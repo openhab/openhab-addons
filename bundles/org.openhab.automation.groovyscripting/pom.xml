@@ -15,7 +15,7 @@
   <name>openHAB Add-ons :: Bundles :: Automation :: Groovy Scripting</name>
 
   <properties>
-    <bnd.importpackage>com.ibm.icu.*;resolution:=optional,com.sun.management;resolution:=optional,groovy.runtime.metaclass;resolution:=optional,groovyjarjarantlr4.stringtemplate;resolution:=optional,jdk.internal.reflect;resolution:=optional,org.abego.treelayout.*;resolution:=optional,org.apache.ivy.*;resolution:=optional,org.fusesource.jansi.*;resolution:=optional,org.jline.jansi;resolution:=optional,org.stringtemplate.v4.*;resolution:=optional</bnd.importpackage>
+    <bnd.importpackage>com.ibm.icu.*;resolution:=optional,com.jcraft.jsch.*;resolution:=optional,com.sun.management;resolution:=optional,groovy.runtime.metaclass;resolution:=optional,groovyjarjarantlr4.stringtemplate;resolution:=optional,jdk.internal.reflect;resolution:=optional,org.abego.treelayout.*;resolution:=optional,org.apache.commons.compress.compressors.pack200;resolution:=optional,org.apache.commons.vfs2.*;resolution:=optional,org.apache.http.*;resolution:=optional,org.apache.oro.*;resolution:=optional,org.apache.tools.ant.*;resolution:=optional,org.fusesource.jansi.*;resolution:=optional,org.jline.jansi;resolution:=optional,org.stringtemplate.v4.*;resolution:=optional</bnd.importpackage>
     <groovy.version>6.0.0</groovy.version>
   </properties>
 
@@ -28,13 +28,19 @@
     </dependency>
     <dependency>
       <groupId>org.apache.groovy</groupId>
-      <artifactId>groovy-jsr223</artifactId>
+      <artifactId>groovy-grape-ivy</artifactId>
       <version>${groovy.version}</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.groovy</groupId>
       <artifactId>groovy-json</artifactId>
+      <version>${groovy.version}</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.groovy</groupId>
+      <artifactId>groovy-jsr223</artifactId>
       <version>${groovy.version}</version>
       <scope>compile</scope>
     </dependency>
@@ -48,6 +54,12 @@
       <groupId>org.apache.groovy</groupId>
       <artifactId>groovy-yaml</artifactId>
       <version>${groovy.version}</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.ivy</groupId>
+      <artifactId>ivy</artifactId>
+      <version>2.6.0</version>
       <scope>compile</scope>
     </dependency>
   </dependencies>
@@ -73,6 +85,21 @@ SPI-Consumer: *
         </plugin>
       </plugins>
     </pluginManagement>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>embed-dependencies</id>
+            <configuration>
+              <!-- Ivy's optional PGP signer requires Bouncy Castle during SPI Fly weaving. -->
+              <excludes>**/module-info.class,org/apache/ivy/plugins/signer/bouncycastle/**</excludes>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
   </build>
 
 </project>

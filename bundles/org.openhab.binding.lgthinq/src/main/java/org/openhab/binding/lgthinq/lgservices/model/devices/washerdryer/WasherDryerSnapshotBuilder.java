@@ -51,7 +51,7 @@ public class WasherDryerSnapshotBuilder extends DefaultSnapshotBuilder<WasherDry
     }
 
     @Override
-    public WasherDryerSnapshot createFromBinary(String binaryData, List<MonitoringBinaryProtocol> prot,
+    public WasherDryerSnapshot createFromBinary(byte[] binaryData, List<MonitoringBinaryProtocol> prot,
             CapabilityDefinition capDef) throws LGThinqUnmarshallException, LGThinqApiException {
         WasherDryerSnapshot snap = super.createFromBinary(binaryData, prot, capDef);
 
@@ -85,7 +85,7 @@ public class WasherDryerSnapshotBuilder extends DefaultSnapshotBuilder<WasherDry
                         if (type == DeviceTypes.DRYER || type == DeviceTypes.DRYER_TOWER) {
                             throw new IllegalArgumentException("Version 1.0 for Dryer is not supported yet.");
                         } else {
-                            snap = MAPPER.convertValue(snapMap, snapClass);
+                            snap = Objects.requireNonNull(MAPPER.convertValue(snapMap, snapClass));
                             snap.setRawData(snapMap);
                         }
                     }

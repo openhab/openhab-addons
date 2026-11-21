@@ -28,7 +28,6 @@ import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedChannelEx
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueException;
 import org.openhab.binding.rfxcom.internal.handler.DeviceState;
 import org.openhab.core.library.types.OnOffType;
-import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.Type;
@@ -188,12 +187,6 @@ public class RFXComRawMessage extends RFXComDeviceMessageImpl<RFXComRawMessage.S
                         this.pulses = config.onPulsesArray;
                     } else {
                         this.pulses = config.offPulsesArray;
-                    }
-                } else if (type instanceof OpenClosedType) {
-                    if (type == OpenClosedType.OPEN) {
-                        this.pulses = config.openPulsesArray;
-                    } else {
-                        this.pulses = config.closedPulsesArray;
                     }
                 } else {
                     throw new RFXComUnsupportedChannelException("Channel " + channelId + " does not accept " + type);

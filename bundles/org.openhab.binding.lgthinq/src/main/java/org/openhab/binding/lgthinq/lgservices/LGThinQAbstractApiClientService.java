@@ -17,11 +17,14 @@ import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.*;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.io.Writer;
+import java.lang.reflect.Constructor;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.time.Instant;
@@ -57,6 +60,7 @@ import org.openhab.binding.lgthinq.lgservices.model.DeviceTypes;
 import org.openhab.binding.lgthinq.lgservices.model.LGDevice;
 import org.openhab.binding.lgthinq.lgservices.model.MonitoringResultFormat;
 import org.openhab.binding.lgthinq.lgservices.model.ResultCodes;
+import org.openhab.binding.lgthinq.lgservices.model.SnapshotBuilder;
 import org.openhab.binding.lgthinq.lgservices.model.SnapshotBuilderFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -182,12 +186,17 @@ public abstract class LGThinQAbstractApiClientService<C extends CapabilityDefini
         File regFile = new File(String.format(getBaseCapConfigDataFile(), deviceId));
         try {
             if (!regFile.isFile() || forceRecreate) {
-                try (InputStream in = new URI(uri).toURL().openStream()) {
-                    Files.copy(in, regFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                try (InputStream in = new URI(uri).toURL().openStream();
+                        Reader reader = new InputStreamReader(in, StandardCharsets.UTF_8);
+                        Writer writer = Files.newBufferedWriter(regFile.toPath(), StandardCharsets.UTF_8)) {
+                    reader.transferTo(writer);
                 }
             }
         } catch (IOException | URISyntaxException e) {
             throw new LGThinqApiException("Error reading IO interface", e);
+        } catch (IllegalArgumentException e) {
+            logger.error("Error reading device {} thing definition with uri: [{}]", deviceId, uri);
+            throw new LGThinqApiException("Error reading device definition", e);
         }
         return regFile;
     }
@@ -322,7 +331,11 @@ public abstract class LGThinQAbstractApiClientService<C extends CapabilityDefini
     public C getCapability(String deviceId, String uri, boolean forceRecreate) throws LGThinqApiException {
         try {
             File regFile = loadDeviceCapability(deviceId, uri, forceRecreate);
-            JsonNode rootNode = objectMapper.readTree(regFile);
+            JsonNode rootNode;
+            try (InputStream in = Files.newInputStream(regFile.toPath());
+                    Reader reader = new InputStreamReader(in, StandardCharsets.UTF_8)) {
+                rootNode = objectMapper.readTree(reader);
+            }
             return CapabilityFactory.getInstance().create(rootNode, capabilityClass);
         } catch (IOException e) {
             throw new LGThinqApiException("Error reading IO interface", e);
@@ -334,8 +347,9 @@ public abstract class LGThinQAbstractApiClientService<C extends CapabilityDefini
     public S buildDefaultOfflineSnapshot() {
         try {
             // As I don't know the current device status, then I reset to default values.
-
-            S shot = snapshotClass.getDeclaredConstructor().newInstance();
+            Constructor<S> ctor = Objects.requireNonNull(snapshotClass.getDeclaredConstructor(),
+                    "Snapshot class default constructor not found");
+            S shot = Objects.requireNonNull(ctor.newInstance());
             shot.setPowerStatus(DevicePowerState.DV_POWER_OFF);
             shot.setOnline(false);
             return shot;
@@ -367,6 +381,12 @@ public abstract class LGThinQAbstractApiClientService<C extends CapabilityDefini
         Map<String, Object> workList = objectMapper
                 .convertValue(envelop.getOrDefault("workList", Collections.emptyMap()), new TypeReference<>() {
                 });
+        return getMonitorData(deviceId, deviceType, deviceCapability, workList);
+    }
+
+    protected @Nullable S getMonitorData(String deviceId, DeviceTypes deviceType, C deviceCapability,
+            Map<String, Object> workList)
+            throws LGThinqApiException, LGThinqUnmarshallException, LGThinqDeviceV1MonitorExpiredException {
         if (workList.get("returnData") != null) {
             if (logger.isDebugEnabled()) {
                 try {
@@ -389,18 +409,24 @@ public abstract class LGThinQAbstractApiClientService<C extends CapabilityDefini
             }
 
             String monDataB64 = (String) workList.get("returnData");
-            String monData = new String(Base64.getDecoder().decode(monDataB64));
+            // The "format" field of the work list ("B64") only describes how returnData is encoded. Whether the
+            // decoded payload is JSON or packed bytes is defined by the device model's monitoring type.
+            MonitoringResultFormat resultFormat = deviceCapability.getMonitoringDataFormat();
+
+            byte[] monData = Base64.getDecoder().decode(monDataB64);
             S shot;
             try {
-                if (MonitoringResultFormat.JSON_FORMAT.equals(deviceCapability.getMonitoringDataFormat())) {
-                    shot = (S) SnapshotBuilderFactory.getInstance().getBuilder(snapshotClass).createFromJson(monData,
-                            deviceType, deviceCapability);
-                } else if (MonitoringResultFormat.BINARY_FORMAT.equals(deviceCapability.getMonitoringDataFormat())) {
-                    shot = (S) SnapshotBuilderFactory.getInstance().getBuilder(snapshotClass).createFromBinary(monData,
-                            deviceCapability.getMonitoringBinaryProtocol(), deviceCapability);
+                SnapshotBuilder<S> builder = (SnapshotBuilder<S>) SnapshotBuilderFactory.getInstance()
+                        .getBuilder(snapshotClass);
+                if (MonitoringResultFormat.JSON_FORMAT.equals(resultFormat)) {
+                    shot = builder.createFromJson(new String(monData, StandardCharsets.UTF_8), deviceType,
+                            deviceCapability);
+                } else if (MonitoringResultFormat.BINARY_FORMAT.equals(resultFormat)) {
+                    shot = builder.createFromBinary(monData, deviceCapability.getMonitoringBinaryProtocol(),
+                            deviceCapability);
                 } else {
-                    throw new LGThinqApiException(String.format("Returned data format not supported: %s",
-                            deviceCapability.getMonitoringDataFormat()));
+                    throw new LGThinqApiException(
+                            String.format("Returned data format not supported: %s", resultFormat));
                 }
                 shot.setOnline("E".equals(workList.get("deviceState")));
             } catch (LGThinqUnmarshallException ex) {

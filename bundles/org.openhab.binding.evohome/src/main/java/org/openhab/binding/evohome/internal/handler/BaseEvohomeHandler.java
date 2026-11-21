@@ -90,9 +90,9 @@ public abstract class BaseEvohomeHandler extends BaseThingHandler {
      * Retrieves the evohome configuration from the bridge
      */
     protected void requestUpdate() {
-        Bridge bridge = getBridge();
+        EvohomeAccountBridgeHandler bridge = getEvohomeBridge();
         if (bridge != null) {
-            ((EvohomeAccountBridgeHandler) bridge).getEvohomeConfig();
+            bridge.requestRefresh();
         }
     }
 

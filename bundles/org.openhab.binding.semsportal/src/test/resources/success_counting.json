@@ -1,0 +1,85 @@
+{
+  "code": "00000",
+  "description": "Success",
+  "traceId": "0000000000000000",
+  "data": [
+    {
+      "code": "telecounting_real",
+      "alias": "realtime_data",
+      "factors": [
+        {
+          "code": "pAc",
+          "data": "2.283",
+          "dataType": "NUMERIC",
+          "unit": "kW"
+        },
+        {
+          "code": "ratedPower",
+          "data": "8.5",
+          "dataType": "NUMERIC",
+          "unit": "kW"
+        }
+      ]
+    },
+    {
+      "code": "telecounting_today",
+      "alias": "day",
+      "factors": [
+        {
+          "code": "proPvStatsToday",
+          "data": "9.1",
+          "dataType": "NUMERIC",
+          "unit": "kWh"
+        }
+      ]
+    },
+    {
+      "code": "telecounting_week",
+      "alias": "week",
+      "factors": [
+        {
+          "code": "proPvStatsWeek",
+          "data": "165.9",
+          "dataType": "NUMERIC",
+          "unit": "kWh"
+        }
+      ]
+    },
+    {
+      "code": "telecounting_month",
+      "alias": "month",
+      "factors": [
+        {
+          "code": "proPvStatsMonth",
+          "data": "789.6",
+          "dataType": "NUMERIC",
+          "unit": "kWh"
+        }
+      ]
+    },
+    {
+      "code": "telecounting_year",
+      "alias": "year",
+      "factors": [
+        {
+          "code": "proPvStatsYear",
+          "data": "8024.1",
+          "dataType": "NUMERIC",
+          "unit": "kWh"
+        }
+      ]
+    },
+    {
+      "code": "telecounting_lifetime",
+      "alias": "lifetime",
+      "factors": [
+        {
+          "code": "proPvStatsTotal",
+          "data": "49119.3",
+          "dataType": "NUMERIC",
+          "unit": "kWh"
+        }
+      ]
+    }
+  ]
+}

@@ -12,67 +12,78 @@
  */
 package org.openhab.binding.semsportal.internal.dto;
 
-import java.time.Instant;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeFormatterBuilder;
-import java.util.List;
-
-import org.openhab.binding.semsportal.internal.SEMSPortalBindingConstants;
-
-import com.google.gson.annotations.SerializedName;
 
 /**
- * Facade for easy access to the SEMS portal data response. Data is distributed over different parts of the response
- * object
+ * Facade for easy access to the status of a power station. The data is distributed over different responses of the
+ * portal.
  *
  * @author Iwan Bron - Initial contribution
+ * @author Julio Vilmar Gesser - Migrated to the SEMS+ API
  */
 public class StationStatus {
-    @SerializedName("kpi")
-    private KeyPerformanceIndicators keyPerformanceIndicators;
-    @SerializedName("inverter")
-    private List<Station> stations;
-    @SerializedName("info")
-    private StationInfo info;
+    private final Double currentOutput;
+    private final Double dayTotal;
+    private final Double monthTotal;
+    private final Double overallTotal;
+    private final Double dayIncome;
+    private final Double totalIncome;
+    private final boolean operational;
+    private final ZonedDateTime lastUpdate;
+
+    /**
+     * All values are null if the portal does not know them.
+     *
+     * @param currentOutput current output in Watt
+     * @param dayTotal energy generated today in kWh
+     * @param monthTotal energy generated this month in kWh
+     * @param overallTotal energy generated since the installation in kWh
+     * @param dayIncome income of today
+     * @param totalIncome income since the installation
+     * @param operational whether an inverter of the station is producing
+     * @param lastUpdate the time of the information
+     */
+    public StationStatus(Double currentOutput, Double dayTotal, Double monthTotal, Double overallTotal,
+            Double dayIncome, Double totalIncome, boolean operational, ZonedDateTime lastUpdate) {
+        this.currentOutput = currentOutput;
+        this.dayTotal = dayTotal;
+        this.monthTotal = monthTotal;
+        this.overallTotal = overallTotal;
+        this.dayIncome = dayIncome;
+        this.totalIncome = totalIncome;
+        this.operational = operational;
+        this.lastUpdate = lastUpdate;
+    }
 
     public Double getCurrentOutput() {
-        return keyPerformanceIndicators.getCurrentOutput();
+        return currentOutput;
     }
 
     public Double getDayTotal() {
-        return stations.isEmpty() ? null : stations.get(0).getDayTotal();
+        return dayTotal;
     }
 
     public Double getMonthTotal() {
-        return stations.isEmpty() ? null : stations.get(0).getMonthTotal();
+        return monthTotal;
     }
 
     public Double getOverallTotal() {
-        return stations.isEmpty() ? null : stations.get(0).getOverallTotal();
+        return overallTotal;
     }
 
     public Double getDayIncome() {
-        return keyPerformanceIndicators.getDayIncome();
+        return dayIncome;
     }
 
     public Double getTotalIncome() {
-        return keyPerformanceIndicators.getTotalIncome();
+        return totalIncome;
     }
 
     public boolean isOperational() {
-        return stations.isEmpty() ? false : stations.get(0).getStatus() == 1;
+        return operational;
     }
 
     public ZonedDateTime getLastUpdate() {
-        if (stations.isEmpty()) {
-            return null;
-        }
-        DateTimeFormatter formatter = new DateTimeFormatterBuilder().appendPattern(info.getDateFormat())
-                .appendLiteral(" ").appendPattern(SEMSPortalBindingConstants.TIME_FORMAT).toFormatter()
-                .withZone(ZoneId.systemDefault());
-        Instant instant = formatter.parse(stations.get(0).getDetails().getLastUpdate(), Instant::from);
-        return ZonedDateTime.ofInstant(instant, ZoneId.systemDefault());
+        return lastUpdate;
     }
 }

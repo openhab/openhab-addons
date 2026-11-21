@@ -1,0 +1,43 @@
+{
+  "id": 18,
+  "type": "event",
+  "event": {
+    "event_type": "state_changed",
+    "data": {
+      "entity_id": "fan.percentage_limited_fan",
+      "old_state": null,
+      "new_state": {
+        "entity_id": "fan.percentage_limited_fan",
+        "state": "off",
+        "attributes": {
+          "preset_modes": [
+            "auto",
+            "smart",
+            "sleep",
+            "on"
+          ],
+          "percentage": null,
+          "percentage_step": 33.333333333333336,
+          "preset_mode": null,
+          "friendly_name": "Percentage Limited Fan",
+          "supported_features": 49
+        },
+        "last_changed": "2026-09-21T12:46:27.336035+00:00",
+        "last_reported": "2026-09-21T12:46:27.372956+00:00",
+        "last_updated": "2026-09-21T12:46:27.336035+00:00",
+        "context": {
+          "id": "01M3201RG8T2JZ0KJSMDY1HDFE",
+          "parent_id": null,
+          "user_id": null
+        }
+      }
+    },
+    "origin": "LOCAL",
+    "time_fired": "2026-09-19T00:00:00.000000+00:00",
+    "context": {
+      "id": "01HXXXXXXX",
+      "parent_id": null,
+      "user_id": null
+    }
+  }
+}

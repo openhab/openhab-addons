@@ -1,0 +1,23 @@
+{
+  "id": 10,
+  "type": "event",
+  "event": {
+    "a": {
+      "calendar.calendar_1": {
+        "s": "off",
+        "a": {
+          "message": "Future Event",
+          "all_day": false,
+          "start_time": "2026-09-21 23:16:27",
+          "end_time": "2026-09-22 00:16:27",
+          "location": "Future Location",
+          "description": "Future Description",
+          "friendly_name": "Calendar 1"
+        },
+        "c": "01M3203K334AHB4MHTJQ7JQ6DZ",
+        "lc": 1789994787.330718,
+        "lu": 1789994847.3316948
+      }
+    }
+  }
+}

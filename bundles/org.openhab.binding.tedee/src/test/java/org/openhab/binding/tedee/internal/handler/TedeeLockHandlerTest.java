@@ -25,6 +25,7 @@ import static org.mockito.Mockito.when;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
@@ -135,6 +136,7 @@ class TedeeLockHandlerTest {
     void shouldNotExecuteQueuedActionAfterDispose() throws Exception {
         TedeeBridgeHandler oldProvider = mock(TedeeBridgeHandler.class);
         TedeeBridgeHandler newProvider = mock(TedeeBridgeHandler.class);
+        AtomicReference<TedeeBridgeHandler> currentProvider = new AtomicReference<>(oldProvider);
         Bridge bridge = mock(Bridge.class);
         ChannelUID channel = mock(ChannelUID.class);
         ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
@@ -149,7 +151,7 @@ class TedeeLockHandlerTest {
 
         when(thing.getBridgeUID()).thenReturn(bridgeUid);
         when(callback.getBridge(bridgeUid)).thenReturn(bridge);
-        when(bridge.getHandler()).thenReturn(oldProvider);
+        when(bridge.getHandler()).thenAnswer(invocation -> currentProvider.get());
         when(channel.getId()).thenReturn(TedeeBindingConstants.C_ACTION);
         testHandler.setCallback(callback);
         when(oldProvider.ready()).thenAnswer(invocation -> {
@@ -180,7 +182,7 @@ class TedeeLockHandlerTest {
 
         testHandler.dispose();
         configuration.deviceId = 456;
-        when(bridge.getHandler()).thenReturn(newProvider);
+        currentProvider.set(newProvider);
         testHandler.initialize();
         releaseReadiness.countDown();
         assertTrue(readinessReturned.await(5, TimeUnit.SECONDS));

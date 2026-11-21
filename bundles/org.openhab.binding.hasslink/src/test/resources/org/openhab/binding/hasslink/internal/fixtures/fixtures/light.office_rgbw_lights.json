@@ -1,0 +1,58 @@
+{
+  "id": 18,
+  "type": "event",
+  "event": {
+    "event_type": "state_changed",
+    "data": {
+      "entity_id": "light.office_rgbw_lights",
+      "old_state": null,
+      "new_state": {
+        "entity_id": "light.office_rgbw_lights",
+        "state": "on",
+        "attributes": {
+          "supported_color_modes": [
+            "rgbw"
+          ],
+          "color_mode": "rgbw",
+          "brightness": 180,
+          "hs_color": [
+            0.0,
+            49.804
+          ],
+          "rgb_color": [
+            255,
+            128,
+            128
+          ],
+          "xy_color": [
+            0.524,
+            0.313
+          ],
+          "rgbw_color": [
+            255,
+            0,
+            0,
+            255
+          ],
+          "friendly_name": "Office RGBW Lights",
+          "supported_features": 0
+        },
+        "last_changed": "2026-09-21T12:46:27.338313+00:00",
+        "last_reported": "2026-09-21T12:46:27.373228+00:00",
+        "last_updated": "2026-09-21T12:46:27.338313+00:00",
+        "context": {
+          "id": "01M3201RGANG9NNAA4TM6ZE9FH",
+          "parent_id": null,
+          "user_id": null
+        }
+      }
+    },
+    "origin": "LOCAL",
+    "time_fired": "2026-09-19T00:00:00.000000+00:00",
+    "context": {
+      "id": "01HXXXXXXX",
+      "parent_id": null,
+      "user_id": null
+    }
+  }
+}

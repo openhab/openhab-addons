@@ -14,6 +14,11 @@ package org.openhab.voice.openaitts.internal;
 
 import static org.openhab.voice.openaitts.internal.OpenAITTSConstants.*;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
@@ -27,12 +32,15 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
+import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.util.FutureResponseListener;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.core.audio.AudioFormat;
 import org.openhab.core.audio.AudioStream;
 import org.openhab.core.audio.ByteArrayAudioStream;
+import org.openhab.core.audio.utils.AudioWaveUtils;
 import org.openhab.core.config.core.ConfigurableService;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.io.net.http.HttpClientFactory;
@@ -55,6 +63,7 @@ import com.google.gson.JsonObject;
 /**
  * @author Artur Fedjukevits - Initial contribution
  *         API documentation: https://platform.openai.com/docs/guides/text-to-speech
+ * @author Dan Cunningham - Add WAV output
  */
 @Component(configurationPid = TTS_SERVICE_PID, property = Constants.SERVICE_PID + "="
         + TTS_SERVICE_PID, service = TTSService.class)
@@ -64,6 +73,14 @@ import com.google.gson.JsonObject;
 public class OpenAITTSService extends AbstractCachedTTSService {
 
     private static final int REQUEST_TIMEOUT_MS = 10_000;
+    // Jetty's default 2 MiB buffer holds only about 43 seconds of 24 kHz WAV
+    private static final int MAX_RESPONSE_BYTES = 32 * 1024 * 1024;
+    private static final AudioFormat MP3_FORMAT = new AudioFormat(AudioFormat.CONTAINER_NONE, AudioFormat.CODEC_MP3,
+            null, 16, 64000, 44100L);
+    // the sample rate comes from the WAV header of the response
+    private static final AudioFormat WAV_FORMAT = new AudioFormat(AudioFormat.CONTAINER_WAVE,
+            AudioFormat.CODEC_PCM_SIGNED, false, 16, null, null, 1);
+    private static final byte[] RIFF_MAGIC = "RIFF".getBytes(StandardCharsets.US_ASCII);
     private final Logger logger = LoggerFactory.getLogger(OpenAITTSService.class);
     private OpenAITTSConfiguration config = new OpenAITTSConfiguration();
     private final HttpClient httpClient;
@@ -91,7 +108,7 @@ public class OpenAITTSService extends AbstractCachedTTSService {
 
     @Override
     public Set<AudioFormat> getSupportedFormats() {
-        return Set.of(new AudioFormat(AudioFormat.CONTAINER_NONE, AudioFormat.CODEC_MP3, null, 16, 64000, 44100L));
+        return Set.of(MP3_FORMAT, WAV_FORMAT);
     }
 
     @Override
@@ -125,6 +142,8 @@ public class OpenAITTSService extends AbstractCachedTTSService {
         content.addProperty("input", text);
         content.addProperty("voice", voice.getLabel().toLowerCase());
         content.addProperty("speed", config.speed);
+        boolean wav = AudioFormat.CONTAINER_WAVE.equals(requestedFormat.getContainer());
+        content.addProperty("response_format", wav ? "wav" : "mp3");
 
         if (!"tts-1".equals(config.model) && !"tts-1-hd".equals(config.model) && !config.instructions.isEmpty()) {
             content.addProperty("instructions", config.instructions);
@@ -135,13 +154,17 @@ public class OpenAITTSService extends AbstractCachedTTSService {
         logger.trace("Send query: {}", queryJson);
 
         try {
-            ContentResponse response = httpClient.newRequest(config.apiUrl).method(HttpMethod.POST)
+            Request request = httpClient.newRequest(config.apiUrl).method(HttpMethod.POST)
                     .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS)
                     .header("Authorization", "Bearer " + config.apiKey).header("Content-Type", "application/json")
-                    .content(new StringContentProvider(queryJson)).send();
+                    .content(new StringContentProvider(queryJson));
+            FutureResponseListener listener = new FutureResponseListener(request, MAX_RESPONSE_BYTES);
+            request.send(listener);
+            ContentResponse response = listener.get(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS);
 
             if (response.getStatus() == HttpStatus.OK_200) {
-                return new ByteArrayAudioStream(response.getContent(), requestedFormat);
+                byte[] audio = response.getContent();
+                return new ByteArrayAudioStream(audio, wav ? getWavResponseFormat(audio) : MP3_FORMAT);
             } else {
                 logger.error("Request failed with status {}: {}", response.getStatus(), response.getContentAsString());
                 throw new TTSException("Failed to generate audio data");
@@ -149,6 +172,20 @@ public class OpenAITTSService extends AbstractCachedTTSService {
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
             logger.error("Request to OpenAI failed: {}", e.getMessage(), e);
             throw new TTSException("Failed to generate audio data");
+        }
+    }
+
+    private AudioFormat getWavResponseFormat(byte[] audio) throws TTSException {
+        // a server at a custom apiUrl may ignore response_format and send MP3
+        if (audio.length < RIFF_MAGIC.length
+                || !Arrays.equals(audio, 0, RIFF_MAGIC.length, RIFF_MAGIC, 0, RIFF_MAGIC.length)) {
+            logger.debug("WAV was requested but the response is not WAV, treating it as MP3");
+            return MP3_FORMAT;
+        }
+        try (InputStream inputStream = new ByteArrayInputStream(audio)) {
+            return AudioWaveUtils.parseWavFormat(inputStream);
+        } catch (IOException e) {
+            throw new TTSException("Cannot parse WAV format", e);
         }
     }
 }

@@ -1,0 +1,17 @@
+{
+  "id": 10,
+  "type": "event",
+  "event": {
+    "a": {
+      "date.date": {
+        "s": "2020-01-01",
+        "a": {
+          "icon": "mdi:calendar",
+          "friendly_name": "Date"
+        },
+        "c": "01M3201RG6N0TZEA6G7SQVBXJX",
+        "lc": 1789994787.334297
+      }
+    }
+  }
+}

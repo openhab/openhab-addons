@@ -1,0 +1,468 @@
+{
+	"deviceMapping": {
+		"id": [
+			"xiaomi.humidifier.p3"
+		],
+		"propertyMethod": "get_properties",
+		"maxProperties": 1,
+		"channels": [
+			{
+				"property": "on",
+				"siid": 2,
+				"piid": 1,
+				"friendlyName": "Power",
+				"channel": "power",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch",
+					"Power"
+				]
+			},
+			{
+				"property": "fault",
+				"siid": 2,
+				"piid": 2,
+				"friendlyName": "Device Fault",
+				"channel": "fault",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "No Faults"
+						},
+						{
+							"value": "1",
+							"label": "Fan Motor Fault"
+						},
+						{
+							"value": "2",
+							"label": "Clean the Water Level Sensor"
+						},
+						{
+							"value": "3",
+							"label": "Water Pump Fault"
+						},
+						{
+							"value": "4",
+							"label": "Paused"
+						},
+						{
+							"value": "5",
+							"label": "Lack of Water"
+						}
+					],
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "error",
+				"tags": [
+					"Status"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"No Faults\",\"1\"\u003d\"Fan Motor Fault\",\"2\"\u003d\"Clean the Water Level Sensor\",\"3\"\u003d\"Water Pump Fault\",\"4\"\u003d\"Paused\",\"5\"\u003d\"Lack of Water\"]`"
+			},
+			{
+				"property": "mode",
+				"siid": 2,
+				"piid": 3,
+				"friendlyName": "Mode",
+				"channel": "mode",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "Constant Humidity"
+						},
+						{
+							"value": "1",
+							"label": "Sleep"
+						},
+						{
+							"value": "2",
+							"label": "High Power"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "fan",
+				"tags": [
+					"Control",
+					"Mode"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Constant Humidity\",\"1\"\u003d\"Sleep\",\"2\"\u003d\"High Power\"]`"
+			},
+			{
+				"property": "target-humidity",
+				"siid": 2,
+				"piid": 6,
+				"friendlyName": "Target Humidity",
+				"channel": "target_humidity",
+				"type": "Number:Dimensionless",
+				"unit": "percentage",
+				"stateDescription": {
+					"minimum": 40,
+					"maximum": 70,
+					"step": 1,
+					"pattern": "%.0f %%"
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "humidity",
+				"tags": [
+					"Setpoint",
+					"Humidity"
+				]
+			},
+			{
+				"property": "relative-humidity",
+				"siid": 3,
+				"piid": 1,
+				"friendlyName": "Humidity",
+				"channel": "humidity",
+				"type": "Number:Dimensionless",
+				"unit": "percentage",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 100,
+					"step": 1,
+					"pattern": "%.0f %%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "humidity",
+				"tags": [
+					"Measurement",
+					"Humidity"
+				]
+			},
+			{
+				"property": "alarm",
+				"siid": 4,
+				"piid": 1,
+				"friendlyName": "Notification Sound",
+				"channel": "buzzer",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "soundvolume",
+				"tags": [
+					"Switch",
+					"Enabled"
+				]
+			},
+			{
+				"property": "physical-controls-locked",
+				"siid": 5,
+				"piid": 1,
+				"friendlyName": "Child Lock",
+				"channel": "child_lock",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "lock",
+				"tags": [
+					"Switch",
+					"Enabled"
+				]
+			},
+			{
+				"property": "off-delay-time",
+				"siid": 6,
+				"piid": 1,
+				"friendlyName": "Turn-Off Delay Time",
+				"channel": "delay_time",
+				"type": "Number:Time",
+				"unit": "minutes",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 480,
+					"step": 1,
+					"pattern": "%.0f %unit%"
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "time",
+				"tags": [
+					"Setpoint",
+					"Duration"
+				],
+				"readmeComment": "0 switches the turn-off delay off"
+			},
+			{
+				"property": "water-status",
+				"siid": 6,
+				"piid": 2,
+				"friendlyName": "Water",
+				"channel": "water_status",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "Normal"
+						},
+						{
+							"value": "1",
+							"label": "Low Water"
+						}
+					],
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "water",
+				"tags": [
+					"Status",
+					"Water"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Normal\",\"1\"\u003d\"Low Water\"]`"
+			},
+			{
+				"property": "over-wet-protect",
+				"siid": 6,
+				"piid": 4,
+				"friendlyName": "Over-Humidity Protection",
+				"channel": "overwet_protection",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch",
+					"Enabled"
+				],
+				"readmeComment": "Switches to a lower level when the ambient humidity is too high"
+			},
+			{
+				"property": "fan-dry-time",
+				"siid": 6,
+				"piid": 5,
+				"friendlyName": "Drying Time Left",
+				"channel": "dry_left_time",
+				"type": "Number:Time",
+				"unit": "minutes",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 90,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "time",
+				"tags": [
+					"Measurement",
+					"Duration"
+				]
+			},
+			{
+				"property": "clean-start",
+				"siid": 6,
+				"piid": 6,
+				"friendlyName": "Start Cleaning",
+				"channel": "clean",
+				"type": "Switch",
+				"refresh": false,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER",
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "ON",
+									"returnValue": 30
+								}
+							]
+						}
+					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch",
+					"Enabled"
+				],
+				"readmeComment": "Starts the 30 minute cleaning cycle while the humidifier is off; the cleaning time left shows the progress. Switch the humidifier off to stop"
+			},
+			{
+				"property": "clean-time",
+				"siid": 6,
+				"piid": 6,
+				"friendlyName": "Cleaning Time Left",
+				"channel": "clean_time_left",
+				"type": "Number:Time",
+				"unit": "minutes",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 30,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "time",
+				"tags": [
+					"Measurement",
+					"Duration"
+				]
+			},
+			{
+				"property": "indicator-light",
+				"siid": 7,
+				"piid": 1,
+				"friendlyName": "Display",
+				"channel": "led",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "light",
+				"tags": [
+					"Switch",
+					"Light"
+				]
+			},
+			{
+				"property": "brightness",
+				"siid": 7,
+				"piid": 2,
+				"friendlyName": "Display Brightness",
+				"channel": "led_brightness",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "Dim"
+						},
+						{
+							"value": "1",
+							"label": "Bright"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "light",
+				"tags": [
+					"Control",
+					"Light"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Dim\",\"1\"\u003d\"Bright\"]`"
+			},
+			{
+				"property": "filter-life-level",
+				"siid": 8,
+				"piid": 1,
+				"friendlyName": "Filter Life",
+				"channel": "filter_life_level",
+				"type": "Number:Dimensionless",
+				"unit": "percentage",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 100,
+					"step": 1,
+					"pattern": "%.0f %%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "status",
+				"tags": [
+					"Measurement",
+					"Level"
+				]
+			},
+			{
+				"property": "",
+				"friendlyName": "Actions",
+				"channel": "actions",
+				"type": "String",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "reset-filter-life",
+							"label": "Reset Filter Life"
+						}
+					]
+				},
+				"actions": [
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 8,
+						"aiid": 1,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "reset-filter-life"
+								}
+							]
+						}
+					}
+				],
+				"category": "settings",
+				"tags": [
+					"Control"
+				],
+				"readmeComment": "The filter reset is not yet confirmed on a device; Value mapping `[\"reset-filter-life\"\u003d\"Reset Filter Life\"]`"
+			}
+		],
+		"experimental": true
+	}
+}

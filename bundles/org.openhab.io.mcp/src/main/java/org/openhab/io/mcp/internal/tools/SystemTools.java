@@ -89,17 +89,20 @@ public class SystemTools {
                 '+5m' that the server resolves itself. Use this tool when you need the server's wall-clock time \
                 for reasoning ('is it morning?', 'what day is it?') or for absolute scheduling against an \
                 unfamiliar timezone.""")
-                .inputSchema(new McpSchema.JsonSchema("object", Map.of(), List.of(), null, null, null)).build();
+                .inputSchema(new McpSchema.JsonSchema("object", Map.of(), List.of(), null, null, null))
+                .annotations(readOnlyAnnotations()).build();
     }
 
     /**
      * Handles a {@code get_system_info} call.
      * Gathers the openHAB version, item/thing/rule counts, and installed binding IDs.
+     * Thing counts and bindings are left out for non-admins.
      *
      * @param request the incoming tool call request (no arguments expected)
+     * @param admin whether the caller is an administrator
      * @return a result containing the system information
      */
-    public CallToolResult handleGetSystemInfo(McpSchema.CallToolRequest request) {
+    public CallToolResult handleGetSystemInfo(McpSchema.CallToolRequest request, boolean admin) {
         Map<String, Object> info = new LinkedHashMap<>();
         info.put("version", OpenHAB.getVersion());
 
@@ -111,12 +114,14 @@ public class SystemTools {
         info.put("epochMillis", now.toInstant().toEpochMilli());
 
         info.put("itemCount", StreamSupport.stream(itemRegistry.getItems().spliterator(), false).count());
-        info.put("thingCount", thingRegistry.getAll().size());
         info.put("ruleCount", ruleRegistry.getAll().size());
 
-        List<String> bindings = thingRegistry.getAll().stream().map(thing -> thing.getThingTypeUID().getBindingId())
-                .distinct().sorted().toList();
-        info.put("installedBindings", bindings);
+        if (admin) {
+            info.put("thingCount", thingRegistry.getAll().size());
+            List<String> bindings = thingRegistry.getAll().stream().map(thing -> thing.getThingTypeUID().getBindingId())
+                    .distinct().sorted().toList();
+            info.put("installedBindings", bindings);
+        }
 
         return textResult(jsonMapper, info);
     }
@@ -135,24 +140,28 @@ public class SystemTools {
                 climate readings (temperature/humidity), device health (offline things), \
                 and energy data. Use this when the user asks about the overall status \
                 of their home or wants a summary.""")
-                .inputSchema(new McpSchema.JsonSchema("object", Map.of(), List.of(), null, null, null)).build();
+                .inputSchema(new McpSchema.JsonSchema("object", Map.of(), List.of(), null, null, null))
+                .annotations(readOnlyAnnotations()).build();
     }
 
     /**
      * Handles a {@code get_home_status} call.
      * Builds a composite overview including security (open contacts), active lights, climate readings,
-     * energy data, and offline device information.
+     * energy data, and offline device information. Device information is left out for non-admins.
      *
      * @param request the incoming tool call request (no arguments expected)
+     * @param admin whether the caller is an administrator
      * @return a result containing the aggregated home status
      */
-    public CallToolResult handleGetHomeStatus(McpSchema.CallToolRequest request) {
+    public CallToolResult handleGetHomeStatus(McpSchema.CallToolRequest request, boolean admin) {
         Map<String, Object> status = new LinkedHashMap<>();
         status.put("security", buildSecurityStatus());
         status.put("lighting", buildLightingStatus());
         status.put("climate", buildClimateStatus());
         status.put("energy", buildEnergyStatus());
-        status.put("devices", buildDeviceHealth());
+        if (admin) {
+            status.put("devices", buildDeviceHealth());
+        }
         return textResult(jsonMapper, status);
     }
 

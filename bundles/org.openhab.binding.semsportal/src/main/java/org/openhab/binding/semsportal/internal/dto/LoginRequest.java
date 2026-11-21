@@ -15,27 +15,23 @@ package org.openhab.binding.semsportal.internal.dto;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The login request to the portal. Response can be deserialized in a {@link LoginResponse}
+ * POJO for the login request: the account and the hashed password. The other fields are required by the portal.
  *
  * @author Iwan Bron - Initial contribution
+ * @author Julio Vilmar Gesser - Migrated to the SEMS+ API
  */
-
+@SuppressWarnings("unused") // the fields are used by Gson
 @NonNullByDefault
 public class LoginRequest {
     private String account;
     private String pwd;
+    private int agreement = 1;
+    private boolean isChinese = false;
+    private boolean isLocal = false;
 
     public LoginRequest(String account, String pwd) {
         this.account = account;
         this.pwd = pwd;
-    }
-
-    public void setPwd(String pwd) {
-        this.pwd = pwd;
-    }
-
-    public void setAccount(String account) {
-        this.account = account;
     }
 
     public String getPwd() {

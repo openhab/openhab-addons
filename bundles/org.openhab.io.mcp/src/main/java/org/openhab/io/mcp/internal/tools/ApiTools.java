@@ -101,7 +101,8 @@ public class ApiTools {
                 spec. Filter by tag or HTTP method. Use this to discover endpoints not \
                 covered by the curated tools, then call describe_api_endpoint for the schema \
                 before invoking with call_api.""")
-                .inputSchema(new McpSchema.JsonSchema("object", props, List.of(), null, null, null)).build();
+                .inputSchema(new McpSchema.JsonSchema("object", props, List.of(), null, null, null))
+                .annotations(readOnlyAnnotations()).build();
     }
 
     /**
@@ -187,7 +188,7 @@ public class ApiTools {
                 call_api so you know what arguments are required and how to interpret the \
                 response.""")
                 .inputSchema(new McpSchema.JsonSchema("object", props, List.of("method", "path"), null, null, null))
-                .build();
+                .annotations(readOnlyAnnotations()).build();
     }
 
     /**
@@ -242,6 +243,7 @@ public class ApiTools {
                 "Optional override for the request Content-Type. When omitted it is inferred from the endpoint's "
                         + "OpenAPI spec — application/json for most endpoints, text/plain for commands, states, and "
                         + "enable/runnow/regenerate flags."));
+        // Any REST endpoint can be invoked, including DELETE.
         return McpSchema.Tool.builder().name("call_api").description("""
                 Invoke an arbitrary openHAB REST endpoint. The call uses your own bearer token, \
                 so permissions match a direct REST call. Supports all HTTP methods. Returns \
@@ -250,7 +252,7 @@ public class ApiTools {
                 request shape. BE CAREFUL — this tool can invoke destructive endpoints \
                 (delete items, modify things, change service configs).""")
                 .inputSchema(new McpSchema.JsonSchema("object", props, List.of("method", "path"), null, null, null))
-                .build();
+                .annotations(writeAnnotations(true, false)).build();
     }
 
     /**

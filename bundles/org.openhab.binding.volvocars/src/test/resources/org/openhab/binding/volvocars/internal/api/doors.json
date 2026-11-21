@@ -1,0 +1,8 @@
+{
+  "data": {
+    "centralLock": { "value": "LOCKED", "timestamp": "2026-01-01T10:00:00.000Z" },
+    "frontLeftDoor": { "value": "CLOSED", "timestamp": "2026-01-01T10:00:00.000Z" },
+    "hood": { "value": "CLOSED", "timestamp": "2026-01-01T10:00:00.000Z" },
+    "tailgate": { "value": "AJAR", "timestamp": "2026-01-01T10:00:00.000Z" }
+  }
+}

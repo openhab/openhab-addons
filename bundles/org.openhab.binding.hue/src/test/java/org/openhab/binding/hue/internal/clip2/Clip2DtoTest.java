@@ -35,6 +35,7 @@ import org.openhab.binding.hue.internal.api.dto.clip2.ContactReport;
 import org.openhab.binding.hue.internal.api.dto.clip2.Dimming;
 import org.openhab.binding.hue.internal.api.dto.clip2.Effects;
 import org.openhab.binding.hue.internal.api.dto.clip2.Event;
+import org.openhab.binding.hue.internal.api.dto.clip2.Gradient;
 import org.openhab.binding.hue.internal.api.dto.clip2.LightLevel;
 import org.openhab.binding.hue.internal.api.dto.clip2.MetaData;
 import org.openhab.binding.hue.internal.api.dto.clip2.MirekSchema;
@@ -252,7 +253,7 @@ class Clip2DtoTest {
         assertNotNull(resources);
         List<Resource> list = resources.getResources();
         assertNotNull(list);
-        assertEquals(17, list.size());
+        assertEquals(18, list.size());
         int itemFoundCount = 0;
         for (Resource item : list) {
             assertEquals(ResourceType.LIGHT, item.getType());
@@ -358,8 +359,54 @@ class Clip2DtoTest {
                     assertEquals(ActionType.BREATHE, actionValue);
                 }
             }
+            if (name.contains("Signe gulvlampe")) {
+                itemFoundCount++;
+                assertEquals(ResourceType.LIGHT, item.getType());
+
+                // test gradient points (get)
+                Gradient gradient = item.getGradient();
+                assertNotNull(gradient);
+                List<PairXy> points = gradient.getXyPoints();
+                assertNotNull(points);
+                assertEquals(5, points.size());
+                PairXy point1 = points.get(0);
+                assertNotNull(point1);
+                double[] xy1 = point1.getXY();
+                assertNotNull(xy1);
+                assertEquals(2, xy1.length);
+                assertEquals(0.5791, xy1[0]);
+                assertEquals(0.3876, xy1[1]);
+                PairXy point5 = points.get(4);
+                assertNotNull(point5);
+                double[] xy5 = point5.getXY();
+                assertNotNull(xy5);
+                assertEquals(2, xy5.length);
+                assertEquals(0.5704, xy5[0]);
+                assertEquals(0.2691, xy5[1]);
+
+                // test gradient points (set + get)
+                gradient.setPointXy(2, new PairXy().setXY(new double[] { 0.5, 0.3 }));
+                points = gradient.getXyPoints();
+                assertNotNull(points);
+                assertEquals(5, points.size());
+                PairXy point2 = points.get(2);
+                assertNotNull(point2);
+                double[] xy2 = point2.getXY();
+                assertNotNull(xy2);
+                assertEquals(2, xy2.length);
+                assertEquals(0.5, xy2[0]);
+                assertEquals(0.3, xy2[1]);
+
+                List<PairXy> points2 = gradient.getXyPoints();
+                assertThrows(IndexOutOfBoundsException.class, () -> points2.get(-1));
+                assertThrows(IndexOutOfBoundsException.class, () -> points2.get(5));
+
+                PairXy pairXy = new PairXy().setXY(new double[] { 0.5, 0.3 });
+                assertThrows(IndexOutOfBoundsException.class, () -> gradient.setPointXy(-1, pairXy));
+                assertThrows(IndexOutOfBoundsException.class, () -> gradient.setPointXy(5, pairXy));
+            }
         }
-        assertEquals(2, itemFoundCount);
+        assertEquals(3, itemFoundCount);
     }
 
     @Test

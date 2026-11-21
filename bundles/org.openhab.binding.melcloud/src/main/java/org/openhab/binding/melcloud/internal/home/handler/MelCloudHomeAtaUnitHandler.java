@@ -460,12 +460,33 @@ public class MelCloudHomeAtaUnitHandler extends BaseThingHandler implements MelC
         Instant from = to.truncatedTo(ChronoUnit.HOURS);
         MelCloudHomeRequestPacer pacer = handler.getRequestPacer();
         track(generation,
-                pacer.scheduleAsync(() -> handler.getApiClient().fetchLatestEnergyKwh(accessToken, config.unitId, from,
-                        to, MelCloudHomeApiClient.MEASURE_ATA_CUMULATIVE_ENERGY_CONSUMED)))
+                pacer.scheduleAsync(unlessStopped(generation,
+                        () -> handler.getApiClient().fetchLatestEnergyKwh(accessToken, config.unitId, from, to,
+                                MelCloudHomeApiClient.MEASURE_ATA_CUMULATIVE_ENERGY_CONSUMED))))
                 .whenComplete((energyKwh, error) -> publishEnergyKwh(generation, energyKwh, error));
-        track(generation, pacer.scheduleAsync(
-                () -> handler.getApiClient().fetchLatestOutdoorTemperature(accessToken, config.unitId, from, to)))
+        track(generation, pacer.scheduleAsync(unlessStopped(generation,
+                () -> handler.getApiClient().fetchLatestOutdoorTemperature(accessToken, config.unitId, from, to))))
                 .whenComplete((temperature, error) -> publishOutdoorTemperature(generation, temperature, error));
+    }
+
+    /**
+     * Wraps a paced telemetry call so it is skipped when its poll round was stopped before the paced slot arrived.
+     * This also covers the window between queuing the call and {@link #track(long, CompletableFuture)} registering it,
+     * in which {@link #cancelTelemetryPoll()} cannot cancel it yet.
+     *
+     * @param generation the poll round the call belongs to
+     * @param call the paced call
+     * @return a paced call that fails with a {@link CancellationException} instead of running {@code call} once the
+     *         poll round is stopped
+     */
+    private <T> MelCloudHomeRequestPacer.PacedCall<T> unlessStopped(long generation,
+            MelCloudHomeRequestPacer.PacedCall<T> call) {
+        return () -> {
+            if (generation != telemetryGeneration.get()) {
+                throw new CancellationException("Telemetry poll was stopped");
+            }
+            return call.call();
+        };
     }
 
     /**

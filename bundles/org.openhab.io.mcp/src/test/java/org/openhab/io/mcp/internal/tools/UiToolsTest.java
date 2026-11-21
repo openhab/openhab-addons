@@ -596,4 +596,14 @@ class UiToolsTest {
         assertNull(component.get("config"), "projected response must not include unrequested 'config'");
         assertNull(component.get("tags"), "projected response must not include unrequested 'tags'");
     }
+
+    @Test
+    void toolAnnotationsDescribeSideEffects() {
+        UiTools t = tools();
+        McpTestHelper.assertReadOnlyTool(t.getListWidgetsTool());
+        McpTestHelper.assertReadOnlyTool(t.getDescribeWidgetTool());
+        McpTestHelper.assertReadOnlyTool(t.getPageSkeletonTool());
+        McpTestHelper.assertReadOnlyTool(t.getValidateUiComponentTool());
+        McpTestHelper.assertWriteTool(t.getManageUiComponentTool(), true, false);
+    }
 }

@@ -547,6 +547,6 @@ public class GsonMapper {
         return Optional.ofNullable(map.get("id")).map(Object::toString);
     }
 
-    private static record Pair<K, @Nullable V> (K key, @Nullable V value) {
+    private static record Pair<K, @Nullable V>(K key, @Nullable V value) {
     }
 }

@@ -1,0 +1,53 @@
+{
+  "id": 18,
+  "type": "event",
+  "event": {
+    "event_type": "state_changed",
+    "data": {
+      "entity_id": "light.entrance_color_white_lights",
+      "old_state": null,
+      "new_state": {
+        "entity_id": "light.entrance_color_white_lights",
+        "state": "on",
+        "attributes": {
+          "supported_color_modes": [
+            "hs",
+            "white"
+          ],
+          "color_mode": "hs",
+          "brightness": 180,
+          "hs_color": [
+            345,
+            75
+          ],
+          "rgb_color": [
+            255,
+            64,
+            112
+          ],
+          "xy_color": [
+            0.588,
+            0.274
+          ],
+          "friendly_name": "Entrance Color + White Lights",
+          "supported_features": 0
+        },
+        "last_changed": "2026-09-21T12:46:27.339037+00:00",
+        "last_reported": "2026-09-21T12:46:27.373346+00:00",
+        "last_updated": "2026-09-21T12:46:27.339037+00:00",
+        "context": {
+          "id": "01M3201RGB3BW3K9AMS4A9ZTC3",
+          "parent_id": null,
+          "user_id": null
+        }
+      }
+    },
+    "origin": "LOCAL",
+    "time_fired": "2026-09-19T00:00:00.000000+00:00",
+    "context": {
+      "id": "01HXXXXXXX",
+      "parent_id": null,
+      "user_id": null
+    }
+  }
+}

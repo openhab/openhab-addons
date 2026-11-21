@@ -139,6 +139,11 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
     private volatile @Nullable Channel stopMoveChannel = null;
 
     /*
+     * Channel for the current position (rollershutters)
+     */
+    private volatile @Nullable Channel positionCurrentChannel = null;
+
+    /*
      * Internal record representing a link between an OH channel and a HomeKit characteristic type & iid.
      * Used for light model management.
      */
@@ -488,8 +493,11 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
             if (command instanceof StopMoveType stopMoveType && StopMoveType.STOP == stopMoveType) {
                 if (stopMoveChannel instanceof Channel stopMoveChannel) {
                     writeChannel(stopMoveChannel, OnOffType.ON);
-                } else if (readChannel(channel) instanceof Command actualPosition) {
-                    writeChannel(channel, actualPosition);
+                } else if (positionCurrentChannel instanceof Channel positionChannel
+                        && readChannel(positionChannel) instanceof Command currentPosition) {
+                    writeChannel(channel, currentPosition);
+                } else {
+                    logger.debug("{} not able to execute stop command", thing.getUID());
                 }
             } else if (channelUID.equals(lightModelClientHSBTypeChannel)) {
                 lightModelHandleCommand(command);
@@ -558,6 +566,7 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
         lightModelLinks.clear();
         lightModelClientHSBTypeChannel = null;
         stopMoveChannel = null;
+        positionCurrentChannel = null;
         super.dispose();
     }
 
@@ -729,20 +738,26 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
     }
 
     /**
-     * Initializes the stop/move button channel by searching for a characteristic of type POSITION_HOLD.
+     * Initializes the stop/move button channel by searching for a characteristic of type POSITION_HOLD,
+     * and the current position channel by searching for a characteristic of type POSITION_CURRENT.
      *
      * @param accessory the accessory containing the characteristics
      * @param channels the list of channels to search
      */
     private void stopMoveFinalize(Accessory accessory, Map<String, Channel> channels) {
+        stopMoveChannel = null;
+        positionCurrentChannel = null;
         for (Channel channel : channels.values()) {
             if (channel.getProperties().get(PROPERTY_IID) instanceof String iid) {
                 for (Service service : accessory.services) {
                     for (Characteristic cxx : service.characteristics) {
-                        if (iid.equals(String.valueOf(cxx.iid))
-                                && CharacteristicType.POSITION_HOLD == cxx.getCharacteristicType()) {
-                            stopMoveChannel = channel;
-                            return;
+                        if (iid.equals(String.valueOf(cxx.iid))) {
+                            CharacteristicType cxxType = cxx.getCharacteristicType();
+                            if (CharacteristicType.POSITION_HOLD == cxxType) {
+                                stopMoveChannel = channel;
+                            } else if (CharacteristicType.POSITION_CURRENT == cxxType) {
+                                positionCurrentChannel = channel;
+                            }
                         }
                     }
                 }

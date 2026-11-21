@@ -185,6 +185,7 @@
 		<item-type>String</item-type>
 		<label>Selected Profile</label>
 		<description>Id of the selected Profile configured in the Shelly App</description>
+		<category>Settings</category>
 		<state readOnly="false"/>
 	</channel-type>
 
@@ -218,6 +219,7 @@
 		<item-type>Switch</item-type>
 		<label>Schedule Active</label>
 		<description>ON: A scheduled program is active</description>
+		<category>Time</category>
 		<state readOnly="false"/>
 	</channel-type>
 

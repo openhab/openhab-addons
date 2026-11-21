@@ -17,6 +17,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Map;
 
@@ -111,6 +112,48 @@ class ElectricalPowerMeasurementConverterTest extends BaseMatterConverterTest {
         converter.onEvent(message);
         verify(mockHandler, times(1)).updateState(eq(1), eq("electricalpowermeasurement-voltage"),
                 eq(new QuantityType<>(230.0, Units.VOLT)));
+    }
+
+    @Test
+    void testOnEventKeepsDecimals() {
+        AttributeChangedMessage message = new AttributeChangedMessage();
+        message.path = new Path();
+
+        message.path.attributeName = "voltage";
+        message.value = BigInteger.valueOf(233900);
+        converter.onEvent(message);
+        verify(mockHandler, times(1)).updateState(eq(1), eq("electricalpowermeasurement-voltage"),
+                eq(new QuantityType<>(new BigDecimal("233.9"), Units.VOLT)));
+
+        message.path.attributeName = "activeCurrent";
+        message.value = BigInteger.valueOf(2600);
+        converter.onEvent(message);
+        verify(mockHandler, times(1)).updateState(eq(1), eq("electricalpowermeasurement-activecurrent"),
+                eq(new QuantityType<>(new BigDecimal("2.6"), Units.AMPERE)));
+
+        message.path.attributeName = "activePower";
+        message.value = BigInteger.valueOf(751123);
+        converter.onEvent(message);
+        verify(mockHandler, times(1)).updateState(eq(1), eq("electricalpowermeasurement-activepower"),
+                eq(new QuantityType<>(new BigDecimal("751.123"), Units.WATT)));
+    }
+
+    @Test
+    void testOnEventWithNegativeAndLargePower() {
+        AttributeChangedMessage message = new AttributeChangedMessage();
+        message.path = new Path();
+        message.path.attributeName = "activePower";
+
+        message.value = BigInteger.valueOf(-1500);
+        converter.onEvent(message);
+        verify(mockHandler, times(1)).updateState(eq(1), eq("electricalpowermeasurement-activepower"),
+                eq(new QuantityType<>(new BigDecimal("-1.5"), Units.WATT)));
+
+        // larger than Integer.MAX_VALUE mW
+        message.value = BigInteger.valueOf(3_000_000_500L);
+        converter.onEvent(message);
+        verify(mockHandler, times(1)).updateState(eq(1), eq("electricalpowermeasurement-activepower"),
+                eq(new QuantityType<>(new BigDecimal("3000000.5"), Units.WATT)));
     }
 
     @Test

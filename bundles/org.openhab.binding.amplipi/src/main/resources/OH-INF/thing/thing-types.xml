@@ -74,6 +74,11 @@
 				<default>1</default>
 				<advanced>true</advanced>
 			</parameter>
+			<parameter name="audioSink" type="boolean">
+				<label>Register Audio Sink</label>
+				<description>Register an audio sink for this zone, so that announcements can be played on this zone only.</description>
+				<default>false</default>
+			</parameter>
 		</config-description>
 	</thing-type>
 

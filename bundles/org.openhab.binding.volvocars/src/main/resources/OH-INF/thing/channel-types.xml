@@ -1,0 +1,455 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="volvocars"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-type id="lock">
+		<item-type>Switch</item-type>
+		<label>Central Lock</label>
+		<description>Central lock state (ON = locked). Send ON to lock and OFF to unlock the vehicle.</description>
+		<category>Lock</category>
+		<tags>
+			<tag>Switch</tag>
+			<tag>LockState</tag>
+		</tags>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+
+	<channel-type id="door">
+		<item-type>Contact</item-type>
+		<label>Door</label>
+		<category>Door</category>
+		<tags>
+			<tag>OpenState</tag>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="window">
+		<item-type>Contact</item-type>
+		<label>Window</label>
+		<category>Window</category>
+		<tags>
+			<tag>OpenState</tag>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="engine-running">
+		<item-type>Switch</item-type>
+		<label>Engine Running</label>
+		<description>Indicates whether the engine is running.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Power</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="distance">
+		<item-type unitHint="km">Number:Length</item-type>
+		<label>Distance</label>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="range">
+		<item-type unitHint="km">Number:Length</item-type>
+		<label>Range</label>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+
+	<channel-type id="availability">
+		<item-type>String</item-type>
+		<label>Availability</label>
+		<description>Indicates whether the vehicle is available for remote commands, or why it is unavailable.</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="true">
+			<options>
+				<option value="AVAILABLE">Available</option>
+				<option value="UNAVAILABLE">Unavailable</option>
+				<option value="CAR_IN_USE">Car in Use</option>
+				<option value="NO_INTERNET">No Internet</option>
+				<option value="OTA_INSTALLATION_IN_PROGRESS">Software Update in Progress</option>
+				<option value="POWER_SAVING_MODE">Power Saving Mode</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="fuel-amount">
+		<item-type unitHint="l">Number:Volume</item-type>
+		<label>Fuel Amount</label>
+		<description>Amount of fuel in the tank.</description>
+		<category>Oil</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Level</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="battery-level">
+		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<label>Battery Level</label>
+		<description>State of charge of the high voltage battery.</description>
+		<category>BatteryLevel</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>StateOfCharge</tag>
+		</tags>
+		<state readOnly="true" min="0" max="100" pattern="%.0f %%"/>
+	</channel-type>
+
+	<channel-type id="charger-connection-status">
+		<item-type>String</item-type>
+		<label>Charger Connection Status</label>
+		<category>Energy</category>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="true">
+			<options>
+				<option value="CONNECTED">Connected</option>
+				<option value="DISCONNECTED">Disconnected</option>
+				<option value="FAULT">Fault</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="charging-status">
+		<item-type>String</item-type>
+		<label>Charging Status</label>
+		<category>Energy</category>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="true">
+			<options>
+				<option value="CHARGING">Charging</option>
+				<option value="IDLE">Idle</option>
+				<option value="DONE">Done</option>
+				<option value="DISCHARGING">Discharging</option>
+				<option value="SCHEDULED">Scheduled</option>
+				<option value="ERROR">Error</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="charging-type">
+		<item-type>String</item-type>
+		<label>Charging Type</label>
+		<category>Energy</category>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="true">
+			<options>
+				<option value="AC">AC</option>
+				<option value="DC">DC</option>
+				<option value="NONE">None</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="charger-power-status">
+		<item-type>String</item-type>
+		<label>Charger Power Status</label>
+		<category>Energy</category>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="true">
+			<options>
+				<option value="PROVIDING_POWER">Providing Power</option>
+				<option value="POWER_AVAILABLE_BUT_NOT_ACTIVATED">Power Available but Not Activated</option>
+				<option value="NO_POWER_AVAILABLE">No Power Available</option>
+				<option value="INITIALIZATION">Initialization</option>
+				<option value="FAULT">Fault</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="estimated-charging-time">
+		<item-type unitHint="min">Number:Time</item-type>
+		<label>Estimated Charging Time</label>
+		<description>Estimated time until the target battery level is reached.</description>
+		<category>Time</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Duration</tag>
+		</tags>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+
+	<channel-type id="charging-current-limit">
+		<item-type unitHint="A">Number:ElectricCurrent</item-type>
+		<label>Charging Current Limit</label>
+		<category>Energy</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Current</tag>
+		</tags>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+
+	<channel-type id="charging-power">
+		<item-type unitHint="W">Number:Power</item-type>
+		<label>Charging Power</label>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+
+	<channel-type id="average-speed">
+		<item-type unitHint="km/h">Number:Speed</item-type>
+		<label>Average Speed</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Speed</tag>
+		</tags>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+
+	<channel-type id="average-fuel-consumption">
+		<item-type>Number</item-type>
+		<label>Average Fuel Consumption</label>
+		<description>Average fuel consumption in l/100km since the manual trip meter was reset.</description>
+		<tags>
+			<tag>Calculation</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f l/100km"/>
+	</channel-type>
+
+	<channel-type id="average-energy-consumption">
+		<item-type>Number</item-type>
+		<label>Average Energy Consumption</label>
+		<description>Average energy consumption in kWh/100km since the manual trip meter was reset.</description>
+		<tags>
+			<tag>Calculation</tag>
+			<tag>Energy</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f kWh/100km"/>
+	</channel-type>
+
+	<channel-type id="heading">
+		<item-type>Number:Angle</item-type>
+		<label>Heading</label>
+		<description>Direction the vehicle is heading to.</description>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+
+	<channel-type id="location-timestamp">
+		<item-type>DateTime</item-type>
+		<label>Location Timestamp</label>
+		<description>Time the location was recorded.</description>
+		<category>Time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="service-warning">
+		<item-type>String</item-type>
+		<label>Service Warning</label>
+		<tags>
+			<tag>Alarm</tag>
+		</tags>
+		<state readOnly="true">
+			<options>
+				<option value="NO_WARNING">No Warning</option>
+				<option value="REGULAR_MAINTENANCE_ALMOST_TIME_FOR_SERVICE">Regular Maintenance Almost Due</option>
+				<option value="ENGINE_HOURS_ALMOST_TIME_FOR_SERVICE">Engine Hours Almost Due</option>
+				<option value="DISTANCE_DRIVEN_ALMOST_TIME_FOR_SERVICE">Distance Driven Almost Due</option>
+				<option value="REGULAR_MAINTENANCE_TIME_FOR_SERVICE">Regular Maintenance Due</option>
+				<option value="ENGINE_HOURS_TIME_FOR_SERVICE">Engine Hours Due</option>
+				<option value="DISTANCE_DRIVEN_TIME_FOR_SERVICE">Distance Driven Due</option>
+				<option value="REGULAR_MAINTENANCE_OVERDUE_FOR_SERVICE">Regular Maintenance Overdue</option>
+				<option value="ENGINE_HOURS_OVERDUE_FOR_SERVICE">Engine Hours Overdue</option>
+				<option value="DISTANCE_DRIVEN_OVERDUE_FOR_SERVICE">Distance Driven Overdue</option>
+				<option value="UNKNOWN_WARNING">Unknown Warning</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="time-to-service">
+		<item-type unitHint="mo">Number:Time</item-type>
+		<label>Time to Service</label>
+		<description>Remaining time until the next service.</description>
+		<category>Time</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Duration</tag>
+		</tags>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+
+	<channel-type id="engine-hours-to-service">
+		<item-type unitHint="h">Number:Time</item-type>
+		<label>Engine Hours to Service</label>
+		<description>Remaining engine hours until the next service.</description>
+		<category>Time</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Duration</tag>
+		</tags>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+
+	<channel-type id="level-warning">
+		<item-type>String</item-type>
+		<label>Level Warning</label>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>Level</tag>
+		</tags>
+		<state readOnly="true">
+			<options>
+				<option value="NO_WARNING">No Warning</option>
+				<option value="TOO_LOW">Too Low</option>
+				<option value="UNSPECIFIED">Unspecified</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="oil-level-warning">
+		<item-type>String</item-type>
+		<label>Oil Level Warning</label>
+		<category>Oil</category>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>Oil</tag>
+		</tags>
+		<state readOnly="true">
+			<options>
+				<option value="NO_WARNING">No Warning</option>
+				<option value="SERVICE_REQUIRED">Service Required</option>
+				<option value="TOO_LOW">Too Low</option>
+				<option value="TOO_HIGH">Too High</option>
+				<option value="UNSPECIFIED">Unspecified</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="tyre-warning">
+		<item-type>String</item-type>
+		<label>Tyre Pressure Warning</label>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>Pressure</tag>
+		</tags>
+		<state readOnly="true">
+			<options>
+				<option value="NO_WARNING">No Warning</option>
+				<option value="VERY_LOW_PRESSURE">Very Low Pressure</option>
+				<option value="LOW_PRESSURE">Low Pressure</option>
+				<option value="HIGH_PRESSURE">High Pressure</option>
+				<option value="UNSPECIFIED">Unspecified</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="light-failure">
+		<item-type>Switch</item-type>
+		<label>Light Failure</label>
+		<description>ON if at least one exterior light reports a failure.</description>
+		<category>Light</category>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>Light</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="light-failures">
+		<item-type>String</item-type>
+		<label>Failed Lights</label>
+		<description>Comma separated list of exterior lights reporting a failure, e.g. brakeLightLeft.</description>
+		<category>Light</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Light</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="climatization">
+		<item-type>Switch</item-type>
+		<label>Climatization</label>
+		<description>Send ON to start and OFF to stop the climatization of the cabin. Switches back to OFF once the start
+			command was sent.</description>
+		<category>Climate</category>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Airconditioning</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="engine-remote-start">
+		<item-type>Switch</item-type>
+		<label>Engine Remote Start</label>
+		<description>Send ON to start and OFF to stop the engine remotely. Switches back to OFF once the start command was
+			sent.</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Power</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="honk-flash">
+		<item-type>String</item-type>
+		<label>Honk and Flash</label>
+		<description>Makes the vehicle honk and/or flash its lights.</description>
+		<tags>
+			<tag>Control</tag>
+		</tags>
+		<command>
+			<options>
+				<option value="HONK">Honk</option>
+				<option value="FLASH">Flash</option>
+				<option value="HONK_AND_FLASH">Honk and Flash</option>
+			</options>
+		</command>
+	</channel-type>
+
+	<channel-type id="lock-reduced-guard">
+		<item-type>Switch</item-type>
+		<label>Lock with Reduced Guard</label>
+		<description>Send ON to lock the vehicle with reduced alarm guard, e.g. to leave a pet inside. Switches back to OFF
+			once the command was sent.</description>
+		<category>Lock</category>
+		<tags>
+			<tag>Switch</tag>
+			<tag>LockState</tag>
+		</tags>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+
+	<channel-type id="last-command-status">
+		<item-type>String</item-type>
+		<label>Last Command Status</label>
+		<description>Result of the last remote command, e.g. COMPLETED or REJECTED.</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+</thing:thing-descriptions>

@@ -24,6 +24,8 @@ The `controller` Bridge has two configuration parameters:
 
 Both the `zone` and `group` Things only require a single configuration parameter `id`, which corresponds to their id on the AmpliPi.
 
+The `zone` Thing additionally supports the optional boolean configuration parameter `audioSink` (default `false`), see [Audio Sink](#audio-sink) below.
+
 ## Channels
 
 These are the channels of the `controller` Bridge:
@@ -50,7 +52,11 @@ The `zone` and `group` Things have the following channels:
 For every AmpliPi controller, an audio sink is registered with the id of the thing.
 This audio sink accepts urls and audio files to be played.
 It uses the AmpliPi's PA feature for announcements on all available zones.
-If no volume value is passed, the current volume of each zone is used, otherwise the provided volume is temporarily set on all zones for the announcement.
+If a volume value is passed, it is used for the announcement.
+
+Additionally, an audio sink can be registered for an individual `zone` Thing by setting its `audioSink` configuration parameter to `true`.
+Such a sink is registered with the id of the zone thing and restricts the announcement to that zone only.
+The `audioSink` parameter is applied when the Thing is activated (e.g. after a restart or after disabling and enabling the Thing again).
 
 ## Full Example
 

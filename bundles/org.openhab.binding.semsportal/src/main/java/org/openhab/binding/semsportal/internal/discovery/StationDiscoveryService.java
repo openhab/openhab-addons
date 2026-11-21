@@ -15,12 +15,14 @@ package org.openhab.binding.semsportal.internal.discovery;
 import static org.openhab.binding.semsportal.internal.SEMSPortalBindingConstants.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.semsportal.internal.PortalHandler;
+import org.openhab.binding.semsportal.internal.dto.Inverter;
 import org.openhab.binding.semsportal.internal.dto.Station;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
@@ -67,8 +69,16 @@ public class StationDiscoveryService extends AbstractDiscoveryService {
 
     private @Nullable Map<String, Object> buildProperties(Station station) {
         Map<String, Object> properties = new HashMap<>();
-        properties.put(Thing.PROPERTY_MODEL_ID, station.getType());
-        properties.put(Thing.PROPERTY_SERIAL_NUMBER, station.getSerialNumber());
+        // the portal knows the model and the serial number of the inverters, not of the station: take the first one
+        List<Inverter> inverters = portal.getInverters(station.getStationId());
+        if (!inverters.isEmpty()) {
+            Inverter inverter = inverters.get(0);
+            properties.put(Thing.PROPERTY_SERIAL_NUMBER, inverter.getSerialNumber());
+            String model = inverter.getModel();
+            if (model != null) {
+                properties.put(Thing.PROPERTY_MODEL_ID, model);
+            }
+        }
         properties.put(STATION_NAME, station.getName());
         properties.put(STATION_CAPACITY, station.getCapacity());
         properties.put(STATION_UUID, station.getStationId());

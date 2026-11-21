@@ -267,8 +267,9 @@ public class ShellyManagerPage {
         properties.put(ATTRIBUTE_ACTIONS_SKIPPED,
                 profile.status.astats != null ? String.valueOf(profile.status.astats.skipped) : "n/a");
         int maxInternalTemp = stats.maxInternalTemp.get();
-        properties.put(ATTRIBUTE_MAX_ITEMP, maxInternalTemp > 0 ? maxInternalTemp + " °C" : "n/a");
-        if (maxInternalTemp == 0) {
+        boolean hasMaxInternalTemp = maxInternalTemp != ShellyDeviceStats.MAX_INTERNAL_TEMP_UNSET;
+        properties.put(ATTRIBUTE_MAX_ITEMP, hasMaxInternalTemp ? maxInternalTemp + " °C" : "n/a");
+        if (!hasMaxInternalTemp) {
             properties.replace(CHANNEL_DEVST_ITEMP, "n/a");
         }
 

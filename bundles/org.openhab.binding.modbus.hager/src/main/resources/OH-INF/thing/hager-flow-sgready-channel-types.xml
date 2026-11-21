@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="modbus"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<channel-type id="hager-flow-sgready-index">
+		<item-type>Number</item-type>
+		<label>SGReady index</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="hager-flow-sgready-name">
+		<item-type>String</item-type>
+		<label>SGReady Name</label>
+	</channel-type>
+	<channel-type id="hager-flow-sgready-active">
+		<item-type>String</item-type>
+		<label>SGReady active</label>
+		<description>Possible values: Inactive, active.</description>
+	</channel-type>
+	<channel-type id="hager-flow-sgready-working">
+		<item-type>Number</item-type>
+		<label>SGReady working</label>
+		<description>Status code of the SGReady controller, mapped by the state options.</description>
+		<state readOnly="true">
+			<options>
+				<option value="0">OK</option>
+				<option value="-1">Hardware issue</option>
+				<option value="-2">Reserved</option>
+				<option value="-3">SGReady controller not alive</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="hager-flow-sgready-status">
+		<item-type>Number</item-type>
+		<label>SGReady status</label>
+		<description>State options: 1 = STATE_1_BLOCK, 2 = STATE_2_NORMAL, 3 = STATE_3_GO, 4 = STATE_4_FORCE_GO.</description>
+		<state readOnly="true">
+			<options>
+				<option value="1">STATE_1_BLOCK</option>
+				<option value="2">STATE_2_NORMAL</option>
+				<option value="3">STATE_3_GO</option>
+				<option value="4">STATE_4_FORCE_GO</option>
+			</options>
+		</state>
+	</channel-type>
+</thing:thing-descriptions>

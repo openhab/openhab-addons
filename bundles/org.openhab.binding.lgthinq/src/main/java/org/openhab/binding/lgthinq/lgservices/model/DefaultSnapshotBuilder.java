@@ -20,6 +20,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HexFormat;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -66,13 +67,13 @@ public abstract class DefaultSnapshotBuilder<S extends AbstractSnapshotDefinitio
      * @throws LGThinqApiException if any LG Thinq API related error occurs
      */
     @Override
-    public S createFromBinary(String binaryData, List<MonitoringBinaryProtocol> prot, CapabilityDefinition capDef)
+    public S createFromBinary(byte[] binaryData, List<MonitoringBinaryProtocol> prot, CapabilityDefinition capDef)
             throws LGThinqUnmarshallException, LGThinqApiException {
         try {
             Map<String, Object> snapValues = new HashMap<>();
-            byte[] data = binaryData.getBytes();
+            byte[] data = binaryData;
             BeanInfo beanInfo = Introspector.getBeanInfo(snapClass);
-            S snap = snapClass.getConstructor().newInstance();
+            S snap = Objects.requireNonNull(snapClass.getConstructor().newInstance());
             PropertyDescriptor[] pds = beanInfo.getPropertyDescriptors();
             Map<String, PropertyDescriptor> aliasesMethod = new HashMap<>();
             for (PropertyDescriptor property : pds) {
@@ -103,7 +104,7 @@ public abstract class DefaultSnapshotBuilder<S extends AbstractSnapshotDefinitio
                 String fName = protField.fieldName;
                 int value = 0;
                 for (int i = protField.startByte; i < protField.startByte + protField.length; i++) {
-                    value = (value << 8) + data[i];
+                    value = (value << 8) + (data[i] & 0xFF);
                 }
                 snapValues.put(fName, value);
                 PropertyDescriptor property = aliasesMethod.get(fName);
@@ -127,6 +128,8 @@ public abstract class DefaultSnapshotBuilder<S extends AbstractSnapshotDefinitio
             return snap;
         } catch (IntrospectionException | InvocationTargetException | InstantiationException | IllegalAccessException
                 | NoSuchMethodException e) {
+            String hexData = HexFormat.of().withUpperCase().formatHex(binaryData);
+            logger.debug("Unexpected Error unmarshalling binary data with payload[0x{}]", hexData, e);
             throw new LGThinqUnmarshallException("Unexpected Error unmarshalling binary data", e);
         }
     }
@@ -152,6 +155,7 @@ public abstract class DefaultSnapshotBuilder<S extends AbstractSnapshotDefinitio
             deviceSetting.put("snapshot", snapshotMap);
             return createFromJson(deviceSetting, capDef);
         } catch (JsonProcessingException e) {
+            logger.debug("Unexpected Error unmarshalling json to map with payload[{}]", snapshotDataJson, e);
             throw new LGThinqUnmarshallException("Unexpected Error unmarshalling json to map", e);
         }
     }
@@ -249,7 +253,7 @@ public abstract class DefaultSnapshotBuilder<S extends AbstractSnapshotDefinitio
 
         if (bitKey == null) {
             // cache the bitKey if it doesn't was fetched yet.
-            bitKey = searchBitKey.apply(capFeatureValues);
+            bitKey = Objects.requireNonNull(searchBitKey.apply(capFeatureValues));
             cachedBitKey.put(key, bitKey);
         }
 
@@ -304,6 +308,17 @@ public abstract class DefaultSnapshotBuilder<S extends AbstractSnapshotDefinitio
         }
 
         return Integer.toString(val);
+    }
+
+    /**
+     * Check if the key is described as a bit-value in the Options feature values of the capability.
+     *
+     * @param key Key of the bit-value
+     * @param capDef capability
+     * @return true if {@link #bitValue} can resolve the key
+     */
+    protected boolean hasBitValue(String key, final CapabilityDefinition capDef) {
+        return !getBitKey(key, capDef.getFeatureValuesRawData(), getSpecificCacheBitKey(capDef)).isEmpty();
     }
 
     /**

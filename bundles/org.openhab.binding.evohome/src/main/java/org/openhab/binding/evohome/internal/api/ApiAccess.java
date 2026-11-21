@@ -12,6 +12,11 @@
  */
 package org.openhab.binding.evohome.internal.api;
 
+import java.time.DateTimeException;
+import java.time.Duration;
+import java.time.Instant;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -25,18 +30,19 @@ import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpMethod;
-import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.evohome.internal.api.models.v2.dto.response.Authentication;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonParseException;
 
 /**
  * Provides access to (an optionally OAUTH based) API. Makes sure that all the necessary headers are set.
  *
  * @author Jasper van Zuijlen - Initial contribution
+ * @author Kovacs Istvan - Propagate failures and respect retry delays
  *
  */
 @NonNullByDefault
@@ -48,6 +54,7 @@ public class ApiAccess {
 
     private @Nullable Authentication authenticationData;
     private @Nullable String applicationId;
+    private Instant retryAfter = Instant.MIN;
 
     public ApiAccess(HttpClient httpClient) {
         this.httpClient = httpClient;
@@ -92,10 +99,13 @@ public class ApiAccess {
      * @throws TimeoutException Thrown when a request times out
      */
     public @Nullable <TOut> TOut doRequest(HttpMethod method, String url, Map<String, String> headers,
-            @Nullable String requestData, String contentType, @Nullable Class<TOut> outClass) throws TimeoutException {
+            @Nullable String requestData, String contentType, @Nullable Class<TOut> outClass)
+            throws TimeoutException, EvohomeApiClientException {
+        if (Instant.now().isBefore(retryAfter)) {
+            throw new EvohomeApiClientException("Waiting before retrying API request", 429,
+                    Math.max(1, Duration.between(Instant.now(), retryAfter).getSeconds() + 1));
+        }
         logger.debug("Requesting: [{}]", url);
-        @Nullable
-        TOut retVal = null;
         try {
             Request request = httpClient.newRequest(url).method(method);
 
@@ -109,27 +119,56 @@ public class ApiAccess {
 
             ContentResponse response = request.timeout(REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS).send();
 
-            logger.trace("Response: {}", response);
-            logger.trace("\n{}\n{}", response.getHeaders(), response.getContentAsString());
-
-            if ((response.getStatus() == HttpStatus.OK_200) || (response.getStatus() == HttpStatus.ACCEPTED_202)) {
-                String reply = response.getContentAsString();
-
-                if (outClass != null) {
-                    retVal = new Gson().fromJson(reply, outClass);
+            int status = response.getStatus();
+            logger.trace("HTTP response status: {}", status);
+            if (status < 200 || status >= 300) {
+                long delay = 0;
+                if (status == 429 || status == 503) {
+                    delay = parseRetryAfter(response.getHeaders().get("Retry-After"));
+                    if (status == 429) {
+                        delay = Math.max(60, delay);
+                    }
+                    retryAfter = Instant.now().plusSeconds(delay);
                 }
-            } else if ((response.getStatus() == HttpStatus.CREATED_201)) {
-                // success nothing to return ignore
-            } else {
-                logger.debug("Request failed with unexpected response code {}", response.getStatus());
+                throw new EvohomeApiClientException("API request failed: HTTP " + status, status, delay);
             }
+            if (outClass == null) {
+                return null;
+            }
+            @Nullable
+            TOut result = gson.fromJson(response.getContentAsString(), outClass);
+            if (result == null) {
+                throw new EvohomeApiClientException("Empty API response");
+            }
+            return result;
         } catch (ExecutionException e) {
-            logger.debug("Error in handling request: ", e);
+            throw new EvohomeApiClientException("API communication failed", e);
         } catch (InterruptedException e) {
-            logger.debug("Handling request interrupted: ", e);
             Thread.currentThread().interrupt();
+            throw new EvohomeApiClientException("API request interrupted", e);
+        } catch (JsonParseException e) {
+            throw new EvohomeApiClientException("Invalid API response", e);
         }
-        return retVal;
+    }
+
+    private long parseRetryAfter(@Nullable String value) {
+        if (value == null) {
+            return 0;
+        }
+        try {
+            long seconds = Long.parseLong(value.trim());
+            Instant.now().plusSeconds(seconds);
+            return Math.max(0, seconds);
+        } catch (NumberFormatException e) {
+            try {
+                Instant deadline = ZonedDateTime.parse(value, DateTimeFormatter.RFC_1123_DATE_TIME).toInstant();
+                return Math.max(0, Duration.between(Instant.now(), deadline).getSeconds() + 1);
+            } catch (DateTimeException ex) {
+                return 0;
+            }
+        } catch (DateTimeException | ArithmeticException e) {
+            return 0;
+        }
     }
 
     /**
@@ -141,7 +180,8 @@ public class ApiAccess {
      * @return The result of the request or null
      * @throws TimeoutException Thrown when a request times out
      */
-    public @Nullable <TOut> TOut doAuthenticatedGet(String url, Class<TOut> outClass) throws TimeoutException {
+    public @Nullable <TOut> TOut doAuthenticatedGet(String url, Class<TOut> outClass)
+            throws TimeoutException, EvohomeApiClientException {
         return doAuthenticatedRequest(HttpMethod.GET, url, null, outClass);
     }
 
@@ -153,7 +193,8 @@ public class ApiAccess {
      * @param requestContainer The object to use as JSON data for the request
      * @throws TimeoutException Thrown when a request times out
      */
-    public void doAuthenticatedPut(String url, Object requestContainer) throws TimeoutException {
+    public void doAuthenticatedPut(String url, Object requestContainer)
+            throws TimeoutException, EvohomeApiClientException {
         doAuthenticatedRequest(HttpMethod.PUT, url, requestContainer, null);
     }
 
@@ -170,7 +211,8 @@ public class ApiAccess {
      * @throws TimeoutException Thrown when a request times out
      */
     private @Nullable <TOut> TOut doRequest(HttpMethod method, String url, Map<String, String> headers,
-            @Nullable Object requestContainer, @Nullable Class<TOut> outClass) throws TimeoutException {
+            @Nullable Object requestContainer, @Nullable Class<TOut> outClass)
+            throws TimeoutException, EvohomeApiClientException {
         String json = null;
         if (requestContainer != null) {
             json = gson.toJson(requestContainer);
@@ -192,7 +234,8 @@ public class ApiAccess {
      * @throws TimeoutException Thrown when a request times out
      */
     private @Nullable <TOut> TOut doAuthenticatedRequest(HttpMethod method, String url,
-            @Nullable Object requestContainer, @Nullable Class<TOut> outClass) throws TimeoutException {
+            @Nullable Object requestContainer, @Nullable Class<TOut> outClass)
+            throws TimeoutException, EvohomeApiClientException {
         Map<String, String> headers = new HashMap<>();
         Authentication localAuthenticationData = authenticationData;
         String localApplicationId = applicationId;

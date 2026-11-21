@@ -1,0 +1,28 @@
+{
+  "id": 10,
+  "type": "event",
+  "event": {
+    "a": {
+      "fan.percentage_full_fan": {
+        "s": "off",
+        "a": {
+          "preset_modes": [
+            "auto",
+            "smart",
+            "sleep",
+            "on"
+          ],
+          "direction": "forward",
+          "oscillating": false,
+          "percentage": null,
+          "percentage_step": 33.333333333333336,
+          "preset_mode": null,
+          "friendly_name": "Percentage Full Fan",
+          "supported_features": 55
+        },
+        "c": "01M3201RG70KJTY162ZVRNK43N",
+        "lc": 1789994787.3358889
+      }
+    }
+  }
+}

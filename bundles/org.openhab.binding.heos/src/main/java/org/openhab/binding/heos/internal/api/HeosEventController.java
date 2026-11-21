@@ -40,7 +40,7 @@ public class HeosEventController extends HeosSystemEventListener {
 
     private final HeosSystem system;
 
-    private long lastEventTime;
+    private volatile long lastEventTime;
 
     public HeosEventController(HeosSystem system) {
         this.system = system;
@@ -115,5 +115,12 @@ public class HeosEventController extends HeosSystemEventListener {
 
     long getLastEventTime() {
         return lastEventTime;
+    }
+
+    /**
+     * Restarts the quiet period of the event stream, for example after it was (re)registered.
+     */
+    void resetLastEventTime() {
+        lastEventTime = System.currentTimeMillis();
     }
 }

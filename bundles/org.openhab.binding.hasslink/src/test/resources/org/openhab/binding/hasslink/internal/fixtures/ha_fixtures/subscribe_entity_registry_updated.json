@@ -1,0 +1,21 @@
+{
+  "type": "event",
+  "event": {
+    "event_type": "entity_registry_updated",
+    "data": {
+      "action": "update",
+      "entity_id": "binary_sensor.sun_solar_rising",
+      "changes": {
+        "name": null
+      }
+    },
+    "origin": "LOCAL",
+    "time_fired": "2026-09-22T08:48:40.706324+00:00",
+    "context": {
+      "id": "01M344V382VD0SW5G38XYEKKCD",
+      "parent_id": null,
+      "user_id": null
+    }
+  },
+  "id": 31
+}

@@ -1,0 +1,17 @@
+{
+  "id": 10,
+  "type": "event",
+  "event": {
+    "a": {
+      "sensor.sun_next_setting": {
+        "s": "2026-09-21T17:41:11+00:00",
+        "a": {
+          "device_class": "timestamp",
+          "friendly_name": "Sun Next setting"
+        },
+        "c": "01M3202YVSKEDQ0ERP5Z36Q081",
+        "lc": 1789994826.6175778
+      }
+    }
+  }
+}

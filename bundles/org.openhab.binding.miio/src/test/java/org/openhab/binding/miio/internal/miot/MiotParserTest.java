@@ -278,6 +278,44 @@ public class MiotParserTest {
             }
             """;
 
+    private static final String WRITABLE_FORMATS_SPEC = """
+            {
+              "type": "urn:miot-spec-v2:device:kettle:0000A009:test-model:1",
+              "description": "Kettle",
+              "services": [
+                {
+                  "iid": 2,
+                  "type": "urn:miot-spec-v2:service:kettle:00007813:test-model:1",
+                  "description": "Kettle",
+                  "properties": [
+                    { "iid": 1, "type": "urn:miot-spec-v2:property:a:00000001:test-model:1",
+                      "description": "Uint8", "format": "uint8", "access": ["read", "write"] },
+                    { "iid": 2, "type": "urn:miot-spec-v2:property:b:00000002:test-model:1",
+                      "description": "Uint16", "format": "uint16", "access": ["read", "write"] },
+                    { "iid": 3, "type": "urn:miot-spec-v2:property:c:00000003:test-model:1",
+                      "description": "Uint32", "format": "uint32", "access": ["read", "write"] },
+                    { "iid": 4, "type": "urn:miot-spec-v2:property:d:00000004:test-model:1",
+                      "description": "Int8", "format": "int8", "access": ["read", "write"] },
+                    { "iid": 5, "type": "urn:miot-spec-v2:property:e:00000005:test-model:1",
+                      "description": "Int16", "format": "int16", "access": ["read", "write"] },
+                    { "iid": 6, "type": "urn:miot-spec-v2:property:f:00000006:test-model:1",
+                      "description": "Int32", "format": "int32", "access": ["read", "write"] },
+                    { "iid": 7, "type": "urn:miot-spec-v2:property:g:00000007:test-model:1",
+                      "description": "Int64", "format": "int64", "access": ["read", "write"] },
+                    { "iid": 8, "type": "urn:miot-spec-v2:property:h:00000008:test-model:1",
+                      "description": "Float", "format": "float", "access": ["read", "write"] },
+                    { "iid": 9, "type": "urn:miot-spec-v2:property:i:00000009:test-model:1",
+                      "description": "Bool", "format": "bool", "access": ["read", "write"] },
+                    { "iid": 10, "type": "urn:miot-spec-v2:property:j:0000000A:test-model:1",
+                      "description": "String", "format": "string", "access": ["read", "write"] },
+                    { "iid": 11, "type": "urn:miot-spec-v2:property:k:0000000B:test-model:1",
+                      "description": "Hex", "format": "hex", "access": ["read", "write"] }
+                  ]
+                }
+              ]
+            }
+            """;
+
     private @Nullable String selectUrn(String instances, String model, @Nullable Integer version) throws IOException {
         ModelUrnsDTO instance = MiotParser.selectInstance(new StringReader(instances), model, version);
         return instance == null ? null : instance.getType();
@@ -487,6 +525,24 @@ public class MiotParserTest {
         assertEquals(List.of("Custom - Mute", "Custom - Set Mute"),
                 channels.stream().map(MiIoBasicChannel::getFriendlyName).toList());
         assertEquals(List.of("String", "String"), channels.stream().map(MiIoBasicChannel::getType).toList());
+    }
+
+    @Test
+    public void writablePropertyGetsParameterTypeOfItsFormat() throws MiotParseException {
+        List<MiIoBasicChannel> channels = new MiotParser("test.vacuum.model")
+                .getDevice(JsonParser.parseString(WRITABLE_FORMATS_SPEC)).getDevice().getChannels();
+
+        assertEquals(List.of("a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k"),
+                channels.stream().map(MiIoBasicChannel::getChannel).toList());
+        assertEquals(
+                List.of(CommandParameterType.NUMBER, CommandParameterType.NUMBER, CommandParameterType.NUMBER,
+                        CommandParameterType.NUMBER, CommandParameterType.NUMBER, CommandParameterType.NUMBER,
+                        CommandParameterType.NUMBER, CommandParameterType.NUMBER, CommandParameterType.ONOFFBOOL,
+                        CommandParameterType.STRING, CommandParameterType.STRING),
+                channels.stream().map(c -> c.getActions().get(0).getparameterType()).toList());
+        for (MiIoBasicChannel channel : channels) {
+            assertEquals("set_properties", channel.getActions().get(0).getCommand());
+        }
     }
 
     @Test

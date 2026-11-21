@@ -251,7 +251,7 @@ public class HikvisionHandler extends ChannelDuplexHandler {
                     }
                     break;
                 case "ResponseStatus version=":
-                    ////////////////// External Alarm Input ///////////////
+                    // External Alarm Input
                     if (content
                             .contains("<requestURL>/ISAPI/System/IO/inputs/" + nvrChannel + "/status</requestURL>")) {
                         // Stops checking the external alarm if camera does not have feature.

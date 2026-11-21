@@ -51,4 +51,9 @@ public class MetaData {
         Integer controlId = this.controlId;
         return controlId != null ? controlId.intValue() : 0;
     }
+
+    @Override
+    public String toString() {
+        return "[archetype=" + archetype + ", name=" + name + "]";
+    }
 }

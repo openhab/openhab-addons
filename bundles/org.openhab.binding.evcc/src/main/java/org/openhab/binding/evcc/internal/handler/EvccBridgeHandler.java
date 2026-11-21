@@ -16,6 +16,7 @@ import static org.openhab.binding.evcc.internal.EvccBindingConstants.API_PATH_ST
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -24,6 +25,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -56,10 +59,13 @@ import com.google.gson.JsonObject;
  * handlers.
  *
  * @author Marcel Goerentz - Initial contribution
+ * @author Michael Weger - Dispatch indexed deltas per array element
  */
 @NonNullByDefault
 public class EvccBridgeHandler extends BaseBridgeHandler {
     private static final long PERIODIC_STATE_REFRESH_INTERVAL_MINUTES = 5;
+    // "<root>.<index>.<field>", e.g. "loadpoints.0.chargePower": group 1 is the element key, group 2 the field
+    private static final Pattern INDEXED_KEY_PATTERN = Pattern.compile("([^.]+\\.\\d+)\\.(.+)");
 
     private final Logger logger = LoggerFactory.getLogger(EvccBridgeHandler.class);
 
@@ -207,7 +213,8 @@ public class EvccBridgeHandler extends BaseBridgeHandler {
      *
      * @param state The complete current state from the EVCC API
      */
-    private void onFullState(JsonObject state) {
+    // Package-private (rather than private) so tests can exercise the exact production path.
+    void onFullState(JsonObject state) {
         if (disposed) {
             return;
         }
@@ -236,22 +243,47 @@ public class EvccBridgeHandler extends BaseBridgeHandler {
     /**
      * Handle partial state updates from the websocket.
      *
-     * Updates the cached state and dispatches the update to relevant handlers.
-     * Also processes any pending handlers if initial state has now been received.
+     * Merges all keys of the message into the cached state, processes any pending handlers and dispatches the
+     * update to relevant handlers. Indexed keys of array elements ("loadpoints.0.chargePower") are grouped per
+     * element and routed once under the element key ("loadpoints.0"), carrying only the changed fields.
      *
-     * @param key The update key (e.g., "battery", "grid", "pv.0")
-     * @param value The updated value (partial JSON structure)
+     * @param delta The delta message, mapping update keys (e.g. "grid", "loadpoints.0.chargePower") to values
      */
     // Package-private (rather than private) so tests can exercise the exact production
     // path (cache merge + dispatch) without needing a real websocket connection.
-    void onPartialUpdate(String key, JsonElement value) {
+    void onPartialUpdate(JsonObject delta) {
         if (disposed) {
             return;
         }
-        logger.trace("Received partial update: {}", key);
-        cachedState.updatePartial(key, value);
+        for (Map.Entry<String, JsonElement> entry : delta.entrySet()) {
+            logger.trace("Received partial update: {}", entry.getKey());
+            cachedState.updatePartial(entry.getKey(), entry.getValue());
+        }
         processPendingHandlers();
-        dispatchUpdate(key, value);
+
+        // evcc reports every changed field of an array element as its own key (e.g. "loadpoints.0.chargePower").
+        // Collect them per element so each affected handler receives one update containing only the changed fields.
+        Map<String, JsonObject> elementDeltas = new LinkedHashMap<>();
+        for (Map.Entry<String, JsonElement> entry : delta.entrySet()) {
+            String key = entry.getKey();
+            Matcher matcher = INDEXED_KEY_PATTERN.matcher(key);
+            if (matcher.matches()) {
+                String elementKey = matcher.group(1);
+                JsonObject elementDelta = elementDeltas.get(elementKey);
+                if (elementDelta == null) {
+                    elementDelta = new JsonObject();
+                    elementDeltas.put(elementKey, elementDelta);
+                }
+                elementDelta.add(matcher.group(2), entry.getValue());
+            } else {
+                dispatchUpdate(key, entry.getValue());
+            }
+        }
+        elementDeltas.forEach((elementKey, elementDelta) -> {
+            if (!messageRouter.route(elementKey, elementDelta)) {
+                logger.debug("No route registered for websocket update key '{}'", elementKey);
+            }
+        });
     }
 
     /**
@@ -358,29 +390,28 @@ public class EvccBridgeHandler extends BaseBridgeHandler {
     }
 
     /**
-     * Dispatch an update to relevant handlers based on the message key.
+     * Dispatch a non-indexed update to relevant handlers based on the message key.
      *
      * evcc's websocket protocol reports changes using dot notation for the exact subtree
-     * that changed (e.g. "loadpoints.1.chargePower", "forecast.solar"), not just for the
-     * top-level key that routes are registered under ("loadpoints", "forecast"). Since
-     * routes match their configured key exactly, such a dotted key would otherwise never be
-     * routed at all. To handle this, the root segment of a dotted key is routed using the
-     * up-to-date merged value already held for that root in the cache (which
-     * {@link CachedJsonState#updatePartial(String, JsonElement)} keeps assembled from dot
-     * notation), rather than the raw single-field value.
+     * that changed (e.g. "forecast.solar"), not just for the top-level key that routes are
+     * registered under ("forecast"). Since routes match their configured key exactly, such a
+     * dotted key would otherwise never be routed at all. To handle this, the root segment of a
+     * dotted key is routed using the up-to-date merged value already held for that root in the
+     * cache (which {@link CachedJsonState#updatePartial(String, JsonElement)} keeps assembled
+     * from dot notation), rather than the raw single-field value.
      *
-     * When the dotted key identifies a single, non-indexed sub-property (e.g. "forecast.solar",
-     * as opposed to an indexed array element like "loadpoints.0.power"), that property is the
-     * only one that actually changed. It is passed to the router as the "changed segment" so
-     * sibling routes registered under the same root key (e.g. the co2/feedin/grid forecast
-     * routes) are not redundantly redispatched with their own, unchanged, merged-cache data.
+     * The sub-property of a dotted key is the only one that actually changed. It is passed to
+     * the router as the "changed segment" so sibling routes registered under the same root key
+     * (e.g. the co2/feedin/grid forecast routes) are not redundantly redispatched with their
+     * own, unchanged, merged-cache data. Indexed keys of array elements are handled by
+     * {@link #onPartialUpdate(JsonObject)} instead.
      *
      * If a route matches the key, it is dispatched through the router.
      * Otherwise, if the key is a top-level key (no dots) and a site handler exists,
      * route it to the site handler as a fallback. This provides a safety net for
      * new evcc API fields that haven't been explicitly routed yet.
      *
-     * @param key The update key (e.g., "battery", "loadpoints.0.chargePower", "grid")
+     * @param key The update key (e.g., "battery", "forecast.solar", "grid")
      * @param value The update value (JSON structure)
      */
     private void dispatchUpdate(String key, JsonElement value) {
@@ -389,15 +420,7 @@ public class EvccBridgeHandler extends BaseBridgeHandler {
         String routeKey = dotIndex < 0 ? key : key.substring(0, dotIndex);
         JsonElement routeValue = dotIndex < 0 ? value : cachedState.get(routeKey);
         @Nullable
-        String changedSegment = null;
-        if (dotIndex >= 0) {
-            String remainder = key.substring(dotIndex + 1);
-            int nextDotIndex = remainder.indexOf('.');
-            boolean indexedElement = nextDotIndex >= 0 && remainder.substring(0, nextDotIndex).matches("\\d+");
-            if (!indexedElement) {
-                changedSegment = remainder;
-            }
-        }
+        String changedSegment = dotIndex < 0 ? null : key.substring(dotIndex + 1);
         if (routeValue != null && messageRouter.route(routeKey, routeValue, changedSegment)) {
             logger.trace("Update for key '{}' was routed successfully via root key '{}'", key, routeKey);
             return;

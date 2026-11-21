@@ -132,6 +132,7 @@ public class Resource {
     private @Nullable Mute mute;
     private @Nullable @SerializedName("dimming_delta") DimmingDelta dimmingDelta;
     private @Nullable @SerializedName("color_temperature_delta") ColorTemperatureDelta colorTemperatureDelta;
+    private @Nullable Gradient gradient;
 
     /**
      * Constructor
@@ -165,7 +166,7 @@ public class Resource {
         return switch (getType()) {
             // https://developers.meethue.com/develop/hue-api-v2/api-reference/#resource_light_get
             case LIGHT -> hasHSBField() || colorTemperature != null || dynamics != null || effects != null
-                    || timedEffects != null;
+                    || timedEffects != null || gradient != null;
             // https://developers.meethue.com/develop/hue-api-v2/api-reference/#resource_grouped_light_get
             case GROUPED_LIGHT -> on != null || dimming != null || alert != null;
             default -> throw new IllegalStateException(type + " is not supported by hasAnyRelevantField()");
@@ -528,6 +529,37 @@ public class Resource {
     public @Nullable Gamut getGamut() {
         ColorXy color = this.color;
         return Objects.nonNull(color) ? color.getGamut() : null;
+    }
+
+    public @Nullable Gradient getGradient() {
+        return gradient;
+    }
+
+    /**
+     * Return the state of the gradient point at the specified index. The returned state is an HSBType where
+     * the HS part is derived from the color xy JSON element and the B part is 100%.
+     * 
+     * @param index the index of the gradient point to retrieve
+     * @return UnDefType.NULL if the channel is not supported, or an HSBType if the value is good
+     * @throws CriticalFieldMissingException if a required point, or gamut is missing
+     */
+    public State getGradientState(int index) throws CriticalFieldMissingException {
+        Gradient gradient = this.gradient;
+        if (Objects.nonNull(gradient)) {
+            List<PairXy> points = gradient.getXyPoints();
+            if (index < 0 || index >= points.size()) {
+                throw new CriticalFieldMissingException("'point' %d is missing".formatted(index));
+            }
+            ColorXy color = this.color;
+            Gamut gamut = color != null ? color.getGamut() : ColorUtil.DEFAULT_GAMUT;
+            if (gamut == null) {
+                throw new CriticalFieldMissingException("'gamut' is missing");
+            }
+            PairXy xy = points.get(index);
+            HSBType hsb = ColorUtil.xyToHsb(xy.getXY(), gamut);
+            return new HSBType(hsb.getHue(), hsb.getSaturation(), PercentType.HUNDRED);
+        }
+        return UnDefType.NULL;
     }
 
     public @Nullable ResourceReference getGroup() {
@@ -995,6 +1027,11 @@ public class Resource {
         if (command instanceof OnOffType onOffCommand) {
             this.enabled = onOffCommand == OnOffType.ON;
         }
+        return this;
+    }
+
+    public Resource setGradient(@Nullable Gradient gradient) {
+        this.gradient = gradient;
         return this;
     }
 

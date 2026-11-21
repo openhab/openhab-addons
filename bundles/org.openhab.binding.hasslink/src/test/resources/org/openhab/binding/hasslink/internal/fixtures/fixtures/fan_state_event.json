@@ -1,0 +1,45 @@
+{
+  "id": 18,
+  "type": "event",
+  "event": {
+    "event_type": "state_changed",
+    "data": {
+      "entity_id": "fan.living_room_fan",
+      "old_state": null,
+      "new_state": {
+        "entity_id": "fan.living_room_fan",
+        "state": "off",
+        "attributes": {
+          "preset_modes": [
+            "auto",
+            "smart",
+            "sleep",
+            "on"
+          ],
+          "direction": "forward",
+          "oscillating": false,
+          "percentage": null,
+          "percentage_step": 33.333333333333336,
+          "preset_mode": null,
+          "friendly_name": "Living Room Fan",
+          "supported_features": 55
+        },
+        "last_changed": "2026-09-21T12:46:27.335550+00:00",
+        "last_reported": "2026-09-21T12:46:27.372851+00:00",
+        "last_updated": "2026-09-21T12:46:27.335550+00:00",
+        "context": {
+          "id": "01M3201RG7QS3JY7MDY8WEDP26",
+          "parent_id": null,
+          "user_id": null
+        }
+      }
+    },
+    "origin": "LOCAL",
+    "time_fired": "2026-09-19T00:00:00.000000+00:00",
+    "context": {
+      "id": "01HXXXXXXX",
+      "parent_id": null,
+      "user_id": null
+    }
+  }
+}

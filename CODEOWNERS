@@ -57,9 +57,11 @@
 /bundles/org.openhab.binding.bluetooth.grundfosalpha/ @tisoft @jlaur
 /bundles/org.openhab.binding.bluetooth.hdpowerview/ @andrewfg
 /bundles/org.openhab.binding.bluetooth.listener/ @docbender
+/bundles/org.openhab.binding.bluetooth.miflora/ @lukasbrinias
 /bundles/org.openhab.binding.bluetooth.radoneye/ @petero-dk
 /bundles/org.openhab.binding.bluetooth.roaming/ @cpmeister
 /bundles/org.openhab.binding.bluetooth.ruuvitag/ @ssalonen
+/bundles/org.openhab.binding.bmwcardata/ @MikeTheTux
 /bundles/org.openhab.binding.bondhome/ @ccutrer
 /bundles/org.openhab.binding.boschindego/ @jofleck @jlaur
 /bundles/org.openhab.binding.boschshc/ @david-pace @GerdZanker
@@ -71,6 +73,7 @@
 /bundles/org.openhab.binding.buienradar/ @gedejong
 /bundles/org.openhab.binding.caddx/ @jossuar
 /bundles/org.openhab.binding.caldav/ @AndreasVilippus
+/bundles/org.openhab.binding.candy/ @magx2
 /bundles/org.openhab.binding.casokitchen/ @weymann
 /bundles/org.openhab.binding.cbus/ @jpharvey
 /bundles/org.openhab.binding.chatgpt/ @kaikreuzer
@@ -87,6 +90,7 @@
 /bundles/org.openhab.binding.deconz/ @J-N-K
 /bundles/org.openhab.binding.denonmarantz/ @jwveldhuis
 /bundles/org.openhab.binding.deutschebahn/ @soenkekueper
+/bundles/org.openhab.binding.dreame/ @rogrun
 /bundles/org.openhab.binding.digiplex/ @rmichalak
 /bundles/org.openhab.binding.digitalstrom/ @openhab/add-ons-maintainers
 /bundles/org.openhab.binding.dirigera/ @weymann
@@ -165,6 +169,7 @@
 /bundles/org.openhab.binding.guntamatic/ @MikeTheTux
 /bundles/org.openhab.binding.haassohnpelletstove/ @chingon007
 /bundles/org.openhab.binding.harmonyhub/ @digitaldan
+/bundles/org.openhab.binding.hasslink/ @jimtng
 /bundles/org.openhab.binding.haywardomnilogic/ @matchews
 /bundles/org.openhab.binding.hccrubbishcollection/ @cossey
 /bundles/org.openhab.binding.hdanywhere/ @kgoderis
@@ -262,6 +267,7 @@
 /bundles/org.openhab.binding.modbus.ankersolix/ @evorg
 /bundles/org.openhab.binding.modbus.e3dc/ @weymann
 /bundles/org.openhab.binding.modbus.foxinverter/ @holgerfriedrich
+/bundles/org.openhab.binding.modbus.hager/ @weymann
 /bundles/org.openhab.binding.modbus.helioseasycontrols/ @bern77
 /bundles/org.openhab.binding.modbus.lambda/ @chilobo
 /bundles/org.openhab.binding.modbus.kermi/ @KaaNee
@@ -271,6 +277,7 @@
 /bundles/org.openhab.binding.modbus.sungrow/ @soenkekueper
 /bundles/org.openhab.binding.modbus.sunspec/ @mrbig
 /bundles/org.openhab.binding.monopriceaudio/ @mlobstein
+/bundles/org.openhab.binding.motionblinds/ @san4esmc
 /bundles/org.openhab.binding.mpd/ @stefanroellin
 /bundles/org.openhab.binding.mqtt/ @ccutrer
 /bundles/org.openhab.binding.mqtt.awtrixlight/ @DrRSatzteil
@@ -372,7 +379,7 @@
 /bundles/org.openhab.binding.satel/ @druciak
 /bundles/org.openhab.binding.sbus/ @cipianpascu
 /bundles/org.openhab.binding.sedif/ @lo92fr
-/bundles/org.openhab.binding.semsportal/ @itb3
+/bundles/org.openhab.binding.semsportal/ @itb3 @jgesser
 /bundles/org.openhab.binding.senechome/ @vctender @KorbinianP @eguib
 /bundles/org.openhab.binding.seneye/ @nikotanghe
 /bundles/org.openhab.binding.sensebox/ @hakan42
@@ -389,7 +396,7 @@
 /bundles/org.openhab.binding.sleepiq/ @syphr42 @mhilbush
 /bundles/org.openhab.binding.smaenergymeter/ @monnimeter
 /bundles/org.openhab.binding.smartmeter/ @msteigenberger
-/bundles/org.openhab.binding.smartthings/ @BobRak
+/bundles/org.openhab.binding.smartthings/ @kaikreuzer
 /bundles/org.openhab.binding.smgw/ @J-N-K
 /bundles/org.openhab.binding.smhi/ @pacive
 /bundles/org.openhab.binding.smsmodem/ @dalgwen
@@ -451,6 +458,7 @@
 /bundles/org.openhab.binding.vektiva/ @octa22
 /bundles/org.openhab.binding.velbus/ @cedricboon
 /bundles/org.openhab.binding.velux/ @gs4711 @andrewfg
+/bundles/org.openhab.binding.veluxactive/ @jlaur
 /bundles/org.openhab.binding.venstarthermostat/ @hww3 @digitaldan
 /bundles/org.openhab.binding.ventaair/ @t2000
 /bundles/org.openhab.binding.verisure/ @jannegpriv
@@ -460,8 +468,8 @@
 /bundles/org.openhab.binding.visualcrossing/ @magx2
 /bundles/org.openhab.binding.vitotronic/ @steand
 /bundles/org.openhab.binding.vizio/ @mlobstein
+/bundles/org.openhab.binding.volvocars/ @MikeTheTux
 /bundles/org.openhab.binding.volumio/ @miloit
-/bundles/org.openhab.binding.volvooncall/ @Jamstah
 /bundles/org.openhab.binding.warmup/ @jamesmelville
 /bundles/org.openhab.binding.weathercompany/ @mhilbush
 /bundles/org.openhab.binding.weatherunderground/ @lolodomo
@@ -522,6 +530,7 @@
 /bundles/org.openhab.voice.googletts/ @gbicskei
 /bundles/org.openhab.voice.mactts/ @kaikreuzer
 /bundles/org.openhab.voice.marytts/ @kaikreuzer
+/bundles/org.openhab.voice.microwakewordks/ @digitaldan
 /bundles/org.openhab.voice.mimictts/ @dalgwen
 /bundles/org.openhab.voice.openaitts/ @Artur-Fedjukevits
 /bundles/org.openhab.voice.picotts/ @FlorianSW

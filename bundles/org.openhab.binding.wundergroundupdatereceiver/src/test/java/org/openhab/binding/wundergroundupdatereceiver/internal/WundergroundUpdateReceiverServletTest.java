@@ -62,6 +62,7 @@ import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.ImperialUnits;
 import org.openhab.core.library.unit.Units;
+import org.openhab.core.test.storage.VolatileStorageService;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ManagedThingProvider;
@@ -221,7 +222,9 @@ class WundergroundUpdateReceiverServletTest {
                 .thenReturn(ChannelTypeBuilder.trigger(LAST_QUERY_TRIGGER_CHANNELTYPEUID, "Label").build());
         WundergroundUpdateReceiverServlet sut = new WundergroundUpdateReceiverServlet(discoveryService);
         WundergroundUpdateReceiverHandler handler = new WundergroundUpdateReceiverHandler(thing, sut, discoveryService,
-                new WundergroundUpdateReceiverUnknownChannelTypeProvider(), channelTypeRegistry, managedThingProvider);
+                new WundergroundUpdateReceiverUnknownChannelTypeProvider(new VolatileStorageService(),
+                        mock(ManagedThingProvider.class)),
+                channelTypeRegistry, managedThingProvider);
         ThingHandlerCallback mockCallback = mock(ThingHandlerCallback.class);
         handler.setCallback(mockCallback);
 
@@ -280,6 +283,12 @@ class WundergroundUpdateReceiverServletTest {
                         .create(new ChannelUID(testThingUID, TEMPERATURE_GROUP,
                                 WundergroundUpdateReceiverBindingConstants.TEMPERATURE), "Number:Temperature")
                         .withKind(ChannelKind.STATE).build(),
+                ChannelBuilder.create(new ChannelUID(testThingUID, TEMPERATURE_GROUP,
+                        WundergroundUpdateReceiverBindingConstants.WIND_CHILL), "Number:Temperature").build(),
+                ChannelBuilder
+                        .create(new ChannelUID(testThingUID, TEMPERATURE_GROUP,
+                                WundergroundUpdateReceiverBindingConstants.INDOOR_TEMPERATURE), "Number:Temperature")
+                        .build(),
                 ChannelBuilder
                         .create(new ChannelUID(testThingUID, RAIN_GROUP,
                                 WundergroundUpdateReceiverBindingConstants.RAIN_IN), "Number:Length")
@@ -319,9 +328,12 @@ class WundergroundUpdateReceiverServletTest {
                 .withChannels(channels).withConfiguration(config).build();
         ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
         WundergroundUpdateReceiverHandler handler = new WundergroundUpdateReceiverHandler(testThing, sut,
-                discoveryService, new WundergroundUpdateReceiverUnknownChannelTypeProvider(), channelTypeRegistry,
-                managedThingProvider);
+                discoveryService, new WundergroundUpdateReceiverUnknownChannelTypeProvider(new VolatileStorageService(),
+                        mock(ManagedThingProvider.class)),
+                channelTypeRegistry, managedThingProvider);
         handler.setCallback(callback);
+        handler.initialize();
+        handler.dispose();
         handler.initialize();
 
         HttpChannel httpChannel = mock(HttpChannel.class);
@@ -356,6 +368,14 @@ class WundergroundUpdateReceiverServletTest {
                 new ChannelUID(TEST_THING_UID, TEMPERATURE_GROUP,
                         WundergroundUpdateReceiverBindingConstants.TEMPERATURE),
                 new QuantityType<>(26.1, ImperialUnits.FAHRENHEIT));
+        verify(callback).stateUpdated(
+                new ChannelUID(TEST_THING_UID, TEMPERATURE_GROUP,
+                        WundergroundUpdateReceiverBindingConstants.WIND_CHILL),
+                new QuantityType<>(26.1, ImperialUnits.FAHRENHEIT));
+        verify(callback).stateUpdated(
+                new ChannelUID(TEST_THING_UID, TEMPERATURE_GROUP,
+                        WundergroundUpdateReceiverBindingConstants.INDOOR_TEMPERATURE),
+                new QuantityType<>(69.3, ImperialUnits.FAHRENHEIT));
         verify(callback).stateUpdated(
                 new ChannelUID(TEST_THING_UID, RAIN_GROUP, WundergroundUpdateReceiverBindingConstants.RAIN_IN),
                 new QuantityType<>(0, ImperialUnits.INCH));
@@ -433,8 +453,9 @@ class WundergroundUpdateReceiverServletTest {
                 .withChannels(channels).withConfiguration(config).build();
         ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
         WundergroundUpdateReceiverHandler handler = new WundergroundUpdateReceiverHandler(testThing, sut,
-                discoveryService, new WundergroundUpdateReceiverUnknownChannelTypeProvider(), channelTypeRegistry,
-                managedThingProvider);
+                discoveryService, new WundergroundUpdateReceiverUnknownChannelTypeProvider(new VolatileStorageService(),
+                        mock(ManagedThingProvider.class)),
+                channelTypeRegistry, managedThingProvider);
         handler.setCallback(callback);
         handler.initialize();
 

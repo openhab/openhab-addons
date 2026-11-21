@@ -12,7 +12,13 @@
 		<semantic-equipment-tag>Display</semantic-equipment-tag>
 		<channels>
 			<channel id="SystemMode" typeId="systemMode"/>
+			<channel id="SystemModeUntil" typeId="systemModeUntil"/>
+			<channel id="SystemModePermanent" typeId="systemModePermanent"/>
+			<channel id="Reset" typeId="reset"/>
 		</channels>
+		<properties>
+			<property name="thingTypeVersion">2</property>
+		</properties>
 		<config-description>
 			<parameter name="id" type="text" required="true" readOnly="true">
 				<label>ID</label>
@@ -35,7 +41,16 @@
 			<channel id="Temperature" typeId="temperature"/>
 			<channel id="SetPointStatus" typeId="setpointstatus"/>
 			<channel id="SetPoint" typeId="setpoint"/>
+			<channel id="TemporarySetPoint" typeId="temporarysetpoint"/>
+			<channel id="SetPointUntil" typeId="setpointuntil"/>
+			<channel id="WeeklySchedule" typeId="weeklySchedule"/>
+			<channel id="NextSwitchpoint" typeId="nextSwitchpoint"/>
+			<channel id="NextScheduledTemperature" typeId="nextScheduledTemperature"/>
+			<channel id="ScheduleLastUpdated" typeId="scheduleLastUpdated"/>
 		</channels>
+		<properties>
+			<property name="thingTypeVersion">2</property>
+		</properties>
 		<config-description>
 			<parameter name="id" type="text" required="true" readOnly="true">
 				<label>ID</label>
@@ -44,6 +59,14 @@
 			<parameter name="name" type="text" required="false" readOnly="true">
 				<label>Name</label>
 				<description>Name of the zone</description>
+			</parameter>
+			<parameter name="temporaryOverrideDuration" type="integer" min="0" max="1440">
+				<label>Temporary Override Duration</label>
+				<description>Duration for temporary set point commands in minutes. 0 ends the override at the next scheduled
+					switch
+					point; a positive value sets a fixed duration.</description>
+				<default>120</default>
+				<unitLabel>min</unitLabel>
 			</parameter>
 		</config-description>
 	</thing-type>

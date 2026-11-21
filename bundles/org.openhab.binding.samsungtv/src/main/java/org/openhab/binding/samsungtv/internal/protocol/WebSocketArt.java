@@ -551,7 +551,7 @@ class WebSocketArt extends WebSocketBase {
                 case "go_to_standby":
                     logger.debug("{}: go_to_standby", host);
                     remoteControllerWebSocket.callback.powerUpdatedAsync(false, false);
-                    remoteControllerWebSocket.callback.setOffline();
+                    remoteControllerWebSocket.callback.setStandby();
                     stateMap.clear();
                     break;
                 case "wakeup":

@@ -1,0 +1,20 @@
+{
+  "id": 10,
+  "type": "event",
+  "event": {
+    "a": {
+      "text.text_with_only_lower_case_characters": {
+        "s": "world",
+        "a": {
+          "mode": "text",
+          "min": 0,
+          "max": 255,
+          "pattern": "[a-z]+",
+          "friendly_name": "Text with only lower case characters"
+        },
+        "c": "01M3201RGWEYBCD25N1KF2DK5N",
+        "lc": 1789994787.3562164
+      }
+    }
+  }
+}

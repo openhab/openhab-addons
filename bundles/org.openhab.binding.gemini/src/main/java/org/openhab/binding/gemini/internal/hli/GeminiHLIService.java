@@ -45,11 +45,13 @@ import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.voice.text.HumanLanguageInterpreter;
 import org.openhab.core.voice.text.InterpretationException;
 import org.openhab.core.voice.text.InterpreterContext;
+import org.openhab.core.voice.text.UnrecoverableInterpretationException;
 import org.openhab.core.voice.text.conversation.Conversation;
 import org.openhab.core.voice.text.conversation.ConversationException;
 import org.openhab.core.voice.text.conversation.ConversationRole;
 import org.openhab.core.voice.text.interpreter.llm.LLMTool;
 import org.openhab.core.voice.text.interpreter.llm.LLMToolException;
+import org.openhab.core.voice.text.interpreter.llm.UnrecoverableLLMToolException;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.component.annotations.Activate;
@@ -323,7 +325,7 @@ public class GeminiHLIService implements ThingHandlerService, HumanLanguageInter
     }
 
     private String executeTool(Collection<LLMTool> tools, @Nullable String toolName, @Nullable Map<String, Object> args,
-            Locale locale) {
+            Locale locale) throws UnrecoverableInterpretationException {
         if (toolName == null) {
             return "Error: Tool name is null";
         }
@@ -334,6 +336,9 @@ public class GeminiHLIService implements ThingHandlerService, HumanLanguageInter
         }
         try {
             return tool.call(args != null ? args : new HashMap<>(), locale);
+        } catch (UnrecoverableLLMToolException e) {
+            throw new UnrecoverableInterpretationException(
+                    "Execution of tool " + toolName + " failed: " + e.getMessage(), e);
         } catch (LLMToolException e) {
             return "Error: " + e.getMessage();
         }

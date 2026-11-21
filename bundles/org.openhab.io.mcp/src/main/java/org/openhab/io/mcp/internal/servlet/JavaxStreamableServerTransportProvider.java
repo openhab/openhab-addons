@@ -48,10 +48,12 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.common.ThreadPoolManager;
 import org.openhab.io.mcp.internal.McpCloudWebhookService;
 import org.openhab.io.mcp.internal.auth.McpAuthenticator;
+import org.openhab.io.mcp.internal.auth.McpUser;
 import org.openhab.io.mcp.internal.util.SubscriptionManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import io.modelcontextprotocol.common.McpTransportContext;
 import io.modelcontextprotocol.json.McpJsonMapper;
 import io.modelcontextprotocol.json.TypeRef;
 import io.modelcontextprotocol.spec.HttpHeaders;
@@ -101,13 +103,6 @@ public class JavaxStreamableServerTransportProvider extends HttpServlet
     private final ConcurrentHashMap<String, McpStreamableServerSession> sessions = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<String, JavaxStreamableSessionTransport> sessionTransports = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<String, String> sessionTokens = new ConcurrentHashMap<>();
-    /**
-     * Authenticated username captured at session init. Used by tools that publish events on behalf of the
-     * caller (e.g. {@link org.openhab.io.mcp.internal.tools.ItemTools}) so the resulting event carries an
-     * actor in its source string, making it possible for operators to see which user drove a change.
-     * Empty string means "authenticated but no username available" (current JWT path).
-     */
-    private final ConcurrentHashMap<String, String> sessionUsernames = new ConcurrentHashMap<>();
     private final AtomicBoolean isClosing = new AtomicBoolean(false);
     private @Nullable ScheduledFuture<?> keepAliveTask;
     private @Nullable SubscriptionManager subscriptionManager;
@@ -146,16 +141,6 @@ public class JavaxStreamableServerTransportProvider extends HttpServlet
      */
     public @Nullable String getSessionToken(String sessionId) {
         return sessionTokens.get(sessionId);
-    }
-
-    /**
-     * Returns the username resolved at session init, used as the actor in event source strings so changes
-     * driven through MCP are attributable in the event log. Returns the empty string when the token was
-     * accepted but the username couldn't be resolved (current JWT path); returns {@code null} if no auth
-     * happened for this session.
-     */
-    public @Nullable String getSessionUsername(String sessionId) {
-        return sessionUsernames.get(sessionId);
     }
 
     @NonNullByDefault({})
@@ -203,7 +188,6 @@ public class JavaxStreamableServerTransportProvider extends HttpServlet
                     sessions.clear();
                     sessionTransports.clear();
                     sessionTokens.clear();
-                    sessionUsernames.clear();
                 });
     }
 
@@ -310,8 +294,8 @@ public class JavaxStreamableServerTransportProvider extends HttpServlet
             return;
         }
 
-        String authenticatedUsername = authenticator.authenticate(request);
-        if (authenticatedUsername == null) {
+        McpUser authenticatedUser = authenticator.authenticate(request);
+        if (authenticatedUser == null) {
             logger.debug("Streamable POST rejected: {} from {}", request.getRequestURI(), request.getRemoteAddr());
             sendUnauthorized(request, response);
             return;
@@ -362,9 +346,6 @@ public class JavaxStreamableServerTransportProvider extends HttpServlet
                 if (initToken != null) {
                     sessionTokens.put(init.session().getId(), initToken);
                 }
-                // Capture the authenticated user so event-publishing tools (ItemTools) can attribute
-                // the resulting events back to the user that drove the change.
-                sessionUsernames.put(init.session().getId(), authenticatedUsername);
 
                 McpSchema.InitializeResult initResult = init.initResult().block();
                 response.setContentType(APPLICATION_JSON);
@@ -421,8 +402,12 @@ public class JavaxStreamableServerTransportProvider extends HttpServlet
 
                 JavaxStreamableSessionTransport sessionTransport = new JavaxStreamableSessionTransport(sessionId,
                         asyncContext, response.getWriter());
+                // Tools check the user of this request, not of the session.
+                McpTransportContext context = McpTransportContext
+                        .create(Map.of(McpUser.CONTEXT_KEY, authenticatedUser));
                 try {
-                    session.responseStream(jsonrpcRequest, sessionTransport).block();
+                    session.responseStream(jsonrpcRequest, sessionTransport)
+                            .contextWrite(ctx -> ctx.put(McpTransportContext.KEY, context)).block();
                 } catch (Exception e) {
                     logger.debug("Streamable response stream failed for session {}: {}", sessionId, e.getMessage());
                     asyncContext.complete();
@@ -474,7 +459,6 @@ public class JavaxStreamableServerTransportProvider extends HttpServlet
             sessions.remove(sessionId);
             sessionTransports.remove(sessionId);
             sessionTokens.remove(sessionId);
-            sessionUsernames.remove(sessionId);
             SubscriptionManager mgr = subscriptionManager;
             if (mgr != null) {
                 mgr.onSessionClosed(sessionId);

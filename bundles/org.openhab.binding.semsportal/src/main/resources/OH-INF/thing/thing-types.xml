@@ -30,6 +30,21 @@
 				<description>Number of minutes between updates. Minimum is 1 minute, maximum is 60. The default is 5 minutes.</description>
 				<default>5</default>
 			</parameter>
+			<parameter name="clientType" type="text">
+				<label>Client Type</label>
+				<description>The type of client that the binding logs in as. A login replaces the previous session of the same type
+					of the account, so a program that uses the same account at the same time needs another type. The default is
+					the type
+					of the SEMS+ web application.</description>
+				<options>
+					<option value="semsPlusWeb">SEMS+ Web Application</option>
+					<option value="web">Web</option>
+					<option value="ios">iOS App</option>
+					<option value="android">Android App</option>
+				</options>
+				<default>semsPlusWeb</default>
+				<advanced>true</advanced>
+			</parameter>
 		</config-description>
 	</bridge-type>
 

@@ -177,6 +177,7 @@ public class AccountHandler extends BaseBridgeHandler implements PushConnection.
         }
         activityLifecycle.incrementAndGet();
         handlerConfig = getConfig().as(AccountHandlerConfig.class);
+        connection.setUserAgent(handlerConfig.userAgent);
 
         updateStatus(ThingStatus.UNKNOWN);
         updateState(CHANNEL_REFRESH_ACTIVITY, OnOffType.OFF);

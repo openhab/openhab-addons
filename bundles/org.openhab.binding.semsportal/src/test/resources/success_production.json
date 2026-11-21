@@ -1,0 +1,12 @@
+{
+  "code": "00000",
+  "description": "Success",
+  "traceId": "0000000000000000",
+  "data": {
+    "proSystemTotalStats": 14.0,
+    "profitProStats": 9.1,
+    "profitGridStats": 0.0,
+    "currency": "BRL",
+    "pr": null
+  }
+}

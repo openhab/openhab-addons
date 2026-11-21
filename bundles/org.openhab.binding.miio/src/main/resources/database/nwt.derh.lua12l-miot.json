@@ -1,0 +1,194 @@
+{
+	"deviceMapping": {
+		"id": [
+			"nwt.derh.lua12l"
+		],
+		"propertyMethod": "get_properties",
+		"maxProperties": 1,
+		"channels": [
+			{
+				"property": "on",
+				"siid": 2,
+				"piid": 1,
+				"friendlyName": "Power",
+				"channel": "power",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch",
+					"Power"
+				]
+			},
+			{
+				"property": "fault",
+				"siid": 2,
+				"piid": 2,
+				"friendlyName": "Device Fault",
+				"channel": "fault",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "No Faults"
+						},
+						{
+							"value": "1",
+							"label": "E1: Temperature Sensor Fault"
+						},
+						{
+							"value": "2",
+							"label": "E2: Copper Pipe Sensor Fault"
+						}
+					],
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "error",
+				"tags": [
+					"Status"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"No Faults\",\"1\"\u003d\"E1: Temperature Sensor Fault\",\"2\"\u003d\"E2: Copper Pipe Sensor Fault\"]`"
+			},
+			{
+				"property": "target-humidity",
+				"siid": 2,
+				"piid": 3,
+				"friendlyName": "Target Humidity",
+				"channel": "target_humidity",
+				"type": "Number:Dimensionless",
+				"unit": "percentage",
+				"stateDescription": {
+					"pattern": "%.0f %%",
+					"options": [
+						{
+							"value": "40",
+							"label": "40%"
+						},
+						{
+							"value": "50",
+							"label": "50%"
+						},
+						{
+							"value": "60",
+							"label": "60%"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "humidity",
+				"tags": [
+					"Setpoint",
+					"Humidity"
+				],
+				"readmeComment": "Used in the mode Dehumidify; Value mapping `[\"40\"\u003d\"40%\",\"50\"\u003d\"50%\",\"60\"\u003d\"60%\"]`"
+			},
+			{
+				"property": "mode",
+				"siid": 2,
+				"piid": 4,
+				"friendlyName": "Mode",
+				"channel": "mode",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "Dehumidify"
+						},
+						{
+							"value": "1",
+							"label": "Continuous"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "fan",
+				"tags": [
+					"Control",
+					"Mode"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Dehumidify\",\"1\"\u003d\"Continuous\"]`"
+			},
+			{
+				"property": "relative-humidity",
+				"siid": 3,
+				"piid": 1,
+				"friendlyName": "Humidity",
+				"channel": "humidity",
+				"type": "Number:Dimensionless",
+				"unit": "percentage",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 100,
+					"step": 1,
+					"pattern": "%.0f %%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "humidity",
+				"tags": [
+					"Measurement",
+					"Humidity"
+				]
+			},
+			{
+				"property": "full-water",
+				"siid": 4,
+				"piid": 1,
+				"friendlyName": "Water Tank Full",
+				"channel": "water_tank_full",
+				"type": "Switch",
+				"stateDescription": {
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "water",
+				"tags": [
+					"Alarm",
+					"Water"
+				]
+			},
+			{
+				"property": "defrosting",
+				"siid": 4,
+				"piid": 2,
+				"friendlyName": "Defrosting",
+				"channel": "defrost",
+				"type": "Switch",
+				"stateDescription": {
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "status",
+				"tags": [
+					"Status"
+				]
+			}
+		],
+		"experimental": true
+	}
+}

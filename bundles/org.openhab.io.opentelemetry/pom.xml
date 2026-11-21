@@ -15,7 +15,7 @@
   <name>openHAB Add-ons :: Bundles :: IO :: OpenTelemetry Service</name>
 
   <properties>
-    <opentelemetry.version>1.63.0</opentelemetry.version>
+    <opentelemetry.version>1.67.0</opentelemetry.version>
     <micrometer.version>1.17.0</micrometer.version>
     <!-- Export proto packages so micrometer-registry-otlp (a separate bundle) can wire to them;
          embed protobuf-java privately so the exported proto classes can load their runtime deps.

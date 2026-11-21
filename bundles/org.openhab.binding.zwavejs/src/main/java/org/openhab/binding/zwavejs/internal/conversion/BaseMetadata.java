@@ -138,7 +138,7 @@ public abstract class BaseMetadata {
         this.factor = determineFactor(value.metadata.unit);
         this.unit = UnitUtils.parseUnit(this.unitSymbol);
         this.itemType = itemTypeFromMetadata(value.metadata.type, value.value, value.commandClass,
-                value.metadata.states);
+                value.metadata.states, value.property, value.propertyKey);
         if (unitSymbol != null && unit == null) {
             logger.warn("Node {}, unable to parse unitSymbol '{}', please file a bug report", nodeId, unitSymbol);
         }
@@ -452,11 +452,26 @@ public abstract class BaseMetadata {
                 return ColorUtil.xyToHsb(ColorUtil.kelvinToXY(2500 + (4000 * cold / 255)));
             }
             return UnDefType.UNDEF;
+        } else if (value instanceof Map<?, ?> map && isPartialRgbColorMap(map)) {
+            logger.debug("Node {}, channel {}, incomplete RGB color value", nodeId, id);
+            return UnDefType.UNDEF;
         } else {
-            logger.warn("Node {}, unexpected value type for color: {}, please file a bug report", nodeId,
-                    value.getClass().getName());
+            logger.warn("Node {}, channel {}, unexpected value type for color: {}, please file a bug report", nodeId,
+                    id, value.getClass().getName());
             return UnDefType.UNDEF;
         }
+    }
+
+    private boolean isPartialRgbColorMap(Map<?, ?> map) {
+        List<String> components = List.of(RED, GREEN, BLUE);
+        return components.stream().anyMatch(map::containsKey)
+                && components.stream().filter(map::containsKey).allMatch(component -> {
+                    if (map.get(component) instanceof Number number) {
+                        double value = number.doubleValue();
+                        return value >= 0 && value <= 255 && value == Math.rint(value);
+                    }
+                    return false;
+                });
     }
 
     /*
@@ -473,7 +488,13 @@ public abstract class BaseMetadata {
      * @return The corrected metadata type.
      */
     protected MetadataType correctedType(MetadataType type, @Nullable Object value, int commandClass,
-            @Nullable Map<String, String> optionList) {
+            @Nullable Map<String, String> optionList, @Nullable Object property, @Nullable Object propertyKey) {
+        // Aggregate color values are typed "any"; when null, the type can't be inferred from the value
+        if (type == MetadataType.ANY && commandClass == COMMAND_CLASS_SWITCH_COLOR && propertyKey == null
+                && ("currentColor".equals(property) || "targetColor".equals(property))) {
+            return MetadataType.COLOR;
+        }
+
         switch (type) {
             case ANY:
                 return determineTypeFromValue(value, commandClass);
@@ -537,8 +558,8 @@ public abstract class BaseMetadata {
     }
 
     protected String itemTypeFromMetadata(MetadataType type, @Nullable Object value, int commandClass,
-            @Nullable Map<String, String> optionList) {
-        type = correctedType(type, value, commandClass, optionList);
+            @Nullable Map<String, String> optionList, @Nullable Object property, @Nullable Object propertyKey) {
+        type = correctedType(type, value, commandClass, optionList, property, propertyKey);
 
         switch (type) {
             case DURATION:

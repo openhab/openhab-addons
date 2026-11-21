@@ -52,6 +52,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Guenther Schreiner - Initial contribution.
  * @author Andrew Fiddian-Green - Refactored (simplified) the message processing loop
+ * @author Cold Leeks - Connection recovery handling
  */
 @NonNullByDefault
 public class SlipVeluxBridge extends VeluxBridge implements Closeable {
@@ -118,6 +119,7 @@ public class SlipVeluxBridge extends VeluxBridge implements Closeable {
     public void shutdown() {
         logger.trace("shutdown() called.");
         connection.resetConnection();
+        resetAuthentication();
         logger.trace("shutdown() done.");
     }
 
@@ -180,6 +182,11 @@ public class SlipVeluxBridge extends VeluxBridge implements Closeable {
         return connection.lastSuccessfulCommunication();
     }
 
+    @Override
+    public boolean lastCommunicationOk() {
+        return connection.lastCommunicationOk();
+    }
+
     /**
      * Initializes a client/server communication towards the Velux Bridge based on the Basic I/O interface
      * {@link Connection#io} and parameters passed as arguments (see below).
@@ -195,6 +202,13 @@ public class SlipVeluxBridge extends VeluxBridge implements Closeable {
             boolean useAuthentication) {
         logger.trace("bridgeDirectCommunicate() '{}', {}authenticated", communication.name(),
                 useAuthentication ? "" : "un");
+
+        if (useAuthentication && !connection.isAlive()) {
+            resetAuthentication();
+            if (!bridgeLogin()) {
+                return false;
+            }
+        }
 
         // store common parameters as constants for frequent use
         final short txCmd = communication.getRequestCommand().toShort();
@@ -258,7 +272,12 @@ public class SlipVeluxBridge extends VeluxBridge implements Closeable {
         while (looping) {
             // timeout
             if (System.currentTimeMillis() > expiryTime) {
-                logger.warn(logMsg, ipAddr, txName, "process loop time out", "=> aborting", "=> PLEASE REPORT !!");
+                logger.info(logMsg, ipAddr, txName, "response sequence timed out", "=> aborting", "");
+                connection.markCommunicationFailed();
+                // the KLF200 may be in an undefined state; drop the connection so the next call starts clean
+                connection.resetConnection();
+                resetAuthentication();
+                success = false;
                 // abort the processing loop
                 break;
             }
@@ -283,12 +302,15 @@ public class SlipVeluxBridge extends VeluxBridge implements Closeable {
                     // only log in send mode (in receive-only mode, no response is ok)
                     if (!rcvonly) {
                         logger.debug(logMsg, ipAddr, txName, "no response", "=> aborting", "");
+                        connection.markCommunicationFailed();
                     }
                     // abort the processing loop
                     break;
                 }
             } catch (IOException e) {
                 logger.debug(logMsg, ipAddr, txName, "i/o error =>", e.getMessage(), "=> aborting");
+                // a new connection requires a new login
+                resetAuthentication();
                 // abort the processing loop
                 break;
             }

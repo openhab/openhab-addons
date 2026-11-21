@@ -754,7 +754,7 @@
 						},
 						{
 							"value": "2",
-							"label": "Basic"
+							"label": "Standard"
 						},
 						{
 							"value": "3",
@@ -762,7 +762,7 @@
 						},
 						{
 							"value": "4",
-							"label": "Full Speed"
+							"label": "Turbo"
 						}
 					]
 				},
@@ -778,7 +778,7 @@
 					"Control",
 					"Mode"
 				],
-				"readmeComment": "Value mapping `[\"1\"\u003d\"Silent\",\"2\"\u003d\"Basic\",\"3\"\u003d\"Strong\",\"4\"\u003d\"Full Speed\"]`"
+				"readmeComment": "Value mapping `[\"1\"\u003d\"Silent\",\"2\"\u003d\"Standard\",\"3\"\u003d\"Strong\",\"4\"\u003d\"Turbo\"]`"
 			},
 			{
 				"property": "mop-water-output-level",

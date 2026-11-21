@@ -196,6 +196,9 @@ public class RemoteControllerService implements SamsungTvService {
                 retryCount += 1;
                 logger.debug("{}: Reconnecting RemoteController, retry: {}", host, retryCount);
                 start();
+                if ((POWER.equals(channel) || ART_MODE.equals(channel)) && OnOffType.ON.equals(command)) {
+                    return false;
+                }
                 return handler.handleCommand(channel, command, 3000);
             } else {
                 logger.warn("{}: TV is not responding - not reconnecting", host);
@@ -693,8 +696,8 @@ public class RemoteControllerService implements SamsungTvService {
         return handler.fetchPowerState();
     }
 
-    public void setOffline() {
-        handler.setOffline();
+    public void setStandby() {
+        handler.setStandby();
     }
 
     public void putConfig(String key, String value) {

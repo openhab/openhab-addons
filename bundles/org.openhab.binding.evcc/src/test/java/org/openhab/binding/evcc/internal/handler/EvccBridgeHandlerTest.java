@@ -18,13 +18,17 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.evcc.internal.EvccBindingConstants;
+import org.openhab.binding.evcc.internal.handler.routing.FixedValueExtraction;
 import org.openhab.binding.evcc.internal.handler.routing.HandlerRoute;
 import org.openhab.binding.evcc.internal.handler.routing.JsonPathExtraction;
+import org.openhab.binding.evcc.internal.handler.routing.LoadpointStateTransformer;
+import org.openhab.binding.evcc.internal.handler.routing.StateTransformer;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
@@ -38,6 +42,7 @@ import com.google.gson.JsonPrimitive;
  * Tests for {@link EvccBridgeHandler}, focused on dispatching websocket updates.
  *
  * @author Marcel Goerentz - Initial contribution
+ * @author Michael Weger - Add tests for indexed delta dispatching
  */
 @NonNullByDefault
 class EvccBridgeHandlerTest {
@@ -59,6 +64,7 @@ class EvccBridgeHandlerTest {
         private final Object identifier;
         private @org.eclipse.jdt.annotation.Nullable String lastKey;
         private @org.eclipse.jdt.annotation.Nullable JsonElement lastValue;
+        private int dispatchCount;
 
         RecordingHandler(String type, Object identifier) {
             this.type = type;
@@ -78,12 +84,20 @@ class EvccBridgeHandlerTest {
         public void handleUpdate(String key, JsonElement value) {
             lastKey = key;
             lastValue = value;
+            dispatchCount++;
         }
 
         @Override
         public void applyNormalizedUpdate(JsonObject normalized) {
             lastKey = null;
             lastValue = normalized;
+            dispatchCount++;
+        }
+
+        JsonObject lastObject() {
+            JsonElement value = lastValue;
+            Assertions.assertNotNull(value);
+            return value.getAsJsonObject();
         }
 
         @Override
@@ -107,18 +121,86 @@ class EvccBridgeHandlerTest {
         bridgeHandler = newBridgeHandler();
     }
 
+    private void partialUpdate(String key, JsonElement value) {
+        JsonObject delta = new JsonObject();
+        delta.add(key, value);
+        bridgeHandler.onPartialUpdate(delta);
+    }
+
+    private RecordingHandler registerLoadpointRoute(int index, @Nullable StateTransformer transformer) {
+        RecordingHandler handler = new RecordingHandler(EvccBindingConstants.JSON_KEY_LOADPOINTS, index);
+        bridgeHandler.getMessageRouter()
+                .registerRoute(new HandlerRoute(EvccBindingConstants.JSON_KEY_LOADPOINTS + "." + index,
+                        new FixedValueExtraction(), handler, EvccBindingConstants.JSON_KEY_LOADPOINTS, transformer));
+        return handler;
+    }
+
     @Test
-    void indexedDotNotationKeyIsRoutedUsingMergedCachedValue() {
+    void indexedDeltaIsOnlyDispatchedToTheRouteOfThatIndex() {
+        RecordingHandler loadpoint0 = registerLoadpointRoute(0, null);
+        RecordingHandler loadpoint1 = registerLoadpointRoute(1, null);
+
+        partialUpdate("loadpoints.1.chargePower", new JsonPrimitive(1500));
+
+        assertEquals(0, loadpoint0.dispatchCount);
+        assertEquals(1, loadpoint1.dispatchCount);
+    }
+
+    @Test
+    void indexedDeltaOnlyCarriesTheChangedFields() {
+        RecordingHandler loadpoint0 = registerLoadpointRoute(0, null);
+        partialUpdate("loadpoints.0.mode", new JsonPrimitive("pv"));
+        partialUpdate("loadpoints.0.charging", new JsonPrimitive(false));
+
+        partialUpdate("loadpoints.0.chargePower", new JsonPrimitive(1500));
+
+        JsonObject dispatched = loadpoint0.lastObject();
+        assertEquals(1, dispatched.size());
+        assertEquals(1500, dispatched.get("chargePower").getAsInt());
+    }
+
+    @Test
+    void indexedKeysOfOneMessageAreDispatchedOncePerElement() {
+        RecordingHandler loadpoint0 = registerLoadpointRoute(0, null);
+        RecordingHandler loadpoint1 = registerLoadpointRoute(1, null);
+        JsonObject message = new JsonObject();
+        message.addProperty("loadpoints.0.chargePower", 1500);
+        message.addProperty("loadpoints.0.charging", true);
+        message.addProperty("loadpoints.1.connected", false);
+
+        bridgeHandler.onPartialUpdate(message);
+
+        assertEquals(1, loadpoint0.dispatchCount);
+        JsonObject dispatched0 = loadpoint0.lastObject();
+        assertEquals(2, dispatched0.size());
+        assertEquals(1500, dispatched0.get("chargePower").getAsInt());
+        assertEquals(true, dispatched0.get("charging").getAsBoolean());
+        assertEquals(1, loadpoint1.dispatchCount);
+        JsonObject dispatched1 = loadpoint1.lastObject();
+        assertEquals(1, dispatched1.size());
+        assertEquals(false, dispatched1.get("connected").getAsBoolean());
+    }
+
+    @Test
+    void indexedDeltaIsNormalizedByTheRouteTransformer() {
+        RecordingHandler loadpoint0 = registerLoadpointRoute(0, new LoadpointStateTransformer());
+
+        partialUpdate("loadpoints.0." + EvccBindingConstants.JSON_KEY_CHARGE_CURRENT, new JsonPrimitive(16));
+
+        JsonObject dispatched = loadpoint0.lastObject();
+        assertEquals(1, dispatched.size());
+        assertEquals(16, dispatched.get(EvccBindingConstants.JSON_KEY_OFFERED_CURRENT).getAsInt());
+    }
+
+    @Test
+    void indexedDotNotationKeyIsRoutedUnderTheElementKey() {
         // evcc reports individual loadpoint field changes using dot notation
         // ("loadpoints.<index>.<field>"), never as a full "loadpoints" array snapshot.
-        // The route registered by a loadpoint handler only matches the literal key
-        // "loadpoints", so the dotted key must be resolved to its root ("loadpoints")
-        // and dispatched using the up-to-date merged value for that root.
-        RecordingHandler loadpointHandler = new RecordingHandler(EvccBindingConstants.JSON_KEY_LOADPOINTS, 1);
-        bridgeHandler.getMessageRouter().registerRoute(new HandlerRoute(EvccBindingConstants.JSON_KEY_LOADPOINTS,
-                new JsonPathExtraction("$[1]"), loadpointHandler, EvccBindingConstants.JSON_KEY_LOADPOINTS));
+        // The loadpoint handler registers its route under the element key ("loadpoints.<index>"),
+        // so the dotted key must be routed under that key with the changed field.
+        RecordingHandler loadpointHandler = registerLoadpointRoute(1, null);
 
-        bridgeHandler.onPartialUpdate("loadpoints.1.chargePower", new JsonPrimitive(1500));
+        partialUpdate("loadpoints.1.chargePower", new JsonPrimitive(1500));
 
         assertEquals(EvccBindingConstants.JSON_KEY_LOADPOINTS, loadpointHandler.lastKey);
         JsonElement dispatched = loadpointHandler.lastValue;
@@ -137,7 +219,7 @@ class EvccBridgeHandlerTest {
 
         JsonObject solar = new JsonObject();
         solar.addProperty("scale", 1.0);
-        bridgeHandler.onPartialUpdate("forecast.solar", solar);
+        partialUpdate("forecast.solar", solar);
 
         assertEquals(EvccBindingConstants.JSON_KEY_FORECAST, forecastHandler.lastKey);
         JsonElement dispatched = forecastHandler.lastValue;
@@ -161,7 +243,7 @@ class EvccBridgeHandlerTest {
         // Populate the co2 sub-object in the cache first, as if it arrived earlier.
         JsonObject co2 = new JsonObject();
         co2.addProperty("today", 100);
-        bridgeHandler.onPartialUpdate("forecast.co2", co2);
+        partialUpdate("forecast.co2", co2);
         assertEquals(EvccBindingConstants.JSON_KEY_FORECAST, co2Handler.lastKey);
         co2Handler.lastKey = null;
         co2Handler.lastValue = null;
@@ -170,7 +252,7 @@ class EvccBridgeHandlerTest {
         // though the merged cache value for "forecast" still contains the earlier co2 data.
         JsonObject solar = new JsonObject();
         solar.addProperty("scale", 1.0);
-        bridgeHandler.onPartialUpdate("forecast.solar", solar);
+        partialUpdate("forecast.solar", solar);
 
         assertEquals(EvccBindingConstants.JSON_KEY_FORECAST, solarHandler.lastKey);
         assertNull(co2Handler.lastKey);
@@ -182,7 +264,7 @@ class EvccBridgeHandlerTest {
         RecordingHandler siteHandler = new RecordingHandler(EvccBindingConstants.PROPERTY_TYPE_SITE, "");
         bridgeHandler.register(siteHandler);
 
-        bridgeHandler.onPartialUpdate("homePower", new JsonPrimitive(1234));
+        partialUpdate("homePower", new JsonPrimitive(1234));
 
         assertEquals("homePower", siteHandler.lastKey);
         JsonElement dispatched = siteHandler.lastValue;
@@ -198,7 +280,7 @@ class EvccBridgeHandlerTest {
         RecordingHandler siteHandler = new RecordingHandler(EvccBindingConstants.PROPERTY_TYPE_SITE, "");
         bridgeHandler.register(siteHandler);
 
-        bridgeHandler.onPartialUpdate("loadpoints.0.chargePower", new JsonPrimitive(0));
+        partialUpdate("loadpoints.0.chargePower", new JsonPrimitive(0));
 
         assertNull(siteHandler.lastKey);
     }

@@ -19,6 +19,11 @@ import static org.openhab.binding.asuswrt.internal.helpers.AsuswrtUtils.getValue
 import java.net.NoRouteToHostException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.util.HexFormat;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeoutException;
 
@@ -29,6 +34,7 @@ import javax.net.ssl.SSLKeyException;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.api.ContentResponse;
+import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.asuswrt.internal.structures.AsuswrtConfiguration;
 import org.openhab.binding.asuswrt.internal.structures.AsuswrtCredentials;
 import org.openhab.binding.asuswrt.internal.things.AsuswrtRouter;
@@ -38,15 +44,21 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 /**
  * The {@link AsuswrtConnector} is a {@link AsuswrtHttpClient} that also keeps track of router configuration and
  * credentials.
  *
  * @author Christian Wild - Initial contribution
+ * @author Daniel Malmgren - Nonce-based authentication support
  */
 @NonNullByDefault
 public class AsuswrtConnector extends AsuswrtHttpClient {
+    private static final String JSON_CONTENT_TYPE = "application/json";
+    private static final String RANDOM_CHARACTERS = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    private static final SecureRandom RANDOM = new SecureRandom();
+
     private final Logger logger = LoggerFactory.getLogger(AsuswrtConnector.class);
     private AsuswrtCredentials credentials;
     private AsuswrtConfiguration routerConfig;
@@ -68,25 +80,125 @@ public class AsuswrtConnector extends AsuswrtHttpClient {
      * Login to the router.
      */
     public Boolean login() {
-        String url = getURL("login.cgi");
-        String encodedCredentials = credentials.getEncodedCredentials();
-        String payload = "";
-
         logout(); // logout (unset cookie) first
         router.errorHandler.reset();
 
-        logger.trace("({}) perform login to '{}'", uid, url);
-
-        payload = "login_authorization=" + encodedCredentials + "}";
-        ContentResponse response = getSyncRequest(url, payload);
-        if (response != null) {
-            setCookieFromResponse(response);
+        LoginChallenge challenge = getLoginChallenge();
+        switch (challenge.protocol()) {
+            case VERSION_2 -> loginVersion2(challenge);
+            case LEGACY -> loginLegacy();
+            case UNAVAILABLE -> {
+                return false;
+            }
         }
+
         if (cookieStore.isValid()) {
             router.setState(ThingStatus.ONLINE);
             return true;
         }
+        router.errorHandler.raiseError(ERR_RESPONSE, "Authentication failed");
         return false;
+    }
+
+    private LoginChallenge getLoginChallenge() {
+        String requestId = randomString(10);
+        String payload = "{\"id\":\"" + requestId + "\"}";
+        ContentResponse response = getSyncRequest(getURL("get_Nonce.cgi"), payload, JSON_CONTENT_TYPE);
+        if (response == null) {
+            return LoginChallenge.unavailable();
+        }
+        if (response.getStatus() == HttpStatus.NOT_FOUND_404
+                || response.getStatus() == HttpStatus.METHOD_NOT_ALLOWED_405) {
+            return LoginChallenge.legacy();
+        }
+        if (response.getStatus() != HttpStatus.OK_200) {
+            router.errorHandler.raiseError(ERR_RESPONSE, "Nonce request returned HTTP " + response.getStatus());
+            return LoginChallenge.unavailable();
+        }
+
+        String responseBody = response.getContentAsString();
+        try {
+            JsonObject responseJson = JsonParser.parseString(responseBody).getAsJsonObject();
+            if (responseJson.has("nonce")) {
+                String nonce = responseJson.get("nonce").getAsString();
+                if (!nonce.isBlank()) {
+                    return LoginChallenge.version2(requestId, nonce);
+                }
+            }
+            router.errorHandler.raiseError(ERR_RESPONSE, "Nonce response did not contain a nonce");
+            return LoginChallenge.unavailable();
+        } catch (RuntimeException e) {
+            router.errorHandler.raiseError(ERR_RESPONSE, "Nonce response was not valid JSON");
+            return LoginChallenge.unavailable();
+        }
+    }
+
+    private void loginVersion2(LoginChallenge challenge) {
+        String cnonce = randomString(32);
+        String digestInput = credentials.getUsername() + ":" + challenge.nonce() + ":" + credentials.getPassword() + ":"
+                + cnonce;
+        String authorization = sha256(digestInput);
+        String payload = formEncode(Map.of("group_id", "", "action_mode", "", "action_script", "", "action_wait", "5",
+                "current_page", "Main_Login.asp", "next_page", "", "login_authorization", authorization, "id",
+                challenge.requestId(), "cnonce", cnonce, "login_captcha", ""));
+
+        ContentResponse response = getSyncRequest(getURL("login_v2.cgi"), payload);
+        if (response != null) {
+            setCookieFromResponse(response);
+        }
+    }
+
+    private void loginLegacy() {
+        String payload = "login_authorization="
+                + URLEncoder.encode(credentials.getEncodedCredentials(), StandardCharsets.UTF_8);
+        ContentResponse response = getSyncRequest(getURL("login.cgi"), payload);
+        if (response != null) {
+            setCookieFromResponse(response);
+        }
+    }
+
+    private String randomString(int length) {
+        StringBuilder result = new StringBuilder(length);
+        for (int i = 0; i < length; i++) {
+            result.append(RANDOM_CHARACTERS.charAt(RANDOM.nextInt(RANDOM_CHARACTERS.length())));
+        }
+        return result.toString();
+    }
+
+    private String sha256(String value) {
+        try {
+            return HexFormat.of()
+                    .formatHex(MessageDigest.getInstance("SHA-256").digest(value.getBytes(StandardCharsets.UTF_8)));
+        } catch (NoSuchAlgorithmException e) {
+            throw new IllegalStateException("SHA-256 is unavailable", e);
+        }
+    }
+
+    private String formEncode(Map<String, String> values) {
+        return values.entrySet().stream()
+                .map(entry -> URLEncoder.encode(entry.getKey(), StandardCharsets.UTF_8) + "="
+                        + URLEncoder.encode(entry.getValue(), StandardCharsets.UTF_8))
+                .collect(java.util.stream.Collectors.joining("&"));
+    }
+
+    private enum LoginProtocol {
+        VERSION_2,
+        LEGACY,
+        UNAVAILABLE
+    }
+
+    private record LoginChallenge(LoginProtocol protocol, String requestId, String nonce) {
+        private static LoginChallenge version2(String requestId, String nonce) {
+            return new LoginChallenge(LoginProtocol.VERSION_2, requestId, nonce);
+        }
+
+        private static LoginChallenge legacy() {
+            return new LoginChallenge(LoginProtocol.LEGACY, "", "");
+        }
+
+        private static LoginChallenge unavailable() {
+            return new LoginChallenge(LoginProtocol.UNAVAILABLE, "", "");
+        }
     }
 
     /**

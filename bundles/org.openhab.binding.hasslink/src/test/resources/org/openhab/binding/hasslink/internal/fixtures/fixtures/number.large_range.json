@@ -1,0 +1,37 @@
+{
+  "id": 18,
+  "type": "event",
+  "event": {
+    "event_type": "state_changed",
+    "data": {
+      "entity_id": "number.large_range",
+      "old_state": null,
+      "new_state": {
+        "entity_id": "number.large_range",
+        "state": "500",
+        "attributes": {
+          "min": 1,
+          "max": 1000,
+          "step": 1,
+          "mode": "auto",
+          "friendly_name": "Large Range"
+        },
+        "last_changed": "2026-09-21T12:46:27.343834+00:00",
+        "last_reported": "2026-09-21T12:46:27.373502+00:00",
+        "last_updated": "2026-09-21T12:46:27.343834+00:00",
+        "context": {
+          "id": "01M3201RGF0AH6FM4395EX8VEF",
+          "parent_id": null,
+          "user_id": null
+        }
+      }
+    },
+    "origin": "LOCAL",
+    "time_fired": "2026-09-19T00:00:00.000000+00:00",
+    "context": {
+      "id": "01HXXXXXXX",
+      "parent_id": null,
+      "user_id": null
+    }
+  }
+}

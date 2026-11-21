@@ -139,6 +139,9 @@ public class HeosSystem {
 
         logger.debug("HEOS System Event Listener successfully started");
         eventLine.getReadResultListener().addPropertyChangeListener(eventProcessor);
+        // The event stream was just (re)registered, so its quiet period starts now. Otherwise a system that
+        // legitimately sends no events would be reset again on every heartbeat after LAST_EVENT_THRESHOLD.
+        eventController.resetLastEventTime();
     }
 
     void closeConnection() {

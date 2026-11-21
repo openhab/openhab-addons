@@ -61,6 +61,36 @@ public class ValueTests {
     }
 
     @Test
+    public void missingStateAndRecovery() {
+        TextValue value = new TextValue();
+        assertThat(value.getChannelState(), is(UnDefType.NULL));
+
+        value.update(new StringType("before reset"));
+        value.resetState();
+        assertThat(value.getChannelState(), is(UnDefType.NULL));
+
+        value.update(new StringType("after reset"));
+        assertThat(value.getChannelState(), is(new StringType("after reset")));
+    }
+
+    @Test
+    public void colorCommandsWithUndefinedState() {
+        ColorValue value = new ColorValue(ColorMode.HSB, "fancyON", "fancyOFF", 77);
+        for (UnDefType state : UnDefType.values()) {
+            value.update(state);
+            assertThat(value.parseCommand(OnOffType.ON), is(new HSBType("0,0,77")));
+            assertThat(value.parseCommand(OnOffType.OFF), is(new HSBType("0,0,0")));
+            assertThat(value.parseCommand(new PercentType(42)), is(new HSBType("0,0,42")));
+            assertThat(value.parseCommand(new StringType("fancyON")), is(new HSBType("0,0,77")));
+            assertThat(value.parseCommand(new StringType("fancyOFF")), is(new HSBType("0,0,0")));
+            HSBType color = new HSBType("120,50,60");
+            value.update(value.parseCommand(color));
+            assertThat(value.getChannelState(), is(color));
+            assertThat(value.parseCommand(new PercentType(42)), is(new HSBType("120,50,42")));
+        }
+    }
+
+    @Test
     public void illegalTextStateUpdate() {
         TextValue v = new TextValue("one,two".split(","));
         assertThrows(IllegalArgumentException.class, () -> v.parseCommand(p(v, "three")));

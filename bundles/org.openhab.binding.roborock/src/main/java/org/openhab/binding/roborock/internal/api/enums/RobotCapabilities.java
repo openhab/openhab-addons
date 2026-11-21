@@ -39,7 +39,6 @@ public enum RobotCapabilities {
     CURRENT_ROOM("", "status#current-room", "roborock:current-room", ""),
     CARPET_MODE("", "info#carpet-mode", "roborock:carpet-mode", COMMAND_GET_CARPET_MODE),
     FW_FEATURES("", "info#fw-features", "roborock:fw-features", COMMAND_GET_FW_FEATURES),
-    ROOM_MAPPING("", "info#room-mapping", "roborock:room-mapping", COMMAND_GET_ROOM_MAPPING),
     MULTI_MAP_LIST("", "info#multi-maps-list", "roborock:multi-maps-list", COMMAND_GET_MULTI_MAP_LIST),
     CUSTOMIZE_CLEAN_MODE("", "info#customize-clean-mode", "roborock:customize-clean-mode",
             COMMAND_GET_CUSTOMIZE_CLEAN_MODE),

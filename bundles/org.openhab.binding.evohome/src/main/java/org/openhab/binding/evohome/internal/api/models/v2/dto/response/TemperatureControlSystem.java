@@ -14,12 +14,15 @@ package org.openhab.binding.evohome.internal.api.models.v2.dto.response;
 
 import java.util.List;
 
+import org.eclipse.jdt.annotation.Nullable;
+
 import com.google.gson.annotations.SerializedName;
 
 /**
  * Response model for the temperature control system
  *
  * @author Jasper van Zuijlen - Initial contribution
+ * @author Kovacs Istvan - Capability-aware controller reset
  *
  */
 public class TemperatureControlSystem {
@@ -36,11 +39,22 @@ public class TemperatureControlSystem {
     @SerializedName("allowedSystemModes")
     private List<Mode> allowedSystemModes;
 
+    @SerializedName("dhw")
+    private DomesticHotWater dhw;
+
     public String getSystemId() {
         return systemId;
     }
 
     public List<Zone> getZones() {
-        return zones;
+        return zones == null ? List.of() : zones;
+    }
+
+    public List<Mode> getAllowedSystemModes() {
+        return allowedSystemModes == null ? List.of() : allowedSystemModes;
+    }
+
+    public @Nullable DomesticHotWater getDhw() {
+        return dhw;
     }
 }

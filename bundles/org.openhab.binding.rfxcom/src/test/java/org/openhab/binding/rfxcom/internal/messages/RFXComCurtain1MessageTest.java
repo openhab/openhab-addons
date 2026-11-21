@@ -21,7 +21,7 @@ import org.openhab.binding.rfxcom.internal.RFXComBindingConstants;
 import org.openhab.binding.rfxcom.internal.RFXComTestHelper;
 import org.openhab.binding.rfxcom.internal.config.RFXComGenericDeviceConfiguration;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
-import org.openhab.core.library.types.OpenClosedType;
+import org.openhab.core.library.types.UpDownType;
 import org.openhab.core.thing.ChannelUID;
 
 /**
@@ -41,13 +41,13 @@ public class RFXComCurtain1MessageTest {
 
     @Test
     public void checkForSupportTest() throws RFXComException {
-        RFXComMessageFactoryImpl.INSTANCE.createMessage(CURTAIN1, config, shutterChannelUID, OpenClosedType.OPEN);
+        RFXComMessageFactoryImpl.INSTANCE.createMessage(CURTAIN1, config, shutterChannelUID, UpDownType.UP);
     }
 
     @Test
     public void basicBoundaryCheck() throws RFXComException {
         RFXComCurtain1Message message = (RFXComCurtain1Message) RFXComMessageFactoryImpl.INSTANCE
-                .createMessage(CURTAIN1, config, shutterChannelUID, OpenClosedType.OPEN);
+                .createMessage(CURTAIN1, config, shutterChannelUID, UpDownType.UP);
 
         RFXComTestHelper.basicBoundaryCheck(CURTAIN1, message);
     }

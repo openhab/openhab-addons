@@ -1,0 +1,285 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="candy"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<thing-type id="bianca">
+		<label>Candy Bianca Washing Machine</label>
+		<description>A Candy Bianca washing machine using local simply-Fi Wi-Fi status</description>
+		<semantic-equipment-tag>WashingMachine</semantic-equipment-tag>
+		<channels>
+			<channel id="machine-state" typeId="machine-state"/>
+			<channel id="program-phase" typeId="program-phase"/>
+			<channel id="program-number" typeId="program-number"/>
+			<channel id="program-code" typeId="program-code"/>
+			<channel id="remaining-time" typeId="remaining-time"/>
+			<channel id="target-temperature" typeId="target-temperature"/>
+			<channel id="target-spin-speed" typeId="target-spin-speed"/>
+			<channel id="remote-control-enabled" typeId="remote-control-enabled"/>
+			<channel id="error-code" typeId="error-code"/>
+			<channel id="last-update" typeId="last-update"/>
+			<channel id="machine-mode-code" typeId="machine-mode-code"/>
+			<channel id="program-phase-code" typeId="program-phase-code"/>
+			<channel id="program-catalog" typeId="program-catalog"/>
+			<channel id="catalog-status" typeId="catalog-status"/>
+			<channel id="selected-program" typeId="selected-program"/>
+			<channel id="start" typeId="start"/>
+			<channel id="start-program" typeId="start-program"/>
+			<channel id="stop" typeId="stop"/>
+			<channel id="last-command-result" typeId="last-command-result"/>
+		</channels>
+		<config-description>
+			<parameter name="hostName" type="text" required="true">
+				<context>network-address</context>
+				<label>Host Name/IP Address</label>
+				<description>Appliance host name or IP address, without scheme, port or path</description>
+			</parameter>
+			<parameter name="username" type="text">
+				<label>Simply-Fi Username</label>
+				<description>Email address used to sign in to the Candy simply-Fi application</description>
+			</parameter>
+			<parameter name="password" type="text">
+				<context>password</context>
+				<label>Simply-Fi Password</label>
+				<description>Account password used to retrieve the existing appliance key automatically</description>
+			</parameter>
+			<parameter name="encryptionKey" type="text">
+				<context>password</context>
+				<label>Appliance Encryption Key</label>
+				<description>Optional manual override; leave empty to retrieve the key using account credentials</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="applianceId" type="text">
+				<label>Account Appliance ID</label>
+				<description>Optional account appliance selector; normally the correct key is matched to the local washer
+					automatically</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="enableControl" type="boolean">
+				<label>Enable Washing Controls</label>
+				<description>Allow explicit start and stop commands; physical remote permission is checked before every write</description>
+				<default>false</default>
+			</parameter>
+			<parameter name="refreshInterval" type="integer" min="15" unit="s">
+				<label>Refresh Interval</label>
+				<description>Delay between completed status polls</description>
+				<default>30</default>
+			</parameter>
+			<parameter name="requestTimeout" type="integer" min="1" max="10" unit="s">
+				<label>Request Timeout</label>
+				<description>Total timeout for a local HTTP request</description>
+				<default>10</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</thing-type>
+	<channel-type id="machine-state">
+		<item-type>String</item-type>
+		<label>Machine State</label>
+		<description>Current operating mode</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="true">
+			<options>
+				<option value="NO_STATE">No state</option>
+				<option value="SELECTING">Selecting</option>
+				<option value="RUNNING">Running</option>
+				<option value="PAUSED">Paused</option>
+				<option value="DELAY_SELECTION">Delay selection</option>
+				<option value="DELAYED">Delayed</option>
+				<option value="ERROR">Error</option>
+				<option value="FINISHED">Finished</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="program-phase">
+		<item-type>String</item-type>
+		<label>Program Phase</label>
+		<description>Current washing phase</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="true">
+			<options>
+				<option value="NONE">None</option>
+				<option value="PREWASH">Prewash</option>
+				<option value="WASH">Wash</option>
+				<option value="RINSE">Rinse</option>
+				<option value="LAST_RINSE">Last rinse</option>
+				<option value="FINISHED">Finished</option>
+				<option value="DRYING">Drying</option>
+				<option value="ERROR">Error</option>
+				<option value="GOOD_NIGHT_PAUSE">Good night pause</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="program-number">
+		<item-type>String</item-type>
+		<label>Program Number</label>
+		<description>Bianca program selector identifier</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="program-code">
+		<item-type>String</item-type>
+		<label>Program Code</label>
+		<description>Bianca program code</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="remaining-time">
+		<item-type>Number:Time</item-type>
+		<label>Remaining Time</label>
+		<description>Remaining wash duration</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Duration</tag>
+		</tags>
+		<state readOnly="true" pattern="%.0f min"/>
+	</channel-type>
+	<channel-type id="target-temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Target Temperature</label>
+		<description>Reported program temperature setting</description>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<state readOnly="true" pattern="%.0f °C"/>
+	</channel-type>
+	<channel-type id="target-spin-speed">
+		<item-type>Number:Frequency</item-type>
+		<label>Target Spin Speed</label>
+		<description>Reported program spin setting</description>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Frequency</tag>
+		</tags>
+		<state readOnly="true" pattern="%.0f rpm"/>
+	</channel-type>
+	<channel-type id="remote-control-enabled">
+		<item-type>Switch</item-type>
+		<label>Remote Control Enabled</label>
+		<description>Permission for remote appliance operation</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="error-code" advanced="true">
+		<item-type>String</item-type>
+		<label>Error Code</label>
+		<description>Device error identifier</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="last-update" advanced="true">
+		<item-type>DateTime</item-type>
+		<label>Last Update</label>
+		<description>Last successful local status read</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
+		<state readOnly="true" pattern="%1$tF %1$tT"/>
+	</channel-type>
+	<channel-type id="machine-mode-code" advanced="true">
+		<item-type>Number</item-type>
+		<label>Machine Mode Code</label>
+		<description>Raw machine mode code</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="true" pattern="%d"/>
+	</channel-type>
+	<channel-type id="program-phase-code" advanced="true">
+		<item-type>Number</item-type>
+		<label>Program Phase Code</label>
+		<description>Raw program phase code</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="true" pattern="%d"/>
+	</channel-type>
+	<channel-type id="program-catalog">
+		<item-type>String</item-type>
+		<label>Program Catalog</label>
+		<description>Send LIST or REFRESH to retrieve program defaults and supported option limits from the server</description>
+		<command>
+			<options>
+				<option value="LIST">Refresh from server</option>
+			</options>
+		</command>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+	<channel-type id="catalog-status">
+		<item-type>String</item-type>
+		<label>Catalog Status</label>
+		<description>Availability of server program options; independent of local monitoring</description>
+		<state readOnly="true">
+			<options>
+				<option value="NOT_READY">Not ready</option>
+				<option value="ACCOUNT_REQUIRED">Account required</option>
+				<option value="LOADING">Loading</option>
+				<option value="READY">Ready</option>
+				<option value="RATE_LIMITED">Rate limited</option>
+				<option value="FAILED">Failed</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="selected-program">
+		<item-type>String</item-type>
+		<label>Selected Program</label>
+		<description>Select a server program without starting the washer</description>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+	<channel-type id="start">
+		<item-type>Switch</item-type>
+		<label>Start Selected Program</label>
+		<description>Send ON to start the selected program with its server defaults</description>
+		<command>
+			<options>
+				<option value="ON">Start</option>
+			</options>
+		</command>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+	<channel-type id="start-program" advanced="true">
+		<item-type>String</item-type>
+		<label>Start Program</label>
+		<description>Send a server program ID to start with its defaults</description>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+	<channel-type id="stop">
+		<item-type>Switch</item-type>
+		<label>Stop Washing</label>
+		<description>Send ON to stop the current cycle or cancel a delayed start</description>
+		<command>
+			<options>
+				<option value="ON">Stop</option>
+			</options>
+		</command>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+	<channel-type id="last-command-result">
+		<item-type>String</item-type>
+		<label>Last Command Result</label>
+		<description>HTTP success is SENT; only an observed matching device state is CONFIRMED</description>
+		<state readOnly="true">
+			<options>
+				<option value="PENDING">Pending</option>
+				<option value="SENT">Sent</option>
+				<option value="CONFIRMED">Confirmed</option>
+				<option value="REJECTED">Rejected</option>
+				<option value="DISABLED">Disabled</option>
+				<option value="BUSY">Busy</option>
+				<option value="INVALID_PROGRAM">Invalid program</option>
+				<option value="NOT_READY">Not ready</option>
+				<option value="REMOTE_DISABLED">Remote disabled</option>
+				<option value="FAILED">Failed</option>
+				<option value="UNKNOWN">Unknown</option>
+			</options>
+		</state>
+	</channel-type>
+</thing:thing-descriptions>

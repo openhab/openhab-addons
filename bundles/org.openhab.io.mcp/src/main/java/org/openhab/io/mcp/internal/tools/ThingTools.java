@@ -50,6 +50,7 @@ public class ThingTools {
     private final ThingRegistry thingRegistry;
     private final ItemChannelLinkRegistry linkRegistry;
     private final McpJsonMapper jsonMapper;
+    private final Paging paging;
 
     /**
      * Creates a new {@code ThingTools} instance.
@@ -57,11 +58,15 @@ public class ThingTools {
      * @param thingRegistry the registry used to look up things
      * @param linkRegistry the registry used to resolve item-channel links
      * @param jsonMapper the JSON mapper for serializing tool results
+     * @param maxItemsPerPage upper bound for the {@code limit} argument of the paginated list tool; values
+     *            below 1 are treated as 1
      */
-    public ThingTools(ThingRegistry thingRegistry, ItemChannelLinkRegistry linkRegistry, McpJsonMapper jsonMapper) {
+    public ThingTools(ThingRegistry thingRegistry, ItemChannelLinkRegistry linkRegistry, McpJsonMapper jsonMapper,
+            int maxItemsPerPage) {
         this.thingRegistry = thingRegistry;
         this.linkRegistry = linkRegistry;
         this.jsonMapper = jsonMapper;
+        this.paging = Paging.of(maxItemsPerPage);
     }
 
     /**
@@ -76,12 +81,12 @@ public class ThingTools {
                 Map.of("type", "string", "description", "Filter by status: ONLINE, OFFLINE, UNKNOWN, INITIALIZING"));
         properties.put("bindingId",
                 Map.of("type", "string", "description", "Filter by binding ID (e.g., 'hue', 'zwave', 'mqtt')"));
-        properties.put("limit", Map.of("type", "integer", "description", "Maximum results to return (default: 50)"));
-        properties.put("offset", Map.of("type", "integer", "description", "Number of results to skip (default: 0)"));
+        paging.addSchemaProperties(properties);
 
         return McpSchema.Tool.builder().name("get_things").description(
                 "List things (device connections) with their online/offline status. Filter by status or binding type. When filtering by binding, bridge things include nested child things from any binding.")
-                .inputSchema(new McpSchema.JsonSchema("object", properties, List.of(), null, null, null)).build();
+                .inputSchema(new McpSchema.JsonSchema("object", properties, List.of(), null, null, null))
+                .annotations(readOnlyAnnotations()).build();
     }
 
     /**
@@ -95,8 +100,6 @@ public class ThingTools {
         Map<String, Object> args = request.arguments();
         String statusFilter = getStringArg(args, "status");
         String bindingFilter = getStringArg(args, "bindingId");
-        int limit = getIntArg(args, "limit", 50);
-        int offset = getIntArg(args, "offset", 0);
 
         Set<ThingUID> listed = new HashSet<>();
         List<Map<String, Object>> things = new ArrayList<>();
@@ -119,14 +122,9 @@ public class ThingTools {
             things.add(summary);
         }
 
-        int total = things.size();
-        List<Map<String, Object>> page = things.subList(Math.min(offset, total), Math.min(offset + limit, total));
-
         Map<String, Object> response = new HashMap<>();
+        List<Map<String, Object>> page = paging.page(things, args, response);
         response.put("things", page);
-        response.put("total", total);
-        response.put("offset", offset);
-        response.put("limit", limit);
         return textResult(jsonMapper, response);
     }
 
@@ -145,7 +143,7 @@ public class ThingTools {
                                 Map.of("type", "string", "description",
                                         "The unique identifier of the thing (e.g., 'hue:0210:bridge:lamp1')")),
                         List.of("thingUID"), null, null, null))
-                .build();
+                .annotations(readOnlyAnnotations()).build();
     }
 
     /**

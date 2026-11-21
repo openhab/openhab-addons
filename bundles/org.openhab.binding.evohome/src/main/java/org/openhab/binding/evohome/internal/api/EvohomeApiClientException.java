@@ -18,20 +18,36 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * Exception for errors from the API Client.
  *
  * @author Jasper van Zuijlen - Initial contribution
+ * @author Kovacs Istvan - HTTP failure and retry information
  *
  */
 @NonNullByDefault
 public class EvohomeApiClientException extends Exception {
     private static final long serialVersionUID = 1L;
-
-    public EvohomeApiClientException() {
-    }
+    private final int statusCode;
+    private final long retryAfterSeconds;
 
     public EvohomeApiClientException(String message) {
-        super(message);
+        this(message, 0, 0);
     }
 
     public EvohomeApiClientException(String message, Throwable cause) {
         super(message, cause);
+        statusCode = 0;
+        retryAfterSeconds = 0;
+    }
+
+    public EvohomeApiClientException(String message, int statusCode, long retryAfterSeconds) {
+        super(message);
+        this.statusCode = statusCode;
+        this.retryAfterSeconds = retryAfterSeconds;
+    }
+
+    public int getStatusCode() {
+        return statusCode;
+    }
+
+    public long getRetryAfterSeconds() {
+        return retryAfterSeconds;
     }
 }

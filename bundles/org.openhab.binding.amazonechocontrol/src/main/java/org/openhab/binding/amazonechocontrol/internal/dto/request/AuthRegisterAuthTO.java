@@ -21,13 +21,26 @@ import com.google.gson.annotations.SerializedName;
  * The {@link AuthRegisterAuthTO} encapsulates the auth information of an app registration request
  *
  * @author Jan N. Klug - Initial contribution
+ * @author Jens Erat - Authorization code + PKCE flow
  */
 public class AuthRegisterAuthTO {
     @SerializedName("access_token")
     public @Nullable String accessToken;
+    @SerializedName("client_id")
+    public @Nullable String clientId;
+    @SerializedName("authorization_code")
+    public @Nullable String authorizationCode;
+    @SerializedName("code_verifier")
+    public @Nullable String codeVerifier;
+    @SerializedName("code_algorithm")
+    public @Nullable String codeAlgorithm;
+    @SerializedName("client_domain")
+    public @Nullable String clientDomain;
 
     @Override
     public @NonNull String toString() {
-        return "AuthRegisterAuthTO{accessToken='" + accessToken + "'}";
+        // accessToken, authorizationCode and codeVerifier are secrets and must not be exposed
+        return "AuthRegisterAuthTO{clientId='" + clientId + "', codeAlgorithm='" + codeAlgorithm + "', clientDomain='"
+                + clientDomain + "'}";
     }
 }

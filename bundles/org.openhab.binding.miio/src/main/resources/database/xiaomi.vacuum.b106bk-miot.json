@@ -166,11 +166,11 @@
 						},
 						{
 							"value": "6",
-							"label": "Mopping"
+							"label": "Sweeping and Mopping"
 						},
 						{
 							"value": "7",
-							"label": "Sweeping and Mopping"
+							"label": "Mopping"
 						},
 						{
 							"value": "8",
@@ -184,7 +184,7 @@
 				"tags": [
 					"Status"
 				],
-				"readmeComment": "Value mapping `[\"0\"\u003d\"Sleep\",\"1\"\u003d\"Idle\",\"2\"\u003d\"Paused\",\"3\"\u003d\"Go Charging\",\"4\"\u003d\"Charging\",\"5\"\u003d\"Sweeping\",\"6\"\u003d\"Mopping\",\"7\"\u003d\"Sweeping and Mopping\",\"8\"\u003d\"Upgrade\"]`"
+				"readmeComment": "The MIoT specification lists 6 as Mopping and 7 as Sweeping and Mopping; the Mi Home app uses 6 for sweeping and mopping and 7 for mopping. Value mapping `[\"0\"\u003d\"Sleep\",\"1\"\u003d\"Idle\",\"2\"\u003d\"Paused\",\"3\"\u003d\"Go Charging\",\"4\"\u003d\"Charging\",\"5\"\u003d\"Sweeping\",\"6\"\u003d\"Sweeping and Mopping\",\"7\"\u003d\"Mopping\",\"8\"\u003d\"Upgrade\"]`"
 			},
 			{
 				"property": "fault",
@@ -462,7 +462,7 @@
 						},
 						{
 							"value": "2",
-							"label": "Medium"
+							"label": "Strong"
 						},
 						{
 							"value": "3",
@@ -482,7 +482,7 @@
 					"Control",
 					"Mode"
 				],
-				"readmeComment": "Value mapping `[\"0\"\u003d\"Silent\",\"1\"\u003d\"Standard\",\"2\"\u003d\"Medium\",\"3\"\u003d\"Turbo\"]`"
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Silent\",\"1\"\u003d\"Standard\",\"2\"\u003d\"Strong\",\"3\"\u003d\"Turbo\"]`"
 			},
 			{
 				"property": "water-state",
@@ -532,11 +532,11 @@
 					"options": [
 						{
 							"value": "0",
-							"label": "S-Shape"
+							"label": "Standard (S-Shape)"
 						},
 						{
 							"value": "1",
-							"label": "Y-Shape"
+							"label": "Professional (Y-Shape)"
 						}
 					]
 				},
@@ -552,7 +552,7 @@
 					"Control",
 					"Mode"
 				],
-				"readmeComment": "Value mapping `[\"0\"\u003d\"S-Shape\",\"1\"\u003d\"Y-Shape\"]`"
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Standard (S-Shape)\",\"1\"\u003d\"Professional (Y-Shape)\"]`"
 			},
 			{
 				"property": "side-brush-life",

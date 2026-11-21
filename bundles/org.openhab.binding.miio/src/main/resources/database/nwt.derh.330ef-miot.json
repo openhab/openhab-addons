@@ -10,8 +10,8 @@
 				"property": "on",
 				"siid": 2,
 				"piid": 1,
-				"friendlyName": "Dehumidifier - Power",
-				"channel": "on",
+				"friendlyName": "Power",
+				"channel": "power",
 				"type": "Switch",
 				"refresh": true,
 				"actions": [
@@ -30,17 +30,17 @@
 				"property": "fault",
 				"siid": 2,
 				"piid": 2,
-				"friendlyName": "Dehumidifier - Device Fault",
+				"friendlyName": "Device Fault",
 				"channel": "fault",
 				"type": "Number",
 				"stateDescription": {
-					"readOnly": true,
 					"options": [
 						{
 							"value": "0",
 							"label": "No Faults"
 						}
-					]
+					],
+					"readOnly": true
 				},
 				"refresh": true,
 				"actions": [],
@@ -54,22 +54,22 @@
 				"property": "mode",
 				"siid": 2,
 				"piid": 3,
-				"friendlyName": "Dehumidifier - Mode",
+				"friendlyName": "Mode",
 				"channel": "mode",
 				"type": "Number",
 				"stateDescription": {
 					"options": [
 						{
 							"value": "1",
-							"label": "Auto"
+							"label": "Target Humidity"
 						},
 						{
 							"value": "2",
-							"label": "Smart"
+							"label": "Continuous"
 						},
 						{
 							"value": "3",
-							"label": "Clothes Drying"
+							"label": "Dry Clothes"
 						}
 					]
 				},
@@ -80,21 +80,23 @@
 						"parameterType": "NUMBER"
 					}
 				],
+				"category": "fan",
 				"tags": [
 					"Control",
 					"Mode"
 				],
-				"readmeComment": "Value mapping `[\"1\"\u003d\"Auto\",\"2\"\u003d\"Smart\",\"3\"\u003d\"Clothes Drying\"]`"
+				"readmeComment": "Value mapping `[\"1\"\u003d\"Target Humidity\",\"2\"\u003d\"Continuous\",\"3\"\u003d\"Dry Clothes\"]`"
 			},
 			{
 				"property": "target-humidity",
 				"siid": 2,
 				"piid": 5,
-				"friendlyName": "Dehumidifier - Target Humidity",
+				"friendlyName": "Target Humidity",
 				"channel": "target_humidity",
 				"type": "Number:Dimensionless",
 				"unit": "percentage",
 				"stateDescription": {
+					"pattern": "%.0f %%",
 					"options": [
 						{
 							"value": "30",
@@ -136,15 +138,15 @@
 				"property": "relative-humidity",
 				"siid": 3,
 				"piid": 1,
-				"friendlyName": "Environment - Relative Humidity",
-				"channel": "relative_humidity",
+				"friendlyName": "Humidity",
+				"channel": "humidity",
 				"type": "Number:Dimensionless",
 				"unit": "percentage",
 				"stateDescription": {
 					"minimum": 0,
 					"maximum": 100,
 					"step": 1,
-					"pattern": "%.0f %unit%",
+					"pattern": "%.0f %%",
 					"readOnly": true
 				},
 				"refresh": true,
@@ -159,14 +161,13 @@
 				"property": "temperature",
 				"siid": 3,
 				"piid": 7,
-				"friendlyName": "Environment - Temperature",
+				"friendlyName": "Temperature",
 				"channel": "temperature",
 				"type": "Number:Temperature",
 				"unit": "celsius",
 				"stateDescription": {
 					"minimum": -30,
 					"maximum": 100,
-					"step": 1,
 					"pattern": "%.0f %unit%",
 					"readOnly": true
 				},
@@ -182,8 +183,8 @@
 				"property": "alarm",
 				"siid": 4,
 				"piid": 1,
-				"friendlyName": "Alarm - Beep Sound",
-				"channel": "alarm",
+				"friendlyName": "Notification Sound",
+				"channel": "buzzer",
 				"type": "Switch",
 				"refresh": true,
 				"actions": [
@@ -199,11 +200,11 @@
 				]
 			},
 			{
-				"property": "on1",
+				"property": "indicator-light",
 				"siid": 5,
 				"piid": 1,
-				"friendlyName": "Indicator Light - Power",
-				"channel": "on1",
+				"friendlyName": "Indicator Light",
+				"channel": "led",
 				"type": "Switch",
 				"refresh": true,
 				"actions": [
@@ -223,7 +224,7 @@
 				"siid": 6,
 				"piid": 1,
 				"friendlyName": "Child Lock",
-				"channel": "physical_controls_locked",
+				"channel": "child_lock",
 				"type": "Switch",
 				"refresh": true,
 				"actions": [
@@ -242,14 +243,13 @@
 				"property": "coil-temp",
 				"siid": 7,
 				"piid": 1,
-				"friendlyName": "Status - Coil Temperature",
-				"channel": "coil_temp",
+				"friendlyName": "Coil Temperature",
+				"channel": "coil_temperature",
 				"type": "Number:Temperature",
 				"unit": "celsius",
 				"stateDescription": {
 					"minimum": -30,
 					"maximum": 200,
-					"step": 1,
 					"pattern": "%.0f %unit%",
 					"readOnly": true
 				},
@@ -265,24 +265,78 @@
 				"property": "compressor-status",
 				"siid": 7,
 				"piid": 2,
-				"friendlyName": "Status - Compressor",
-				"channel": "compressor_status",
+				"friendlyName": "Compressor",
+				"channel": "compressor",
 				"type": "Switch",
 				"stateDescription": {
 					"readOnly": true
 				},
 				"refresh": true,
 				"actions": [],
+				"category": "status",
 				"tags": [
-					"Status"
+					"Status",
+					"Power"
 				]
 			},
 			{
 				"property": "water-tank-status",
 				"siid": 7,
 				"piid": 3,
-				"friendlyName": "Status - Water Tank",
-				"channel": "water_tank_status",
+				"friendlyName": "Water Tank Full",
+				"channel": "water_tank_full",
+				"type": "Switch",
+				"stateDescription": {
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "water",
+				"tags": [
+					"Alarm",
+					"Water"
+				]
+			},
+			{
+				"property": "defrost-status",
+				"siid": 7,
+				"piid": 4,
+				"friendlyName": "Defrosting",
+				"channel": "defrost",
+				"type": "Switch",
+				"stateDescription": {
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "status",
+				"tags": [
+					"Status"
+				]
+			},
+			{
+				"property": "fall-down-status",
+				"siid": 7,
+				"piid": 5,
+				"friendlyName": "Fallen Over",
+				"channel": "fallen_over",
+				"type": "Switch",
+				"stateDescription": {
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "alarm",
+				"tags": [
+					"Alarm"
+				]
+			},
+			{
+				"property": "pump",
+				"siid": 8,
+				"piid": 1,
+				"friendlyName": "Drain Pump",
+				"channel": "pump",
 				"type": "Switch",
 				"stateDescription": {
 					"readOnly": true
@@ -292,65 +346,15 @@
 				"category": "water",
 				"tags": [
 					"Status",
-					"Water"
-				]
-			},
-			{
-				"property": "defrost-status",
-				"siid": 7,
-				"piid": 4,
-				"friendlyName": "Status - Defrosting",
-				"channel": "defrost_status",
-				"type": "Switch",
-				"stateDescription": {
-					"readOnly": true
-				},
-				"refresh": true,
-				"actions": [],
-				"tags": [
-					"Status"
-				]
-			},
-			{
-				"property": "fall-down-status",
-				"siid": 7,
-				"piid": 5,
-				"friendlyName": "Status - Fallen Over",
-				"channel": "fall_down_status",
-				"type": "Switch",
-				"stateDescription": {
-					"readOnly": true
-				},
-				"refresh": true,
-				"actions": [],
-				"tags": [
-					"Alarm"
-				]
-			},
-			{
-				"property": "pump",
-				"siid": 8,
-				"piid": 1,
-				"friendlyName": "Pump - Power",
-				"channel": "pump",
-				"type": "Switch",
-				"refresh": true,
-				"actions": [
-					{
-						"command": "set_properties",
-						"parameterType": "ONOFFBOOL"
-					}
-				],
-				"tags": [
-					"Switch",
 					"Power"
-				]
+				],
+				"readmeComment": "Read only: the app only allows switching the drain pump when the drain pipe is connected"
 			},
 			{
 				"property": "pump-pipe-installed",
 				"siid": 8,
 				"piid": 2,
-				"friendlyName": "Pump - Pump Pipe Installed",
+				"friendlyName": "Drain Pipe Connected",
 				"channel": "pump_pipe_installed",
 				"type": "Switch",
 				"stateDescription": {
@@ -358,6 +362,7 @@
 				},
 				"refresh": true,
 				"actions": [],
+				"category": "water",
 				"tags": [
 					"Status"
 				]
@@ -366,14 +371,15 @@
 				"property": "timer",
 				"siid": 9,
 				"piid": 1,
-				"friendlyName": "Timer - Remaining Time",
+				"friendlyName": "Timer Remaining",
 				"channel": "timer",
-				"type": "Number",
+				"type": "Number:Time",
+				"unit": "minutes",
 				"stateDescription": {
 					"minimum": 0,
 					"maximum": 65535,
 					"step": 1,
-					"pattern": "%.0f",
+					"pattern": "%.0f %unit%",
 					"readOnly": true
 				},
 				"refresh": true,
@@ -388,7 +394,7 @@
 				"property": "timer-setting",
 				"siid": 9,
 				"piid": 2,
-				"friendlyName": "Timer - Timer Setting",
+				"friendlyName": "Off Timer",
 				"channel": "timer_setting",
 				"type": "Number",
 				"stateDescription": {

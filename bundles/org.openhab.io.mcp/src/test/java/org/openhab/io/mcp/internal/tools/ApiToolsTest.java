@@ -208,4 +208,12 @@ class ApiToolsTest {
         assertSuccess(result);
         assertEquals("text/plain", capturedContentType());
     }
+
+    @Test
+    void toolAnnotationsDescribeSideEffects() {
+        ApiTools t = tools();
+        McpTestHelper.assertReadOnlyTool(t.getListApiEndpointsTool());
+        McpTestHelper.assertReadOnlyTool(t.getDescribeApiEndpointTool());
+        McpTestHelper.assertWriteTool(t.getCallApiTool(), true, false);
+    }
 }

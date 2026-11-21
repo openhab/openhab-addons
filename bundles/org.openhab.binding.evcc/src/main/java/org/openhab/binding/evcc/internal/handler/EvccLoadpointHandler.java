@@ -18,8 +18,8 @@ import java.util.Locale;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.evcc.internal.handler.routing.FixedValueExtraction;
 import org.openhab.binding.evcc.internal.handler.routing.HandlerRoute;
-import org.openhab.binding.evcc.internal.handler.routing.JsonPathExtraction;
 import org.openhab.binding.evcc.internal.handler.routing.LoadpointStateTransformer;
 import org.openhab.binding.evcc.internal.handler.routing.MessageRouter;
 import org.openhab.binding.evcc.internal.handler.routing.StateTransformer;
@@ -65,7 +65,9 @@ public class EvccLoadpointHandler extends EvccBaseThingHandler {
             endpoint = String.join("/", handler.getBaseURL(), API_PATH_LOADPOINTS, String.valueOf(index + 1));
             handler.register(this);
             MessageRouter router = handler.getMessageRouter();
-            router.registerRoute(new HandlerRoute(JSON_KEY_LOADPOINTS, new JsonPathExtraction("$[" + index + "]"), this,
+            // evcc reports loadpoint values as "loadpoints.<index>.<field>"; the bridge routes the changed fields of
+            // each loadpoint under "loadpoints.<index>"
+            router.registerRoute(new HandlerRoute(JSON_KEY_LOADPOINTS + "." + index, new FixedValueExtraction(), this,
                     JSON_KEY_LOADPOINTS, stateTransformer));
         });
     }

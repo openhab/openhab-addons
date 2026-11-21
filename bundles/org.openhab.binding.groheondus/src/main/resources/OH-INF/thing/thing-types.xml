@@ -32,14 +32,18 @@
 		<description>A SENSE GUARD device</description>
 		<semantic-equipment-tag>HotWaterFaucet</semantic-equipment-tag>
 		<channels>
-			<channel id="name" typeId="name"/>
 			<channel id="pressure" typeId="pressure"/>
 			<channel id="temperature_guard" typeId="temperature_guard"/>
 			<channel id="waterconsumption" typeId="waterconsumption"/>
 			<channel id="waterconsumption_since_midnight" typeId="waterconsumption_since_midnight"/>
 			<channel id="pause" typeId="pause"/>
 			<channel id="valve_open" typeId="valve_open"/>
+			<channel id="last_update" typeId="last_update"/>
 		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 
 		<representation-property>applianceId</representation-property>
 
@@ -75,12 +79,16 @@
 		<semantic-equipment-tag>Sensor</semantic-equipment-tag>
 
 		<channels>
-			<channel id="name" typeId="name"/>
 			<channel id="humidity" typeId="humidity"/>
 			<channel id="temperature" typeId="temperature"/>
 			<channel id="battery" typeId="system.battery-level"/>
 			<channel id="pause" typeId="pause"/>
+			<channel id="last_update" typeId="last_update"/>
 		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 
 		<representation-property>applianceId</representation-property>
 
@@ -104,11 +112,18 @@
 		</config-description>
 	</thing-type>
 
-	<channel-type id="name">
-		<item-type>String</item-type>
-		<label>Appliance Name</label>
-		<description>The name of the appliance</description>
+	<channel-type id="last_update">
+		<item-type>DateTime</item-type>
+		<label>Last Update</label>
+		<description>The time the device last transmitted data to the GROHE ONDUS cloud.</description>
+		<category>Time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
+		<state readOnly="true"/>
 	</channel-type>
+
 	<channel-type id="pressure">
 		<item-type>Number:Pressure</item-type>
 		<label>Pressure</label>
@@ -174,7 +189,7 @@
 		<config-description>
 			<parameter name="timeframe" type="integer" min="1" max="90" step="1" required="true">
 				<label>Timeframe</label>
-				<description>The timeframe in days to get the water consumption of</description>
+				<description>Number of full days before today to include in the water consumption, in addition to today</description>
 				<default>1</default>
 			</parameter>
 		</config-description>

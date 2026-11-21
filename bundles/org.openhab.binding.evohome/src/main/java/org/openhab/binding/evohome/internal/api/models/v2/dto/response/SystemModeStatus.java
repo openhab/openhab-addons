@@ -12,12 +12,15 @@
  */
 package org.openhab.binding.evohome.internal.api.models.v2.dto.response;
 
+import org.eclipse.jdt.annotation.Nullable;
+
 import com.google.gson.annotations.SerializedName;
 
 /**
  * Response model for the system mode status
  *
  * @author Jasper van Zuijlen - Initial contribution
+ * @author Kovacs Istvan - System mode permanence and expiry
  *
  */
 public class SystemModeStatus {
@@ -26,9 +29,20 @@ public class SystemModeStatus {
     private String mode;
 
     @SerializedName("isPermanent")
-    private boolean isPermanent;
+    private Boolean isPermanent;
+
+    @SerializedName("timeUntil")
+    private String timeUntil;
 
     public String getMode() {
         return mode;
+    }
+
+    public @Nullable Boolean getIsPermanent() {
+        return isPermanent;
+    }
+
+    public @Nullable String getTimeUntil() {
+        return timeUntil;
     }
 }
