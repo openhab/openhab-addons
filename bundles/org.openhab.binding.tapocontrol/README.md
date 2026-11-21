@@ -34,7 +34,11 @@ The following Tapo-Devices are supported. For precise channel-description look a
 | IP Camera (Wi-Fi)                  | camera    | Wi-Fi IP Camera                               |
 
 The Kasa devices HS200, HS220, EP10, EP40 and KP405 are controlled with the legacy Kasa protocol on TCP port 9999 (`protocol="KASA"`), which UDP discovery selects automatically.
-Newer TP-Link security firmware (for example EP10 1.1.1, EP40 1.1.0 and KP405 1.1.0) secures this local protocol, and devices running it may no longer accept `KASA` commands.
+Newer TP-Link security firmware (for example EP10 1.1.1, EP40 1.1.0 and KP405 1.1.0) closes port 9999.
+Devices running it use the same Kasa commands over an authenticated KLAP connection (`protocol="KASA_KLAP"`), which UDP discovery selects when the device reports an `IOT.*` device type with KLAP encryption.
+The login uses the bridge's TP-Link account.
+Some devices set up in the Kasa app hold a key made from the account e-mail and the fixed password `kasaSetup` instead of the account password, so the binding tries that combination when the account password is rejected.
+After a firmware update, change the Thing's protocol from `KASA` to `KASA_KLAP` or discover the device again.
 
 ## Prerequisites
 
@@ -129,13 +133,13 @@ RF-based things need a SmartHub (Wi-Fi device) to operate.
 
 The Things have the following configuration parameters:
 
-| Parameter          | Description                                                           | Things supporting parameter |
-|--------------------|-----------------------------------------------------------------------|-----------------------------|
-| ipAddress          | IP address of the device.                                             | Any Wi-Fi device            |
-| pollingInterval    | [optional] Refresh interval in seconds. The default is 30 seconds     | Any Wi-Fi device            |
-| httpPort           | [optional] HTTP communication port. Default is 80                     | Any Wi-Fi device            |
-| protocol           | [optional] Used communication protocol (AES/KLAP/KASA/'') Default 'AES' | Any Wi-Fi device          |
-| backgroundDiscovery| [optional] RF devices will be discovered after every polling request  | SmartHub                    |
+| Parameter           | Description                                                                       | Things supporting parameter |
+|---------------------|-----------------------------------------------------------------------------------|-----------------------------|
+| ipAddress           | IP address of the device.                                                         | Any Wi-Fi device            |
+| pollingInterval     | [optional] Refresh interval in seconds. The default is 30 seconds                 | Any Wi-Fi device            |
+| httpPort            | [optional] HTTP communication port. Default is 80                                 | Any Wi-Fi device            |
+| protocol            | [optional] Used communication protocol (AES/KLAP/KASA/KASA_KLAP/'') Default 'AES' | Any Wi-Fi device            |
+| backgroundDiscovery | [optional] RF devices will be discovered after every polling request              | SmartHub                    |
 
 ## Channels
 

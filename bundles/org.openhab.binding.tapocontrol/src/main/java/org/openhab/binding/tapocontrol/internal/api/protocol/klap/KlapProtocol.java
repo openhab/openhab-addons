@@ -20,6 +20,7 @@ import static org.openhab.binding.tapocontrol.internal.helpers.utils.JsonUtils.i
 
 import java.io.IOException;
 import java.util.Objects;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -45,6 +46,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Christian Wild - Initial contribution
  * @author David Henshaw - Improvements to handle tapo device error states in send
+ * @author Christopher Smith - Add raw payload exchange for the Kasa IOT protocol
  */
 @NonNullByDefault
 public class KlapProtocol implements org.openhab.binding.tapocontrol.internal.api.protocol.TapoProtocolInterface {
@@ -243,6 +245,49 @@ public class KlapProtocol implements org.openhab.binding.tapocontrol.internal.ap
                 }
             }
         } /* end of loop */
+    }
+
+    /**
+     * Sends an already serialized payload through the KLAP session and returns the decrypted response.
+     * Used by protocols that carry their own payload format over KLAP, such as the Kasa IOT protocol.
+     * The session is re-established once with the stored credentials if the device rejects it.
+     *
+     * @param payload plain request payload
+     * @return decrypted response payload
+     */
+    public synchronized String exchange(String payload) throws TapoErrorHandler {
+        for (int attempt = 1; attempt <= 2; attempt++) {
+            if (attempt > 1 || !isLoggedIn()) {
+                session.reset();
+                if (!session.login()) {
+                    throw new TapoErrorHandler(ERR_BINDING_LOGIN);
+                }
+            }
+            try {
+                byte[] encodedBytes = session.encryptRequest(payload);
+                Integer ivSequence = session.getIvSequence();
+                Request httpRequest = setHeaders(httpDelegator.getHttpClient().newRequest(getUrl())
+                        .method(HttpMethod.POST).param("seq", ivSequence.toString()));
+                ContentResponse response = httpRequest.content(new BytesContentProvider(encodedBytes))
+                        .timeout(TAPO_HTTP_TIMEOUT_MS, TimeUnit.MILLISECONDS).send();
+                if (response.getStatus() == 200) {
+                    return session.decryptResponse(response.getContent(), ivSequence);
+                }
+                if (response.getStatus() != 403) {
+                    throw new TapoErrorHandler(ERR_BINDING_HTTP_RESPONSE, String.valueOf(response.getStatus()));
+                }
+                logger.trace("({}) KLAP session rejected, logging in again", uid);
+            } catch (TimeoutException e) {
+                throw new TapoErrorHandler(ERR_BINDING_CONNECT_TIMEOUT, e.getMessage());
+            } catch (ExecutionException e) {
+                session.reset();
+                throw new TapoErrorHandler(ERR_BINDING_SEND_REQUEST, e.getMessage());
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                throw new TapoErrorHandler(ERR_BINDING_SEND_REQUEST, e.getMessage());
+            }
+        }
+        throw new TapoErrorHandler(ERR_BINDING_HTTP_RESPONSE, "403");
     }
 
     /**

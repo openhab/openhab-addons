@@ -269,7 +269,7 @@ public class TapoDiscoveryService extends AbstractDiscoveryService implements Th
         if (device.ip().length() >= 7) {
             properties.put(TapoDeviceConfiguration.CONFIG_DEVICE_IP, device.ip());
             properties.put(TapoDeviceConfiguration.CONFIG_HTTP_PORT, device.encryptionSchema().httpPort());
-            properties.put(TapoDeviceConfiguration.CONFIG_PROTOCOL, device.encryptionSchema().encryptType());
+            properties.put(TapoDeviceConfiguration.CONFIG_PROTOCOL, device.protocol());
         }
 
         logger.debug("device {} discovered with mac {}", deviceModel, deviceMAC);
