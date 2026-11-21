@@ -73,13 +73,16 @@ import org.openhab.binding.netatmo.internal.config.ConfigurationLevel;
 import org.openhab.binding.netatmo.internal.deserialization.AccessTokenResponseDeserializer;
 import org.openhab.binding.netatmo.internal.deserialization.NADeserializer;
 import org.openhab.binding.netatmo.internal.discovery.NetatmoDiscoveryService;
+import org.openhab.binding.netatmo.internal.servlet.CloudWebhookServlet;
 import org.openhab.binding.netatmo.internal.servlet.GrantServlet;
+import org.openhab.binding.netatmo.internal.servlet.LocalWebhookServlet;
 import org.openhab.binding.netatmo.internal.servlet.WebhookServlet;
 import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
 import org.openhab.core.auth.client.oauth2.OAuthClientService;
 import org.openhab.core.auth.client.oauth2.OAuthException;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
 import org.openhab.core.auth.client.oauth2.OAuthResponseException;
+import org.openhab.core.io.rest.WebhookService;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.Bridge;
@@ -116,6 +119,7 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(ApiBridgeHandler.class);
     private final AuthenticationApi connectApi = new AuthenticationApi(this);
+    private final WebhookApi webhookApi = new WebhookApi(this);
     private final Map<Class<? extends RestManager>, RestManager> managers = new HashMap<>();
     private final Deque<Instant> requestsTimestamps = new ArrayDeque<>(200);
     private final Deque<Long> requestsWindowInNanos = new ArrayDeque<>(MAX_REQUESTS_PER_SECOND);
@@ -131,6 +135,7 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
     private @Nullable ScheduledFuture<?> connectJob;
     private @Nullable WebhookServlet webhookServlet;
     private @Nullable GrantServlet grantServlet;
+    private @Nullable WebhookService webhookService;
 
     public ApiBridgeHandler(Bridge bridge, HttpClient httpClient, NADeserializer deserializer,
             BindingConfiguration configuration, HttpService httpService, OAuthFactory oAuthFactory) {
@@ -174,19 +179,10 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
         }
 
         logger.debug("Connected to Netatmo API.");
-        freeConnectJob();
 
-        ApiHandlerConfiguration configuration = getConfiguration();
-        hookState(false);
-        if (!configuration.webHookUrl.isBlank() && getRestManager(WebhookApi.class) instanceof WebhookApi api) {
-            WebhookServlet servlet = webhookServlet;
-            if (servlet != null) {
-                servlet.dispose();
-            }
-            servlet = webhookServlet = new WebhookServlet(this, httpService, deserializer, api,
-                    configuration.webHookUrl, configuration.webHookPostfix);
-            servlet.startListening();
-        }
+        freeConnectJob();
+        freeWebhookServlet();
+        checkStartWebhook();
 
         updateStatus(ThingStatus.ONLINE);
     }
@@ -278,12 +274,7 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
     public void dispose() {
         logger.debug("Shutting down Netatmo API bridge handler.");
 
-        WebhookServlet webHookServlet = this.webhookServlet;
-        if (webHookServlet != null) {
-            webHookServlet.dispose();
-        }
-        this.webhookServlet = null;
-
+        freeWebhookServlet();
         freeGrantServlet();
 
         connectApi.dispose();
@@ -304,7 +295,7 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command == RefreshType.REFRESH && CHANNEL_HOOK_SET.equals(channelUID.getIdWithoutGroup())) {
             updateState(hookSetChannelUID,
-                    webhookServlet != null ? OnOffType.from(webhookServlet.hookSet()) : OnOffType.OFF);
+                    webhookServlet != null ? OnOffType.from(webhookServlet.hookInstalled()) : OnOffType.OFF);
         }
     }
 
@@ -582,5 +573,44 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
         }
 
         updateState(hookSetChannelUID, OnOffType.from(hooked));
+    }
+
+    public void webhookServiceAvailable(@Nullable WebhookService webhookService) {
+        this.webhookService = webhookService;
+        checkStartWebhook();
+    }
+
+    public void webhookServiceGone() {
+        webhookService = null;
+        if (webhookServlet instanceof CloudWebhookServlet) {
+            freeWebhookServlet();
+        }
+    }
+
+    private void checkStartWebhook() {
+        ApiHandlerConfiguration configuration = getConfiguration();
+        WebhookServlet servlet = null;
+        if (configuration.useCloudWebhook) {
+            if (webhookService instanceof WebhookService service) {
+                servlet = new CloudWebhookServlet(this, httpService, deserializer, webhookApi, service, scheduler);
+            } else {
+                logger.info("Netatmo webhook will be set once openHAB Cloud WebhookService is available");
+            }
+        } else if (configuration.getWebhookUrlPattern() instanceof String urlPattern) {
+            servlet = new LocalWebhookServlet(this, httpService, deserializer, webhookApi, urlPattern);
+        }
+
+        if (servlet != null) {
+            this.webhookServlet = servlet;
+            servlet.startListening();
+        }
+    }
+
+    private void freeWebhookServlet() {
+        hookState(false);
+        if (webhookServlet instanceof WebhookServlet servlet) {
+            servlet.dispose();
+        }
+        this.webhookServlet = null;
     }
 }

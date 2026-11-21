@@ -15,6 +15,7 @@ package org.openhab.binding.netatmo.internal.servlet;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -23,9 +24,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.HttpMethod;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.UriBuilder;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.NetatmoException;
 import org.openhab.binding.netatmo.internal.api.WebhookApi;
 import org.openhab.binding.netatmo.internal.api.data.EventType;
@@ -45,21 +46,20 @@ import org.slf4j.LoggerFactory;
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
-public class WebhookServlet extends NetatmoServlet {
+public abstract class WebhookServlet extends NetatmoServlet {
     private static final long serialVersionUID = -354583910860541214L;
 
     private final Map<String, Capability> dataListeners = new ConcurrentHashMap<>();
     private final Logger logger = LoggerFactory.getLogger(WebhookServlet.class);
     private final WebhookApi api;
     private final NADeserializer deserializer;
-    private final URI uri;
+    private @Nullable URI currentUri;
 
     private boolean hooked;
 
-    public WebhookServlet(ApiBridgeHandler handler, HttpService httpService, NADeserializer deserializer,
-            WebhookApi api, String webHookUrl, String webHookPostfix) {
+    protected WebhookServlet(ApiBridgeHandler handler, HttpService httpService, NADeserializer deserializer,
+            WebhookApi api) {
         super(handler, httpService, "webhook");
-        this.uri = UriBuilder.fromUri(webHookUrl).path(getPath() + webHookPostfix).build();
         this.deserializer = deserializer;
         this.api = api;
     }
@@ -67,41 +67,33 @@ public class WebhookServlet extends NetatmoServlet {
     @Override
     public void startListening() {
         super.startListening();
-        try {
-            logger.debug("Getting list of active webhooks");
-            List<Webhook> currentHooks = api.getWebhooks();
-            if (currentHooks.stream().anyMatch(url -> url.getUri().equals(uri))) {
-                logger.info("The webhook {} is already present", uri);
-                setHooked(true);
-            } else {
-                logger.info("Setting up the webhook {}", uri);
-                setHooked(api.appendWebhook(uri));
-            }
-        } catch (NetatmoException e) {
-            if (ServiceError.WEBHOOK_LIMIT_REACHED.equals(e.getStatusCode())) {
-                logger.debug("Another uri is already present, force the new one");
-                try {
-                    setHooked(api.setWebhooks(List.of(uri)));
-                } catch (NetatmoException e1) {
-                    logger.warn("Error setting webhook: {}", e1.getMessage());
-                }
-            } else {
-                logger.warn("Error setting webhook: {}", e.getMessage());
-            }
-        }
+        registerEndpoint();
+    }
+
+    protected abstract void registerEndpoint();
+
+    protected abstract String publishedPath();
+
+    protected void disposeEndpoint() {
     }
 
     @Override
-    public void dispose() {
+    public synchronized void dispose() {
+        disposeEndpoint();
         if (hooked) {
             logger.info("Releasing webhook");
             try {
                 List<Webhook> currentHooks = api.getWebhooks();
-                currentHooks.removeIf(url -> url.getUri().equals(uri));
+                URI uri = currentUri;
+                if (uri != null) {
+                    currentHooks.removeIf(url -> url.getUri().equals(uri));
+                }
                 if (currentHooks.isEmpty()) {
                     api.dropWebhook();
                 } else {
-                    api.setWebhooks(currentHooks.stream().map(wh -> wh.getUri()).toList());
+                    List<URI> otherUris = new ArrayList<>();
+                    currentHooks.forEach(hook -> otherUris.add(hook.getUri()));
+                    api.setWebhooks(otherUris);
                 }
             } catch (NetatmoException e) {
                 logger.warn("Error releasing webhook: {}", e.getMessage());
@@ -110,6 +102,44 @@ public class WebhookServlet extends NetatmoServlet {
         }
         dataListeners.clear();
         super.dispose();
+    }
+
+    protected final boolean registerWebhook(URI uri) {
+        try {
+            logger.debug("Getting list of active webhooks");
+            List<Webhook> currentHooks = api.getWebhooks();
+            if (currentHooks.stream().anyMatch(url -> url.getUri().equals(uri))) {
+                logger.info("The webhook {} is already present", uri);
+                currentUri = uri;
+                setHooked(true);
+                return true;
+            } else {
+                logger.info("Setting up the webhook {}", uri);
+                boolean registered = api.appendWebhook(uri);
+                if (registered) {
+                    currentUri = uri;
+                }
+                setHooked(registered);
+                return registered;
+            }
+        } catch (NetatmoException e) {
+            if (ServiceError.WEBHOOK_LIMIT_REACHED.equals(e.getStatusCode())) {
+                logger.debug("Another uri is already present, force the new one");
+                try {
+                    boolean registered = api.setWebhooks(List.of(uri));
+                    if (registered) {
+                        currentUri = uri;
+                    }
+                    setHooked(registered);
+                    return registered;
+                } catch (NetatmoException e1) {
+                    logger.warn("Error setting webhook: {}", e1.getMessage());
+                }
+            } else {
+                logger.warn("Error setting webhook: {}", e.getMessage());
+            }
+        }
+        return false;
     }
 
     @Override
@@ -168,11 +198,13 @@ public class WebhookServlet extends NetatmoServlet {
     }
 
     private void setHooked(boolean hookSet) {
-        hooked = hookSet;
-        handler.hookState(hooked);
+        if (hooked != hookSet) {
+            hooked = hookSet;
+            handler.hookState(hooked);
+        }
     }
 
-    public boolean hookSet() {
+    public boolean hookInstalled() {
         return hooked;
     }
 }

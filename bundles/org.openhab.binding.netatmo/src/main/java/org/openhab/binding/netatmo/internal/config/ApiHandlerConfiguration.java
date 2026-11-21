@@ -14,7 +14,11 @@ package org.openhab.binding.netatmo.internal.config;
 
 import java.time.Duration;
 
+import javax.ws.rs.core.UriBuilder;
+import javax.ws.rs.core.UriBuilderException;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * The {@link ApiHandlerConfiguration} is responsible for holding configuration
@@ -28,8 +32,9 @@ public class ApiHandlerConfiguration {
 
     public String clientId = "";
     public String clientSecret = "";
-    public String webHookUrl = "";
-    public String webHookPostfix = "";
+    private String webHookUrl = "";
+    private String webHookPostfix = "";
+    public boolean useCloudWebhook;
     private int reconnectInterval = 300;
 
     public ConfigurationLevel check() {
@@ -37,11 +42,21 @@ public class ApiHandlerConfiguration {
             return ConfigurationLevel.EMPTY_CLIENT_ID;
         } else if (clientSecret.isBlank()) {
             return ConfigurationLevel.EMPTY_CLIENT_SECRET;
+        } else if (!webHookUrl.isBlank()) {
+            try {
+                UriBuilder.fromPath(webHookUrl);
+            } catch (IllegalArgumentException | UriBuilderException e) {
+                return ConfigurationLevel.WEBHOOK_URL_SYNTAX_ERROR;
+            }
         }
         return ConfigurationLevel.COMPLETED;
     }
 
     public Duration getReconnectInterval() {
         return Duration.ofSeconds(reconnectInterval);
+    }
+
+    public @Nullable String getWebhookUrlPattern() {
+        return webHookUrl.isBlank() ? null : webHookUrl + "%s" + webHookPostfix;
     }
 }

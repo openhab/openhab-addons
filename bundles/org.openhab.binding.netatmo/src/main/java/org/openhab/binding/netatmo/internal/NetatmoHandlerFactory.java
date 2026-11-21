@@ -14,6 +14,7 @@ package org.openhab.binding.netatmo.internal;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -47,6 +48,7 @@ import org.openhab.binding.netatmo.internal.providers.NetatmoDescriptionProvider
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
 import org.openhab.core.config.core.ConfigParser;
 import org.openhab.core.io.net.http.HttpClientFactory;
+import org.openhab.core.io.rest.WebhookService;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
@@ -58,6 +60,8 @@ import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Modified;
 import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
+import org.osgi.service.component.annotations.ReferencePolicy;
 import org.osgi.service.http.HttpService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -79,6 +83,8 @@ public class NetatmoHandlerFactory extends BaseThingHandlerFactory {
     private final HttpClient httpClient;
     private final HttpService httpService;
     private final OAuthFactory oAuthFactory;
+    private volatile @Nullable WebhookService webhookService;
+    private @Nullable ApiBridgeHandler apiBridge;
 
     @Activate
     public NetatmoHandlerFactory(final @Reference NetatmoDescriptionProvider stateDescriptionProvider,
@@ -100,6 +106,23 @@ public class NetatmoHandlerFactory extends BaseThingHandlerFactory {
         }
     }
 
+    @Reference(cardinality = ReferenceCardinality.OPTIONAL, policy = ReferencePolicy.DYNAMIC)
+    void setWebhookService(WebhookService service) {
+        webhookService = service;
+        if (apiBridge != null) {
+            apiBridge.webhookServiceAvailable(webhookService);
+        }
+    }
+
+    void unsetWebhookService(WebhookService service) {
+        if (Objects.equals(webhookService, service)) {
+            webhookService = null;
+            if (apiBridge instanceof ApiBridgeHandler account) {
+                account.webhookServiceGone();
+            }
+        }
+    }
+
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
         return ModuleType.AS_SET.stream().anyMatch(mt -> mt.thingTypeUID.equals(thingTypeUID));
@@ -114,8 +137,13 @@ public class NetatmoHandlerFactory extends BaseThingHandlerFactory {
 
     private BaseThingHandler buildHandler(Thing thing, ModuleType moduleType) {
         if (ModuleType.ACCOUNT.equals(moduleType)) {
-            return new ApiBridgeHandler((Bridge) thing, httpClient, deserializer, configuration, httpService,
-                    oAuthFactory);
+            ApiBridgeHandler account = new ApiBridgeHandler((Bridge) thing, httpClient, deserializer, configuration,
+                    httpService, oAuthFactory);
+            if (webhookService != null) {
+                account.webhookServiceAvailable(webhookService);
+            }
+            this.apiBridge = account;
+            return account;
         }
         CommonInterface handler = moduleType.isABridge() ? new DeviceHandler((Bridge) thing) : new ModuleHandler(thing);
 
