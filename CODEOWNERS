@@ -439,6 +439,7 @@
 /bundles/org.openhab.binding.teslascope/ @psmedley
 /bundles/org.openhab.binding.threedprinter/ @computergeek1507
 /bundles/org.openhab.binding.tibber/ @kjoglum @weymann
+/bundles/org.openhab.binding.tibberpulselocal/ @maihacke
 /bundles/org.openhab.binding.tivo/ @mlobstein
 /bundles/org.openhab.binding.touchwand/ @roieg
 /bundles/org.openhab.binding.tplinkrouter/ @olivierkeke
