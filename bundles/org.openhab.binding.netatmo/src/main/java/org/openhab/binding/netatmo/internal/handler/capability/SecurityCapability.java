@@ -72,8 +72,25 @@ class SecurityCapability extends CacheCapability<SecurityApi> {
     }
 
     @Override
-    protected void updateHomeData(HomeData homeData) {
-        if (homeData instanceof HomeData.Security securityData) {
+    protected void internalSetNewData(Object newData) {
+        super.internalSetNewData(newData);
+        if (newData instanceof HomeEvent homeEvent) {
+            addEventIfKnownObject(homeEvent, homeEvent.getPersonId());
+            addEventIfKnownObject(homeEvent, homeEvent.getCameraId());
+        } else if (newData instanceof HomeStatus securityStatus) {
+            NAObjectMap<HomeStatusPerson> persons = securityStatus.getPersons();
+            NAObjectMap<HomeStatusModule> modules = securityStatus.getModules();
+            handler.getActiveChildren(FeatureArea.SECURITY).forEach(childHandler -> {
+                String childId = childHandler.getId();
+                persons.getOpt(childId).ifPresentOrElse(personData -> childHandler.setNewData(personData), () -> {
+                    modules.getOpt(childId).ifPresent(childData -> {
+                        childHandler.setNewData(childData);
+                        modules.values().stream().filter(module -> childId.equals(module.getBridge()))
+                                .forEach(bridgedModule -> childHandler.setNewData(bridgedModule));
+                    });
+                });
+            });
+        } else if (newData instanceof HomeData homeData && homeData instanceof HomeData.Security securityData) {
             persons = securityData.getPersons();
             modules = homeData.getModules();
             handler.getActiveChildren(FeatureArea.SECURITY).forEach(childHandler -> {
@@ -87,28 +104,6 @@ class SecurityCapability extends CacheCapability<SecurityApi> {
                         });
             });
         }
-    }
-
-    @Override
-    protected void updateHomeStatus(HomeStatus securityStatus) {
-        NAObjectMap<HomeStatusPerson> persons = securityStatus.getPersons();
-        NAObjectMap<HomeStatusModule> modules = securityStatus.getModules();
-        handler.getActiveChildren(FeatureArea.SECURITY).forEach(childHandler -> {
-            String childId = childHandler.getId();
-            persons.getOpt(childId).ifPresentOrElse(personData -> childHandler.setNewData(personData), () -> {
-                modules.getOpt(childId).ifPresent(childData -> {
-                    childHandler.setNewData(childData);
-                    modules.values().stream().filter(module -> childId.equals(module.getBridge()))
-                            .forEach(bridgedModule -> childHandler.setNewData(bridgedModule));
-                });
-            });
-        });
-    }
-
-    @Override
-    protected void updateHomeEvent(HomeEvent homeEvent) {
-        addEventIfKnownObject(homeEvent, homeEvent.getPersonId());
-        addEventIfKnownObject(homeEvent, homeEvent.getCameraId());
     }
 
     private void addEventIfKnownObject(HomeEvent homeEvent, @Nullable String objectId) {

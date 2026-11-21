@@ -23,7 +23,6 @@ import org.openhab.binding.netatmo.internal.api.data.ModuleType;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.VideoStatus;
 import org.openhab.binding.netatmo.internal.api.dto.Event;
 import org.openhab.binding.netatmo.internal.api.dto.HomeEvent;
-import org.openhab.binding.netatmo.internal.api.dto.NAObject;
 import org.openhab.binding.netatmo.internal.utils.ChannelTypeUtils;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
@@ -54,7 +53,7 @@ public class EventChannelHelper extends ChannelHelper {
     }
 
     @Override
-    public void setNewData(@Nullable NAObject data) {
+    public void setNewData(Object data) {
         if (data instanceof Event event && !event.getEventType().validFor(moduleType)) {
             return;
         }

@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.netatmo.internal.handler.channelhelper;
 
+import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
+import static org.openhab.binding.netatmo.internal.utils.ChannelTypeUtils.*;
+
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -21,8 +24,11 @@ import org.openhab.binding.netatmo.internal.api.dto.Event;
 import org.openhab.binding.netatmo.internal.api.dto.HomeEvent;
 import org.openhab.binding.netatmo.internal.api.dto.NAObject;
 import org.openhab.binding.netatmo.internal.api.dto.NAThing;
+import org.openhab.binding.netatmo.internal.api.dto.WebhookEvent;
+import org.openhab.binding.netatmo.internal.utils.ChannelTypeUtils;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.types.State;
+import org.openhab.core.types.UnDefType;
 
 /**
  * The {@link ChannelHelper} is the base class for all channel helpers.
@@ -34,54 +40,46 @@ import org.openhab.core.types.State;
 public abstract class ChannelHelper {
     private final Set<String> channelGroups;
 
-    private @Nullable NAObject data;
+    private @Nullable Object data;
 
     public ChannelHelper(Set<String> providedGroups) {
         channelGroups = providedGroups;
     }
 
-    public void setNewData(@Nullable NAObject data) {
+    public void setNewData(Object data) {
         this.data = data;
     }
 
     public final @Nullable State getChannelState(String channelId, @Nullable String groupId, Configuration config) {
-        State result = null;
         if (channelGroups.isEmpty() || (groupId != null && channelGroups.contains(groupId))) {
-            NAObject localData = data;
-            if (localData instanceof HomeEvent homeEvent) {
-                result = internalGetHomeEvent(channelId, groupId, homeEvent);
-                if (result != null) {
-                    return result;
+            if (data instanceof HomeEvent homeEvent
+                    && internalGetHomeEvent(channelId, groupId, homeEvent) instanceof State state) {
+                return state;
+            }
+
+            if (data instanceof WebhookEvent webhookEvent
+                    && internalGetWebhookEvent(channelId, groupId, webhookEvent) instanceof State state) {
+                return state;
+            }
+
+            if (data instanceof Event event && internalGetEvent(channelId, event) instanceof State state) {
+                return state;
+            }
+            if (data instanceof NAThing naThing) {
+                if (internalGetProperty(channelId, naThing, config) instanceof State state) {
+                    return state;
+                }
+                if (naThing.getDashboardData() instanceof Dashboard dashboard
+                        && internalGetDashboard(channelId, dashboard) instanceof State state) {
+                    return state;
                 }
             }
-            if (localData instanceof Event event) {
-                result = internalGetEvent(channelId, event);
-                if (result != null) {
-                    return result;
-                }
+            if (data instanceof NAObject naObject && internalGetObject(channelId, naObject) instanceof State state) {
+                return state;
             }
-            if (localData instanceof NAThing naThing) {
-                result = internalGetProperty(channelId, naThing, config);
-                if (result != null) {
-                    return result;
-                }
-                Dashboard dashboard = naThing.getDashboardData();
-                if (dashboard != null) {
-                    result = internalGetDashboard(channelId, dashboard);
-                    if (result != null) {
-                        return result;
-                    }
-                }
-            }
-            if (localData != null) {
-                result = internalGetObject(channelId, localData);
-                if (result != null) {
-                    return result;
-                }
-            }
-            result = internalGetOther(channelId);
+            return internalGetOther(channelId);
         }
-        return result;
+        return null;
     }
 
     protected @Nullable State internalGetObject(String channelId, NAObject localData) {
@@ -106,5 +104,30 @@ public abstract class ChannelHelper {
 
     protected @Nullable State internalGetHomeEvent(String channelId, @Nullable String groupId, HomeEvent event) {
         return null;
+    }
+
+    protected @Nullable State internalGetWebhookEvent(String channelId, @Nullable String groupId, WebhookEvent event) {
+        if (GROUP_LAST_EVENT.equals(groupId) || GROUP_SUB_EVENT.equals(groupId)) {
+            switch (channelId) {
+                case CHANNEL_EVENT_TYPE:
+                    return toStringType(event.getEventType());
+                case CHANNEL_EVENT_SUBTYPE:
+                    return event.getSubTypeDescription().map(ChannelTypeUtils::toStringType).orElse(UnDefType.NULL);
+                case CHANNEL_EVENT_MESSAGE:
+                    return toStringType(event.getName());
+                case CHANNEL_EVENT_TIME:
+                    return toDateTimeType(event.getTime());
+                case CHANNEL_EVENT_SNAPSHOT:
+                    return pictureIfUrlPresent(event.getSnapshotUrl(), true);
+            }
+        }
+        return null;
+    }
+
+    protected State pictureIfUrlPresent(@Nullable String url, boolean toRaw) {
+        if (url == null || url.isBlank()) {
+            return UnDefType.NULL;
+        }
+        return toRaw ? toRawType(url) : toStringType(url);
     }
 }
