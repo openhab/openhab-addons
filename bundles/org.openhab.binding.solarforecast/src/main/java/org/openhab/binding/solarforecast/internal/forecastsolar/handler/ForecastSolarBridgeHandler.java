@@ -114,6 +114,8 @@ public class ForecastSolarBridgeHandler extends BaseBridgeHandler implements Sol
         updateConfiguration(editConfig);
         configuration = getConfigAs(ForecastSolarBridgeConfiguration.class);
 
+        // planes stay attached while the site is reinitialized, their forecasts may rely on a changed site config
+        sequentialScheduler.execute(() -> planes.forEach(ForecastSolarPlaneHandler::resetForecast));
         updateStatus(ThingStatus.UNKNOWN);
         refreshJob = sequentialScheduler.scheduleWithFixedDelay(this::updateData, 0, REFRESH_ACTUAL_INTERVAL,
                 TimeUnit.MINUTES);

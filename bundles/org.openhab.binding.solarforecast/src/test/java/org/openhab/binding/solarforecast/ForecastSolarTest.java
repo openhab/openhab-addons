@@ -593,6 +593,51 @@ class ForecastSolarTest {
                 fsPlaneHandler1.getURL(), "Full URL");
     }
 
+    @Test
+    void testForecastResetOnPlaneConfigChange() {
+        ForecastSolarBridgeMock fsBridgeHandler = ForecastSolarMockFactory.createBridgeHandler();
+        ForecastSolarPlaneMock fsPlaneHandler = ForecastSolarMockFactory.createPlaneHandler(fsBridgeHandler, "plane1",
+                "src/test/resources/forecastsolar/result.json");
+        assertFalse(fsPlaneHandler.getForecast().isExpired(), "Forecast valid before config change");
+
+        Configuration planeConfig = new Configuration();
+        planeConfig.put("declination", "30");
+        planeConfig.put("azimuth", "-90");
+        planeConfig.put("kwp", "5");
+        newPlaneConfig(fsPlaneHandler, planeConfig);
+        assertTrue(waitForExpiredForecast(fsPlaneHandler), "Forecast of old plane config discarded");
+    }
+
+    @Test
+    void testForecastResetOnSiteConfigChange() {
+        ForecastSolarBridgeMock fsBridgeHandler = ForecastSolarMockFactory.createBridgeHandler();
+        ForecastSolarPlaneMock fsPlaneHandler = ForecastSolarMockFactory.createPlaneHandler(fsBridgeHandler, "plane1",
+                "src/test/resources/forecastsolar/result.json");
+        assertFalse(fsPlaneHandler.getForecast().isExpired(), "Forecast valid before config change");
+
+        Configuration siteConfig = new Configuration();
+        siteConfig.put("location", "1.234,9.876");
+        newSiteConfig(fsBridgeHandler, siteConfig);
+        assertTrue(waitForExpiredForecast(fsPlaneHandler), "Forecast of old site config discarded");
+    }
+
+    private boolean waitForExpiredForecast(ForecastSolarPlaneMock handler) {
+        // reset is queued on the sequential scheduler of the bridge
+        Instant deadline = Instant.now().plusSeconds(10);
+        while (Instant.now().isBefore(deadline)) {
+            if (handler.getForecast().isExpired()) {
+                return true;
+            }
+            try {
+                Thread.sleep(50);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                return false;
+            }
+        }
+        return false;
+    }
+
     private void newSiteConfig(ForecastSolarBridgeMock handler, Configuration config) {
         handler.updateConfiguration(config);
         handler.dispose();

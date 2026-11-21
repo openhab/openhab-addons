@@ -139,7 +139,11 @@ public class ForecastSolarPlaneHandler extends BaseThingHandler implements Solar
 
     @Override
     public void dispose() {
-        bridge().removePlane(this);
+        ForecastSolarBridgeHandler localBridge = bridge();
+        localBridge.removePlane(this);
+        // the handler instance is reused after a configuration change, so the forecast fetched with the
+        // previous parameters must not survive until it expires. Queued behind a running update.
+        localBridge.getSequentialScheduler().execute(this::resetForecast);
     }
 
     @Override
@@ -275,6 +279,15 @@ public class ForecastSolarPlaneHandler extends BaseThingHandler implements Solar
         synchronized (this) {
             forecast = newForecast;
             dirty.set(true);
+        }
+    }
+
+    /**
+     * Discard the current forecast so the next update fetches new data from the API.
+     */
+    void resetForecast() {
+        synchronized (this) {
+            forecast = new ForecastSolarObject(identifier);
         }
     }
 
