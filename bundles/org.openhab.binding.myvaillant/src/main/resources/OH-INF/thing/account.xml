@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="myvaillant"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="account">
+		<label>myVAILLANT Account</label>
+		<description>The account of the myVAILLANT app</description>
+
+		<channels>
+			<channel id="api-requests" typeId="api-requests"/>
+		</channels>
+
+		<config-description>
+			<parameter-group name="account">
+				<label>Account</label>
+			</parameter-group>
+			<parameter-group name="update">
+				<label>Updates</label>
+				<description>Vaillant limits the number of requests per account (call volume quota). Every update of a system
+					costs 2
+					requests plus one for each optional value below.</description>
+			</parameter-group>
+			<parameter-group name="defaults">
+				<label>Defaults</label>
+			</parameter-group>
+
+			<parameter name="username" type="text" required="true" groupName="account">
+				<label>Username</label>
+				<description>Email address of the myVAILLANT account</description>
+			</parameter>
+			<parameter name="password" type="text" required="true" groupName="account">
+				<context>password</context>
+				<label>Password</label>
+			</parameter>
+			<parameter name="brand" type="text" required="true" groupName="account">
+				<label>Brand</label>
+				<options>
+					<option value="vaillant">Vaillant</option>
+					<option value="sdbg">Saunier Duval</option>
+					<option value="bulex">Bulex</option>
+					<option value="glow-worm">Glow-worm</option>
+					<option value="demirdokum">DemirDöküm</option>
+				</options>
+				<default>vaillant</default>
+			</parameter>
+			<parameter name="country" type="text" groupName="account">
+				<label>Country</label>
+				<description>Country the account is registered in (required for Vaillant and Saunier Duval), e.g. germany,
+					austria,
+					unitedkingdom, czechrepublic</description>
+				<options>
+					<option value="austria">Austria</option>
+					<option value="belgium">Belgium</option>
+					<option value="czechrepublic">Czechia</option>
+					<option value="denmark">Denmark</option>
+					<option value="finland">Finland</option>
+					<option value="france">France</option>
+					<option value="germany">Germany</option>
+					<option value="hungary">Hungary</option>
+					<option value="italy">Italy</option>
+					<option value="luxembourg">Luxembourg</option>
+					<option value="netherlands">Netherlands</option>
+					<option value="norway">Norway</option>
+					<option value="poland">Poland</option>
+					<option value="portugal">Portugal</option>
+					<option value="slovakia">Slovakia</option>
+					<option value="spain">Spain</option>
+					<option value="sweden">Sweden</option>
+					<option value="switzerland">Switzerland</option>
+					<option value="unitedkingdom">United Kingdom</option>
+				</options>
+				<limitToOptions>false</limitToOptions>
+				<default>germany</default>
+			</parameter>
+
+			<parameter name="refreshInterval" type="integer" min="60" unit="s" groupName="update">
+				<label>Refresh Interval</label>
+				<description>Seconds between updates of the systems</description>
+				<default>300</default>
+			</parameter>
+			<parameter name="energyRefreshInterval" type="integer" min="0" unit="min" groupName="update">
+				<label>Energy Refresh Interval</label>
+				<description>Minutes between updates of today's energy values, 0 disables them. Only linked energy channels are
+					updated, each costs one request.</description>
+				<default>60</default>
+			</parameter>
+			<parameter name="fetchRts" type="boolean" groupName="update">
+				<label>Fetch Operation Time and Cycles</label>
+				<description>Updates operation time and on/off cycles of the devices (RTS, one request per update)</description>
+				<default>false</default>
+			</parameter>
+			<parameter name="fetchMpc" type="boolean" groupName="update">
+				<label>Fetch Current Power</label>
+				<description>Updates the current power of the devices (MPC, one request per update)</description>
+				<default>false</default>
+			</parameter>
+			<parameter name="fetchConnectionStatus" type="boolean" groupName="update">
+				<label>Fetch Connection Status</label>
+				<description>Updates whether the system is connected (one request per update)</description>
+				<default>false</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="fetchTroubleCodes" type="boolean" groupName="update">
+				<label>Fetch Trouble Codes</label>
+				<description>Updates the diagnostic trouble codes (one request per update)</description>
+				<default>false</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="refreshDelay" type="integer" min="0" max="120" unit="s" groupName="update">
+				<label>Refresh Delay</label>
+				<description>Seconds to wait after a command before updating, the API takes a while to return new values</description>
+				<default>10</default>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="quickVetoDuration" type="decimal" min="0.5" max="24" step="0.5" unit="h"
+				groupName="defaults">
+				<label>Quick Veto Duration</label>
+				<description>Hours a temperature set outside of manual mode (quick veto) lasts</description>
+				<default>3</default>
+			</parameter>
+			<parameter name="holidayDuration" type="integer" min="1" unit="d" groupName="defaults">
+				<label>Holiday Duration</label>
+				<description>Days away mode lasts when switched on without an end</description>
+				<default>365</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="manualCoolingDuration" type="integer" min="1" unit="d" groupName="defaults">
+				<label>Manual Cooling Duration</label>
+				<description>Days manual cooling lasts when switched on without an end</description>
+				<default>30</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</bridge-type>
+</thing:thing-descriptions>
