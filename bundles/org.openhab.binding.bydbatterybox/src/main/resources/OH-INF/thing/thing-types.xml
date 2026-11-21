@@ -4,7 +4,7 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<thing-type id="battery">
+	<thing-type id="hv-premium">
 		<label>BYD Battery-Box Premium</label>
 		<description>BYD Battery-Box Premium HVS/HVM, read over its local network interface. Only the tower and module channel
 			groups the battery reports are kept.</description>
