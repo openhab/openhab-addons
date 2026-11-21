@@ -84,7 +84,7 @@ public class PlugwiseHAApplianceHandler extends PlugwiseHABaseHandler<Appliance,
 
     @Override
     protected synchronized void initialize(PlugwiseHAThingConfig config, PlugwiseHABridgeHandler bridgeHandler) {
-        if (thing.getStatus() == INITIALIZING) {
+        if (thing.getStatus() == INITIALIZING || thing.getStatus() == OFFLINE) {
             logger.debug("Initializing Plugwise Home Automation appliance handler with config = {}", config);
             if (!config.isValid()) {
                 updateStatus(CONFIGURATION_ERROR,
