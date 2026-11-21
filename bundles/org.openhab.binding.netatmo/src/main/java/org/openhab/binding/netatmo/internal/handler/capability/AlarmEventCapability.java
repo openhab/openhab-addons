@@ -12,20 +12,14 @@
  */
 package org.openhab.binding.netatmo.internal.handler.capability;
 
-import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
-import static org.openhab.binding.netatmo.internal.utils.ChannelTypeUtils.*;
-
 import java.util.List;
 import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.netatmo.internal.api.dto.NAObject;
-import org.openhab.binding.netatmo.internal.api.dto.WebhookEvent;
 import org.openhab.binding.netatmo.internal.handler.CommonInterface;
 import org.openhab.binding.netatmo.internal.handler.channelhelper.ChannelHelper;
 import org.openhab.binding.netatmo.internal.providers.NetatmoDescriptionProvider;
-import org.openhab.binding.netatmo.internal.utils.ChannelTypeUtils;
-import org.openhab.core.types.UnDefType;
 
 /**
  * {@link AlarmEventCapability} gives the ability to handle Alarm modules events
@@ -42,22 +36,9 @@ public class AlarmEventCapability extends HomeSecurityThingCapability {
     }
 
     @Override
-    protected void updateWebhookEvent(WebhookEvent event) {
-        super.updateWebhookEvent(event);
-
-        handler.updateState(GROUP_LAST_EVENT, CHANNEL_EVENT_TYPE, toStringType(event.getEventType()));
-        handler.updateState(GROUP_LAST_EVENT, CHANNEL_EVENT_TIME, toDateTimeType(event.getTime()));
-        handler.updateState(GROUP_LAST_EVENT, CHANNEL_EVENT_SUBTYPE, Objects.requireNonNull(
-                event.getSubTypeDescription().map(ChannelTypeUtils::toStringType).orElse(UnDefType.NULL)));
-
-        handler.updateState(GROUP_LAST_EVENT, CHANNEL_EVENT_MESSAGE, toStringType(event.getName()));
-    }
-
-    @Override
     public List<NAObject> updateReadings() {
-        return pullMode() ? Objects.requireNonNull(
+        return Objects.requireNonNull(
                 getSecurityCapability().map(cap -> cap.getDeviceLastEvent(handler.getId(), moduleType.apiName))
-                        .map(event -> List.of((NAObject) event)).orElse(List.of()))
-                : List.of();
+                        .map(event -> List.of((NAObject) event)).orElse(List.of()));
     }
 }

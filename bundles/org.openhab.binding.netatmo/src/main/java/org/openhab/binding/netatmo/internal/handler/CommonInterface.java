@@ -175,7 +175,7 @@ public interface CommonInterface {
                 .orElse(Optional.empty()));
     }
 
-    default void setNewData(NAObject newData) {
+    default void setNewData(Object newData) {
         if (newData instanceof NAThing thingData && getId().equals(thingData.getBridge())) {
             getActiveChildren().stream().filter(child -> child.getId().equals(thingData.getId())). //
                     findFirst().ifPresent(child -> child.setNewData(thingData));
@@ -199,7 +199,7 @@ public interface CommonInterface {
             channelHelper.setNewData(newData);
         }
 
-        if (newData.isIgnoredForThingUpdate()) {
+        if (newData instanceof NAObject naObject && naObject.isIgnoredForThingUpdate()) {
             return;
         }
 
@@ -228,10 +228,17 @@ public interface CommonInterface {
     }
 
     default List<NAObject> updateReadings() {
+        // boolean pullMode = getCapabilities().getOrDescendant(WebhookListenerCapability.class)
+        // .map(WebhookListenerCapability::pullMode).orElseGet(() -> true);
+
+        // if (pullMode) {
         List<NAObject> result = new ArrayList<>();
         getCapabilities().values().forEach(cap -> result.addAll(cap.updateReadings()));
         getActiveChildren().forEach(child -> result.addAll(child.updateReadings()));
         return result;
+        // }
+
+        // return List.of();
     }
 
     default void commonInitialize() {

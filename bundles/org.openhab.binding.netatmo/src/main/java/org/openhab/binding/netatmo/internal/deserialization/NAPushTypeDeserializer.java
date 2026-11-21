@@ -50,8 +50,8 @@ class NAPushTypeDeserializer implements JsonDeserializer<NAPushType> {
             eventType = fromEvent(elements[0]);
         }
 
-        if (eventType.equals(EventType.UNKNOWN)) {
-            logger.warn("Unknown event type: {}, deserialized to '{}-{}'", string, moduleType, eventType);
+        if (EventType.UNKNOWN.equals(eventType)) {
+            logger.info("Unexpected event type: {}, deserialized to '{}-{}'", string, moduleType, eventType);
         }
 
         return new NAPushType(moduleType, eventType);

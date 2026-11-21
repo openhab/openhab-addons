@@ -19,9 +19,12 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.netatmo.internal.api.data.EventType;
+import org.openhab.binding.netatmo.internal.api.data.ModuleType;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.MeasureClass;
 import org.openhab.binding.netatmo.internal.api.dto.NAObject;
 import org.openhab.binding.netatmo.internal.api.dto.Room;
+import org.openhab.binding.netatmo.internal.api.dto.WebhookExtraParams;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 
@@ -63,6 +66,22 @@ public class SetpointChannelHelper extends ChannelHelper {
                         case UNKNOWN:
                             return UnDefType.NULL;
                     }
+            }
+        }
+        return null;
+    }
+
+    @Override
+    protected @Nullable State internalGetExtraParams(String channelId, @Nullable String groupId,
+            WebhookExtraParams extraParams) {
+        if (extraParams.deviceType.equals(ModuleType.PLUG)
+                && extraParams.eventType.equals(EventType.TEMPERATURE_VARIATION_EVENT)
+                && CHANNEL_VALUE.equals(channelId)) {
+            if (GROUP_SETPOINT.equals(groupId)) {
+                return toQuantityType(extraParams.setpoint, MeasureClass.INSIDE_TEMPERATURE);
+            }
+            if (GROUP_TEMPERATURE.equals(groupId)) {
+                return toQuantityType(extraParams.temperature, MeasureClass.INSIDE_TEMPERATURE);
             }
         }
         return null;
