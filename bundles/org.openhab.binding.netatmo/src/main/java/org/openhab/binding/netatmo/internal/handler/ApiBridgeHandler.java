@@ -36,7 +36,6 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.function.BiFunction;
-import java.util.function.Supplier;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriBuilder;
@@ -129,7 +128,6 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
     private final OAuthFactory oAuthFactory;
     private final NADeserializer deserializer;
     private final HttpService httpService;
-    private final Supplier<@Nullable WebhookService> webhookServiceSupplier;
     private final ChannelUID requestCountChannelUID;
     private final ChannelUID hookSetChannelUID;
 
@@ -137,17 +135,16 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
     private @Nullable ScheduledFuture<?> connectJob;
     private @Nullable WebhookServlet webhookServlet;
     private @Nullable GrantServlet grantServlet;
+    private @Nullable WebhookService webhookService;
 
     public ApiBridgeHandler(Bridge bridge, HttpClient httpClient, NADeserializer deserializer,
-            BindingConfiguration configuration, HttpService httpService, OAuthFactory oAuthFactory,
-            Supplier<@Nullable WebhookService> webhookServiceSupplier) {
+            BindingConfiguration configuration, HttpService httpService, OAuthFactory oAuthFactory) {
         super(bridge);
         this.bindingConf = configuration;
         this.httpClient = httpClient;
         this.deserializer = deserializer;
         this.httpService = httpService;
         this.oAuthFactory = oAuthFactory;
-        this.webhookServiceSupplier = webhookServiceSupplier;
         requestCountChannelUID = new ChannelUID(thing.getUID(), GROUP_MONITORING, CHANNEL_REQUEST_COUNT);
         hookSetChannelUID = new ChannelUID(thing.getUID(), GROUP_MONITORING, CHANNEL_HOOK_SET);
     }
@@ -182,34 +179,10 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
         }
 
         logger.debug("Connected to Netatmo API.");
+
         freeConnectJob();
-
-        ApiHandlerConfiguration configuration = getConfiguration();
-        hookState(false);
-        WebhookServlet previousServlet = webhookServlet;
-        if (previousServlet != null) {
-            previousServlet.dispose();
-            webhookServlet = null;
-        }
-
-        WebhookService cloudWebhookService = null;
-        if (configuration.useCloudWebhook) {
-            cloudWebhookService = webhookServiceSupplier.get();
-            if (cloudWebhookService == null) {
-                logger.warn("openHAB Cloud WebhookService is unavailable; Netatmo webhook is disabled");
-            }
-        }
-
-        String urlPattern = configuration.getWebhookUrlPattern();
-        if (urlPattern != null || cloudWebhookService != null) {
-            WebhookServlet servlet = cloudWebhookService != null
-                    ? new CloudWebhookServlet(this, httpService, deserializer, webhookApi, cloudWebhookService,
-                            scheduler)
-                    : new LocalWebhookServlet(this, httpService, deserializer, webhookApi,
-                            Objects.requireNonNull(urlPattern));
-            webhookServlet = servlet;
-            servlet.startListening();
-        }
+        freeWebhookServlet();
+        checkStartWebhook();
 
         updateStatus(ThingStatus.ONLINE);
     }
@@ -301,12 +274,7 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
     public void dispose() {
         logger.debug("Shutting down Netatmo API bridge handler.");
 
-        WebhookServlet webHookServlet = this.webhookServlet;
-        if (webHookServlet != null) {
-            webHookServlet.dispose();
-        }
-        this.webhookServlet = null;
-
+        freeWebhookServlet();
         freeGrantServlet();
 
         connectApi.dispose();
@@ -605,5 +573,45 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
         }
 
         updateState(hookSetChannelUID, OnOffType.from(hooked));
+    }
+
+    public void webhookServiceAvailable(@Nullable WebhookService webhookService) {
+        this.webhookService = webhookService;
+        checkStartWebhook();
+    }
+
+    public void webhookServiceGone() {
+        webhookService = null;
+        if (webhookServlet instanceof CloudWebhookServlet) {
+            freeWebhookServlet();
+        }
+    }
+
+    private void checkStartWebhook() {
+        ApiHandlerConfiguration configuration = getConfiguration();
+        WebhookServlet servlet = null;
+        if (configuration.useCloudWebhook) {
+            if (webhookService != null) {
+                servlet = new CloudWebhookServlet(this, httpService, deserializer, webhookApi, webhookService,
+                        scheduler);
+            } else {
+                logger.info("Netatmo webhook will be set once openHAB Cloud WebhookService is available");
+            }
+        } else if (configuration.getWebhookUrlPattern() instanceof String urlPattern) {
+            servlet = new LocalWebhookServlet(this, httpService, deserializer, webhookApi, urlPattern);
+        }
+
+        if (servlet != null) {
+            this.webhookServlet = servlet;
+            servlet.startListening();
+        }
+    }
+
+    private void freeWebhookServlet() {
+        hookState(false);
+        if (webhookServlet instanceof WebhookServlet servlet) {
+            servlet.dispose();
+        }
+        this.webhookServlet = null;
     }
 }
