@@ -33,7 +33,7 @@ public class ModuleTypeDeserializer implements JsonDeserializer<ModuleType> {
     @Override
     public @Nullable ModuleType deserialize(JsonElement json, Type clazz, JsonDeserializationContext context) {
         String string = json.getAsString();
-        return ModuleType.AS_STREAM.filter(mt -> mt.apiName.equalsIgnoreCase(string)).findFirst()
+        return ModuleType.AS_SET.stream().filter(mt -> mt.apiName.equalsIgnoreCase(string)).findFirst()
                 .orElse(ModuleType.UNKNOWN);
     }
 }

@@ -140,13 +140,13 @@ public class NetatmoHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
-        return ModuleType.AS_STREAM.anyMatch(mt -> mt.thingTypeUID.equals(thingTypeUID));
+        return ModuleType.AS_SET.stream().anyMatch(mt -> mt.thingTypeUID.equals(thingTypeUID));
     }
 
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
-        return ModuleType.AS_STREAM.filter(mt -> mt.thingTypeUID.equals(thingTypeUID)).findFirst()
+        return ModuleType.AS_SET.stream().filter(mt -> mt.thingTypeUID.equals(thingTypeUID)).findFirst()
                 .map(mt -> buildHandler(thing, mt)).orElse(null);
     }
 

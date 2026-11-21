@@ -44,7 +44,7 @@ public class ModuleTypeTest {
 
     @Test
     public void checkConfigDescription() {
-        ModuleType.AS_STREAM.forEach(mt -> {
+        ModuleType.AS_SET.stream().forEach(mt -> {
             if (mt != ModuleType.WELCOME) {
                 URI confDesc = mt.configDescription;
                 assertEquals(getConfigDescription(mt), confDesc);

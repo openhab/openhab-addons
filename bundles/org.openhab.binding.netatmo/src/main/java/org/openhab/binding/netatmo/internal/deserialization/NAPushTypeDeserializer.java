@@ -62,8 +62,8 @@ class NAPushTypeDeserializer implements JsonDeserializer<NAPushType> {
      * @return moduletype value if found, or else Unknown
      */
     public static ModuleType fromNetatmoObject(String apiName) {
-        return Objects.requireNonNull(
-                ModuleType.AS_STREAM.filter(mt -> apiName.equals(mt.apiName)).findFirst().orElse(ModuleType.UNKNOWN));
+        return Objects.requireNonNull(ModuleType.AS_SET.stream().filter(mt -> apiName.equals(mt.apiName)).findFirst()
+                .orElse(ModuleType.UNKNOWN));
     }
 
     /**
