@@ -257,6 +257,7 @@
 			<tag>Status</tag>
 			<tag>Duration</tag>
 		</tags>
+		<state pattern="%1$tT"/>
 	</channel-type>
 	<channel-type id="totalTime">
 		<item-type>String</item-type>

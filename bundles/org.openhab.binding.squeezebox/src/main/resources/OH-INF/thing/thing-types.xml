@@ -230,7 +230,7 @@
 			<tag>Control</tag>
 			<tag>Duration</tag>
 		</tags>
-		<state pattern="%.0f %unit%"/>
+		<state pattern="%1$tT"/>
 	</channel-type>
 	<channel-type id="duration">
 		<item-type>Number:Time</item-type>
@@ -241,7 +241,7 @@
 			<tag>Measurement</tag>
 			<tag>Duration</tag>
 		</tags>
-		<state pattern="%.0f %unit%" readOnly="true"/>
+		<state pattern="%1$tT" readOnly="true"/>
 	</channel-type>
 	<channel-type id="currentPlaylistShuffle">
 		<item-type>Number</item-type>
