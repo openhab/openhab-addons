@@ -29,6 +29,7 @@ import org.openhab.binding.loxone.internal.types.LxCategory;
 import org.openhab.binding.loxone.internal.types.LxContainer;
 import org.openhab.binding.loxone.internal.types.LxState;
 import org.openhab.binding.loxone.internal.types.LxUuid;
+import org.openhab.core.config.core.Configuration;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.type.ChannelKind;
 import org.openhab.core.types.Command;
@@ -218,6 +219,14 @@ class LxControlTest {
     void executeCommand(String namePostFix, Command command) {
         LxControl ctrl = getControl(controlUuid);
         executeCommand(ctrl, namePostFix, command);
+    }
+
+    void setChannelConfiguration(String namePostFix, Configuration configuration) {
+        LxControl ctrl = getControl(controlUuid);
+        assertNotNull(ctrl);
+        Channel c = getChannel(getExpectedName(ctrl.getLabel(), ctrl.getRoom().getName(), namePostFix), ctrl);
+        assertNotNull(c);
+        ctrl.setChannelConfiguration(c.getUID(), configuration);
     }
 
     void executeCommand(LxControl ctrl, Command command) {

@@ -53,6 +53,7 @@ class LxControlFactory {
         add(new LxControlUpDownDigital.Factory());
         add(new LxControlValueSelector.Factory());
         add(new LxControlWebPage.Factory());
+        add(new LxControlWindow.Factory());
     }
 
     private static final Map<String, LxControlInstance> CONTROLS;

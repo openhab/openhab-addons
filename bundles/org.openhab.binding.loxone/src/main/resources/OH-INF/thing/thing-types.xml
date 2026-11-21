@@ -162,6 +162,27 @@
 		</tags>
 	</channel-type>
 
+	<channel-type id="windowPositionTypeId">
+		<item-type>Rollershutter</item-type>
+		<label>Loxone Window</label>
+		<description>Loxone's window position control.</description>
+		<category>Window</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>OpenLevel</tag>
+		</tags>
+		<state min="0" max="100"/>
+		<config-description>
+			<parameter name="inverted" type="boolean">
+				<label>Inverted Position</label>
+				<description>Inverts the percentage, so that 0 % means fully closed and 100 % means fully open as used by
+					Loxone,
+					instead of the openHAB default of 0 % fully open and 100 % fully closed.</description>
+				<default>false</default>
+			</parameter>
+		</config-description>
+	</channel-type>
+
 	<channel-type id="roTextTypeId">
 		<item-type>String</item-type>
 		<label>Loxone State Read-only Information</label>

@@ -169,6 +169,7 @@ Currently supported controls are presented in the table below.
 |                                                           |                                                                                                                                                                                                                                                                                                                           | `Number` - direct input of selected value                      | `DecimalType` - must be between min-max range                                                                                                                                                        |
 | Webpage                                                   | [Web Page](https://www.loxone.com/enen/kb/webpage/)                                                                                                                                                                                                                                                                       | `String` - low-res URL                                         | Read-only channel                                                                                                                                                                                    |
 |                                                           |                                                                                                                                                                                                                                                                                                                           | `String` - high-res URL                                        | Read-only channel                                                                                                                                                                                    |
+| Window                                                    | Window                                                                                                                                                                                                                                                                                                                    | `Rollershutter` - window position                              | `UpDownType.*`, `StopMoveType.STOP`, `PercentType` - target position                                                                                                                                 |
 
 If your control is supported, but binding does not recognize it, please check if it is exposed in Loxone UI using [Loxone Config](https://www.loxone.com/enen/kb-cat/loxone-config/) application.
 
@@ -192,6 +193,18 @@ Channels have the default tags as follows:
 - **Jalousie**: main rollershutter channel will be tagged with _Blinds_ tag. Shade and automatic shade switch channels will be tagged with _Switchable_ tag.
 - **LightController (V1 and V2)**: main channel with selected scene will be tagged with _Scene_ tag.
 - **Switch**, **TimedSwitch** and **Pushbutton** controls: when it belongs to a category that is of a _Lights_ type, the channel will be tagged with _Lighting_ tag. Otherwise it will be tagged with _Switchable_ tag.
+
+### Window Position
+
+The `Window` control is exposed as a `Rollershutter` channel that reports the window position.
+
+By default, the channel follows the openHAB convention, where `0` means fully open and `100` means fully closed.
+Loxone uses the opposite convention, so the channel has an `inverted` configuration parameter, which is disabled by default.
+When it is enabled, `0` means fully closed and `100` means fully open.
+State updates and commands always use the selected convention.
+Positions in between are sent to the Miniserver using its native `moveToPosition` command.
+
+The `STOP` command requires Miniserver 11.3 or newer.
 
 ## Advanced Parameters
 
