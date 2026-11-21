@@ -108,6 +108,21 @@ public class VerisureBindingConstants {
     public static final String CHANNEL_BATTERY_LEVEL = "batteryLevel";
     public static final String CHANNEL_SYSTEM_HEALTH = "systemHealth";
     public static final String CHANNEL_SYSTEM_HEALTH_ALERTS = "systemHealthAlerts";
+    public static final String CHANNEL_ARM_CHECK = "armCheck";
+    public static final String CHANNEL_ARM_CHECK_RESULT = "armCheckResult";
+    public static final String CHANNEL_VACATION_MODE = "vacationMode";
+    public static final String CHANNEL_VACATION_MODE_START = "vacationModeStart";
+    public static final String CHANNEL_VACATION_MODE_END = "vacationModeEnd";
+    public static final String CHANNEL_TEMPERATURE_ALERT_MIN = "temperatureAlertMin";
+    public static final String CHANNEL_TEMPERATURE_ALERT_MIN_ENABLED = "temperatureAlertMinEnabled";
+    public static final String CHANNEL_TEMPERATURE_ALERT_MAX = "temperatureAlertMax";
+    public static final String CHANNEL_TEMPERATURE_ALERT_MAX_ENABLED = "temperatureAlertMaxEnabled";
+    public static final String CHANNEL_HUMIDITY_ALERT_MIN = "humidityAlertMin";
+    public static final String CHANNEL_HUMIDITY_ALERT_MIN_ENABLED = "humidityAlertMinEnabled";
+    public static final String CHANNEL_HUMIDITY_ALERT_MAX = "humidityAlertMax";
+    public static final String CHANNEL_HUMIDITY_ALERT_MAX_ENABLED = "humidityAlertMaxEnabled";
+
+    public static final String PROPERTY_LATEST_FIRMWARE_VERSION = "latestFirmwareVersion";
 
     // Trigger channel events
     public static final String TRIGGER_EVENT_LOCK = "LOCK";

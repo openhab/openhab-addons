@@ -14,6 +14,9 @@ package org.openhab.binding.verisure.internal.dto;
 
 import static org.openhab.binding.verisure.internal.VerisureBindingConstants.*;
 
+import java.util.List;
+import java.util.Objects;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.thing.ThingTypeUID;
@@ -76,11 +79,22 @@ public class VerisureClimatesDTO extends VerisureBaseThingDTO {
         private double humidityValue;
         private @Nullable String temperatureTimestamp;
         private double temperatureValue;
+        private @Nullable List<Threshold> thresholds;
         @SerializedName("__typename")
         private @Nullable String typename;
 
         public Device getDevice() {
             return device;
+        }
+
+        public List<Threshold> getThresholds() {
+            List<Threshold> localThresholds = thresholds;
+            return localThresholds != null ? localThresholds : List.of();
+        }
+
+        public @Nullable Threshold getThreshold(String sensorType) {
+            return getThresholds().stream().filter(threshold -> sensorType.equals(threshold.getSensorType()))
+                    .findFirst().orElse(null);
         }
 
         public boolean isHumidityEnabled() {
@@ -124,6 +138,7 @@ public class VerisureClimatesDTO extends VerisureBaseThingDTO {
             result = prime * result + (int) (temp ^ (temp >>> 32));
             String localTypeName = typename;
             result = prime * result + ((localTypeName == null) ? 0 : localTypeName.hashCode());
+            result = prime * result + Objects.hashCode(thresholds);
             return result;
         }
 
@@ -175,14 +190,95 @@ public class VerisureClimatesDTO extends VerisureBaseThingDTO {
             } else if (!localTypeName.equals(other.typename)) {
                 return false;
             }
-            return true;
+            return Objects.equals(thresholds, other.thresholds);
         }
 
         @Override
         public String toString() {
             return "Climate [device=" + device + ", humidityEnabled=" + humidityEnabled + ", humidityTimestamp="
                     + humidityTimestamp + ", humidityValue=" + humidityValue + ", temperatureTimestamp="
-                    + temperatureTimestamp + ", temperatureValue=" + temperatureValue + ", typename=" + typename + "]";
+                    + temperatureTimestamp + ", temperatureValue=" + temperatureValue + ", thresholds=" + thresholds
+                    + ", typename=" + typename + "]";
+        }
+    }
+
+    /**
+     * Limit for the alert that Verisure sends when a temperature or humidity value is too low or too high.
+     */
+    public static class Threshold {
+
+        public static final String SENSOR_TYPE_TEMPERATURE = "TEMPERATURE";
+        public static final String SENSOR_TYPE_HUMIDITY = "HUMIDITY";
+
+        private @Nullable String sensorType;
+        private @Nullable Double min;
+        private @Nullable Double max;
+        private boolean minActive;
+        private boolean maxActive;
+
+        public Threshold() {
+        }
+
+        public Threshold(Threshold other) {
+            sensorType = other.sensorType;
+            min = other.min;
+            max = other.max;
+            minActive = other.minActive;
+            maxActive = other.maxActive;
+        }
+
+        public @Nullable String getSensorType() {
+            return sensorType;
+        }
+
+        public @Nullable Double getMin() {
+            return min;
+        }
+
+        public void setMin(@Nullable Double min) {
+            this.min = min;
+        }
+
+        public @Nullable Double getMax() {
+            return max;
+        }
+
+        public void setMax(@Nullable Double max) {
+            this.max = max;
+        }
+
+        public boolean isMinActive() {
+            return minActive;
+        }
+
+        public void setMinActive(boolean minActive) {
+            this.minActive = minActive;
+        }
+
+        public boolean isMaxActive() {
+            return maxActive;
+        }
+
+        public void setMaxActive(boolean maxActive) {
+            this.maxActive = maxActive;
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(sensorType, min, max, minActive, maxActive);
+        }
+
+        @Override
+        public boolean equals(@Nullable Object obj) {
+            return obj instanceof Threshold other && Objects.equals(sensorType, other.sensorType)
+                    && Objects.equals(min, other.min) && Objects.equals(max, other.max) && minActive == other.minActive
+                    && maxActive == other.maxActive;
+        }
+
+        @Override
+        public String toString() {
+            return "Threshold [sensorType=" + sensorType + ", min=" + min + ", max=" + max + ", minActive=" + minActive
+                    + ", maxActive=" + maxActive + "]";
         }
     }
 }

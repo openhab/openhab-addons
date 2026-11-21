@@ -20,12 +20,76 @@
 				<type>system:battery-level</type>
 			</add-channel>
 		</instruction-set>
+		<instruction-set targetVersion="2">
+			<add-channel id="temperatureAlertMin">
+				<type>verisure:temperatureAlertLimit</type>
+				<label>Low Temperature Alert Limit</label>
+				<description>Verisure sends an alert when the temperature falls below this limit.</description>
+			</add-channel>
+			<add-channel id="temperatureAlertMinEnabled">
+				<type>verisure:alertLimitEnabled</type>
+				<label>Low Temperature Alert</label>
+				<description>Enables the alert for low temperature.</description>
+			</add-channel>
+			<add-channel id="temperatureAlertMax">
+				<type>verisure:temperatureAlertLimit</type>
+				<label>High Temperature Alert Limit</label>
+				<description>Verisure sends an alert when the temperature rises above this limit.</description>
+			</add-channel>
+			<add-channel id="temperatureAlertMaxEnabled">
+				<type>verisure:alertLimitEnabled</type>
+				<label>High Temperature Alert</label>
+				<description>Enables the alert for high temperature.</description>
+			</add-channel>
+			<add-channel id="humidityAlertMin">
+				<type>verisure:humidityAlertLimit</type>
+				<label>Low Humidity Alert Limit</label>
+				<description>Verisure sends an alert when the humidity falls below this limit.</description>
+			</add-channel>
+			<add-channel id="humidityAlertMinEnabled">
+				<type>verisure:alertLimitEnabled</type>
+				<label>Low Humidity Alert</label>
+				<description>Enables the alert for low humidity.</description>
+			</add-channel>
+			<add-channel id="humidityAlertMax">
+				<type>verisure:humidityAlertLimit</type>
+				<label>High Humidity Alert Limit</label>
+				<description>Verisure sends an alert when the humidity rises above this limit.</description>
+			</add-channel>
+			<add-channel id="humidityAlertMaxEnabled">
+				<type>verisure:alertLimitEnabled</type>
+				<label>High Humidity Alert</label>
+				<description>Enables the alert for high humidity.</description>
+			</add-channel>
+		</instruction-set>
 	</thing-type>
 
 	<thing-type uid="verisure:waterDetector">
 		<instruction-set targetVersion="1">
 			<add-channel id="batteryLevel">
 				<type>system:battery-level</type>
+			</add-channel>
+		</instruction-set>
+		<instruction-set targetVersion="2">
+			<add-channel id="temperatureAlertMin">
+				<type>verisure:temperatureAlertLimit</type>
+				<label>Low Temperature Alert Limit</label>
+				<description>Verisure sends an alert when the temperature falls below this limit.</description>
+			</add-channel>
+			<add-channel id="temperatureAlertMinEnabled">
+				<type>verisure:alertLimitEnabled</type>
+				<label>Low Temperature Alert</label>
+				<description>Enables the alert for low temperature.</description>
+			</add-channel>
+			<add-channel id="temperatureAlertMax">
+				<type>verisure:temperatureAlertLimit</type>
+				<label>High Temperature Alert Limit</label>
+				<description>Verisure sends an alert when the temperature rises above this limit.</description>
+			</add-channel>
+			<add-channel id="temperatureAlertMaxEnabled">
+				<type>verisure:alertLimitEnabled</type>
+				<label>High Temperature Alert</label>
+				<description>Enables the alert for high temperature.</description>
 			</add-channel>
 		</instruction-set>
 	</thing-type>
@@ -36,12 +100,56 @@
 				<type>system:battery-level</type>
 			</add-channel>
 		</instruction-set>
+		<instruction-set targetVersion="2">
+			<add-channel id="temperatureAlertMin">
+				<type>verisure:temperatureAlertLimit</type>
+				<label>Low Temperature Alert Limit</label>
+				<description>Verisure sends an alert when the temperature falls below this limit.</description>
+			</add-channel>
+			<add-channel id="temperatureAlertMinEnabled">
+				<type>verisure:alertLimitEnabled</type>
+				<label>Low Temperature Alert</label>
+				<description>Enables the alert for low temperature.</description>
+			</add-channel>
+			<add-channel id="temperatureAlertMax">
+				<type>verisure:temperatureAlertLimit</type>
+				<label>High Temperature Alert Limit</label>
+				<description>Verisure sends an alert when the temperature rises above this limit.</description>
+			</add-channel>
+			<add-channel id="temperatureAlertMaxEnabled">
+				<type>verisure:alertLimitEnabled</type>
+				<label>High Temperature Alert</label>
+				<description>Enables the alert for high temperature.</description>
+			</add-channel>
+		</instruction-set>
 	</thing-type>
 
 	<thing-type uid="verisure:nightControl">
 		<instruction-set targetVersion="1">
 			<add-channel id="batteryLevel">
 				<type>system:battery-level</type>
+			</add-channel>
+		</instruction-set>
+		<instruction-set targetVersion="2">
+			<add-channel id="temperatureAlertMin">
+				<type>verisure:temperatureAlertLimit</type>
+				<label>Low Temperature Alert Limit</label>
+				<description>Verisure sends an alert when the temperature falls below this limit.</description>
+			</add-channel>
+			<add-channel id="temperatureAlertMinEnabled">
+				<type>verisure:alertLimitEnabled</type>
+				<label>Low Temperature Alert</label>
+				<description>Enables the alert for low temperature.</description>
+			</add-channel>
+			<add-channel id="temperatureAlertMax">
+				<type>verisure:temperatureAlertLimit</type>
+				<label>High Temperature Alert Limit</label>
+				<description>Verisure sends an alert when the temperature rises above this limit.</description>
+			</add-channel>
+			<add-channel id="temperatureAlertMaxEnabled">
+				<type>verisure:alertLimitEnabled</type>
+				<label>High Temperature Alert</label>
+				<description>Enables the alert for high temperature.</description>
 			</add-channel>
 		</instruction-set>
 	</thing-type>
@@ -61,6 +169,52 @@
 			</add-channel>
 			<add-channel id="systemHealthAlerts">
 				<type>verisure:systemHealthAlerts</type>
+			</add-channel>
+		</instruction-set>
+		<instruction-set targetVersion="2">
+			<add-channel id="armCheck">
+				<type>verisure:armCheck</type>
+			</add-channel>
+			<add-channel id="armCheckResult">
+				<type>verisure:armCheckResult</type>
+			</add-channel>
+			<add-channel id="vacationMode">
+				<type>verisure:vacationMode</type>
+			</add-channel>
+			<add-channel id="vacationModeStart">
+				<type>verisure:timestamp</type>
+				<label>Vacation Mode Start</label>
+				<description>Start of the vacation mode period.</description>
+			</add-channel>
+			<add-channel id="vacationModeEnd">
+				<type>verisure:timestamp</type>
+				<label>Vacation Mode End</label>
+				<description>End of the vacation mode period.</description>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+
+	<thing-type uid="verisure:miceDetection">
+		<instruction-set targetVersion="1">
+			<add-channel id="temperatureAlertMin">
+				<type>verisure:temperatureAlertLimit</type>
+				<label>Low Temperature Alert Limit</label>
+				<description>Verisure sends an alert when the temperature falls below this limit.</description>
+			</add-channel>
+			<add-channel id="temperatureAlertMinEnabled">
+				<type>verisure:alertLimitEnabled</type>
+				<label>Low Temperature Alert</label>
+				<description>Enables the alert for low temperature.</description>
+			</add-channel>
+			<add-channel id="temperatureAlertMax">
+				<type>verisure:temperatureAlertLimit</type>
+				<label>High Temperature Alert Limit</label>
+				<description>Verisure sends an alert when the temperature rises above this limit.</description>
+			</add-channel>
+			<add-channel id="temperatureAlertMaxEnabled">
+				<type>verisure:alertLimitEnabled</type>
+				<label>High Temperature Alert</label>
+				<description>Enables the alert for high temperature.</description>
 			</add-channel>
 		</instruction-set>
 	</thing-type>
