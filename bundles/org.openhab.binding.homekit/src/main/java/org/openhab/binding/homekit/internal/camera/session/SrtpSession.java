@@ -27,11 +27,12 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * Encrypts and decrypts RTP and RTCP packets using SRTP and SRTCP as defined in RFC 3711, for the
  * AES_CM_128_HMAC_SHA1_80 and AES_CM_256_HMAC_SHA1_80 crypto suites. An instance handles one direction of one stream.
  * <p>
- * The public methods are synchronized, so that RTP and RTCP may be handled by different threads. Packets of one
- * stream must still be processed in order.
+ * The public methods are synchronized, so that RTP and RTCP may be handled by different threads. The receiver accepts
+ * reordering within the replay window and rejects duplicates and packets older than that window.
  *
  * @author Andrew Fiddian-Green - Initial contribution
  * @author Andrew Fiddian-Green - SRTCP support
+ * @author Andrew Fiddian-Green - SRTP replay protection
  */
 @NonNullByDefault
 public final class SrtpSession {
@@ -55,6 +56,9 @@ public final class SrtpSession {
     private static final byte LABEL_RTCP_AUTHENTICATION = 0x04;
     private static final byte LABEL_RTCP_SALT = 0x05;
 
+    /** RFC 3711 section 3.3.2 recommends a replay list of this size. */
+    private static final int REPLAY_WINDOW = 64;
+
     private final HMac hmac = new HMac(new SHA1Digest());
     private final byte[] macBuffer = new byte[20];
     private final byte[] iv = new byte[BLOCK_LENGTH];
@@ -68,6 +72,8 @@ public final class SrtpSession {
     private final KeyParameter rtcpAuthKey;
 
     private long highestIndex = -1;
+    /** Bit {@code i} is set when the packet at {@code highestIndex - i} has been authenticated. */
+    private long replayMask;
     private int rtcpIndex;
 
     private SrtpSession(byte[] sessionKey, byte[] sessionSalt, byte[] authKey, byte[] rtcpSessionKey,
@@ -128,7 +134,7 @@ public final class SrtpSession {
      * Authenticates and decrypts an SRTP packet, returning the RTP packet.
      *
      * @param srtp the SRTP packet
-     * @return the RTP packet, or null if the packet is malformed or fails authentication
+     * @return the RTP length, or -1 if the packet is malformed, fails authentication, or is a replay
      */
     public synchronized int decrypt(byte[] srtp, int srtpLength, byte[] rtp) {
         int headerLength = headerLength(srtp, srtpLength);
@@ -137,12 +143,12 @@ public final class SrtpSession {
             return -1;
         }
         long index = estimateIndex(sequenceNumber(srtp));
-        if (!authenticateAndVerify(srtp, rtpLength, index)) {
+        if (replayed(index) || !authenticateAndVerify(srtp, rtpLength, index)) {
             return -1;
         }
         System.arraycopy(srtp, 0, rtp, 0, rtpLength);
         applyKeystream(sessionKey, sessionSalt, rtp, headerLength, rtpLength, ssrc(srtp), index);
-        advance(index);
+        recordAuthenticated(index);
         return rtpLength;
     }
 
@@ -217,6 +223,41 @@ public final class SrtpSession {
         if (index > highestIndex) {
             highestIndex = index;
         }
+    }
+
+    /**
+     * Returns true if this index was already authenticated, or is older than the replay window. A failed authentication
+     * does not count as received, so the index can still be accepted later.
+     */
+    private boolean replayed(long index) {
+        if (highestIndex < 0) {
+            return false;
+        }
+        long age = highestIndex - index;
+        if (age >= REPLAY_WINDOW) {
+            return true;
+        }
+        return age >= 0 && (replayMask & (1L << age)) != 0;
+    }
+
+    /**
+     * Records an authenticated index. The window moves only after authentication, so a forged packet cannot consume an
+     * index or slide a genuine packet out of the window.
+     */
+    private void recordAuthenticated(long index) {
+        if (highestIndex < 0) {
+            highestIndex = index;
+            replayMask = 1L;
+            return;
+        }
+        long age = highestIndex - index;
+        if (age >= 0) {
+            replayMask |= 1L << age;
+            return;
+        }
+        long shift = -age;
+        replayMask = shift >= REPLAY_WINDOW ? 1L : (replayMask << shift) | 1L;
+        highestIndex = index;
     }
 
     /**

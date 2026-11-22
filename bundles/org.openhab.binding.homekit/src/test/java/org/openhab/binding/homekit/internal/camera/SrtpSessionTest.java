@@ -27,6 +27,7 @@ import org.openhab.binding.homekit.internal.camera.session.SrtpSession;
  * Tests for {@link SrtpSession}.
  *
  * @author Andrew Fiddian-Green - Initial contribution
+ * @author Andrew Fiddian-Green - SRTP replay protection
  */
 class SrtpSessionTest {
 
@@ -111,6 +112,42 @@ class SrtpSessionTest {
         SrtpParameters other = new SrtpParameters(SrtpCryptoSuite.AES_CM_128_HMAC_SHA1_80,
                 hex("00112233445566778899AABBCCDDEEFF"), MASTER_SALT);
         assertNull(decrypt(SrtpSession.create(other), srtp));
+    }
+
+    @Test
+    void replayedPacketIsRejected() {
+        SrtpSession sender = SrtpSession.create(PARAMETERS);
+        SrtpSession receiver = SrtpSession.create(PARAMETERS);
+        byte[] first = encrypt(sender, rtpPacket(1, 0x12345678, 1));
+        byte[] second = encrypt(sender, rtpPacket(2, 0x12345678, 2));
+        assertNotNull(decrypt(receiver, first));
+        assertNull(decrypt(receiver, first));
+        assertNotNull(decrypt(receiver, second));
+    }
+
+    @Test
+    void replayWindowAllowsBoundedReordering() {
+        SrtpSession sender = SrtpSession.create(PARAMETERS);
+        SrtpSession receiver = SrtpSession.create(PARAMETERS);
+        byte[][] packets = new byte[65][];
+        for (int i = 0; i < packets.length; i++) {
+            packets[i] = encrypt(sender, rtpPacket(i, 0x12345678, i));
+        }
+        assertNotNull(decrypt(receiver, packets[64]));
+        assertNotNull(decrypt(receiver, packets[1]));
+        assertNull(decrypt(receiver, packets[0]));
+        assertNull(decrypt(receiver, packets[64]));
+    }
+
+    @Test
+    void failedAuthenticationDoesNotConsumeReplayIndex() {
+        SrtpSession sender = SrtpSession.create(PARAMETERS);
+        SrtpSession receiver = SrtpSession.create(PARAMETERS);
+        byte[] srtp = encrypt(sender, rtpPacket(5, 0x12345678, 5));
+        byte[] tampered = srtp.clone();
+        tampered[20] ^= 0x01;
+        assertNull(decrypt(receiver, tampered));
+        assertNotNull(decrypt(receiver, srtp));
     }
 
     @Test
