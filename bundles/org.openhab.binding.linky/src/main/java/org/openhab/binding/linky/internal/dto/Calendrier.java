@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.linky.internal.dto;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * The {@link Calendrier} holds informations about the available energy calendar
  *
@@ -19,6 +21,12 @@ package org.openhab.binding.linky.internal.dto;
  */
 
 public class Calendrier {
+    @SerializedName("id_calendar")
     public String idCalendrier;
+
+    @SerializedName("label_calendar")
     public String libelleCalendrier;
+
+    @SerializedName("temporal_class")
+    public TemporalClass[] temporalClass;
 }

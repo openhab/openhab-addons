@@ -22,6 +22,9 @@ import com.google.gson.annotations.SerializedName;
  */
 
 public class ReadingType {
+    @SerializedName("flow_direction")
+    public String flowDirection;
+
     @SerializedName("measurement_kind")
     public String measurementKind;
 
