@@ -58,6 +58,8 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class PleosAccountHandler extends BaseBridgeHandler {
 
+    private static final int RETRY_INTERVAL_SECONDS = 60;
+
     private final Logger logger = LoggerFactory.getLogger(PleosAccountHandler.class);
     private final HttpClient httpClient;
     private final TimeZoneProvider timeZoneProvider;
@@ -132,8 +134,24 @@ public class PleosAccountHandler extends BaseBridgeHandler {
         PleosApiClient client = new PleosApiClient(httpClient, clientId, clientSecret, brand);
         this.apiClient = client;
 
-        // Asynchronous initial fetch, so that initialize() does not block
+        scheduleAuthentication(0);
+    }
+
+    private void scheduleAuthentication(int delaySeconds) {
+        ScheduledFuture<?> currentInitJob = this.initJob;
+        if (currentInitJob != null) {
+            currentInitJob.cancel(true);
+            this.initJob = null;
+        }
+
+        PleosAccountConfiguration config = getConfigAs(PleosAccountConfiguration.class);
+
         this.initJob = scheduler.schedule(() -> {
+            PleosApiClient client = this.apiClient;
+            if (client == null) {
+                return;
+            }
+
             try {
                 client.authenticate();
                 if (Thread.currentThread().isInterrupted() || this.apiClient != client) {
@@ -145,14 +163,16 @@ public class PleosAccountHandler extends BaseBridgeHandler {
                 if (Thread.currentThread().isInterrupted() || this.apiClient != client) {
                     return;
                 }
-                logger.debug("Initial authentication failed: {}", e.getMessage());
+                logger.debug("Authentication failed: {}", e.getMessage());
                 if (e.isAuthError()) {
                     updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
                 } else {
                     updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                    logger.debug("Retrying authentication in {} seconds...", RETRY_INTERVAL_SECONDS);
+                    scheduleAuthentication(RETRY_INTERVAL_SECONDS);
                 }
             }
-        }, 0, TimeUnit.SECONDS);
+        }, delaySeconds, TimeUnit.SECONDS);
     }
 
     @Override
