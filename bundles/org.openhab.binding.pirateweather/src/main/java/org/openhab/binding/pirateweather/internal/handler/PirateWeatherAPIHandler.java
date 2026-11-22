@@ -102,7 +102,11 @@ public class PirateWeatherAPIHandler extends BaseBridgeHandler {
         }
 
         updateStatus(ThingStatus.UNKNOWN);
-        connection = new PirateWeatherConnection(config, httpClient);
+        PirateWeatherConnection connection = this.connection = new PirateWeatherConnection(config, httpClient);
+
+        // Verify the API key right away so the bridge reaches ONLINE/OFFLINE on its own, instead of staying
+        // UNKNOWN until a weather-and-forecast thing happens to request data.
+        scheduler.execute(() -> validateConnection(connection));
 
         ScheduledFuture<?> localRefreshJob = refreshJob;
         if (localRefreshJob == null || localRefreshJob.isCancelled()) {
@@ -140,6 +144,17 @@ public class PirateWeatherAPIHandler extends BaseBridgeHandler {
                 pirateChildHandler.updateData();
             }
         }, INITIAL_DELAY_IN_SECONDS, TimeUnit.SECONDS);
+    }
+
+    private void validateConnection(PirateWeatherConnection connection) {
+        try {
+            connection.validateApiKey();
+            updateStatus(ThingStatus.ONLINE);
+        } catch (PirateWeatherConfigurationException e) {
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+        } catch (PirateWeatherCommunicationException e) {
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+        }
     }
 
     private void updateThings() {

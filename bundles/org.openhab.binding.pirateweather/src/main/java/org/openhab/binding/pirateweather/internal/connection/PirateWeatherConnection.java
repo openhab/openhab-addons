@@ -98,6 +98,25 @@ public class PirateWeatherConnection {
         }
     }
 
+    /**
+     * Performs a minimal, uncached request to verify that the API is reachable and the configured API key is
+     * accepted. Only the current conditions block is requested to keep the response small.
+     *
+     * @throws PirateWeatherCommunicationException if the server cannot be reached or returns an unexpected error
+     * @throws PirateWeatherConfigurationException if the API key is missing or rejected
+     */
+    public void validateApiKey() throws PirateWeatherCommunicationException, PirateWeatherConfigurationException {
+        String apikey = config.apikey;
+        if (apikey.isBlank()) {
+            throw new PirateWeatherConfigurationException("@text/offline.conf-error-missing-apikey");
+        }
+        String url = String.format(Locale.ROOT, WEATHER_URL, apikey, 0.0, 0.0);
+        Map<String, String> params = new HashMap<>();
+        params.put(PARAM_EXCLUDE, "minutely,hourly,daily,alerts,flags");
+        params.put(PARAM_UNITS, "si");
+        getResponse(buildURL(url, params));
+    }
+
     private Map<String, String> getRequestParams(PirateWeatherAPIConfiguration config) {
         Map<String, String> params = new HashMap<>();
         params.put(PARAM_EXCLUDE, "minutely,flags");
@@ -162,6 +181,7 @@ public class PirateWeatherConnection {
                     return content;
                 case BAD_REQUEST_400:
                 case UNAUTHORIZED_401:
+                case FORBIDDEN_403:
                 case NOT_FOUND_404:
                     logger.debug("Pirate Weather server responded with status code {}: {}", httpStatus, content);
                     throw new PirateWeatherConfigurationException(content);
