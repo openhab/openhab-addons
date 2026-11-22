@@ -259,7 +259,13 @@ public class Go2RtcCameraServlet extends HttpServlet {
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
             return;
         }
-        String offer = new String(request.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
+        final int maxOfferBytes = 64 * 1024;
+        byte[] offerBytes = request.getInputStream().readNBytes(maxOfferBytes + 1);
+        if (offerBytes.length > maxOfferBytes) {
+            response.sendError(HttpServletResponse.SC_REQUEST_ENTITY_TOO_LARGE);
+            return;
+        }
+        String offer = new String(offerBytes, StandardCharsets.UTF_8);
         String answer;
         try {
             answer = talk ? provider.answerBrowserTalkOffer(offer) : provider.answerBrowserOffer(offer);
