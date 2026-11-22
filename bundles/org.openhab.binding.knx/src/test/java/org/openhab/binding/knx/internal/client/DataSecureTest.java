@@ -26,6 +26,9 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -38,6 +41,8 @@ import io.calimero.KNXAddress;
 import io.calimero.KNXTimeoutException;
 import io.calimero.Priority;
 import io.calimero.cemi.CEMILData;
+import io.calimero.datapoint.CommandDP;
+import io.calimero.datapoint.Datapoint;
 import io.calimero.device.ProcessCommunicationResponder;
 import io.calimero.link.medium.KNXMediumSettings;
 import io.calimero.mgmt.TransportLayerImpl;
@@ -66,7 +71,8 @@ class DataSecureTest {
     @Test
     void groupWriteIsEncryptedWithTheGroupKey() throws Exception {
         CapturingLink link = new CapturingLink(OPENHAB);
-        ProcessCommunicator communicator = AbstractKNXClient.newProcessCommunicator(link, newSal(link));
+        ProcessCommunicator communicator = AbstractKNXClient.newProcessCommunicator(link, newSal(link),
+                new ReentrantLock());
 
         communicator.write(SECURE_GROUP, true);
 
@@ -81,7 +87,8 @@ class DataSecureTest {
     @Test
     void groupReadIsEncryptedWithTheGroupKey() throws Exception {
         CapturingLink link = new CapturingLink(OPENHAB);
-        ProcessCommunicator communicator = AbstractKNXClient.newProcessCommunicator(link, newSal(link));
+        ProcessCommunicator communicator = AbstractKNXClient.newProcessCommunicator(link, newSal(link),
+                new ReentrantLock());
         communicator.responseTimeout(Duration.ofMillis(50));
 
         assertThrows(KNXTimeoutException.class, () -> communicator.readBool(SECURE_GROUP));
@@ -102,7 +109,8 @@ class DataSecureTest {
     @Test
     void groupWriteWithoutKeyStaysPlain() throws Exception {
         CapturingLink link = new CapturingLink(OPENHAB);
-        ProcessCommunicator communicator = AbstractKNXClient.newProcessCommunicator(link, newSal(link));
+        ProcessCommunicator communicator = AbstractKNXClient.newProcessCommunicator(link, newSal(link),
+                new ReentrantLock());
 
         communicator.write(PLAIN_GROUP, true);
 
@@ -113,7 +121,8 @@ class DataSecureTest {
     void sequenceNumberFollowsTheClock() throws Exception {
         CapturingLink link = new CapturingLink(OPENHAB);
         long before = CustomSecureManagement.initialSequenceNumber(Instant.now());
-        ProcessCommunicator communicator = AbstractKNXClient.newProcessCommunicator(link, newSal(link));
+        ProcessCommunicator communicator = AbstractKNXClient.newProcessCommunicator(link, newSal(link),
+                new ReentrantLock());
         long after = CustomSecureManagement.initialSequenceNumber(Instant.now());
 
         communicator.write(SECURE_GROUP, true);
@@ -126,7 +135,8 @@ class DataSecureTest {
     @Test
     void concurrentSendsGetDistinctSequenceNumbers() throws Exception {
         CapturingLink link = new CapturingLink(OPENHAB);
-        ProcessCommunicator communicator = AbstractKNXClient.newProcessCommunicator(link, newSal(link));
+        ProcessCommunicator communicator = AbstractKNXClient.newProcessCommunicator(link, newSal(link),
+                new ReentrantLock());
         int threads = 8;
         int writesPerThread = 100;
         CountDownLatch start = new CountDownLatch(1);
@@ -155,6 +165,55 @@ class DataSecureTest {
             sequenceNumbers.add(sequenceNumber(apdu));
         }
         assertEquals(threads * writesPerThread, sequenceNumbers.size());
+    }
+
+    @Test
+    void commandsReadsAndResponsesReachTheLinkInSequenceOrder() throws Exception {
+        CapturingLink link = new CapturingLink(OPENHAB, true);
+        CustomSecureManagement sal = newSal(link);
+        Lock sendLock = new ReentrantLock();
+        ProcessCommunicator communicator = AbstractKNXClient.newProcessCommunicator(link, sal, sendLock);
+        communicator.responseTimeout(Duration.ofMillis(1));
+        ProcessCommunicationResponder responder = AbstractKNXClient.newResponseCommunicator(link, sal, sendLock);
+        Datapoint datapoint = new CommandDP(SECURE_GROUP, "test", 0, "1.001");
+        int telegramsPerThread = 60;
+        CountDownLatch start = new CountDownLatch(1);
+        ExecutorService executor = Executors.newFixedThreadPool(6);
+        try {
+            List<Future<?>> futures = new ArrayList<>();
+            for (int t = 0; t < 6; t++) {
+                int kind = t % 3;
+                futures.add(executor.submit(() -> {
+                    start.await();
+                    for (int i = 0; i < telegramsPerThread; i++) {
+                        if (kind == 0) {
+                            communicator.write(datapoint, "on");
+                        } else if (kind == 1) {
+                            assertThrows(KNXTimeoutException.class, () -> communicator.read(datapoint));
+                        } else {
+                            responder.write(datapoint, "on");
+                        }
+                    }
+                    return null;
+                }));
+            }
+            start.countDown();
+            for (Future<?> future : futures) {
+                future.get();
+            }
+        } finally {
+            executor.shutdownNow();
+            responder.close();
+        }
+
+        List<byte[]> apdus = link.allApdus();
+        assertEquals(6 * telegramsPerThread, apdus.size());
+        long last = 0;
+        for (byte[] apdu : apdus) {
+            long sequenceNumber = sequenceNumber(apdu);
+            assertTrue(sequenceNumber > last, sequenceNumber + " reached the link after " + last);
+            last = sequenceNumber;
+        }
     }
 
     @Test
@@ -203,8 +262,15 @@ class DataSecureTest {
         private final List<byte[]> apdus = Collections.synchronizedList(new ArrayList<>());
         private volatile byte[] lastApdu = new byte[0];
 
+        private final boolean slow;
+
         CapturingLink(IndividualAddress address) {
+            this(address, false);
+        }
+
+        CapturingLink(IndividualAddress address, boolean slow) {
             this.address = address;
+            this.slow = slow;
         }
 
         @Override
@@ -214,6 +280,14 @@ class DataSecureTest {
 
         @Override
         public void sendRequestWait(@Nullable KNXAddress dst, @Nullable Priority p, byte @Nullable... nsdu) {
+            if (slow) {
+                // gives another thread the time to overtake between securing and sending
+                try {
+                    Thread.sleep(0, ThreadLocalRandom.current().nextInt(200_000));
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+            }
             if (nsdu != null) {
                 lastApdu = nsdu.clone();
                 apdus.add(lastApdu);

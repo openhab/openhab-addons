@@ -22,6 +22,8 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -47,11 +49,14 @@ import io.calimero.IndividualAddress;
 import io.calimero.KNXAddress;
 import io.calimero.KNXException;
 import io.calimero.KNXIllegalArgumentException;
+import io.calimero.KNXTimeoutException;
+import io.calimero.Priority;
 import io.calimero.cemi.CEMILData;
 import io.calimero.cemi.CemiTData;
 import io.calimero.datapoint.CommandDP;
 import io.calimero.datapoint.Datapoint;
 import io.calimero.device.ProcessCommunicationResponder;
+import io.calimero.dptxlator.DPTXlator;
 import io.calimero.link.KNXLinkClosedException;
 import io.calimero.link.KNXNetworkLink;
 import io.calimero.link.NetworkLinkListener;
@@ -101,6 +106,9 @@ public abstract class AbstractKNXClient implements NetworkLinkListener, KNXClien
 
     private @Nullable ProcessCommunicator processCommunicator;
     private @Nullable ProcessCommunicationResponder responseCommunicator;
+    // A Data Secure receiver drops a telegram whose sequence number is not above the last one it accepted, so
+    // commands, reads and read responses must reach the link in the order their numbers were taken.
+    private final Lock sendLock = new ReentrantLock();
     private @Nullable ManagementProcedures managementProcedures;
     private @Nullable ManagementClient managementClient;
     private @Nullable KNXNetworkLink link;
@@ -244,13 +252,13 @@ public abstract class AbstractKNXClient implements NetworkLinkListener, KNXClien
             deviceInfoClient = new DeviceInfoClientImpl(managementClient);
 
             // ProcessCommunicator provides main KNX communication (Calimero).
-            ProcessCommunicator processCommunicator = newProcessCommunicator(link, sal);
+            ProcessCommunicator processCommunicator = newProcessCommunicator(link, sal, sendLock);
             processCommunicator.responseTimeout(Duration.ofSeconds(responseTimeout));
             processCommunicator.addProcessListener(processListener);
             this.processCommunicator = processCommunicator;
 
             // ProcessCommunicationResponder provides responses to requests from KNX bus (Calimero).
-            ProcessCommunicationResponder responseCommunicator = new ProcessCommunicationResponder(link, sal);
+            ProcessCommunicationResponder responseCommunicator = newResponseCommunicator(link, sal, sendLock);
             this.responseCommunicator = responseCommunicator;
 
             // register this class, callbacks will be triggered
@@ -402,10 +410,39 @@ public abstract class AbstractKNXClient implements NetworkLinkListener, KNXClien
         }
     }
 
-    static ProcessCommunicator newProcessCommunicator(KNXNetworkLink link, SecureApplicationLayer sal)
+    static ProcessCommunicator newProcessCommunicator(KNXNetworkLink link, SecureApplicationLayer sal, Lock sendLock)
             throws KNXLinkClosedException {
         // secure group addresses are written with their group key; GO diagnostics would need device tool keys
-        return new ProcessCommunicatorImpl(link, sal, false);
+        return new ProcessCommunicatorImpl(link, sal, false) {
+            // the wait for the answer to a read is outside of send(), so it does not hold up other telegrams
+            @Override
+            @NonNullByDefault({})
+            protected void send(final GroupAddress dst, final Priority p, final int service, final DPTXlator t)
+                    throws KNXTimeoutException, KNXLinkClosedException, InterruptedException {
+                sendLock.lock();
+                try {
+                    super.send(dst, p, service, t);
+                } finally {
+                    sendLock.unlock();
+                }
+            }
+        };
+    }
+
+    static ProcessCommunicationResponder newResponseCommunicator(KNXNetworkLink link, SecureApplicationLayer sal,
+            Lock sendLock) throws KNXLinkClosedException {
+        return new ProcessCommunicationResponder(link, sal) {
+            @Override
+            @NonNullByDefault({})
+            public void write(final Datapoint dp, final String value) throws KNXException {
+                sendLock.lock();
+                try {
+                    super.write(dp, value);
+                } finally {
+                    sendLock.unlock();
+                }
+            }
+        };
     }
 
     public void dispose() {
