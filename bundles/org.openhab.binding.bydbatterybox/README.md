@@ -216,11 +216,14 @@ It is `UNDEF` for the 5th module of a 160-cell tower without `readExtendedCells`
 
 Updated every `eventLogInterval` from the logs of the BMU and of each tower.
 
-| Channel           | Type     | Description                                                                                  |
-|-------------------|----------|----------------------------------------------------------------------------------------------|
-| `last-event`      | String   | Newest log entry, e.g. `BMS 1: Stop discharging (SoC 7 %, 305.3 V, 0.0 A)`                   |
-| `last-event-time` | DateTime | Time of the newest log entry                                                                 |
-| `event`           | Trigger  | Fired once for every new log entry, with the source and event code as payload, e.g. `BMS1:7` |
+| Channel           | Type     | Description                                                                                                |
+|-------------------|----------|------------------------------------------------------------------------------------------------------------|
+| `last-event`      | String   | Newest log entry, e.g. `BMS 1: Stop discharging (SoC 7 %, 305.3 V, 0.0 A)`                                 |
+| `last-event-time` | DateTime | Time of the newest log entry                                                                               |
+| `event`           | Trigger  | Fired once for every new log entry, oldest first, with the source and event code as payload, e.g. `BMS1:7` |
+
+When a reading finds several new entries, `last-event` and `last-event-time` show the newest of them, while the trigger fires once for each entry.
+A rule triggered by `event` should therefore take the entry from its payload (`receivedEvent`), not from `last-event`.
 
 The battery keeps several weeks of entries per unit and hands them out in pages of 20, newest first.
 Each request returns the next older page, and only after a pause of about two minutes does the battery start at the newest page again.
@@ -271,7 +274,7 @@ Cell voltages change in steps of 1 mV, so `everyChange` stores only real changes
 
 ### Rule Example
 
-Alert when the voltage spread between the cells of a tower exceeds 80 mV, and log every new battery event:
+Alert when the voltage spread between the cells of a tower exceeds 80 mV, log every new battery event, and react to one specific event:
 
 ```java
 rule "Battery cell spread alert"
@@ -288,7 +291,14 @@ rule "Battery event"
 when
     Channel "bydbatterybox:hv-premium:home:events#event" triggered
 then
-    logInfo("battery", "Battery event {}: {}", receivedEvent, BYD_LastEvent.state)
+    logInfo("battery", "Battery event {}", receivedEvent)
+end
+
+rule "Battery stopped discharging"
+when
+    Channel "bydbatterybox:hv-premium:home:events#event" triggered "BMS1:7"
+then
+    logInfo("battery", "Tower 1 stopped discharging")
 end
 ```
 

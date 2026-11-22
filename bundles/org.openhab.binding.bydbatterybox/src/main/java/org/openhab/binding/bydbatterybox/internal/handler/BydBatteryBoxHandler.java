@@ -513,7 +513,8 @@ public class BydBatteryBoxHandler extends BaseThingHandler {
     }
 
     /**
-     * Updates the last event channels before triggering, so that a rule triggered by an event already reads it there.
+     * Updates the last event channels to the newest entry before triggering, so that they are current when rules run.
+     * With several new entries, the channels describe the newest one; the trigger payload identifies each entry.
      */
     void publishEvents(List<EventRecord> fresh, @Nullable EventRecord newest, Duration clockOffset) {
         if (newest != null) {
