@@ -880,17 +880,14 @@ Please see [HomeWorks RS232 Protocol Guide](https://www.lutron.com/TechnicalDocu
 - HomeWorks RS232-connected Processor Units (**hwserialbridge**)
 - HomeWorks Ethernet-connected Processor Units (**hwtelnetbridge**)
 - Dimmers (**hwdimmer**)
-
-Supported in future updates:
-
-- Keypads
-- Keypad LEDs
+- Keypads, including their buttons and LEDs (**hwkeypad**)
 
 ### HomeWorks RS232 Discovery
 
 This binding supports active and passive discovery.
 It will detect dimmers as they are manually raised or lowered, or can be made to scan for configured dimmer modules.
-Discovery uses the processor's `DL` level messages.
+Keypads are detected when one of their buttons is pressed or an LED changes.
+Discovery uses the processor's `DL` level messages for dimmers, and the `KB` button and `KLS` LED messages for keypads.
 RPM, D48 and H48 dimmers have five-field addresses (for example `[01:01:03:02:04]`), while RF dimmers, GRAFIK Eye zones and Wallbox Power Module (WPM) zones have four-field addresses (for example `[01:08:01:54]` for an RF dimmer).
 On a Series 8 processor, QED shades have been seen to report `DL` messages with four-field addresses too (for example `[01:04:2:12]`), so address length alone cannot distinguish them from lighting zones.
 Shades are not supported yet.
@@ -928,8 +925,8 @@ The bridge relies on the processor's reply to its heartbeat command to detect a 
 At the next heartbeat after 150 seconds without receiving data, including immediately after login, the bridge reports a communication error and schedules a reconnect.
 The error asks you to check both the network connection and the Suppress Replies setting, because silence alone cannot distinguish them.
 Monitoring messages do not establish that command replies are enabled; with replies suppressed, a quiet system can repeatedly disconnect and reconnect.
-When the bridge connects, it sends `PROMPTOFF`, `KBMOFF`, `KLMOFF`, `GSMOFF` and `DLMON`, which are the same commands the RS232 bridge sends.
-The bridge currently uses only dimmer level messages.
+When the bridge connects, it sends `PROMPTOFF`, `KBMON`, `KLMON`, `GSMOFF` and `DLMON`, which are the same commands the RS232 bridge sends.
+The bridge uses dimmer level, keypad button and keypad LED messages.
 
 These settings are described in the HomeWorks Illumination help, in the Address Assignment topic (Link 9, Login/Driver).
 The device address formats are described in its RS232 command reference, in the Device Address Formatting topic.
@@ -962,6 +959,68 @@ Dimmer addresses depend on the device type, as described in the discovery sectio
 An address can be written in any format the processor accepts, such as `1:1:3:2:4` or `1.1.3.2.4`; the binding converts it to the form the processor reports.
 Each dimmer asks the processor for its level whenever the bridge goes online, including after a reconnect.
 
+### HomeWorks Keypads
+
+A keypad has one required parameter ``address``, and one optional parameter ``model``.
+Keypads (and other devices that share their address space, such as CCIs and TEL-9 interfaces) have three-field addresses on links 4 to 6 (for example `[01:04:02]`), and RF keypads have four fields (for example `[01:08:02:01]`).
+The processor numbers the buttons of every keypad 1 to 24, and the ``model`` decides which of them get channels.
+The default, `GENERIC`, gives the Thing all 24 buttons and LEDs; channels for buttons or LEDs that the keypad does not have never receive events.
+The processor does not tell the binding which model a keypad is, so discovered keypads use `GENERIC`.
+Set ``model`` to the keypad's model number to get only the channels it has:
+
+| Model                                                                        | Buttons                       | LEDs                |
+|------------------------------------------------------------------------------|-------------------------------|---------------------|
+| `HWI-KP5`, `HWI-KP5-DN`, `HWI-KP5-DW`, `HWI-4SE-M`, `HWI-4SE-IR`, `HWI-5S-M` | 1-5, 23, 24                   | 1-5                 |
+| `HWI-KP10`                                                                   | 1-10, 23, 24                  | 1-10                |
+| `HWI-KP15`                                                                   | 1-15, 23, 24                  | 1-15                |
+| `HWI-8SE-M`, `HWI-8SE-IR`                                                    | 1-9, 23, 24                   | 1-9                 |
+| `HWI-KP-LB6`                                                                 | 1, 3, 5, 6, 8, 10             | same as the buttons |
+| `HWI-KP-LB9`                                                                 | 1, 3, 5, 6, 8, 10, 11, 13, 15 | same as the buttons |
+| `HWI-2B`                                                                     | 23, 24                        | 23, 24              |
+| `HWI-2SE`                                                                    | 3, 4                          | 3, 4                |
+| `HWI-5S-IR`, `HWI-5S-NM`                                                     | 1-5                           | 1-5                 |
+| `ST-4S`                                                                      | 1-4, 6, 23, 24                | 1-4, 6              |
+
+The button numbers are those of the Keypad Button Numbering topic in the HomeWorks Illumination help.
+That topic does not cover seeTouch keypads (models starting with `ST-`).
+seeTouch keypads report their buttons by position, with 23 for the lower and 24 for the raise button; the buttons of `ST-4S` were confirmed on a processor, and other seeTouch models use `GENERIC` for now.
+The insert style and color in a full seeTouch model number, such as `-NI-WH` in `ST-4S-NI-WH`, do not change the buttons.
+
+```java
+lutron:hwkeypad:keypad1 (lutron:hwtelnetbridge:home) [ address="[01:04:02]", model="HWI-KP10" ]
+```
+
+| Channel    | Type    | Description                                                                            |
+|------------|---------|----------------------------------------------------------------------------------------|
+| button1-24 | Trigger | Fires `PRESSED`, `RELEASED`, `LONG_PRESSED` and `DOUBLE_PRESSED` events for the button |
+| led1-24    | String  | State of the LED of the button: `OFF`, `ON`, `FLASH1` or `FLASH2`                      |
+| press      | String  | Send a button number (1-24) to simulate a press and release of that button             |
+
+Only the buttons and LEDs of the configured model have channels.
+
+The processor reports what the keypad does, and the binding passes it on unchanged.
+A button that is held sends `PRESSED`, `LONG_PRESSED` and `RELEASED`, and a double tap sends `PRESSED`, `RELEASED`, `DOUBLE_PRESSED` and `RELEASED`.
+
+LED states are read from the processor when the Thing starts and whenever the bridge comes online, and they follow every change afterwards.
+Sending a state to an LED channel sets the LED.
+The processor ignores this for an LED that is programmed to follow a scene or a load; use the `press` channel to run the keypad's programming instead.
+
+```java
+String Keypad1_Led3 "Keypad LED 3" { channel="lutron:hwkeypad:keypad1:led3" }
+```
+
+```javascript
+rule "Keypad button 3 pressed"
+when
+    Channel "lutron:hwkeypad:keypad1:button3" triggered PRESSED
+then
+    logInfo("keypad", "Button 3 pressed")
+end
+```
+
+Dimmers that report taps on their switch (H48 and RF dimmers, but not D48) have a ``tap`` trigger channel with the same events.
+Existing dimmer Things get the channel when the binding is updated.
+
 ### HomeWorks Console Commands
 
 The console commands help to see how a processor responds, for example when investigating problems or testing commands.
@@ -988,8 +1047,8 @@ Listening to lutron:hwtelnetbridge:home for 20 seconds...
 Done.
 ```
 
-Monitoring that is turned on from the console stays on until the bridge reconnects.
-The bridge itself sends `KBMOFF` when it connects.
+Monitoring that is turned on or off from the console stays that way until the bridge reconnects.
+The bridge itself sends `KBMON` and `KLMON` when it connects.
 
 ### HomeWorks Logging
 
