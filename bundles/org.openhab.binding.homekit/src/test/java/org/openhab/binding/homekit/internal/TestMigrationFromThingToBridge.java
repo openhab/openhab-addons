@@ -13,7 +13,7 @@
 package org.openhab.binding.homekit.internal;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 import static org.openhab.binding.homekit.internal.HomekitBindingConstants.*;
 
@@ -36,6 +36,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatchers;
+import org.openhab.binding.homekit.internal.camera.go2rtc.Go2RtcCameraServlet;
 import org.openhab.binding.homekit.internal.discovery.HomekitMdnsDiscoveryParticipant;
 import org.openhab.binding.homekit.internal.dto.Accessories;
 import org.openhab.binding.homekit.internal.dto.Accessory;
@@ -1776,7 +1777,7 @@ class TestMigrationFromThingToBridge {
                 ScheduledExecutorService scheduler, ManagedThingProvider thingProvider,
                 HomekitMdnsDiscoveryParticipant discoveryParticipant, MacResolver macResolver) {
             super(thing, typeProvider, channelTypeRegistry, channelGroupTypeRegistry, keyStore, i18nProvider, bundle,
-                    thingProvider, discoveryParticipant, macResolver);
+                    thingProvider, discoveryParticipant, macResolver, mock(Go2RtcCameraServlet.class));
             this.injectedTestScheduler = scheduler;
         }
 

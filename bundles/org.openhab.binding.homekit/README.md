@@ -176,6 +176,20 @@ then
 end
 ```
 
+### Special Extra Browser Audio/Video Channel
+
+Cameras also expose a Camera URL Channel (`camera-url`).
+The binding downloads and runs a [go2rtc](https://github.com/AlexxIT/go2rtc) process and serves a WebRTC viewer page from openHAB's own web server.
+Opening this URL in a browser lets you listen to the camera microphone and watch its video.
+The **Talk** button sends your browser microphone to the camera speaker.
+
+- The page is served from openHAB's own HTTP or HTTPS port, and browser signalling is relayed through openHAB.
+  When openHAB's HTTPS service is enabled, the viewer uses HTTPS with the openHAB certificate.
+  The default openHAB certificate is self-signed, so the browser shows a warning that you must accept.
+  Otherwise, the viewer uses plain HTTP.
+- Browsers only allow microphone access on HTTPS, so **Talk** is available only when the viewer is opened over HTTPS and the browser trusts the certificate.
+- The viewer has **no authentication**, so anyone who can reach the host on that network can listen to and talk through the camera and view its video.
+
 ## Integration with Apple Home App / Ecosystem
 
 Many HomeKit accessories are able only to be paired with one client.
