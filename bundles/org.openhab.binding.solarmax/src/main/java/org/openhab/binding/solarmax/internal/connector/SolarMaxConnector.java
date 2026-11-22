@@ -17,6 +17,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 import java.time.ZonedDateTime;
@@ -151,7 +152,7 @@ public class SolarMaxConnector {
         while (true) {
             try {
                 Socket socket = getSocketConnection(host, portNumber, settings.timeout());
-                return getValuesFromSolarMax(socket, deviceAddress, commandsToSend);
+                return getValuesFromSolarMax(socket, deviceAddress, commandsToSend, settings.timeout());
             } catch (UnknownHostException e) {
                 // retrying won't help
                 throw new SolarMaxConnectionException("Unknown host '" + host + "'", e);
@@ -199,15 +200,21 @@ public class SolarMaxConnector {
         return commandString;
     }
 
+    /**
+     * @param timeout time in milliseconds the complete response may take. The socket timeout applies to every single
+     *            read and starts again with each byte, so a device sending its response slowly byte by byte could
+     *            otherwise keep the request running much longer than the timeout.
+     */
     private static Map<SolarMaxCommandKey, @Nullable String> getValuesFromSolarMax(final Socket socket,
-            final int deviceAddress, final List<SolarMaxCommandKey> commandList) throws SolarMaxException {
+            final int deviceAddress, final List<SolarMaxCommandKey> commandList, final int timeout)
+            throws SolarMaxException {
         OutputStream outputStream = null;
         InputStream inputStream = null;
         try {
             outputStream = socket.getOutputStream();
             inputStream = socket.getInputStream();
 
-            return getValuesFromSolarMax(outputStream, inputStream, deviceAddress, commandList);
+            return getValuesFromSolarMax(socket, outputStream, inputStream, deviceAddress, commandList, timeout);
         } catch (final IOException e) {
             throw new SolarMaxException("Error getting input/output streams from socket: " + describe(e), e);
         } finally {
@@ -225,15 +232,16 @@ public class SolarMaxConnector {
         }
     }
 
-    private static Map<SolarMaxCommandKey, @Nullable String> getValuesFromSolarMax(final OutputStream outputStream,
-            final InputStream inputStream, final int deviceAddress, final List<SolarMaxCommandKey> commandList)
-            throws SolarMaxException {
+    private static Map<SolarMaxCommandKey, @Nullable String> getValuesFromSolarMax(final Socket socket,
+            final OutputStream outputStream, final InputStream inputStream, final int deviceAddress,
+            final List<SolarMaxCommandKey> commandList, final int timeout) throws SolarMaxException {
         Map<SolarMaxCommandKey, @Nullable String> returnedValues;
         String commandString = getCommandString(commandList);
         String request = contructRequest(deviceAddress, commandString);
         try {
             LOGGER.trace("    ==>: {}", request);
 
+            final long responseDeadline = System.nanoTime() + TimeUnit.MILLISECONDS.toNanos(timeout);
             outputStream.write(request.getBytes(StandardCharsets.US_ASCII));
 
             String response = "";
@@ -241,6 +249,13 @@ public class SolarMaxConnector {
 
             // get everything from the stream
             while (true) {
+                // the complete response has to arrive within the timeout, so limit each read to the time left
+                long remainingMillis = TimeUnit.NANOSECONDS.toMillis(responseDeadline - System.nanoTime());
+                if (remainingMillis <= 0) {
+                    throw new SocketTimeoutException("Response not complete after " + timeout + "ms");
+                }
+                socket.setSoTimeout((int) remainingMillis);
+
                 // read one byte from the stream
                 int bytesRead = inputStream.read(responseByte);
 
@@ -324,7 +339,8 @@ public class SolarMaxConnector {
     }
 
     /**
-     * @param timeout timeout in milliseconds, used for connecting and for every read from the socket
+     * @param timeout timeout in milliseconds for connecting (and initial socket timeout, the complete response is
+     *            limited to the same time while reading it)
      */
     private static Socket getSocketConnection(final String host, int portNumber, int timeout)
             throws SolarMaxConnectionException, UnknownHostException {

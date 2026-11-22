@@ -207,6 +207,63 @@ public class SolarMaxConnectorRetryTest {
         }
     }
 
+    /**
+     * sends the response byte by byte with a pause before each byte that is shorter than the timeout, so each single
+     * read succeeds
+     */
+    private static Behaviour trickle(long pauseMillis) {
+        return (n, s) -> {
+            readRequest(s);
+            OutputStream out = s.getOutputStream();
+            for (byte b : RESPONSE.getBytes(StandardCharsets.US_ASCII)) {
+                Thread.sleep(pauseMillis);
+                out.write(b);
+                out.flush();
+            }
+        };
+    }
+
+    @Test
+    public void tricklingAnswerIsLimitedToTheTimeout() throws Exception {
+        // without a limit for the complete response this would take more than 150 characters * 20 ms = 3 s
+        try (FakeSolarMax device = new FakeSolarMax(trickle(20))) {
+            long start = System.nanoTime();
+            SolarMaxException e = assertThrows(SolarMaxException.class,
+                    () -> poll(device, new SolarMaxConnectionSettings(300, 0, 50, NO_TIME_LIMIT)));
+            long elapsedMillis = (System.nanoTime() - start) / 1_000_000;
+
+            assertEquals(1, device.connections());
+            assertTrue(elapsedMillis >= 300, "elapsed " + elapsedMillis + " ms");
+            assertTrue(elapsedMillis < 1000, "elapsed " + elapsedMillis + " ms");
+            assertTrue(message(e).contains("SocketTimeoutException"), message(e));
+        }
+    }
+
+    @Test
+    public void retryOfTricklingAnswerStaysWithinTheTimeBudget() throws Exception {
+        // budget 1000 ms: the first attempt is cut off after 300 ms, so the retry (50 ms + max. 2 * 300 ms) still fits.
+        // Before the response was limited as a whole, the first attempt alone took longer than the budget.
+        try (FakeSolarMax device = new FakeSolarMax(trickle(20))) {
+            long start = System.nanoTime();
+            assertThrows(SolarMaxException.class, () -> poll(device, new SolarMaxConnectionSettings(300, 1, 50, 1000)));
+            long elapsedMillis = (System.nanoTime() - start) / 1_000_000;
+
+            assertEquals(2, device.connections());
+            assertTrue(elapsedMillis < 1000, "elapsed " + elapsedMillis + " ms");
+        }
+    }
+
+    @Test
+    public void tricklingAnswerWithinTheTimeoutSucceeds() throws Exception {
+        // about 150 characters * 2 ms = 0.3 s per request, well within the timeout
+        try (FakeSolarMax device = new FakeSolarMax(trickle(2))) {
+            SolarMaxData data = poll(device, new SolarMaxConnectionSettings(3000, 0, 50, NO_TIME_LIMIT));
+
+            assertTrue(data.wasCommunicationSuccessful());
+            assertEquals(REQUESTS_PER_POLL, device.connections());
+        }
+    }
+
     @Test
     public void deviceNeverAnsweringFailsAfterTimeoutTimesAttempts() throws Exception {
         try (FakeSolarMax device = new FakeSolarMax((n, s) -> neverAnswer(s))) {
