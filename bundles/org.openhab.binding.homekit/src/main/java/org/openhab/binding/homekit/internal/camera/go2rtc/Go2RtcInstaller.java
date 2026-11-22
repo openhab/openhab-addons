@@ -71,9 +71,11 @@ public class Go2RtcInstaller {
         Path path = baseDir.resolve(NAME);
         Path binary = path.resolve(NAME + (isWindows(os) ? ".exe" : ""));
         logger.debug("ensureBinary() destBinary={}", binary);
-        if (!Files.exists(binary)) {
-            logger.debug("Downloading {} to {}", asset, binary);
-            download(RELEASE_URL + asset, asset, path, binary, os);
+        synchronized (Go2RtcInstaller.class) {
+            if (!Files.exists(binary)) {
+                logger.debug("Downloading {} to {}", asset, binary);
+                download(RELEASE_URL + asset, asset, path, binary, os);
+            }
         }
         if (!binary.toFile().setExecutable(true)) {
             logger.debug("ensureBinary() cannot make {} executable", binary);

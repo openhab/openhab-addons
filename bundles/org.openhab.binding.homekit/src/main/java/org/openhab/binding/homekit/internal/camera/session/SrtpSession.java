@@ -31,8 +31,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * reordering within the replay window and rejects duplicates and packets older than that window.
  *
  * @author Andrew Fiddian-Green - Initial contribution
- * @author Andrew Fiddian-Green - SRTCP support
- * @author Andrew Fiddian-Green - SRTP replay protection
  */
 @NonNullByDefault
 public final class SrtpSession {

@@ -38,7 +38,6 @@ import org.slf4j.LoggerFactory;
  * to a loopback port owned by this class. Each received packet is passed to the downstream {@link RtpPacketSink}.
  *
  * @author Andrew Fiddian-Green - Initial contribution
- * @author Andrew Fiddian-Green - RTP packet interfaces
  */
 @NonNullByDefault
 public final class FfmpegRtpTranscoder implements RtpPacketSource, RtpPacketSink, AutoCloseable {

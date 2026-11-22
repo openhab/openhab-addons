@@ -25,7 +25,6 @@ import org.eclipse.jdt.annotation.Nullable;
  * All methods are synchronized because the RTP relay thread updates the statistics while the report thread reads them.
  *
  * @author Andrew Fiddian-Green - Initial contribution
- * @author Andrew Fiddian-Green - RTCP sequence restart validation
  */
 @NonNullByDefault
 public final class RtcpReceiverReport {

@@ -52,9 +52,6 @@ import org.slf4j.LoggerFactory;
  * camera session and are not reused when that session is replaced.
  *
  * @author Andrew Fiddian-Green - Initial contribution
- * @author Andrew Fiddian-Green - Session transition isolation
- * @author Andrew Fiddian-Green - RTP packet pipelines
- * @author Andrew Fiddian-Green - SRTP packet adapters
  */
 @NonNullByDefault
 public class Go2RtcDataPump implements AutoCloseable {

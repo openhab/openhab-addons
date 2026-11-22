@@ -33,7 +33,6 @@ import org.slf4j.LoggerFactory;
  * @param packetTimeMs the RTP packet time in ms, which the camera advertises and which HomeKit Table 9-20 allows
  *
  * @author Andrew Fiddian-Green - Initial contribution
- * @author Andrew Fiddian-Green - Preserve advertised audio bit-rate mode
  */
 @NonNullByDefault
 public record AudioCodec(AudioCodecType codecType, int channels, boolean constantBitrate, int sampleRateKhz,

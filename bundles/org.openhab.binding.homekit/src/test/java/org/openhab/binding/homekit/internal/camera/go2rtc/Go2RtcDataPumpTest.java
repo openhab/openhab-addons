@@ -49,8 +49,6 @@ import org.openhab.binding.homekit.internal.enums.VideoCodecType;
  * Tests for {@link Go2RtcDataPump} codec selection, port allocation and full-duplex audio.
  *
  * @author Andrew Fiddian-Green - Initial contribution
- * @author Andrew Fiddian-Green - Symmetric audio regression coverage
- * @author Andrew Fiddian-Green - Session transition regression coverage
  */
 class Go2RtcDataPumpTest {
 

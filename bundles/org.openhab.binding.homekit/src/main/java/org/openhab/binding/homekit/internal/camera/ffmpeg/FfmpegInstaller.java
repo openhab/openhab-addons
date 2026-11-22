@@ -67,9 +67,11 @@ public final class FfmpegInstaller {
         String asset = assetName(os, arch);
         Path destDir = baseDir.resolve(NAME);
         Path destBinary = destDir.resolve(NAME + (isWindows(os) ? ".exe" : ""));
-        if (!Files.exists(destBinary)) {
-            LOGGER.debug("Downloading {} to {}", asset, destBinary);
-            download(RELEASE_URL + asset, asset, destDir, destBinary);
+        synchronized (FfmpegInstaller.class) {
+            if (!Files.exists(destBinary)) {
+                LOGGER.debug("Downloading {} to {}", asset, destBinary);
+                download(RELEASE_URL + asset, asset, destDir, destBinary);
+            }
         }
         if (!destBinary.toFile().setExecutable(true)) {
             throw new IOException("Cannot make " + destBinary + " executable");

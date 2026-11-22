@@ -60,7 +60,7 @@ public final class Go2RtcConfig {
         yaml.append("webrtc:\n");
         yaml.append("  listen: \"").append(address.host()).append(":").append(address.webRtcPort()).append("\"\n");
         yaml.append("rtsp:\n");
-        yaml.append("  listen: \"127.0.0.1:").append(address.rtspPort()).append("\"\n");
+        yaml.append("  listen: \"").append(API_HOST).append(":").append(address.rtspPort()).append("\"\n");
         yaml.append("streams:\n");
         yaml.append("  ").append(listenStream).append(":\n");
         yaml.append("  ").append(talkStream).append(":\n");

@@ -27,7 +27,6 @@ import org.openhab.binding.homekit.internal.camera.session.SrtpSession;
  * Tests for {@link SrtpSession}.
  *
  * @author Andrew Fiddian-Green - Initial contribution
- * @author Andrew Fiddian-Green - SRTP replay protection
  */
 class SrtpSessionTest {
 
