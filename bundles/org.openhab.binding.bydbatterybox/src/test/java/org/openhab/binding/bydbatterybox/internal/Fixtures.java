@@ -48,6 +48,24 @@ public final class Fixtures {
     }
 
     /**
+     * @return a copy of the fixture frame with one byte replaced and the Modbus CRC recomputed
+     */
+    public static byte[] frameWithByte(String name, int offset, int value) {
+        byte[] frame = frame(name);
+        frame[offset] = (byte) value;
+        int crc = 0xFFFF;
+        for (int i = 0; i < frame.length - 2; i++) {
+            crc ^= frame[i] & 0xFF;
+            for (int bit = 0; bit < 8; bit++) {
+                crc = (crc & 1) != 0 ? (crc >>> 1) ^ 0xA001 : crc >>> 1;
+            }
+        }
+        frame[frame.length - 2] = (byte) crc;
+        frame[frame.length - 1] = (byte) (crc >>> 8);
+        return frame;
+    }
+
+    /**
      * Concatenates the chunk payloads (frame bytes 5..132) of numbered fixtures {@code prefix-1 ... prefix-count}.
      */
     public static byte[] chunkPayloads(String prefix, int count) {

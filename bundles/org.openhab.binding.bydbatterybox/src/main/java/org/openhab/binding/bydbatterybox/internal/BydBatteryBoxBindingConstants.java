@@ -61,6 +61,8 @@ public class BydBatteryBoxBindingConstants {
     public static final String CHANNEL_CHARGED_ENERGY = "charged-energy";
     public static final String CHANNEL_DISCHARGED_ENERGY = "discharged-energy";
     public static final String CHANNEL_EFFICIENCY = "efficiency";
+    public static final String CHANNEL_USABLE_CAPACITY = "usable-capacity";
+    public static final String CHANNEL_STORED_ENERGY = "stored-energy";
     public static final String CHANNEL_ERROR = "error";
     public static final String CHANNEL_ERRORS = "errors";
     public static final String CHANNEL_BALANCING_CELLS = "balancing-cells";
@@ -82,6 +84,7 @@ public class BydBatteryBoxBindingConstants {
     public static final String PROPERTY_MODULES_PER_TOWER = "modulesPerTower";
     public static final String PROPERTY_CELLS_PER_MODULE = "cellsPerModule";
     public static final String PROPERTY_TEMPERATURE_SENSORS_PER_MODULE = "temperatureSensorsPerModule";
+    public static final String PROPERTY_NOMINAL_CAPACITY = "nominalCapacity";
     public static final String PROPERTY_PARAMETER_TABLE = "parameterTable";
     public static final String PROPERTY_INVERTER_TYPE = "inverterType";
     public static final String PROPERTY_APPLICATION = "application";

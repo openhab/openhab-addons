@@ -118,6 +118,16 @@
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
+	<channel-type id="energy-calculated">
+		<item-type unitHint="kWh">Number:Energy</item-type>
+		<label>Energy</label>
+		<tags>
+			<tag>Calculation</tag>
+			<tag>Energy</tag>
+		</tags>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+
 	<channel-type id="efficiency">
 		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Efficiency</label>

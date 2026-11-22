@@ -21,19 +21,23 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public enum BatteryType {
-    HVM(1, 16, 8),
-    HVS(2, 32, 12),
+    /** 16 cells of 3.2 V and 54 Ah per module. */
+    HVM(1, 16, 8, 2760),
+    /** 32 cells of 3.2 V and 25 Ah per module. */
+    HVS(2, 32, 12, 2560),
     /** HVL (code 0), LVS and any unknown code: no known cell layout. */
-    UNSUPPORTED(-1, 0, 0);
+    UNSUPPORTED(-1, 0, 0, 0);
 
     private final int code;
     private final int cellsPerModule;
     private final int temperatureSensorsPerModule;
+    private final int moduleCapacityWh;
 
-    BatteryType(int code, int cellsPerModule, int temperatureSensorsPerModule) {
+    BatteryType(int code, int cellsPerModule, int temperatureSensorsPerModule, int moduleCapacityWh) {
         this.code = code;
         this.cellsPerModule = cellsPerModule;
         this.temperatureSensorsPerModule = temperatureSensorsPerModule;
+        this.moduleCapacityWh = moduleCapacityWh;
     }
 
     public static BatteryType fromCode(int code) {
@@ -51,6 +55,13 @@ public enum BatteryType {
 
     public int getTemperatureSensorsPerModule() {
         return temperatureSensorsPerModule;
+    }
+
+    /**
+     * @return the nominal capacity of one module in Wh, or 0 if it is not known
+     */
+    public int getModuleCapacityWh() {
+        return moduleCapacityWh;
     }
 
     public boolean hasCellDetails() {

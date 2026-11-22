@@ -50,6 +50,14 @@
 				<description>Lifetime discharged energy.</description>
 			</channel>
 			<channel id="efficiency" typeId="efficiency"/>
+			<channel id="usable-capacity" typeId="energy-calculated">
+				<label>Usable Capacity</label>
+				<description>Nominal capacity reduced by the state of health.</description>
+			</channel>
+			<channel id="stored-energy" typeId="energy-calculated">
+				<label>Stored Energy</label>
+				<description>Usable capacity multiplied by the state of charge.</description>
+			</channel>
 			<channel id="error" typeId="alarm">
 				<label>Error</label>
 				<description>ON while the battery reports at least one system error.</description>
@@ -81,6 +89,10 @@
 			<channel id="discharged-energy" typeId="energy">
 				<label>Discharged Energy</label>
 				<description>Lifetime discharged energy of the tower.</description>
+			</channel>
+			<channel id="usable-capacity" typeId="energy-calculated">
+				<label>Usable Capacity</label>
+				<description>Nominal capacity of the tower reduced by its state of health.</description>
 			</channel>
 			<channel id="max-cell-voltage" typeId="cell-voltage">
 				<label>Max Cell Voltage</label>

@@ -275,7 +275,7 @@ public class BydBatteryBoxHandler extends BaseThingHandler {
                 return;
             }
             applyIdentity(context, info);
-            publishStatus(status);
+            publishStatus(status, info);
             context.failures = 0;
             updateStatus(ThingStatus.ONLINE);
 
@@ -358,6 +358,7 @@ public class BydBatteryBoxHandler extends BaseThingHandler {
                 new QuantityType<>(BigDecimal.valueOf(data.chargedEnergyWh(), 3), Units.KILOWATT_HOUR));
         update(group, CHANNEL_DISCHARGED_ENERGY,
                 new QuantityType<>(BigDecimal.valueOf(data.dischargedEnergyWh(), 3), Units.KILOWATT_HOUR));
+        update(group, CHANNEL_USABLE_CAPACITY, energy(towerCapacityWh(info), data.stateOfHealth()));
         update(group, CHANNEL_BALANCING_CELLS, new DecimalType(data.balancingCells()));
         update(group, CHANNEL_WARNING, OnOffType.from(data.stateBits() != 0));
         update(group, CHANNEL_WARNINGS, new StringType(texts.towerWarnings(data.stateBits())));
@@ -490,6 +491,13 @@ public class BydBatteryBoxHandler extends BaseThingHandler {
                 String.valueOf(info.batteryType().getTemperatureSensorsPerModule()));
         properties.put(PROPERTY_INVERTER_TYPE, String.valueOf(info.inverterType()));
         properties.put(PROPERTY_APPLICATION, String.valueOf(info.application()));
+        int nominalCapacityWh = info.towers() * towerCapacityWh(info);
+        if (nominalCapacityWh > 0) {
+            properties.put(PROPERTY_NOMINAL_CAPACITY,
+                    BigDecimal.valueOf(nominalCapacityWh, 3).stripTrailingZeros().toPlainString() + " kWh");
+        } else {
+            properties.remove(PROPERTY_NOMINAL_CAPACITY);
+        }
         if (!properties.equals(editProperties())) {
             updateProperties(properties);
         }
@@ -567,7 +575,26 @@ public class BydBatteryBoxHandler extends BaseThingHandler {
         return String.format("%02d", number);
     }
 
-    private void publishStatus(SystemStatus status) {
+    private static int towerCapacityWh(SystemInfo info) {
+        return info.modulesPerTower() * info.batteryType().getModuleCapacityWh();
+    }
+
+    /**
+     * @return the capacity scaled by the given percentages, in kWh with 10 Wh resolution, or {@code UNDEF} if the
+     *         capacity is not known
+     */
+    private static State energy(int capacityWh, int... percents) {
+        if (capacityWh <= 0) {
+            return UnDefType.UNDEF;
+        }
+        BigDecimal wh = BigDecimal.valueOf(capacityWh);
+        for (int percent : percents) {
+            wh = wh.multiply(BigDecimal.valueOf(percent)).movePointLeft(2);
+        }
+        return new QuantityType<>(wh.movePointLeft(3).setScale(2, RoundingMode.HALF_UP), Units.KILOWATT_HOUR);
+    }
+
+    private void publishStatus(SystemStatus status, SystemInfo info) {
         update(GROUP_STATUS, CHANNEL_STATE_OF_CHARGE, new QuantityType<>(status.stateOfCharge(), Units.PERCENT));
         update(GROUP_STATUS, CHANNEL_STATE_OF_HEALTH, new QuantityType<>(status.stateOfHealth(), Units.PERCENT));
         update(GROUP_STATUS, CHANNEL_VOLTAGE, new QuantityType<>(status.voltage(), Units.VOLT));
@@ -592,6 +619,10 @@ public class BydBatteryBoxHandler extends BaseThingHandler {
                         ? new QuantityType<>(status.dischargedEnergy().multiply(BigDecimal.valueOf(100))
                                 .divide(status.chargedEnergy(), 1, RoundingMode.HALF_UP), Units.PERCENT)
                         : UnDefType.UNDEF);
+        int nominalCapacityWh = info.towers() * towerCapacityWh(info);
+        update(GROUP_STATUS, CHANNEL_USABLE_CAPACITY, energy(nominalCapacityWh, status.stateOfHealth()));
+        update(GROUP_STATUS, CHANNEL_STORED_ENERGY,
+                energy(nominalCapacityWh, status.stateOfHealth(), status.stateOfCharge()));
         update(GROUP_STATUS, CHANNEL_ERROR, OnOffType.from(status.errorBits() != 0));
         update(GROUP_STATUS, CHANNEL_ERRORS, new StringType(texts.systemErrors(status.errorBits())));
         updateProperty(PROPERTY_PARAMETER_TABLE, status.parameterTable());

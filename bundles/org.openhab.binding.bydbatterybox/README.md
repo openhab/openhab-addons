@@ -97,22 +97,23 @@ The number of balancing cells includes the 5th module only with the option enabl
 
 ### Properties
 
-| Property                       | Description                                                            |
-|--------------------------------|------------------------------------------------------------------------|
-| `serialNumber`                 | Serial number of the system, as reported by the battery                |
-| `modelId`                      | Module type: `HVS` or `HVM`                                            |
-| `firmwareVersion`              | BMU firmware currently in use, e.g. `3.26-B`                           |
-| `bmuFirmwareA`, `bmuFirmwareB` | BMU firmware in slot A and slot B                                      |
-| `bmsFirmware`                  | BMS firmware currently in use                                          |
-| `towers`                       | Number of towers                                                       |
-| `modulesPerTower`              | Number of modules per tower                                            |
-| `cellsPerModule`               | Number of cells per module                                             |
-| `temperatureSensorsPerModule`  | Number of temperature sensors per module                               |
-| `parameterTable`               | Version of the parameter table                                         |
-| `inverterType`                 | Inverter setting of the battery (as a number)                          |
-| `application`                  | Application setting of the battery (as a number)                       |
-| `tower<n>SerialNumber`         | Serial number of the BMS of tower n (after the first cell measurement) |
-| `tower<n>Firmware`             | BMS firmware of tower n, slot A and slot B                             |
+| Property                       | Description                                                                                    |
+|--------------------------------|------------------------------------------------------------------------------------------------|
+| `serialNumber`                 | Serial number of the system, as reported by the battery                                        |
+| `modelId`                      | Module type: `HVS` or `HVM`                                                                    |
+| `firmwareVersion`              | BMU firmware currently in use, e.g. `3.26-B`                                                   |
+| `bmuFirmwareA`, `bmuFirmwareB` | BMU firmware in slot A and slot B                                                              |
+| `bmsFirmware`                  | BMS firmware currently in use                                                                  |
+| `towers`                       | Number of towers                                                                               |
+| `modulesPerTower`              | Number of modules per tower                                                                    |
+| `cellsPerModule`               | Number of cells per module                                                                     |
+| `temperatureSensorsPerModule`  | Number of temperature sensors per module                                                       |
+| `nominalCapacity`              | Capacity of the system when new, e.g. `7.68 kWh` (HVS and HVM only, see [Capacity](#capacity)) |
+| `parameterTable`               | Version of the parameter table                                                                 |
+| `inverterType`                 | Inverter setting of the battery (as a number)                                                  |
+| `application`                  | Application setting of the battery (as a number)                                               |
+| `tower<n>SerialNumber`         | Serial number of the BMS of tower n (after the first cell measurement)                         |
+| `tower<n>Firmware`             | BMS firmware of tower n, slot A and slot B                                                     |
 
 ## Channels
 
@@ -123,53 +124,68 @@ The same applies to the power.
 
 Updated every `refreshInterval`.
 
-| Channel                | Type                     | Description                                                   |
-|------------------------|--------------------------|---------------------------------------------------------------|
-| `state-of-charge`      | Number:Dimensionless     | State of charge (1 % resolution)                              |
-| `state-of-health`      | Number:Dimensionless     | State of health                                               |
-| `voltage`              | Number:ElectricPotential | Battery voltage                                               |
-| `output-voltage`       | Number:ElectricPotential | Voltage at the battery output, behind the main relay          |
-| `current`              | Number:ElectricCurrent   | Battery current                                               |
-| `power`                | Number:Power             | Battery power, calculated from current and output voltage     |
-| `max-cell-voltage`     | Number:ElectricPotential | Highest cell voltage (10 mV resolution)                       |
-| `min-cell-voltage`     | Number:ElectricPotential | Lowest cell voltage (10 mV resolution)                        |
-| `cell-voltage-spread`  | Number:ElectricPotential | Highest minus lowest cell voltage (10 mV resolution)          |
-| `max-cell-temperature` | Number:Temperature       | Highest cell temperature                                      |
-| `min-cell-temperature` | Number:Temperature       | Lowest cell temperature                                       |
-| `bmu-temperature`      | Number:Temperature       | Temperature of the BMU                                        |
-| `charged-energy`       | Number:Energy            | Lifetime charged energy                                       |
-| `discharged-energy`    | Number:Energy            | Lifetime discharged energy                                    |
-| `efficiency`           | Number:Dimensionless     | Lifetime discharged energy divided by lifetime charged energy |
-| `error`                | Switch                   | `ON` while the battery reports a system error                 |
-| `errors`               | String                   | The system errors as text, or `None`                          |
+| Channel                | Type                     | Description                                                                |
+|------------------------|--------------------------|----------------------------------------------------------------------------|
+| `state-of-charge`      | Number:Dimensionless     | State of charge (1 % resolution)                                           |
+| `state-of-health`      | Number:Dimensionless     | State of health                                                            |
+| `voltage`              | Number:ElectricPotential | Battery voltage                                                            |
+| `output-voltage`       | Number:ElectricPotential | Voltage at the battery output, behind the main relay                       |
+| `current`              | Number:ElectricCurrent   | Battery current                                                            |
+| `power`                | Number:Power             | Battery power, calculated from current and output voltage                  |
+| `max-cell-voltage`     | Number:ElectricPotential | Highest cell voltage (10 mV resolution)                                    |
+| `min-cell-voltage`     | Number:ElectricPotential | Lowest cell voltage (10 mV resolution)                                     |
+| `cell-voltage-spread`  | Number:ElectricPotential | Highest minus lowest cell voltage (10 mV resolution)                       |
+| `max-cell-temperature` | Number:Temperature       | Highest cell temperature                                                   |
+| `min-cell-temperature` | Number:Temperature       | Lowest cell temperature                                                    |
+| `bmu-temperature`      | Number:Temperature       | Temperature of the BMU                                                     |
+| `charged-energy`       | Number:Energy            | Lifetime charged energy                                                    |
+| `discharged-energy`    | Number:Energy            | Lifetime discharged energy                                                 |
+| `efficiency`           | Number:Dimensionless     | Lifetime discharged energy divided by lifetime charged energy              |
+| `usable-capacity`      | Number:Energy            | Nominal capacity reduced by the state of health, see [Capacity](#capacity) |
+| `stored-energy`        | Number:Energy            | Energy currently stored: usable capacity multiplied by the state of charge |
+| `error`                | Switch                   | `ON` while the battery reports a system error                              |
+| `errors`               | String                   | The system errors as text, or `None`                                       |
+
+### Capacity
+
+The battery does not report its capacity, so the binding calculates it from the number of towers and modules: 2.56 kWh per HVS module and 2.76 kWh per HVM module.
+An HVS 7.7 with 3 modules has a nominal capacity of 7.68 kWh.
+
+- `usable-capacity` is the nominal capacity multiplied by the state of health: with a state of health of 94 %, the HVS 7.7 has 7.22 kWh left.
+- `stored-energy` is the usable capacity multiplied by the state of charge: at 50 %, it holds 3.61 kWh.
+- Each tower has its own `usable-capacity`, calculated from its own state of health, which shows whether one tower ages faster than the others.
+
+These values are only as precise as the state of charge and state of health reported by the battery, in steps of 1 %.
+For batteries with an unknown module type, such as the HVL, they are `UNDEF`.
 
 ### Group `tower-<n>`
 
 One group per tower, updated every `detailInterval`.
 Minimum, maximum, average and spread cover all cells of the tower; cells and sensors are numbered from 1 within the tower.
 
-| Channel                       | Type                     | Description                                             |
-|-------------------------------|--------------------------|---------------------------------------------------------|
-| `state-of-charge`             | Number:Dimensionless     | State of charge (0.1 % resolution)                      |
-| `state-of-health`             | Number:Dimensionless     | State of health                                         |
-| `voltage`                     | Number:ElectricPotential | Tower voltage                                           |
-| `output-voltage`              | Number:ElectricPotential | Voltage at the tower output, behind the main relay      |
-| `current`                     | Number:ElectricCurrent   | Tower current                                           |
-| `charged-energy`              | Number:Energy            | Lifetime charged energy of the tower (Wh resolution)    |
-| `discharged-energy`           | Number:Energy            | Lifetime discharged energy of the tower (Wh resolution) |
-| `max-cell-voltage`            | Number:ElectricPotential | Highest cell voltage                                    |
-| `max-cell-voltage-cell`       | Number                   | Number of the cell with the highest voltage             |
-| `min-cell-voltage`            | Number:ElectricPotential | Lowest cell voltage                                     |
-| `min-cell-voltage-cell`       | Number                   | Number of the cell with the lowest voltage              |
-| `average-cell-voltage`        | Number:ElectricPotential | Average cell voltage                                    |
-| `cell-voltage-spread`         | Number:ElectricPotential | Highest minus lowest cell voltage (1 mV resolution)     |
-| `max-cell-temperature`        | Number:Temperature       | Highest cell temperature                                |
-| `max-cell-temperature-sensor` | Number                   | Number of the sensor with the highest temperature       |
-| `min-cell-temperature`        | Number:Temperature       | Lowest cell temperature                                 |
-| `min-cell-temperature-sensor` | Number                   | Number of the sensor with the lowest temperature        |
-| `balancing-cells`             | Number                   | Number of cells currently being balanced                |
-| `warning`                     | Switch                   | `ON` while the tower reports a warning                  |
-| `warnings`                    | String                   | The tower warnings as text, or `None`                   |
+| Channel                       | Type                     | Description                                                  |
+|-------------------------------|--------------------------|--------------------------------------------------------------|
+| `state-of-charge`             | Number:Dimensionless     | State of charge (0.1 % resolution)                           |
+| `state-of-health`             | Number:Dimensionless     | State of health                                              |
+| `voltage`                     | Number:ElectricPotential | Tower voltage                                                |
+| `output-voltage`              | Number:ElectricPotential | Voltage at the tower output, behind the main relay           |
+| `current`                     | Number:ElectricCurrent   | Tower current                                                |
+| `charged-energy`              | Number:Energy            | Lifetime charged energy of the tower (Wh resolution)         |
+| `discharged-energy`           | Number:Energy            | Lifetime discharged energy of the tower (Wh resolution)      |
+| `usable-capacity`             | Number:Energy            | Nominal capacity of the tower reduced by its state of health |
+| `max-cell-voltage`            | Number:ElectricPotential | Highest cell voltage                                         |
+| `max-cell-voltage-cell`       | Number                   | Number of the cell with the highest voltage                  |
+| `min-cell-voltage`            | Number:ElectricPotential | Lowest cell voltage                                          |
+| `min-cell-voltage-cell`       | Number                   | Number of the cell with the lowest voltage                   |
+| `average-cell-voltage`        | Number:ElectricPotential | Average cell voltage                                         |
+| `cell-voltage-spread`         | Number:ElectricPotential | Highest minus lowest cell voltage (1 mV resolution)          |
+| `max-cell-temperature`        | Number:Temperature       | Highest cell temperature                                     |
+| `max-cell-temperature-sensor` | Number                   | Number of the sensor with the highest temperature            |
+| `min-cell-temperature`        | Number:Temperature       | Lowest cell temperature                                      |
+| `min-cell-temperature-sensor` | Number                   | Number of the sensor with the lowest temperature             |
+| `balancing-cells`             | Number                   | Number of cells currently being balanced                     |
+| `warning`                     | Switch                   | `ON` while the tower reports a warning                       |
+| `warnings`                    | String                   | The tower warnings as text, or `None`                        |
 
 ### Group `tower-<n>-module-<m>`
 

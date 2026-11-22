@@ -195,6 +195,40 @@ class BydBatteryBoxHandlerTest {
     }
 
     @Test
+    void capacityIsCalculatedFromTopologyAndHealth() throws Exception {
+        FakeBattery localBattery = FakeBattery.start(64, twoTowerDetailReplies(false));
+        battery = localBattery;
+        BydBatteryBoxHandler localHandler = createHandler(localBattery.port(), List.of(),
+                Map.of("detailInterval", BigDecimal.valueOf(600)));
+        ThingUID thingUID = localHandler.getThing().getUID();
+
+        localHandler.initialize();
+
+        // 2 towers with 5 HVS modules of 2.56 kWh; system SoH 94 %, SoC 6 %; tower SoH 95 % and 98 %
+        verifyState(new ChannelUID(thingUID, GROUP_STATUS, CHANNEL_USABLE_CAPACITY), "24.06 kWh");
+        verifyState(new ChannelUID(thingUID, GROUP_STATUS, CHANNEL_STORED_ENERGY), "1.44 kWh");
+        verifyState(new ChannelUID(thingUID, "tower-1", CHANNEL_USABLE_CAPACITY), "12.16 kWh");
+        verifyState(new ChannelUID(thingUID, "tower-2", CHANNEL_USABLE_CAPACITY), "12.54 kWh");
+        assertEquals("25.6 kWh", localHandler.getThing().getProperties().get(PROPERTY_NOMINAL_CAPACITY));
+    }
+
+    @Test
+    void capacityIsUndefinedForAnUnknownBatteryType() throws Exception {
+        // identity byte 37 is the module type; 0 is HVL, whose module capacity is not known
+        FakeBattery localBattery = FakeBattery.start(64, Fixtures.frameWithByte("identity", 37, 0),
+                Fixtures.frame("status"));
+        battery = localBattery;
+        BydBatteryBoxHandler localHandler = createHandler(localBattery.port());
+        ThingUID thingUID = localHandler.getThing().getUID();
+
+        localHandler.initialize();
+
+        verifyState(new ChannelUID(thingUID, GROUP_STATUS, CHANNEL_USABLE_CAPACITY), "UNDEF");
+        verifyState(new ChannelUID(thingUID, GROUP_STATUS, CHANNEL_STORED_ENERGY), "UNDEF");
+        assertEquals(null, localHandler.getThing().getProperties().get(PROPERTY_NOMINAL_CAPACITY));
+    }
+
+    @Test
     void refreshRepublishesTheLastState() throws Exception {
         FakeBattery localBattery = FakeBattery.start(64, Fixtures.frame("identity"), Fixtures.frame("status"));
         battery = localBattery;
