@@ -70,7 +70,8 @@
 		</parameter>
 		<parameter name="useOHmDNS" type="boolean" required="false" groupName="network">
 			<label>Use openHAB mDNS Service</label>
-			<description>Prefer openHAB's shared mDNS when true. When false (or no matching shared client exists), HomeKit uses HAP-Java's optional native DNS-SD backend if available, otherwise a dedicated JmDNS instance.</description>
+			<description>Prefer openHAB's shared mDNS when true. When false (or no matching shared client exists), HomeKit uses
+				HAP-Java's optional native DNS-SD backend if available, otherwise a dedicated JmDNS instance.</description>
 			<default>false</default>
 			<advanced>true</advanced>
 		</parameter>
