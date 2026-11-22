@@ -137,14 +137,7 @@ public class ApiBridgeHandler extends BaseBridgeHandler implements NetatmoHandle
     private @Nullable OAuthClientService oAuthClientService;
     private @Nullable ScheduledFuture<?> connectJob;
     private @Nullable WebhookServlet webhookServlet;
-<<<<<<< Upstream, based on main
-<<<<<<< Upstream, based on main
-=======
-    private @Nullable GrantServlet grantServlet;
-=======
->>>>>>> 70e57ea Rebase
     private @Nullable WebhookService webhookService;
->>>>>>> 566fb64 Review openhabCloud availability cycle
 
     public ApiBridgeHandler(Bridge bridge, HttpClient httpClient, NADeserializer deserializer,
             BindingConfiguration configuration, HttpService httpService, OAuthFactory oAuthFactory,
@@ -155,20 +148,8 @@ public class ApiBridgeHandler extends BaseBridgeHandler implements NetatmoHandle
         this.deserializer = deserializer;
         this.httpService = httpService;
         this.oAuthFactory = oAuthFactory;
-<<<<<<< Upstream, based on main
-<<<<<<< Upstream, based on main
-        this.grantServlet = new GrantServlet(this, httpService);
-
-        this.webhookServiceSupplier = webhookServiceSupplier;
-=======
->>>>>>> 566fb64 Review openhabCloud availability cycle
-=======
         this.handlerFactory = handlerFactory;
-<<<<<<< Upstream, based on main
->>>>>>> 1d4e37b Make ApiBridgeHandler a listener of NetatmoHandlerFactory
-=======
         this.grantServlet = new GrantServlet(this, httpService);
->>>>>>> 70e57ea Rebase
         requestCountChannelUID = new ChannelUID(thing.getUID(), GROUP_MONITORING, CHANNEL_REQUEST_COUNT);
         hookSetChannelUID = new ChannelUID(thing.getUID(), GROUP_MONITORING, CHANNEL_HOOK_SET);
     }
@@ -206,72 +187,7 @@ public class ApiBridgeHandler extends BaseBridgeHandler implements NetatmoHandle
         logger.debug("Connected to Netatmo API.");
 
         freeConnectJob();
-<<<<<<< Upstream, based on main
-
-        ApiHandlerConfiguration configuration = getConfiguration();
-<<<<<<< Upstream, based on main
-<<<<<<< Upstream, based on main
-=======
->>>>>>> 7601187 Rebased after merge of 22187_2
-        hookState(false);
-<<<<<<< Upstream, based on main
-<<<<<<< Upstream, based on main
-        if (configuration.getWebhookUrlPattern() instanceof String urlPattern
-                && getRestManager(WebhookApi.class) instanceof WebhookApi api) {
-            WebhookServlet servlet = webhookServlet;
-        if (!configuration.webHookUrl.isBlank() && getRestManager(WebhookApi.class) instanceof WebhookApi api) {
-            WebhookServlet servlet = this.webhookServlet;
->>>>>>> 194ac54 Use new API endpoints for webhooks
-            if (servlet != null) {
-                servlet.dispose();
-=======
-=======
->>>>>>> 7601187 Rebased after merge of 22187_2
-        WebhookServlet previousServlet = webhookServlet;
-        if (previousServlet != null) {
-            previousServlet.dispose();
-            webhookServlet = null;
-        }
-
-        WebhookService cloudWebhookService = null;
-        if (configuration.useCloudWebhook) {
-            cloudWebhookService = webhookServiceSupplier.get();
-            if (cloudWebhookService == null) {
-                logger.warn("openHAB Cloud WebhookService is unavailable; Netatmo webhook is disabled");
-            }
-<<<<<<< Upstream, based on main
-<<<<<<< Upstream, based on main
-<<<<<<< Upstream, based on main
-<<<<<<< Upstream, based on main
-            servlet = webhookServlet = new WebhookServlet(this, httpService, deserializer, api,
-=======
-            servlet = webhookServlet = new WebhookServlet(this, httpService, deserializer, api,
->>>>>>> 7e96b33 lsiepel code review corrections
-                    configuration.webHookUrl, configuration.webHookPostfix);
-=======
-            servlet = webhookServlet = new WebhookServlet(this, httpService, deserializer, api, urlPattern);
->>>>>>> 643b017 Initial commit
-=======
-=======
->>>>>>> 7601187 Rebased after merge of 22187_2
-        }
-
-        String urlPattern = configuration.getWebhookUrlPattern();
-        if (urlPattern != null || cloudWebhookService != null) {
-            WebhookServlet servlet = cloudWebhookService != null
-                    ? new CloudWebhookServlet(this, httpService, deserializer, webhookApi, cloudWebhookService,
-                            scheduler)
-                    : new LocalWebhookServlet(this, httpService, deserializer, webhookApi,
-                            Objects.requireNonNull(urlPattern));
-            webhookServlet = servlet;
-            servlet.startListening();
-        }
-=======
         freeWebhookServlet();
-<<<<<<< Upstream, based on main
-        checkStartWebhook();
->>>>>>> 566fb64 Review openhabCloud availability cycle
-=======
 
         ApiHandlerConfiguration configuration = getConfiguration();
         if (configuration.useCloudWebhook) {
@@ -279,7 +195,6 @@ public class ApiBridgeHandler extends BaseBridgeHandler implements NetatmoHandle
         } else {
             handlerFactory.unregisterCloudWebhookServiceListener(this);
         }
->>>>>>> 46d6349 Review cloudWebhookServiceListener initialization
 
         if (configuration.getWebhookUrlPattern() != null) {
             checkStartWebhook();
@@ -297,17 +212,9 @@ public class ApiBridgeHandler extends BaseBridgeHandler implements NetatmoHandle
 
         AccessTokenResponse accessTokenResponse;
         try {
-<<<<<<< Upstream, based on main
-            if (code != null) {
-                accessTokenResponse = oAuthClientService.getAccessTokenResponseByAuthorizationCode(code, redirectUri);
-            } else {
-                accessTokenResponse = oAuthClientService.getAccessTokenResponse();
-            }
-=======
             accessTokenResponse = code != null
                     ? oAuthClientService.getAccessTokenResponseByAuthorizationCode(code, redirectUri)
                     : oAuthClientService.getAccessTokenResponse();
->>>>>>> 70e57ea Rebase
         } catch (OAuthException | OAuthResponseException e) {
             logger.debug("Failed to load access token: {}", e.getMessage());
             startAuthorizationFlow();
@@ -369,34 +276,9 @@ public class ApiBridgeHandler extends BaseBridgeHandler implements NetatmoHandle
     public void dispose() {
         logger.debug("Shutting down Netatmo API bridge handler.");
 
-<<<<<<< Upstream, based on main
-<<<<<<< Upstream, based on main
-        WebhookServlet webHookServlet = this.webhookServlet;
-        if (webHookServlet != null) {
-            webHookServlet.dispose();
-        }
-        this.webhookServlet = null;
-
-        grantServlet.dispose();
-=======
-        freeWebhookServlet();
-=======
         webhookServiceGone();
-<<<<<<< Upstream, based on main
->>>>>>> 5170662 Free webhookService at dispose
-        freeGrantServlet();
-<<<<<<< Upstream, based on main
-<<<<<<< Upstream, based on main
->>>>>>> 566fb64 Review openhabCloud availability cycle
-=======
-        handlerFactory.unregisterWebhookServiceListener(this);
->>>>>>> 1d4e37b Make ApiBridgeHandler a listener of NetatmoHandlerFactory
-=======
-=======
         grantServlet.dispose();
->>>>>>> 70e57ea Rebase
         handlerFactory.unregisterCloudWebhookServiceListener(this);
->>>>>>> 730a221 Make explicit we're working with openHAB cloud
 
         connectApi.dispose();
         freeConnectJob();
@@ -693,17 +575,7 @@ public class ApiBridgeHandler extends BaseBridgeHandler implements NetatmoHandle
             return;
         }
 
-<<<<<<< Upstream, based on main
-<<<<<<< Upstream, based on main
-=======
->>>>>>> 7601187 Rebased after merge of 22187_2
         updateState(hookSetChannelUID, OnOffType.from(hooked));
-<<<<<<< Upstream, based on main
-=======
-        updateState(hookSetChannelUID, OnOffType.from(hooked));
->>>>>>> a1c653f Lolodomo code review
-=======
->>>>>>> 7601187 Rebased after merge of 22187_2
     }
 
     @Override
