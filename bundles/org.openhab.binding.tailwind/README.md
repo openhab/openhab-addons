@@ -29,8 +29,8 @@ Everything else is set up automatically, including the channels of the doors tha
 | `door2PartialOpenTime` | decimal | no       | 2.5     | Seconds that door 2 runs when it is opened partially (0.5 to 15). Advanced.      |
 | `door3PartialOpenTime` | decimal | no       | 2.5     | Seconds that door 3 runs when it is opened partially (0.5 to 15). Advanced.      |
 
-The Local Control Key page of the [TailWind web dashboard](https://web.gotailwind.com) can show a Global key and Local keys.
-Enter the Global key: an iQ3 with firmware 10.80 rejected a Local key created there.
+Enter the Global Key from the Local Control Key page of the [TailWind web dashboard](https://web.gotailwind.com).
+The device's own key, on the second tab of that page, works only if the firmware supports it: an iQ3 needs firmware newer than 10.80, an iQ3 2.0 or 2.1 newer than 10.30.
 See the [token section](https://github.com/Scott--R/Tailwind_Local_Control_API#2-token) of the API document for details.
 
 The host name of a controller is `tailwind-` followed by its MAC address and `.local`.
@@ -110,12 +110,12 @@ An item in an `.items` file needs `unit="dBm"`, as in the [Full Example](#full-e
 
 ## Troubleshooting
 
-| Problem                                                       | Cause and solution                                                                                                                                                                  |
-|---------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| The Thing is offline with a configuration error about the key | The Local Control Key is wrong. Enter the Global key from the TailWind web dashboard, not a Local key.                                                                              |
-| The Thing is offline with a communication error               | The controller cannot be reached at `hostname`. Check the address, and use the IP address if `.local` names cannot be resolved.                                                     |
-| The Thing is offline because another controller answers       | The address now belongs to another TailWind controller, for example after the router gave it a new address. Set `hostname` to the controller's `.local` name or its new IP address. |
-| Door changes appear only after several minutes                | The status reports do not arrive. Check the firewall and Docker setup in Status Reports, and that no other system registers for the reports.                                        |
+| Problem                                                       | Cause and solution                                                                                                                                                                                                                                                              |
+|---------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| The Thing is offline with a configuration error about the key | The Local Control Key is wrong. Enter the Global Key from the TailWind web dashboard, or check that the firmware supports the device's own key.                                                                                                                                 |
+| The Thing is offline with a communication error               | The controller cannot be reached at `hostname`. Check the address, and use the IP address if `.local` names cannot be resolved.                                                                                                                                                 |
+| The Thing is offline because another controller answers       | The address now belongs to another TailWind controller, for example after the router gave it a new address. Set `hostname` to the controller's `.local` name or its new IP address. If you replaced the controller, remove the Thing and add the new controller from the Inbox. |
+| Door changes appear only after several minutes                | The status reports do not arrive. Check the firewall and Docker setup in Status Reports, and that no other system registers for the reports.                                                                                                                                    |
 
 For more detail in the log, run `log:set DEBUG org.openhab.binding.tailwind` in the openHAB console.
 
