@@ -205,6 +205,10 @@ public abstract class DeviceType implements AttributeListener, EventTriggeredLis
         });
     }
 
+    public void handleChannelConfigurationUpdate() {
+        clusterToConverters.values().forEach(GenericConverter::handleChannelConfigurationUpdate);
+    }
+
     /**
      * Returns an unmodifiable map of all clusters associated with this device type.
      * The map keys are cluster names

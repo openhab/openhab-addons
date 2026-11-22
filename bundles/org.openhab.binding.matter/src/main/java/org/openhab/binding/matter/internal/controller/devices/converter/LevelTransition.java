@@ -16,22 +16,25 @@ import static org.openhab.binding.matter.internal.MatterBindingConstants.*;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletionException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.matter.internal.client.MatterRequestException;
 import org.openhab.binding.matter.internal.client.dto.cluster.ClusterCommand;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.LevelControlCluster;
 import org.openhab.binding.matter.internal.client.dto.ws.AttributeChangedMessage;
 import org.openhab.binding.matter.internal.handler.MatterBaseThingHandler;
-import org.openhab.core.config.core.ConfigDescriptionBuilder;
 import org.openhab.core.config.core.ConfigDescriptionParameter;
 import org.openhab.core.config.core.ConfigDescriptionParameter.Type;
 import org.openhab.core.config.core.ConfigDescriptionParameterBuilder;
-import org.openhab.core.config.core.ConfigDescriptionParameterGroupBuilder;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.thing.Channel;
+import org.openhab.core.thing.ChannelGroupUID;
 import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.ThingStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,28 +49,77 @@ import com.google.gson.JsonNull;
 @NonNullByDefault
 class LevelTransition {
     private static final int MAX_DEVICE_DEFAULT = 65535;
-    // Color Control commands accept at most 65534
-    private static final int MAX_COLOR_TRANSITION = 65534;
+    // Level and color commands accept at most 65534. Level commands use 65535 for null.
+    private static final int MAX_COMMAND_TRANSITION = 65534;
 
     private final Logger logger = LoggerFactory.getLogger(LevelTransition.class);
     private final MatterBaseThingHandler handler;
     private final int endpointNumber;
-    private final String defaultKey;
+    // The channel that holds the device default
+    private final String channelId;
     private volatile @Nullable Integer deviceDefault;
 
-    LevelTransition(MatterBaseThingHandler handler, int endpointNumber) {
+    LevelTransition(MatterBaseThingHandler handler, int endpointNumber, String channelId) {
         this.handler = handler;
         this.endpointNumber = endpointNumber;
-        this.defaultKey = CONFIG_LEVEL_DEFAULT_TRANSITION_TIME + "-" + endpointNumber;
+        this.channelId = channelId;
     }
 
     void initialize(@Nullable LevelControlCluster cluster) {
         Integer deviceDefault = cluster != null ? cluster.onOffTransitionTime : null;
         this.deviceDefault = deviceDefault;
-        if (deviceDefault != null) {
-            updateConfigDescription();
-            updateDefaultConfig(deviceDefault);
+        if (deviceDefault == null) {
+            return;
         }
+        handler.addChannelConfigDescription(channelUID(), List.of(defaultParameter()));
+        applyConfiguredDefault();
+    }
+
+    /**
+     * Writes the configured default to the device when they differ. The configured value wins.
+     */
+    void applyConfiguredDefault() {
+        Integer deviceDefault = this.deviceDefault;
+        if (deviceDefault == null) {
+            return;
+        }
+        Object value = channelConfig().get(CONFIG_CHANNEL_DEFAULT_TRANSITION_TIME);
+        if (value == null) {
+            updateDefaultConfig(deviceDefault);
+            return;
+        }
+        Integer configured = toTenths(value, MAX_DEVICE_DEFAULT);
+        if (configured == null) {
+            logger.debug("Ignoring invalid default transition time {} for endpoint {}", value, endpointNumber);
+            restoreDefaultConfig();
+        } else if (!configured.equals(deviceDefault)) {
+            // Endpoints are rebuilt when the device comes back online, which applies the value then
+            if (handler.getThing().getStatus() != ThingStatus.ONLINE) {
+                return;
+            }
+            logger.debug("Updating default transition time of endpoint {} from {} to {}", endpointNumber, deviceDefault,
+                    configured);
+            // deviceDefault updates when the device reports the new value
+            handler.writeAttribute(endpointNumber, LevelControlCluster.CLUSTER_NAME,
+                    LevelControlCluster.ATTRIBUTE_ON_OFF_TRANSITION_TIME, String.valueOf(configured))
+                    .exceptionally(e -> {
+                        logger.debug("Failed to update default transition time: {}", e.getMessage());
+                        if (isRejectedByDevice(e)) {
+                            restoreDefaultConfig();
+                        }
+                        return Void.TYPE.cast(null);
+                    });
+        }
+    }
+
+    /**
+     * True when the controller answered with an error while the device is online.
+     * Other failures keep the configured value so it is written again when the endpoints are rebuilt.
+     */
+    private boolean isRejectedByDevice(Throwable e) {
+        Throwable cause = e instanceof CompletionException ? e.getCause() : e;
+        return cause instanceof MatterRequestException request && request.isFromServer()
+                && handler.getThing().getStatus() == ThingStatus.ONLINE;
     }
 
     /**
@@ -80,7 +132,7 @@ class LevelTransition {
         if (value == null) {
             return null;
         }
-        Integer tenths = toTenths(value, MAX_COLOR_TRANSITION);
+        Integer tenths = toTenths(value, MAX_COMMAND_TRANSITION);
         if (tenths == null) {
             logger.debug("Ignoring invalid transition time {} on channel {}", value, channelUID);
         }
@@ -93,7 +145,7 @@ class LevelTransition {
             return channelTransition;
         }
         Integer deviceDefault = this.deviceDefault;
-        return deviceDefault != null ? Math.min(deviceDefault, MAX_COLOR_TRANSITION) : 0;
+        return deviceDefault != null ? Math.min(deviceDefault, MAX_COMMAND_TRANSITION) : 0;
     }
 
     static ClusterCommand moveToLevelWithOnOff(int level, @Nullable Integer transitionTime,
@@ -114,58 +166,38 @@ class LevelTransition {
         }
     }
 
-    void handleConfigurationUpdate(Configuration config) {
-        Integer current = deviceDefault;
-        Object value = config.get(defaultKey);
-        if (current == null || value == null) {
-            return;
-        }
-        Integer configured = toTenths(value, MAX_DEVICE_DEFAULT);
-        if (configured == null) {
-            logger.debug("Ignoring invalid default transition time {} for endpoint {}", value, endpointNumber);
-            restoreDefaultConfig();
-        } else if (!configured.equals(current)) {
-            logger.debug("Updating default transition time of endpoint {} from {} to {}", endpointNumber, current,
-                    configured);
-            // deviceDefault updates when the device reports the new value
-            handler.writeAttribute(endpointNumber, LevelControlCluster.CLUSTER_NAME,
-                    LevelControlCluster.ATTRIBUTE_ON_OFF_TRANSITION_TIME, String.valueOf(configured))
-                    .exceptionally(e -> {
-                        logger.debug("Failed to update default transition time: {}", e.getMessage());
-                        restoreDefaultConfig();
-                        return Void.TYPE.cast(null);
-                    });
-        }
+    private ChannelUID channelUID() {
+        return new ChannelUID(new ChannelGroupUID(handler.getThing().getUID(), String.valueOf(endpointNumber)),
+                channelId);
+    }
+
+    private Configuration channelConfig() {
+        Channel channel = handler.getThing().getChannel(channelUID());
+        return channel != null ? channel.getConfiguration() : new Configuration();
     }
 
     private void restoreDefaultConfig() {
         Integer deviceDefault = this.deviceDefault;
         if (deviceDefault != null) {
-            handler.updateConfiguration(Map.of(defaultKey, toSeconds(deviceDefault)));
+            handler.updateChannelConfiguration(channelUID(),
+                    Map.of(CONFIG_CHANNEL_DEFAULT_TRANSITION_TIME, toSeconds(deviceDefault)));
         }
     }
 
     private void updateDefaultConfig(int tenths) {
         BigDecimal seconds = toSeconds(tenths);
-        Object stored = handler.getThing().getConfiguration().get(defaultKey);
+        Object stored = channelConfig().get(CONFIG_CHANNEL_DEFAULT_TRANSITION_TIME);
         if (!(stored instanceof BigDecimal decimal && decimal.compareTo(seconds) == 0)) {
-            handler.updateConfiguration(Map.of(defaultKey, seconds));
+            handler.updateChannelConfiguration(channelUID(), Map.of(CONFIG_CHANNEL_DEFAULT_TRANSITION_TIME, seconds));
         }
     }
 
-    private void updateConfigDescription() {
-        String groupName = CONFIG_GROUP_LEVEL_TRANSITION + "-" + endpointNumber;
-        ConfigDescriptionParameter param = ConfigDescriptionParameterBuilder.create(defaultKey, Type.DECIMAL)
-                .withLabel(handler.getTranslation(CONFIG_LABEL_LEVEL_DEFAULT_TRANSITION_TIME))
-                .withDescription(handler.getTranslation(CONFIG_DESC_LEVEL_DEFAULT_TRANSITION_TIME))
-                .withGroupName(groupName).withMinimum(BigDecimal.ZERO).withMaximum(toSeconds(MAX_DEVICE_DEFAULT))
+    private ConfigDescriptionParameter defaultParameter() {
+        return ConfigDescriptionParameterBuilder.create(CONFIG_CHANNEL_DEFAULT_TRANSITION_TIME, Type.DECIMAL)
+                .withLabel(handler.getTranslation(CONFIG_LABEL_DEFAULT_TRANSITION_TIME))
+                .withDescription(handler.getTranslation(CONFIG_DESC_DEFAULT_TRANSITION_TIME))
+                .withMinimum(BigDecimal.ZERO).withMaximum(toSeconds(MAX_DEVICE_DEFAULT))
                 .withStepSize(BigDecimal.valueOf(1, 1)).withUnit("s").build();
-
-        handler.addConfigDescription(groupName, ConfigDescriptionBuilder.create(handler.getConfigDescriptionURI())
-                .withParameter(param)
-                .withParameterGroup(ConfigDescriptionParameterGroupBuilder.create(groupName)
-                        .withLabel(handler.getTranslation(CONFIG_LABEL_LEVEL_TRANSITION, endpointNumber)).build())
-                .build());
     }
 
     /**

@@ -98,6 +98,12 @@ public abstract class GenericConverter<T extends BaseCluster> implements Attribu
         // add configuration update handling logic here in subclasses
     }
 
+    /**
+     * Called after the Thing was updated externally, for example when channel config was edited.
+     */
+    public void handleChannelConfigurationUpdate() {
+    }
+
     @Override
     public void onEvent(AttributeChangedMessage message) {
     }

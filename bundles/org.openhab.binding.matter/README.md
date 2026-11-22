@@ -441,12 +441,15 @@ Other device types may be supported, but with limited or missing functionality.
 
 Transition times are in seconds.
 
-| Setting                        | Where                                                                              | Description                                                 |
-|--------------------------------|------------------------------------------------------------------------------------|-------------------------------------------------------------|
-| Device Default Transition Time | Thing config `defaultTransitionTime-<endpoint>`                                    | Stored on the device. Only shown if the device supports it. |
-| Transition Time                | Channel config `transitionTime` on the level, color and color temperature channels | Overrides the device default.                               |
+| Setting                        | Where                                                                                     | Description                                                 |
+|--------------------------------|-------------------------------------------------------------------------------------------|-------------------------------------------------------------|
+| Device Default Transition Time | Channel config `defaultTransitionTime` on the level channel, or color channel if no level | Stored on the device. Only shown if the device supports it. |
+| Transition Time                | Channel config `transitionTime` on the level, color and color temperature channels        | Overrides the device default.                               |
 
-ON and OFF commands to lights always use the device default.
+ON, OFF and 0% commands to lights always use the device default.
+
+openHAB writes its Device Default Transition Time to the device when it connects.
+This replaces any change made by another controller while openHAB was disconnected.
 
 ## Door Lock Management
 

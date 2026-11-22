@@ -29,7 +29,6 @@ import org.openhab.binding.matter.internal.client.dto.cluster.gen.OnOffCluster;
 import org.openhab.binding.matter.internal.client.dto.ws.AttributeChangedMessage;
 import org.openhab.binding.matter.internal.handler.MatterBaseThingHandler;
 import org.openhab.binding.matter.internal.util.ValueUtils;
-import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
@@ -67,7 +66,7 @@ public class LevelControlConverter extends GenericConverter<LevelControlCluster>
         minLevel = cluster.featureMap.lighting ? 1 : 0;
         onTransitionTime = cluster.onTransitionTime;
         offTransitionTime = cluster.offTransitionTime;
-        transition = new LevelTransition(handler, endpointNumber);
+        transition = new LevelTransition(handler, endpointNumber, CHANNEL_ID_LEVEL_LEVEL);
     }
 
     LevelTransition transition() {
@@ -157,8 +156,8 @@ public class LevelControlConverter extends GenericConverter<LevelControlCluster>
     }
 
     @Override
-    public void handleConfigurationUpdate(Configuration config) {
-        transition.handleConfigurationUpdate(config);
+    public void handleChannelConfigurationUpdate() {
+        transition.applyConfiguredDefault();
     }
 
     @Override

@@ -33,7 +33,6 @@ import org.openhab.binding.matter.internal.client.dto.cluster.gen.OnOffCluster;
 import org.openhab.binding.matter.internal.client.dto.ws.AttributeChangedMessage;
 import org.openhab.binding.matter.internal.handler.MatterBaseThingHandler;
 import org.openhab.binding.matter.internal.util.ValueUtils;
-import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
@@ -98,7 +97,7 @@ public class ColorControlConverter extends GenericConverter<ColorControlCluster>
     public ColorControlConverter(ColorControlCluster cluster, MatterBaseThingHandler handler, int endpointNumber,
             String labelPrefix) {
         super(cluster, handler, endpointNumber, labelPrefix);
-        transition = new LevelTransition(handler, endpointNumber);
+        transition = new LevelTransition(handler, endpointNumber, CHANNEL_ID_COLOR_COLOR);
         supportsHue = initializingCluster.featureMap.hueSaturation;
         supportsColorTemperature = initializingCluster.featureMap.colorTemperature;
         // The inovelli device for example sends a max mireds of 65279 (matter spec max value), which means they did not
@@ -287,19 +286,19 @@ public class ColorControlConverter extends GenericConverter<ColorControlCluster>
         super.onEvent(message);
     }
 
-    @Override
-    public void handleConfigurationUpdate(Configuration config) {
-        if (ownsTransition) {
-            transition.handleConfigurationUpdate(config);
-        }
-    }
-
     /**
      * Uses the Level Control converter's transition, which then owns its config and events.
      */
     public void shareTransition(LevelControlConverter levelControlConverter) {
         transition = levelControlConverter.transition();
         ownsTransition = false;
+    }
+
+    @Override
+    public void handleChannelConfigurationUpdate() {
+        if (ownsTransition) {
+            transition.applyConfiguredDefault();
+        }
     }
 
     @Override

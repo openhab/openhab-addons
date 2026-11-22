@@ -17,6 +17,7 @@ import static org.openhab.binding.matter.internal.MatterBindingConstants.THING_S
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -60,6 +61,7 @@ import org.openhab.binding.matter.internal.util.MatterUIDUtils;
 import org.openhab.binding.matter.internal.util.TranslationService;
 import org.openhab.core.config.core.ConfigDescription;
 import org.openhab.core.config.core.ConfigDescriptionBuilder;
+import org.openhab.core.config.core.ConfigDescriptionParameter;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
@@ -176,10 +178,22 @@ public abstract class MatterBaseThingHandler extends BaseThingHandler
     }
 
     @Override
+    public void thingUpdated(Thing thing) {
+        super.thingUpdated(thing);
+        // An update reinitializes the handler but does not rebuild the endpoints
+        devices.values().forEach(DeviceType::handleChannelConfigurationUpdate);
+    }
+
+    @Override
     public void handleRemoval() {
         channelTypeProvider.removeThingType(getThing().getThingTypeUID());
-        // Before the first build the Thing has the base type, whose prefix matches all Things
-        channelTypeProvider.removeChannelGroupTypesForPrefix(getDynamicThingTypeUID().getId());
+        try {
+            // Before the first build the Thing has the base type, whose prefix matches all Things
+            channelTypeProvider.removeChannelGroupTypesForPrefix(getDynamicThingTypeUID().getId());
+        } catch (IllegalStateException e) {
+            // An endpoint whose node handler is gone cannot build its type
+            logger.debug("Not removing channel group types of {}: {}", getThing().getUID(), e.getMessage());
+        }
         super.handleRemoval();
     }
 
@@ -508,6 +522,37 @@ public abstract class MatterBaseThingHandler extends BaseThingHandler
                 getThing().getUID().getAsString());
         return URI.create(
                 MatterBindingConstants.CONFIG_DESCRIPTION_URI_THING_PREFIX + ":" + getThing().getUID().getAsString());
+    }
+
+    /**
+     * Adds config parameters to one channel. Core merges them with the parameters of the channel type.
+     */
+    public void addChannelConfigDescription(ChannelUID channelUID, List<ConfigDescriptionParameter> parameters) {
+        URI uri;
+        try {
+            // Encodes the "#" in the channel UID the same way the REST API does, so lookups match
+            uri = new URI(MatterBindingConstants.CONFIG_DESCRIPTION_URI_CHANNEL_PREFIX, channelUID.getAsString(), null);
+        } catch (URISyntaxException e) {
+            logger.debug("Invalid config description URI for channel {}: {}", channelUID, e.getMessage());
+            return;
+        }
+        configDescriptionProvider
+                .addConfigDescription(ConfigDescriptionBuilder.create(uri).withParameters(parameters).build());
+    }
+
+    public synchronized void updateChannelConfiguration(ChannelUID channelUID, Map<String, Object> values) {
+        Channel channel = getThing().getChannel(channelUID);
+        if (channel == null) {
+            return;
+        }
+        Configuration config = new Configuration(channel.getConfiguration().getProperties());
+        values.forEach(config::put);
+        Channel updated = ChannelBuilder.create(channel).withConfiguration(config).build();
+        updateThing(
+                editThing()
+                        .withChannels(getThing().getChannels().stream()
+                                .map(existing -> existing.getUID().equals(channelUID) ? updated : existing).toList())
+                        .build());
     }
 
     public final String getTranslation(String key) {
