@@ -75,7 +75,7 @@ Add the Thing manually with its hostname or IP address.
 | `port`              | integer | Port of the battery                                                                                   | 8080    | no       | yes      |
 | `refreshInterval`   | integer | Seconds between two status readings (minimum 30)                                                      | 60      | no       | no       |
 | `detailInterval`    | integer | Seconds between two cell measurements, `0` turns them off                                             | 600     | no       | no       |
-| `eventLogInterval`  | integer | Seconds between two event log readings, `0` turns them off                                            | 600     | no       | no       |
+| `eventLogInterval`  | integer | Seconds between two event log readings (at least 150), `0` turns them off                             | 600     | no       | no       |
 | `readExtendedCells` | boolean | Also read cells 129–160 of towers with 5 modules, see [Towers With 160 Cells](#towers-with-160-cells) | false   | no       | yes      |
 | `connectionTimeout` | integer | Seconds to wait for the battery to connect and to answer                                              | 5       | no       | yes      |
 
@@ -213,7 +213,10 @@ Updated every `eventLogInterval` from the logs of the BMU and of each tower.
 | `last-event-time` | DateTime | Time of the newest log entry                                                                 |
 | `event`           | Trigger  | Fired once for every new log entry, with the source and event code as payload, e.g. `BMS1:7` |
 
-The battery keeps the latest 20 entries per unit.
+The battery keeps several weeks of entries per unit and hands them out in pages of 20, newest first.
+Each request returns the next older page, and only after a pause of about two minutes does the battery start at the newest page again.
+The binding therefore reads the event logs at most every 150 seconds, also when `eventLogInterval` is set lower or a reading failed.
+If more than 20 entries were written since the previous reading, it reads up to 5 pages, so that up to 100 new entries fire the trigger.
 After a restart of openHAB or of the binding, entries that were already in the log do not fire the trigger again; only newer entries do.
 The battery clock is not set automatically, so the binding corrects the times of the log entries by the measured deviation (see `bmu-clock-offset`).
 

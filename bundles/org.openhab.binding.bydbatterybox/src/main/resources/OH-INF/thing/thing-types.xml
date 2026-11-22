@@ -128,8 +128,8 @@
 			</parameter>
 			<parameter name="eventLogInterval" type="integer" unit="s" min="0">
 				<label>Event Log Interval</label>
-				<description>Seconds between two readings of the event logs. 0 turns them off. Rounded up to a multiple of the
-					refresh interval.</description>
+				<description>Seconds between two readings of the event logs, at least 150. 0 turns them off. Rounded up to a
+					multiple of the refresh interval.</description>
 				<default>600</default>
 			</parameter>
 			<parameter name="readExtendedCells" type="boolean">

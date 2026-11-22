@@ -96,6 +96,7 @@ public class BydBatteryBoxHandler extends BaseThingHandler {
     private static final long MAX_BACKOFF_SECONDS = 15 * 60;
     private static final long INITIAL_DELAY_SECONDS = 2;
     static final long RETRY_DELAY_MILLIS = 20_000;
+    static final Duration MIN_EVENT_LOG_SPACING = Duration.ofSeconds(150);
 
     private final Logger logger = LoggerFactory.getLogger(BydBatteryBoxHandler.class);
     private final ScheduledExecutorService executor = ThreadPoolManager.getScheduledPool(BINDING_ID);
@@ -122,6 +123,8 @@ public class BydBatteryBoxHandler extends BaseThingHandler {
         Instant lastDetail;
         @Nullable
         Instant lastEventLog;
+        @Nullable
+        Instant lastEventLogRequest;
         @Nullable
         String topology;
         Duration clockOffset = Duration.ZERO;
@@ -261,7 +264,8 @@ public class BydBatteryBoxHandler extends BaseThingHandler {
         Instant now = Instant.now();
         BydBatteryBoxConfiguration config = context.config;
         boolean detailDue = isDue(context.lastDetail, config.detailInterval, config.refreshInterval, now);
-        boolean eventsDue = isDue(context.lastEventLog, config.eventLogInterval, config.refreshInterval, now);
+        boolean eventsDue = isEventLogDue(context.lastEventLog, context.lastEventLogRequest, config.eventLogInterval,
+                config.refreshInterval, now);
         BydConnection connection = BydConnection.open(config.hostname, config.port, config.connectionTimeout * 1000);
         activeConnection.set(connection);
         try (connection) {
@@ -295,6 +299,17 @@ public class BydBatteryBoxHandler extends BaseThingHandler {
      * Interval steps are aligned to the polling cycle: a step is due if at least the interval minus half a cycle has
      * passed, so that an interval of n cycles really runs every n cycles.
      */
+    /**
+     * The event log is read at most every {@link #MIN_EVENT_LOG_SPACING} after the previous request, even a failed one:
+     * the battery only starts at its newest page again after a pause of about two minutes, and returns the next older
+     * page otherwise.
+     */
+    static boolean isEventLogDue(@Nullable Instant lastRead, @Nullable Instant lastRequest, int intervalSeconds,
+            int refreshSeconds, Instant now) {
+        return isDue(lastRead, intervalSeconds, refreshSeconds, now)
+                && (lastRequest == null || Duration.between(lastRequest, now).compareTo(MIN_EVENT_LOG_SPACING) >= 0);
+    }
+
     private static boolean isDue(@Nullable Instant last, int intervalSeconds, int refreshSeconds, Instant now) {
         if (intervalSeconds <= 0) {
             return false;
@@ -430,19 +445,25 @@ public class BydBatteryBoxHandler extends BaseThingHandler {
     private boolean readEventLogs(PollContext context, BydClient client, SystemInfo info)
             throws BydCommunicationException, InterruptedException {
         Map<Integer, List<EventRecord>> logs = new LinkedHashMap<>();
-        for (int unit = EventRecord.UNIT_BMU; unit <= info.towers(); unit++) {
-            try {
-                logs.put(unit, client.readEventLog(unit));
-            } catch (BydCommunicationException e) {
-                if (e.getReason() != BydCommunicationException.Reason.NOT_READY) {
-                    throw e;
+        try {
+            for (int unit = EventRecord.UNIT_BMU; unit <= info.towers(); unit++) {
+                int logUnit = unit;
+                try {
+                    logs.put(unit, context.eventTracker.collect(unit, () -> client.readEventLog(logUnit)));
+                } catch (BydCommunicationException e) {
+                    if (e.getReason() != BydCommunicationException.Reason.NOT_READY) {
+                        throw e;
+                    }
+                    logger.debug("Event log of unit {} not ready: {}", unit, e.getMessage());
+                    return false;
                 }
-                logger.debug("Event log of unit {} not ready: {}", unit, e.getMessage());
-                return false;
+                if (!isCurrent(context)) {
+                    return false;
+                }
             }
-            if (!isCurrent(context)) {
-                return false;
-            }
+        } finally {
+            // every request moves the battery's read position one page back, even one that failed
+            context.lastEventLogRequest = Instant.now();
         }
         // the tracker only advances once all units were read, so that an aborted cycle loses no events
         List<EventRecord> fresh = new ArrayList<>();

@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.bydbatterybox.internal.handler;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 import static org.openhab.binding.bydbatterybox.internal.BydBatteryBoxBindingConstants.*;
@@ -23,6 +23,7 @@ import java.math.BigDecimal;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.time.Duration;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -192,6 +193,21 @@ class BydBatteryBoxHandlerTest {
         // the temperatures of module 5 are part of the first pass
         verifyState(new ChannelUID(thingUID, "tower-2-module-5", "cell-temperature-12"), "14 °C");
         assertEquals(2 + 2 * 6, localBattery.requests().size());
+    }
+
+    @Test
+    void eventLogRequestsAreAtLeastTheMinimumSpacingApart() {
+        Instant now = Instant.parse("2026-11-22T12:00:00Z");
+        Instant minSpacingAgo = now.minus(BydBatteryBoxHandler.MIN_EVENT_LOG_SPACING);
+
+        assertTrue(BydBatteryBoxHandler.isEventLogDue(null, null, 600, 60, now));
+        // a configured interval shorter than the minimum spacing is stretched to it
+        assertFalse(BydBatteryBoxHandler.isEventLogDue(now.minusSeconds(60), now.minusSeconds(60), 30, 30, now));
+        assertTrue(BydBatteryBoxHandler.isEventLogDue(minSpacingAgo, minSpacingAgo, 30, 30, now));
+        // after a failed read, the next attempt waits for the minimum spacing as well
+        assertFalse(BydBatteryBoxHandler.isEventLogDue(now.minusSeconds(700), now.minusSeconds(20), 600, 60, now));
+        assertTrue(BydBatteryBoxHandler.isEventLogDue(now.minusSeconds(700), minSpacingAgo, 600, 60, now));
+        assertFalse(BydBatteryBoxHandler.isEventLogDue(null, null, 0, 60, now));
     }
 
     @Test
