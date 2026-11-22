@@ -217,9 +217,20 @@ public enum EventType {
     @SerializedName("set_point")
     SET_POINT(ModuleType.THERMOSTAT),
 
-    /** Manual setpoint ended */
-    @SerializedName("cancel_set_point")
-    CANCEL_SET_POINT(ModuleType.THERMOSTAT);
+    @SerializedName("cancel_set_point") // manual setpoint ended
+    CANCEL_SET_POINT(ModuleType.THERMOSTAT),
+
+    @SerializedName("home_event_changed") // A home configuration has changed (e.g. event_type: "schedule")
+    HOME_EVENT_CHANGED(ModuleType.HOME),
+
+    @SerializedName("device_event") // A device state has changed
+    DEVICE_EVENT(ModuleType.HOME),
+
+    @SerializedName("boiler_event") // A device state has changed
+    BOILER_EVENT(ModuleType.PLUG),
+
+    @SerializedName("temperature_variation_event") // A device state has changed
+    TEMPERATURE_VARIATION_EVENT(ModuleType.PLUG);
 
     public static final EnumSet<EventType> AS_SET = EnumSet.allOf(EventType.class);
 

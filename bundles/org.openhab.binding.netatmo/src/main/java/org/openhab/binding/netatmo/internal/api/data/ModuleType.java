@@ -231,4 +231,17 @@ public enum ModuleType {
                 .orElseThrow(() -> new IllegalArgumentException(
                         "No known ModuleType matched '%s'".formatted(thingTypeUID.toString())));
     }
+
+    public Set<EventType> getMonitored() {
+        if (WEATHER_STATION.equals(this) || RAIN.equals(this)) {
+            return Set.of(EventType.UNKNOWN);
+        }
+        if (THERMOSTAT.equals(this)) {
+            return Set.of(EventType.BOILER_EVENT);
+        }
+        if (ROOM.equals(this)) {
+            return Set.of(EventType.TEMPERATURE_VARIATION_EVENT);
+        }
+        return Set.of();
+    }
 }
