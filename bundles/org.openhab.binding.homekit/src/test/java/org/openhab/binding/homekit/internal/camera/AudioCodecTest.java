@@ -122,6 +122,21 @@ class AudioCodecTest {
     }
 
     @Test
+    @Test
+    void constantBitrateIsPreservedWhenItIsTheOnlyAdvertisedMode() {
+        byte[] tlv = tlv(entry(AudioCodecType.OPUS.value, 1, new byte[] { 0x02, 1, 1 }, 0x01));
+
+        assertEquals(List.of(new AudioCodec(AudioCodecType.OPUS, 1, true, 16, 20)), AudioCodec.decode(tlv));
+    }
+
+    @Test
+    void variableBitrateIsSelectedWhenBothModesAreAdvertised() {
+        byte[] tlv = tlv(entry(AudioCodecType.OPUS.value, 1, new byte[] { 0x02, 1, 0, 0x02, 1, 1 }, 0x01));
+
+        assertEquals(List.of(new AudioCodec(AudioCodecType.OPUS, 1, false, 16, 20)), AudioCodec.decode(tlv));
+    }
+
+    @Test
     void testPreferredAacEldRequires16Or24kHz() {
         AudioCodec aac8 = new AudioCodec(AudioCodecType.AAC_ELD, 1, 8, 20);
         AudioCodec aac24 = new AudioCodec(AudioCodecType.AAC_ELD, 1, 24, 20);

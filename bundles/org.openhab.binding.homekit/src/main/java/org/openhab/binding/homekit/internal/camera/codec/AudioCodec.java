@@ -28,12 +28,23 @@ import org.slf4j.LoggerFactory;
  * An audio codec configuration that a HomeKit camera declares it can send and receive,
  * as found in its SupportedAudioStreamConfiguration characteristic.
  *
+ * @param constantBitrate true when the camera advertises only constant bit rate. Variable bit rate is used when the
+ *            camera advertises it, or advertises no mode
  * @param packetTimeMs the RTP packet time in ms, which the camera advertises and which HomeKit Table 9-20 allows
  *
  * @author Andrew Fiddian-Green - Initial contribution
+ * @author Andrew Fiddian-Green - Preserve advertised audio bit-rate mode
  */
 @NonNullByDefault
-public record AudioCodec(AudioCodecType codecType, int channels, int sampleRateKhz, int packetTimeMs) {
+public record AudioCodec(AudioCodecType codecType, int channels, boolean constantBitrate, int sampleRateKhz,
+        int packetTimeMs) {
+
+    /**
+     * A codec that uses variable bit rate. Used when the camera does not advertise a bit-rate mode.
+     */
+    public AudioCodec(AudioCodecType codecType, int channels, int sampleRateKhz, int packetTimeMs) {
+        this(codecType, channels, false, sampleRateKhz, packetTimeMs);
+    }
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AudioCodec.class);
 
@@ -41,8 +52,11 @@ public record AudioCodec(AudioCodecType codecType, int channels, int sampleRateK
     private static final int TYPE_CODEC_TYPE = 0x01;
     private static final int TYPE_CODEC_PARAMETERS = 0x02;
     private static final int TYPE_CHANNEL = 0x01;
+    private static final int TYPE_BIT_RATE = 0x02;
     private static final int TYPE_SAMPLE_RATE = 0x03;
     private static final int TYPE_RTP_TIME = 0x04;
+    private static final int BIT_RATE_VARIABLE = 0;
+    private static final int BIT_RATE_CONSTANT = 1;
 
     /**
      * Returns the audio codec configurations declared by a TLV8 value.
@@ -121,13 +135,34 @@ public record AudioCodec(AudioCodecType codecType, int channels, int sampleRateK
                 LOGGER.debug("Ignoring camera audio codec {} at {} kHz with no RTP time HomeKit allows", codecType,
                         sampleRateKhz);
             }
+            boolean constantBitrate = constantBitrate(codecParameters.get(TYPE_BIT_RATE));
             for (int packetTimeMs : packetTimes) {
-                AudioCodec candidate = new AudioCodec(codecType, channels, sampleRateKhz, packetTimeMs);
+                AudioCodec candidate = new AudioCodec(codecType, channels, constantBitrate, sampleRateKhz,
+                        packetTimeMs);
                 if (!result.contains(candidate)) {
                     result.add(candidate);
                 }
             }
         }
+    }
+
+    /**
+     * Returns true only when the camera advertises constant bit rate and not variable bit rate. A camera that
+     * advertises both accepts the variable mode already used for session setup.
+     */
+    private static boolean constantBitrate(byte @Nullable [] modes) {
+        if (modes == null) {
+            return false;
+        }
+        boolean variable = false;
+        boolean constant = false;
+        for (byte mode : modes) {
+            switch (mode & 0xFF) {
+                case BIT_RATE_VARIABLE -> variable = true;
+                case BIT_RATE_CONSTANT -> constant = true;
+            }
+        }
+        return constant && !variable;
     }
 
     /**
