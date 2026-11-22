@@ -184,6 +184,7 @@ Opening this URL in a browser lets you listen to the camera microphone and watch
 The **Talk** button sends your browser microphone to the camera speaker.
 
 - The page is served from openHAB's own HTTP or HTTPS port, and browser signalling is relayed through openHAB.
+  go2rtc's management API listens only on loopback. The WebRTC media port is the only go2rtc port reachable on the LAN.
   When openHAB's HTTPS service is enabled, the viewer uses HTTPS with the openHAB certificate.
   The default openHAB certificate is self-signed, so the browser shows a warning that you must accept.
   Otherwise, the viewer uses plain HTTP.

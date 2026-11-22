@@ -198,9 +198,10 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler
     private final AtomicBoolean disposing = new AtomicBoolean(false);
 
     /**
-     * The go2rtc instance for the camera: its API address, the stream names, and the camera's address.
+     * The go2rtc instance for the camera: its loopback API port, the stream names, and the camera's address.
+     * API requests use {@link Go2RtcConfig#API_HOST}; the LAN address is used only for WebRTC media.
      */
-    private record Go2RtcEndpoint(String host, int apiPort, String stream, String remoteAddress) {
+    private record Go2RtcEndpoint(int apiPort, String stream, String remoteAddress) {
     }
 
     // constants for camera talk-back sessions
@@ -1616,7 +1617,7 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler
 
             process = new Go2RtcProcess(go2rtcBinary);
             process.start(yaml);
-            if (!awaitGo2rtcReady(process, address.host(), address.apiPort())) {
+            if (!awaitGo2rtcReady(process, Go2RtcConfig.API_HOST, address.apiPort())) {
                 logger.debug("{} startGo2rtc() go2rtc did not become ready", thing.getUID());
                 throw new IOException("go2rtc did not become ready");
             }
@@ -1627,7 +1628,7 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler
                     return;
                 }
                 go2rtcProcess = process;
-                go2rtcEndpoint = new Go2RtcEndpoint(host, address.apiPort(), listenStreamId, remoteIpAddress);
+                go2rtcEndpoint = new Go2RtcEndpoint(address.apiPort(), listenStreamId, remoteIpAddress);
                 go2rtcDemandPoller = scheduler.scheduleWithFixedDelay(this::requestGo2rtcDemandCheck,
                         GO2RTC_DEMAND_POLL_SECONDS, GO2RTC_DEMAND_POLL_SECONDS, TimeUnit.SECONDS);
                 go2rtcKeepalive = scheduler.scheduleWithFixedDelay(this::sendGo2rtcKeepalive, GO2RTC_KEEPALIVE_SECONDS,
@@ -1767,7 +1768,7 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler
 
             boolean wanted;
             try {
-                wanted = process.hasConsumers(endpoint.host(), endpoint.apiPort(), endpoint.stream(),
+                wanted = process.hasConsumers(Go2RtcConfig.API_HOST, endpoint.apiPort(), endpoint.stream(),
                         endpoint.stream() + "_talk");
             } catch (IOException e) {
                 // an unreadable go2rtc state is unknown demand, so the current camera session is left unchanged.
@@ -1833,7 +1834,7 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler
         Instant deadline = Instant.now().plusSeconds(BROWSER_OPEN_TIMEOUT_SECONDS);
         while (!disposing.get() && Instant.now().isBefore(deadline)) {
             try {
-                if (process.hasProducers(endpoint.host(), endpoint.apiPort(), endpoint.stream())) {
+                if (process.hasProducers(Go2RtcConfig.API_HOST, endpoint.apiPort(), endpoint.stream())) {
                     return true;
                 }
             } catch (IOException e) {
@@ -1865,7 +1866,7 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler
             return null;
         }
         String stream = talk ? endpoint.stream() + "_talk" : endpoint.stream();
-        return process.answerWebRtc(endpoint.host(), endpoint.apiPort(), stream, offer);
+        return process.answerWebRtc(Go2RtcConfig.API_HOST, endpoint.apiPort(), stream, offer);
     }
 
     /**
@@ -1874,7 +1875,7 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler
      */
     private void updateTalkDemand(Go2RtcProcess process, Go2RtcDataPump pump, Go2RtcEndpoint endpoint) {
         try {
-            if (process.hasProducers(endpoint.host(), endpoint.apiPort(), endpoint.stream() + "_talk")) {
+            if (process.hasProducers(Go2RtcConfig.API_HOST, endpoint.apiPort(), endpoint.stream() + "_talk")) {
                 pump.startTalk();
             } else {
                 pump.stopTalk();

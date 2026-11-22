@@ -28,7 +28,14 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public final class Go2RtcConfig {
 
     /**
-     * The address and ports that go2rtc listens on.
+     * go2rtc's management API has no authentication, so it listens only on loopback. WebRTC media uses
+     * {@link Address#host()}, which must be reachable by the browser.
+     */
+    public static final String API_HOST = "127.0.0.1";
+
+    /**
+     * The LAN address used for WebRTC media, and the ports go2rtc listens on. The management API does not use
+     * {@link #host()}; it listens on {@link #API_HOST}.
      */
     public record Address(String host, int apiPort, int webRtcPort, int rtspPort) {
     }
@@ -42,14 +49,14 @@ public final class Go2RtcConfig {
      * Returns the go2rtc YAML configuration. The listen and talk streams are declared without sources; the
      * data pump publishes media to them over RTSP.
      *
-     * @param address the host address and ports to listen on
+     * @param address the WebRTC address and the ports to listen on. The API listens on {@link #API_HOST}
      * @param listenStream the name of the stream the browser listens to
      * @param talkStream the name of the stream the browser talks to
      */
     public static String toYaml(Address address, String listenStream, String talkStream) {
         StringBuilder yaml = new StringBuilder();
         yaml.append("api:\n");
-        yaml.append("  listen: \"").append(address.host()).append(":").append(address.apiPort()).append("\"\n");
+        yaml.append("  listen: \"").append(API_HOST).append(":").append(address.apiPort()).append("\"\n");
         yaml.append("webrtc:\n");
         yaml.append("  listen: \"").append(address.host()).append(":").append(address.webRtcPort()).append("\"\n");
         yaml.append("rtsp:\n");

@@ -29,7 +29,8 @@ class Go2RtcConfigTest {
     void yamlContainsPortsAndDeclaredStreams() {
         String yaml = Go2RtcConfig.toYaml(new Go2RtcConfig.Address("192.168.1.10", 1984, 8555, 18554), "camera",
                 "camera_talk");
-        assertTrue(yaml.contains("api:\n  listen: \"192.168.1.10:1984\"\n"));
+        assertTrue(yaml.contains("api:\n  listen: \"127.0.0.1:1984\"\n"));
+        assertFalse(yaml.contains("192.168.1.10:1984"));
         assertTrue(yaml.contains("webrtc:\n  listen: \"192.168.1.10:8555\"\n"));
         assertTrue(yaml.contains("rtsp:\n  listen: \"127.0.0.1:18554\"\n"));
         assertTrue(yaml.contains("streams:\n  camera:\n  camera_talk:\n"));
