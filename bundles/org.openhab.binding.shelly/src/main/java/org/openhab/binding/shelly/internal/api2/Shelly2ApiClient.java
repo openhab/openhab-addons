@@ -470,7 +470,7 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
             var sleep = sys != null ? sys.sleep : null;
             Integer wakeupPeriod = sleep != null ? sleep.wakeupPeriod : null;
             profile.settings.sleepMode.period = wakeupPeriod != null ? wakeupPeriod / 60 : 720;
-            profile.wakeupPeriodAssumed = sleep == null;
+            profile.wakeupPeriodAssumed = wakeupPeriod == null;
         }
 
         if (profile.isFlood) {
