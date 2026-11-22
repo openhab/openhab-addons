@@ -30,7 +30,7 @@ import org.openhab.binding.bydbatterybox.internal.dto.SystemInfo;
 class ChannelLayoutTest {
 
     private static SystemInfo info(BatteryType type, int towers, int modules) {
-        return new SystemInfo("", "", "", 'A', "", 'A', 0, towers, modules, type, 0, 0, null);
+        return new SystemInfo("", "", "", 'A', "", 'A', 0, towers, modules, type, 0, 0, 0, null);
     }
 
     @Test

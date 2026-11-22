@@ -88,6 +88,7 @@ public class BydBatteryBoxBindingConstants {
     public static final String PROPERTY_PARAMETER_TABLE = "parameterTable";
     public static final String PROPERTY_INVERTER_TYPE = "inverterType";
     public static final String PROPERTY_APPLICATION = "application";
+    public static final String PROPERTY_PHASE = "phase";
     public static final String PROPERTY_TOWER_SERIAL_NUMBER = "tower%dSerialNumber";
     public static final String PROPERTY_TOWER_FIRMWARE = "tower%dFirmware";
 }

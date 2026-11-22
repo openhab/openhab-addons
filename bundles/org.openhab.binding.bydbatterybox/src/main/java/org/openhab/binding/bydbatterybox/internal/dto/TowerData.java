@@ -28,7 +28,10 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * @param current in A, positive while discharging
  * @param chargedEnergyWh lifetime charged energy of the tower in Wh
  * @param dischargedEnergyWh lifetime discharged energy of the tower in Wh
- * @param stateBits tower warning bitmap
+ * @param warningBits1 first tower warning bitmap
+ * @param warningBits2 second tower warning bitmap, same meaning of the bits as the first
+ * @param warningBits3 third tower warning bitmap
+ * @param errorBits tower error bitmap
  * @param balancingCells number of cells currently balancing
  * @param cellVoltages cell voltages in mV, index 0 = cell 1; only the cells that were read
  * @param temperatures sensor temperatures in °C, index 0 = sensor 1
@@ -38,9 +41,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public record TowerData(int tower, BigDecimal stateOfCharge, int stateOfHealth, BigDecimal voltage,
-        BigDecimal outputVoltage, BigDecimal current, long chargedEnergyWh, long dischargedEnergyWh, int stateBits,
-        int balancingCells, List<Integer> cellVoltages, List<Integer> temperatures, String bmsFirmwareA,
-        String bmsFirmwareB, String serialNumber) {
+        BigDecimal outputVoltage, BigDecimal current, long chargedEnergyWh, long dischargedEnergyWh, int warningBits1,
+        int warningBits2, int warningBits3, int errorBits, int balancingCells, List<Integer> cellVoltages,
+        List<Integer> temperatures, String bmsFirmwareA, String bmsFirmwareB, String serialNumber) {
 
     public TowerData {
         cellVoltages = List.copyOf(cellVoltages);
@@ -52,7 +55,7 @@ public record TowerData(int tower, BigDecimal stateOfCharge, int stateOfHealth, 
      */
     public TowerData withCells(List<Integer> cellVoltages, int balancingCells) {
         return new TowerData(tower, stateOfCharge, stateOfHealth, voltage, outputVoltage, current, chargedEnergyWh,
-                dischargedEnergyWh, stateBits, balancingCells, cellVoltages, temperatures, bmsFirmwareA, bmsFirmwareB,
-                serialNumber);
+                dischargedEnergyWh, warningBits1, warningBits2, warningBits3, errorBits, balancingCells, cellVoltages,
+                temperatures, bmsFirmwareA, bmsFirmwareB, serialNumber);
     }
 }

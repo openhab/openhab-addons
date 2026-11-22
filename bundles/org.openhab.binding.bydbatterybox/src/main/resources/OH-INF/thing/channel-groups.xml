@@ -134,6 +134,14 @@
 				<label>Warnings</label>
 				<description>Warnings reported by the tower.</description>
 			</channel>
+			<channel id="error" typeId="alarm">
+				<label>Error</label>
+				<description>ON while the tower reports at least one error.</description>
+			</channel>
+			<channel id="errors" typeId="status-text">
+				<label>Errors</label>
+				<description>Errors reported by the tower.</description>
+			</channel>
 		</channels>
 	</channel-group-type>
 

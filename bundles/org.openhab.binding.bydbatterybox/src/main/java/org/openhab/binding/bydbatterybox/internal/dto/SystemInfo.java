@@ -26,6 +26,8 @@ import org.eclipse.jdt.annotation.Nullable;
  * @param bmsFirmware firmware of the active BMS section
  * @param activeBmsSection {@code 'A'} or {@code 'B'}
  * @param inverterType raw inverter index (the name tables of the references disagree)
+ * @param phase phase setting of the battery; reported as 0 = single-phase, 1 = three-phase by one other
+ *            implementation, but not confirmed: a battery with a three-phase inverter reported 0
  * @param clock BMU real-time clock, {@code null} if the reported value is not a valid date
  *
  * @author Michael Weger - Initial contribution
@@ -33,7 +35,7 @@ import org.eclipse.jdt.annotation.Nullable;
 @NonNullByDefault
 public record SystemInfo(String serialNumber, String bmuFirmwareA, String bmuFirmwareB, char activeBmuSection,
         String bmsFirmware, char activeBmsSection, int inverterType, int towers, int modulesPerTower,
-        BatteryType batteryType, int batteryTypeCode, int application, @Nullable LocalDateTime clock) {
+        BatteryType batteryType, int batteryTypeCode, int application, int phase, @Nullable LocalDateTime clock) {
 
     /** Cell voltages of a tower that the first measurement pass returns. */
     public static final int FIRST_PASS_CELLS = 128;

@@ -112,6 +112,7 @@ The number of balancing cells includes the 5th module only with the option enabl
 | `parameterTable`               | Version of the parameter table                                                                 |
 | `inverterType`                 | Inverter setting of the battery (as a number)                                                  |
 | `application`                  | Application setting of the battery (as a number)                                               |
+| `phase`                        | Phase setting of the battery (as a number)                                                     |
 | `tower<n>SerialNumber`         | Serial number of the BMS of tower n (after the first cell measurement)                         |
 | `tower<n>Firmware`             | BMS firmware of tower n, slot A and slot B                                                     |
 
@@ -163,29 +164,31 @@ For batteries with an unknown module type, such as the HVL, they are `UNDEF`.
 One group per tower, updated every `detailInterval`.
 Minimum, maximum, average and spread cover all cells of the tower; cells and sensors are numbered from 1 within the tower.
 
-| Channel                       | Type                     | Description                                                  |
-|-------------------------------|--------------------------|--------------------------------------------------------------|
-| `state-of-charge`             | Number:Dimensionless     | State of charge (0.1 % resolution)                           |
-| `state-of-health`             | Number:Dimensionless     | State of health                                              |
-| `voltage`                     | Number:ElectricPotential | Tower voltage                                                |
-| `output-voltage`              | Number:ElectricPotential | Voltage at the tower output, behind the main relay           |
-| `current`                     | Number:ElectricCurrent   | Tower current                                                |
-| `charged-energy`              | Number:Energy            | Lifetime charged energy of the tower (Wh resolution)         |
-| `discharged-energy`           | Number:Energy            | Lifetime discharged energy of the tower (Wh resolution)      |
-| `usable-capacity`             | Number:Energy            | Nominal capacity of the tower reduced by its state of health |
-| `max-cell-voltage`            | Number:ElectricPotential | Highest cell voltage                                         |
-| `max-cell-voltage-cell`       | Number                   | Number of the cell with the highest voltage                  |
-| `min-cell-voltage`            | Number:ElectricPotential | Lowest cell voltage                                          |
-| `min-cell-voltage-cell`       | Number                   | Number of the cell with the lowest voltage                   |
-| `average-cell-voltage`        | Number:ElectricPotential | Average cell voltage                                         |
-| `cell-voltage-spread`         | Number:ElectricPotential | Highest minus lowest cell voltage (1 mV resolution)          |
-| `max-cell-temperature`        | Number:Temperature       | Highest cell temperature                                     |
-| `max-cell-temperature-sensor` | Number                   | Number of the sensor with the highest temperature            |
-| `min-cell-temperature`        | Number:Temperature       | Lowest cell temperature                                      |
-| `min-cell-temperature-sensor` | Number                   | Number of the sensor with the lowest temperature             |
-| `balancing-cells`             | Number                   | Number of cells currently being balanced                     |
-| `warning`                     | Switch                   | `ON` while the tower reports a warning                       |
-| `warnings`                    | String                   | The tower warnings as text, or `None`                        |
+| Channel                       | Type                     | Description                                                    |
+|-------------------------------|--------------------------|----------------------------------------------------------------|
+| `state-of-charge`             | Number:Dimensionless     | State of charge (0.1 % resolution)                             |
+| `state-of-health`             | Number:Dimensionless     | State of health                                                |
+| `voltage`                     | Number:ElectricPotential | Tower voltage                                                  |
+| `output-voltage`              | Number:ElectricPotential | Voltage at the tower output, behind the main relay             |
+| `current`                     | Number:ElectricCurrent   | Tower current                                                  |
+| `charged-energy`              | Number:Energy            | Lifetime charged energy of the tower (Wh resolution)           |
+| `discharged-energy`           | Number:Energy            | Lifetime discharged energy of the tower (Wh resolution)        |
+| `usable-capacity`             | Number:Energy            | Nominal capacity of the tower reduced by its state of health   |
+| `max-cell-voltage`            | Number:ElectricPotential | Highest cell voltage                                           |
+| `max-cell-voltage-cell`       | Number                   | Number of the cell with the highest voltage                    |
+| `min-cell-voltage`            | Number:ElectricPotential | Lowest cell voltage                                            |
+| `min-cell-voltage-cell`       | Number                   | Number of the cell with the lowest voltage                     |
+| `average-cell-voltage`        | Number:ElectricPotential | Average cell voltage                                           |
+| `cell-voltage-spread`         | Number:ElectricPotential | Highest minus lowest cell voltage (1 mV resolution)            |
+| `max-cell-temperature`        | Number:Temperature       | Highest cell temperature                                       |
+| `max-cell-temperature-sensor` | Number                   | Number of the sensor with the highest temperature              |
+| `min-cell-temperature`        | Number:Temperature       | Lowest cell temperature                                        |
+| `min-cell-temperature-sensor` | Number                   | Number of the sensor with the lowest temperature               |
+| `balancing-cells`             | Number                   | Number of cells currently being balanced                       |
+| `warning`                     | Switch                   | `ON` while the tower reports a warning                         |
+| `warnings`                    | String                   | The tower warnings as text, or `None`                          |
+| `error`                       | Switch                   | `ON` while the tower reports an error                          |
+| `errors`                      | String                   | The tower errors as text, e.g. `Main relay failure`, or `None` |
 
 ### Group `tower-<n>-module-<m>`
 
@@ -323,5 +326,6 @@ The binding was written from scratch, using the following projects to understand
 - [ioBroker.bydhvs](https://github.com/christianh17/ioBroker.bydhvs)
 - [python-bydhvs](https://github.com/bbr111/python-bydhvs)
 - [smarthomeNG plugin byd_bat](https://github.com/smarthomeNG/plugins/tree/develop/byd_bat), which also documents the event log
+- [byd_battery_box for Home Assistant](https://github.com/TimWeyand/byd_battery_box), whose code tables and recorded event logs helped to decode the tower status words and more event entries
 
 Readings were cross-checked with "BYD-Logger" by Olli from the Photovoltaik-Forum.

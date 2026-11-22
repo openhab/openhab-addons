@@ -55,6 +55,7 @@ class BydDecoderTest {
         assertEquals(BatteryType.HVS, info.batteryType());
         assertEquals(0, info.inverterType());
         assertEquals(0, info.application());
+        assertEquals(0, info.phase());
         assertEquals(LocalDateTime.of(2026, 11, 16, 18, 37, 8), info.clock());
         assertEquals(96, info.firstPassCellsPerTower());
         assertEquals(36, info.temperatureSensorsPerTower());
@@ -88,6 +89,7 @@ class BydDecoderTest {
         assertEquals(BatteryType.HVS, info.batteryType());
         assertEquals(19, info.inverterType());
         assertEquals(1, info.application());
+        assertEquals(1, info.phase());
         assertEquals(160, info.cellsPerTower());
         assertEquals(128, info.firstPassCellsPerTower());
         assertEquals(32, info.secondPassCellsPerTower());
@@ -201,6 +203,27 @@ class BydDecoderTest {
     }
 
     @Test
+    void measurementStatusWords() throws BydCommunicationException {
+        SystemInfo info = BydDecoder.decodeIdentity(Fixtures.frame("identity"));
+        byte[] buffer = Fixtures.chunkPayloads("measurement", 4);
+        // big-endian words: warnings 1 at 54, warnings 2 at 56, warnings 3 at 58, errors at 94
+        buffer[55] = 0x10;
+        buffer[56] = (byte) 0x80;
+        buffer[59] = 0x01;
+        buffer[94] = 0x01;
+        buffer[95] = 0x02;
+
+        TowerData tower = BydDecoder.decodeMeasurement(1, buffer, info);
+
+        assertEquals(0x0010, tower.warningBits1());
+        assertEquals(0x8000, tower.warningBits2());
+        assertEquals(0x0001, tower.warningBits3());
+        assertEquals(0x0102, tower.errorBits());
+        // the cell voltages behind the error word are unchanged
+        assertEquals(3121, tower.cellVoltages().get(0));
+    }
+
+    @Test
     void measurement() throws BydCommunicationException {
         SystemInfo info = BydDecoder.decodeIdentity(Fixtures.frame("identity"));
         TowerData tower = BydDecoder.decodeMeasurement(1, Fixtures.chunkPayloads("measurement", 4), info);
@@ -213,7 +236,10 @@ class BydDecoderTest {
         assertDecimal("0.0", tower.current());
         assertEquals(5_515_448, tower.chargedEnergyWh());
         assertEquals(5_055_100, tower.dischargedEnergyWh());
-        assertEquals(0, tower.stateBits());
+        assertEquals(0, tower.warningBits1());
+        assertEquals(0, tower.warningBits2());
+        assertEquals(0, tower.warningBits3());
+        assertEquals(0, tower.errorBits());
         assertEquals(0, tower.balancingCells());
         assertEquals("3.30", tower.bmsFirmwareA());
         assertEquals("3.31", tower.bmsFirmwareB());

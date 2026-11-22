@@ -58,12 +58,15 @@ public final class BydDecoder {
     private static final int MEAS_STATE_OF_CHARGE = 48;
     private static final int MEAS_STATE_OF_HEALTH = 50;
     private static final int MEAS_CURRENT = 52;
-    private static final int MEAS_STATE_BITS = 54;
+    private static final int MEAS_WARNING_BITS_1 = 54;
+    private static final int MEAS_WARNING_BITS_2 = 56;
+    private static final int MEAS_WARNING_BITS_3 = 58;
     private static final int MEAS_BMS_FIRMWARE_A = 60;
     private static final int MEAS_BMS_FIRMWARE_B = 62;
     /** 0 in the first and 1 in the second measurement pass. */
     private static final int MEAS_PASS = 65;
     private static final int MEAS_SERIAL_NUMBER = 66;
+    private static final int MEAS_ERROR_BITS = 94;
     private static final int MEAS_CELL_VOLTAGES = 96;
     private static final int MEAS_TEMPERATURES = 354;
 
@@ -81,7 +84,7 @@ public final class BydDecoder {
                 version(u8(frame, 29), u8(frame, 30)), u8(frame, 33) == 0 ? 'A' : 'B',
                 version(u8(frame, 31), u8(frame, 32)), u8(frame, 34) == 0 ? 'A' : 'B', u8(frame, 35),
                 towers(topology >>> 4), topology & 0x0F, BatteryType.fromCode(typeCode), typeCode, u8(frame, 38),
-                dateTime(frame, 201));
+                u8(frame, 39), dateTime(frame, 201));
     }
 
     public static SystemStatus decodeStatus(byte[] frame) throws BydCommunicationException {
@@ -114,8 +117,10 @@ public final class BydDecoder {
                 s16(buffer, MEAS_STATE_OF_HEALTH), BigDecimal.valueOf(s16(buffer, MEAS_VOLTAGE), 1),
                 BigDecimal.valueOf(s16(buffer, MEAS_OUTPUT_VOLTAGE), 1),
                 BigDecimal.valueOf(s16(buffer, MEAS_CURRENT), 1), u32WordSwapped(buffer, MEAS_CHARGED_ENERGY),
-                u32WordSwapped(buffer, MEAS_DISCHARGED_ENERGY), u16(buffer, MEAS_STATE_BITS), balancing, cells,
-                temperatures, version(u8(buffer, MEAS_BMS_FIRMWARE_A + 1), u8(buffer, MEAS_BMS_FIRMWARE_A)),
+                u32WordSwapped(buffer, MEAS_DISCHARGED_ENERGY), u16(buffer, MEAS_WARNING_BITS_1),
+                u16(buffer, MEAS_WARNING_BITS_2), u16(buffer, MEAS_WARNING_BITS_3), u16(buffer, MEAS_ERROR_BITS),
+                balancing, cells, temperatures,
+                version(u8(buffer, MEAS_BMS_FIRMWARE_A + 1), u8(buffer, MEAS_BMS_FIRMWARE_A)),
                 version(u8(buffer, MEAS_BMS_FIRMWARE_B + 1), u8(buffer, MEAS_BMS_FIRMWARE_B)),
                 ascii(buffer, MEAS_SERIAL_NUMBER, SERIAL_NUMBER_LENGTH));
     }

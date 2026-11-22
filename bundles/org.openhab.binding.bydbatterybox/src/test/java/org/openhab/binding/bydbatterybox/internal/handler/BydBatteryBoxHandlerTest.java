@@ -226,6 +226,7 @@ class BydBatteryBoxHandlerTest {
         verifyState(new ChannelUID(thingUID, "tower-1", CHANNEL_USABLE_CAPACITY), "12.16 kWh");
         verifyState(new ChannelUID(thingUID, "tower-2", CHANNEL_USABLE_CAPACITY), "12.54 kWh");
         assertEquals("25.6 kWh", localHandler.getThing().getProperties().get(PROPERTY_NOMINAL_CAPACITY));
+        assertEquals("1", localHandler.getThing().getProperties().get(PROPERTY_PHASE));
     }
 
     @Test

@@ -14,6 +14,7 @@ package org.openhab.binding.bydbatterybox.internal.handler;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -48,6 +49,21 @@ class BydTexts {
             "Overcurrent while discharging", "Hardware overcurrent while charging", "Short circuit",
             "Inverse connection", "Interlock switch abnormal", "Air switch abnormal" };
 
+    /** Third tower warning bitmap of the measurement buffer. */
+    private static final String[] WARNING3_BITS = { "Battery overvoltage", "Battery undervoltage", "Cell overvoltage",
+            "Cell undervoltage", "Voltage sensor failure", "Temperature sensor failure",
+            "High temperature while discharging", "Low temperature while discharging",
+            "High temperature while charging", "Low temperature while charging", "Overcurrent while discharging",
+            "Overcurrent while charging", "Main circuit failure", "Short circuit alarm", "Cell imbalance",
+            "Current sensor failure" };
+
+    /** Tower error bitmap of the measurement buffer. */
+    private static final String[] TOWER_ERROR_BITS = { "Cell voltage sensor failure", "Temperature sensor failure",
+            "Cell monitoring communication failure", "Pack voltage sensor failure", "Current sensor failure",
+            "Charging switch failure", "Discharging switch failure", "Pre-charge switch failure", "Main relay failure",
+            "Pre-charge failed", "Heater failure", "Cooling failure", "Cell monitoring balancing failure",
+            "Cell failure", "Circuit board temperature sensor failure", "Functional safety failure" };
+
     /** Error enumeration of BMU "events record" entries. */
     private static final String[] BMU_ERRORS = { "Total voltage too high", "Total voltage too low",
             "Cell voltage too high", "Cell voltage too low", "Voltage sensor fault", "Temperature sensor fault",
@@ -60,9 +76,11 @@ class BydTexts {
             "Shutdown", "Pre-charge", "Battery check", "Address assignment", "Loading parameters", "Initialisation" };
 
     private static final int EVENT_EVENTS_RECORD = 2;
+    /** Error number of BMU "events record" entries that carry a warning bitmap instead of a single error. */
+    private static final int EVENTS_RECORD_WARNINGS = 23;
     private static final int EVENT_SYSTEM_STATUS_CHANGED = 32;
     /** BMS entries whose data use the common layout (warnings, faults, switches, SoC, voltages, current, cells). */
-    private static final Set<Integer> BMS_STANDARD_LAYOUT = Set.of(2, 3, 4, 5, 6, 7, 8, 13, 14, 16, 19);
+    private static final Set<Integer> BMS_STANDARD_LAYOUT = Set.of(2, 3, 4, 5, 6, 7, 8, 10, 13, 14, 16, 19, 21);
 
     private final TextSource source;
 
@@ -74,8 +92,20 @@ class BydTexts {
         return bitTexts("error.bit.", ERROR_BITS, bits);
     }
 
-    String towerWarnings(int bits) {
-        return bitTexts("warning.bit.", WARNING_BITS, bits);
+    /**
+     * @param bits1 first warning bitmap
+     * @param bits2 second warning bitmap, same meaning of the bits as the first
+     * @param bits3 third warning bitmap
+     */
+    String towerWarnings(int bits1, int bits2, int bits3) {
+        // the bitmaps overlap in meaning; each text is listed once
+        LinkedHashSet<String> texts = new LinkedHashSet<>(bitTextList("warning.bit.", WARNING_BITS, bits1 | bits2));
+        texts.addAll(bitTextList("warning3.bit.", WARNING3_BITS, bits3));
+        return texts.isEmpty() ? source.get("text.none", "None") : String.join(", ", texts);
+    }
+
+    String towerErrors(int bits) {
+        return bitTexts("tower.error.bit.", TOWER_ERROR_BITS, bits);
     }
 
     String eventSource(int unit) {
@@ -100,6 +130,10 @@ class BydTexts {
                 String change = record.u8(0) == 0 ? source.get("event.disappeared", "disappeared")
                         : source.get("event.appeared", "appeared");
                 int error = record.u8(1);
+                if (error == EVENTS_RECORD_WARNINGS) {
+                    // the warning bitmap uses the bit numbers of the error enumeration
+                    return bitTexts("bmu.error.", BMU_ERRORS, record.u16BigEndian(2)) + ", " + change;
+                }
                 return error < BMU_ERRORS.length ? source.get("bmu.error." + error, BMU_ERRORS[error]) + ", " + change
                         : change;
             }
@@ -121,12 +155,17 @@ class BydTexts {
     }
 
     private String bitTexts(String keyPrefix, String[] defaults, int bits) {
+        List<String> texts = bitTextList(keyPrefix, defaults, bits);
+        return texts.isEmpty() ? source.get("text.none", "None") : String.join(", ", texts);
+    }
+
+    private List<String> bitTextList(String keyPrefix, String[] defaults, int bits) {
         List<String> texts = new ArrayList<>();
         for (int bit = 0; bit < defaults.length; bit++) {
             if ((bits & (1 << bit)) != 0) {
                 texts.add(source.get(keyPrefix + bit, defaults[bit]));
             }
         }
-        return texts.isEmpty() ? source.get("text.none", "None") : String.join(", ", texts);
+        return texts;
     }
 }

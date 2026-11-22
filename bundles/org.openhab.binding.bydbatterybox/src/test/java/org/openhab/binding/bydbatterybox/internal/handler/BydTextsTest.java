@@ -19,7 +19,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
+import java.time.LocalDateTime;
 import java.util.HashSet;
+import java.util.HexFormat;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
@@ -70,8 +72,49 @@ class BydTextsTest {
 
     @Test
     void towerWarnings() {
-        assertEquals("Cell imbalance", texts.towerWarnings(1 << 4));
-        assertEquals("Battery overvoltage, Air switch abnormal", texts.towerWarnings(1 | 1 << 15));
+        assertEquals("None", texts.towerWarnings(0, 0, 0));
+        assertEquals("Cell imbalance", texts.towerWarnings(1 << 4, 0, 0));
+        assertEquals("Battery overvoltage, Air switch abnormal", texts.towerWarnings(1 | 1 << 15, 0, 0));
+        // the second word has the meaning of the first, the third its own; each text is listed once
+        assertEquals("Battery overvoltage, Cell imbalance, Main circuit failure",
+                texts.towerWarnings(1, 1 | 1 << 4, 1 | 1 << 12));
+        assertTrue(missingKeys.isEmpty(), () -> "missing i18n keys " + missingKeys);
+    }
+
+    @Test
+    void towerErrors() {
+        assertEquals("None", texts.towerErrors(0));
+        assertEquals("Main relay failure, Functional safety failure", texts.towerErrors(1 << 8 | 1 << 15));
+        assertTrue(missingKeys.isEmpty(), () -> "missing i18n keys " + missingKeys);
+    }
+
+    private static EventRecord event(int unit, int code, String hex) {
+        return new EventRecord(unit, code, LocalDateTime.of(2026, 11, 22, 8, 0), HexFormat.of().parseHex(hex));
+    }
+
+    @Test
+    void bmsEventDetailsOfSocCalibrationStopAndAdditionalInfo() {
+        // recorded on an HVS 7.7 on 2026-11-16 and 2026-11-22
+        assertEquals("BMS 1: SoC calibration stop (SoC 9 %, 309.5 V, -0.5 A)",
+                texts.event(event(1, 10, "000000000000000001090a170c1d0cfbff9d0c910c1a16")));
+        assertEquals("BMS 1: Events additional info (SoC 5 %, 307.2 V, 0.0 A)",
+                texts.event(event(1, 21, "000000000000000018055e000c050c00003205011e0000")));
+        assertTrue(missingKeys.isEmpty(), () -> "missing i18n keys " + missingKeys);
+    }
+
+    @Test
+    void bmuEventsRecordWithWarningBitmap() {
+        // error number 23 carries a warning bitmap in bytes 2..3: cell voltage too low (bit 3), battery imbalance (14)
+        assertEquals("BMU: Events record (Cell voltage too low, Battery imbalance, appeared)",
+                texts.event(event(EventRecord.UNIT_BMU, 2, "01174008ffffffffffffffffffffffffffffffffffffff")));
+        assertTrue(missingKeys.isEmpty(), () -> "missing i18n keys " + missingKeys);
+    }
+
+    @Test
+    void newEventCodesHaveTexts() {
+        assertEquals("BMU: Firmware update failed", texts.event(event(EventRecord.UNIT_BMU, 103, "00".repeat(23))));
+        assertEquals("BMU: Parameter table update finished",
+                texts.event(event(EventRecord.UNIT_BMU, 120, "00".repeat(23))));
         assertTrue(missingKeys.isEmpty(), () -> "missing i18n keys " + missingKeys);
     }
 
@@ -81,7 +124,7 @@ class BydTextsTest {
 
         assertEquals("BMS 1: Stop discharging (SoC 7 %, 305.3 V, 0.0 A)", texts.event(records.get(0)));
         assertEquals("BMS 1: Start charging (SoC 10 %, 311.3 V, -1.8 A)", texts.event(records.get(4)));
-        assertEquals("BMS 1: SoC calibration stop", texts.event(records.get(8)));
+        assertEquals("BMS 1: SoC calibration stop (SoC 9 %, 309.5 V, -0.5 A)", texts.event(records.get(8)));
         assertEquals("BMS 1: Pre-charge successful (SoC 5 %, 306.7 V, 0.0 A)", texts.event(records.get(16)));
         assertTrue(missingKeys.isEmpty(), () -> "missing i18n keys " + missingKeys);
     }

@@ -375,8 +375,12 @@ public class BydBatteryBoxHandler extends BaseThingHandler {
                 new QuantityType<>(BigDecimal.valueOf(data.dischargedEnergyWh(), 3), Units.KILOWATT_HOUR));
         update(group, CHANNEL_USABLE_CAPACITY, energy(towerCapacityWh(info), data.stateOfHealth()));
         update(group, CHANNEL_BALANCING_CELLS, new DecimalType(data.balancingCells()));
-        update(group, CHANNEL_WARNING, OnOffType.from(data.stateBits() != 0));
-        update(group, CHANNEL_WARNINGS, new StringType(texts.towerWarnings(data.stateBits())));
+        int warningBits = data.warningBits1() | data.warningBits2() | data.warningBits3();
+        update(group, CHANNEL_WARNING, OnOffType.from(warningBits != 0));
+        update(group, CHANNEL_WARNINGS,
+                new StringType(texts.towerWarnings(data.warningBits1(), data.warningBits2(), data.warningBits3())));
+        update(group, CHANNEL_ERROR, OnOffType.from(data.errorBits() != 0));
+        update(group, CHANNEL_ERRORS, new StringType(texts.towerErrors(data.errorBits())));
 
         List<Integer> cells = data.cellVoltages();
         CellStatistics cellStats = CellStatistics.of(cells, 0, cells.size());
@@ -512,6 +516,7 @@ public class BydBatteryBoxHandler extends BaseThingHandler {
                 String.valueOf(info.batteryType().getTemperatureSensorsPerModule()));
         properties.put(PROPERTY_INVERTER_TYPE, String.valueOf(info.inverterType()));
         properties.put(PROPERTY_APPLICATION, String.valueOf(info.application()));
+        properties.put(PROPERTY_PHASE, String.valueOf(info.phase()));
         int nominalCapacityWh = info.towers() * towerCapacityWh(info);
         if (nominalCapacityWh > 0) {
             properties.put(PROPERTY_NOMINAL_CAPACITY,
