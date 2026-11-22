@@ -126,11 +126,11 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
     private final HttpService httpService;
     private final ChannelUID requestCountChannelUID;
     private final ChannelUID hookSetChannelUID;
+    private final GrantServlet grantServlet;
 
     private @Nullable OAuthClientService oAuthClientService;
     private @Nullable ScheduledFuture<?> connectJob;
     private @Nullable WebhookServlet webhookServlet;
-    private @Nullable GrantServlet grantServlet;
 
     public ApiBridgeHandler(Bridge bridge, HttpClient httpClient, NADeserializer deserializer,
             BindingConfiguration configuration, HttpService httpService, OAuthFactory oAuthFactory) {
@@ -140,6 +140,8 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
         this.deserializer = deserializer;
         this.httpService = httpService;
         this.oAuthFactory = oAuthFactory;
+        this.grantServlet = new GrantServlet(this, httpService);
+
         requestCountChannelUID = new ChannelUID(thing.getUID(), GROUP_MONITORING, CHANNEL_REQUEST_COUNT);
         hookSetChannelUID = new ChannelUID(thing.getUID(), GROUP_MONITORING, CHANNEL_HOOK_SET);
     }
@@ -164,6 +166,7 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
                         new AccessTokenResponseDeserializer()));
 
         updateStatus(ThingStatus.UNKNOWN);
+        grantServlet.startListening();
 
         scheduler.execute(() -> openConnection(null, null));
     }
@@ -202,9 +205,6 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
         try {
             if (code != null) {
                 accessTokenResponse = oAuthClientService.getAccessTokenResponseByAuthorizationCode(code, redirectUri);
-
-                // Dispose grant servlet upon completion of authorization flow.
-                freeGrantServlet();
             } else {
                 accessTokenResponse = oAuthClientService.getAccessTokenResponse();
             }
@@ -233,8 +233,6 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
     }
 
     private void startAuthorizationFlow() {
-        GrantServlet grantServlet = this.grantServlet = new GrantServlet(this, httpService);
-        grantServlet.startListening();
         updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                 "@text/conf-error-grant-needed [ \"http(s)://<YOUROPENHAB>:<YOURPORT>%s\" ]"
                         .formatted(grantServlet.getPath()));
@@ -267,13 +265,6 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
         this.connectJob = null;
     }
 
-    private void freeGrantServlet() {
-        if (grantServlet instanceof GrantServlet servlet) {
-            servlet.dispose();
-        }
-        this.grantServlet = null;
-    }
-
     @Override
     public void dispose() {
         logger.debug("Shutting down Netatmo API bridge handler.");
@@ -284,7 +275,7 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
         }
         this.webhookServlet = null;
 
-        freeGrantServlet();
+        grantServlet.dispose();
 
         connectApi.dispose();
         freeConnectJob();
