@@ -138,8 +138,11 @@ public class ApiBridgeHandler extends BaseBridgeHandler implements NetatmoHandle
     private @Nullable ScheduledFuture<?> connectJob;
     private @Nullable WebhookServlet webhookServlet;
 <<<<<<< Upstream, based on main
+<<<<<<< Upstream, based on main
 =======
     private @Nullable GrantServlet grantServlet;
+=======
+>>>>>>> 70e57ea Rebase
     private @Nullable WebhookService webhookService;
 >>>>>>> 566fb64 Review openhabCloud availability cycle
 
@@ -161,7 +164,11 @@ public class ApiBridgeHandler extends BaseBridgeHandler implements NetatmoHandle
 >>>>>>> 566fb64 Review openhabCloud availability cycle
 =======
         this.handlerFactory = handlerFactory;
+<<<<<<< Upstream, based on main
 >>>>>>> 1d4e37b Make ApiBridgeHandler a listener of NetatmoHandlerFactory
+=======
+        this.grantServlet = new GrantServlet(this, httpService);
+>>>>>>> 70e57ea Rebase
         requestCountChannelUID = new ChannelUID(thing.getUID(), GROUP_MONITORING, CHANNEL_REQUEST_COUNT);
         hookSetChannelUID = new ChannelUID(thing.getUID(), GROUP_MONITORING, CHANNEL_HOOK_SET);
     }
@@ -290,11 +297,17 @@ public class ApiBridgeHandler extends BaseBridgeHandler implements NetatmoHandle
 
         AccessTokenResponse accessTokenResponse;
         try {
+<<<<<<< Upstream, based on main
             if (code != null) {
                 accessTokenResponse = oAuthClientService.getAccessTokenResponseByAuthorizationCode(code, redirectUri);
             } else {
                 accessTokenResponse = oAuthClientService.getAccessTokenResponse();
             }
+=======
+            accessTokenResponse = code != null
+                    ? oAuthClientService.getAccessTokenResponseByAuthorizationCode(code, redirectUri)
+                    : oAuthClientService.getAccessTokenResponse();
+>>>>>>> 70e57ea Rebase
         } catch (OAuthException | OAuthResponseException e) {
             logger.debug("Failed to load access token: {}", e.getMessage());
             startAuthorizationFlow();
@@ -369,6 +382,7 @@ public class ApiBridgeHandler extends BaseBridgeHandler implements NetatmoHandle
         freeWebhookServlet();
 =======
         webhookServiceGone();
+<<<<<<< Upstream, based on main
 >>>>>>> 5170662 Free webhookService at dispose
         freeGrantServlet();
 <<<<<<< Upstream, based on main
@@ -378,6 +392,9 @@ public class ApiBridgeHandler extends BaseBridgeHandler implements NetatmoHandle
         handlerFactory.unregisterWebhookServiceListener(this);
 >>>>>>> 1d4e37b Make ApiBridgeHandler a listener of NetatmoHandlerFactory
 =======
+=======
+        grantServlet.dispose();
+>>>>>>> 70e57ea Rebase
         handlerFactory.unregisterCloudWebhookServiceListener(this);
 >>>>>>> 730a221 Make explicit we're working with openHAB cloud
 
