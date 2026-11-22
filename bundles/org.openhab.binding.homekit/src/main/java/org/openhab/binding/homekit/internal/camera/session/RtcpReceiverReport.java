@@ -25,6 +25,7 @@ import org.eclipse.jdt.annotation.Nullable;
  * All methods are synchronized because the RTP relay thread updates the statistics while the report thread reads them.
  *
  * @author Andrew Fiddian-Green - Initial contribution
+ * @author Andrew Fiddian-Green - RTCP sequence restart validation
  */
 @NonNullByDefault
 public final class RtcpReceiverReport {
@@ -34,6 +35,7 @@ public final class RtcpReceiverReport {
     private static final int RR_HEADER_LENGTH = 8;
     private static final int REPORT_BLOCK_LENGTH = 24;
     private static final int MAX_DROPOUT = 3000;
+    private static final int MAX_MISORDER = 100;
     private static final int SEQUENCE_MODULUS = 1 << 16;
     private static final long MICROS_PER_SECOND = 1_000_000L;
 
@@ -46,6 +48,8 @@ public final class RtcpReceiverReport {
     private int sourceSsrc;
     private int baseSeq;
     private int maxSeq;
+    /** The next sequence number that would confirm a restart, or {@link #SEQUENCE_MODULUS} when none is pending. */
+    private int badSeq = SEQUENCE_MODULUS;
     private long cycles;
     private long received;
     private long expectedPrior;
@@ -71,6 +75,7 @@ public final class RtcpReceiverReport {
     public synchronized void reset() {
         peer = null;
         sourceSeen = false;
+        badSeq = SEQUENCE_MODULUS;
         received = 0;
         expectedPrior = 0;
         receivedPrior = 0;
@@ -112,7 +117,9 @@ public final class RtcpReceiverReport {
         if (!sourceSeen || ssrc != sourceSsrc) {
             startSource(ssrc, seq);
         }
-        updateSequence(seq);
+        if (!updateSequence(seq)) {
+            return;
+        }
         received++;
         updateJitter(timestamp, arrivalMicros);
     }
@@ -164,6 +171,7 @@ public final class RtcpReceiverReport {
         sourceSsrc = ssrc;
         baseSeq = seq;
         maxSeq = seq;
+        badSeq = SEQUENCE_MODULUS;
         cycles = 0;
         received = 0;
         expectedPrior = 0;
@@ -173,16 +181,28 @@ public final class RtcpReceiverReport {
     }
 
     /**
-     * Updates the highest sequence number, counting sequence number wrap-arounds (RFC 3550 appendix A.1).
+     * Updates the highest sequence number, counting sequence number wrap-arounds (RFC 3550 appendix A.1). A forward
+     * jump of at least {@link #MAX_DROPOUT} is not accepted until the following packet continues that new sequence,
+     * which is treated as a source restart. A packet that is not accepted is not counted.
+     *
+     * @return true if the packet is accepted and should be counted
      */
-    private void updateSequence(int seq) {
+    private boolean updateSequence(int seq) {
         int delta = (seq - maxSeq) & (SEQUENCE_MODULUS - 1);
         if (delta < MAX_DROPOUT) {
             if (seq < maxSeq) {
                 cycles += SEQUENCE_MODULUS;
             }
             maxSeq = seq;
+        } else if (delta <= SEQUENCE_MODULUS - MAX_MISORDER) {
+            if (seq == badSeq) {
+                startSource(sourceSsrc, seq);
+            } else {
+                badSeq = (seq + 1) & (SEQUENCE_MODULUS - 1);
+                return false;
+            }
         }
+        return true;
     }
 
     /**

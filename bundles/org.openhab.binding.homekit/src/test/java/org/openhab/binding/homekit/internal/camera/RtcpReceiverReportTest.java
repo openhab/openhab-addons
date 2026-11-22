@@ -89,6 +89,21 @@ class RtcpReceiverReportTest {
     }
 
     @Test
+    void largeSequenceJumpIsIgnoredUntilRestartIsConfirmed() {
+        RtcpReceiverReport report = new RtcpReceiverReport(SENDER_SSRC, VIDEO_CLOCK_RATE);
+        report.onRtp(rtp(100, 0, SOURCE_SSRC), 12, 0);
+        report.onRtp(rtp(5000, 0, SOURCE_SSRC), 12, 0);
+        byte[] beforeRestart = report.buildReport();
+        assertEquals(100, readInt(beforeRestart, 16), "unconfirmed jump does not advance the highest sequence");
+        assertEquals(0, readInt(beforeRestart, 12) & 0xFFFFFF, "unconfirmed jump is not counted");
+
+        report.onRtp(rtp(5001, 0, SOURCE_SSRC), 12, 0);
+        byte[] afterRestart = report.buildReport();
+        assertEquals(5001, readInt(afterRestart, 16));
+        assertEquals(0, readInt(afterRestart, 12) & 0xFFFFFF, "restart does not report negative loss");
+    }
+
+    @Test
     void resetForgetsPeerAndStatistics() {
         RtcpReceiverReport report = new RtcpReceiverReport(SENDER_SSRC, VIDEO_CLOCK_RATE);
         report.setPeer(new InetSocketAddress("192.0.2.1", 5000));
