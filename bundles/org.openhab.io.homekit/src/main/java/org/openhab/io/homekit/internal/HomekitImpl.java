@@ -259,11 +259,12 @@ public class HomekitImpl implements Homekit, NetworkAddressChangeListener, Ready
             if (settings.useOHmDNS) {
                 logger.trace("no suitable mDNS server for IP {} found", localNetworkInterface);
             }
-            // On macOS (and other hosts with a system mDNSResponder), a dedicated JmDNS
-            // instance cannot bind UDP 5353. Prefer native DNS-SD / Bonjour via HAP-Java.
+            // Prefer sharing openHAB's JmDNS above. Otherwise use HAP-Java's optional native
+            // DNS-SD backend (system Bonjour/Avahi) to avoid a second in-process multicast
+            // stack. Long-term, platform native mDNS belongs in openHAB core; io.homekit
+            // should then inject a HomekitAdvertiser wrapper around that service instead.
             if (HomekitAdvertisers.isNativeDnssdSupported()) {
-                logger.debug("Creating HomeKit server with native DNS-SD advertiser for {} (no UDP 5353 bind)",
-                        localNetworkInterface);
+                logger.debug("Creating HomeKit server with native DNS-SD advertiser for {}", localNetworkInterface);
                 homekitServer = new HomekitServer(localNetworkInterface, settings.port + instance,
                         HomekitAdvertisers.nativeDnssd());
             } else {
