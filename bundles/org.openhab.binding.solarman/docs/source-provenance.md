@@ -60,6 +60,16 @@ python tools/review_single_phase_migration.py --definitions-only
 python tools/validate_documentation.py
 ```
 
+The copyable configuration examples are maintained in the binding README.
+The example generator writes complete channel lists, Item templates and migration reports to `target/profile-channel-lists` and refreshes the marked legacy README tables.
+The definition review adds its reports to the same directory.
+These generated reports are development output and are not published as a separate examples directory.
+To include them in the documentation checks after generation, run:
+
+```shell
+python tools/validate_documentation.py --generated target/profile-channel-lists
+```
+
 The current single-phase comparison contains 81 deye_hybrid legacy entries and 150 advanced entries, including the three binding additions.
 The example generator also refreshes the marked README legacy tables from the independent main fixture, preserving all 94 deye_sg04lp3 and 37 deye_2mppt channel IDs/types/access flags.
 The five-family comparison intentionally compares only the 925 pinned Kellerza entries and identifies the matched legacy families explicitly.
@@ -71,6 +81,7 @@ Keep the historical fixture frozen and review upstream evolution separately.
 
 ## Example Validation Scope
 
-The documentation validator checks Item/channel types and units, complete generated lists, README/file consistency, sitemap references, published command options, numeric bounds and local links against checked-in metadata.
+The documentation validator checks the README examples' Item/channel types and units, sitemap references, published command options, numeric bounds and local links against checked-in metadata.
+With `--generated`, it also checks the complete generated Item lists, channel CSV and migration map.
 It also checks that the selected warning and source attribution are present.
 This static review does not install the files, execute commands, validate every model's operating conditions or replace an openHAB UI/runtime test.

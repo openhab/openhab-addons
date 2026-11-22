@@ -2,6 +2,7 @@
 
 Uses only development tooling (PyYAML), local fixtures and files. No commands or network I/O.
 """
+import argparse
 import csv
 import json
 import re
@@ -12,7 +13,6 @@ from pathlib import Path
 from profile_resources import load_profile
 
 ROOT = Path(__file__).resolve().parents[1]
-EXAMPLES = ROOT / 'docs/examples'
 LEGACY = json.loads((ROOT / 'src/test/resources/legacy/main-baseline.json').read_text(encoding='utf-8'))['profiles']
 DIFFERENCES = json.loads((ROOT / 'src/test/resources/legacy/main-reviewed-differences.json').read_text(encoding='utf-8'))
 XML = ET.parse(ROOT / 'src/main/resources/OH-INF/thing/sunsynk.xml').getroot()
@@ -97,7 +97,27 @@ def block(text, filename):
     return match[1] + '\n'
 
 
-def main():
+def generated_examples(directory):
+    counts = {}
+    for profile, expected_count in (('deye_hybrid', 81), ('sunsynk_single_phase', 150)):
+        declarations = items((directory / (profile + '.items')).read_text(encoding='utf-8'), profile)
+        assert len(declarations) == expected_count
+        assert {value['channel'] for value in declarations.values()} == metadata(profile).keys()
+        counts[profile] = len(declarations)
+    with (directory / 'channels.csv').open(encoding='utf-8') as stream:
+        rows = list(csv.DictReader(stream))
+    assert len(rows) == 231
+    for row in rows:
+        expected = metadata(row['profile'])[row['channel']]
+        assert row['item_type'] == expected['item_type']
+        assert (row['access'] == 'Read/write') == expected['writable']
+    with (directory / 'migration-map.csv').open(encoding='utf-8') as stream:
+        mapping = list(csv.DictReader(stream))
+    assert len(mapping) == 81 and {row['legacy_channel'] for row in mapping} == metadata('deye_hybrid').keys()
+    return dict(item_declarations=counts, combined_csv_rows=len(rows), migration_rows=len(mapping))
+
+
+def main(generated=None):
     readme = (ROOT / 'README.md').read_text(encoding='utf-8')
     assert '> **Warning:** ' + WARNING in readme
     assert all(value in readme for value in ('Johann Kellerman', 'f1ecbc28e3ccf2b9f87b1ccee85a41628567da43', 'Apache-2.0', 'Hardware Test Coverage'))
@@ -116,10 +136,7 @@ def main():
     counts = {}
     sitemap_references = 0
     for prefix, profile in (('solarman', 'deye_sg04lp3'), ('sunsynk', 'sunsynk_single_phase')):
-        for extension in ('things', 'items', 'sitemap'):
-            path = EXAMPLES / (prefix + '.' + extension)
-            assert block(readme, path.name) == path.read_text(encoding='utf-8'), path.name
-        thing = (EXAMPLES / (prefix + '.things')).read_text(encoding='utf-8')
+        thing = block(readme, prefix + '.things')
         assert f'inverterType="{profile}"' in thing
         assert 'hostname="192.168.1.100"' in thing and 'serialNumber="1234567890"' in thing
         if prefix == 'solarman':
@@ -128,23 +145,10 @@ def main():
         else:
             assert int(re.search(r'refreshInterval=(\d+)', thing)[1]) >= 5
             custom = None
-        declarations = items((EXAMPLES / (prefix + '.items')).read_text(encoding='utf-8'), profile, custom)
+        declarations = items(block(readme, prefix + '.items'), profile, custom)
         counts[prefix] = len(declarations)
-        sitemap_references += sitemap((EXAMPLES / (prefix + '.sitemap')).read_text(encoding='utf-8'), declarations)
-    for profile, expected_count in (('deye_hybrid', 81), ('sunsynk_single_phase', 150)):
-        path = EXAMPLES / 'profile-channel-lists' / (profile + '.items')
-        declarations = items(path.read_text(encoding='utf-8'), profile)
-        assert len(declarations) == expected_count
-        assert {value['channel'] for value in declarations.values()} == metadata(profile).keys()
-        counts[profile] = len(declarations)
-    rows = list(csv.DictReader((EXAMPLES / 'profile-channel-lists/channels.csv').open(encoding='utf-8')))
-    assert len(rows) == 231
-    for row in rows:
-        expected = metadata(row['profile'])[row['channel']]
-        assert row['item_type'] == expected['item_type']
-        assert (row['access'] == 'Read/write') == expected['writable']
-    mapping = list(csv.DictReader((EXAMPLES / 'profile-channel-lists/migration-map.csv').open(encoding='utf-8')))
-    assert len(mapping) == 81 and {row['legacy_channel'] for row in mapping} == metadata('deye_hybrid').keys()
+        sitemap_references += sitemap(block(readme, prefix + '.sitemap'), declarations)
+    generated_checks = generated_examples(generated) if generated is not None else 'not requested'
     broken = []
     for path in ROOT.rglob('*.md'):
         if 'target' in path.parts or path.name == 'main-port-validation.md':
@@ -154,8 +158,10 @@ def main():
             if target and '://' not in target and not target.startswith(('mailto:', '/')) and not (path.parent / target).exists():
                 broken.append((str(path.relative_to(ROOT)), target))
     assert not broken, broken
-    print(json.dumps(dict(legacy_readme_table_rows=legacy_tables, item_declarations_by_example=counts, sitemap_references=sitemap_references, combined_csv_rows=len(rows), migration_rows=len(mapping), local_links='passed', selected_warning='passed', scope='Static metadata/example checks; no runtime import or inverter commands'), indent=2))
+    print(json.dumps(dict(legacy_readme_table_rows=legacy_tables, item_declarations_by_example=counts, sitemap_references=sitemap_references, generated_reports=generated_checks, local_links='passed', selected_warning='passed', scope='Static metadata/example checks; no runtime import or inverter commands'), indent=2))
 
 
 if __name__ == '__main__':
-    main()
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--generated', type=Path, help='Also validate reports produced by generate_profile_item_examples.py')
+    main(parser.parse_args().generated)

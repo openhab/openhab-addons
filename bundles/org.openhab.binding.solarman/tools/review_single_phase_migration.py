@@ -130,8 +130,9 @@ def review(source=None, output=None):
                                   candidate_definitions=json.dumps({**exact, **partial}, ensure_ascii=False),
                                   decision=decision, notes=note)
     assert len(decisions) == 81
-    public = ROOT / "docs/examples/profile-channel-lists"
-    write_csv(public / "single-phase-register-review.csv", list(decisions.values()))
+    reports = ROOT / "target/profile-channel-lists"
+    reports.mkdir(parents=True, exist_ok=True)
+    write_csv(reports / "single-phase-register-review.csv", list(decisions.values()))
     report = ["# Reviewed Single-phase Migration Proposals", "",
               "Current deye_hybrid YAML is compared with the single-phase profile plus its separately attributed binding metadata. All 81 legacy entries are accounted for. The README's generic 0x021D temperature example is not the deye_hybrid address; this pair uses 91 (0x005B).", "",
               "A proposal is separate from automatic linking and hardware qualification. Same-function controls with changed signedness are listed with explicit differences; they are not classified as missing. Partial register tuples, different functions and uncertain energy meanings are held rather than silently linked.", "",
@@ -140,7 +141,7 @@ def review(source=None, output=None):
               "| --- | --- | --- | --- | --- | --- |"]
     for row in decisions.values():
         report.append(f"| `{row['legacy_channel']}` | {row['legacy_registers']} | {row['proposed_channel'] or 'None'} | {row['proposed_registers']} | {row['decision']} | {row['notes']} |")
-    (public / "single-phase-register-review.md").write_text(format_markdown("\n".join(report)), encoding="utf-8")
+    (reports / "single-phase-register-review.md").write_text(format_markdown("\n".join(report)), encoding="utf-8")
     if source is None:
         print("Reviewed all 81 current-main legacy definitions without reading personal Items.")
         return

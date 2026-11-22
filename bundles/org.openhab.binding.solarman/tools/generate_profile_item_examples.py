@@ -17,7 +17,7 @@ from compare_profile_definitions import legacy_items, numeric_signature
 from profile_resources import load_profile
 
 ROOT = Path(__file__).resolve().parents[1]
-OUT = ROOT / "docs/examples/profile-channel-lists"
+OUT = ROOT / "target/profile-channel-lists"
 DIMENSIONS = {"%": "Dimensionless", "W": "Power", "KW": "Power", "V": "ElectricPotential",
               "A": "ElectricCurrent", "AH": "ElectricCharge", "WH": "Energy", "KWH": "Energy",
               "HZ": "Frequency", "\u00b0C": "Temperature", "S": "Time", "H": "Time",
@@ -101,7 +101,7 @@ def generate():
                  "// Use only the Item file matching the selected inverterType.",
                  "// Creating Items does not issue write commands.", ""]
         table = ["# " + profile + " Channels", "", f"{count} entries: {count - writable} read-only and {writable} read/write, including aliases.",
-                 "", "All names and the Thing UID are generic examples. See [usage instructions](README.md).",
+                 "", "All names and the Thing UID are generic examples. See Legacy-to-Advanced Migration in the binding README.",
                  "", "| Channel ID | Item name | Item type | Unit | Access | Registers (decimal) |",
                  "| --- | --- | --- | --- | --- | --- |"]
         for entry in entries:
@@ -205,7 +205,7 @@ def generate():
              "Computed sensors are excluded from direct matches; shared input registers do not make a computed value a replacement. See migration-map.csv for complete numeric/control models, masks, limits and auto_link_allowed decisions.",
              "Automatic links require a unique exact register tuple, matching numeric sign/scale/offset/unit and matching Item type. Partial tuples, lookup/type changes, signedness changes and source-undefined channels require review. Even matching read models do not establish identical write bounds or hardware behavior.",
              "Registers are profile-specific: deye_hybrid inverter L1 power uses 173 (0x00AD), while the three-phase legacy profiles use 633 (0x0279); advanced three-phase inverter-l1-power uses 633 and 691. These are not interchangeable addresses on a single-phase device.",
-             "Keep existing Item names where the Item type remains compatible. See [usage instructions](README.md).", "",
+             "Keep existing Item names where the Item type remains compatible. See Legacy-to-Advanced Migration in the binding README.", "",
              "| Legacy channel | Legacy registers (decimal / hex) | Legacy Item type / access | Advanced candidate(s) | Advanced registers (decimal / hex) | Advanced Item type / access | Review / automatic link |",
              "| --- | --- | --- | --- | --- | --- | --- |"]
     for row in mapping:

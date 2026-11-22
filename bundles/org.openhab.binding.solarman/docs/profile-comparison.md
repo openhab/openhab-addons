@@ -44,5 +44,5 @@ The hidden earlier advanced Thing types remain compatibility entry points; they 
 Keep transport/framing separate from profile interpretation and preserve supported writable channels.
 No automatic rewrite of existing YAML interpretations or Item links is performed.
 
-Use the [current single-phase migration guide](examples/profile-channel-lists/README.md) for all 81 legacy entries and 150 advanced entries, with separate automatic-candidate eligibility and functional-review proposals.
+See [Legacy-to-Advanced Migration](../README.md#legacy-to-advanced-migration) for the configuration and Item-link checks required when changing profiles.
 Hardware limits and reproducible tooling are described in the README and [source provenance](source-provenance.md).

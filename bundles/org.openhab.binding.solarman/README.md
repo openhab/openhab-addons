@@ -211,7 +211,7 @@ Channel IDs are based on the definition's group and item names; for example, `In
 Register addresses in the following historical table are profile-specific examples, not a universal map.
 The same dynamic channel ID can use different addresses for different inverterType values.
 In particular, deye_hybrid AC temperature uses 91 (0x005B), while deye_sg04lp3/deye_sg01hp3 use 541 (0x021D).
-For the monophase migration, use the [complete reviewed register proposals](docs/examples/profile-channel-lists/single-phase-register-review.md), which compare the actual deye_hybrid and sunsynk_single_phase definitions.
+For migration from a single-phase legacy profile, see [Legacy-to-Advanced Migration](#legacy-to-advanced-migration).
 
 <!-- BEGIN GENERATED DEYE_SG04LP3 CHANNELS -->
 
@@ -417,12 +417,23 @@ Each full ID is listed separately in the catalog.
 Channels cover start time, power limit, voltage, capacity/SOC, charge source, operating mode and sell permission where the profile supports them.
 Other catalog entries include BMS limits, per-phase and MPPT readings, energy counters, faults, generator/smart-load settings, export limits and peak shaving.
 
-### Complete Item Lists for Legacy-to-Advanced Migration
+### Legacy-to-Advanced Migration
 
-For migrating from deye_hybrid to sunsynk_single_phase, use the [complete lists and migration guide](docs/examples/profile-channel-lists/README.md).
-It provides all [81 legacy channel definitions](docs/examples/profile-channel-lists/deye_hybrid.md), all [150 advanced channel definitions](docs/examples/profile-channel-lists/sunsynk_single_phase.md), ready-to-adapt Item files and a per-legacy-channel review map.
-Preserve existing Item names where compatible; the templates use generic names and do not automatically migrate links.
-Some legacy channels have no direct replacement in the advanced profile.
+Changing inverterType does not automatically migrate Item links or device settings.
+Legacy and advanced profiles have different channel IDs, Item types and interpretations; matching names or register addresses alone do not establish equivalence.
+
+1. Save the Thing configuration, Item links and device settings, and suspend rules that send commands while changing profiles.
+1. Keep one active Thing per physical logger. Retain its UID where appropriate and select the profile matching the inverter.
+1. Review each Item link against the selected profile's [channel catalog](docs/sunsynk-channels.md). Preserve Item names only where type and meaning remain compatible; review rules, sitemap widgets and persistence when changing types.
+1. Remove legacy additionalRequests and custom channels before selecting an advanced profile; those facilities are supported only by legacy selections.
+1. Compare readings with the inverter before enabling controls. Review signedness, phase-versus-total power, energy-counter meaning and String lookup values.
+1. For an intended write, record the original setting, check the selected profile's limits and confirm the device readback before resuming rules.
+
+Some legacy channels have no direct replacement.
+For example, the legacy raw fault String and the advanced decoded fault labels cover different words and use different representations.
+Some legacy String controls become Switch Items, and combined legacy controls can become separate masked controls.
+The six time-of-use SOC commands are separate transactions; failure of one does not roll back the others.
+Changing back to a legacy profile does not undo device settings already written.
 
 The binding adds three read-only String identification channels to `sunsynk_single_phase`.
 They are binding metadata additions from the bundled `deye_hybrid` register map, stored separately from the 147 unchanged Kellerza entries.
@@ -438,8 +449,6 @@ Other advanced profiles do not receive these model-specific additions.
 Use `String` Items without unit metadata.
 Firmware version codes are not dotted versions and are not numeric measurements.
 These addresses are for this single-phase profile; the historical three-phase example uses register 17 for the communication board version.
-
-For staged device qualification, follow the [single-phase hardware validation procedure](docs/examples/profile-channel-lists/hardware-validation.md), covering reading differences, all six SOC controls, queued commands, repeated values and unresolved legacy functions.
 
 ## Writable Channels
 
@@ -761,8 +770,8 @@ Use this example as an alternative to the legacy configuration above; both use t
 Select the profile matching the inverter; do not run multiple Things against the same physical logger.
 The example below is for `sunsynk_single_phase` and is not a universal configuration for LV/HV, 16 kW or micro ESS models.
 
-Copy only the three `sunsynk.*` files from [docs/examples](docs/examples) into the corresponding openHAB configuration directories, or use the contents below.
-The `solarman.*` files are alternative legacy examples; do not activate both Things for one physical logger.
+Create the three `sunsynk.*` files below in the corresponding openHAB configuration directories.
+They are an alternative to the legacy example above; do not activate both Things for one physical logger.
 Replace the logger address/serial before use.
 UI ranges are illustrative and do not override the selected profile's limits.
 Time selections must remain consistent with neighboring periods; unsupported choices are rejected.
@@ -876,7 +885,3 @@ The advanced profiles derive from [kellerza/sunsynk at f1ecbc28e3ccf2b9f87b1ccee
 Source attribution is retained in NOTICE and the original full license is bundled as `sunsynk/LICENSE`.
 The separate single-phase identification/version metadata derives from this binding's EPL-2.0 `deye_hybrid` definition.
 See [source provenance](docs/source-provenance.md) for the distinction and generated fixture provenance.
-
-The [migration register index](docs/examples/profile-channel-lists/register-index.csv) supports address-first review across the declared profiles.
-The migration map exposes both source and target register tuples, conversion models and automatic-link eligibility.
-Identical channel names across profiles do not imply identical registers; partial tuples and semantic differences require explicit review.
