@@ -22,9 +22,9 @@ import java.time.format.DateTimeFormatter;
 import java.util.concurrent.ExecutionException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.Request;
 import org.eclipse.jetty.http.HttpFields;
 import org.eclipse.jetty.http.HttpHeader;
 import org.junit.jupiter.api.BeforeEach;
@@ -128,8 +128,8 @@ class PlugwiseHAControllerTest {
 
     private ContentResponse response(String xml) {
         ContentResponse response = mock(ContentResponse.class);
-        HttpFields headers = new HttpFields();
-        headers.put(HttpHeader.DATE, ZonedDateTime.now().format(DateTimeFormatter.RFC_1123_DATE_TIME));
+        HttpFields headers = HttpFields.build().put(HttpHeader.DATE,
+                ZonedDateTime.now().format(DateTimeFormatter.RFC_1123_DATE_TIME));
         when(response.getStatus()).thenReturn(200);
         when(response.getHeaders()).thenReturn(headers);
         when(response.getContentAsString()).thenReturn(xml);
