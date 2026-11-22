@@ -14,11 +14,11 @@ package org.openhab.binding.netatmo.internal.config;
 
 import java.time.Duration;
 
-import javax.ws.rs.core.UriBuilder;
-import javax.ws.rs.core.UriBuilderException;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+
+import jakarta.ws.rs.core.UriBuilder;
+import jakarta.ws.rs.core.UriBuilderException;
 
 /**
  * The {@link ApiHandlerConfiguration} is responsible for holding configuration

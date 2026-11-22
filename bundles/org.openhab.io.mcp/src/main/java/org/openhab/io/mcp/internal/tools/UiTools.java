@@ -31,9 +31,9 @@ import java.util.function.Function;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpMethod;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -197,7 +197,7 @@ public class UiTools {
     private @Nullable CatalogSnapshot fetchLiveCatalog() {
         try {
             ContentResponse resp = httpClient.newRequest(URI.create(baseUrl + LIVE_CATALOG_PATH)).method(HttpMethod.GET)
-                    .header("Accept", "application/json").timeout(5, TimeUnit.SECONDS).send();
+                    .accept("application/json").timeout(5, TimeUnit.SECONDS).send();
             if (resp.getStatus() != 200) {
                 logger.debug("Live widget catalog not available (HTTP {}); will use bundled fallback.",
                         resp.getStatus());
@@ -541,7 +541,7 @@ public class UiTools {
         String path = "/rest/ui/components/" + encodePath(namespace) + (uid == null ? "" : "/" + encodePath(uid));
         try {
             ContentResponse resp = httpClient.newRequest(URI.create(baseUrl + path)).method(HttpMethod.GET)
-                    .header("Authorization", "Bearer " + token).header("Accept", "application/json").send();
+                    .headers(h -> h.put("Authorization", "Bearer " + token)).accept("application/json").send();
             if (resp.getStatus() == 404) {
                 return errorResult("Component '" + uid + "' not found in namespace '" + namespace + "'.");
             }
@@ -595,8 +595,8 @@ public class UiTools {
         String path = "/rest/ui/components/" + encodePath(namespace);
         try {
             ContentResponse resp = httpClient.newRequest(URI.create(baseUrl + path)).method(HttpMethod.POST)
-                    .header("Authorization", "Bearer " + token).header("Accept", "application/json")
-                    .content(new StringContentProvider(payload.toString(), StandardCharsets.UTF_8), "application/json")
+                    .headers(h -> h.put("Authorization", "Bearer " + token)).accept("application/json")
+                    .body(new StringRequestContent("application/json", payload.toString(), StandardCharsets.UTF_8))
                     .send();
             if (resp.getStatus() == 401 || resp.getStatus() == 403) {
                 return adminRequiredError("POST", resp.getStatus());
@@ -623,8 +623,8 @@ public class UiTools {
         String path = "/rest/ui/components/" + encodePath(namespace) + "/" + encodePath(uid);
         try {
             ContentResponse resp = httpClient.newRequest(URI.create(baseUrl + path)).method(HttpMethod.PUT)
-                    .header("Authorization", "Bearer " + token).header("Accept", "application/json")
-                    .content(new StringContentProvider(payload.toString(), StandardCharsets.UTF_8), "application/json")
+                    .headers(h -> h.put("Authorization", "Bearer " + token)).accept("application/json")
+                    .body(new StringRequestContent("application/json", payload.toString(), StandardCharsets.UTF_8))
                     .send();
             if (resp.getStatus() == 401 || resp.getStatus() == 403) {
                 return adminRequiredError("PUT", resp.getStatus());
@@ -662,7 +662,7 @@ public class UiTools {
         ObjectNode current;
         try {
             ContentResponse getResp = httpClient.newRequest(URI.create(baseUrl + basePath)).method(HttpMethod.GET)
-                    .header("Authorization", "Bearer " + token).header("Accept", "application/json").send();
+                    .headers(h -> h.put("Authorization", "Bearer " + token)).accept("application/json").send();
             if (getResp.getStatus() == 404) {
                 return errorResult("Component '" + uid + "' not found in namespace '" + namespace + "'.");
             }
@@ -687,8 +687,8 @@ public class UiTools {
         }
         try {
             ContentResponse putResp = httpClient.newRequest(URI.create(baseUrl + basePath)).method(HttpMethod.PUT)
-                    .header("Authorization", "Bearer " + token).header("Accept", "application/json")
-                    .content(new StringContentProvider(current.toString(), StandardCharsets.UTF_8), "application/json")
+                    .headers(h -> h.put("Authorization", "Bearer " + token)).accept("application/json")
+                    .body(new StringRequestContent("application/json", current.toString(), StandardCharsets.UTF_8))
                     .send();
             if (putResp.getStatus() == 401 || putResp.getStatus() == 403) {
                 return adminRequiredError("PUT", putResp.getStatus());
@@ -748,7 +748,7 @@ public class UiTools {
         String path = "/rest/ui/components/" + encodePath(namespace) + "/" + encodePath(uid);
         try {
             ContentResponse resp = httpClient.newRequest(URI.create(baseUrl + path)).method(HttpMethod.DELETE)
-                    .header("Authorization", "Bearer " + token).send();
+                    .headers(h -> h.put("Authorization", "Bearer " + token)).send();
             if (resp.getStatus() == 401 || resp.getStatus() == 403) {
                 return adminRequiredError("DELETE", resp.getStatus());
             }

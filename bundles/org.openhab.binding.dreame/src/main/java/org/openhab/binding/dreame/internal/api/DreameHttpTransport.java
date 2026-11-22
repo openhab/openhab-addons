@@ -20,10 +20,10 @@ import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
@@ -62,19 +62,24 @@ final class DreameHttpTransport {
         logger.trace("{} POST {} authenticated={} body={}", service, path, authenticated,
                 DreameDiagnostics.sanitize(body));
         Request request = httpClient.newRequest(apiUrl() + path).method(HttpMethod.POST)
-                .timeout(REQUEST_TIMEOUT.toMillis(), TimeUnit.MILLISECONDS).header(HttpHeader.ACCEPT, "*/*")
-                .header(HttpHeader.ACCEPT_LANGUAGE, "en-US;q=0.8").header(HttpHeader.ACCEPT_ENCODING, "gzip, deflate")
-                .header(HttpHeader.USER_AGENT, authentication.cloudService().userAgent())
-                .header(HttpHeader.AUTHORIZATION, authentication.cloudService().authorization())
-                .header("Tenant-Id", authentication.tenantId());
+                .timeout(REQUEST_TIMEOUT.toMillis(), TimeUnit.MILLISECONDS).headers(h -> {
+                    h.put(HttpHeader.ACCEPT, "*/*");
+                    h.put(HttpHeader.ACCEPT_LANGUAGE, "en-US;q=0.8");
+                    h.put(HttpHeader.ACCEPT_ENCODING, "gzip, deflate");
+                    h.put(HttpHeader.USER_AGENT, authentication.cloudService().userAgent());
+                    h.put(HttpHeader.AUTHORIZATION, authentication.cloudService().authorization());
+                    h.put("Tenant-Id", authentication.tenantId());
+                });
         if (authenticated) {
-            request.header(HttpHeader.CONTENT_TYPE, "application/json").header("Dreame-Auth",
-                    authentication.accessToken());
+            request.headers(h -> {
+                h.put(HttpHeader.CONTENT_TYPE, "application/json");
+                h.put("Dreame-Auth", authentication.accessToken());
+            });
         } else {
-            request.header(HttpHeader.CONTENT_TYPE, "application/x-www-form-urlencoded");
+            request.headers(h -> h.put(HttpHeader.CONTENT_TYPE, "application/x-www-form-urlencoded"));
         }
         if (body != null) {
-            request.content(new StringContentProvider(body, StandardCharsets.UTF_8));
+            request.body(new StringRequestContent(body, StandardCharsets.UTF_8));
         }
 
         try {
@@ -113,8 +118,10 @@ final class DreameHttpTransport {
     String getFile(String url) throws DreameCloudException {
         String service = authentication.cloudService().label();
         Request request = httpClient.newRequest(url).method(HttpMethod.GET)
-                .timeout(REQUEST_TIMEOUT.toMillis(), TimeUnit.MILLISECONDS).header(HttpHeader.ACCEPT, "*/*")
-                .header(HttpHeader.USER_AGENT, authentication.cloudService().userAgent());
+                .timeout(REQUEST_TIMEOUT.toMillis(), TimeUnit.MILLISECONDS).headers(h -> {
+                    h.put(HttpHeader.ACCEPT, "*/*");
+                    h.put(HttpHeader.USER_AGENT, authentication.cloudService().userAgent());
+                });
         try {
             ContentResponse response = request.send();
             if (!HttpStatus.isSuccess(response.getStatus())) {

@@ -19,17 +19,20 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
+import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.http.HttpFields;
 import org.eclipse.jetty.http.HttpHeader;
+import org.eclipse.jetty.io.Content;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -113,7 +116,11 @@ class VeluxActiveApiTest {
                 is(new ModuleInfo("home-a", "gateway-a", "Attic", ModuleType.GATEWAY, null, null, null)));
         assertThat(gateways.get(1).homeId(), is("home-b"));
         verify(http).newRequest("https://app.velux-active.com/api/homesdata");
-        verify(request).header(HttpHeader.AUTHORIZATION, "Bearer token");
+        ArgumentCaptor<Consumer<HttpFields.Mutable>> headers = ArgumentCaptor.captor();
+        verify(request).headers(headers.capture());
+        HttpFields.Mutable fields = HttpFields.build();
+        headers.getValue().accept(fields);
+        assertThat(fields.get(HttpHeader.AUTHORIZATION), is("Bearer token"));
         verify(request).followRedirects(false);
     }
 
@@ -174,13 +181,11 @@ class VeluxActiveApiTest {
         verify(request, never()).send();
     }
 
-    private com.google.gson.JsonObject commandBody() {
-        ArgumentCaptor<StringContentProvider> content = ArgumentCaptor.forClass(StringContentProvider.class);
-        verify(request).content(content.capture());
-        StringBuilder json = new StringBuilder();
-        content.getValue().iterator()
-                .forEachRemaining(buffer -> json.append(StandardCharsets.UTF_8.decode(buffer.duplicate())));
-        return JsonParser.parseString(json.toString()).getAsJsonObject();
+    private com.google.gson.JsonObject commandBody() throws IOException {
+        ArgumentCaptor<Request.Content> content = ArgumentCaptor.forClass(Request.Content.class);
+        verify(request).body(content.capture());
+        return JsonParser.parseString(Content.Source.asString(content.getValue(), StandardCharsets.UTF_8))
+                .getAsJsonObject();
     }
 
     @Test
@@ -271,14 +276,10 @@ class VeluxActiveApiTest {
         when(response.getContentAsString()).thenReturn("{\"status\":\"ok\",\"body\":{}}");
         api.lock("token", "home", "gateway", "Europe/Copenhagen");
         verify(http).newRequest("https://app.velux-active.com/syncapi/v1/setstate");
-        ArgumentCaptor<StringContentProvider> content = ArgumentCaptor.forClass(StringContentProvider.class);
-        verify(request).content(content.capture());
-        var buffers = content.getValue().iterator();
-        StringBuilder json = new StringBuilder();
-        while (buffers.hasNext()) {
-            json.append(StandardCharsets.UTF_8.decode(buffers.next().duplicate()));
-        }
-        var body = JsonParser.parseString(json.toString()).getAsJsonObject();
+        ArgumentCaptor<Request.Content> content = ArgumentCaptor.forClass(Request.Content.class);
+        verify(request).body(content.capture());
+        var body = JsonParser.parseString(Content.Source.asString(content.getValue(), StandardCharsets.UTF_8))
+                .getAsJsonObject();
         assertThat(body.get("app_type").getAsString(), is("app_velux"));
         var home = body.getAsJsonObject("home");
         assertThat(home.get("id").getAsString(), is("home"));

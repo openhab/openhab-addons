@@ -13,7 +13,7 @@
 package org.openhab.binding.mielecloud.internal.webservice.request;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.Request;
 
 /**
  * Factory for {@link Request} objects.

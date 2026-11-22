@@ -27,18 +27,14 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.api.ContentResponse;
+import org.eclipse.jetty.client.ContentResponse;
+import org.eclipse.jetty.ee10.servlet.ServletContextHandler;
+import org.eclipse.jetty.ee10.servlet.ServletHolder;
 import org.eclipse.jetty.server.Connector;
-import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
-import org.eclipse.jetty.server.handler.AbstractHandler;
 import org.eclipse.jetty.util.UrlEncoded;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.openhab.binding.argoclima.internal.ArgoClimaTranslationProvider;
@@ -52,6 +48,10 @@ import org.openhab.binding.argoclima.internal.exception.ArgoApiCommunicationExce
 import org.openhab.binding.argoclima.internal.exception.ArgoRemoteServerStubStartupException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * Implements a stub HTTP server which simulates Argo remote APIs
@@ -114,7 +114,9 @@ public class RemoteArgoApiServerStub {
      *
      * @author Mateusz Bronk - Initial contribution
      */
-    public class ArgoDeviceRequestHandler extends AbstractHandler {
+    public class ArgoDeviceRequestHandler extends HttpServlet {
+        private static final long serialVersionUID = 1L;
+
         private final DeviceSidePasswordDisplayMode includeDeviceSidePasswordsInProperties;
 
         /**
@@ -134,14 +136,12 @@ public class RemoteArgoApiServerStub {
          * {@inheritDoc}
          */
         @Override
-        public void handle(@Nullable String target, @Nullable Request baseRequest, @Nullable HttpServletRequest request,
-                @Nullable HttpServletResponse response) throws IOException, ServletException {
-            Objects.requireNonNull(target);
-            Objects.requireNonNull(baseRequest);
+        protected void service(@Nullable HttpServletRequest request, @Nullable HttpServletResponse response)
+                throws IOException {
             Objects.requireNonNull(request);
             Objects.requireNonNull(response);
 
-            var body = getRequestBodyAsString(baseRequest);
+            var body = getRequestBodyAsString(request);
             var requestType = detectRequestType(request, body);
 
             // Stage1: Use the sniffed response to update internal state
@@ -181,7 +181,7 @@ public class RemoteArgoApiServerStub {
                     try {
                         // CONSIDER: This implementation does NOT do any request pre-processing (ex. scrambling Wi-Fi
                         // password Argo has no need of knowing). It may be a nice enhancement in the future
-                        upstreamResponse = Optional.of(passthroughClient.get().passthroughRequest(baseRequest, body));
+                        upstreamResponse = Optional.of(passthroughClient.get().passthroughRequest(request, body));
                     } catch (InterruptedException | TimeoutException | ExecutionException e) {
                         // Deliberately not handling the upstream request exception here and allowing to fall-through to
                         // a "response faking" logic
@@ -192,7 +192,6 @@ public class RemoteArgoApiServerStub {
                         var overridenBody = postProcessUpstreamResponse(requestType, upstreamResponse.get(), deviceApi);
                         PassthroughHttpClient.forwardUpstreamResponse(upstreamResponse.get(), response,
                                 Optional.of(overridenBody));
-                        baseRequest.setHandled(true);
                         return;
                     }
                 }
@@ -208,9 +207,8 @@ public class RemoteArgoApiServerStub {
             response.setHeader("X-Powered-By", "PHP/5.4.11");
             response.setHeader("Access-Control-Allow-Origin", "*");
             response.setStatus(HttpServletResponse.SC_OK);
-            baseRequest.setHandled(true);
 
-            if (baseRequest.getOriginalURI().contains("UI_NTP")) { // a little more lax parsing than request type (just
+            if (getRequestPathQuery(request).contains("UI_NTP")) { // a little more lax parsing than request type (just
                                                                    // in case of syntax variances)
                 response.getWriter().println(getNtpResponse(Instant.now()));
             } else if (deviceApi.isPresent() && DeviceRequestType.GET_UI_FLG.equals(requestType)) {
@@ -391,7 +389,11 @@ public class RemoteArgoApiServerStub {
             qtp.setDaemon(true); // Lower our priority (just in case)
         }
 
-        server.setHandler(new ArgoDeviceRequestHandler(this.includeDeviceSidePasswordsInProperties));
+        // a servlet context, as request handling and the request DTOs work with the servlet API
+        var context = new ServletContextHandler();
+        context.addServlet(new ServletHolder(new ArgoDeviceRequestHandler(this.includeDeviceSidePasswordsInProperties)),
+                "/*");
+        server.setHandler(context);
         server.start();
     }
 
@@ -402,8 +404,19 @@ public class RemoteArgoApiServerStub {
      * @return Request body as string
      * @throws IOException In case of read errors
      */
-    public static String getRequestBodyAsString(Request downstreamHttpRequest) throws IOException {
+    public static String getRequestBodyAsString(HttpServletRequest downstreamHttpRequest) throws IOException {
         return downstreamHttpRequest.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
+    }
+
+    /**
+     * Returns the request target as sent by the device, i.e. path and query
+     *
+     * @param request The request sent by the HVAC device-side
+     * @return Path and query of the request
+     */
+    public static String getRequestPathQuery(HttpServletRequest request) {
+        String query = request.getQueryString();
+        return query == null ? request.getRequestURI() : request.getRequestURI() + "?" + query;
     }
 
     /**
@@ -480,7 +493,7 @@ public class RemoteArgoApiServerStub {
             }
         }
 
-        var commandFromBody = new UrlEncoded(requestBody).getString("CM");
+        var commandFromBody = UrlEncoded.decodeQuery(requestBody).getString("CM");
 
         if ("UI_RT".equalsIgnoreCase(commandFromBody) && "POST".equalsIgnoreCase(request.getMethod())) {
             return DeviceRequestType.POST_UI_RT; // Unknown: POST /UI/UI.php body:

@@ -17,8 +17,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import javax.ws.rs.core.UriBuilder;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
@@ -26,6 +24,7 @@ import org.openhab.binding.freeboxos.internal.api.Response;
 import org.openhab.binding.freeboxos.internal.api.rest.LanBrowserManager.LanHost;
 
 import inet.ipaddr.mac.MACAddress;
+import jakarta.ws.rs.core.UriBuilder;
 
 /**
  * The {@link APManager} is the Java class used to handle api requests related to wifi access points

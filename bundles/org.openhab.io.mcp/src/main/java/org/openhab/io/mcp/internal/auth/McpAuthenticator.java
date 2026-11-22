@@ -16,12 +16,10 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.core.auth.Authentication;
@@ -32,6 +30,8 @@ import org.openhab.core.auth.UserRegistry;
 import org.openhab.io.mcp.internal.tools.McpToolUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * Validates bearer tokens presented to the MCP server and checks whether the user is an admin.
@@ -115,7 +115,8 @@ public class McpAuthenticator {
     private int probe(String token) {
         try {
             ContentResponse resp = httpClient.newRequest(coreBaseUrl + ADMIN_PROBE_PATH).method(HttpMethod.GET)
-                    .header(AUTH_HEADER, BEARER_PREFIX + token).timeout(PROBE_TIMEOUT_SECONDS, TimeUnit.SECONDS).send();
+                    .headers(h -> h.put(AUTH_HEADER, BEARER_PREFIX + token))
+                    .timeout(PROBE_TIMEOUT_SECONDS, TimeUnit.SECONDS).send();
             int status = resp.getStatus();
             if (status != HttpStatus.OK_200) {
                 logger.debug("REST probe to {}{} returned {} {} (body prefix: {})", coreBaseUrl, ADMIN_PROBE_PATH,

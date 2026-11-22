@@ -19,14 +19,14 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.homeconnectdirect.internal.common.utils.ConfigurationUtils;
 import org.openhab.core.thing.ThingRegistry;
 import org.osgi.service.cm.ConfigurationAdmin;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * Tests for {@link RequestHandlerContext}.

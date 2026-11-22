@@ -22,8 +22,6 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import javax.servlet.ServletException;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -55,15 +53,17 @@ import org.openhab.io.neeo.internal.discovery.BrainDiscovery;
 import org.openhab.io.neeo.internal.discovery.DiscoveryListener;
 import org.openhab.io.neeo.internal.discovery.MdnsBrainDiscovery;
 import org.openhab.io.neeo.internal.models.NeeoSystemInfo;
+import org.ops4j.pax.web.service.http.HttpService;
+import org.ops4j.pax.web.service.http.NamespaceException;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.http.HttpService;
-import org.osgi.service.http.NamespaceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import jakarta.servlet.ServletException;
 
 /**
  * The main entry point for the integration service. The integration service will listen for brain broadcasts, connect
@@ -75,6 +75,9 @@ import org.slf4j.LoggerFactory;
 @Component(service = EventSubscriber.class, property = { "service.pid=org.openhab.io.neeo.NeeoService" })
 @ConfigurableService(category = "io", label = "NEEO Integration", description_uri = "io:neeo")
 public class NeeoService implements EventSubscriber, NetworkAddressChangeListener {
+
+    /** The alias of the dashboard servlet */
+    private static final String DASHBOARD_URL = NeeoConstants.WEBAPP_PREFIX + NeeoConstants.WEBAPP_DASHBOARD_PREFIX;
 
     /** The logger */
     private final Logger logger = LoggerFactory.getLogger(NeeoService.class);
@@ -172,10 +175,9 @@ public class NeeoService implements EventSubscriber, NetworkAddressChangeListene
         discovery.addListener(discoveryListener);
 
         try {
-            final String servletUrl = NeeoConstants.WEBAPP_PREFIX + NeeoConstants.WEBAPP_DASHBOARD_PREFIX;
-            dashboardServlet = new NeeoDashboardServlet(this, servletUrl, localContext);
+            dashboardServlet = new NeeoDashboardServlet(this, DASHBOARD_URL, localContext);
 
-            localContext.getHttpService().registerServlet(servletUrl, dashboardServlet, new Hashtable<>(),
+            localContext.getHttpService().registerServlet(DASHBOARD_URL, dashboardServlet, new Hashtable<>(),
                     localContext.getHttpService().createDefaultHttpContext());
 
             localContext.getHttpService().registerResources(NeeoConstants.WEBAPP_PREFIX, "web",
@@ -253,6 +255,12 @@ public class NeeoService implements EventSubscriber, NetworkAddressChangeListene
                 NeeoUtil.close(servlet);
             }
             servlets.clear();
+
+            // Unregister explicitly instead of relying on the cleanup when the HttpService is released: Pax Web then
+            // leaves all but one of the servlets of this bundle mapped in Jetty, so the next activation fails with
+            // "Multiple servlets map to path" and the shared "/" context can no longer be started.
+            unregisterAlias(service, DASHBOARD_URL);
+            unregisterAlias(service, NeeoConstants.WEBAPP_PREFIX);
         }
 
         if (dashboardServlet != null) {
@@ -261,6 +269,15 @@ public class NeeoService implements EventSubscriber, NetworkAddressChangeListene
         }
 
         logger.debug("Stopped NEEO Listener");
+    }
+
+    private void unregisterAlias(HttpService service, String alias) {
+        try {
+            service.unregister(alias);
+        } catch (IllegalArgumentException e) {
+            // not registered, e.g. because the registration failed during activation
+            logger.debug("Alias {} was not registered: {}", alias, e.getMessage());
+        }
     }
 
     /**

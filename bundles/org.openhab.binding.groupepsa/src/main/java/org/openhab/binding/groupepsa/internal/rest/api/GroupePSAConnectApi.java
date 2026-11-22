@@ -24,9 +24,9 @@ import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.Request;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.groupepsa.internal.bridge.GroupePSABridgeHandler;
@@ -123,9 +123,11 @@ public class GroupePSAConnectApi {
 
         request.param("client_id", this.clientId);
 
-        request.header("Authorization", "Bearer " + token);
-        request.header("Accept", accept);
-        request.header("x-introspect-realm", this.realm);
+        request.headers(headers -> {
+            headers.add("Authorization", "Bearer " + token);
+            headers.add("Accept", accept);
+            headers.add("x-introspect-realm", this.realm);
+        });
 
         request.method(HttpMethod.GET);
 

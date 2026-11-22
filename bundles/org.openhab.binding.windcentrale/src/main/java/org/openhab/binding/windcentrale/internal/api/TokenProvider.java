@@ -25,7 +25,7 @@ import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.api.ContentResponse;
+import org.eclipse.jetty.client.ContentResponse;
 import org.openhab.binding.windcentrale.internal.dto.AuthenticationResultResponse;
 import org.openhab.binding.windcentrale.internal.dto.KeyResponse;
 import org.openhab.binding.windcentrale.internal.exception.InvalidAccessTokenException;
@@ -82,7 +82,7 @@ public class TokenProvider {
             logger.debug("Getting JSON from: {}", KEY_URL);
             ContentResponse contentResponse = httpClientFactory.getCommonHttpClient().newRequest(KEY_URL) //
                     .method(GET) //
-                    .header(ACCEPT, APPLICATION_JSON) //
+                    .headers(h -> h.add(ACCEPT, APPLICATION_JSON)) //
                     .timeout(REQUEST_TIMEOUT.toNanos(), TimeUnit.NANOSECONDS) //
                     .send();
 

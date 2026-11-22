@@ -23,9 +23,9 @@ import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.amplipi.internal.audio.PAAudioSink;
@@ -194,10 +194,9 @@ public class AmpliPiZoneHandler extends BaseThingHandler implements AmpliPiStatu
         }
         if (bridgeHandler != null) {
             String url = bridgeHandler.getUrl() + "/api/zones/" + getId(thing);
-            StringContentProvider contentProvider = new StringContentProvider(gson.toJson(update));
             try {
                 ContentResponse response = httpClient.newRequest(url).method(HttpMethod.PATCH)
-                        .content(contentProvider, "application/json").send();
+                        .body(new StringRequestContent("application/json", gson.toJson(update))).send();
                 if (response.getStatus() != HttpStatus.OK_200) {
                     logger.error("AmpliPi API returned HTTP status {}.", response.getStatus());
                     logger.debug("Content: {}", response.getContentAsString());

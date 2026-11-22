@@ -143,7 +143,7 @@ final class PortalDeviceForm {
 
     /** The fields as the browser posts them, in document order. */
     Fields toFields() {
-        Fields result = new Fields();
+        Fields result = new Fields(true);
         for (FormField field : fields) {
             result.add(field.name(), field.value());
         }
