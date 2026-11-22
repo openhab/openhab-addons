@@ -188,6 +188,9 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
             servlet.startListening();
         }
 
+        GrantServlet grantServlet = this.grantServlet = new GrantServlet(this, httpService);
+        grantServlet.startListening();
+
         updateStatus(ThingStatus.ONLINE);
     }
 
@@ -233,11 +236,9 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
     }
 
     private void startAuthorizationFlow() {
-        GrantServlet grantServlet = this.grantServlet = new GrantServlet(this, httpService);
-        grantServlet.startListening();
         updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                 "@text/conf-error-grant-needed [ \"http(s)://<YOUROPENHAB>:<YOURPORT>%s\" ]"
-                        .formatted(grantServlet.getPath()));
+                        .formatted(Objects.requireNonNull(grantServlet).getPath()));
         connectApi.dispose();
     }
 
