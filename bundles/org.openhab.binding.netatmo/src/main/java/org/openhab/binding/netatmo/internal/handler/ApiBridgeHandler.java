@@ -130,7 +130,7 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
     private @Nullable OAuthClientService oAuthClientService;
     private @Nullable ScheduledFuture<?> connectJob;
     private @Nullable WebhookServlet webhookServlet;
-    private @Nullable GrantServlet grantServlet;
+    private @NonNullByDefault({}) GrantServlet grantServlet;
 
     public ApiBridgeHandler(Bridge bridge, HttpClient httpClient, NADeserializer deserializer,
             BindingConfiguration configuration, HttpService httpService, OAuthFactory oAuthFactory) {
@@ -238,7 +238,7 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
     private void startAuthorizationFlow() {
         updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                 "@text/conf-error-grant-needed [ \"http(s)://<YOUROPENHAB>:<YOURPORT>%s\" ]"
-                        .formatted(Objects.requireNonNull(grantServlet).getPath()));
+                        .formatted(grantServlet.getPath()));
         connectApi.dispose();
     }
 
