@@ -34,7 +34,7 @@ public record SrtpStreamConfiguration(byte[] sessionId, SessionCommand command,
     public enum SessionCommand {
         END(0),
         START(1),
-        RECONFIGURE(2);
+        RECONFIGURE(4);
 
         private final int code;
 

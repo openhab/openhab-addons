@@ -122,7 +122,6 @@ class AudioCodecTest {
     }
 
     @Test
-    @Test
     void constantBitrateIsPreservedWhenItIsTheOnlyAdvertisedMode() {
         byte[] tlv = tlv(entry(AudioCodecType.OPUS.value, 1, new byte[] { 0x02, 1, 1 }, 0x01));
 

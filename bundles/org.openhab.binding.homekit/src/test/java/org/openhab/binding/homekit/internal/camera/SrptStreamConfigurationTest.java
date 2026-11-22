@@ -86,7 +86,7 @@ class SrptStreamConfigurationTest {
         byte[] controlBytes = root.get(0x01);
         assertNotNull(controlBytes);
         Map<Integer, byte[]> control = Tlv8Codec.decode(controlBytes);
-        assertArrayEquals(new byte[] { 2 }, control.get(0x02));
+        assertArrayEquals(new byte[] { 4 }, control.get(0x02));
     }
 
     @Test

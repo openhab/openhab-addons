@@ -130,13 +130,29 @@ public record VideoCodec(VideoCodecType codecType, int profile, int level, int w
     private static List<byte[]> entries(byte[] tlv, int tag) {
         List<byte[]> result = new ArrayList<>();
         int offset = 0;
+        int previousType = -1;
+        int previousLength = 0;
         while (offset + 2 <= tlv.length) {
             int type = tlv[offset] & 0xFF;
+            int length = tlv[offset + 1] & 0xFF;
             int start = offset + 2;
-            int end = Math.min(start + (tlv[offset + 1] & 0xFF), tlv.length);
-            if (type == tag) {
-                result.add(Arrays.copyOfRange(tlv, start, end));
+            int end = start + length;
+            if (end > tlv.length) {
+                throw new SecurityException("Invalid TLV8 length");
             }
+            if (type == tag) {
+                byte[] value = Arrays.copyOfRange(tlv, start, end);
+                if (previousType == tag && previousLength == Tlv8Codec.MAX_TLV_LENGTH && !result.isEmpty()) {
+                    byte[] previous = result.remove(result.size() - 1);
+                    byte[] combined = Arrays.copyOf(previous, previous.length + value.length);
+                    System.arraycopy(value, 0, combined, previous.length, value.length);
+                    result.add(combined);
+                } else {
+                    result.add(value);
+                }
+            }
+            previousType = type;
+            previousLength = length;
             offset = end;
         }
         return result;
