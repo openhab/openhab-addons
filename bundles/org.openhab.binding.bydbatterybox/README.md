@@ -18,14 +18,22 @@ Towers and modules are not separate Things, but channel groups of the `hv-premiu
 Channel groups are defined for up to 3 towers with up to 8 modules each.
 After the first reading, the binding removes the channels of towers and modules your battery does not have.
 
-| Battery                                   | Status                                                                                                         |
-|-------------------------------------------|----------------------------------------------------------------------------------------------------------------|
-| Battery-Box Premium HVS, BMU firmware 3.x | Tested (HVS 7.7, 1 tower with 3 modules)                                                                       |
-| Battery-Box Premium HVS with 5 modules    | Tested with recorded data of 2 towers with 5 modules each; see [Towers With 160 Cells](#towers-with-160-cells) |
-| Battery-Box Premium HVM                   | Untested, but expected to work (16 cells and 8 temperature sensors per module)                                 |
-| Several towers in parallel                | Tested with recorded data of 2 towers                                                                          |
-| Battery-Box Premium LVS, HVL              | Not supported. Status values may work, cell details are not available.                                         |
-| Battery-Box HVB / BCU 2.0                 | Not supported                                                                                                  |
+| Battery                                   | Status                                                                                                                                |
+|-------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------|
+| Battery-Box Premium HVS, BMU firmware 3.x | Tested (HVS 7.7, 1 tower with 3 modules)                                                                                              |
+| Battery-Box Premium HVS with 5 modules    | Tested with recorded data of 2 towers with 5 modules each; see [Towers With 160 Cells](#towers-with-160-cells)                        |
+| Battery-Box Premium HVM                   | Untested, but expected to work (16 cells and 8 temperature sensors per module)                                                        |
+| Several towers in parallel                | Tested with recorded data of 2 towers                                                                                                 |
+| Battery-Box Premium HVL                   | Partly supported: status values and event logs, no tower and cell details yet; see [Help Wanted: HVL Owners](#help-wanted-hvl-owners) |
+| Battery-Box Premium LVS                   | Not supported. Status values may work, cell details are not available.                                                                |
+| Battery-Box HVB / BCU 2.0                 | Not supported                                                                                                                         |
+
+### Help Wanted: HVL Owners
+
+With a Battery-Box Premium HVL, the binding reads the status values and the event logs, but no tower and cell details.
+The cell layout of HVL modules is not known yet, and no HVL system was available for testing.
+If you own an HVL and would like to help, please get in touch in the [community thread](https://community.openhab.org/t/byd-battery-box-5-2-0-6-0-0/171008).
+A short recording of the battery's answers, taken with a script on any computer in your network, is enough to add tower and cell details for HVL.
 
 ## Before You Start
 
@@ -276,8 +284,8 @@ While the battery stays unreachable, the binding keeps trying at the next readin
 
 ### Short Interruptions Without Internet Access
 
-If the battery is blocked from the internet, for example by a router or firewall rule, its network connection restarts about every 100 seconds.
-Each time, the battery does not answer on the network for about 20 seconds, not even to `ping`.
+If the battery is blocked from the internet, for example by a router or firewall rule, its network connection restarts every 103 seconds.
+Each time, the battery does not answer on the network for about 19 seconds, not even to `ping`.
 In a measurement over 14 hours, about one in five readings fell into such an interruption.
 The repeated reading 20 seconds later always succeeded, so the values arrived only a little later and the Thing stayed `ONLINE`.
 No setting is needed for this, and allowing the battery to access the internet made the interruptions disappear.
