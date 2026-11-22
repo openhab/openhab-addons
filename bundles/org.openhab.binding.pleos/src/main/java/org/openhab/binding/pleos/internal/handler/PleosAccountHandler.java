@@ -67,6 +67,7 @@ public class PleosAccountHandler extends BaseBridgeHandler {
     private Instant lastSixHourAlert = Instant.EPOCH;
 
     private volatile @Nullable PleosApiClient apiClient;
+    private @Nullable ScheduledFuture<?> initJob;
     private @Nullable ScheduledFuture<?> refreshJob;
 
     public PleosAccountHandler(Bridge bridge, HttpClient httpClient, TimeZoneProvider timeZoneProvider) {
@@ -117,16 +118,33 @@ public class PleosAccountHandler extends BaseBridgeHandler {
             return;
         }
 
+        ScheduledFuture<?> currentInitJob = this.initJob;
+        if (currentInitJob != null) {
+            currentInitJob.cancel(true);
+            this.initJob = null;
+        }
+        ScheduledFuture<?> currentRefreshJob = this.refreshJob;
+        if (currentRefreshJob != null) {
+            currentRefreshJob.cancel(true);
+            this.refreshJob = null;
+        }
+
         PleosApiClient client = new PleosApiClient(httpClient, clientId, clientSecret, brand);
         this.apiClient = client;
 
         // Asynchronous initial fetch, so that initialize() does not block
-        scheduler.execute(() -> {
+        this.initJob = scheduler.schedule(() -> {
             try {
                 client.authenticate();
+                if (Thread.currentThread().isInterrupted() || this.apiClient != client) {
+                    return;
+                }
                 updateStatus(ThingStatus.ONLINE);
                 startAutomaticRefresh(config.refreshInterval);
             } catch (PleosApiException e) {
+                if (Thread.currentThread().isInterrupted() || this.apiClient != client) {
+                    return;
+                }
                 logger.debug("Initial authentication failed: {}", e.getMessage());
                 if (e.isAuthError()) {
                     updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
@@ -134,15 +152,20 @@ public class PleosAccountHandler extends BaseBridgeHandler {
                     updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                 }
             }
-        });
+        }, 0, TimeUnit.SECONDS);
     }
 
     @Override
     public void dispose() {
         logger.debug("Terminate Pleo's account handler (dispose).");
-        ScheduledFuture<?> job = this.refreshJob;
-        if (job != null) {
-            job.cancel(true);
+        ScheduledFuture<?> currentInitJob = this.initJob;
+        if (currentInitJob != null) {
+            currentInitJob.cancel(true);
+            this.initJob = null;
+        }
+        ScheduledFuture<?> currentRefreshJob = this.refreshJob;
+        if (currentRefreshJob != null) {
+            currentRefreshJob.cancel(true);
             this.refreshJob = null;
         }
         this.apiClient = null;
@@ -176,6 +199,12 @@ public class PleosAccountHandler extends BaseBridgeHandler {
     private void startAutomaticRefresh(int intervalMinutes) {
         int safeInterval = Math.max(1, intervalMinutes); // Protection against 0 or negative values
         logger.debug("Start cyclic refresh every {} minutes.", safeInterval);
+
+        ScheduledFuture<?> currentRefreshJob = this.refreshJob;
+        if (currentRefreshJob != null) {
+            currentRefreshJob.cancel(true);
+            this.refreshJob = null;
+        }
 
         refreshJob = scheduler.scheduleWithFixedDelay(() -> {
             if (getThing().getStatus() != ThingStatus.ONLINE) {
