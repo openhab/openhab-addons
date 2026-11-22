@@ -188,6 +188,9 @@ public class PirateWeatherWeatherAndForecastHandler extends BaseThingHandler {
             }
         } else if (ThingStatus.OFFLINE.equals(bridgeStatusInfo.getStatus())) {
             updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
+        } else if (ThingStatus.UNKNOWN.equals(bridgeStatusInfo.getStatus())) {
+            // Bridge is re-validating its API key; data is fetched again once it reports ONLINE.
+            updateStatus(ThingStatus.UNKNOWN);
         }
     }
 

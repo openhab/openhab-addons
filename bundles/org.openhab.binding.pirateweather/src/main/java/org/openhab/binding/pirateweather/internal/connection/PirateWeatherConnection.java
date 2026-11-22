@@ -110,6 +110,9 @@ public class PirateWeatherConnection {
         if (apikey.isBlank()) {
             throw new PirateWeatherConfigurationException("@text/offline.conf-error-missing-apikey");
         }
+        // Pirate Weather counts every request against the key's quota, so this costs one extra call per bridge
+        // initialization. 0,0 is used as a fixed open-ocean point: it is always valid, needs no configured location
+        // and, with all blocks but "currently" excluded, keeps the response minimal.
         String url = String.format(Locale.ROOT, WEATHER_URL, apikey, 0.0, 0.0);
         Map<String, String> params = new HashMap<>();
         params.put(PARAM_EXCLUDE, "minutely,hourly,daily,alerts,flags");
