@@ -49,6 +49,8 @@ public class SolarMaxHandler extends BaseThingHandler {
 
     private SolarMaxConfiguration config = getConfigAs(SolarMaxConfiguration.class);
 
+    private SolarMaxFailureCounter failureCounter = new SolarMaxFailureCounter(config.offlineAfterFailures);
+
     @Nullable
     private ScheduledFuture<?> pollingJob;
 
@@ -69,6 +71,8 @@ public class SolarMaxHandler extends BaseThingHandler {
             updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "The refresh interval must be greater than 0");
             return;
         }
+        // stays UNKNOWN until the first successful poll, OFFLINE only after offlineAfterFailures failed polls in a row
+        failureCounter = new SolarMaxFailureCounter(config.offlineAfterFailures);
         updateStatus(ThingStatus.UNKNOWN);
         configurePolling(); // Setup the scheduler
     }
@@ -108,23 +112,40 @@ public class SolarMaxHandler extends BaseThingHandler {
         // get the data from the SolarMax device
         try {
             SolarMaxData solarMaxData = SolarMaxConnector.getAllValuesFromSolarMax(config.host, config.portNumber,
-                    this.config.deviceAddress);
+                    this.config.deviceAddress, config.getConnectionSettings());
 
             if (solarMaxData.wasCommunicationSuccessful()) {
+                failureCounter.recordSuccess();
                 updateStatus(ThingStatus.ONLINE);
                 updateProperties(solarMaxData);
                 updateChannels(solarMaxData);
                 return;
             }
-            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "The device did not return any values");
+            handlePollFailure("The device did not return any values");
         } catch (SolarMaxException e) {
-            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Communication error with the device: " + e.getMessage());
+            handlePollFailure("Communication error with the device: " + e.getMessage());
         } catch (RuntimeException e) {
             // an exception escaping from a job scheduled with scheduleWithFixedDelay would silently stop all further
             // polling, so catch everything here
             logger.warn("Unexpected error while updating {}: {}", getThing().getUID(), e.getMessage(), e);
-            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "Unexpected error: " + e.getMessage());
+            handlePollFailure("Unexpected error: " + e.getMessage());
+        }
+    }
+
+    /**
+     * A single failed poll (e.g. one connection the device didn't accept) doesn't take the thing OFFLINE, the channels
+     * just keep their last values. Only after offlineAfterFailures failed polls in a row the thing goes OFFLINE, e.g.
+     * at night when the inverter is switched off.
+     */
+    private void handlePollFailure(String reason) {
+        if (failureCounter.recordFailure()) {
+            // the description deliberately doesn't contain the running count: an unchanged status info doesn't create
+            // a new status event, so a thing that stays OFFLINE (all night) doesn't flood the event log
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
+                    reason + " (failed " + failureCounter.getThreshold() + " times in a row)");
+        } else {
+            logger.debug("Polling {} failed ({} of {} failures in a row before going OFFLINE): {}", getThing().getUID(),
+                    failureCounter.getFailuresInARow(), failureCounter.getThreshold(), reason);
         }
     }
 

@@ -15,12 +15,21 @@ Auto-discovery is currently not available.
 
 Each inverter requires the following configuration parameters:
 
-| parameter       | required | default | description                                                          |
-| --------------- | -------- | ------- | -------------------------------------------------------------------- |
-| host            | yes      |         | hostname or IP address of the inverter                               |
-| portNumber      | no       | 12345   | Port number to connect to. This should be `12345` for most inverters |
-| deviceAddress   | no       | 1       | Device address for devices connected serially.                       |
-| refreshInterval | no       | 15      | Interval (in seconds) to refresh the channel values.                 |
+| parameter            | required | default | description                                                                                                                                  |
+| -------------------- | -------- | ------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| host                 | yes      |         | hostname or IP address of the inverter                                                                                                       |
+| portNumber           | no       | 12345   | Port number to connect to. This should be `12345` for most inverters                                                                         |
+| deviceAddress        | no       | 1       | Device address for devices connected serially.                                                                                               |
+| refreshInterval      | no       | 15      | Interval (in seconds) to refresh the channel values.                                                                                         |
+| timeout              | no       | 3000    | Timeout (in milliseconds) for connecting and for waiting for a response. 3000 ms is the value given in the MaxComm protocol description.     |
+| retries              | no       | 1       | How often a failed request (connection error, no or invalid response) is repeated. A retry is skipped if it would not fit into the interval. |
+| retryDelay           | no       | 500     | Pause (in milliseconds) before a failed request is repeated.                                                                                 |
+| offlineAfterFailures | no       | 3       | Number of failed refreshes in a row after which the thing goes OFFLINE. Until then the channels keep their last values.                     |
+
+Devices connected via WLAN (e.g. through a WLAN bridge) sometimes don't accept a single connection.
+With the default settings such a hiccup is retried once and doesn't take the thing OFFLINE.
+When the inverter switches off at night, the thing goes OFFLINE after `offlineAfterFailures` × `refreshInterval` seconds.
+The cause of a communication error (e.g. `SocketTimeoutException: connect timed out` or `ConnectException: Connection refused`) is shown in the thing status.
 
 ## Properties
 

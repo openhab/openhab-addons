@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -49,26 +50,17 @@ public class SolarMaxConnector {
     private static final Logger LOGGER = LoggerFactory.getLogger(SolarMaxConnector.class);
 
     /**
-     * default timeout for socket connections is 1 second
-     */
-    private static final int CONNECTION_TIMEOUT = 1000;
-
-    /**
-     * default timeout for socket responses is 10 seconds
-     */
-    private static int responseTimeout = 10000;
-
-    /**
      * gets all known values from the SolarMax device addressable at host:portNumber
-     * 
+     *
      * @param host hostname or ip address of the SolarMax device to be contacted
      * @param portNumber portNumber the SolarMax is listening on (default is 12345)
      * @param deviceAddress
+     * @param settings timeout and retry settings
      * @return
      * @throws SolarMaxException if some other exception occurs
      */
     public static SolarMaxData getAllValuesFromSolarMax(final String host, final int portNumber,
-            final int deviceAddress) throws SolarMaxException {
+            final int deviceAddress, final SolarMaxConnectionSettings settings) throws SolarMaxException {
         List<SolarMaxCommandKey> commandList = new ArrayList<>();
 
         for (SolarMaxCommandKey solarMaxCommandKey : SolarMaxCommandKey.values()) {
@@ -84,7 +76,7 @@ public class SolarMaxConnector {
         // successful as soon as the device returned any value at all.
 
         Map<SolarMaxCommandKey, @Nullable String> valuesFromSolarMax = getValuesFromSolarMax(host, portNumber,
-                deviceAddress, commandList);
+                deviceAddress, commandList, settings);
         if (LOGGER.isDebugEnabled()) {
             for (SolarMaxCommandKey solarMaxCommandKey : commandList) {
                 if (!valuesFromSolarMax.containsKey(solarMaxCommandKey)) {
@@ -106,14 +98,14 @@ public class SolarMaxConnector {
      * @param host hostname or ip address of the SolarMax device to be contacted
      * @param portNumber portNumber the SolarMax is listening on (default is 12345)
      * @param commandList a list of commands to be sent to the SolarMax device
+     * @param settings timeout and retry settings
      * @return
-     * @throws UnknownHostException if the host is unknown
-     * @throws SolarMaxException if some other exception occurs
+     * @throws SolarMaxException if the values could not be read (also after retrying)
      */
     private static Map<SolarMaxCommandKey, @Nullable String> getValuesFromSolarMax(final String host,
-            final int portNumber, final int deviceAddress, final List<SolarMaxCommandKey> commandList)
-            throws SolarMaxException {
-        Socket socket;
+            final int portNumber, final int deviceAddress, final List<SolarMaxCommandKey> commandList,
+            final SolarMaxConnectionSettings settings) throws SolarMaxException {
+        final long deadline = System.nanoTime() + TimeUnit.MILLISECONDS.toNanos(settings.maxDuration());
 
         Map<SolarMaxCommandKey, @Nullable String> returnMap = new HashMap<>();
 
@@ -126,7 +118,7 @@ public class SolarMaxConnector {
         }
         for (int requestNumber = 0; requestNumber < requestsRequired; requestNumber++) {
             LOGGER.debug("    Requesting data from {}:{} (Device Address {}) with timeout of {}ms", host, portNumber,
-                    deviceAddress, responseTimeout);
+                    deviceAddress, settings.timeout());
 
             int firstCommandNumber = requestNumber * maxConcurrentCommands;
             int lastCommandNumber = (requestNumber + 1) * maxConcurrentCommands;
@@ -135,21 +127,65 @@ public class SolarMaxConnector {
             }
             List<SolarMaxCommandKey> commandsToSend = commandList.subList(firstCommandNumber, lastCommandNumber);
 
-            try {
-                socket = getSocketConnection(host, portNumber);
-            } catch (UnknownHostException e) {
-                throw new SolarMaxConnectionException(e);
-            }
-            returnMap.putAll(getValuesFromSolarMax(socket, deviceAddress, commandsToSend));
+            returnMap.putAll(getValuesWithRetries(host, portNumber, deviceAddress, commandsToSend, settings, deadline));
 
             // SolarMax can't deal with requests too close to one another, so just wait a moment
             try {
                 Thread.sleep(10);
             } catch (InterruptedException e) {
-                // do nothing
+                Thread.currentThread().interrupt();
             }
         }
         return returnMap;
+    }
+
+    /**
+     * sends a single request (on a new connection) and repeats it if it fails, as long as the retries are not used up
+     * and the repetition still fits into the time budget. Only one connection is open at any time (MaxComm: the device
+     * handles only one request at a time).
+     */
+    private static Map<SolarMaxCommandKey, @Nullable String> getValuesWithRetries(final String host,
+            final int portNumber, final int deviceAddress, final List<SolarMaxCommandKey> commandsToSend,
+            final SolarMaxConnectionSettings settings, final long deadline) throws SolarMaxException {
+        int retry = 0;
+        while (true) {
+            try {
+                Socket socket = getSocketConnection(host, portNumber, settings.timeout());
+                return getValuesFromSolarMax(socket, deviceAddress, commandsToSend);
+            } catch (UnknownHostException e) {
+                // retrying won't help
+                throw new SolarMaxConnectionException("Unknown host '" + host + "'", e);
+            } catch (SolarMaxException e) {
+                if (retry >= settings.retries()) {
+                    throw e;
+                }
+                long remainingMillis = TimeUnit.NANOSECONDS.toMillis(deadline - System.nanoTime());
+                if (remainingMillis < settings.retryDelay() + settings.maxAttemptDuration()) {
+                    LOGGER.debug("    Request to {}:{} failed ({}), not retrying: only {}ms left of the time budget",
+                            host, portNumber, e.getMessage(), remainingMillis);
+                    throw e;
+                }
+                retry++;
+                LOGGER.debug("    Request to {}:{} failed ({}), retry {} of {} in {}ms", host, portNumber,
+                        e.getMessage(), retry, settings.retries(), settings.retryDelay());
+                try {
+                    Thread.sleep(settings.retryDelay());
+                } catch (InterruptedException ie) {
+                    // the thing handler is being disposed
+                    Thread.currentThread().interrupt();
+                    throw e;
+                }
+            }
+        }
+    }
+
+    /**
+     * @return the type and the message of an exception, e.g. "SocketTimeoutException: connect timed out", so the
+     *         cause of a communication error can be told apart in the thing status and the log
+     */
+    static String describe(Throwable e) {
+        String message = e.getMessage();
+        return e.getClass().getSimpleName() + (message == null || message.isBlank() ? "" : ": " + message);
     }
 
     static String getCommandString(List<SolarMaxCommandKey> commandList) {
@@ -172,8 +208,8 @@ public class SolarMaxConnector {
             inputStream = socket.getInputStream();
 
             return getValuesFromSolarMax(outputStream, inputStream, deviceAddress, commandList);
-        } catch (final SolarMaxException | IOException e) {
-            throw new SolarMaxException("Error getting input/output streams from socket", e);
+        } catch (final IOException e) {
+            throw new SolarMaxException("Error getting input/output streams from socket: " + describe(e), e);
         } finally {
             try {
                 socket.close();
@@ -225,16 +261,20 @@ public class SolarMaxConnector {
 
             LOGGER.trace("    <==: {}", response);
 
+            if (response.isEmpty()) {
+                throw new SolarMaxException("No response received, the device closed the connection");
+            }
             if (!validateResponse(response)) {
-                throw new SolarMaxException("Invalid response received: " + response);
+                throw new SolarMaxException(
+                        "Invalid response received (" + response.length() + " characters): " + response);
             }
 
             returnedValues = extractValuesFromResponse(response);
 
             return returnedValues;
         } catch (IOException e) {
-            LOGGER.debug("Error communicating via input/output streams: {} ", e.getMessage());
-            throw new SolarMaxException(e);
+            LOGGER.debug("Error communicating via input/output streams: {} ", describe(e));
+            throw new SolarMaxException("Error communicating with the device: " + describe(e), e);
         }
     }
 
@@ -283,31 +323,43 @@ public class SolarMaxConnector {
         return responseMap;
     }
 
-    private static Socket getSocketConnection(final String host, int portNumber)
+    /**
+     * @param timeout timeout in milliseconds, used for connecting and for every read from the socket
+     */
+    private static Socket getSocketConnection(final String host, int portNumber, int timeout)
             throws SolarMaxConnectionException, UnknownHostException {
         portNumber = (portNumber == 0) ? DEFAULT_PORT : portNumber;
 
-        Socket socket;
+        Socket socket = new Socket();
 
         try {
-            socket = new Socket();
-            socket.connect(new InetSocketAddress(host, portNumber), CONNECTION_TIMEOUT);
-            socket.setSoTimeout(responseTimeout);
+            socket.connect(new InetSocketAddress(host, portNumber), timeout);
+            socket.setSoTimeout(timeout);
         } catch (final UnknownHostException e) {
+            closeQuietly(socket);
             throw e;
         } catch (final IOException e) {
+            closeQuietly(socket);
             throw new SolarMaxConnectionException(
-                    "Error connecting to portNumber '" + portNumber + "' on host '" + host + "'", e);
+                    "Error connecting to portNumber '" + portNumber + "' on host '" + host + "': " + describe(e), e);
         }
 
         return socket;
+    }
+
+    private static void closeQuietly(Socket socket) {
+        try {
+            socket.close();
+        } catch (IOException e) {
+            // ignore any error while trying to close the socket
+        }
     }
 
     public static boolean connectionTest(final String host, final int portNumber) throws UnknownHostException {
         Socket socket = null;
 
         try {
-            socket = getSocketConnection(host, portNumber);
+            socket = getSocketConnection(host, portNumber, SolarMaxConnectionSettings.DEFAULT_TIMEOUT);
         } catch (SolarMaxConnectionException e) {
             return false;
         } finally {
@@ -321,20 +373,6 @@ public class SolarMaxConnector {
         }
 
         return true;
-    }
-
-    /**
-     * @return timeout for responses in milliseconds
-     */
-    public static int getResponseTimeout() {
-        return responseTimeout;
-    }
-
-    /**
-     * @param responseTimeout timeout for responses in milliseconds
-     */
-    public static void setResponseTimeout(int responseTimeout) {
-        SolarMaxConnector.responseTimeout = responseTimeout;
     }
 
     /**
