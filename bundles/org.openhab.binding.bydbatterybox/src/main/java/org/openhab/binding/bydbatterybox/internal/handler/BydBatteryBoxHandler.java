@@ -374,6 +374,13 @@ public class BydBatteryBoxHandler extends BaseThingHandler {
         update(group, CHANNEL_DISCHARGED_ENERGY,
                 new QuantityType<>(BigDecimal.valueOf(data.dischargedEnergyWh(), 3), Units.KILOWATT_HOUR));
         update(group, CHANNEL_USABLE_CAPACITY, energy(towerCapacityWh(info), data.stateOfHealth()));
+        update(group, CHANNEL_EFFICIENCY,
+                data.chargedEnergyWh() > 0
+                        ? new QuantityType<>(
+                                BigDecimal.valueOf(data.dischargedEnergyWh() * 100)
+                                        .divide(BigDecimal.valueOf(data.chargedEnergyWh()), 1, RoundingMode.HALF_UP),
+                                Units.PERCENT)
+                        : UnDefType.UNDEF);
         update(group, CHANNEL_BALANCING_CELLS, new DecimalType(data.balancingCells()));
         int warningBits = data.warningBits1() | data.warningBits2() | data.warningBits3();
         update(group, CHANNEL_WARNING, OnOffType.from(warningBits != 0));
@@ -400,6 +407,8 @@ public class BydBatteryBoxHandler extends BaseThingHandler {
                 tempStats == null ? UnDefType.UNDEF : new QuantityType<>(tempStats.min(), SIUnits.CELSIUS));
         update(group, CHANNEL_MIN_CELL_TEMPERATURE_SENSOR,
                 tempStats == null ? UnDefType.UNDEF : new DecimalType(tempStats.minPosition()));
+        update(group, CHANNEL_AVERAGE_CELL_TEMPERATURE,
+                tempStats == null ? UnDefType.UNDEF : new QuantityType<>(tempStats.average(), SIUnits.CELSIUS));
 
         int cellsPerModule = info.batteryType().getCellsPerModule();
         int sensorsPerModule = info.batteryType().getTemperatureSensorsPerModule();
@@ -410,6 +419,13 @@ public class BydBatteryBoxHandler extends BaseThingHandler {
             publishCellStatistics(moduleGroup, moduleStats);
             update(moduleGroup, CHANNEL_VOLTAGE, moduleStats == null ? UnDefType.UNDEF
                     : new QuantityType<>(BigDecimal.valueOf(moduleStats.sum(), 3), Units.VOLT));
+            int lastCell = firstCell + cellsPerModule;
+            // the balancing flags of a module are only known if all its cells were read
+            update(moduleGroup, CHANNEL_BALANCING_CELLS,
+                    lastCell <= cells.size()
+                            ? new DecimalType(data.balancingCellNumbers().stream()
+                                    .filter(number -> number > firstCell && number <= lastCell).count())
+                            : UnDefType.UNDEF);
             for (int i = 0; i < cellsPerModule; i++) {
                 int index = firstCell + i;
                 update(moduleGroup, CHANNEL_CELL_VOLTAGE_PREFIX + twoDigits(i + 1),

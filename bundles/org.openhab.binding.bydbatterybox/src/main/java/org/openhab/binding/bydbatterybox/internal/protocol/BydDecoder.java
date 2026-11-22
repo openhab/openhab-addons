@@ -111,7 +111,7 @@ public final class BydDecoder {
         for (int i = 0; i < info.temperatureSensorsPerTower(); i++) {
             temperatures.add(u8(buffer, MEAS_TEMPERATURES + i));
         }
-        int balancing = bitCount(buffer, MEAS_BALANCING_FLAGS, MEAS_BALANCING_FLAGS_LENGTH);
+        List<Integer> balancing = flaggedCells(buffer, MEAS_BALANCING_FLAGS, MEAS_BALANCING_FLAGS_LENGTH * 8, 1);
         // firmware versions are stored as (minor, major)
         return new TowerData(tower, BigDecimal.valueOf(s16(buffer, MEAS_STATE_OF_CHARGE), 1),
                 s16(buffer, MEAS_STATE_OF_HEALTH), BigDecimal.valueOf(s16(buffer, MEAS_VOLTAGE), 1),
@@ -130,8 +130,7 @@ public final class BydDecoder {
      * first pass.
      * <p>
      * The balancing flags of these cells are assumed to start at the position of the first-pass flags; this is not
-     * verified yet. Under both bit orders discussed for the first pass, the flags of cells 129-160 are in the first 4
-     * bytes, and only their number is used.
+     * verified yet.
      *
      * @throws BydCommunicationException if the buffer is not marked as second pass
      */
@@ -147,7 +146,8 @@ public final class BydDecoder {
         for (int i = 0; i < count; i++) {
             cells.add(s16(buffer, MEAS_CELL_VOLTAGES + 2 * i));
         }
-        int balancing = firstPass.balancingCells() + bitCount(buffer, MEAS_BALANCING_FLAGS, (count + 7) / 8);
+        List<Integer> balancing = new ArrayList<>(firstPass.balancingCellNumbers());
+        balancing.addAll(flaggedCells(buffer, MEAS_BALANCING_FLAGS, count, SystemInfo.FIRST_PASS_CELLS + 1));
         return firstPass.withCells(cells, balancing);
     }
 
@@ -186,12 +186,20 @@ public final class BydDecoder {
         }
     }
 
-    private static int bitCount(byte[] b, int offset, int length) {
-        int count = 0;
-        for (int i = 0; i < length; i++) {
-            count += Integer.bitCount(u8(b, offset + i));
+    /**
+     * The balancing flags are 16-bit words, high byte first; bit 0 of the first word is the first cell, as decoded by
+     * the smarthomeNG plugin and the Home Assistant integration.
+     *
+     * @return the numbers of the flagged cells, ascending
+     */
+    private static List<Integer> flaggedCells(byte[] b, int offset, int cells, int firstCellNumber) {
+        List<Integer> flagged = new ArrayList<>();
+        for (int i = 0; i < cells; i++) {
+            if ((u16(b, offset + 2 * (i / 16)) >>> (i % 16) & 1) != 0) {
+                flagged.add(firstCellNumber + i);
+            }
         }
-        return count;
+        return flagged;
     }
 
     private static String version(int major, int minor) {

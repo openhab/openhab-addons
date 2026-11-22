@@ -32,7 +32,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * @param warningBits2 second tower warning bitmap, same meaning of the bits as the first
  * @param warningBits3 third tower warning bitmap
  * @param errorBits tower error bitmap
- * @param balancingCells number of cells currently balancing
+ * @param balancingCellNumbers numbers of the cells currently balancing, 1-based, ascending
  * @param cellVoltages cell voltages in mV, index 0 = cell 1; only the cells that were read
  * @param temperatures sensor temperatures in °C, index 0 = sensor 1
  * @param serialNumber serial number of the tower BMS as reported
@@ -42,20 +42,29 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public record TowerData(int tower, BigDecimal stateOfCharge, int stateOfHealth, BigDecimal voltage,
         BigDecimal outputVoltage, BigDecimal current, long chargedEnergyWh, long dischargedEnergyWh, int warningBits1,
-        int warningBits2, int warningBits3, int errorBits, int balancingCells, List<Integer> cellVoltages,
-        List<Integer> temperatures, String bmsFirmwareA, String bmsFirmwareB, String serialNumber) {
+        int warningBits2, int warningBits3, int errorBits, List<Integer> balancingCellNumbers,
+        List<Integer> cellVoltages, List<Integer> temperatures, String bmsFirmwareA, String bmsFirmwareB,
+        String serialNumber) {
 
     public TowerData {
         cellVoltages = List.copyOf(cellVoltages);
         temperatures = List.copyOf(temperatures);
+        balancingCellNumbers = List.copyOf(balancingCellNumbers);
     }
 
     /**
-     * @return this measurement with the cell voltages and the balancing cell count replaced
+     * @return the number of cells currently balancing
      */
-    public TowerData withCells(List<Integer> cellVoltages, int balancingCells) {
+    public int balancingCells() {
+        return balancingCellNumbers.size();
+    }
+
+    /**
+     * @return this measurement with the cell voltages and the balancing cells replaced
+     */
+    public TowerData withCells(List<Integer> cellVoltages, List<Integer> balancingCellNumbers) {
         return new TowerData(tower, stateOfCharge, stateOfHealth, voltage, outputVoltage, current, chargedEnergyWh,
-                dischargedEnergyWh, warningBits1, warningBits2, warningBits3, errorBits, balancingCells, cellVoltages,
-                temperatures, bmsFirmwareA, bmsFirmwareB, serialNumber);
+                dischargedEnergyWh, warningBits1, warningBits2, warningBits3, errorBits, balancingCellNumbers,
+                cellVoltages, temperatures, bmsFirmwareA, bmsFirmwareB, serialNumber);
     }
 }

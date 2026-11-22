@@ -203,6 +203,22 @@ class BydDecoderTest {
     }
 
     @Test
+    void balancingFlagsAreWordsWithBitZeroForTheFirstCell() throws BydCommunicationException {
+        SystemInfo info = BydDecoder.decodeIdentity(Fixtures.frame("identity"));
+        byte[] buffer = Fixtures.chunkPayloads("measurement", 4);
+        // flags at 12: word 0 = 0x8001 (cells 1 and 16), word 1 = 0x0002 (cell 18), word 7 = 0x4000 (cell 127)
+        buffer[12] = (byte) 0x80;
+        buffer[13] = 0x01;
+        buffer[15] = 0x02;
+        buffer[26] = 0x40;
+
+        TowerData tower = BydDecoder.decodeMeasurement(1, buffer, info);
+
+        assertEquals(List.of(1, 16, 18, 127), tower.balancingCellNumbers());
+        assertEquals(4, tower.balancingCells());
+    }
+
+    @Test
     void measurementStatusWords() throws BydCommunicationException {
         SystemInfo info = BydDecoder.decodeIdentity(Fixtures.frame("identity"));
         byte[] buffer = Fixtures.chunkPayloads("measurement", 4);

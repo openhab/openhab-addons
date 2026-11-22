@@ -172,6 +172,8 @@ class BydBatteryBoxHandlerTest {
         verifyState(new ChannelUID(thingUID, "tower-2-module-5", "cell-voltage-32"), "3205 mV");
         verifyState(new ChannelUID(thingUID, "tower-2-module-5", "cell-temperature-12"), "14 °C");
         verifyState(new ChannelUID(thingUID, "tower-2", "state-of-charge"), "15.8 %");
+        // with the second pass, the balancing flags of module 5 are known as well
+        verifyState(new ChannelUID(thingUID, "tower-2-module-5", CHANNEL_BALANCING_CELLS), "0");
         assertEquals(2 + 2 * 11, localBattery.requests().size());
     }
 
@@ -192,7 +194,30 @@ class BydBatteryBoxHandlerTest {
         verifyState(new ChannelUID(thingUID, "tower-2-module-5", "voltage"), "UNDEF");
         // the temperatures of module 5 are part of the first pass
         verifyState(new ChannelUID(thingUID, "tower-2-module-5", "cell-temperature-12"), "14 °C");
+        verifyState(new ChannelUID(thingUID, "tower-1", CHANNEL_EFFICIENCY), "87.8 %");
+        verifyState(new ChannelUID(thingUID, "tower-1", CHANNEL_AVERAGE_CELL_TEMPERATURE), "14.3 °C");
+        verifyState(new ChannelUID(thingUID, "tower-2-module-4", CHANNEL_BALANCING_CELLS), "0");
+        verifyState(new ChannelUID(thingUID, "tower-2-module-5", CHANNEL_BALANCING_CELLS), "UNDEF");
         assertEquals(2 + 2 * 6, localBattery.requests().size());
+    }
+
+    @Test
+    void balancingCellsAreCountedPerModule() throws Exception {
+        byte[][] replies = twoTowerDetailReplies(false);
+        // tower 1, chunk 1: balancing flag word 2 (payload bytes 16..17, frame bytes 21..22) = 0x0001, i.e. cell 33,
+        // the first cell of module 2
+        replies[4] = Fixtures.frameWithByte("hvs2x5-t1-measurement-1", 22, 0x01);
+        FakeBattery localBattery = FakeBattery.start(64, replies);
+        battery = localBattery;
+        BydBatteryBoxHandler localHandler = createHandler(localBattery.port(), List.of(),
+                Map.of("detailInterval", BigDecimal.valueOf(600)));
+        ThingUID thingUID = localHandler.getThing().getUID();
+
+        localHandler.initialize();
+
+        verifyState(new ChannelUID(thingUID, "tower-1", CHANNEL_BALANCING_CELLS), "1");
+        verifyState(new ChannelUID(thingUID, "tower-1-module-1", CHANNEL_BALANCING_CELLS), "0");
+        verifyState(new ChannelUID(thingUID, "tower-1-module-2", CHANNEL_BALANCING_CELLS), "1");
     }
 
     @Test

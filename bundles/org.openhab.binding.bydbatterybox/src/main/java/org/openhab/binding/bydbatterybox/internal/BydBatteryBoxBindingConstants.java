@@ -52,6 +52,7 @@ public class BydBatteryBoxBindingConstants {
     public static final String CHANNEL_MIN_CELL_VOLTAGE = "min-cell-voltage";
     public static final String CHANNEL_MIN_CELL_VOLTAGE_CELL = "min-cell-voltage-cell";
     public static final String CHANNEL_AVERAGE_CELL_VOLTAGE = "average-cell-voltage";
+    public static final String CHANNEL_AVERAGE_CELL_TEMPERATURE = "average-cell-temperature";
     public static final String CHANNEL_CELL_VOLTAGE_SPREAD = "cell-voltage-spread";
     public static final String CHANNEL_MAX_CELL_TEMPERATURE = "max-cell-temperature";
     public static final String CHANNEL_MAX_CELL_TEMPERATURE_SENSOR = "max-cell-temperature-sensor";

@@ -164,47 +164,52 @@ For batteries with an unknown module type, such as the HVL, they are `UNDEF`.
 One group per tower, updated every `detailInterval`.
 Minimum, maximum, average and spread cover all cells of the tower; cells and sensors are numbered from 1 within the tower.
 
-| Channel                       | Type                     | Description                                                    |
-|-------------------------------|--------------------------|----------------------------------------------------------------|
-| `state-of-charge`             | Number:Dimensionless     | State of charge (0.1 % resolution)                             |
-| `state-of-health`             | Number:Dimensionless     | State of health                                                |
-| `voltage`                     | Number:ElectricPotential | Tower voltage                                                  |
-| `output-voltage`              | Number:ElectricPotential | Voltage at the tower output, behind the main relay             |
-| `current`                     | Number:ElectricCurrent   | Tower current                                                  |
-| `charged-energy`              | Number:Energy            | Lifetime charged energy of the tower (Wh resolution)           |
-| `discharged-energy`           | Number:Energy            | Lifetime discharged energy of the tower (Wh resolution)        |
-| `usable-capacity`             | Number:Energy            | Nominal capacity of the tower reduced by its state of health   |
-| `max-cell-voltage`            | Number:ElectricPotential | Highest cell voltage                                           |
-| `max-cell-voltage-cell`       | Number                   | Number of the cell with the highest voltage                    |
-| `min-cell-voltage`            | Number:ElectricPotential | Lowest cell voltage                                            |
-| `min-cell-voltage-cell`       | Number                   | Number of the cell with the lowest voltage                     |
-| `average-cell-voltage`        | Number:ElectricPotential | Average cell voltage                                           |
-| `cell-voltage-spread`         | Number:ElectricPotential | Highest minus lowest cell voltage (1 mV resolution)            |
-| `max-cell-temperature`        | Number:Temperature       | Highest cell temperature                                       |
-| `max-cell-temperature-sensor` | Number                   | Number of the sensor with the highest temperature              |
-| `min-cell-temperature`        | Number:Temperature       | Lowest cell temperature                                        |
-| `min-cell-temperature-sensor` | Number                   | Number of the sensor with the lowest temperature               |
-| `balancing-cells`             | Number                   | Number of cells currently being balanced                       |
-| `warning`                     | Switch                   | `ON` while the tower reports a warning                         |
-| `warnings`                    | String                   | The tower warnings as text, or `None`                          |
-| `error`                       | Switch                   | `ON` while the tower reports an error                          |
-| `errors`                      | String                   | The tower errors as text, e.g. `Main relay failure`, or `None` |
+| Channel                       | Type                     | Description                                                                               |
+|-------------------------------|--------------------------|-------------------------------------------------------------------------------------------|
+| `state-of-charge`             | Number:Dimensionless     | State of charge (0.1 % resolution)                                                        |
+| `state-of-health`             | Number:Dimensionless     | State of health                                                                           |
+| `voltage`                     | Number:ElectricPotential | Tower voltage                                                                             |
+| `output-voltage`              | Number:ElectricPotential | Voltage at the tower output, behind the main relay                                        |
+| `current`                     | Number:ElectricCurrent   | Tower current                                                                             |
+| `charged-energy`              | Number:Energy            | Lifetime charged energy of the tower (Wh resolution)                                      |
+| `discharged-energy`           | Number:Energy            | Lifetime discharged energy of the tower (Wh resolution)                                   |
+| `usable-capacity`             | Number:Energy            | Nominal capacity of the tower reduced by its state of health                              |
+| `efficiency`                  | Number:Dimensionless     | Lifetime discharged energy of the tower divided by its lifetime charged energy (advanced) |
+| `max-cell-voltage`            | Number:ElectricPotential | Highest cell voltage                                                                      |
+| `max-cell-voltage-cell`       | Number                   | Number of the cell with the highest voltage                                               |
+| `min-cell-voltage`            | Number:ElectricPotential | Lowest cell voltage                                                                       |
+| `min-cell-voltage-cell`       | Number                   | Number of the cell with the lowest voltage                                                |
+| `average-cell-voltage`        | Number:ElectricPotential | Average cell voltage                                                                      |
+| `cell-voltage-spread`         | Number:ElectricPotential | Highest minus lowest cell voltage (1 mV resolution)                                       |
+| `max-cell-temperature`        | Number:Temperature       | Highest cell temperature                                                                  |
+| `max-cell-temperature-sensor` | Number                   | Number of the sensor with the highest temperature                                         |
+| `min-cell-temperature`        | Number:Temperature       | Lowest cell temperature                                                                   |
+| `min-cell-temperature-sensor` | Number                   | Number of the sensor with the lowest temperature                                          |
+| `average-cell-temperature`    | Number:Temperature       | Average temperature of all sensors of the tower                                           |
+| `balancing-cells`             | Number                   | Number of cells currently being balanced                                                  |
+| `warning`                     | Switch                   | `ON` while the tower reports a warning                                                    |
+| `warnings`                    | String                   | The tower warnings as text, or `None`                                                     |
+| `error`                       | Switch                   | `ON` while the tower reports an error                                                     |
+| `errors`                      | String                   | The tower errors as text, e.g. `Main relay failure`, or `None`                            |
 
 ### Group `tower-<n>-module-<m>`
 
 One group per module, updated every `detailInterval`.
 Module m holds cells `(m-1) × 32 + 1` to `m × 32` of the tower for HVS (16 cells per module for HVM), in the order the battery reports them.
 HVM modules only have the channels `cell-voltage-01` … `cell-voltage-16` and `cell-temperature-01` … `cell-temperature-08`.
+A module's `balancing-cells` shows which module the battery keeps balancing, an early sign of a weak module.
+It is `UNDEF` for the 5th module of a 160-cell tower without `readExtendedCells`.
 
-| Channel                                       | Type                     | Description                                     |
-|-----------------------------------------------|--------------------------|-------------------------------------------------|
-| `voltage`                                     | Number:ElectricPotential | Sum of the cell voltages of the module          |
-| `max-cell-voltage`                            | Number:ElectricPotential | Highest cell voltage of the module              |
-| `min-cell-voltage`                            | Number:ElectricPotential | Lowest cell voltage of the module               |
-| `average-cell-voltage`                        | Number:ElectricPotential | Average cell voltage of the module              |
-| `cell-voltage-spread`                         | Number:ElectricPotential | Highest minus lowest cell voltage of the module |
-| `cell-voltage-01` … `cell-voltage-32`         | Number:ElectricPotential | Voltage of each cell (HVM: 01 … 16)             |
-| `cell-temperature-01` … `cell-temperature-12` | Number:Temperature       | Temperature of each sensor (HVM: 01 … 08)       |
+| Channel                                       | Type                     | Description                                                       |
+|-----------------------------------------------|--------------------------|-------------------------------------------------------------------|
+| `voltage`                                     | Number:ElectricPotential | Sum of the cell voltages of the module                            |
+| `max-cell-voltage`                            | Number:ElectricPotential | Highest cell voltage of the module                                |
+| `min-cell-voltage`                            | Number:ElectricPotential | Lowest cell voltage of the module                                 |
+| `average-cell-voltage`                        | Number:ElectricPotential | Average cell voltage of the module                                |
+| `cell-voltage-spread`                         | Number:ElectricPotential | Highest minus lowest cell voltage of the module                   |
+| `balancing-cells`                             | Number                   | Number of cells of the module currently being balanced (advanced) |
+| `cell-voltage-01` … `cell-voltage-32`         | Number:ElectricPotential | Voltage of each cell (HVM: 01 … 16)                               |
+| `cell-temperature-01` … `cell-temperature-12` | Number:Temperature       | Temperature of each sensor (HVM: 01 … 08)                         |
 
 ### Group `events`
 

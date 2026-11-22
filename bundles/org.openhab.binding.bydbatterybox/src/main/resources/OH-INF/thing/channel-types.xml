@@ -108,6 +108,16 @@
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 
+	<channel-type id="temperature-calculated">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature</label>
+		<tags>
+			<tag>Calculation</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
 	<channel-type id="energy">
 		<item-type unitHint="kWh">Number:Energy</item-type>
 		<label>Energy</label>
@@ -136,6 +146,26 @@
 			<tag>Calculation</tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %%"/>
+	</channel-type>
+
+	<channel-type id="tower-efficiency" advanced="true">
+		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<label>Efficiency</label>
+		<description>Lifetime discharged energy of the tower divided by its lifetime charged energy.</description>
+		<tags>
+			<tag>Calculation</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f %%"/>
+	</channel-type>
+
+	<channel-type id="module-balancing-cells" advanced="true">
+		<item-type>Number</item-type>
+		<label>Balancing Cells</label>
+		<description>Number of cells of the module currently being balanced.</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="true" pattern="%d"/>
 	</channel-type>
 
 	<channel-type id="balancing-cells">
