@@ -429,7 +429,7 @@ public class ApiBridgeHandler extends BaseBridgeHandler implements NetatmoHandle
                 if (connectApi.matchesScopes(expected)) {
                     managers.put(clazz, instance);
                 } else {
-                    logger.warn("Unable to instantiate {}, expected scope {} is not active", clazz, expected);
+                    logger.warn("Unable to instantiate {} because expected scope {} is not active", clazz, expected);
                 }
             } catch (SecurityException | ReflectiveOperationException e) {
                 logger.warn("Error invoking RestManager constructor for class {}: {}", clazz, e.getMessage());
