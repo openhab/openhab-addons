@@ -384,7 +384,7 @@ public class PlugwiseHAApplianceHandler extends PlugwiseHABaseHandler<Appliance,
                 }
                 break;
             case APPLIANCE_RETURNWATERTEMPERATURE_CHANNEL:
-                if (entity.getBoilerTemp().isPresent()) {
+                if (entity.getReturnWaterTemp().isPresent()) {
                     Unit<Temperature> unit = getRemoteTemperatureUnit(entity);
                     state = new QuantityType<>(entity.getReturnWaterTemp().get(), unit);
                 }
