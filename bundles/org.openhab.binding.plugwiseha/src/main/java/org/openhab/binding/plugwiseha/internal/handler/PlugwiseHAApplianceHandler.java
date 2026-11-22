@@ -139,7 +139,7 @@ public class PlugwiseHAApplianceHandler extends PlugwiseHABaseHandler<Appliance,
             case APPLIANCE_LOCK_CHANNEL:
                 if (command instanceof OnOffType onOffCommand) {
                     try {
-                        controller.setRelay(entity, (command == OnOffType.ON));
+                        controller.setRelayLock(entity, onOffCommand == OnOffType.ON);
                     } catch (PlugwiseHAException e) {
                         logger.warn("Unable to switch relay lock {} for appliance '{}'", onOffCommand,
                                 entity.getName());
