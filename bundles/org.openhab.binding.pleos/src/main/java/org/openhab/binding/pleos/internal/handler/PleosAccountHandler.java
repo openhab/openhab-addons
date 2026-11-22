@@ -45,6 +45,7 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
+import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -194,7 +195,9 @@ public class PleosAccountHandler extends BaseBridgeHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        // Read-Only-API for Private Users
+        if (command instanceof RefreshType) {
+            checkSecretExpiration();
+        }
     }
 
     @Override
@@ -227,6 +230,7 @@ public class PleosAccountHandler extends BaseBridgeHandler {
         }
 
         refreshJob = scheduler.scheduleWithFixedDelay(() -> {
+            checkSecretExpiration();
             if (getThing().getStatus() != ThingStatus.ONLINE) {
                 return;
             }
