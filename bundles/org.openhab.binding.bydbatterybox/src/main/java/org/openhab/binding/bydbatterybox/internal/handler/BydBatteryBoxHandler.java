@@ -22,6 +22,7 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -97,6 +98,15 @@ public class BydBatteryBoxHandler extends BaseThingHandler {
     private static final long INITIAL_DELAY_SECONDS = 2;
     static final long RETRY_DELAY_MILLIS = 20_000;
     static final Duration MIN_EVENT_LOG_SPACING = Duration.ofSeconds(150);
+    /**
+     * Inverter setting of HVS and HVM systems, in the order of the inverter list of BYD's configuration tool, as used
+     * by the Home Assistant integration byd_battery_box. LVS and HVL systems number their inverters differently.
+     */
+    private static final String[] HV_INVERTERS = { "Fronius HV", "Goodwe HV/Viessmann HV", "Goodwe LV/Viessmann LV",
+            "KOSTAL HV", "Selectronic LV", "SMA SBS3.7/5.0/6.0 HV", "SMA LV", "Victron LV", "SUNTECH LV", "Sungrow HV",
+            "KACO HV", "Studer LV", "SolarEdge LV", "Ingeteam HV", "Sungrow LV", "Schneider LV", "SMA SBS2.5 HV",
+            "Solis LV", "Solis HV", "SMA STP 5.0-10.0 SE HV", "Deye LV", "Phocos LV", "GE HV", "Deye HV", "Raion LV",
+            "KACO NH", "Solplanet", "Western HV", "SOSEN", "Hoymiles LV", "Hoymiles HV", "SAJ HV" };
 
     private final Logger logger = LoggerFactory.getLogger(BydBatteryBoxHandler.class);
     private final ScheduledExecutorService executor = ThreadPoolManager.getScheduledPool(BINDING_ID);
@@ -374,6 +384,8 @@ public class BydBatteryBoxHandler extends BaseThingHandler {
         update(group, CHANNEL_DISCHARGED_ENERGY,
                 new QuantityType<>(BigDecimal.valueOf(data.dischargedEnergyWh(), 3), Units.KILOWATT_HOUR));
         update(group, CHANNEL_USABLE_CAPACITY, energy(towerCapacityWh(info), data.stateOfHealth()));
+        update(group, CHANNEL_STORED_ENERGY,
+                energy(towerCapacityWh(info), BigDecimal.valueOf(data.stateOfHealth()), data.stateOfCharge()));
         update(group, CHANNEL_EFFICIENCY,
                 data.chargedEnergyWh() > 0
                         ? new QuantityType<>(
@@ -530,7 +542,7 @@ public class BydBatteryBoxHandler extends BaseThingHandler {
         properties.put(PROPERTY_CELLS_PER_MODULE, String.valueOf(info.batteryType().getCellsPerModule()));
         properties.put(PROPERTY_TEMPERATURE_SENSORS_PER_MODULE,
                 String.valueOf(info.batteryType().getTemperatureSensorsPerModule()));
-        properties.put(PROPERTY_INVERTER_TYPE, String.valueOf(info.inverterType()));
+        properties.put(PROPERTY_INVERTER_TYPE, inverter(info));
         properties.put(PROPERTY_APPLICATION, String.valueOf(info.application()));
         properties.put(PROPERTY_PHASE, String.valueOf(info.phase()));
         int nominalCapacityWh = info.towers() * towerCapacityWh(info);
@@ -617,6 +629,13 @@ public class BydBatteryBoxHandler extends BaseThingHandler {
         return String.format("%02d", number);
     }
 
+    private static String inverter(SystemInfo info) {
+        int type = info.inverterType();
+        return info.batteryType().hasCellDetails() && type < HV_INVERTERS.length
+                ? HV_INVERTERS[type] + " (" + type + ")"
+                : String.valueOf(type);
+    }
+
     private static int towerCapacityWh(SystemInfo info) {
         return info.modulesPerTower() * info.batteryType().getModuleCapacityWh();
     }
@@ -626,12 +645,16 @@ public class BydBatteryBoxHandler extends BaseThingHandler {
      *         capacity is not known
      */
     private static State energy(int capacityWh, int... percents) {
+        return energy(capacityWh, Arrays.stream(percents).mapToObj(BigDecimal::valueOf).toArray(BigDecimal[]::new));
+    }
+
+    private static State energy(int capacityWh, BigDecimal... percents) {
         if (capacityWh <= 0) {
             return UnDefType.UNDEF;
         }
         BigDecimal wh = BigDecimal.valueOf(capacityWh);
-        for (int percent : percents) {
-            wh = wh.multiply(BigDecimal.valueOf(percent)).movePointLeft(2);
+        for (BigDecimal percent : percents) {
+            wh = wh.multiply(percent).movePointLeft(2);
         }
         return new QuantityType<>(wh.movePointLeft(3).setScale(2, RoundingMode.HALF_UP), Units.KILOWATT_HOUR);
     }

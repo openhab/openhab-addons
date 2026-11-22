@@ -250,8 +250,35 @@ class BydBatteryBoxHandlerTest {
         verifyState(new ChannelUID(thingUID, GROUP_STATUS, CHANNEL_STORED_ENERGY), "1.44 kWh");
         verifyState(new ChannelUID(thingUID, "tower-1", CHANNEL_USABLE_CAPACITY), "12.16 kWh");
         verifyState(new ChannelUID(thingUID, "tower-2", CHANNEL_USABLE_CAPACITY), "12.54 kWh");
+        // tower SoC 12.0 % and 15.8 %
+        verifyState(new ChannelUID(thingUID, "tower-1", CHANNEL_STORED_ENERGY), "1.46 kWh");
+        verifyState(new ChannelUID(thingUID, "tower-2", CHANNEL_STORED_ENERGY), "1.98 kWh");
         assertEquals("25.6 kWh", localHandler.getThing().getProperties().get(PROPERTY_NOMINAL_CAPACITY));
         assertEquals("1", localHandler.getThing().getProperties().get(PROPERTY_PHASE));
+        assertEquals("SMA STP 5.0-10.0 SE HV (19)",
+                localHandler.getThing().getProperties().get(PROPERTY_INVERTER_TYPE));
+    }
+
+    private String inverterOf(byte[] identity) throws Exception {
+        FakeBattery localBattery = FakeBattery.start(64, identity, Fixtures.frame("status"));
+        battery = localBattery;
+        BydBatteryBoxHandler localHandler = createHandler(localBattery.port());
+
+        localHandler.initialize();
+        verify(callback, timeout(FIRST_CYCLE_TIMEOUT_MILLIS)).statusUpdated(any(),
+                argThat(info -> info.getStatus() == ThingStatus.ONLINE));
+        return String.valueOf(localHandler.getThing().getProperties().get(PROPERTY_INVERTER_TYPE));
+    }
+
+    @Test
+    void knownInverterIsShownByName() throws Exception {
+        assertEquals("Fronius HV (0)", inverterOf(Fixtures.frame("identity")));
+    }
+
+    @Test
+    void unknownInverterIsShownAsNumber() throws Exception {
+        // identity byte 35 is the inverter setting; 40 is not in the list
+        assertEquals("40", inverterOf(Fixtures.frameWithByte("identity", 35, 40)));
     }
 
     @Test

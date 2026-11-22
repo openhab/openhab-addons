@@ -95,6 +95,10 @@
 				<label>Usable Capacity</label>
 				<description>Nominal capacity of the tower reduced by its state of health.</description>
 			</channel>
+			<channel id="stored-energy" typeId="energy-calculated">
+				<label>Stored Energy</label>
+				<description>Usable capacity of the tower multiplied by its state of charge.</description>
+			</channel>
 			<channel id="max-cell-voltage" typeId="cell-voltage">
 				<label>Max Cell Voltage</label>
 			</channel>

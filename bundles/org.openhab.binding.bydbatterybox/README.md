@@ -97,24 +97,24 @@ The number of balancing cells includes the 5th module only with the option enabl
 
 ### Properties
 
-| Property                       | Description                                                                                    |
-|--------------------------------|------------------------------------------------------------------------------------------------|
-| `serialNumber`                 | Serial number of the system, as reported by the battery                                        |
-| `modelId`                      | Module type: `HVS` or `HVM`                                                                    |
-| `firmwareVersion`              | BMU firmware currently in use, e.g. `3.26-B`                                                   |
-| `bmuFirmwareA`, `bmuFirmwareB` | BMU firmware in slot A and slot B                                                              |
-| `bmsFirmware`                  | BMS firmware currently in use                                                                  |
-| `towers`                       | Number of towers                                                                               |
-| `modulesPerTower`              | Number of modules per tower                                                                    |
-| `cellsPerModule`               | Number of cells per module                                                                     |
-| `temperatureSensorsPerModule`  | Number of temperature sensors per module                                                       |
-| `nominalCapacity`              | Capacity of the system when new, e.g. `7.68 kWh` (HVS and HVM only, see [Capacity](#capacity)) |
-| `parameterTable`               | Version of the parameter table                                                                 |
-| `inverterType`                 | Inverter setting of the battery (as a number)                                                  |
-| `application`                  | Application setting of the battery (as a number)                                               |
-| `phase`                        | Phase setting of the battery (as a number)                                                     |
-| `tower<n>SerialNumber`         | Serial number of the BMS of tower n (after the first cell measurement)                         |
-| `tower<n>Firmware`             | BMS firmware of tower n, slot A and slot B                                                     |
+| Property                       | Description                                                                                         |
+|--------------------------------|-----------------------------------------------------------------------------------------------------|
+| `serialNumber`                 | Serial number of the system, as reported by the battery                                             |
+| `modelId`                      | Module type: `HVS` or `HVM`                                                                         |
+| `firmwareVersion`              | BMU firmware currently in use, e.g. `3.26-B`                                                        |
+| `bmuFirmwareA`, `bmuFirmwareB` | BMU firmware in slot A and slot B                                                                   |
+| `bmsFirmware`                  | BMS firmware currently in use                                                                       |
+| `towers`                       | Number of towers                                                                                    |
+| `modulesPerTower`              | Number of modules per tower                                                                         |
+| `cellsPerModule`               | Number of cells per module                                                                          |
+| `temperatureSensorsPerModule`  | Number of temperature sensors per module                                                            |
+| `nominalCapacity`              | Capacity of the system when new, e.g. `7.68 kWh` (HVS and HVM only, see [Capacity](#capacity))      |
+| `parameterTable`               | Version of the parameter table                                                                      |
+| `inverterType`                 | Inverter setting of the battery, e.g. `Fronius HV (0)`, or only the number if the name is not known |
+| `application`                  | Application setting of the battery (as a number)                                                    |
+| `phase`                        | Phase setting of the battery (as a number)                                                          |
+| `tower<n>SerialNumber`         | Serial number of the BMS of tower n (after the first cell measurement)                              |
+| `tower<n>Firmware`             | BMS firmware of tower n, slot A and slot B                                                          |
 
 ## Channels
 
@@ -154,7 +154,7 @@ An HVS 7.7 with 3 modules has a nominal capacity of 7.68 kWh.
 
 - `usable-capacity` is the nominal capacity multiplied by the state of health: with a state of health of 94 %, the HVS 7.7 has 7.22 kWh left.
 - `stored-energy` is the usable capacity multiplied by the state of charge: at 50 %, it holds 3.61 kWh.
-- Each tower has its own `usable-capacity`, calculated from its own state of health, which shows whether one tower ages faster than the others.
+- Each tower has its own `usable-capacity` and `stored-energy`, calculated from its own state of health and state of charge; the usable capacity shows whether one tower ages faster than the others.
 
 These values are only as precise as the state of charge and state of health reported by the battery, in steps of 1 %.
 For batteries with an unknown module type, such as the HVL, they are `UNDEF`.
@@ -174,6 +174,7 @@ Minimum, maximum, average and spread cover all cells of the tower; cells and sen
 | `charged-energy`              | Number:Energy            | Lifetime charged energy of the tower (Wh resolution)                                      |
 | `discharged-energy`           | Number:Energy            | Lifetime discharged energy of the tower (Wh resolution)                                   |
 | `usable-capacity`             | Number:Energy            | Nominal capacity of the tower reduced by its state of health                              |
+| `stored-energy`               | Number:Energy            | Usable capacity of the tower multiplied by its state of charge (0.1 % resolution)         |
 | `efficiency`                  | Number:Dimensionless     | Lifetime discharged energy of the tower divided by its lifetime charged energy (advanced) |
 | `max-cell-voltage`            | Number:ElectricPotential | Highest cell voltage                                                                      |
 | `max-cell-voltage-cell`       | Number                   | Number of the cell with the highest voltage                                               |
