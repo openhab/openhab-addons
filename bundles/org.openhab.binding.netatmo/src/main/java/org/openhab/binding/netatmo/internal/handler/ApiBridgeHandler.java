@@ -357,6 +357,7 @@ public class ApiBridgeHandler extends BaseBridgeHandler implements NetatmoHandle
         logger.debug("Shutting down Netatmo API bridge handler.");
 
 <<<<<<< Upstream, based on main
+<<<<<<< Upstream, based on main
         WebhookServlet webHookServlet = this.webhookServlet;
         if (webHookServlet != null) {
             webHookServlet.dispose();
@@ -366,6 +367,9 @@ public class ApiBridgeHandler extends BaseBridgeHandler implements NetatmoHandle
         grantServlet.dispose();
 =======
         freeWebhookServlet();
+=======
+        webhookServiceGone();
+>>>>>>> 5170662 Free webhookService at dispose
         freeGrantServlet();
 <<<<<<< Upstream, based on main
 <<<<<<< Upstream, based on main
