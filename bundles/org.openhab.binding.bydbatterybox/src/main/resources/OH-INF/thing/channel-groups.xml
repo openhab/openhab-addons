@@ -82,6 +82,9 @@
 				<label>Output Voltage</label>
 			</channel>
 			<channel id="current" typeId="current"/>
+			<channel id="power" typeId="power">
+				<description>Tower current multiplied by tower output voltage. Positive while discharging, negative while charging.</description>
+			</channel>
 			<channel id="charged-energy" typeId="energy">
 				<label>Charged Energy</label>
 				<description>Lifetime charged energy of the tower.</description>
@@ -163,11 +166,20 @@
 				<description>Sum of the cell voltages of the module.</description>
 			</channel>
 			<channel id="balancing-cells" typeId="module-balancing-cells"/>
+			<channel id="balancing-cell-numbers" typeId="balancing-cell-numbers"/>
 			<channel id="max-cell-voltage" typeId="cell-voltage">
 				<label>Max Cell Voltage</label>
 			</channel>
+			<channel id="max-cell-voltage-cell" typeId="cell-number">
+				<label>Max Voltage Cell</label>
+				<description>Number of the cell with the highest voltage within the module.</description>
+			</channel>
 			<channel id="min-cell-voltage" typeId="cell-voltage">
 				<label>Min Cell Voltage</label>
+			</channel>
+			<channel id="min-cell-voltage-cell" typeId="cell-number">
+				<label>Min Voltage Cell</label>
+				<description>Number of the cell with the lowest voltage within the module.</description>
 			</channel>
 			<channel id="average-cell-voltage" typeId="cell-voltage-calculated">
 				<label>Average Cell Voltage</label>
@@ -175,6 +187,23 @@
 			<channel id="cell-voltage-spread" typeId="cell-voltage-calculated">
 				<label>Cell Voltage Spread</label>
 				<description>Difference between highest and lowest cell voltage.</description>
+			</channel>
+			<channel id="max-cell-temperature" typeId="temperature">
+				<label>Max Cell Temperature</label>
+			</channel>
+			<channel id="max-cell-temperature-sensor" typeId="cell-number">
+				<label>Max Temperature Sensor</label>
+				<description>Number of the sensor with the highest temperature within the module.</description>
+			</channel>
+			<channel id="min-cell-temperature" typeId="temperature">
+				<label>Min Cell Temperature</label>
+			</channel>
+			<channel id="min-cell-temperature-sensor" typeId="cell-number">
+				<label>Min Temperature Sensor</label>
+				<description>Number of the sensor with the lowest temperature within the module.</description>
+			</channel>
+			<channel id="average-cell-temperature" typeId="temperature-calculated">
+				<label>Average Cell Temperature</label>
 			</channel>
 			<channel id="cell-voltage-01" typeId="cell-voltage">
 				<label>Cell 01 Voltage</label>

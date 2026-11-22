@@ -67,6 +67,7 @@ public class BydBatteryBoxBindingConstants {
     public static final String CHANNEL_ERROR = "error";
     public static final String CHANNEL_ERRORS = "errors";
     public static final String CHANNEL_BALANCING_CELLS = "balancing-cells";
+    public static final String CHANNEL_BALANCING_CELL_NUMBERS = "balancing-cell-numbers";
     public static final String CHANNEL_WARNING = "warning";
     public static final String CHANNEL_WARNINGS = "warnings";
     public static final String CHANNEL_CELL_VOLTAGE_PREFIX = "cell-voltage-";

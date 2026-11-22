@@ -379,6 +379,8 @@ public class BydBatteryBoxHandler extends BaseThingHandler {
         update(group, CHANNEL_VOLTAGE, new QuantityType<>(data.voltage(), Units.VOLT));
         update(group, CHANNEL_OUTPUT_VOLTAGE, new QuantityType<>(data.outputVoltage(), Units.VOLT));
         update(group, CHANNEL_CURRENT, new QuantityType<>(data.current(), Units.AMPERE));
+        update(group, CHANNEL_POWER, new QuantityType<>(
+                data.current().multiply(data.outputVoltage()).setScale(0, RoundingMode.HALF_UP), Units.WATT));
         update(group, CHANNEL_CHARGED_ENERGY,
                 new QuantityType<>(BigDecimal.valueOf(data.chargedEnergyWh(), 3), Units.KILOWATT_HOUR));
         update(group, CHANNEL_DISCHARGED_ENERGY,
@@ -431,19 +433,39 @@ public class BydBatteryBoxHandler extends BaseThingHandler {
             publishCellStatistics(moduleGroup, moduleStats);
             update(moduleGroup, CHANNEL_VOLTAGE, moduleStats == null ? UnDefType.UNDEF
                     : new QuantityType<>(BigDecimal.valueOf(moduleStats.sum(), 3), Units.VOLT));
+            update(moduleGroup, CHANNEL_MAX_CELL_VOLTAGE_CELL,
+                    moduleStats == null ? UnDefType.UNDEF : new DecimalType(moduleStats.maxPosition() - firstCell));
+            update(moduleGroup, CHANNEL_MIN_CELL_VOLTAGE_CELL,
+                    moduleStats == null ? UnDefType.UNDEF : new DecimalType(moduleStats.minPosition() - firstCell));
             int lastCell = firstCell + cellsPerModule;
             // the balancing flags of a module are only known if all its cells were read
-            update(moduleGroup, CHANNEL_BALANCING_CELLS,
-                    lastCell <= cells.size()
-                            ? new DecimalType(data.balancingCellNumbers().stream()
-                                    .filter(number -> number > firstCell && number <= lastCell).count())
-                            : UnDefType.UNDEF);
+            if (lastCell <= cells.size()) {
+                List<Integer> balancing = data.balancingCellNumbers().stream()
+                        .filter(number -> number > firstCell && number <= lastCell).map(number -> number - firstCell)
+                        .toList();
+                update(moduleGroup, CHANNEL_BALANCING_CELLS, new DecimalType(balancing.size()));
+                update(moduleGroup, CHANNEL_BALANCING_CELL_NUMBERS, new StringType(texts.cellNumbers(balancing)));
+            } else {
+                update(moduleGroup, CHANNEL_BALANCING_CELLS, UnDefType.UNDEF);
+                update(moduleGroup, CHANNEL_BALANCING_CELL_NUMBERS, UnDefType.UNDEF);
+            }
             for (int i = 0; i < cellsPerModule; i++) {
                 int index = firstCell + i;
                 update(moduleGroup, CHANNEL_CELL_VOLTAGE_PREFIX + twoDigits(i + 1),
                         index < cells.size() ? new QuantityType<>(cells.get(index), MILLIVOLT) : UnDefType.UNDEF);
             }
             int firstSensor = (module - 1) * sensorsPerModule;
+            CellStatistics moduleTemps = CellStatistics.of(temperatures, firstSensor, firstSensor + sensorsPerModule);
+            update(moduleGroup, CHANNEL_MAX_CELL_TEMPERATURE,
+                    moduleTemps == null ? UnDefType.UNDEF : new QuantityType<>(moduleTemps.max(), SIUnits.CELSIUS));
+            update(moduleGroup, CHANNEL_MAX_CELL_TEMPERATURE_SENSOR,
+                    moduleTemps == null ? UnDefType.UNDEF : new DecimalType(moduleTemps.maxPosition() - firstSensor));
+            update(moduleGroup, CHANNEL_MIN_CELL_TEMPERATURE,
+                    moduleTemps == null ? UnDefType.UNDEF : new QuantityType<>(moduleTemps.min(), SIUnits.CELSIUS));
+            update(moduleGroup, CHANNEL_MIN_CELL_TEMPERATURE_SENSOR,
+                    moduleTemps == null ? UnDefType.UNDEF : new DecimalType(moduleTemps.minPosition() - firstSensor));
+            update(moduleGroup, CHANNEL_AVERAGE_CELL_TEMPERATURE,
+                    moduleTemps == null ? UnDefType.UNDEF : new QuantityType<>(moduleTemps.average(), SIUnits.CELSIUS));
             for (int i = 0; i < sensorsPerModule; i++) {
                 int index = firstSensor + i;
                 update(moduleGroup, CHANNEL_CELL_TEMPERATURE_PREFIX + twoDigits(i + 1),

@@ -104,6 +104,14 @@ class BydTexts {
         return texts.isEmpty() ? source.get("text.none", "None") : String.join(", ", texts);
     }
 
+    /**
+     * @return the cell numbers separated by commas, or the text for none
+     */
+    String cellNumbers(List<Integer> numbers) {
+        return numbers.isEmpty() ? source.get("text.none", "None")
+                : String.join(", ", numbers.stream().map(String::valueOf).toList());
+    }
+
     String towerErrors(int bits) {
         return bitTexts("tower.error.bit.", TOWER_ERROR_BITS, bits);
     }

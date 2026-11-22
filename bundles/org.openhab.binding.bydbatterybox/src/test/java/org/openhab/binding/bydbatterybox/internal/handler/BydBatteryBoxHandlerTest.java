@@ -197,6 +197,16 @@ class BydBatteryBoxHandlerTest {
         verifyState(new ChannelUID(thingUID, "tower-1", CHANNEL_EFFICIENCY), "87.8 %");
         verifyState(new ChannelUID(thingUID, "tower-1", CHANNEL_AVERAGE_CELL_TEMPERATURE), "14.3 °C");
         verifyState(new ChannelUID(thingUID, "tower-2-module-4", CHANNEL_BALANCING_CELLS), "0");
+        verifyState(new ChannelUID(thingUID, "tower-1", CHANNEL_POWER), "0 W");
+        // positions within module 2 (cells 33..64, sensors 13..24), not within the tower
+        verifyState(new ChannelUID(thingUID, "tower-1-module-2", CHANNEL_MAX_CELL_VOLTAGE_CELL), "25");
+        verifyState(new ChannelUID(thingUID, "tower-1-module-2", CHANNEL_MIN_CELL_VOLTAGE_CELL), "2");
+        verifyState(new ChannelUID(thingUID, "tower-1-module-2", CHANNEL_MAX_CELL_TEMPERATURE), "15 °C");
+        verifyState(new ChannelUID(thingUID, "tower-1-module-2", CHANNEL_MAX_CELL_TEMPERATURE_SENSOR), "1");
+        verifyState(new ChannelUID(thingUID, "tower-1-module-2", CHANNEL_MIN_CELL_TEMPERATURE), "14 °C");
+        verifyState(new ChannelUID(thingUID, "tower-1-module-2", CHANNEL_MIN_CELL_TEMPERATURE_SENSOR), "2");
+        verifyState(new ChannelUID(thingUID, "tower-1-module-2", CHANNEL_AVERAGE_CELL_TEMPERATURE), "14.2 °C");
+        verifyState(new ChannelUID(thingUID, "tower-2-module-5", CHANNEL_BALANCING_CELL_NUMBERS), "UNDEF");
         verifyState(new ChannelUID(thingUID, "tower-2-module-5", CHANNEL_BALANCING_CELLS), "UNDEF");
         assertEquals(2 + 2 * 6, localBattery.requests().size());
     }
@@ -218,6 +228,8 @@ class BydBatteryBoxHandlerTest {
         verifyState(new ChannelUID(thingUID, "tower-1", CHANNEL_BALANCING_CELLS), "1");
         verifyState(new ChannelUID(thingUID, "tower-1-module-1", CHANNEL_BALANCING_CELLS), "0");
         verifyState(new ChannelUID(thingUID, "tower-1-module-2", CHANNEL_BALANCING_CELLS), "1");
+        verifyState(new ChannelUID(thingUID, "tower-1-module-1", CHANNEL_BALANCING_CELL_NUMBERS), "None");
+        verifyState(new ChannelUID(thingUID, "tower-1-module-2", CHANNEL_BALANCING_CELL_NUMBERS), "1");
     }
 
     @Test

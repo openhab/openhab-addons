@@ -168,6 +168,16 @@
 		<state readOnly="true" pattern="%d"/>
 	</channel-type>
 
+	<channel-type id="balancing-cell-numbers" advanced="true">
+		<item-type>String</item-type>
+		<label>Balancing Cell Numbers</label>
+		<description>Numbers of the cells of the module currently being balanced, e.g. "5, 17", or "None".</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
 	<channel-type id="balancing-cells">
 		<item-type>Number</item-type>
 		<label>Balancing Cells</label>

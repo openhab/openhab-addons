@@ -82,6 +82,13 @@ class BydTextsTest {
     }
 
     @Test
+    void cellNumbers() {
+        assertEquals("None", texts.cellNumbers(List.of()));
+        assertEquals("5, 17", texts.cellNumbers(List.of(5, 17)));
+        assertTrue(missingKeys.isEmpty(), () -> "missing i18n keys " + missingKeys);
+    }
+
+    @Test
     void towerErrors() {
         assertEquals("None", texts.towerErrors(0));
         assertEquals("Main relay failure, Functional safety failure", texts.towerErrors(1 << 8 | 1 << 15));
