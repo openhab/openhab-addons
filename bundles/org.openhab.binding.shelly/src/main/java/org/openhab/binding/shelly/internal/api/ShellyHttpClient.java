@@ -226,7 +226,10 @@ public class ShellyHttpClient {
                 }
                 var error = message != null ? message.error : null;
                 if (error != null) {
-                    builder.httpCode(getInteger(error.code));
+                    Integer code = error.code;
+                    if (code != null) {
+                        builder.httpCode(code);
+                    }
                     builder.response(error.message);
                     if (getInteger(error.code) == HttpStatus.UNAUTHORIZED_401) {
                         builder.authChallenge(getString(error.message).replaceAll("\\\"", "\""));
