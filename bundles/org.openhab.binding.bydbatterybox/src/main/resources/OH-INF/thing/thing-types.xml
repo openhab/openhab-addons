@@ -107,42 +107,41 @@
 			<parameter name="hostname" type="text" required="true">
 				<context>network-address</context>
 				<label>Hostname</label>
-				<description>Hostname or IP address of the battery, or of a TCP forwarder in front of it.</description>
+				<description>Hostname or IP address of the battery, or of the forwarding host.</description>
 			</parameter>
 			<parameter name="port" type="integer" min="1" max="65535">
 				<label>Port</label>
-				<description>TCP port of the battery.</description>
+				<description>Port of the battery.</description>
 				<default>8080</default>
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="refreshInterval" type="integer" unit="s" min="30">
 				<label>Refresh Interval</label>
-				<description>Interval for reading the system status.</description>
+				<description>Seconds between two status readings.</description>
 				<default>60</default>
 			</parameter>
 			<parameter name="detailInterval" type="integer" unit="s" min="0">
 				<label>Cell Detail Interval</label>
-				<description>Interval for measuring and reading the cell voltages and temperatures. 0 disables cell details. Rounded
-					up to a multiple of the refresh interval.</description>
+				<description>Seconds between two measurements of the cell voltages and temperatures. 0 turns them off. Rounded up to
+					a multiple of the refresh interval.</description>
 				<default>600</default>
 			</parameter>
 			<parameter name="eventLogInterval" type="integer" unit="s" min="0">
 				<label>Event Log Interval</label>
-				<description>Interval for reading the event logs. 0 disables the event log. Rounded up to a multiple of the refresh
-					interval.</description>
+				<description>Seconds between two readings of the event logs. 0 turns them off. Rounded up to a multiple of the
+					refresh interval.</description>
 				<default>600</default>
 			</parameter>
 			<parameter name="readExtendedCells" type="boolean">
-				<label>Read Cells Beyond 128</label>
-				<description>Also reads cells 129-160 of HVS towers with 5 modules. This needs a second measurement per tower, which
-					is requested by writing the text DEBUG to a battery register, as other integrations do. Without it, these cells are
-					reported as undefined.</description>
+				<label>Read Cells 129-160</label>
+				<description>Also reads cells 129-160 of towers with 5 modules, using a second measurement of about 3 seconds per
+					tower. Without it, these cells are reported as undefined.</description>
 				<default>false</default>
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="connectionTimeout" type="integer" unit="s" min="1" max="30">
 				<label>Connection Timeout</label>
-				<description>Timeout for establishing the connection and for each reply.</description>
+				<description>Seconds to wait for the battery to connect and to answer.</description>
 				<default>5</default>
 				<advanced>true</advanced>
 			</parameter>

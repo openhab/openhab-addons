@@ -1,48 +1,46 @@
 # BYD Battery-Box Binding
 
-This binding reads the BYD Battery-Box Premium HVS/HVM home batteries over their local network interface.
+This binding reads the BYD Battery-Box Premium HVS/HVM home batteries over your local network.
 Its focus is long-term monitoring of the battery's health: every cell voltage and cell temperature, balancing, state of charge and state of health, and the battery's own event logs.
 All values can be persisted and used in rules, for example to be alerted when the voltage spread between the cells grows.
 
-The binding is read-only: it does not change any setting of the battery.
-It reads data, and sends only the two commands that make the battery measure its cells and load its event log.
-The BYD configuration tool sends the same commands.
-For towers with more than 128 cells, a third command can be enabled, see [Cells Beyond 128](#cells-beyond-128).
+The binding only reads from the battery and never changes its settings.
+To get fresh cell values and the event log, it asks the battery to measure its cells and to load its log, as the BYD configuration tool does.
+For towers with 160 cells, an additional measurement can be enabled, see [Towers With 160 Cells](#towers-with-160-cells).
 
 ## Supported Things
 
-| Thing Type   | Description                                                                                  |
-|--------------|----------------------------------------------------------------------------------------------|
-| `hv-premium` | One BYD Battery-Box Premium HVS/HVM system, addressed through its BMU (battery control unit) |
+| Thing Type   | Description                                                                                     |
+|--------------|-------------------------------------------------------------------------------------------------|
+| `hv-premium` | One BYD Battery-Box Premium HVS/HVM system, addressed through its BMU (battery management unit) |
 
 Towers and modules are not separate Things, but channel groups of the `hv-premium` Thing.
 Channel groups are defined for up to 3 towers with up to 8 modules each.
-After the first reading, the binding removes the channels of towers and modules the battery does not have.
+After the first reading, the binding removes the channels of towers and modules your battery does not have.
 
-| Battery                                   | Status                                                                                               |
-|-------------------------------------------|------------------------------------------------------------------------------------------------------|
-| Battery-Box Premium HVS, BMU firmware 3.x | Tested (HVS 7.7, 1 tower with 3 modules)                                                             |
-| Battery-Box Premium HVS with 5 modules    | Tested with recorded data of 2 towers with 5 modules each; see [Cells Beyond 128](#cells-beyond-128) |
-| Battery-Box Premium HVM                   | Untested. Supported by the protocol (16 cells and 8 temperature sensors per module).                 |
-| Several towers in parallel                | Tested with recorded data of 2 towers                                                                |
-| Battery-Box Premium LVS, HVL              | Not supported. Status values may work, cell details are not available.                               |
-| Battery-Box HVB / BCU 2.0                 | Not supported                                                                                        |
+| Battery                                   | Status                                                                                                         |
+|-------------------------------------------|----------------------------------------------------------------------------------------------------------------|
+| Battery-Box Premium HVS, BMU firmware 3.x | Tested (HVS 7.7, 1 tower with 3 modules)                                                                       |
+| Battery-Box Premium HVS with 5 modules    | Tested with recorded data of 2 towers with 5 modules each; see [Towers With 160 Cells](#towers-with-160-cells) |
+| Battery-Box Premium HVM                   | Untested, but expected to work (16 cells and 8 temperature sensors per module)                                 |
+| Several towers in parallel                | Tested with recorded data of 2 towers                                                                          |
+| Battery-Box Premium LVS, HVL              | Not supported. Status values may work, cell details are not available.                                         |
+| Battery-Box HVB / BCU 2.0                 | Not supported                                                                                                  |
 
-## Prerequisites
+## Before You Start
 
-### Only One Connection at a Time
+### Only One App at a Time
 
-The battery accepts **only one TCP connection at a time**.
-While the BYD app (Be Connect), another tool or another home automation system is connected, the binding cannot read the battery and the Thing goes `OFFLINE` with the message that another client is probably connected.
-The binding opens a connection only for the few seconds each reading takes, and closes it right after, so other tools can be used between two readings.
-It retries automatically, waiting longer after each failed attempt (at most 15 minutes).
+The battery accepts **only one connection at a time**.
+While the BYD app (Be Connect), another tool or another home automation system is connected to the battery, openHAB cannot read it, and the Thing goes `OFFLINE` with the message that another client is probably connected.
+openHAB connects only for the few seconds a reading takes, so you can use the BYD app between two readings.
+If the battery is busy, the binding tries again later, waiting longer after each failed attempt (at most 15 minutes).
 
-### Network
+### Connecting the Battery to Your Network
 
-The battery listens on TCP port 8080.
-It can be reached in two ways:
+The battery is reached on port 8080, in one of two ways:
 
-- **Ethernet**: the BMU's LAN port, connected to your home network. Look up the address the battery received from your DHCP server.
+- **Ethernet**: the LAN port of the BMU, connected to your home network. Look up the address the battery received from your router (DHCP server).
 - **Wi-Fi access point**: the BMU's own access point, with the battery at `192.168.16.254`. The openHAB host, or another host in between, needs a Wi-Fi interface connected to this access point with a static address, e.g. `192.168.16.50/24`, and no default route.
 
 If openHAB runs on a different host than the one connected to the battery's access point, forward the port on the connected host, for example with `socat`:
@@ -51,63 +49,62 @@ If openHAB runs on a different host than the one connected to the battery's acce
 socat TCP-LISTEN:8080,fork,reuseaddr,max-children=1 TCP:192.168.16.254:8080
 ```
 
-Then configure the address of the forwarding host as `hostname`.
-The forward does not lift the one-connection limit: clients connected through the forward and directly to the battery still exclude each other.
+Then enter the address of the forwarding host as `hostname`.
+The one-connection limit still applies: an app connected through the forwarding host and an app connected directly to the battery still exclude each other.
 
 ## Discovery
 
-Discovery is not supported.
-The battery offers no way to be found on the network.
-Add the Thing manually with its hostname.
+Discovery is not supported, because the battery cannot be found automatically on the network.
+Add the Thing manually with its hostname or IP address.
 
 ## Thing Configuration
 
 ### `hv-premium` Thing Configuration
 
-| Name                | Type    | Description                                                                                     | Default | Required | Advanced |
-|---------------------|---------|-------------------------------------------------------------------------------------------------|---------|----------|----------|
-| `hostname`          | text    | Hostname or IP address of the battery, or of a forwarding host                                  | N/A     | yes      | no       |
-| `port`              | integer | TCP port                                                                                        | 8080    | no       | yes      |
-| `refreshInterval`   | integer | Interval in seconds for reading the status (minimum 30)                                         | 60      | no       | no       |
-| `detailInterval`    | integer | Interval in seconds for measuring the cell voltages and temperatures, `0` disables it           | 600     | no       | no       |
-| `eventLogInterval`  | integer | Interval in seconds for reading the event logs, `0` disables it                                 | 600     | no       | no       |
-| `readExtendedCells` | boolean | Also read cells 129–160 of HVS towers with 5 modules, see [Cells Beyond 128](#cells-beyond-128) | false   | no       | yes      |
-| `connectionTimeout` | integer | Timeout in seconds for connecting and for each reply                                            | 5       | no       | yes      |
+| Name                | Type    | Description                                                                                           | Default | Required | Advanced |
+|---------------------|---------|-------------------------------------------------------------------------------------------------------|---------|----------|----------|
+| `hostname`          | text    | Hostname or IP address of the battery, or of the forwarding host                                      | N/A     | yes      | no       |
+| `port`              | integer | Port of the battery                                                                                   | 8080    | no       | yes      |
+| `refreshInterval`   | integer | Seconds between two status readings (minimum 30)                                                      | 60      | no       | no       |
+| `detailInterval`    | integer | Seconds between two cell measurements, `0` turns them off                                             | 600     | no       | no       |
+| `eventLogInterval`  | integer | Seconds between two event log readings, `0` turns them off                                            | 600     | no       | no       |
+| `readExtendedCells` | boolean | Also read cells 129–160 of towers with 5 modules, see [Towers With 160 Cells](#towers-with-160-cells) | false   | no       | yes      |
+| `connectionTimeout` | integer | Seconds to wait for the battery to connect and to answer                                              | 5       | no       | yes      |
 
-Cell details and event logs are read in the same connection as the status, so their intervals are rounded up to a multiple of `refreshInterval`.
-A cell measurement keeps the connection busy for about 2–3 seconds per tower.
+Cell measurements and event logs are read together with a status reading.
+Their intervals are therefore rounded up to a multiple of `refreshInterval`: with `refreshInterval=60`, a `detailInterval` of 90 seconds results in a cell measurement every 120 seconds.
+A cell measurement takes about 2–3 seconds per tower; during that time, the BYD app cannot connect.
 
-### Cells Beyond 128
+### Towers With 160 Cells
 
-A cell measurement returns at most 128 cell voltages per tower.
-An HVS tower with 5 modules has 160 cells, so the voltages of its 5th module are missing; its temperatures are always read.
-With `readExtendedCells` enabled, the binding measures such a tower a second time to read cells 129–160.
-To request this second measurement, it writes the text `DEBUG` to a battery register before it, as other integrations (ioBroker, Home Assistant, smarthomeNG) do.
-On the tested system, this write affected only the following measurement; the next regular measurement was normal again.
-The second measurement adds about 3 seconds per tower.
+In a regular measurement, the battery reports at most 128 cell voltages per tower.
+An HVS tower with 5 modules has 160 cells, so the cell voltages and the module voltage of its 5th module stay `UNDEF`; its temperatures are always available.
 
-Without the option, the cell voltages and the module voltage of the 5th module are `UNDEF`.
-The number of balancing cells includes cells 129–160 only with the option enabled; where their balancing flags are stored is assumed, not yet verified.
-Towers with at most 128 cells are never measured a second time, even with the option enabled.
+With `readExtendedCells` enabled, the binding requests a second measurement for such towers to get cells 129–160, the same way other integrations (ioBroker, Home Assistant, smarthomeNG) do.
+BYD does not document this measurement; on the tested system, it affected nothing beyond that one measurement.
+It adds about 3 seconds per tower to each cell measurement.
+Towers with at most 128 cells are never measured twice.
+
+The number of balancing cells includes the 5th module only with the option enabled, and has not yet been verified for that module.
 
 ### Properties
 
-| Property                       | Description                                                        |
-|--------------------------------|--------------------------------------------------------------------|
-| `serialNumber`                 | Serial number of the system, as reported by the battery            |
-| `modelId`                      | Module type: `HVS` or `HVM`                                        |
-| `firmwareVersion`              | Firmware of the active BMU section, e.g. `3.26-B`                  |
-| `bmuFirmwareA`, `bmuFirmwareB` | Firmware of the two BMU sections                                   |
-| `bmsFirmware`                  | Firmware of the active BMS section                                 |
-| `towers`                       | Number of towers                                                   |
-| `modulesPerTower`              | Number of modules per tower                                        |
-| `cellsPerModule`               | Number of cells per module                                         |
-| `temperatureSensorsPerModule`  | Number of temperature sensors per module                           |
-| `parameterTable`               | Version of the parameter table                                     |
-| `inverterType`                 | Inverter setting of the battery (raw number)                       |
-| `application`                  | Application setting of the battery (raw number)                    |
-| `tower<n>SerialNumber`         | Serial number of the BMS of tower n (after the first cell reading) |
-| `tower<n>Firmware`             | Firmware of the two BMS sections of tower n                        |
+| Property                       | Description                                                            |
+|--------------------------------|------------------------------------------------------------------------|
+| `serialNumber`                 | Serial number of the system, as reported by the battery                |
+| `modelId`                      | Module type: `HVS` or `HVM`                                            |
+| `firmwareVersion`              | BMU firmware currently in use, e.g. `3.26-B`                           |
+| `bmuFirmwareA`, `bmuFirmwareB` | BMU firmware in slot A and slot B                                      |
+| `bmsFirmware`                  | BMS firmware currently in use                                          |
+| `towers`                       | Number of towers                                                       |
+| `modulesPerTower`              | Number of modules per tower                                            |
+| `cellsPerModule`               | Number of cells per module                                             |
+| `temperatureSensorsPerModule`  | Number of temperature sensors per module                               |
+| `parameterTable`               | Version of the parameter table                                         |
+| `inverterType`                 | Inverter setting of the battery (as a number)                          |
+| `application`                  | Application setting of the battery (as a number)                       |
+| `tower<n>SerialNumber`         | Serial number of the BMS of tower n (after the first cell measurement) |
+| `tower<n>Firmware`             | BMS firmware of tower n, slot A and slot B                             |
 
 ## Channels
 
@@ -116,16 +113,16 @@ The same applies to the power.
 
 ### Group `status`
 
-Read every `refreshInterval`.
+Updated every `refreshInterval`.
 
 | Channel                | Type                     | Description                                                   |
 |------------------------|--------------------------|---------------------------------------------------------------|
 | `state-of-charge`      | Number:Dimensionless     | State of charge (1 % resolution)                              |
 | `state-of-health`      | Number:Dimensionless     | State of health                                               |
 | `voltage`              | Number:ElectricPotential | Battery voltage                                               |
-| `output-voltage`       | Number:ElectricPotential | Voltage behind the main relay                                 |
+| `output-voltage`       | Number:ElectricPotential | Voltage at the battery output, behind the main relay          |
 | `current`              | Number:ElectricCurrent   | Battery current                                               |
-| `power`                | Number:Power             | Current × output voltage                                      |
+| `power`                | Number:Power             | Battery power, calculated from current and output voltage     |
 | `max-cell-voltage`     | Number:ElectricPotential | Highest cell voltage (10 mV resolution)                       |
 | `min-cell-voltage`     | Number:ElectricPotential | Lowest cell voltage (10 mV resolution)                        |
 | `cell-voltage-spread`  | Number:ElectricPotential | Highest minus lowest cell voltage (10 mV resolution)          |
@@ -140,15 +137,15 @@ Read every `refreshInterval`.
 
 ### Group `tower-<n>`
 
-One group per tower, read every `detailInterval`.
-Minimum, maximum, average and spread are calculated from all cells of the tower; cells and sensors are numbered from 1 within the tower.
+One group per tower, updated every `detailInterval`.
+Minimum, maximum, average and spread cover all cells of the tower; cells and sensors are numbered from 1 within the tower.
 
 | Channel                       | Type                     | Description                                             |
 |-------------------------------|--------------------------|---------------------------------------------------------|
 | `state-of-charge`             | Number:Dimensionless     | State of charge (0.1 % resolution)                      |
 | `state-of-health`             | Number:Dimensionless     | State of health                                         |
 | `voltage`                     | Number:ElectricPotential | Tower voltage                                           |
-| `output-voltage`              | Number:ElectricPotential | Voltage behind the main relay                           |
+| `output-voltage`              | Number:ElectricPotential | Voltage at the tower output, behind the main relay      |
 | `current`                     | Number:ElectricCurrent   | Tower current                                           |
 | `charged-energy`              | Number:Energy            | Lifetime charged energy of the tower (Wh resolution)    |
 | `discharged-energy`           | Number:Energy            | Lifetime discharged energy of the tower (Wh resolution) |
@@ -168,7 +165,7 @@ Minimum, maximum, average and spread are calculated from all cells of the tower;
 
 ### Group `tower-<n>-module-<m>`
 
-One group per module, read every `detailInterval`.
+One group per module, updated every `detailInterval`.
 Module m holds cells `(m-1) × 32 + 1` to `m × 32` of the tower for HVS (16 cells per module for HVM), in the order the battery reports them.
 HVM modules only have the channels `cell-voltage-01` … `cell-voltage-16` and `cell-temperature-01` … `cell-temperature-08`.
 
@@ -184,7 +181,7 @@ HVM modules only have the channels `cell-voltage-01` … `cell-voltage-16` and `
 
 ### Group `events`
 
-Read every `eventLogInterval` from the BMU and from each tower's BMS.
+Updated every `eventLogInterval` from the logs of the BMU and of each tower.
 
 | Channel           | Type     | Description                                                                                  |
 |-------------------|----------|----------------------------------------------------------------------------------------------|
@@ -193,15 +190,15 @@ Read every `eventLogInterval` from the BMU and from each tower's BMS.
 | `event`           | Trigger  | Fired once for every new log entry, with the source and event code as payload, e.g. `BMS1:7` |
 
 The battery keeps the latest 20 entries per unit.
-After a restart of the binding, only entries that are newer than the first reading fire the trigger.
-The battery clock is not synchronized; the binding corrects the log times by the clock offset it measures (see `bmu-clock-offset`).
+After a restart of openHAB or of the binding, entries that were already in the log do not fire the trigger again; only newer entries do.
+The battery clock is not set automatically, so the binding corrects the times of the log entries by the measured deviation (see `bmu-clock-offset`).
 
 ### Group `diagnostics`
 
-| Channel              | Type        | Description                                                                              |
-|----------------------|-------------|------------------------------------------------------------------------------------------|
-| `bmu-clock-offset`   | Number:Time | Deviation of the battery clock, read as UTC, from the openHAB clock; positive when ahead |
-| `last-detail-update` | DateTime    | Time of the last successful cell measurement                                             |
+| Channel              | Type        | Description                                                                                        |
+|----------------------|-------------|----------------------------------------------------------------------------------------------------|
+| `bmu-clock-offset`   | Number:Time | How far the battery clock, taken as UTC, is ahead of the openHAB clock; negative when it is behind |
+| `last-detail-update` | DateTime    | Time of the last successful cell measurement                                                       |
 
 ## Full Example
 
@@ -264,23 +261,32 @@ Compare values taken at a similar state of charge, or use a lower threshold in t
 
 ## Troubleshooting
 
+### Thing Status Messages
+
 | Thing status message                 | Meaning                                                                                                 |
 |--------------------------------------|---------------------------------------------------------------------------------------------------------|
-| Another client is probably connected | The battery accepted the connection and closed it right away. Close the BYD app or other tools.         |
+| Another client is probably connected | The battery refused the connection. Close the BYD app or the other tool.                                |
 | The battery cannot be reached        | Wrong hostname or port, the battery or the forwarding host is offline, or the Wi-Fi connection is down. |
 | The battery did not answer in time   | The connection is slow or interrupted; increase `connectionTimeout` if this happens regularly.          |
 
-If the battery cannot be reached or does not answer, the binding tries once more 20 seconds later, before it reports the Thing as `OFFLINE`.
-After that, it retries at the next readings, waiting longer after each failed attempt.
+### When a Reading Fails
 
-Enable `TRACE` logging for `org.openhab.binding.bydbatterybox` to see every frame sent and received.
+If the battery cannot be reached or does not answer, the binding repeats the reading 20 seconds later, before it reports the Thing as `OFFLINE`.
+While the battery stays unreachable, the binding keeps trying at the next readings, waiting longer after each failed attempt.
 
-### Short Outages Without Internet Access
+### Short Interruptions Without Internet Access
 
-A battery that is blocked from the internet, for example by a router or firewall rule, was seen to stop answering on the network for about 15 seconds every 100 seconds, even to ping.
-The retry after 20 seconds bridges such an outage.
-If the Thing still changes between `OFFLINE` and `ONLINE` regularly with the message that the battery cannot be reached, check whether the battery is blocked from the internet: a `ping` to the battery that runs for a few minutes shows the outages.
-Allowing the battery to access the internet made the outages disappear.
+If the battery is blocked from the internet, for example by a router or firewall rule, its network connection restarts about every 100 seconds.
+Each time, the battery does not answer on the network for about 20 seconds, not even to `ping`.
+In a measurement over 14 hours, about one in five readings fell into such an interruption.
+The repeated reading 20 seconds later always succeeded, so the values arrived only a little later and the Thing stayed `ONLINE`.
+No setting is needed for this, and allowing the battery to access the internet made the interruptions disappear.
+
+If the Thing still goes `OFFLINE` regularly with the message that the battery cannot be reached, the cause is probably a different one: check the cable or Wi-Fi connection and the battery's address.
+
+### Logging
+
+Set the log level of `org.openhab.binding.bydbatterybox` to `DEBUG` to see every reading with its result and duration, or to `TRACE` to also see the data exchanged with the battery.
 
 ## Credits
 
