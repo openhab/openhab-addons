@@ -19,11 +19,15 @@ import java.io.InputStream;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.time.Duration;
 import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -54,6 +58,8 @@ import org.openhab.binding.tibber.internal.config.TibberConfiguration;
 import org.openhab.binding.tibber.internal.exception.PriceCalculationException;
 import org.openhab.binding.tibber.internal.history.TibberHistory;
 import org.openhab.binding.tibber.internal.history.TibberHistoryAggregator;
+import org.openhab.binding.tibber.internal.history.TibberHistoryCurrentPeriods;
+import org.openhab.binding.tibber.internal.history.TibberHistoryCurrentPeriods.Values;
 import org.openhab.binding.tibber.internal.history.TibberHistoryListener;
 import org.openhab.binding.tibber.internal.history.TibberHistorySeries;
 import org.openhab.binding.tibber.internal.websocket.TibberWebsocket;
@@ -100,10 +106,17 @@ import com.google.gson.JsonSyntaxException;
  * @author Bernd Weymann - Rework initialization
  * @author Bernd Weymann - Add history support
  * @author Bernd Weymann - Add history channel group
+ * @author Bernd Weymann - Add stale history refresh and live history values
  */
 @NonNullByDefault
 public class TibberHandler extends BaseThingHandler implements TibberHistoryListener {
     private static final int REQUEST_TIMEOUT_SEC = 10;
+    /** Maximum number of hourly stale-history fetch attempts per window and day before backing off. */
+    private static final int MAX_STALE_HISTORY_ATTEMPTS = 6;
+    private static final Duration STALE_HISTORY_RETRY_INTERVAL = Duration.ofHours(6);
+    /** Minimum interval between two live updates of the history channels. */
+    private static final Duration HISTORY_LIVE_UPDATE_INTERVAL = Duration.ofMinutes(1);
+
     private final Logger logger = LoggerFactory.getLogger(TibberHandler.class);
     private final Random random = new Random();
     private final BundleContext bundleContext;
@@ -124,7 +137,16 @@ public class TibberHandler extends BaseThingHandler implements TibberHistoryList
     private Object calculatorLock = new Object();
     private int retryCounter = 0;
     private boolean isDisposed = true;
-    private @Nullable TibberHistory history;
+    private boolean historyStarted;
+    protected @Nullable TibberHistory history;
+
+    private final Map<TibberHistory.TimeWindow, Integer> staleHistoryAttempts = new EnumMap<>(
+            TibberHistory.TimeWindow.class);
+    private final Map<TibberHistory.TimeWindow, Instant> staleHistoryLastAttempt = new EnumMap<>(
+            TibberHistory.TimeWindow.class);
+    private LocalDate staleHistoryAttemptsDate = LocalDate.MIN;
+    private volatile @Nullable Values currentPeriodValues;
+    private volatile Instant lastHistoryLiveUpdate = Instant.MIN;
 
     private TimeSeries priceCache = new TimeSeries(TimeSeries.Policy.REPLACE);
     private TimeSeries energyCache = new TimeSeries(TimeSeries.Policy.REPLACE);
@@ -205,6 +227,15 @@ public class TibberHandler extends BaseThingHandler implements TibberHistoryList
         }
     }
 
+    /**
+     * Creates the {@link TibberHistory} instance used by this handler.
+     * Called from {@link #initialize()} so that StorageService injection has already completed.
+     * Overridden in unit tests to inject a history stub.
+     */
+    protected TibberHistory createHistory() {
+        return new TibberHistory(storageService, tibberConfig.homeid, this);
+    }
+
     @Override
     public void initialize() {
         isDisposed = false;
@@ -213,8 +244,10 @@ public class TibberHandler extends BaseThingHandler implements TibberHistoryList
             updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/status.configuration-error");
         } else {
             // Create TibberHistory here (not in constructor) to ensure StorageService OSGi injection is complete
-            history = new TibberHistory(storageService, tibberConfig.homeid, this);
+            TibberHistory history = createHistory();
+            this.history = history;
             history.dispose(false); // mark as active (default state is disposed=true)
+            historyStarted = false;
             updateStatus(ThingStatus.UNKNOWN);
             scheduler.execute(this::doInitialize);
         }
@@ -337,6 +370,10 @@ public class TibberHandler extends BaseThingHandler implements TibberHistoryList
         int hour = tibberConfig.updateHour;
         String cronHour = (hour < 0) ? "*" : String.valueOf(hour);
         cronDaily = cron.schedule(this::updateSpotPrices, String.format(CRON_DAILY_AT, cronHour));
+
+        // An existing channel link is not replayed to a handler which is initialized after the link
+        // (re-)appeared, so history updates must also start from here and not only from channelLinked().
+        startHistoryProcessing();
     }
 
     private void initializePulseUser() {
@@ -345,6 +382,10 @@ public class TibberHandler extends BaseThingHandler implements TibberHistoryList
         // create websocket and watchdog
         webSocket = new TibberWebsocket(this, tibberConfig, httpClient);
         watchdog = scheduler.scheduleWithFixedDelay(this::watchdog, 0, 1, TimeUnit.MINUTES);
+
+        // An existing channel link is not replayed to a handler which is initialized after the link
+        // (re-)appeared, so history updates must also start from here and not only from channelLinked().
+        startHistoryProcessing();
     }
 
     private void handleInitializeError(@Nullable String message, boolean retry) {
@@ -384,7 +425,7 @@ public class TibberHandler extends BaseThingHandler implements TibberHistoryList
 
     private void watchdog() {
         TibberWebsocket webSocket = this.webSocket;
-        if (liveChannelsLinked() && isRealtimeEnabled()) {
+        if (realtimeChannelsLinked() && isRealtimeEnabled()) {
             if (webSocket != null) {
                 if (!webSocket.isConnected()) {
                     webSocket.start();
@@ -401,8 +442,8 @@ public class TibberHandler extends BaseThingHandler implements TibberHistoryList
                     webSocket.stop();
                 }
             } else {
-                logger.trace("Websocket is kept offline - either feature disabled ({}) or channel mot linked ({})",
-                        isRealtimeEnabled(), liveChannelsLinked());
+                logger.trace("Websocket is kept offline - either feature disabled ({}) or channel not linked ({})",
+                        isRealtimeEnabled(), realtimeChannelsLinked());
             }
         }
     }
@@ -574,12 +615,17 @@ public class TibberHandler extends BaseThingHandler implements TibberHistoryList
         return false;
     }
 
-    private boolean liveChannelsLinked() {
+    /**
+     * Returns true when at least one channel which requires the live websocket is linked: live,
+     * statistics or history. A history channel uses the live measurement to include the running day.
+     */
+    private boolean realtimeChannelsLinked() {
         return getThing().getChannels().stream().map(Channel::getUID)
-                .filter((channelUID -> channelUID.getAsString().contains(CHANNEL_GROUP_LIVE)
-                        || channelUID.getAsString().contains(CHANNEL_GROUP_STATISTICS)))
+                .filter(uid -> CHANNEL_GROUP_LIVE.equals(uid.getGroupId())
+                        || CHANNEL_GROUP_STATISTICS.equals(uid.getGroupId())
+                        || CHANNEL_GROUP_HISTORY.equals(uid.getGroupId()))
                 .anyMatch(this::isLinked);
-    };
+    }
 
     private void updatePriceInfoRetry() {
         if (isDisposed) {
@@ -678,6 +724,8 @@ public class TibberHandler extends BaseThingHandler implements TibberHistoryList
 
             updateChannel(CHANNEL_GROUP_LIVE, CHANNEL_POWER_BALANCE, String.valueOf(consumptionValue - productionValue),
                     "W");
+
+            updateHistoryLiveValues(jsonData);
         }
     }
 
@@ -707,6 +755,72 @@ public class TibberHandler extends BaseThingHandler implements TibberHistoryList
             // value is null
             updateState(new ChannelUID(thing.getUID(), group, channelId), UnDefType.NULL);
         }
+    }
+
+    /**
+     * Adds the live values of the running day (received via the websocket) to the completed part of the
+     * current week/month/year and publishes the result to the history channels.
+     * <p>
+     * The completed part is the sum of the stored DAILY entries strictly before today
+     * ({@link TibberHistoryCurrentPeriods}); the live values are the Tibber accumulators since midnight.
+     * The result is independent of the forecast restore state because {@code updateState} is used directly.
+     * Updates are throttled and skipped while the history store does not contain yesterday yet, so the
+     * displayed value never drops at midnight before the daily history fetch has completed.
+     */
+    private void updateHistoryLiveValues(JsonObject liveMeasurement) {
+        Values currentValues = this.currentPeriodValues;
+        if (isDisposed || currentValues == null) {
+            return;
+        }
+        Instant now = Instant.now();
+        if (!currentValues.isFresh(timeZoneProvider.getTimeZone(), now)) {
+            return;
+        }
+        if (now.isBefore(lastHistoryLiveUpdate.plus(HISTORY_LIVE_UPDATE_INTERVAL))) {
+            return;
+        }
+        State todayConsumption = getLiveState(liveMeasurement, "accumulatedConsumption", "kWh");
+        State todayCost = getLiveCostState(Utils.getJsonValue(liveMeasurement, "accumulatedCost"));
+        State todayProduction = getLiveState(liveMeasurement, "accumulatedProduction", "kWh");
+        if (todayConsumption == null && todayCost == null && todayProduction == null) {
+            return;
+        }
+        lastHistoryLiveUpdate = now;
+        for (TibberHistory.TimeWindow window : List.of(TibberHistory.TimeWindow.WEEKLY,
+                TibberHistory.TimeWindow.MONTHLY, TibberHistory.TimeWindow.ANNUAL)) {
+            updateHistoryLiveChannel(window, TibberHistorySeries.PURPOSE_CONSUMPTION, todayConsumption, currentValues);
+            updateHistoryLiveChannel(window, TibberHistorySeries.PURPOSE_COST, todayCost, currentValues);
+            updateHistoryLiveChannel(window, TibberHistorySeries.PURPOSE_PRODUCTION, todayProduction, currentValues);
+        }
+    }
+
+    private void updateHistoryLiveChannel(TibberHistory.TimeWindow window, String purpose, @Nullable State today,
+            Values currentValues) {
+        if (today == null) {
+            return;
+        }
+        State completed = currentValues.get(window, purpose);
+        State state = completed == null ? today : TibberHistoryCurrentPeriods.add(completed, today);
+        if (state != null) {
+            updateState(new ChannelUID(thing.getUID(), CHANNEL_GROUP_HISTORY, window.channelPrefix() + "-" + purpose),
+                    state);
+        }
+    }
+
+    private @Nullable State getLiveState(JsonObject liveMeasurement, String key, String unit) {
+        String value = Utils.getJsonValue(liveMeasurement, key);
+        if (EMPTY_VALUE.equals(value) || NULL_VALUE.equals(value)) {
+            return null;
+        }
+        return QuantityType.valueOf(value + " " + unit);
+    }
+
+    private @Nullable State getLiveCostState(String value) {
+        if (EMPTY_VALUE.equals(value) || NULL_VALUE.equals(value)) {
+            return null;
+        }
+        String currencyUnit = this.currencyUnit;
+        return currencyUnit != null ? QuantityType.valueOf(value + " " + currencyUnit) : DecimalType.valueOf(value);
     }
 
     public String getTemplate(String name) {
@@ -805,28 +919,12 @@ public class TibberHandler extends BaseThingHandler implements TibberHistoryList
     private void sendHistorySeries(TibberHistory history, TibberHistory.TimeWindow window, Instant start) {
         TibberHistorySeries stored = history.getStoredSeries(window);
 
-        TimeSeries consumptionSeries = stored.getTimeSeries(start, TibberHistorySeries.PURPOSE_CONSUMPTION);
-        logger.debug("History {} consumption series size: {}", window, consumptionSeries.size());
-        if (consumptionSeries.size() > 0) {
-            sendTimeSeries(
-                    new ChannelUID(thing.getUID(), CHANNEL_GROUP_HISTORY, window.channelPrefix() + "-consumption"),
-                    consumptionSeries);
-        }
-
-        TimeSeries costSeries = stored.getTimeSeries(start, TibberHistorySeries.PURPOSE_COST);
-        logger.debug("History {} cost series size: {}", window, costSeries.size());
-        if (costSeries.size() > 0) {
-            sendTimeSeries(new ChannelUID(thing.getUID(), CHANNEL_GROUP_HISTORY, window.channelPrefix() + "-cost"),
-                    costSeries);
-        }
-
-        TimeSeries productionSeries = stored.getTimeSeries(start, TibberHistorySeries.PURPOSE_PRODUCTION);
-        logger.debug("History {} production series size: {}", window, productionSeries.size());
-        if (productionSeries.size() > 0) {
-            sendTimeSeries(
-                    new ChannelUID(thing.getUID(), CHANNEL_GROUP_HISTORY, window.channelPrefix() + "-production"),
-                    productionSeries);
-        }
+        sendHistoryChannel(window, TibberHistorySeries.PURPOSE_CONSUMPTION,
+                stored.getTimeSeries(start, TibberHistorySeries.PURPOSE_CONSUMPTION));
+        sendHistoryChannel(window, TibberHistorySeries.PURPOSE_COST,
+                stored.getTimeSeries(start, TibberHistorySeries.PURPOSE_COST));
+        sendHistoryChannel(window, TibberHistorySeries.PURPOSE_PRODUCTION,
+                stored.getTimeSeries(start, TibberHistorySeries.PURPOSE_PRODUCTION));
     }
 
     /**
@@ -834,10 +932,12 @@ public class TibberHandler extends BaseThingHandler implements TibberHistoryList
      * into each coarser resolution that would otherwise have a gap for the running period:
      * <ol>
      * <li>DAILY → WEEKLY (current ISO week so far)</li>
-     * <li>WEEKLY → MONTHLY (current month so far)</li>
-     * <li>MONTHLY → ANNUAL (current year so far)</li>
+     * <li>DAILY → MONTHLY (current month so far)</li>
+     * <li>MONTHLY → ANNUAL (current year so far, including the synthetic current month)</li>
      * </ol>
-     * Synthetic entries are transient — they are never written to the persistent store.
+     * The current month is aggregated from DAILY data because WEEKLY entries are dated at the start of
+     * a completed ISO week and therefore only rarely fall into the running month.
+     * Synthetic entries are transient — they are never written to the Tibber history store.
      */
     private void enrichCurrentPeriods(TibberHistory localHistory) {
         if (isDisposed) {
@@ -845,59 +945,64 @@ public class TibberHandler extends BaseThingHandler implements TibberHistoryList
         }
         TibberHistoryAggregator agg = new TibberHistoryAggregator(timeZoneProvider.getTimeZone());
 
-        enrichAndSend(agg, localHistory, TibberHistory.TimeWindow.DAILY, TibberHistory.TimeWindow.WEEKLY);
-        enrichAndSend(agg, localHistory, TibberHistory.TimeWindow.WEEKLY, TibberHistory.TimeWindow.MONTHLY);
-        enrichAndSend(agg, localHistory, TibberHistory.TimeWindow.MONTHLY, TibberHistory.TimeWindow.ANNUAL);
-    }
+        TibberHistorySeries daily = localHistory.getStoredSeries(TibberHistory.TimeWindow.DAILY);
+        TibberHistorySeries weekly = localHistory.getStoredSeries(TibberHistory.TimeWindow.WEEKLY);
+        TibberHistorySeries monthly = localHistory.getStoredSeries(TibberHistory.TimeWindow.MONTHLY);
+        TibberHistorySeries annual = localHistory.getStoredSeries(TibberHistory.TimeWindow.ANNUAL);
 
-    /**
-     * Loads the stored series for both windows, fills the current-period gap via the aggregator,
-     * and sends the enriched coarser series to the three history channels.
-     *
-     * @param agg the aggregator instance
-     * @param history the history store
-     * @param finer source resolution
-     * @param coarser target resolution (the one with the gap)
-     */
-    private void enrichAndSend(TibberHistoryAggregator agg, TibberHistory history, TibberHistory.TimeWindow finer,
-            TibberHistory.TimeWindow coarser) {
-        TibberHistorySeries finerSeries = history.getStoredSeries(finer);
-        TibberHistorySeries coarserSeries = history.getStoredSeries(coarser);
+        // cache the completed part of the running periods for the live updates of the history channels
+        currentPeriodValues = TibberHistoryCurrentPeriods.compute(daily, timeZoneProvider.getTimeZone(), Instant.now());
 
-        TibberHistorySeries enriched = agg.fillCurrentPeriod(finer, coarser, finerSeries, coarserSeries);
-
-        if (enriched.equals(coarserSeries)) {
-            // No enrichment happened (identity return) — nothing to send
-            return;
-        }
-
-        // Send full enriched series (REPLACE policy ensures channels are up to date)
-        sendEnrichedSeries(enriched, coarser);
+        sendEnrichedSeries(
+                agg.fillCurrentPeriod(TibberHistory.TimeWindow.DAILY, TibberHistory.TimeWindow.WEEKLY, daily, weekly),
+                weekly, TibberHistory.TimeWindow.WEEKLY);
+        TibberHistorySeries enrichedMonthly = agg.fillCurrentPeriod(TibberHistory.TimeWindow.DAILY,
+                TibberHistory.TimeWindow.MONTHLY, daily, monthly);
+        sendEnrichedSeries(enrichedMonthly, monthly, TibberHistory.TimeWindow.MONTHLY);
+        sendEnrichedSeries(agg.fillCurrentPeriod(TibberHistory.TimeWindow.MONTHLY, TibberHistory.TimeWindow.ANNUAL,
+                enrichedMonthly, annual), annual, TibberHistory.TimeWindow.ANNUAL);
     }
 
     /**
      * Sends all three history channels for the given window from an enriched (in-memory) series.
      * Unlike {@link #sendHistorySeries}, this uses the provided series directly rather than
      * reading from the persistent store, so that synthetic aggregation entries are included.
+     * Nothing is sent if the aggregator did not add an entry.
      */
-    private void sendEnrichedSeries(TibberHistorySeries enriched, TibberHistory.TimeWindow window) {
-        TimeSeries consumptionSeries = enriched.getTimeSeries(Instant.MIN, TibberHistorySeries.PURPOSE_CONSUMPTION);
-        if (consumptionSeries.size() > 0) {
-            sendTimeSeries(
-                    new ChannelUID(thing.getUID(), CHANNEL_GROUP_HISTORY, window.channelPrefix() + "-consumption"),
-                    consumptionSeries);
+    private void sendEnrichedSeries(TibberHistorySeries enriched, TibberHistorySeries stored,
+            TibberHistory.TimeWindow window) {
+        if (enriched.equals(stored)) {
+            return;
         }
-        TimeSeries costSeries = enriched.getTimeSeries(Instant.MIN, TibberHistorySeries.PURPOSE_COST);
-        if (costSeries.size() > 0) {
-            sendTimeSeries(new ChannelUID(thing.getUID(), CHANNEL_GROUP_HISTORY, window.channelPrefix() + "-cost"),
-                    costSeries);
+        // REPLACE policy ensures the channels receive the complete enriched series
+        sendHistoryChannel(window, TibberHistorySeries.PURPOSE_CONSUMPTION,
+                enriched.getTimeSeries(Instant.MIN, TibberHistorySeries.PURPOSE_CONSUMPTION));
+        sendHistoryChannel(window, TibberHistorySeries.PURPOSE_COST,
+                enriched.getTimeSeries(Instant.MIN, TibberHistorySeries.PURPOSE_COST));
+        sendHistoryChannel(window, TibberHistorySeries.PURPOSE_PRODUCTION,
+                enriched.getTimeSeries(Instant.MIN, TibberHistorySeries.PURPOSE_PRODUCTION));
+    }
+
+    /**
+     * Sends the time series of one history channel and publishes its newest past entry as item state.
+     * <p>
+     * openHAB core applies past entries of a {@link TimeSeries} to the item state only if the entry
+     * timestamp is newer than the item's last state update (see {@code PersistenceManagerImpl}). History
+     * entries are always dated at the start of their period, so they are silently ignored for items whose
+     * state was already restored. The explicit {@link #updateState(ChannelUID, State)} makes the channel
+     * show the current (or most recently completed) period regardless of the restore state.
+     */
+    private void sendHistoryChannel(TibberHistory.TimeWindow window, String purpose, TimeSeries series) {
+        if (series.size() == 0) {
+            return;
         }
-        TimeSeries productionSeries = enriched.getTimeSeries(Instant.MIN, TibberHistorySeries.PURPOSE_PRODUCTION);
-        if (productionSeries.size() > 0) {
-            sendTimeSeries(
-                    new ChannelUID(thing.getUID(), CHANNEL_GROUP_HISTORY, window.channelPrefix() + "-production"),
-                    productionSeries);
-        }
+        ChannelUID channelUID = new ChannelUID(thing.getUID(), CHANNEL_GROUP_HISTORY,
+                window.channelPrefix() + "-" + purpose);
+        sendTimeSeries(channelUID, series);
+        logger.debug("History {} {} series size: {}", window, purpose, series.size());
+        Instant now = Instant.now();
+        series.getStates().filter(entry -> !entry.timestamp().isAfter(now)).reduce((first, second) -> second)
+                .ifPresent(entry -> updateState(channelUID, entry.state()));
     }
 
     // -------------------------------------------------------------------------
@@ -908,11 +1013,8 @@ public class TibberHandler extends BaseThingHandler implements TibberHistoryList
     public void channelLinked(ChannelUID channelUID) {
         super.channelLinked(channelUID);
         if (CHANNEL_GROUP_HISTORY.equals(channelUID.getGroupId())) {
-            logger.debug("History channel linked: {} — triggering initial fetch and starting cron", channelUID);
-            // On first link: full paginated fetch to load complete history.
-            // On subsequent links (store already populated): partial fetch is sufficient.
-            scheduler.execute(this::initialHistoryLoad);
-            startHistoryCron();
+            logger.debug("History channel linked: {} — starting history updates", channelUID);
+            startHistoryProcessing();
         }
     }
 
@@ -934,16 +1036,38 @@ public class TibberHandler extends BaseThingHandler implements TibberHistoryList
     }
 
     /**
-     * Starts the daily cron job for history updates if not already running.
+     * Starts the daily history refresh and the initial history load once per handler lifetime.
+     * <p>
+     * This is called from {@link #channelLinked(ChannelUID)} and after a successful initialization.
+     * The latter is required because openHAB core only replays link notifications to handlers which are
+     * already initialized at that moment ({@code ChannelLinkNotifier}); a handler initialized afterwards
+     * never receives {@code channelLinked} for its existing links and would therefore neither fetch the
+     * history nor start the daily refresh.
+     */
+    private synchronized void startHistoryProcessing() {
+        if (isDisposed || !historyChannelsLinked()) {
+            return;
+        }
+        startHistoryCron();
+        if (!historyStarted) {
+            historyStarted = true;
+            // On first start: full paginated fetch to load complete history.
+            // On subsequent starts (store already populated): partial fetch is sufficient.
+            scheduler.execute(this::initialHistoryLoad);
+        }
+    }
+
+    /**
+     * Starts the hourly history refresh if not already running.
      * Only schedules if at least one history channel is linked.
      */
     private void startHistoryCron() {
         if (this.cronHistory != null || !historyChannelsLinked()) {
             return;
         }
-        // Run daily at 01:00 (offset from spot-price cron to spread API load)
-        cronHistory = cron.schedule(this::updateHistoryChannels, "30 0 1 ? * * *");
-        logger.debug("History cron scheduled");
+        // Check every hour whether a completed period is missing; a fetch is only issued if needed
+        cronHistory = cron.schedule(this::refreshStaleHistory, "0 5 * * * ? *");
+        logger.debug("History refresh cron scheduled");
     }
 
     /**
@@ -959,7 +1083,7 @@ public class TibberHandler extends BaseThingHandler implements TibberHistoryList
     }
 
     /**
-     * Called once when the first history channel is linked.
+     * Called once per handler lifetime when the history updates are started.
      * Issues a full update (paginated) for windows whose persistent store is still empty,
      * so the complete available history is fetched. Windows that already have stored data
      * get a partial update (most recent page only) instead.
@@ -982,21 +1106,70 @@ public class TibberHandler extends BaseThingHandler implements TibberHistoryList
     }
 
     /**
-     * Enqueues a partial update for all four time windows.
-     * Called by the daily cron job.
+     * Triggered hourly by the history cron.
+     * <p>
+     * Requests an update only for those windows whose stored series does not yet contain the newest period the
+     * Tibber API can have completed (see {@link TibberHistory.TimeWindow#lastCompletedPeriodStart(ZonedDateTime)}).
+     * On a normal day this causes no API request at all, while a missed or too early daily fetch (API lag, restart,
+     * communication error) is retried automatically. A window whose store is still empty is retried once per day
+     * with a full fetch, so a failed initial load recovers. Retries per window are capped and then continue at a
+     * reduced interval to keep API load bounded.
      */
-    private void updateHistoryChannels() {
+    protected void refreshStaleHistory() {
         if (isDisposed || !historyChannelsLinked()) {
             return;
         }
         TibberHistory localHistory = this.history;
         if (localHistory == null) {
-            logger.debug("updateHistoryChannels: history not yet initialised");
             return;
         }
-        logger.debug("Scheduling partial history update for all windows");
+        ZonedDateTime now = ZonedDateTime.now(timeZoneProvider.getTimeZone());
+        resetStaleHistoryAttemptsOnNewDay(now.toLocalDate());
         for (TibberHistory.TimeWindow window : TibberHistory.TimeWindow.values()) {
+            TibberHistorySeries stored = localHistory.getStoredSeries(window);
+            if (stored.isEmpty()) {
+                // Retry a failed initial load once per day. A permanently empty window (for example DAILY data
+                // for a non-pulse user) must not cause hourly requests.
+                if (shouldRetryStaleHistory(window, now.toInstant(), 1)) {
+                    logger.debug("No stored {} history, retrying full fetch", window);
+                    localHistory.updateHistory(window, true);
+                }
+                continue;
+            }
+            Instant expected = window.lastCompletedPeriodStart(now);
+            if (!stored.lastKey().isBefore(expected)) {
+                continue;
+            }
+            if (!shouldRetryStaleHistory(window, now.toInstant(), MAX_STALE_HISTORY_ATTEMPTS)) {
+                continue;
+            }
+            logger.debug("Stored {} history is stale (last entry {}, expected {}), requesting partial update", window,
+                    stored.lastKey(), expected);
             localHistory.updateHistory(window, false);
+        }
+    }
+
+    private void resetStaleHistoryAttemptsOnNewDay(LocalDate today) {
+        synchronized (staleHistoryAttempts) {
+            if (!today.equals(staleHistoryAttemptsDate)) {
+                staleHistoryAttempts.clear();
+                staleHistoryLastAttempt.clear();
+                staleHistoryAttemptsDate = today;
+            }
+        }
+    }
+
+    private boolean shouldRetryStaleHistory(TibberHistory.TimeWindow window, Instant now, int maxAttempts) {
+        synchronized (staleHistoryAttempts) {
+            int attempts = staleHistoryAttempts.getOrDefault(window, 0);
+            Instant lastAttempt = staleHistoryLastAttempt.get(window);
+            if (attempts >= maxAttempts && lastAttempt != null
+                    && now.isBefore(lastAttempt.plus(STALE_HISTORY_RETRY_INTERVAL))) {
+                return false;
+            }
+            staleHistoryAttempts.put(window, attempts + 1);
+            staleHistoryLastAttempt.put(window, now);
+            return true;
         }
     }
 

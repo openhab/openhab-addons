@@ -40,9 +40,11 @@ import com.google.gson.JsonObject;
  * Aggregation rules:
  * <ul>
  * <li>MONTHLY → ANNUAL: sum all monthly entries whose timestamp falls in the current year</li>
- * <li>WEEKLY → MONTHLY: sum all weekly entries whose timestamp falls in the current month</li>
+ * <li>DAILY → MONTHLY: sum all daily entries whose timestamp falls in the current month</li>
  * <li>DAILY → WEEKLY: sum all daily entries whose timestamp falls in the current ISO week</li>
  * </ul>
+ * WEEKLY data is not used for the current month because weekly entries are dated at the start of a
+ * completed ISO week and therefore do not cover a running month.
  * Synthetic entries are <strong>not</strong> written back to the persistent store —
  * they are transient and will be superseded by real API data once the period closes.
  *
@@ -176,7 +178,7 @@ public class TibberHistoryAggregator {
      * <li>DAILY → first instant of the current day (00:00)</li>
      * </ul>
      */
-    private Instant currentPeriodStart(TibberHistory.TimeWindow coarser, ZonedDateTime now) {
+    static Instant currentPeriodStart(TibberHistory.TimeWindow coarser, ZonedDateTime now) {
         return switch (coarser) {
             case ANNUAL -> now.withDayOfYear(1).truncatedTo(ChronoUnit.DAYS).toInstant();
             case MONTHLY -> now.withDayOfMonth(1).truncatedTo(ChronoUnit.DAYS).toInstant();
