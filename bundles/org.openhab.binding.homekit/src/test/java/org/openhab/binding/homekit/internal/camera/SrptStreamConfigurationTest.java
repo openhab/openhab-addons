@@ -79,7 +79,7 @@ class SrptStreamConfigurationTest {
     }
 
     @Test
-    void testReconfigureEncodesCommandTwo() {
+    void testReconfigureEncodesCommandFour() {
         Map<Integer, byte[]> root = Tlv8Codec
                 .decode(new SrtpStreamConfiguration(SESSION_ID, SessionCommand.RECONFIGURE, AUDIO).encode());
 
