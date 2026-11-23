@@ -8,10 +8,12 @@ This binding integrates [Mikrotik](https://mikrotik.com/) [RouterOS](https://hel
 - `routeros` - An instance of the RouterOS device connection
 - `interface` - A network interface inside RouterOS device
 - `wifiRegistration` - Any wireless client connected to a RouterOS wireless network (regular or CAPsMAN-managed)
+- `kidControl` - A group of devices owned by a child that can be controlled to remove internet at set times, paused or disabled.
+- `device` - A device on your LAN that has a MAC address.
 
 ## Discovery
 
-Discovery is currently not supported, but may be implemented in future versions.
+Discovery is implemented for `routeros` bridge thing types, `kidControl` if you have any defined, plus `device` things that have a host-name.
 
 ## Bridge Configuration
 
@@ -24,8 +26,8 @@ Take note of the API port number as you'll need it below.
 [SSL API connection](https://wiki.mikrotik.com/wiki/Manual:API-SSL) is not yet supported by this binding.
 To connect to the RouterOS API, you will need to provide user credentials for the bridge Thing.
 You may use your current credentials that you use to manage your devices, but it is highly recommended to **create a read-only RouterOS user** since this binding only needs to read data from the device.
-To do this, proceed to <kbd>System -> Users</kbd> configuration section and add a user to the `read` group.
-To control PoE output, the user must also have the `write` policy assigned.
+To do this, proceed to <kbd>System -> Users</kbd> configuration section and add a user to the `read` or `write` group.
+To make any changes to the RouterOS, like controlling PoE outputs or disabling devices, the user must have the `write` policy assigned.
 
 > Thing type: `routeros`
 
@@ -159,6 +161,52 @@ Common for all kinds of interfaces:
 | registeredClients | Number                  | Amount of clients registered to WiFi interface   | Populated only for `cap` interfaces            |
 | authorizedClients | Number                  | Amount of clients authorized by WiFi interface   | Populated only for `cap` interfaces            |
 | upSince           | DateTime                | Time when Thing got up                           | Populated only for `cap` interfaces            |
+
+## Kid Control Thing Configuration
+
+Is designed to control the internet access to your kids devices, but could easily be setup to block internet to any group of devices. You setup a time and bandwidth limit for each day of the week and the routerOS will control it automatically for you. openHAB can then enable/disable this feature to give full time access, or you can pause to remove the access at any time.
+
+> Thing type: `kidControl`
+
+### Kid Control Thing Configuration
+
+| Name | Type | Required | Default | Description                            |
+|------|------|----------|---------|----------------------------------------|
+| name | text | Yes      |         | Name of the kid (i.e. Bobby)           |
+
+The name can be auto detected if you first setup a kid and their devices in the routerOS device, and then press the SCAN button in the openHAB INBOX.
+
+### Kid Control Thing Channels
+
+| Channel           | Type                    | Description                                                                 |
+|-------------------|-------------------------|-----------------------------------------------------------------------------|
+| paused            | Switch                  | ON if the kid has their internet turned off on all devices                  |
+| enabled           | Switch                  | ON if the automatic start and end times each day are enabled for the kid    |
+| txRate            | Number:DataTransferRate | Rate of data transmission in megabits per second for all devices that belong to the kid |
+| rxRate            | Number:DataTransferRate | Rate of data receiving in megabits per second for all devices that belong to the kid |
+
+## Device Thing Configuration
+
+Is designed to control the internet access to your kids devices, but can also be setup to block internet to any type of device on your LAN with a MAC address.
+It can enable or disable the LAN device and report its transmit and receive rates.
+
+> Thing type: `kidControl`
+
+### Device Thing Configuration
+
+| Name | Type | Required | Default | Description                            |
+|------|------|----------|---------|----------------------------------------|
+| name | text | Yes      |         | Name of the kid (i.e. Bobby)           |
+
+The name can be auto detected if you first setup a kid and their devices in the routerOS device, and then press the SCAN button in the openHAB INBOX.
+
+### Device Thing Channels
+
+| Channel           | Type                    | Description                                         |
+|-------------------|-------------------------|-----------------------------------------------------|
+| enabled           | Switch                  | ON if the device is allowed across the LAN          |
+| txRate            | Number:DataTransferRate | Rate of data transmission in megabits per second    |
+| rxRate            | Number:DataTransferRate | Rate of data receiving in megabits per second       |
 
 ## Text Configuration Example
 
