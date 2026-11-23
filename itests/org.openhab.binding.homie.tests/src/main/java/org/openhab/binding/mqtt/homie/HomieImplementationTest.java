@@ -259,9 +259,7 @@ public class HomieImplementationTest extends MqttOSGiTest {
         assertThat(device.attributes.name, is("Name"));
         assertThat(device.attributes.state, is(ReadyState.ready));
         assertThat(device.attributes.nodes.length, is(1));
-        verify(device, times(4)).attributeChanged(any(), any(), any(), any(), anyBoolean());
         verify(callback).readyStateChanged(eq(ReadyState.ready));
-        verify(device).attributesReceived(any(), any(), anyInt());
 
         // Expect 1 node
         assertThat(device.nodes.size(), is(1));
@@ -269,7 +267,7 @@ public class HomieImplementationTest extends MqttOSGiTest {
         // Check node and node attributes
         Node node = device.nodes.get("testnode");
         verify(node).subscribe(any(), any(), anyInt());
-        verify(node).attributesReceived(any(), any(), anyInt());
+        verify(callback).nodeAddedOrChanged(node);
         verify(node.attributes).subscribeAndReceive(any(), any(), anyString(), any(), anyInt());
         assertThat(node.attributes.type, is("Type"));
         assertThat(node.attributes.name, is("Testnode"));
