@@ -31,9 +31,8 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Locates or downloads the ffmpeg binary used to trans-code the camera's AAC-ELD audio for go2rtc. The homebridge
- * static
- * build is downloaded into the binding's cache directory if it is not already present. A ffmpeg on the PATH is never
- * used, because it may lack the codecs (for example libfdk_aac) that the binding requires.
+ * static build is downloaded into the binding's cache directory if it is not already present. A ffmpeg on the PATH
+ * is never used, because it may lack the codecs (for example libfdk_aac) that the binding requires.
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */
