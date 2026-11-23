@@ -19,9 +19,12 @@ import static org.mockito.Mockito.*;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -252,5 +255,89 @@ class MetadataSubscriptionTests {
             verify(callback).nodeAddedOrChanged(node);
         }
         (deviceLevel ? device.stop() : node.stop()).get(5, TimeUnit.SECONDS);
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = { false, true })
+    void lateMandatoryMetadataRecoversAfterTimeout(boolean deviceLevel) throws Exception {
+        AbstractMqttAttributeClass attributes = deviceLevel ? deviceAttributes : nodeAttributes;
+        AtomicReference<AbstractMqttAttributeClass.AttributeChanged> listener = new AtomicReference<>();
+        doAnswer(invocation -> {
+            listener.set(invocation.getArgument(3));
+            return pending;
+        }).when(attributes).subscribeAndReceive(any(), any(), anyString(), any(), anyInt());
+        CompletableFuture<@Nullable Void> subscription = deviceLevel ? device.subscribe(connection, scheduler, 500)
+                : node.subscribe(connection, scheduler, 500);
+        TimeoutException timeout = new TimeoutException("Mandatory metadata did not arrive");
+        pending.completeExceptionally(timeout);
+        assertSame(timeout,
+                assertThrows(ExecutionException.class, () -> subscription.get(5, TimeUnit.SECONDS)).getCause());
+        Node addedNode = childNode("new", CompletableFuture.completedFuture(null));
+        Property addedProperty = childProperty("new", CompletableFuture.completedFuture(null));
+        deviceAttributes.nodes = new String[] { "new" };
+        deviceAttributes.state = DeviceAttributes.ReadyState.ready;
+        nodeAttributes.properties = new String[] { "new" };
+        doReturn(addedNode).when(device).createNode("new");
+        doReturn(addedProperty).when(node).createProperty("new");
+        // AbstractMqttAttributeClass updates isComplete after notifying the listener of the final mandatory field.
+        doReturn(false).when(attributes).isComplete();
+        listener.get().attributeChanged(deviceLevel ? "nodes" : "properties", new String[] { "new" }, connection,
+                scheduler, true);
+        if (deviceLevel) {
+            verify(addedNode).subscribe(connection, scheduler, 500);
+            verify(callback).readyStateChanged(DeviceAttributes.ReadyState.ready);
+            assertTrue(device.isInitialized());
+        } else {
+            verify(addedProperty).subscribe(connection, scheduler, 500);
+            verify(callback, atLeastOnce()).nodeAddedOrChanged(node);
+        }
+        (deviceLevel ? device.stop() : node.stop()).get(5, TimeUnit.SECONDS);
+        clearInvocations(callback, addedNode, addedProperty);
+        listener.get().attributeChanged(deviceLevel ? "nodes" : "properties", new String[] { "new" }, connection,
+                scheduler, true);
+        verifyNoInteractions(callback, addedNode, addedProperty);
+    }
+
+    @Test
+    void reinitializationKeepsOutgoingNodesForCleanup() throws Exception {
+        Node restored = childNode("restored", CompletableFuture.completedFuture(null));
+        device.nodes.put("restored", restored);
+        doReturn(childNode("new", pending)).when(device).createNode("new");
+        CountDownLatch entered = new CountDownLatch(1);
+        CountDownLatch release = new CountDownLatch(1);
+        AtomicBoolean listening = new AtomicBoolean();
+        doAnswer(invocation -> {
+            entered.countDown();
+            assertTrue(release.await(5, TimeUnit.SECONDS), "Subscription setup was not released");
+            listening.set(true);
+            return CompletableFuture.completedFuture(null);
+        }).when(restored).subscribe(any(), any(), anyInt());
+        doAnswer(invocation -> {
+            listening.set(false);
+            return CompletableFuture.completedFuture(null);
+        }).when(restored).stop();
+        CompletableFuture<@Nullable Void> oldSubscription = device.subscribe(connection, scheduler, 500);
+        clearInvocations(restored, callback);
+        CompletableFuture<Void> receiveMetadata = CompletableFuture.runAsync(() -> pending.complete(null));
+        try {
+            assertTrue(entered.await(5, TimeUnit.SECONDS), "Restored subscription setup did not start");
+            CompletableFuture<@Nullable Void> stopped = device.stop();
+            assertFalse(stopped.isDone());
+            device.initialize("homie", "replacement", List.of());
+            assertEquals(0, device.nodes.size());
+            release.countDown();
+            stopped.get(5, TimeUnit.SECONDS);
+            receiveMetadata.get(5, TimeUnit.SECONDS);
+            oldSubscription.handle((v, error) -> null).get(5, TimeUnit.SECONDS);
+            assertFalse(listening.get(), "Reinitialization leaked the outgoing node's listeners");
+            verify(restored).stop();
+            verifyNoInteractions(callback);
+            deviceAttributes.nodes = new String[0];
+            device.subscribe(connection, scheduler, 500).get(5, TimeUnit.SECONDS);
+            assertTrue(device.isInitialized());
+            device.stop().get(5, TimeUnit.SECONDS);
+        } finally {
+            release.countDown();
+        }
     }
 }

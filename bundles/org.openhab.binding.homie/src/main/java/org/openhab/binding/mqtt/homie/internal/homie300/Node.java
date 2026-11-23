@@ -105,7 +105,11 @@ public class Node implements AbstractMqttAttributeClass.AttributeChanged {
                         return CompletableFuture.completedFuture(null);
                     }), timeout);
         }).thenCompose(v -> context.run(() -> attributesReceived(context, connection, scheduler, timeout)))
-                .thenCompose(v -> context.run(() -> CompletableFuture.completedFuture(null)));
+                .handle((v, error) -> context.run(() -> {
+                    metadataReady = true;
+                    return error == null ? CompletableFuture.<@Nullable Void> completedFuture(null)
+                            : CompletableFuture.<@Nullable Void> failedFuture(error);
+                })).thenCompose(future -> future);
     }
 
     public CompletableFuture<@Nullable Void> attributesReceived(MqttBrokerConnection connection,

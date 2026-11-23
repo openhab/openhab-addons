@@ -60,7 +60,7 @@ public class Device implements AbstractMqttAttributeClass.AttributeChanged {
     private final Logger logger = LoggerFactory.getLogger(Device.class);
     // The device attributes, statistics and nodes of this device
     public final DeviceAttributes attributes;
-    public final ChildMap<Node> nodes;
+    public volatile ChildMap<Node> nodes;
 
     // The corresponding ThingUID and callback of this device object
     public final ThingUID thingUID;
@@ -72,7 +72,7 @@ public class Device implements AbstractMqttAttributeClass.AttributeChanged {
     public String deviceID = "";
     private volatile @Nullable SubscriptionContext initializedSubscription;
     private boolean metadataReady = false;
-    private final AtomicReference<SubscriptionContext> subscription = new AtomicReference<>(new SubscriptionContext());
+    private final AtomicReference<DeviceSubscription> subscription;
 
     /**
      * Creates a Homie Device structure. It consists of device attributes, device statistics and nodes.
@@ -98,6 +98,7 @@ public class Device implements AbstractMqttAttributeClass.AttributeChanged {
         this.callback = callback;
         this.attributes = attributes;
         this.nodes = nodes;
+        this.subscription = new AtomicReference<>(new DeviceSubscription(new SubscriptionContext(), nodes));
     }
 
     /**
@@ -121,8 +122,9 @@ public class Device implements AbstractMqttAttributeClass.AttributeChanged {
 
         CompletableFuture<@Nullable Void> predecessor = new CompletableFuture<>();
         SubscriptionContext context = new SubscriptionContext(predecessor);
-        SubscriptionContext previous = subscription.getAndSet(context);
-        previous.stop(this::unsubscribe).whenComplete((v, error) -> {
+        DeviceSubscription current = new DeviceSubscription(context, nodes);
+        DeviceSubscription previous = subscription.getAndSet(current);
+        previous.context().stop(() -> unsubscribe(previous.nodes())).whenComplete((v, error) -> {
             if (error == null) {
                 predecessor.complete(null);
             } else {
@@ -133,11 +135,12 @@ public class Device implements AbstractMqttAttributeClass.AttributeChanged {
             metadataReady = false;
             return attributes.subscribeAndReceive(connection, scheduler, topic,
                     (name, value, broker, executor, complete) -> context.run(() -> {
-                        attributeChanged(context, name, value, broker, executor, complete);
+                        attributeChanged(current, name, value, broker, executor, complete);
                         return CompletableFuture.completedFuture(null);
                     }), timeout);
-        }).thenCompose(v -> context.run(() -> attributesReceived(context, connection, scheduler, timeout)))
+        }).thenCompose(v -> context.run(() -> attributesReceived(current, connection, scheduler, timeout)))
                 .handle((v, error) -> context.run(() -> {
+                    metadataReady = true;
                     initializedSubscription = context;
                     return error == null ? CompletableFuture.<@Nullable Void> completedFuture(null)
                             : CompletableFuture.<@Nullable Void> failedFuture(error);
@@ -146,12 +149,14 @@ public class Device implements AbstractMqttAttributeClass.AttributeChanged {
 
     public CompletableFuture<@Nullable Void> attributesReceived(MqttBrokerConnection connection,
             ScheduledExecutorService scheduler, int timeout) {
-        SubscriptionContext context = subscription.get();
-        return context.run(() -> attributesReceived(context, connection, scheduler, timeout));
+        DeviceSubscription current = subscription.get();
+        return current.context().run(() -> attributesReceived(current, connection, scheduler, timeout));
     }
 
-    private CompletableFuture<@Nullable Void> attributesReceived(SubscriptionContext context,
+    private CompletableFuture<@Nullable Void> attributesReceived(DeviceSubscription current,
             MqttBrokerConnection connection, ScheduledExecutorService scheduler, int timeout) {
+        SubscriptionContext context = current.context();
+        ChildMap<Node> nodes = current.nodes();
         // Parent metadata is ready before child metadata. Continue processing schema and state updates
         // while the child subscriptions are pending.
         metadataReady = true;
@@ -159,7 +164,7 @@ public class Device implements AbstractMqttAttributeClass.AttributeChanged {
         // ChildMap.apply only subscribes newly discovered children. Existing children also need
         // metadata subscriptions after restoration or a reconnect.
         List<Node> existing = nodes.stream().toList();
-        return applyNodes(connection, scheduler, timeout).thenCompose(v -> context.run(
+        return applyNodes(nodes, connection, scheduler, timeout).thenCompose(v -> context.run(
                 () -> CompletableFuture.allOf(existing.stream().filter(child -> child.equals(nodes.get(child.nodeID)))
                         .map(child -> child.subscribe(connection, scheduler, timeout))
                         .toArray(CompletableFuture[]::new))));
@@ -177,14 +182,15 @@ public class Device implements AbstractMqttAttributeClass.AttributeChanged {
      */
     public CompletableFuture<@Nullable Void> startChannels(MqttBrokerConnection connection,
             ScheduledExecutorService scheduler, int timeout, HomieThingHandler handler) {
-        return subscription.get().run(() -> {
+        DeviceSubscription current = subscription.get();
+        return current.context().run(() -> {
             if (!isInitialized() || deviceID.isEmpty()) {
                 CompletableFuture<@Nullable Void> c = new CompletableFuture<>();
                 c.completeExceptionally(new Exception("Homie Device Tree not inialized yet."));
                 return c;
             }
 
-            return CompletableFuture.allOf(nodes.stream().flatMap(node -> node.properties.stream())
+            return CompletableFuture.allOf(current.nodes().stream().flatMap(node -> node.properties.stream())
                     .map(p -> p.startChannel(connection, scheduler, timeout)).toArray(CompletableFuture[]::new));
         });
     }
@@ -213,10 +219,11 @@ public class Device implements AbstractMqttAttributeClass.AttributeChanged {
      * Unsubscribe from everything.
      */
     public CompletableFuture<@Nullable Void> stop() {
-        return subscription.get().stop(this::unsubscribe);
+        DeviceSubscription current = subscription.get();
+        return current.context().stop(() -> unsubscribe(current.nodes()));
     }
 
-    private CompletableFuture<@Nullable Void> unsubscribe() {
+    private CompletableFuture<@Nullable Void> unsubscribe(ChildMap<Node> nodes) {
         return CompletableFuture.allOf(
                 CompletableFuture.allOf(nodes.stream().map(Node::stop).toArray(CompletableFuture[]::new)),
                 attributes.unsubscribe());
@@ -233,7 +240,7 @@ public class Device implements AbstractMqttAttributeClass.AttributeChanged {
      * @return Return true if this device is initialized
      */
     public boolean isInitialized() {
-        SubscriptionContext context = subscription.get();
+        SubscriptionContext context = subscription.get().context();
         return context.equals(initializedSubscription) && context.isActive();
     }
 
@@ -244,6 +251,12 @@ public class Device implements AbstractMqttAttributeClass.AttributeChanged {
      */
     @SuppressWarnings({ "null", "unused" })
     public void initialize(String baseTopic, String deviceID, List<Channel> channels) {
+        // Deferred cleanup retains the outgoing map through its subscription context.
+        if (!this.deviceID.isEmpty()) {
+            CompletableFuture<@Nullable Void> predecessor = stop();
+            nodes = new ChildMap<>();
+            subscription.set(new DeviceSubscription(new SubscriptionContext(predecessor), nodes));
+        }
         this.topic = baseTopic + "/" + deviceID;
         this.deviceID = deviceID;
         this.thingTypeUID = new ThingTypeUID(HomieBindingConstants.BINDING_ID,
@@ -349,8 +362,8 @@ public class Device implements AbstractMqttAttributeClass.AttributeChanged {
         callback.nodeRemoved(node);
     }
 
-    CompletableFuture<@Nullable Void> applyNodes(MqttBrokerConnection connection, ScheduledExecutorService scheduler,
-            int timeout) {
+    private CompletableFuture<@Nullable Void> applyNodes(ChildMap<Node> nodes, MqttBrokerConnection connection,
+            ScheduledExecutorService scheduler, int timeout) {
         return nodes.apply(Objects.requireNonNull(attributes.nodes),
                 node -> node.subscribe(connection, scheduler, timeout), this::createNode, this::notifyNodeRemoved)
                 .exceptionally(e -> {
@@ -362,21 +375,21 @@ public class Device implements AbstractMqttAttributeClass.AttributeChanged {
     @Override
     public void attributeChanged(String name, Object value, MqttBrokerConnection connection,
             ScheduledExecutorService scheduler, boolean allMandatoryFieldsReceived) {
-        SubscriptionContext context = subscription.get();
-        context.run(() -> {
-            attributeChanged(context, name, value, connection, scheduler, allMandatoryFieldsReceived);
+        DeviceSubscription current = subscription.get();
+        current.context().run(() -> {
+            attributeChanged(current, name, value, connection, scheduler, allMandatoryFieldsReceived);
             return CompletableFuture.completedFuture(null);
         });
     }
 
-    private void attributeChanged(SubscriptionContext context, String name, Object value,
+    private void attributeChanged(DeviceSubscription current, String name, Object value,
             MqttBrokerConnection connection, ScheduledExecutorService scheduler, boolean allMandatoryFieldsReceived) {
         if (!metadataReady || !allMandatoryFieldsReceived) {
             return;
         }
         // Special case: Not all fields were known before
         if (!attributes.isComplete()) {
-            attributesReceived(context, connection, scheduler, 500);
+            attributesReceived(current, connection, scheduler, 500);
         } else {
             switch (name) {
                 case "state": {
@@ -384,7 +397,7 @@ public class Device implements AbstractMqttAttributeClass.AttributeChanged {
                     return;
                 }
                 case "nodes": {
-                    applyNodes(connection, scheduler, 500);
+                    applyNodes(current.nodes(), connection, scheduler, 500);
                     return;
                 }
             }
@@ -404,5 +417,8 @@ public class Device implements AbstractMqttAttributeClass.AttributeChanged {
                 .collect(Collectors.toList())).collect(Collectors.toList()).forEach(topics::addAll);
 
         return topics;
+    }
+
+    private record DeviceSubscription(SubscriptionContext context, ChildMap<Node> nodes) {
     }
 }
