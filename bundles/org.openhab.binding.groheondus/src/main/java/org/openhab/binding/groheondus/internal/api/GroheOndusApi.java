@@ -24,6 +24,7 @@ import java.time.format.DateTimeParseException;
 import java.time.temporal.TemporalAccessor;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HexFormat;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
@@ -395,7 +396,9 @@ public class GroheOndusApi {
         ApplianceResponse.Config config = appliance.config;
         return new ApplianceInfo(ref, Objects.requireNonNullElse(appliance.name, ref.applianceId()),
                 Objects.requireNonNull(appliance.type), config == null ? null : config.measurementTransmissionInterval,
-                parseTimestamp(appliance.tdt, timeZoneProvider.getTimeZone()));
+                parseTimestamp(appliance.tdt, timeZoneProvider.getTimeZone()),
+                decodeSerialNumber(appliance.serialNumber), appliance.version, appliance.installationDate,
+                config == null ? null : config.measurementPeriod);
     }
 
     private static String applianceUrl(ApplianceRef ref) {
@@ -413,6 +416,28 @@ public class GroheOndusApi {
             logger.debug("Ignoring sample with unsupported timestamp '{}'", date);
         }
         return timestamp;
+    }
+
+    /**
+     * The API reports the serial number hex-encoded, e.g. {@code 315a3136...} for {@code 1Z16...}.
+     *
+     * @return the decoded serial number, or the value unchanged if it is not hex-encoded printable ASCII
+     */
+    static @Nullable String decodeSerialNumber(@Nullable String value) {
+        if (value == null || value.isBlank()) {
+            return value;
+        }
+        String text = value.trim();
+        if (text.length() % 2 != 0 || !text.chars().allMatch(c -> Character.digit(c, 16) >= 0)) {
+            return text;
+        }
+        byte[] bytes = HexFormat.of().parseHex(text);
+        for (byte b : bytes) {
+            if (b < 0x20 || b > 0x7e) {
+                return text;
+            }
+        }
+        return new String(bytes, StandardCharsets.US_ASCII);
     }
 
     static String extractFormAction(String loginPage) throws GroheOndusCommunicationException {

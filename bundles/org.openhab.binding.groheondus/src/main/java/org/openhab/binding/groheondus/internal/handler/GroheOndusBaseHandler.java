@@ -14,7 +14,6 @@ package org.openhab.binding.groheondus.internal.handler;
 
 import static org.openhab.binding.groheondus.internal.GroheOndusBindingConstants.CHANNEL_LAST_UPDATE;
 import static org.openhab.binding.groheondus.internal.GroheOndusBindingConstants.CHANNEL_PAUSE;
-import static org.openhab.binding.groheondus.internal.GroheOndusBindingConstants.PROPERTY_APPLIANCE_NAME;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -217,7 +216,7 @@ public abstract class GroheOndusBaseHandler<S> extends BaseThingHandler {
                 return;
             }
             adjustPollingInterval(appliance);
-            updateProperty(PROPERTY_APPLIANCE_NAME, appliance.name());
+            updateProperties(appliance.properties());
             S snapshot = fetch(api, appliance);
             Instant newestSample = getNewestSampleTime(snapshot);
             Instant lastTransmission = appliance.lastTransmission();
