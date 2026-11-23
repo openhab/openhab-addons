@@ -172,6 +172,8 @@ public enum MiIoDevices {
     IKEA_LIGHT_LED1650R5("ikea.light.led1650r5", "IKEA GU10 warm white", THING_TYPE_LUMI),
     IKEA_LIGHT_LED1649C5("ikea.light.led1649c5", "IKEA E14 warm white", THING_TYPE_LUMI),
     LESHOW_FAN_SS4("leshow.fan.ss4", "leshow fan", THING_TYPE_BASIC),
+    LESHOW_HEATER_BS1S("leshow.heater.bs1s", "Mi Smart Baseboard Heater 1S", THING_TYPE_BASIC),
+    LESHOW_HEATER_BS3("leshow.heater.bs3", "Xiaomi Graphene Baseboard Heater", THING_TYPE_BASIC),
     LESHOW_HEATER_NFJ2LX("leshow.heater.nfj2lx", "Xiaomi Smart Tower Heater Lite", THING_TYPE_BASIC),
     LESHOW_HEATER_NFJ3LX("leshow.heater.nfj3lx", "Xiaomi Smart Tower Heater Lite", THING_TYPE_BASIC),
     LUMI_CTRL_NEUTRAL1_V1("lumi.ctrl_neutral1.v1", "Aqara Wall Switch(No Neutral, Single Rocker)",
