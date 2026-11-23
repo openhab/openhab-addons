@@ -16,7 +16,9 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
@@ -33,9 +35,12 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.stubbing.Answer;
+import org.openhab.binding.homie.internal.handler.HomieThingHandler;
 import org.openhab.binding.homie.internal.handler.ThingChannelConstants;
+import org.openhab.binding.mqtt.generic.ChannelState;
 import org.openhab.binding.mqtt.generic.mapping.AbstractMqttAttributeClass;
 import org.openhab.core.io.transport.mqtt.MqttBrokerConnection;
+import org.openhab.core.io.transport.mqtt.MqttMessageSubscriber;
 
 /**
  * Tests metadata changes and shutdown while child subscriptions are pending.
@@ -339,5 +344,190 @@ class MetadataSubscriptionTests {
         } finally {
             release.countDown();
         }
+    }
+
+    @Test
+    void propertyIgnoresMetadataCompletionAfterStop() throws Exception {
+        PropertyAttributes attributes = spy(new PropertyAttributes());
+        stubAttributes(attributes);
+        doReturn(pending).when(attributes).subscribeAndReceive(any(), any(), anyString(), any(), anyInt());
+        Property property = node.createProperty("property", attributes);
+        CompletableFuture<@Nullable Void> subscription = property.subscribe(connection, scheduler, 500);
+        property.stop().get(5, TimeUnit.SECONDS);
+        clearInvocations(callback);
+        pending.complete(null);
+        subscription.handle((v, error) -> null).get(5, TimeUnit.SECONDS);
+        verifyNoInteractions(callback);
+        assertNull(property.getChannelState());
+        assertTrue(subscription.isCompletedExceptionally());
+    }
+
+    private Set<MqttMessageSubscriber> trackValueListeners() {
+        Set<MqttMessageSubscriber> listeners = new HashSet<>();
+        doAnswer(invocation -> {
+            listeners.add(invocation.getArgument(1));
+            return CompletableFuture.completedFuture(true);
+        }).when(connection).subscribe(anyString(), any());
+        doAnswer(invocation -> {
+            listeners.remove(invocation.getArgument(1));
+            return CompletableFuture.completedFuture(true);
+        }).when(connection).unsubscribe(anyString(), any());
+        return listeners;
+    }
+
+    @Test
+    void propertyRestartIgnoresOldMetadataAndRemovesValueListeners() throws Exception {
+        Set<MqttMessageSubscriber> listeners = trackValueListeners();
+        PropertyAttributes attributes = spy(new PropertyAttributes());
+        stubAttributes(attributes);
+        AtomicReference<AbstractMqttAttributeClass.AttributeChanged> listener = new AtomicReference<>();
+        doAnswer(invocation -> {
+            listener.set(invocation.getArgument(3));
+            return pending;
+        }).when(attributes).subscribeAndReceive(any(), any(), anyString(), any(), anyInt());
+        Property property = node.createProperty("property", attributes);
+        CompletableFuture<@Nullable Void> oldSubscription = property.subscribe(connection, scheduler, 500);
+        AbstractMqttAttributeClass.AttributeChanged oldListener = listener.get();
+        property.stop().get(5, TimeUnit.SECONDS);
+        doReturn(CompletableFuture.completedFuture(null)).when(attributes).subscribeAndReceive(any(), any(),
+                anyString(), any(), anyInt());
+        property.subscribe(connection, scheduler, 500).get(5, TimeUnit.SECONDS);
+        property.startChannel(connection, scheduler, 0).get(5, TimeUnit.SECONDS);
+        ChannelState active = property.getChannelState();
+        assertNotNull(active);
+        assertEquals(Set.of(active), listeners);
+        clearInvocations(callback);
+        pending.complete(null);
+        oldSubscription.handle((v, error) -> null).get(5, TimeUnit.SECONDS);
+        oldListener.attributeChanged("name", "Old name", connection, scheduler, true);
+        assertSame(active, property.getChannelState());
+        verifyNoInteractions(callback);
+        property.startChannel(connection, scheduler, 0).get(5, TimeUnit.SECONDS);
+        assertEquals(Set.of(active), listeners);
+        property.stop().get(5, TimeUnit.SECONDS);
+        assertTrue(listeners.isEmpty(), "Property shutdown left a value listener registered");
+    }
+
+    @Test
+    void propertyMetadataUpdateStopsPreviousValueListener() throws Exception {
+        Set<MqttMessageSubscriber> listeners = trackValueListeners();
+        PropertyAttributes attributes = spy(new PropertyAttributes());
+        stubAttributes(attributes);
+        AtomicReference<AbstractMqttAttributeClass.AttributeChanged> listener = new AtomicReference<>();
+        doAnswer(invocation -> {
+            listener.set(invocation.getArgument(3));
+            return CompletableFuture.completedFuture(null);
+        }).when(attributes).subscribeAndReceive(any(), any(), anyString(), any(), anyInt());
+        Property property = node.createProperty("property", attributes);
+        property.subscribe(connection, scheduler, 500).get(5, TimeUnit.SECONDS);
+        property.startChannel(connection, scheduler, 0).get(5, TimeUnit.SECONDS);
+        ChannelState previous = property.getChannelState();
+        assertNotNull(previous);
+        attributes.name = "Updated name";
+        listener.get().attributeChanged("name", "Updated name", connection, scheduler, true);
+        property.startChannel(connection, scheduler, 0).get(5, TimeUnit.SECONDS);
+        ChannelState updated = property.getChannelState();
+        assertNotNull(updated);
+        assertNotSame(previous, updated);
+        assertEquals(Set.of(updated), listeners);
+        property.stop().get(5, TimeUnit.SECONDS);
+        assertTrue(listeners.isEmpty());
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = { false, true })
+    void childMetadataTimeoutDoesNotPreventStartingCachedChannels(boolean restored) throws Exception {
+        trackValueListeners();
+        deviceAttributes.nodes = new String[] { "incomplete" };
+        NodeAttributes attributes = spy(new NodeAttributes());
+        stubAttributes(attributes);
+        doReturn(CompletableFuture.failedFuture(new TimeoutException("Missing mandatory node metadata")))
+                .when(attributes).subscribeAndReceive(any(), any(), anyString(), any(), anyInt());
+        Node incomplete = device.createNode("incomplete", attributes);
+        Property cached = incomplete.createProperty("cached", new PropertyAttributes());
+        cached.attributesReceived();
+        incomplete.properties.put("cached", cached);
+        if (restored) {
+            device.nodes.put("incomplete", incomplete);
+        } else {
+            doReturn(incomplete).when(device).createNode("incomplete");
+        }
+        device.subscribe(connection, scheduler, 500).get(5, TimeUnit.SECONDS);
+        device.startChannels(connection, scheduler, 0, mock(HomieThingHandler.class)).get(5, TimeUnit.SECONDS);
+        verify(connection).subscribe(eq("homie/device/incomplete/cached"), same(cached.getChannelState()));
+        assertTrue(device.isInitialized());
+        device.stop().get(5, TimeUnit.SECONDS);
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = { false, true })
+    void propertySerializesMetadataChangesAndRestartWithUnsubscription(boolean restart) throws Exception {
+        Set<MqttMessageSubscriber> listeners = trackValueListeners();
+        PropertyAttributes attributes = spy(new PropertyAttributes());
+        stubAttributes(attributes);
+        AtomicReference<AbstractMqttAttributeClass.AttributeChanged> listener = new AtomicReference<>();
+        doAnswer(invocation -> {
+            listener.set(invocation.getArgument(3));
+            return CompletableFuture.completedFuture(null);
+        }).when(attributes).subscribeAndReceive(any(), any(), anyString(), any(), anyInt());
+        Property property = node.createProperty("property", attributes);
+        property.subscribe(connection, scheduler, 500).get(5, TimeUnit.SECONDS);
+        property.startChannel(connection, scheduler, 0).get(5, TimeUnit.SECONDS);
+        ChannelState previous = property.getChannelState();
+        assertNotNull(previous);
+        CompletableFuture<Boolean> unsubscribed = new CompletableFuture<>();
+        doAnswer(invocation -> unsubscribed.thenApply(result -> {
+            listeners.remove(previous);
+            return result;
+        })).when(connection).unsubscribe(anyString(), same(previous));
+        attributes.name = "First update";
+        listener.get().attributeChanged("name", "First update", connection, scheduler, true);
+        attributes.name = "Second update";
+        listener.get().attributeChanged("name", "Second update", connection, scheduler, true);
+        CompletableFuture<@Nullable Void> start = property.startChannel(connection, scheduler, 0);
+        assertFalse(start.isDone(), "Value subscription must wait for metadata replacement");
+        CompletableFuture<@Nullable Void> restarted = CompletableFuture.completedFuture(null);
+        if (restart) {
+            property.stop();
+            restarted = property.subscribe(connection, scheduler, 500);
+            assertFalse(restarted.isDone(), "Restart must wait for outgoing value unsubscription");
+        }
+        unsubscribed.complete(true);
+        if (restart) {
+            restarted.get(5, TimeUnit.SECONDS);
+            start.handle((v, error) -> null).get(5, TimeUnit.SECONDS);
+            assertTrue(start.isCompletedExceptionally(), "A stopped subscription must not be restarted by queued work");
+            property.startChannel(connection, scheduler, 0).get(5, TimeUnit.SECONDS);
+        } else {
+            start.get(5, TimeUnit.SECONDS);
+        }
+        ChannelState current = property.getChannelState();
+        assertNotNull(current);
+        assertEquals(Set.of(current), listeners);
+        assertEquals("Second update", property.getChannelDefinition().getLabel());
+        property.stop().get(5, TimeUnit.SECONDS);
+        assertTrue(listeners.isEmpty());
+    }
+
+    @Test
+    void restoredPropertyMetadataFailureDoesNotPreventStartingCachedChannel() throws Exception {
+        trackValueListeners();
+        deviceAttributes.nodes = new String[] { "restored" };
+        NodeAttributes attributes = spy(new NodeAttributes());
+        stubAttributes(attributes);
+        attributes.properties = new String[] { "cached" };
+        Node restored = device.createNode("restored", attributes);
+        PropertyAttributes propertyAttributes = spy(new PropertyAttributes());
+        stubAttributes(propertyAttributes);
+        doReturn(CompletableFuture.failedFuture(new TimeoutException("Metadata subscription failed")))
+                .when(propertyAttributes).subscribeAndReceive(any(), any(), anyString(), any(), anyInt());
+        Property cached = restored.createProperty("cached", propertyAttributes);
+        cached.attributesReceived();
+        restored.properties.put("cached", cached);
+        device.nodes.put("restored", restored);
+        device.subscribe(connection, scheduler, 500).get(5, TimeUnit.SECONDS);
+        device.startChannels(connection, scheduler, 0, mock(HomieThingHandler.class)).get(5, TimeUnit.SECONDS);
+        verify(connection).subscribe(eq("homie/device/restored/cached"), same(cached.getChannelState()));
+        device.stop().get(5, TimeUnit.SECONDS);
     }
 }

@@ -167,7 +167,10 @@ public class Device implements AbstractMqttAttributeClass.AttributeChanged {
         return applyNodes(nodes, connection, scheduler, timeout).thenCompose(v -> context.run(
                 () -> CompletableFuture.allOf(existing.stream().filter(child -> child.equals(nodes.get(child.nodeID)))
                         .map(child -> child.subscribe(connection, scheduler, timeout))
-                        .toArray(CompletableFuture[]::new))));
+                        .toArray(CompletableFuture[]::new)).exceptionally(error -> {
+                            logger.debug("Could not subscribe to restored nodes", error);
+                            return null;
+                        })));
     }
 
     /**

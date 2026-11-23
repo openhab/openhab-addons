@@ -130,7 +130,11 @@ public class Node implements AbstractMqttAttributeClass.AttributeChanged {
         return applyProperties(connection, scheduler, timeout).thenCompose(v -> context.run(() -> CompletableFuture
                 .allOf(existing.stream().filter(child -> child.equals(properties.get(child.propertyID)))
                         .map(child -> child.subscribe(connection, scheduler, timeout))
-                        .toArray(CompletableFuture[]::new))));
+                        .toArray(CompletableFuture[]::new))
+                .exceptionally(error -> {
+                    logger.debug("Could not subscribe to restored properties", error);
+                    return null;
+                })));
     }
 
     public void nodeRestoredFromConfig() {
