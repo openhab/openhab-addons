@@ -86,8 +86,8 @@ public class GrantServlet extends NetatmoServlet {
             replaceMap.put(ACCOUNT_NAME, label != null ? label : "");
             replaceMap.put(CLIENT_ID, accountHandler.getId());
             replaceMap.put(ACCOUNT_AUTHORIZED_CLASS, accountHandler.isConnected() ? " authorized" : " Unauthorized");
-            replaceMap.put(ACCOUNT_AUTHORIZE,
-                    accountHandler.formatAuthorizationUrl().queryParam(REDIRECT_URI, servletBaseURL).build().toString());
+            replaceMap.put(ACCOUNT_AUTHORIZE, accountHandler.formatAuthorizationUrl()
+                    .queryParam(REDIRECT_URI, servletBaseURL).build().toString());
             replaceMap.put(REDIRECT_URI, servletBaseURL);
 
             resp.setContentType(CONTENT_TYPE);
