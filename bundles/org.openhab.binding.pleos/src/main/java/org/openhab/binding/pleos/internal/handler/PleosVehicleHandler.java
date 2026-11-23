@@ -10,18 +10,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-/*
- * Copyright (c) 2010-2026 Contributors to the openHAB project
- *
- * See the NOTICE file(s) distributed with this work for additional
- * information.
- *
- * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License 2.0 which is available at
- * http://www.eclipse.org/legal/epl-2.0
- *
- * SPDX-License-Identifier: EPL-2.0
- */
 package org.openhab.binding.pleos.internal.handler;
 
 import static org.openhab.binding.pleos.internal.PleosBindingConstants.*;
@@ -226,6 +214,8 @@ public class PleosVehicleHandler extends BaseThingHandler {
             if (getThing().getStatus() != ThingStatus.ONLINE) {
                 updateStatus(ThingStatus.ONLINE);
             }
+        } else if (e.isInvalidParameter()) {
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/vehicle-handler.status.invalid-vin");
         } else {
             updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }

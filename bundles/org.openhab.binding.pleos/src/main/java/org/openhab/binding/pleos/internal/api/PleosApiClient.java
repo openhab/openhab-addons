@@ -24,10 +24,10 @@ import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
@@ -75,7 +75,7 @@ public class PleosApiClient {
     private static final Set<String> RETRYABLE_TOKEN_CODES = Set.of("40003", "40004", "4011");
 
     // Error codes indicating incorrect access credentials or missing permissions
-    private static final Set<String> FATAL_AUTH_CODES = Set.of("401", "403", "40001", "40404", "5006");
+    private static final Set<String> FATAL_AUTH_CODES = Set.of("401", "403", "40404", "5006");
 
     private final HttpClient httpClient;
     private final Gson gson;
@@ -109,9 +109,10 @@ public class PleosApiClient {
         String jsonPayload = gson.toJson(payload);
 
         Request request = httpClient.newRequest(PLEOS_AUTH_URL).method(HttpMethod.POST)
-                .timeout(TIMEOUT_SECONDS, TimeUnit.SECONDS).header(HttpHeader.CONTENT_TYPE, "application/json")
-                .header("Brand", brand.name().toLowerCase(Locale.ROOT))
-                .content(new StringContentProvider(jsonPayload, StandardCharsets.UTF_8));
+                .timeout(TIMEOUT_SECONDS, TimeUnit.SECONDS).headers(headers -> {
+                    headers.put(HttpHeader.CONTENT_TYPE, "application/json");
+                    headers.put("Brand", brand.name().toLowerCase(Locale.ROOT));
+                }).body(new StringRequestContent(jsonPayload, StandardCharsets.UTF_8));
 
         try {
             ContentResponse response = request.send();
@@ -163,10 +164,11 @@ public class PleosApiClient {
         }
 
         Request request = httpClient.newRequest(PLEOS_API_BASE + urlPath).method(HttpMethod.GET)
-                .timeout(TIMEOUT_SECONDS, TimeUnit.SECONDS)
-                .header(HttpHeader.AUTHORIZATION, "Bearer " + this.accessToken)
-                .header(HttpHeader.CONTENT_TYPE, "application/json")
-                .header("Brand", brand.name().toLowerCase(Locale.ROOT));
+                .timeout(TIMEOUT_SECONDS, TimeUnit.SECONDS).headers(headers -> {
+                    headers.put(HttpHeader.AUTHORIZATION, "Bearer " + this.accessToken);
+                    headers.put(HttpHeader.CONTENT_TYPE, "application/json");
+                    headers.put("Brand", brand.name().toLowerCase(Locale.ROOT));
+                });
 
         try {
             ContentResponse response = request.send();

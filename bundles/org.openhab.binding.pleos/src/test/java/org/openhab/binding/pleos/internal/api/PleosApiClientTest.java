@@ -73,7 +73,8 @@ public class PleosApiClientTest {
         String msg = ex.getMessage();
         assertNotNull(msg);
         assertTrue(msg.contains("vin: Must be 17 characters"));
-        assertTrue(ex.isAuthError()); // 40001 is a fatal auth code
+        assertFalse(ex.isAuthError());
+        assertTrue(ex.isInvalidParameter()); // 40001 is a invalid parameter code
     }
 
     @Test

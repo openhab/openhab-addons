@@ -64,4 +64,11 @@ public class PleosApiException extends Exception {
     public boolean isNoDataAvailable() {
         return "4045".equals(errorCode);
     }
+
+    /**
+     * Checks whether the request failed due to an invalid parameter (code 40001).
+     */
+    public boolean isInvalidParameter() {
+        return "40001".equals(errorCode);
+    }
 }
