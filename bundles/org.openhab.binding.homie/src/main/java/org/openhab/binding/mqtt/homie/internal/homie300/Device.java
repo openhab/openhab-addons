@@ -52,6 +52,7 @@ import org.slf4j.LoggerFactory;
  * </pre>
  *
  * @author David Graeff - Initial contribution
+ * @author Cody Cutrer - Restore metadata subscriptions for existing channels
  */
 @NonNullByDefault
 public class Device implements AbstractMqttAttributeClass.AttributeChanged {
@@ -115,6 +116,7 @@ public class Device implements AbstractMqttAttributeClass.AttributeChanged {
             throw new IllegalStateException("You must call initialize()!");
         }
 
+        initialized = false;
         return attributes.subscribeAndReceive(connection, scheduler, topic, this, timeout)
                 // On success, create all nodes and tell the handler about the ready state
                 .thenCompose(b -> attributesReceived(connection, scheduler, timeout))
@@ -127,7 +129,12 @@ public class Device implements AbstractMqttAttributeClass.AttributeChanged {
     public CompletableFuture<@Nullable Void> attributesReceived(MqttBrokerConnection connection,
             ScheduledExecutorService scheduler, int timeout) {
         callback.readyStateChanged(attributes.state);
-        return applyNodes(connection, scheduler, timeout);
+        // ChildMap.apply only subscribes newly discovered children. Existing children also need
+        // metadata subscriptions after restoration or a reconnect.
+        List<Node> existing = nodes.stream().toList();
+        return applyNodes(connection, scheduler, timeout).thenCompose(v -> CompletableFuture.allOf(existing.stream()
+                .filter(child -> child.equals(nodes.get(child.nodeID)))
+                .map(child -> child.subscribe(connection, scheduler, timeout)).toArray(CompletableFuture[]::new)));
     }
 
     /**

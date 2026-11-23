@@ -46,6 +46,7 @@ import org.slf4j.LoggerFactory;
  * It corresponds to a ChannelGroup.
  *
  * @author David Graeff - Initial contribution
+ * @author Cody Cutrer - Restore metadata subscriptions for existing channels
  */
 @NonNullByDefault
 public class Node implements AbstractMqttAttributeClass.AttributeChanged {
@@ -84,6 +85,7 @@ public class Node implements AbstractMqttAttributeClass.AttributeChanged {
      */
     public CompletableFuture<@Nullable Void> subscribe(MqttBrokerConnection connection,
             ScheduledExecutorService scheduler, int timeout) {
+        initialized = false;
         return attributes.subscribeAndReceive(connection, scheduler, topic, this, timeout)
                 // On success, create all properties and tell the handler about this node
                 .thenCompose(b -> attributesReceived(connection, scheduler, timeout))
@@ -96,7 +98,12 @@ public class Node implements AbstractMqttAttributeClass.AttributeChanged {
     public CompletableFuture<@Nullable Void> attributesReceived(MqttBrokerConnection connection,
             ScheduledExecutorService scheduler, int timeout) {
         callback.nodeAddedOrChanged(this);
-        return applyProperties(connection, scheduler, timeout);
+        // ChildMap.apply only subscribes newly discovered children. Existing children also need
+        // metadata subscriptions after restoration or a reconnect.
+        List<Property> existing = properties.stream().toList();
+        return applyProperties(connection, scheduler, timeout).thenCompose(v -> CompletableFuture.allOf(existing
+                .stream().filter(child -> child.equals(properties.get(child.propertyID)))
+                .map(child -> child.subscribe(connection, scheduler, timeout)).toArray(CompletableFuture[]::new)));
     }
 
     public void nodeRestoredFromConfig() {
