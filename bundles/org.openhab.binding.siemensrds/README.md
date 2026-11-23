@@ -2,6 +2,8 @@
 
 The Siemens RDS binding provides the infrastructure for connecting openHAB to the Siemens Climatix IC cloud server and integrate connected [Siemens RDS Smart thermostats](https://new.siemens.com/global/en/products/buildings/hvac/room-thermostats/smart-thermostat.html) onto the openHAB bus.
 
+Note: the RDS110 and RDS120 ranges have been discontinued since February 2022 and reach end of service in December 2030.
+
 ![Siemens RDS](doc/rds110-family.jpg)
 
 ## Supported Things
