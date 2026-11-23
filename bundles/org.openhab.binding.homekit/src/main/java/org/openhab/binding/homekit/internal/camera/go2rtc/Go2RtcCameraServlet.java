@@ -17,11 +17,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import javax.servlet.Servlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.net.HttpServiceUtil;
@@ -30,7 +25,12 @@ import org.osgi.framework.BundleContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.http.whiteboard.HttpWhiteboardConstants;
+import org.osgi.service.servlet.whiteboard.HttpWhiteboardConstants;
+
+import jakarta.servlet.Servlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * Serves the browser viewer of a HomeKit camera on openHAB's own origin. A GET opens the camera stream on demand and
@@ -218,6 +218,7 @@ public class Go2RtcCameraServlet extends HttpServlet {
     }
 
     @Override
+    @NonNullByDefault({})
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         BrowserStreamProvider provider = providerFor(request.getPathInfo());
         if (provider == null) {
@@ -242,6 +243,7 @@ public class Go2RtcCameraServlet extends HttpServlet {
     }
 
     @Override
+    @NonNullByDefault({})
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String pathInfo = request.getPathInfo();
         if (pathInfo == null) {
