@@ -33,6 +33,7 @@ import org.openhab.binding.netatmo.internal.handler.capability.ChannelHelperCapa
 import org.openhab.binding.netatmo.internal.handler.capability.DeviceCapability;
 import org.openhab.binding.netatmo.internal.handler.capability.DoorbellCapability;
 import org.openhab.binding.netatmo.internal.handler.capability.HomeCapability;
+import org.openhab.binding.netatmo.internal.handler.capability.HomeSecurityThingCapability;
 import org.openhab.binding.netatmo.internal.handler.capability.MeasureCapability;
 import org.openhab.binding.netatmo.internal.handler.capability.ParentUpdateCapability;
 import org.openhab.binding.netatmo.internal.handler.capability.PersonCapability;
@@ -77,12 +78,12 @@ public enum ModuleType {
             new ChannelGroup(SecurityChannelHelper.class, GROUP_SECURITY_EVENT, GROUP_SECURITY),
             new ChannelGroup(EnergyChannelHelper.class, GROUP_ENERGY)),
 
-    PERSON(FeatureArea.SECURITY, "NAPerson", 1, "virtual", HOME,
+    PERSON(FeatureArea.SECURITY, "NAPerson", 2, "virtual", HOME,
             Set.of(PersonCapability.class, ChannelHelperCapability.class, ParentUpdateCapability.class),
             new ChannelGroup(PersonChannelHelper.class, GROUP_PERSON),
             new ChannelGroup(EventPersonChannelHelper.class, GROUP_SECURITY_EVENT, GROUP_PERSON_LAST_EVENT)),
 
-    WELCOME(FeatureArea.SECURITY, "NACamera", 1, "camera", HOME,
+    WELCOME(FeatureArea.SECURITY, "NACamera", 2, "camera", HOME,
             Set.of(CameraCapability.class, ChannelHelperCapability.class, ParentUpdateCapability.class),
             ChannelGroup.SIGNAL, ChannelGroup.EVENT,
             new ChannelGroup(CameraChannelHelper.class, GROUP_SECURITY_EVENT, GROUP_CAM_STATUS, GROUP_CAM_LIVE)),
@@ -95,14 +96,14 @@ public enum ModuleType {
             Set.of(ChannelHelperCapability.class, ParentUpdateCapability.class), ChannelGroup.SIGNAL,
             ChannelGroup.BATTERY, ChannelGroup.TIMESTAMP, new ChannelGroup(SirenChannelHelper.class, GROUP_SIREN)),
 
-    PRESENCE(FeatureArea.SECURITY, "NOC", 2, "camera", HOME,
+    PRESENCE(FeatureArea.SECURITY, "NOC", 3, "camera", HOME,
             Set.of(PresenceCapability.class, ChannelHelperCapability.class, ParentUpdateCapability.class),
             ChannelGroup.SIGNAL, ChannelGroup.EVENT,
             new ChannelGroup(PresenceChannelHelper.class, GROUP_SECURITY_EVENT, GROUP_CAM_STATUS, GROUP_CAM_LIVE,
                     GROUP_PRESENCE),
             new ChannelGroup(EventCameraChannelHelper.class, GROUP_SUB_EVENT)),
 
-    DOORBELL(FeatureArea.SECURITY, "NDB", 1, "camera", HOME,
+    DOORBELL(FeatureArea.SECURITY, "NDB", 2, "camera", HOME,
             Set.of(DoorbellCapability.class, ChannelHelperCapability.class, ParentUpdateCapability.class),
             ChannelGroup.SIGNAL,
             new ChannelGroup(CameraChannelHelper.class, GROUP_SECURITY_EVENT, GROUP_DOORBELL_STATUS,
@@ -159,11 +160,11 @@ public enum ModuleType {
             new ChannelGroup(RoomChannelHelper.class, GROUP_TYPE_ROOM_PROPERTIES, GROUP_TYPE_ROOM_TEMPERATURE),
             new ChannelGroup(SetpointChannelHelper.class, GROUP_SETPOINT)),
 
-    SMOKE_DETECTOR(FeatureArea.SECURITY, "NSD", 1, "device", HOME,
+    SMOKE_DETECTOR(FeatureArea.SECURITY, "NSD", 2, "device", HOME,
             Set.of(AlarmEventCapability.class, ChannelHelperCapability.class, ParentUpdateCapability.class),
             ChannelGroup.SIGNAL, ChannelGroup.TIMESTAMP, ChannelGroup.ALARM_LAST_EVENT),
 
-    CO_DETECTOR(FeatureArea.SECURITY, "NCO", 1, "device", HOME,
+    CO_DETECTOR(FeatureArea.SECURITY, "NCO", 2, "device", HOME,
             Set.of(AlarmEventCapability.class, ChannelHelperCapability.class, ParentUpdateCapability.class),
             ChannelGroup.SIGNAL, ChannelGroup.TIMESTAMP, ChannelGroup.ALARM_LAST_EVENT);
 
@@ -192,6 +193,10 @@ public enum ModuleType {
 
     public boolean isLogical() {
         return !channelGroups.contains(ChannelGroup.SIGNAL);
+    }
+
+    public boolean supportsPushMode() {
+        return capabilities.stream().anyMatch(HomeSecurityThingCapability.class::isAssignableFrom);
     }
 
     public boolean isABridge() { // I am a bridge if any module references me as being so

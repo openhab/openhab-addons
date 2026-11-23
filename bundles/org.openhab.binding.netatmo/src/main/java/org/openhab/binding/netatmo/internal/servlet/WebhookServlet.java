@@ -194,16 +194,20 @@ public abstract class WebhookServlet extends NetatmoServlet {
         String id = handler.getId();
         logger.debug("Registering webhook listener for '{}' ({})", handler.getThing().getLabel(), id);
         dataListeners.put(id, handler);
+        handler.setPushMode(hooked);
     }
 
     public void unregisterDataListener(String id) {
-        dataListeners.remove(id);
+        if (dataListeners.remove(id) instanceof CommonInterface listener) {
+            listener.setPushMode(false);
+        }
     }
 
     private void setHooked(boolean hookSet) {
         if (hooked != hookSet) {
             hooked = hookSet;
-            handler.hookState(hooked);
+            accountHandler.hookState(hooked);
+            dataListeners.values().forEach(listener -> listener.setPushMode(hooked));
         }
     }
 

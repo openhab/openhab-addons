@@ -37,12 +37,12 @@ public abstract class NetatmoServlet extends HttpServlet {
     private final HttpService httpService;
     private final String path;
 
-    protected final ApiBridgeHandler handler;
+    protected final ApiBridgeHandler accountHandler;
 
-    public NetatmoServlet(ApiBridgeHandler handler, HttpService httpService, String localPath) {
-        this.path = "/" + BINDING_ID + "/" + localPath + "/" + handler.getId();
+    public NetatmoServlet(ApiBridgeHandler accountHandler, HttpService httpService, String localPath) {
+        this.path = "/" + BINDING_ID + "/" + localPath + "/" + accountHandler.getId();
         this.httpService = httpService;
-        this.handler = handler;
+        this.accountHandler = accountHandler;
     }
 
     public void startListening() {
