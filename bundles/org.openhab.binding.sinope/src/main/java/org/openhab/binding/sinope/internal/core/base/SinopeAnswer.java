@@ -110,7 +110,7 @@ public abstract class SinopeAnswer extends SinopeRequest {
      */
     @Override
     protected void setInternal_payload(byte[] internal_payload) {
-        logger.debug("Answer  Frame: {}", ByteUtil.toString(internal_payload));
+        logger.trace("Answer  Frame: {}", ByteUtil.toString(internal_payload));
         super.setInternal_payload(internal_payload);
     }
 }

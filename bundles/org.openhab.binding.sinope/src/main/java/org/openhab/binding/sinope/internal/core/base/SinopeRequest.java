@@ -79,7 +79,7 @@ public abstract class SinopeRequest extends SinopeFrame {
      */
     @Override
     protected void setInternal_payload(byte[] internal_payload) {
-        logger.debug("Request Frame: {}", ByteUtil.toString(internal_payload));
+        logger.trace("Request Frame: {}", ByteUtil.toString(internal_payload));
         super.setInternal_payload(internal_payload);
     }
 }
