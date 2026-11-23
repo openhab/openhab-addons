@@ -44,9 +44,10 @@ import org.slf4j.LoggerFactory;
  * sent to one of the channels with a bridge.
  *
  * @author Christian Wild - Initial contribution
+ * @author Christopher Smith - Share the device bridge interface with the TP-Link account bridge
  */
 @NonNullByDefault
-public class TapoBridgeHandler extends BaseBridgeHandler {
+public class TapoBridgeHandler extends BaseBridgeHandler implements TapoDeviceBridge {
     private final Logger logger = LoggerFactory.getLogger(TapoBridgeHandler.class);
     private final TapoErrorHandler bridgeError = new TapoErrorHandler();
     private TapoBridgeConfiguration config = new TapoBridgeConfiguration();
@@ -269,12 +270,19 @@ public class TapoBridgeHandler extends BaseBridgeHandler {
      *
      ************************************/
 
+    @Override
     public TapoCredentials getCredentials() {
         return credentials;
     }
 
+    @Override
     public HttpClient getHttpClient() {
         return httpClient;
+    }
+
+    @Override
+    public @Nullable TapoBridgeHandler getTapoBridge() {
+        return this;
     }
 
     public TapoCloudConnector getCloudConnector() {

@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.tapocontrol.internal.devices.dto.TapoChildDeviceData;
 import org.openhab.binding.tapocontrol.internal.devices.dto.TapoChildList;
 import org.openhab.binding.tapocontrol.internal.devices.wifi.TapoBaseDeviceHandler;
@@ -57,8 +58,8 @@ public class TapoHubHandler extends TapoBaseDeviceHandler implements BridgeHandl
     private @NonNullByDefault({}) TapoChildDiscoveryService discoveryService;
     private List<Thing> tapoChildThings = new ArrayList<>();
 
-    public TapoHubHandler(Thing thing) {
-        super(thing);
+    public TapoHubHandler(Thing thing, HttpClient httpClient) {
+        super(thing, httpClient);
         logger.trace("{} Hub initialized", uid);
     }
 

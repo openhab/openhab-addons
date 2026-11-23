@@ -8,6 +8,7 @@
 	<thing-type id="L630">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="bridge"/>
+			<bridge-type-ref bindingId="tplinkbridge" id="account"/>
 		</supported-bridge-type-refs>
 
 		<label>L630 Series Color-Spot</label>

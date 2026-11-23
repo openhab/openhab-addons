@@ -4,6 +4,7 @@
 
 	<feature name="openhab-binding-tapocontrol" description="TapoControl Binding" version="${project.version}">
 		<feature>openhab-runtime-base</feature>
+		<bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.tplinkbridge/${project.version}</bundle>
 		<bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.tapocontrol/${project.version}</bundle>
 	</feature>
 </features>

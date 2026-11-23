@@ -284,7 +284,8 @@ public class KlapSession {
         var httpDelegator = klap.httpDelegator;
         try {
             var bridge = httpDelegator.getBridge();
-            var udpSender = new TapoUdpDiscovery(bridge);
+            var udpSender = bridge != null ? new TapoUdpDiscovery(bridge)
+                    : new TapoUdpDiscovery(httpDelegator.getThingUID());
             var url = httpDelegator.getBaseUrl();
             var urlparts = url.split("://"); // strip http:// from start
             if (urlparts.length > 1) {

@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.tapocontrol.internal.devices.dto.TapoBaseDeviceData;
 import org.openhab.binding.tapocontrol.internal.devices.dto.TapoChildDeviceData;
 import org.openhab.binding.tapocontrol.internal.devices.dto.TapoChildList;
@@ -50,8 +51,8 @@ public class TapoSocketStripHandler extends TapoBaseDeviceHandler {
      *
      * @param thing Thing object representing device
      */
-    public TapoSocketStripHandler(Thing thing) {
-        super(thing);
+    public TapoSocketStripHandler(Thing thing, HttpClient httpClient) {
+        super(thing, httpClient);
     }
 
     /**

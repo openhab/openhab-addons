@@ -17,6 +17,7 @@ import static org.openhab.binding.tapocontrol.internal.constants.TapoThingConsta
 import static org.openhab.binding.tapocontrol.internal.helpers.utils.TypeUtils.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.tapocontrol.internal.TapoStateDescriptionProvider;
 import org.openhab.binding.tapocontrol.internal.devices.dto.TapoLightDynamicFx;
 import org.openhab.binding.tapocontrol.internal.devices.wifi.TapoBaseDeviceHandler;
@@ -53,8 +54,8 @@ public class TapoBulbHandler extends TapoBaseDeviceHandler {
      *
      * @param thing Thing object representing device
      */
-    public TapoBulbHandler(Thing thing, TapoStateDescriptionProvider stateDescriptionProvider) {
-        super(thing);
+    public TapoBulbHandler(Thing thing, HttpClient httpClient, TapoStateDescriptionProvider stateDescriptionProvider) {
+        super(thing, httpClient);
         this.stateDescriptionProvider = stateDescriptionProvider;
     }
 

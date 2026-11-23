@@ -13,6 +13,7 @@
 package org.openhab.binding.tapocontrol.internal.api;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.tapocontrol.internal.devices.bridge.TapoBridgeHandler;
 import org.openhab.binding.tapocontrol.internal.dto.TapoResponse;
@@ -44,6 +45,6 @@ public interface TapoConnectorInterface {
     /* get ThingUID of device */
     public String getThingUID();
 
-    /* get bridge */
-    public TapoBridgeHandler getBridge();
+    /* get Tapo bridge, or null when the device uses a tplinkbridge:account */
+    public @Nullable TapoBridgeHandler getBridge();
 }

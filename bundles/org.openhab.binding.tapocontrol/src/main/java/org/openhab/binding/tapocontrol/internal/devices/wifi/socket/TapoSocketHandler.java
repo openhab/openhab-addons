@@ -17,6 +17,7 @@ import static org.openhab.binding.tapocontrol.internal.constants.TapoThingConsta
 import static org.openhab.binding.tapocontrol.internal.helpers.utils.TypeUtils.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.tapocontrol.internal.devices.wifi.TapoBaseDeviceHandler;
 import org.openhab.binding.tapocontrol.internal.dto.TapoResponse;
 import org.openhab.core.library.types.OnOffType;
@@ -43,8 +44,8 @@ public class TapoSocketHandler extends TapoBaseDeviceHandler {
      *
      * @param thing Thing object representing device
      */
-    public TapoSocketHandler(Thing thing) {
-        super(thing);
+    public TapoSocketHandler(Thing thing, HttpClient httpClient) {
+        super(thing, httpClient);
     }
 
     /**

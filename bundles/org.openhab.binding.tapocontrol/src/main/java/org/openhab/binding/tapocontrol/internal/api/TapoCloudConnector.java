@@ -18,6 +18,7 @@ import static org.openhab.binding.tapocontrol.internal.constants.TapoErrorCode.*
 import static org.openhab.binding.tapocontrol.internal.helpers.utils.JsonUtils.getObjectFromJson;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.tapocontrol.internal.api.protocol.passthrough.PassthroughProtocol;
 import org.openhab.binding.tapocontrol.internal.devices.bridge.TapoBridgeHandler;
@@ -170,7 +171,7 @@ public class TapoCloudConnector implements TapoConnectorInterface {
     }
 
     @Override
-    public TapoBridgeHandler getBridge() {
+    public @Nullable TapoBridgeHandler getBridge() {
         return bridge;
     }
 
