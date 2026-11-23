@@ -711,6 +711,7 @@ public enum MiIoDevices {
     ZHIMI_FAN_ZA4("zhimi.fan.za4", "Smartmi Standing Fan 2S", THING_TYPE_BASIC),
     ZHIMI_FAN_ZA5("zhimi.fan.za5", "Smartmi Standing Fan 3", THING_TYPE_BASIC),
     ZHIMI_HEATER_MA2("zhimi.heater.ma2", "Mi Smart Space Heater S", THING_TYPE_BASIC),
+    ZHIMI_HEATER_MA2A("zhimi.heater.ma2a", "Mi Smart Space Heater S", THING_TYPE_BASIC),
     ZHIMI_HEATER_MA3("zhimi.heater.ma3", "Mi Smart Baseboard Heater E", THING_TYPE_BASIC),
     ZHIMI_HEATER_MC2("zhimi.heater.mc2", "Mi Smart Space Heater S", THING_TYPE_BASIC),
     ZHIMI_HEATER_MC2A("zhimi.heater.mc2a", "Mi Smart Space Heater S", THING_TYPE_BASIC),
