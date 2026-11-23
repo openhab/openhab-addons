@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -59,7 +60,8 @@ public class Node implements AbstractMqttAttributeClass.AttributeChanged {
     public final DeviceCallback callback;
     protected final ChannelGroupUID channelGroupUID;
     private final String topic;
-    private boolean initialized = false;
+    private boolean metadataReady = false;
+    private final AtomicReference<SubscriptionContext> subscription = new AtomicReference<>(new SubscriptionContext());
 
     /**
      * Creates a Homie Node.
@@ -85,29 +87,49 @@ public class Node implements AbstractMqttAttributeClass.AttributeChanged {
      */
     public CompletableFuture<@Nullable Void> subscribe(MqttBrokerConnection connection,
             ScheduledExecutorService scheduler, int timeout) {
-        initialized = false;
-        return attributes.subscribeAndReceive(connection, scheduler, topic, this, timeout)
-                // On success, create all properties and tell the handler about this node
-                .thenCompose(b -> attributesReceived(connection, scheduler, timeout))
-                // No matter if values have been received or not -> the subscriptions have been performed
-                .whenComplete((r, e) -> {
-                    initialized = true;
-                });
+        CompletableFuture<@Nullable Void> predecessor = new CompletableFuture<>();
+        SubscriptionContext context = new SubscriptionContext(predecessor);
+        SubscriptionContext previous = subscription.getAndSet(context);
+        previous.stop(this::unsubscribe).whenComplete((v, error) -> {
+            if (error == null) {
+                predecessor.complete(null);
+            } else {
+                predecessor.completeExceptionally(error);
+            }
+        });
+        return context.run(() -> {
+            metadataReady = false;
+            return attributes.subscribeAndReceive(connection, scheduler, topic,
+                    (name, value, broker, executor, complete) -> context.run(() -> {
+                        attributeChanged(context, name, value, broker, executor, complete);
+                        return CompletableFuture.completedFuture(null);
+                    }), timeout);
+        }).thenCompose(v -> context.run(() -> attributesReceived(context, connection, scheduler, timeout)))
+                .thenCompose(v -> context.run(() -> CompletableFuture.completedFuture(null)));
     }
 
     public CompletableFuture<@Nullable Void> attributesReceived(MqttBrokerConnection connection,
             ScheduledExecutorService scheduler, int timeout) {
+        SubscriptionContext context = subscription.get();
+        return context.run(() -> attributesReceived(context, connection, scheduler, timeout));
+    }
+
+    private CompletableFuture<@Nullable Void> attributesReceived(SubscriptionContext context,
+            MqttBrokerConnection connection, ScheduledExecutorService scheduler, int timeout) {
+        // Parent metadata is ready before child metadata. Continue processing schema and state updates
+        // while the child subscriptions are pending.
+        metadataReady = true;
         callback.nodeAddedOrChanged(this);
         // ChildMap.apply only subscribes newly discovered children. Existing children also need
         // metadata subscriptions after restoration or a reconnect.
         List<Property> existing = properties.stream().toList();
-        return applyProperties(connection, scheduler, timeout).thenCompose(v -> CompletableFuture.allOf(existing
-                .stream().filter(child -> child.equals(properties.get(child.propertyID)))
-                .map(child -> child.subscribe(connection, scheduler, timeout)).toArray(CompletableFuture[]::new)));
+        return applyProperties(connection, scheduler, timeout).thenCompose(v -> context.run(() -> CompletableFuture
+                .allOf(existing.stream().filter(child -> child.equals(properties.get(child.propertyID)))
+                        .map(child -> child.subscribe(connection, scheduler, timeout))
+                        .toArray(CompletableFuture[]::new))));
     }
 
     public void nodeRestoredFromConfig() {
-        initialized = true;
         attributes.name = nodeID;
     }
 
@@ -117,8 +139,13 @@ public class Node implements AbstractMqttAttributeClass.AttributeChanged {
      * @return Returns a future that completes as soon as all unsubscriptions have been performed.
      */
     public CompletableFuture<@Nullable Void> stop() {
-        return attributes.unsubscribe().thenCompose(b -> CompletableFuture
-                .allOf(properties.stream().map(Property::stop).toArray(CompletableFuture[]::new)));
+        return subscription.get().stop(this::unsubscribe);
+    }
+
+    private CompletableFuture<@Nullable Void> unsubscribe() {
+        return CompletableFuture.allOf(
+                CompletableFuture.allOf(properties.stream().map(Property::stop).toArray(CompletableFuture[]::new)),
+                attributes.unsubscribe());
     }
 
     /**
@@ -196,12 +223,21 @@ public class Node implements AbstractMqttAttributeClass.AttributeChanged {
     @Override
     public void attributeChanged(String name, Object value, MqttBrokerConnection connection,
             ScheduledExecutorService scheduler, boolean allMandatoryFieldsReceived) {
-        if (!initialized || !allMandatoryFieldsReceived) {
+        SubscriptionContext context = subscription.get();
+        context.run(() -> {
+            attributeChanged(context, name, value, connection, scheduler, allMandatoryFieldsReceived);
+            return CompletableFuture.completedFuture(null);
+        });
+    }
+
+    private void attributeChanged(SubscriptionContext context, String name, Object value,
+            MqttBrokerConnection connection, ScheduledExecutorService scheduler, boolean allMandatoryFieldsReceived) {
+        if (!metadataReady || !allMandatoryFieldsReceived) {
             return;
         }
         // Special case: Not all fields were known before
         if (!attributes.isComplete()) {
-            attributesReceived(connection, scheduler, 500);
+            attributesReceived(context, connection, scheduler, 500);
         } else if ("properties".equals(name)) {
             applyProperties(connection, scheduler, 500);
         }

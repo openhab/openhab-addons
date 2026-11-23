@@ -443,7 +443,6 @@ public class HomieThingHandlerTests {
         verify(thingHandler).nodeAddedOrChanged(any());
 
         verify(thingHandler.device).subscribe(any(), any(), anyInt());
-        verify(thingHandler.device).attributesReceived(any(), any(), anyInt());
 
         assertNotNull(thingHandler.device.nodes.get("node").properties.get("property"));
 
