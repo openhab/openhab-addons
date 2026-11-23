@@ -7,8 +7,8 @@
 		<item-type>Number</item-type>
 		<label>AC Zone</label>
 		<tags>
-			<tag>Control</tag>
-			<tag>Airconditioning</tag>
+			<point>Control</point>
+			<property>Airconditioning</property>
 		</tags>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
@@ -16,8 +16,8 @@
 		<item-type>Number:Temperature</item-type>
 		<label>AC Setpoint Temperature</label>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
@@ -26,8 +26,8 @@
 		<label>AC Precondition Control</label>
 		<description>Switch on/off precondition air conditioning</description>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Airconditioning</tag>
+			<point>Switch</point>
+			<property>Airconditioning</property>
 		</tags>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
@@ -36,8 +36,8 @@
 		<label>AC Precondition Status</label>
 		<description>Status of precondition air conditioning</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Airconditioning</tag>
+			<point>Status</point>
+			<property>Airconditioning</property>
 		</tags>
 		<state>
 			<!-- see https://github.com/mercedes-benz/MBSDK-CarKit-iOS/blob/8592099d9b0d94161517ce2bc7469562f86c9886/MBCarKit/MBCarKit/Common/Enums/Status/ZEVTypes.swift#L235 -->
@@ -54,8 +54,8 @@
 		<item-type>Switch</item-type>
 		<label>AC Seat Front Left</label>
 		<tags>
-			<tag>Status</tag>
-			<tag>Airconditioning</tag>
+			<point>Status</point>
+			<property>Airconditioning</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -63,8 +63,8 @@
 		<item-type>Switch</item-type>
 		<label>AC Seat Front Right</label>
 		<tags>
-			<tag>Status</tag>
-			<tag>Airconditioning</tag>
+			<point>Status</point>
+			<property>Airconditioning</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -72,8 +72,8 @@
 		<item-type>Switch</item-type>
 		<label>AC Seat Rear Left</label>
 		<tags>
-			<tag>Status</tag>
-			<tag>Airconditioning</tag>
+			<point>Status</point>
+			<property>Airconditioning</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -81,8 +81,8 @@
 		<item-type>Switch</item-type>
 		<label>AC Seat Rear Right</label>
 		<tags>
-			<tag>Status</tag>
-			<tag>Airconditioning</tag>
+			<point>Status</point>
+			<property>Airconditioning</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -91,8 +91,8 @@
 		<label>Auxiliary Heating Control</label>
 		<description>Switch on/off auxiliary heating</description>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Heating</tag>
+			<point>Switch</point>
+			<property>Heating</property>
 		</tags>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
@@ -101,8 +101,8 @@
 		<label>Auxiliary Heating Status</label>
 		<description>Auxiliary heating status</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Heating</tag>
+			<point>Status</point>
+			<property>Heating</property>
 		</tags>
 		<state>
 			<!-- see https://github.com/mercedes-benz/MBSDK-CarKit-iOS/blob/8592099d9b0d94161517ce2bc7469562f86c9886/MBCarKit/MBCarKit/Common/Enums/Status/AuxheatTypes.swift#L66 -->

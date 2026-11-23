@@ -27,8 +27,8 @@
 		<label>Zone Status</label>
 		<description>Zone Status (Open/Closed)</description>
 		<tags>
-			<tag>Alarm</tag>
-			<tag>OpenState</tag>
+			<point>Alarm</point>
+			<property>OpenState</property>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -57,8 +57,8 @@
 		<label>Alarm Triggered</label>
 		<description>Indicates if zone is in alarm</description>
 		<tags>
-			<tag>Alarm</tag>
-			<tag>Presence</tag>
+			<point>Alarm</point>
+			<property>Presence</property>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -73,8 +73,8 @@
 		<label>Fire Alarm Triggered</label>
 		<description>Indicates if zone is in fire alarm</description>
 		<tags>
-			<tag>Alarm</tag>
-			<tag>Smoke</tag>
+			<point>Alarm</point>
+			<property>Smoke</property>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -89,8 +89,8 @@
 		<label>Supervision Lost</label>
 		<description>Indicates if zone has lost a supervision</description>
 		<tags>
-			<tag>Alarm</tag>
-			<tag>Tampered</tag>
+			<point>Alarm</point>
+			<property>Tampered</property>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -105,8 +105,8 @@
 		<label>Low Battery Warning</label>
 		<description>Indicates if zone is low on battery</description>
 		<tags>
-			<tag>Alarm</tag>
-			<tag>LowBattery</tag>
+			<point>Alarm</point>
+			<property>LowBattery</property>
 		</tags>
 		<state readOnly="true">
 			<options>

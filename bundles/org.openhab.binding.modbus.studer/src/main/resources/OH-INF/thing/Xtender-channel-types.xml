@@ -8,8 +8,8 @@
 		<item-type>Number:ElectricPotential</item-type>
 		<label>Input Voltage</label>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Voltage</tag>
+			<point>Measurement</point>
+			<property>Voltage</property>
 		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
@@ -18,8 +18,8 @@
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>Input Current</label>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Current</tag>
+			<point>Measurement</point>
+			<property>Current</property>
 		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
@@ -28,8 +28,8 @@
 		<item-type>Number:Power</item-type>
 		<label>Input Active Power</label>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point>Measurement</point>
+			<property>Power</property>
 		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
@@ -38,8 +38,8 @@
 		<item-type>Number:Frequency</item-type>
 		<label>Input Frequency</label>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Frequency</tag>
+			<point>Measurement</point>
+			<property>Frequency</property>
 		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
@@ -48,8 +48,8 @@
 		<item-type>Number:ElectricPotential</item-type>
 		<label>Output Voltage</label>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Voltage</tag>
+			<point>Measurement</point>
+			<property>Voltage</property>
 		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
@@ -58,8 +58,8 @@
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>Output Current</label>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Current</tag>
+			<point>Measurement</point>
+			<property>Current</property>
 		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
@@ -68,8 +68,8 @@
 		<item-type>Number:Power</item-type>
 		<label>Output Active Power</label>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point>Measurement</point>
+			<property>Power</property>
 		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
@@ -78,8 +78,8 @@
 		<item-type>Number:Frequency</item-type>
 		<label>Output Frequency</label>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Frequency</tag>
+			<point>Measurement</point>
+			<property>Frequency</property>
 		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
@@ -88,8 +88,8 @@
 		<item-type>String</item-type>
 		<label>Operating State</label>
 		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
+			<point>Status</point>
+			<property>Mode</property>
 		</tags>
 		<state readOnly="true">
 			<options>

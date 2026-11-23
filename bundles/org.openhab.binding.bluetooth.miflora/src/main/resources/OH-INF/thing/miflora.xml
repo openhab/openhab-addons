@@ -42,8 +42,8 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Temperature</label>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -51,8 +51,8 @@
 		<item-type>Number:Illuminance</item-type>
 		<label>Light</label>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Illuminance</tag>
+			<point>Measurement</point>
+			<property>Illuminance</property>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
@@ -60,8 +60,8 @@
 		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Moisture</label>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Moisture</tag>
+			<point>Measurement</point>
+			<property>Moisture</property>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
@@ -70,7 +70,7 @@
 		<label>Conductivity</label>
 		<description>Electrical conductivity of the soil, an indicator of its fertility</description>
 		<tags>
-			<tag>Measurement</tag>
+			<point>Measurement</point>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>

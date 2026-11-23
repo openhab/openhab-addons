@@ -27,8 +27,8 @@
 		<label>Generic Switch</label>
 		<description>Generic switch channel</description>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Power</tag>
+			<point>Switch</point>
+			<property>Power</property>
 		</tags>
 		<state readOnly="false"></state>
 		<config-description>
@@ -80,7 +80,7 @@
 		<label>Generic Number</label>
 		<description>Generic number channel</description>
 		<tags>
-			<tag>Control</tag>
+			<point>Control</point>
 		</tags>
 		<state readOnly="false"></state>
 		<config-description>
@@ -112,8 +112,8 @@
 		<label>Generic Dimmer</label>
 		<description>Generic dimmer channel</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Brightness</tag>
+			<point>Control</point>
+			<property>Brightness</property>
 		</tags>
 		<state readOnly="false"></state>
 		<config-description>
@@ -179,8 +179,8 @@
 		<label>Generic String</label>
 		<description>Generic string channel</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="false"></state>
 		<config-description>
@@ -212,8 +212,8 @@
 		<label>Generic Roller Shutter</label>
 		<description>Generic roller shutter channel</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>OpenLevel</tag>
+			<point>Control</point>
+			<property>OpenLevel</property>
 		</tags>
 		<state readOnly="false"></state>
 		<config-description>
@@ -247,8 +247,8 @@
 		<description>RF device low battery warning.</description>
 		<category>Battery</category>
 		<tags>
-			<tag>Alarm</tag>
-			<tag>LowBattery</tag>
+			<point>Alarm</point>
+			<property>LowBattery</property>
 		</tags>
 		<state readOnly="true"></state>
 		<config-description>
@@ -264,8 +264,8 @@
 		<description>RF device signal strength.</description>
 		<category>QualityOfService</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>SignalStrength</tag>
+			<point>Measurement</point>
+			<property>SignalStrength</property>
 		</tags>
 		<state readOnly="true" min="0" max="4">
 			<options>

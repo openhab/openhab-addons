@@ -23,8 +23,8 @@
 		<label>Voltage</label>
 		<description>Voltage for phase A</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Voltage</tag>
+			<point>Measurement</point>
+			<property>Voltage</property>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"></state>
 	</channel-type>
@@ -33,8 +33,8 @@
 		<label>Current</label>
 		<description>Current for phase A</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Current</tag>
+			<point>Measurement</point>
+			<property>Current</property>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"></state>
 	</channel-type>
@@ -43,8 +43,8 @@
 		<label>Power</label>
 		<description>Power for phase A</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point>Measurement</point>
+			<property>Power</property>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"></state>
 	</channel-type>
@@ -53,8 +53,8 @@
 		<label>Import Energy</label>
 		<description>Import energy for phase A</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"></state>
 	</channel-type>
@@ -63,8 +63,8 @@
 		<label>Export Energy</label>
 		<description>Export energy for phase A</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"></state>
 	</channel-type>

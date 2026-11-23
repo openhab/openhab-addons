@@ -184,8 +184,8 @@
 		<label>Current</label>
 		<description>Actual current in A</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Current</tag>
+			<point>Measurement</point>
+			<property>Current</property>
 		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
@@ -195,8 +195,8 @@
 		<label>Energy</label>
 		<description>Today's energy in kWh</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
@@ -206,8 +206,8 @@
 		<label>Power</label>
 		<description>Current power in W</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point>Measurement</point>
+			<property>Power</property>
 		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
@@ -217,8 +217,8 @@
 		<label>Voltage</label>
 		<description>Current Voltage</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Voltage</tag>
+			<point>Measurement</point>
+			<property>Voltage</property>
 		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
@@ -228,8 +228,8 @@
 		<label>Highest Voltage</label>
 		<description>Highest Voltage ever measured by the outlet</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Voltage</tag>
+			<point>Measurement</point>
+			<property>Voltage</property>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
@@ -238,8 +238,8 @@
 		<item-type>Switch</item-type>
 		<label>Voltage PT Status</label>
 		<tags>
-			<tag>Status</tag>
-			<tag>Voltage</tag>
+			<point>Status</point>
+			<property>Voltage</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -249,8 +249,8 @@
 		<label>Energy Week</label>
 		<description>Total energy of week in kWh</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
@@ -260,8 +260,8 @@
 		<label>Energy Month</label>
 		<description>Total energy of month in kWh</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
@@ -271,8 +271,8 @@
 		<label>Energy Year</label>
 		<description>Total energy of year in kWh</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
@@ -282,8 +282,8 @@
 		<label>Switched On</label>
 		<description>Indicator if the device is switched on</description>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
+			<point>Switch</point>
+			<property>Mode</property>
 		</tags>
 		<state readOnly="false"/>
 	</channel-type>
@@ -293,8 +293,8 @@
 		<label>Display Lock</label>
 		<description>Indicator if the devices child lock is enabled (Display Lock)</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>LockState</tag>
+			<point>Status</point>
+			<property>LockState</property>
 		</tags>
 		<state readOnly="false"/>
 	</channel-type>
@@ -304,8 +304,8 @@
 		<label>Display</label>
 		<description>Indicator if the devices display is enabled</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
+			<point>Status</point>
+			<property>Mode</property>
 		</tags>
 		<state readOnly="false"/>
 	</channel-type>
@@ -336,8 +336,8 @@
 		<label>Night Light</label>
 		<description>The operating mode of the night light functionality</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
+			<point>Status</point>
+			<property>Mode</property>
 		</tags>
 		<state readOnly="false">
 			<options>
@@ -354,8 +354,8 @@
 		<label>Fan Speed</label>
 		<description>Indicator of the current fan speed</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Speed</tag>
+			<point>Control</point>
+			<property>Speed</property>
 		</tags>
 		<state pattern="%.0f"/>
 	</channel-type>
@@ -372,8 +372,8 @@
 		<label>Air Quality</label>
 		<description>System representation of air quality</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>AirQuality</tag>
+			<point>Measurement</point>
+			<property>AirQuality</property>
 		</tags>
 		<state readOnly="true" pattern="%.0f"/>
 	</channel-type>
@@ -383,8 +383,8 @@
 		<label>Air Quality PPM2.5</label>
 		<description>Indicator of current air quality</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>AirQuality</tag>
+			<point>Measurement</point>
+			<property>AirQuality</property>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
@@ -394,8 +394,8 @@
 		<label>Config: Display Forever</label>
 		<description>Configuration: If the devices display is enabled forever</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
+			<point>Status</point>
+			<property>Mode</property>
 		</tags>
 	</channel-type>
 
@@ -404,8 +404,8 @@
 		<label>Light Detection</label>
 		<description>If the devices light detection is enabled</description>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
+			<point>Switch</point>
+			<property>Mode</property>
 		</tags>
 		<state readOnly="false"/>
 	</channel-type>
@@ -415,8 +415,8 @@
 		<label>Light Detected</label>
 		<description>Indicator if the device detects light</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Light</tag>
+			<point>Status</point>
+			<property>Light</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -426,8 +426,8 @@
 		<label>Config: Auto Mode</label>
 		<description>The operating mode when the air purifier is set to auto</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
+			<point>Status</point>
+			<property>Mode</property>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -443,8 +443,8 @@
 		<label>Auto Off Expiry</label>
 		<description>The time when the auto off timer will be reached</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
+			<point>Status</point>
+			<property>Timestamp</property>
 		</tags>
 		<state readOnly="true" pattern="%1$tF %1$tR"/>
 	</channel-type>
@@ -469,8 +469,8 @@
 		<label>Water Low/Empty</label>
 		<description>Indicator if the devices water is low or empty</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Water</tag>
+			<point>Status</point>
+			<property>Water</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -480,8 +480,8 @@
 		<label>High Humidity</label>
 		<description>Indicator if the device is measuring high humidity</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Humidity</tag>
+			<point>Status</point>
+			<property>Humidity</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -491,8 +491,8 @@
 		<label>Water Tank Removed</label>
 		<description>Indicator if the device is reporting the water tank as removed</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Water</tag>
+			<point>Status</point>
+			<property>Water</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -502,8 +502,8 @@
 		<label>Stop @ Set Point</label>
 		<description>Indicator if the device is set to stop when the humidity set point has been reached</description>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
+			<point>Switch</point>
+			<property>Mode</property>
 		</tags>
 		<state readOnly="false"/>
 	</channel-type>
@@ -513,8 +513,8 @@
 		<label>Humidity Level</label>
 		<description>System representation of humidity</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Humidity</tag>
+			<point>Measurement</point>
+			<property>Humidity</property>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
@@ -524,8 +524,8 @@
 		<label>Humidity Set Point</label>
 		<description>Humidity Set Point</description>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Humidity</tag>
+			<point>Setpoint</point>
+			<property>Humidity</property>
 		</tags>
 		<state readOnly="false" pattern="%.0f %unit%"/>
 	</channel-type>
@@ -535,8 +535,8 @@
 		<label>Mist Level</label>
 		<description>System representation of mist level</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Level</tag>
+			<point>Control</point>
+			<property>Level</property>
 		</tags>
 		<state readOnly="false" pattern="%.0f"/>
 	</channel-type>
@@ -559,8 +559,8 @@
 		<label>Warm Mode Enabled</label>
 		<description>Indicator if the device is set to warm mist</description>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
+			<point>Switch</point>
+			<property>Mode</property>
 		</tags>
 		<state readOnly="false"/>
 	</channel-type>
@@ -570,8 +570,8 @@
 		<label>Warm Level</label>
 		<description>Warm Level</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Level</tag>
+			<point>Control</point>
+			<property>Level</property>
 		</tags>
 		<state readOnly="false" pattern="%.0f"/>
 	</channel-type>

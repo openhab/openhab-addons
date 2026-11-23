@@ -46,7 +46,7 @@
 		<label>Name</label>
 		<description>Schedule rule name.</description>
 		<tags>
-			<tag>Status</tag>
+			<point>Status</point>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -55,7 +55,7 @@
 		<label>Enabled</label>
 		<description>ON if the schedule rule is enabled.</description>
 		<tags>
-			<tag>Status</tag>
+			<point>Status</point>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -70,8 +70,8 @@
 		<label>Start Time</label>
 		<description>Schedule rule start time from Rachio startDate, with startTime used as a fallback when present.</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
+			<point>Status</point>
+			<property>Timestamp</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -80,8 +80,8 @@
 		<label>Last Run</label>
 		<description>Last run time when provided by Rachio. Remains UNDEF when the API does not provide a usable value.</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
+			<point>Status</point>
+			<property>Timestamp</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -90,8 +90,8 @@
 		<label>Next Run</label>
 		<description>Next run time when provided by Rachio. Remains UNDEF when the API does not provide a usable value.</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
+			<point>Status</point>
+			<property>Timestamp</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -106,7 +106,7 @@
 		<label>Seasonal Adjustment</label>
 		<description>Seasonal adjustment value for the schedule rule. Sending a number updates the adjustment.</description>
 		<tags>
-			<tag>Control</tag>
+			<point>Control</point>
 		</tags>
 	</channel-type>
 	<channel-type id="schedule-start">
@@ -114,8 +114,8 @@
 		<label>Start Schedule</label>
 		<description>Send ON to start this schedule rule.</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Water</tag>
+			<point>Control</point>
+			<property>Water</property>
 		</tags>
 	</channel-type>
 	<channel-type id="schedule-skip">
@@ -123,7 +123,7 @@
 		<label>Skip Schedule</label>
 		<description>Send ON to skip this schedule rule.</description>
 		<tags>
-			<tag>Control</tag>
+			<point>Control</point>
 		</tags>
 	</channel-type>
 	<channel-type id="schedule-skip-forward-zone-run">
@@ -131,7 +131,7 @@
 		<label>Skip Forward Zone Run</label>
 		<description>Send ON to skip the currently running zone in this schedule context.</description>
 		<tags>
-			<tag>Control</tag>
+			<point>Control</point>
 		</tags>
 	</channel-type>
 </thing:thing-descriptions>

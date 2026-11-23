@@ -10,8 +10,8 @@
 		<description>Received signal strength indicator</description>
 		<category>QualityOfService</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>RSSI</tag>
+			<point>Measurement</point>
+			<property>RSSI</property>
 		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>

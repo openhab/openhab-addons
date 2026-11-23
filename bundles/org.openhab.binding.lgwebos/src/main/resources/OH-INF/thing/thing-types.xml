@@ -40,8 +40,8 @@
 		<label>Channel</label>
 		<description>Current Channel</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Channel</tag>
+			<point>Control</point>
+			<property>Channel</property>
 		</tags>
 	</channel-type>
 	<channel-type id="toastType">
@@ -54,8 +54,8 @@
 		<label>Stop</label>
 		<description>Stop Playback</description>
 		<tags>
-			<tag>Switch</tag>
-			<tag>MediaControl</tag>
+			<point>Switch</point>
+			<property>MediaControl</property>
 		</tags>
 	</channel-type>
 	<channel-type id="app-launcher">
@@ -63,8 +63,8 @@
 		<label>Application</label>
 		<description>Start application and monitor running applications.</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>App</tag>
+			<point>Control</point>
+			<property>App</property>
 		</tags>
 	</channel-type>
 	<channel-type id="rcButtonType">
