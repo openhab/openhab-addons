@@ -24,6 +24,8 @@ import org.openhab.core.thing.ThingTypeUID;
  */
 @NonNullByDefault
 public enum MiIoDevices {
+    AIRDOG_AIRPURIFIER_X5("airdog.airpurifier.x5", "Airdog X3(M) air purifier", THING_TYPE_BASIC),
+    AIRDOG_AIRPURIFIER_X7SM("airdog.airpurifier.x7sm", "Airdog X7S(M) air purifier", THING_TYPE_BASIC),
     AUX_AIRCONDITION_V1("aux.aircondition.v1", "AUX Smart Air Conditioner", THING_TYPE_UNSUPPORTED),
     CARELI_FRYER_MAF01("careli.fryer.maf01", "Mi Air Frying Pan", THING_TYPE_BASIC),
     CARELI_FRYER_MAF02("careli.fryer.maf02", "Mi Smart Air Fryer (3.5L)", THING_TYPE_BASIC),
