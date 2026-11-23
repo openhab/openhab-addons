@@ -372,6 +372,38 @@ public class HomieThingHandlerTests {
         thingHandler.device.stop().get(5, TimeUnit.SECONDS);
     }
 
+    @ParameterizedTest
+    @ValueSource(strings = { "none", "device", "node" })
+    public void reinitializeUnsubscribesOldChannel(String delayedUnsubscribe) throws Exception {
+        thingHandler.device.initialize("homie", deviceID, List.of());
+        Node node = thingHandler.device.createNode("node", spy(new NodeAttributes()));
+        doReturn(future).when(node.attributes).unsubscribe();
+        Property property = node.createProperty("property", spy(new PropertyAttributes()));
+        doReturn(future).when(property.attributes).unsubscribe();
+        property.attributes.name = "Property";
+        property.attributes.datatype = DataTypeEnum.string_;
+        property.attributesReceived();
+        ChannelState channelState = property.getChannelState();
+        assertNotNull(channelState);
+        ChannelStateHelper.setConnection(channelState, connectionMock);
+        node.properties.put(property.propertyID, property);
+        thingHandler.device.nodes.put(node.nodeID, node);
+
+        CompletableFuture<@Nullable Void> unsubscribe = new CompletableFuture<>();
+        doReturn("device".equals(delayedUnsubscribe) ? unsubscribe : future).when(thingHandler.device.attributes)
+                .unsubscribe();
+        doReturn("node".equals(delayedUnsubscribe) ? unsubscribe : future).when(node.attributes).unsubscribe();
+        CompletableFuture<@Nullable Void> stopped = thingHandler.device.stop();
+        assertEquals("none".equals(delayedUnsubscribe), stopped.isDone());
+        // Handler initialization rebuilds the device tree while asynchronous shutdown may still be pending.
+        thingHandler.device.initialize("homie", deviceID, List.of());
+        node.properties.clear();
+        unsubscribe.complete(null);
+        stopped.get(5, TimeUnit.SECONDS);
+
+        verify(connectionMock).unsubscribe(eq(deviceTopic + "/node/property"), same(channelState));
+    }
+
     public Object createSubscriberAnswer(InvocationOnMock invocation) {
         final AbstractMqttAttributeClass attributes = (AbstractMqttAttributeClass) invocation.getMock();
         final ScheduledExecutorService scheduler = (ScheduledExecutorService) invocation.getArguments()[0];
