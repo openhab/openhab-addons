@@ -22,7 +22,15 @@
     <dependency>
       <groupId>io.github.hap-java</groupId>
       <artifactId>hap</artifactId>
-      <version>2.0.8</version>
+      <!-- Temporary pre-release of hap-java/HAP-Java#213 for CI until an official release is published.
+           Replace with the Maven Central release version and remove the repositories block below. -->
+      <version>2.0.10-dnssd1</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>net.java.dev.jna</groupId>
+      <artifactId>jna</artifactId>
+      <version>5.14.0</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
@@ -116,4 +124,13 @@
       <scope>compile</scope>
     </dependency>
   </dependencies>
+
+  <!-- Draft-only: hap 2.0.10-dnssd1 until HAP-Java#213 is released to Maven Central -->
+  <repositories>
+    <repository>
+      <id>kgoderis-hap-java-pr213</id>
+      <name>HAP-Java PR#213 pre-release</name>
+      <url>https://raw.githubusercontent.com/kgoderis/HAP-Java/mvn-repo</url>
+    </repository>
+  </repositories>
 </project>
