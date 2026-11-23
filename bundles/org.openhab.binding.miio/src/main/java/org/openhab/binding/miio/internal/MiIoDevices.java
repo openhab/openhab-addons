@@ -522,6 +522,7 @@ public enum MiIoDevices {
     XIAOMI_FEEDER_PI2001("xiaomi.feeder.pi2001", "Mijia Smart Pet Food Feeder 2", THING_TYPE_BASIC),
     XIAOMI_DERH_13L("xiaomi.derh.13l", "Mijia Smart Dehumidifier 13L", THING_TYPE_BASIC),
     XIAOMI_DERH_LITE("xiaomi.derh.lite", "Xiaomi Smart Dehumidifier Lite", THING_TYPE_BASIC),
+    XIAOMI_HEATER_NB1("xiaomi.heater.nb1", "Xiaomi Smart Graphene Heater", THING_TYPE_BASIC),
     XIAOMI_HUMIDIFIER_3LITE("xiaomi.humidifier.3lite", "Xiaomi Smart Evaporative Humidifier", THING_TYPE_BASIC),
     XIAOMI_HUMIDIFIER_4LITE("xiaomi.humidifier.4lite", "Mijia Mist-Free Humidifier 3 400mL/h", THING_TYPE_BASIC),
     XIAOMI_HUMIDIFIER_600EK("xiaomi.humidifier.600ek", "Mijia Smart Evaporative Humidifier Pro", THING_TYPE_BASIC),
