@@ -49,6 +49,8 @@ import org.openhab.binding.tapocontrol.internal.api.TapoDeviceConnector;
 import org.openhab.binding.tapocontrol.internal.devices.dto.TapoBaseDeviceData;
 import org.openhab.binding.tapocontrol.internal.devices.dto.TapoChildDeviceData;
 import org.openhab.binding.tapocontrol.internal.devices.dto.TapoChildList;
+import org.openhab.binding.tapocontrol.internal.devices.wifi.lightswitch.TapoDimmerSwitchData;
+import org.openhab.binding.tapocontrol.internal.devices.wifi.socket.TapoSocketData;
 import org.openhab.binding.tapocontrol.internal.dto.TapoChildRequest;
 import org.openhab.binding.tapocontrol.internal.dto.TapoMultipleRequest;
 import org.openhab.binding.tapocontrol.internal.dto.TapoRequest;
@@ -102,6 +104,29 @@ class KasaXorProtocolTest {
                 .requireNonNull(GSON.fromJson(KasaXorProtocol.mapChildList(sysinfo).result(), TapoChildList.class));
 
         assertThat(childList.getChildDeviceList(), hasSize(0));
+    }
+
+    @Test
+    void keepsOnTimeAndBrightnessForSocketAndDimmerHandlers() throws TapoErrorHandler {
+        // Based on python-kasa fixture KP405(US)_1.0_1.0.6.json
+        String kp405 = """
+                {"system":{"get_sysinfo":{"err_code":0,"model":"KP405(US)","alias":"Deck Edison",
+                "relay_state":1,"brightness":70,"on_time":3600,"rssi":-49,"sw_ver":"1.0.6 Build 240229 Rel.174151"}}}
+                """;
+        String ep10 = """
+                {"system":{"get_sysinfo":{"err_code":0,"model":"EP10(US)","relay_state":1,"on_time":120,"rssi":-46}}}
+                """;
+
+        TapoDimmerSwitchData dimmer = Objects
+                .requireNonNull(GSON.fromJson(KasaXorProtocol.mapSysinfo(kp405).result(), TapoDimmerSwitchData.class));
+        TapoSocketData socket = Objects
+                .requireNonNull(GSON.fromJson(KasaXorProtocol.mapSysinfo(ep10).result(), TapoSocketData.class));
+
+        assertThat(dimmer.isOn(), is(true));
+        assertThat(dimmer.getBrightness(), is(70));
+        assertThat(dimmer.getOnTime().intValue(), is(3600));
+        assertThat(socket.isOn(), is(true));
+        assertThat(socket.getOnTime().intValue(), is(120));
     }
 
     @Test
