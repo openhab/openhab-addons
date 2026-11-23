@@ -33,11 +33,11 @@ import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
+import org.eclipse.jetty.client.FormRequestContent;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.HttpResponseException;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.FormContentProvider;
+import org.eclipse.jetty.client.Request;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.util.Fields;
@@ -259,12 +259,12 @@ public class AtagOnePortalClient implements AtagOneConnection {
         if (token == null) {
             throw new SessionExpiredException();
         }
-        Fields fields = new Fields();
+        Fields fields = new Fields(true);
         fields.put("update_message[seqnr]", "0");
         fields.put("update_message[device_id]", requireDeviceId());
         fieldValues.forEach((name, value) -> fields.put("update_message[" + block + "][" + name + "]", value));
         Request request = newRequest(HttpMethod.POST, "/api/app/update")
-                .header(HttpHeader.AUTHORIZATION, "Bearer " + token).content(new FormContentProvider(fields));
+                .headers(h -> h.put(HttpHeader.AUTHORIZATION, "Bearer " + token)).body(new FormRequestContent(fields));
         return checkSession(send(request)).getContentAsString();
     }
 
@@ -317,7 +317,7 @@ public class AtagOnePortalClient implements AtagOneConnection {
         PortalDeviceForm form = PortalDeviceForm.parse(page);
         if (form.apply(controlMode, update, current)) {
             Request request = newRequest(HttpMethod.POST, "/Device/EditDevice")
-                    .content(new FormContentProvider(form.toFields()));
+                    .body(new FormRequestContent(form.toFields()));
             String reply = checkSession(send(request)).getContentAsString();
             if (!reply.contains("Changes saved successfully")) {
                 throw rejected("Portal did not save the device settings", reply);
@@ -349,7 +349,7 @@ public class AtagOnePortalClient implements AtagOneConnection {
         }
         Fields form = scheduleForm(activeProgram(scheduleType), schedule);
         Request request = newRequest(HttpMethod.POST, "/api/app/EditSchedule")
-                .header(HttpHeader.AUTHORIZATION, "Bearer " + token).content(new FormContentProvider(form));
+                .headers(h -> h.put(HttpHeader.AUTHORIZATION, "Bearer " + token)).body(new FormRequestContent(form));
         checkSession(send(request));
         if (!matches(activeProgram(scheduleType), schedule)) {
             throw new AtagOneCommunicationException("Portal did not store the schedule");
@@ -363,7 +363,7 @@ public class AtagOnePortalClient implements AtagOneConnection {
             throw new SessionExpiredException();
         }
         Request request = newRequest(HttpMethod.GET, "/api/app/GetAllSchedules?deviceId=" + requireDeviceId())
-                .header(HttpHeader.AUTHORIZATION, "Bearer " + token);
+                .headers(h -> h.put(HttpHeader.AUTHORIZATION, "Bearer " + token));
         String body = checkSession(send(request)).getContentAsString();
         try {
             for (JsonElement element : JsonParser.parseString(body).getAsJsonArray()) {
@@ -380,7 +380,7 @@ public class AtagOnePortalClient implements AtagOneConnection {
     }
 
     static Fields scheduleForm(JsonObject program, ScheduleDTO schedule) throws AtagOneCommunicationException {
-        Fields form = new Fields();
+        Fields form = new Fields(true);
         try {
             for (String name : new String[] { "Key", "Type", "ProgramId", "DeviceId", "Name", "ScheduleType" }) {
                 form.put(name, member(program, name).getAsString());
@@ -481,10 +481,10 @@ public class AtagOnePortalClient implements AtagOneConnection {
         if (id == null) {
             throw new SessionExpiredException();
         }
-        Fields fields = new Fields();
+        Fields fields = new Fields(true);
         fields.put("__RequestVerificationToken", fetchFormToken());
         Request request = newRequest(HttpMethod.POST, "/Home/SetMode/?deviceId=" + id + "&mode=" + mode)
-                .content(new FormContentProvider(fields));
+                .body(new FormRequestContent(fields));
         String reply = checkSession(send(request)).getContentAsString();
         if (!isSuccess(reply)) {
             throw rejected("Portal did not accept mode " + mode, reply);
@@ -512,7 +512,7 @@ public class AtagOnePortalClient implements AtagOneConnection {
         if (seconds < 60) {
             throw new AtagOneCommunicationException("Extend needs at least one minute");
         }
-        Fields extra = new Fields();
+        Fields extra = new Fields(true);
         extra.put("endDate", String.format(Locale.ROOT, "%02d:%02d", seconds / 3600, seconds % 3600 / 60));
         submitMode("/Home/SetExtendMode", "vacation_submit", "party", "setActiveMode('party'", extra);
     }
@@ -522,14 +522,14 @@ public class AtagOnePortalClient implements AtagOneConnection {
             throw new AtagOneCommunicationException(
                     "Fireplace duration must be 1 to 24 hours in steps of 30 minutes, got " + seconds + " s");
         }
-        Fields extra = new Fields();
+        Fields extra = new Fields(true);
         extra.put("duration", BigDecimal.valueOf(seconds / 3600.0).stripTrailingZeros().toPlainString());
         submitMode("/Home/SetFireplaceMode", "fireplace_submit", "fireplace", "setActiveMode('fireplace'", extra);
     }
 
     private void setVacation(long seconds) throws AtagOneCommunicationException {
         ZonedDateTime start = ZonedDateTime.now(deviceZone).plusMinutes(VACATION_START_DELAY_MIN);
-        Fields extra = new Fields();
+        Fields extra = new Fields(true);
         extra.put("startDate", VACATION_TIME.format(start));
         extra.put("endDate", VACATION_TIME.format(start.plusSeconds(seconds)));
         submitMode("/Home/SetVacationMode", "vacation_submit", "vacation", "retrieveAndUpdate(true)", extra);
@@ -537,14 +537,14 @@ public class AtagOnePortalClient implements AtagOneConnection {
 
     private void submitMode(String path, String submitType, String mode, String successMarker, Fields extra)
             throws AtagOneCommunicationException {
-        Fields fields = new Fields();
+        Fields fields = new Fields(true);
         fields.put("submit_type", submitType);
         fields.put("__RequestVerificationToken", fetchFormToken());
         fields.put("deviceId", requireDeviceId());
         fields.put("mode", mode);
         extra.forEach(field -> fields.put(field));
         fields.put("X-Requested-With", "XMLHttpRequest");
-        String reply = checkSession(send(newRequest(HttpMethod.POST, path).content(new FormContentProvider(fields))))
+        String reply = checkSession(send(newRequest(HttpMethod.POST, path).body(new FormRequestContent(fields))))
                 .getContentAsString();
         if (!reply.contains(successMarker)) {
             throw rejected("Portal did not accept mode " + mode, reply);
@@ -564,11 +564,11 @@ public class AtagOnePortalClient implements AtagOneConnection {
         if (id == null) {
             throw new SessionExpiredException();
         }
-        Fields fields = new Fields();
+        Fields fields = new Fields(true);
         fields.put("__RequestVerificationToken", fetchFormToken());
         String value = BigDecimal.valueOf(temperature).stripTrailingZeros().toPlainString();
         Request request = newRequest(HttpMethod.POST, "/Home/DeviceSetSetpoint/" + id + "?temperature=" + value)
-                .content(new FormContentProvider(fields));
+                .body(new FormRequestContent(fields));
         double confirmed = parseSetpointReply(checkSession(send(request)).getContentAsString());
         if (Math.abs(confirmed - temperature) > 0.01) {
             throw new AtagOneCommunicationException("Portal set " + confirmed + " instead of " + temperature);
@@ -600,7 +600,7 @@ public class AtagOnePortalClient implements AtagOneConnection {
                 return;
             }
             logger.debug("Session gone, signing in with the credentials");
-            httpClient.getCookieStore().removeAll();
+            httpClient.getHttpCookieStore().clear();
             page = send(newRequest(HttpMethod.GET, "/Account/Login"));
         }
         String formToken = firstGroup(FORM_TOKEN, page.getContentAsString());
@@ -608,13 +608,13 @@ public class AtagOnePortalClient implements AtagOneConnection {
             throw new AtagOneCommunicationException("Portal login page unavailable (HTTP " + page.getStatus() + ")");
         }
 
-        Fields fields = new Fields();
+        Fields fields = new Fields(true);
         fields.put("__RequestVerificationToken", formToken);
         fields.put("Email", email);
         fields.put("Password", password);
         fields.put("RememberMe", "false");
         ContentResponse result = send(
-                newRequest(HttpMethod.POST, "/Account/Login").content(new FormContentProvider(fields)));
+                newRequest(HttpMethod.POST, "/Account/Login").body(new FormRequestContent(fields)));
         if (result.getStatus() != 302) {
             String message = firstGroup(LOGIN_ERROR, result.getContentAsString());
             if (result.getStatus() == 200 && message != null) {
@@ -666,12 +666,12 @@ public class AtagOnePortalClient implements AtagOneConnection {
         if (id == null || token == null) {
             throw new SessionExpiredException();
         }
-        Fields fields = new Fields();
+        Fields fields = new Fields(true);
         fields.put("retrieve_message[seqnr]", "0");
         fields.put("retrieve_message[device_id]", id);
         fields.put("retrieve_message[info]", Integer.toString(PORTAL_INFO_BITMASK));
         Request retrieveRequest = newRequest(HttpMethod.POST, "/api/app/retrieve")
-                .header(HttpHeader.AUTHORIZATION, "Bearer " + token).content(new FormContentProvider(fields));
+                .headers(h -> h.put(HttpHeader.AUTHORIZATION, "Bearer " + token)).body(new FormRequestContent(fields));
         RetrieveReplyDTO reply = parseRetrieve(checkSession(send(retrieveRequest)).getContentAsString());
         reply.status.device_id = id;
         deviceZone = zoneOf(reply.configuration.time_zone);
@@ -680,9 +680,10 @@ public class AtagOnePortalClient implements AtagOneConnection {
     }
 
     private Request newRequest(HttpMethod method, String path) {
-        return httpClient.newRequest(baseUrl + path).method(method).followRedirects(false)
-                .header(HttpHeader.ACCEPT_LANGUAGE, "en").header("X-Requested-With", "XMLHttpRequest")
-                .timeout(REQUEST_TIMEOUT_S, TimeUnit.SECONDS);
+        return httpClient.newRequest(baseUrl + path).method(method).followRedirects(false).headers(h -> {
+            h.put(HttpHeader.ACCEPT_LANGUAGE, "en");
+            h.put("X-Requested-With", "XMLHttpRequest");
+        }).timeout(REQUEST_TIMEOUT_S, TimeUnit.SECONDS);
     }
 
     private synchronized ContentResponse send(Request request) throws AtagOneCommunicationException {

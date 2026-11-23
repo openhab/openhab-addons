@@ -30,12 +30,13 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jetty.client.BufferingResponseListener;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.api.Response;
-import org.eclipse.jetty.client.api.Result;
-import org.eclipse.jetty.client.util.BufferingResponseListener;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.Response;
+import org.eclipse.jetty.client.Result;
 import org.eclipse.jetty.http.HttpFields;
+import org.eclipse.jetty.io.Content;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -110,7 +111,10 @@ public class ConnectionAuthAgentTest {
             BufferingResponseListener listener = invocation.getArgument(0);
             Response response = okJsonResponse(request);
             listener.onHeaders(response);
-            listener.onContent(response, ByteBuffer.wrap(RESPONSE_BODY.getBytes(StandardCharsets.UTF_8)));
+            // Jetty 12 only buffers content passed as a chunk, onContent(Response, ByteBuffer) is just a hook
+            listener.onContent(response,
+                    Content.Chunk.from(ByteBuffer.wrap(RESPONSE_BODY.getBytes(StandardCharsets.UTF_8)), true), () -> {
+                    });
             listener.onComplete(resultOf(response));
             return null;
         }).when(request).send(any(Response.CompleteListener.class));
@@ -119,7 +123,7 @@ public class ConnectionAuthAgentTest {
 
     @SuppressWarnings("null")
     private Response okJsonResponse(Request request) {
-        HttpFields headers = new HttpFields();
+        HttpFields.Mutable headers = HttpFields.build();
         headers.add("Content-Type", "application/json");
         Response response = mock(Response.class);
         when(response.getRequest()).thenReturn(request);

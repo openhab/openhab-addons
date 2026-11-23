@@ -19,13 +19,11 @@ import static org.mockito.Mockito.*;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.Request;
 import org.eclipse.jetty.http.HttpMethod;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -39,6 +37,8 @@ import org.openhab.core.auth.AuthenticationException;
 import org.openhab.core.auth.Role;
 import org.openhab.core.auth.UserApiTokenCredentials;
 import org.openhab.core.auth.UserRegistry;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * Tests for {@link McpAuthenticator}.
@@ -95,7 +95,7 @@ class McpAuthenticatorTest {
         ContentResponse response = mock(ContentResponse.class);
         when(Objects.requireNonNull(httpClient).newRequest(ADMIN_PROBE_URL)).thenReturn(jettyRequest);
         when(jettyRequest.method(any(HttpMethod.class))).thenReturn(jettyRequest);
-        when(jettyRequest.header(anyString(), anyString())).thenReturn(jettyRequest);
+        when(jettyRequest.headers(any())).thenReturn(jettyRequest);
         when(jettyRequest.timeout(anyLong(), any(TimeUnit.class))).thenReturn(jettyRequest);
         when(jettyRequest.send()).thenReturn(response);
         when(response.getStatus()).thenReturn(status);

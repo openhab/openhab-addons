@@ -81,7 +81,7 @@ public class A5_38_08_Dimming extends _4BSMessage {
                     byte storeByte = ZERO; // "Store final value" (standard) vs. "block value" (Eltako)
 
                     if (!c.eltakoDimmer) {
-                        dimmValue *= 2.55; // 0-100% = 0-255
+                        dimmValue = (byte) (dimmValue * 2.55); // 0-100% = 0-255
 
                         if (c.storeValue) {
                             storeByte = 0x02; // set DB0.1

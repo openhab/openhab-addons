@@ -14,7 +14,7 @@ package org.openhab.binding.tado.swagger.codegen.api.client;
 
 import java.io.IOException;
 
-import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.Request;
 import org.eclipse.jetty.http.HttpHeader;
 import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
 import org.openhab.core.auth.client.oauth2.OAuthClientService;
@@ -48,8 +48,8 @@ public class OAuthorizerV2 {
         try {
             AccessTokenResponse token = oAuthService.getAccessTokenResponse();
             if (token != null) {
-                request.header(HttpHeader.AUTHORIZATION,
-                        String.format("%s %s", token.getTokenType(), token.getAccessToken()));
+                final String authHeader = String.format("%s %s", token.getTokenType(), token.getAccessToken());
+                request.headers(h -> h.add(HttpHeader.AUTHORIZATION, authHeader));
                 return;
             }
         } catch (OAuthException | IOException | OAuthResponseException e) {

@@ -19,10 +19,9 @@ import java.io.IOException;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.http.HttpHeader;
+import org.eclipse.jetty.client.Request;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.junit.jupiter.api.Test;
@@ -44,10 +43,9 @@ class EyeOnWaterClientTest {
         Request request = mock(Request.class);
         when(request.method((HttpMethod) any())).thenReturn(request);
         when(request.timeout(anyLong(), any())).thenReturn(request);
-        when(request.header((HttpHeader) any(), anyString())).thenReturn(request);
-        when(request.header((String) any(), anyString())).thenReturn(request);
+        when(request.headers(any())).thenReturn(request);
         when(request.followRedirects(anyBoolean())).thenReturn(request);
-        when(request.content(any())).thenReturn(request);
+        when(request.body(any())).thenReturn(request);
         return request;
     }
 

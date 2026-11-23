@@ -27,9 +27,9 @@ import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
+import org.eclipse.jetty.client.FormRequestContent;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.util.FormContentProvider;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.util.Fields;
@@ -261,8 +261,8 @@ public class BMWCarDataAuthClient {
         }
         try {
             ContentResponse response = httpClient.newRequest(url).method(HttpMethod.POST)
-                    .header(HttpHeader.ACCEPT, "application/json").content(new FormContentProvider(fields))
-                    .timeout(TIMEOUT_SECONDS, TimeUnit.SECONDS).send();
+                    .headers(headers -> headers.put(HttpHeader.ACCEPT, "application/json"))
+                    .body(new FormRequestContent(fields)).timeout(TIMEOUT_SECONDS, TimeUnit.SECONDS).send();
             if (logger.isTraceEnabled()) {
                 logger.trace("BMW authorization response POST {} -> HTTP {}, body: {}", url, response.getStatus(),
                         LogRedaction.payload(response.getContentAsString()));

@@ -47,8 +47,8 @@ import java.util.stream.Collectors;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.Response;
-import org.eclipse.jetty.client.util.InputStreamResponseListener;
+import org.eclipse.jetty.client.InputStreamResponseListener;
+import org.eclipse.jetty.client.Response;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.core.io.net.exec.ExecUtil;
 import org.openhab.core.net.CidrAddress;
@@ -153,8 +153,8 @@ public class NetworkUtils {
             for (int i = 1; i <= addressCount; i++) {
                 int octet = i & ~ipMask;
                 byte[] segments = baseIp.getAddress().getAddress();
-                segments[2] += (octet >> 8);
-                segments[3] += octet;
+                segments[2] = (byte) (segments[2] + (octet >> 8));
+                segments[3] = (byte) (segments[3] + octet);
                 result.add(InetAddress.getByAddress(segments).getHostAddress());
             }
         } catch (UnknownHostException e) {

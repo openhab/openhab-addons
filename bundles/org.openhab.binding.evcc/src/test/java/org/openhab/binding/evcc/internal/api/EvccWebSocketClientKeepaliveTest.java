@@ -26,7 +26,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jetty.websocket.api.RemoteEndpoint;
+import org.eclipse.jetty.websocket.api.Callback;
 import org.eclipse.jetty.websocket.api.Session;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -106,7 +106,6 @@ class EvccWebSocketClientKeepaliveTest {
 
     private final VirtualScheduler scheduler = new VirtualScheduler();
     private final Session session = mock(Session.class);
-    private final RemoteEndpoint remote = mock(RemoteEndpoint.class);
     private EvccWebSocketClient client = createClient();
     private boolean evccAnswersPings = true;
     private boolean sessionClosed;
@@ -123,7 +122,6 @@ class EvccWebSocketClientKeepaliveTest {
     void setUp() throws Exception {
         client = createClient();
         when(session.isOpen()).thenAnswer(invocation -> !sessionClosed);
-        when(session.getRemote()).thenReturn(remote);
         doAnswer(invocation -> {
             sessionClosed = true;
             return null;
@@ -132,8 +130,9 @@ class EvccWebSocketClientKeepaliveTest {
             if (evccAnswersPings) {
                 client.handlePong();
             }
+            invocation.<Callback> getArgument(1).succeed();
             return null;
-        }).when(remote).sendPing(any(ByteBuffer.class));
+        }).when(session).sendPing(any(ByteBuffer.class), any(Callback.class));
 
         client.handleConnected(session);
         JsonObject welcome = new JsonObject();
@@ -158,7 +157,7 @@ class EvccWebSocketClientKeepaliveTest {
         waitSeconds(300);
 
         assertFalse(sessionClosed);
-        verify(remote, atLeastOnce()).sendPing(any(ByteBuffer.class));
+        verify(session, atLeastOnce()).sendPing(any(ByteBuffer.class), any(Callback.class));
     }
 
     @Test

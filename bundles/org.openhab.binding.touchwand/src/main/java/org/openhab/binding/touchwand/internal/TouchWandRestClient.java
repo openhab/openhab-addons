@@ -27,11 +27,10 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentProvider;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.MimeTypes;
 import org.openhab.core.library.types.OnOffType;
@@ -221,9 +220,8 @@ public class TouchWandRestClient {
 
         request = httpClient.newRequest(url.toString()).timeout(REQUEST_TIMEOUT_SEC, TimeUnit.SECONDS).method(method);
         if (method.equals(METHOD_POST) && (!content.isEmpty())) {
-            ContentProvider contentProvider = new StringContentProvider(CONTENT_TYPE_APPLICATION_JSON, content,
-                    StandardCharsets.UTF_8);
-            request = request.content(contentProvider);
+            request = request
+                    .body(new StringRequestContent(CONTENT_TYPE_APPLICATION_JSON, content, StandardCharsets.UTF_8));
         }
 
         try {
