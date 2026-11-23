@@ -77,6 +77,21 @@ public class SqueezeBoxAudioSink extends AudioSinkSync {
     }
 
     @Override
+    public String getName() {
+        return playerHandler.getThing().getUID().getId();
+    }
+
+    @Override
+    public String getBinding() {
+        return SqueezeBoxBindingConstants.BINDING_ID;
+    }
+
+    @Override
+    public String getType() {
+        return "";
+    }
+
+    @Override
     public void processSynchronously(@Nullable AudioStream audioStream)
             throws UnsupportedAudioFormatException, UnsupportedAudioStreamException {
         if (audioStream == null) {
