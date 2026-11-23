@@ -124,11 +124,20 @@ The binding has no configuration options, all configuration is done at `bridge`,
 | `chargeFromGrid`         | Switch               | Whether charging the battery from the grid is allowed (writable, requires battery control)                                          |
 | `calibration`            | Switch               | Whether the battery is currently performing a calibration charge (read-only, requires battery control)                              |
 | `nightPreservationLimit` | Number:Dimensionless | State of charge preserved over night to keep the battery system operational (read-only, requires battery control)                   |
+| `min-charge-power`       | Number:Power         | Minimum battery charging power currently in effect, derived from the time of use settings (writable, requires battery control)      |
+| `max-charge-power`       | Number:Power         | Maximum battery charging power currently in effect, derived from the time of use settings (writable, requires battery control)      |
+| `min-discharge-power`    | Number:Power         | Minimum battery discharging power currently in effect, derived from the time of use settings (writable, requires battery control)   |
+| `max-discharge-power`    | Number:Power         | Maximum battery discharging power currently in effect, derived from the time of use settings (writable, requires battery control)   |
 
 The battery settings channels (`socMin`, `socMax`, `backupReservedCapacity`, `backupCriticalSoc`, `chargeFromGrid`, `calibration` and `nightPreservationLimit`) require the username and password to be configured in the bridge, see [Actions](#actions).
 They read from and write to the inverter's settings through its config API.
 Since reading these settings requires a login to the inverter, they are not part of the fast polling cycle, but refreshed every `batterySettingsRefreshInterval` minutes (and after each write), so changes made through the inverter's web UI show up with a delay.
 Commands sent to the writable channels are applied to the inverter immediately.
+
+The charge/discharge power limit channels (`min-charge-power`, `max-charge-power`, `min-discharge-power` and `max-discharge-power`) reflect the limit currently in effect: of the active time of use entries of the channel's schedule type whose weekday and time range match the current time (in the time zone configured in openHAB), the most restrictive one determines the value, as the inverter applies it; without a matching entry the channel is `UNDEF`.
+Writing such a channel sets a single all-time entry of its schedule type, entries of the other schedule types are preserved.
+The inverter applies an entry up to, but excluding, its end time; as 23:59 is the latest possible end time (also in the inverter web UI), an entry ending at 23:59, such as this all-time entry, is not in effect during the last minute of the day.
+The write is refused while other entries of that schedule type exist, e.g. schedules added through the [Actions](#actions) or the inverter web UI, so that they are not destroyed.
 
 ### `meter` Thing Channels
 
@@ -260,6 +269,7 @@ Once the actions instance has been retrieved, you can invoke the following metho
 - `addBatteryChargingLimitSchedule(ZonedDateTime from, ZonedDateTime until, QuantityType<Power> power)`: Add a schedule to limit the battery charging power to at most the specified power in the specified time range.
 - `addBatteryDischargingLimitSchedule(LocalTime from, LocalTime until, QuantityType<Power> power)`: Add a schedule to limit the battery discharging power to at most the specified power in the specified time range.
 - `addBatteryDischargingLimitSchedule(ZonedDateTime from, ZonedDateTime until, QuantityType<Power> power)`: Add a schedule to limit the battery discharging power to at most the specified power in the specified time range.
+- `getTimeOfUseSchedules()`: Returns the current time of use schedule entries of the battery management.
 - `setBackupReservedBatteryCapacity(int percent)`: Set the reserved battery capacity for backup power.
 - `setBackupReservedBatteryCapacity(PercentType percent)`: Set the reserved battery capacity for backup power.
 
