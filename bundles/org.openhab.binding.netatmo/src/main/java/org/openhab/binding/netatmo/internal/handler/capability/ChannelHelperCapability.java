@@ -15,9 +15,14 @@ package org.openhab.binding.netatmo.internal.handler.capability;
 import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 import static org.openhab.core.thing.Thing.*;
 
+import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.netatmo.internal.api.data.EventSubType;
+import org.openhab.binding.netatmo.internal.api.data.EventType;
 import org.openhab.binding.netatmo.internal.api.dto.NAError;
 import org.openhab.binding.netatmo.internal.api.dto.NAThing;
 import org.openhab.binding.netatmo.internal.api.dto.WebhookEvent;
@@ -36,6 +41,7 @@ import org.openhab.core.types.State;
  */
 @NonNullByDefault
 public class ChannelHelperCapability extends Capability {
+    private @Nullable ZonedDateTime lastEventTime;
     private final List<ChannelHelper> channelHelpers;
 
     public ChannelHelperCapability(CommonInterface handler, List<ChannelHelper> channelHelpers) {
@@ -72,10 +78,19 @@ public class ChannelHelperCapability extends Capability {
         // The channel should get triggered at last (after super and sub methods), because this allows rules to access
         // the new updated data from the other channels.
         if (newData instanceof WebhookEvent event) {
-            String eventType = event.getEventType().name();
-            handler.recurseUpToHomeHandler(handler).ifPresent(
-                    homeHandler -> homeHandler.triggerChannel(GROUP_SECURITY_EVENT, CHANNEL_HOME_EVENT, eventType));
-            handler.triggerChannel(GROUP_SECURITY_EVENT, CHANNEL_HOME_EVENT, eventType);
+            EventType eventType = event.getEventType();
+            ZonedDateTime localLast = lastEventTime;
+            ZonedDateTime eventTime = event.getTime();
+
+            if (eventType.validFor(handler.getModuleType()) && (localLast == null || eventTime.isAfter(localLast))) {
+                String eventTypeName = eventType.name();
+                lastEventTime = eventTime;
+                handler.recurseUpToHomeHandler(handler).ifPresent(homeHandler -> homeHandler
+                        .triggerChannel(GROUP_SECURITY_EVENT, CHANNEL_HOME_EVENT, eventTypeName));
+                handler.triggerChannel(GROUP_SECURITY_EVENT, CHANNEL_HOME_EVENT, Objects
+                        .requireNonNull(event.getSubTypeDescription().map(EventSubType::name).orElse(eventTypeName)));
+            }
+
         }
 
         super.afterNewData(newData);

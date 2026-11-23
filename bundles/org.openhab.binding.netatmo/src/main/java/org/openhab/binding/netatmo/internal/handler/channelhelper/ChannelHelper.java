@@ -119,6 +119,15 @@ public abstract class ChannelHelper {
                     return toDateTimeType(event.getTime());
                 case CHANNEL_EVENT_SNAPSHOT:
                     return pictureIfUrlPresent(event.getSnapshotUrl(), true);
+                case CHANNEL_EVENT_SNAPSHOT_URL:
+                    return pictureIfUrlPresent(event.getSnapshotUrl(), false);
+                case CHANNEL_EVENT_VIGNETTE:
+                    return pictureIfUrlPresent(event.getVignetteUrl(), true);
+                case CHANNEL_EVENT_VIGNETTE_URL:
+                    return pictureIfUrlPresent(event.getVignetteUrl(), false);
+                case CHANNEL_EVENT_PERSON_ID:
+                    return event.getPersons().isEmpty() ? UnDefType.NULL
+                            : toStringType(event.getPersons().values().iterator().next().getId());
             }
         }
         return null;
