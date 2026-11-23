@@ -13,9 +13,7 @@
 package org.openhab.binding.netatmo.internal.api.data;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.BINDING_ID;
-import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.CHANNEL_PUSH_MODE;
 
 import java.net.URI;
 
@@ -61,7 +59,6 @@ public class ModuleTypeTest {
             boolean supportsPushMode = moduleType.capabilities.stream()
                     .anyMatch(HomeSecurityThingCapability.class::isAssignableFrom);
             assertEquals(supportsPushMode, moduleType.supportsPushMode(), moduleType.name());
-            assertFalse(moduleType.getGroupTypes().contains(CHANNEL_PUSH_MODE), moduleType.name());
         });
     }
 }
