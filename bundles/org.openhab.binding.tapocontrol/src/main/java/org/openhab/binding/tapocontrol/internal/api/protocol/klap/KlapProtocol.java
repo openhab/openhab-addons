@@ -280,7 +280,7 @@ public class KlapProtocol implements org.openhab.binding.tapocontrol.internal.ap
                 Integer ivSequence = session.getIvSequence();
                 Request httpRequest = setHeaders(httpDelegator.getHttpClient().newRequest(getUrl())
                         .method(HttpMethod.POST).param("seq", ivSequence.toString()));
-                ContentResponse response = httpRequest.content(new BytesContentProvider(encodedBytes))
+                ContentResponse response = httpRequest.body(new BytesRequestContent(encodedBytes))
                         .timeout(TAPO_HTTP_TIMEOUT_MS, TimeUnit.MILLISECONDS).send();
                 if (response.getStatus() == 200) {
                     return session.decryptResponse(response.getContent(), ivSequence);
