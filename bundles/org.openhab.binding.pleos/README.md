@@ -16,7 +16,7 @@ It provides read-only access to vehicle telematics data such as battery state of
 
 To use this binding, you need personal API credentials from the **Pleos Playground**:
 
-1. Log in to the [Pleos Playground](https://pleos.ai) with your Hyundai, Kia, or Genesis account.
+1. Log in to the [Pleos Playground](https://developer.pleos.ai/playground) with your Hyundai, Kia, or Genesis account.
 1. Navigate to **Vehicle Data API -> Getting Started -> For Private Users -> Issue a My Vehicle API Key**.
 1. Consent to data sharing for your vehicle(s) and generate your **Client ID** and **Client Secret**.
 
@@ -47,6 +47,8 @@ If `secretCreationDate` is configured on the `account` bridge, the binding autom
 | `secret-remaining-days` | `Number:Time` | State | Remaining days until the Client Secret expires (`d`). |
 | `secret-expiry-warning` | `Switch` | State | Switches to `ON` when the remaining validity drops below 7 days. |
 | `secret-expiry-event` | - | Trigger | Fires events (`EXPIRING_7_DAYS`, `EXPIRING_2_DAYS`, `EXPIRED`) at 7 days, 2 days, and every 6 hours below 2 days before expiration. |
+
+> **Note:** The Pleos binding does not automatically renew the `clientSecret` when its validity period expires. It is the user's own responsibility to log in to their Pleos Playground account in a timely manner, renew the `clientSecret`, and update it within the Pleos API account "thing."
 
 ### `vehicle` Thing Configuration
 
