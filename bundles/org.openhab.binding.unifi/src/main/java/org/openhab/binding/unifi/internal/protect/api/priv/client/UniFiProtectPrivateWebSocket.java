@@ -99,8 +99,6 @@ public class UniFiProtectPrivateWebSocket {
         this.client = client;
 
         this.wsClient = new WebSocketClient(httpClient);
-        // Prevent wsClient.stop() from stopping the shared HttpClient instance
-        this.wsClient.unmanage(httpClient);
 
         try {
             wsClient.start();
