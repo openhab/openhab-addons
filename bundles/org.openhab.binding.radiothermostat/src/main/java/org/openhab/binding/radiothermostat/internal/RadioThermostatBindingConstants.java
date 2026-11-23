@@ -34,7 +34,6 @@ import org.openhab.core.thing.ThingTypeUID;
 public class RadioThermostatBindingConstants {
 
     public static final String BINDING_ID = "radiothermostat";
-    public static final String LOCAL = "local";
     public static final String PROPERTY_IP = "hostName";
     public static final String PROPERTY_ISCT80 = "isCT80";
     public static final String JSON_TIME = "{\"day\":%s,\"hour\":%s,\"minute\":%s}";
@@ -82,12 +81,8 @@ public class RadioThermostatBindingConstants {
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_RTHERM);
 
-    public static final Set<String> SUPPORTED_CHANNEL_IDS = Set.of(TEMPERATURE, HUMIDITY, MODE, FAN_MODE, PROGRAM_MODE,
-            SET_POINT, OVERRIDE, HOLD, STATUS, FAN_STATUS, DAY, HOUR, MINUTE, DATE_STAMP, TODAY_HEAT_RUNTIME,
-            TODAY_COOL_RUNTIME, YESTERDAY_HEAT_RUNTIME, YESTERDAY_COOL_RUNTIME, REMOTE_TEMP, MESSAGE, NEXT_TEMP,
-            NEXT_TIME);
-
-    public static final Set<String> NO_UPDATE_CHANNEL_IDS = Set.of(REMOTE_TEMP, MESSAGE);
+    public static final Set<String> TSAT_CHANNEL_IDS = Set.of(TEMPERATURE, MODE, FAN_MODE, PROGRAM_MODE, SET_POINT,
+            OVERRIDE, HOLD, STATUS, FAN_STATUS, DAY, HOUR, MINUTE, DATE_STAMP, NEXT_TEMP, NEXT_TIME);
 
     // Units of measurement of the data delivered by the API
     public static final Unit<Temperature> API_TEMPERATURE_UNIT = ImperialUnits.FAHRENHEIT;
