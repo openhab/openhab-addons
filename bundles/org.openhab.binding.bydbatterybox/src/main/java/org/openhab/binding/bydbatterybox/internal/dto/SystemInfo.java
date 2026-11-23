@@ -26,8 +26,8 @@ import org.eclipse.jdt.annotation.Nullable;
  * @param bmsFirmware firmware of the active BMS section
  * @param activeBmsSection {@code 'A'} or {@code 'B'}
  * @param inverterType raw inverter index (the name tables of the references disagree)
- * @param phase phase setting of the battery; reported as 0 = single-phase, 1 = three-phase by one other
- *            implementation, but not confirmed: a battery with a three-phase inverter reported 0
+ * @param application application setting of the battery: 0 = off grid, 1 = on grid, 2 = backup
+ * @param phase phase setting of the battery: 0 = single-phase, 1 = three-phase
  * @param clock BMU real-time clock, {@code null} if the reported value is not a valid date
  *
  * @author Michael Weger - Initial contribution

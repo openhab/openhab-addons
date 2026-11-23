@@ -266,12 +266,13 @@ class BydBatteryBoxHandlerTest {
         verifyState(new ChannelUID(thingUID, "tower-1", CHANNEL_STORED_ENERGY), "1.46 kWh");
         verifyState(new ChannelUID(thingUID, "tower-2", CHANNEL_STORED_ENERGY), "1.98 kWh");
         assertEquals("25.6 kWh", localHandler.getThing().getProperties().get(PROPERTY_NOMINAL_CAPACITY));
-        assertEquals("1", localHandler.getThing().getProperties().get(PROPERTY_PHASE));
+        assertEquals("Three-phase (1)", localHandler.getThing().getProperties().get(PROPERTY_PHASE));
+        assertEquals("On Grid (1)", localHandler.getThing().getProperties().get(PROPERTY_APPLICATION));
         assertEquals("SMA STP 5.0-10.0 SE HV (19)",
                 localHandler.getThing().getProperties().get(PROPERTY_INVERTER_TYPE));
     }
 
-    private String inverterOf(byte[] identity) throws Exception {
+    private Map<String, String> propertiesOf(byte[] identity) throws Exception {
         FakeBattery localBattery = FakeBattery.start(64, identity, Fixtures.frame("status"));
         battery = localBattery;
         BydBatteryBoxHandler localHandler = createHandler(localBattery.port());
@@ -279,18 +280,35 @@ class BydBatteryBoxHandlerTest {
         localHandler.initialize();
         verify(callback, timeout(FIRST_CYCLE_TIMEOUT_MILLIS)).statusUpdated(any(),
                 argThat(info -> info.getStatus() == ThingStatus.ONLINE));
-        return String.valueOf(localHandler.getThing().getProperties().get(PROPERTY_INVERTER_TYPE));
+        return localHandler.getThing().getProperties();
     }
 
     @Test
-    void knownInverterIsShownByName() throws Exception {
-        assertEquals("Fronius HV (0)", inverterOf(Fixtures.frame("identity")));
+    void knownSettingsAreShownByName() throws Exception {
+        Map<String, String> properties = propertiesOf(Fixtures.frame("identity"));
+
+        assertEquals("Fronius HV (0)", properties.get(PROPERTY_INVERTER_TYPE));
+        // the test system was configured as off grid and single-phase at capture time
+        assertEquals("Off Grid (0)", properties.get(PROPERTY_APPLICATION));
+        assertEquals("Single-phase (0)", properties.get(PROPERTY_PHASE));
     }
 
     @Test
     void unknownInverterIsShownAsNumber() throws Exception {
         // identity byte 35 is the inverter setting; 40 is not in the list
-        assertEquals("40", inverterOf(Fixtures.frameWithByte("identity", 35, 40)));
+        assertEquals("40", propertiesOf(Fixtures.frameWithByte("identity", 35, 40)).get(PROPERTY_INVERTER_TYPE));
+    }
+
+    @Test
+    void unknownApplicationIsShownAsNumber() throws Exception {
+        // identity byte 38 is the application setting
+        assertEquals("3", propertiesOf(Fixtures.frameWithByte("identity", 38, 3)).get(PROPERTY_APPLICATION));
+    }
+
+    @Test
+    void unknownPhaseIsShownAsNumber() throws Exception {
+        // identity byte 39 is the phase setting
+        assertEquals("2", propertiesOf(Fixtures.frameWithByte("identity", 39, 2)).get(PROPERTY_PHASE));
     }
 
     @Test

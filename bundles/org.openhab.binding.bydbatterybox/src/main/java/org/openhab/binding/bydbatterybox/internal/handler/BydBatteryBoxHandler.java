@@ -107,6 +107,12 @@ public class BydBatteryBoxHandler extends BaseThingHandler {
             "KACO HV", "Studer LV", "SolarEdge LV", "Ingeteam HV", "Sungrow LV", "Schneider LV", "SMA SBS2.5 HV",
             "Solis LV", "Solis HV", "SMA STP 5.0-10.0 SE HV", "Deye LV", "Phocos LV", "GE HV", "Deye HV", "Raion LV",
             "KACO NH", "Solplanet", "Western HV", "SOSEN", "Hoymiles LV", "Hoymiles HV", "SAJ HV" };
+    /**
+     * Application and phase settings, in the order of BYD's configuration tool. Confirmed on an HVS by changing both
+     * settings there and reading the values before and after.
+     */
+    private static final String[] APPLICATIONS = { "Off Grid", "On Grid", "Backup" };
+    private static final String[] PHASES = { "Single-phase", "Three-phase" };
 
     private final Logger logger = LoggerFactory.getLogger(BydBatteryBoxHandler.class);
     private final ScheduledExecutorService executor = ThreadPoolManager.getScheduledPool(BINDING_ID);
@@ -566,8 +572,8 @@ public class BydBatteryBoxHandler extends BaseThingHandler {
         properties.put(PROPERTY_TEMPERATURE_SENSORS_PER_MODULE,
                 String.valueOf(info.batteryType().getTemperatureSensorsPerModule()));
         properties.put(PROPERTY_INVERTER_TYPE, inverter(info));
-        properties.put(PROPERTY_APPLICATION, String.valueOf(info.application()));
-        properties.put(PROPERTY_PHASE, String.valueOf(info.phase()));
+        properties.put(PROPERTY_APPLICATION, named(APPLICATIONS, info.application()));
+        properties.put(PROPERTY_PHASE, named(PHASES, info.phase()));
         int nominalCapacityWh = info.towers() * towerCapacityWh(info);
         if (nominalCapacityWh > 0) {
             properties.put(PROPERTY_NOMINAL_CAPACITY,
@@ -657,6 +663,13 @@ public class BydBatteryBoxHandler extends BaseThingHandler {
         return info.batteryType().hasCellDetails() && type < HV_INVERTERS.length
                 ? HV_INVERTERS[type] + " (" + type + ")"
                 : String.valueOf(type);
+    }
+
+    /**
+     * @return the name with the raw value, e.g. {@code On Grid (1)}, or only the raw value if it has no name
+     */
+    private static String named(String[] names, int value) {
+        return value < names.length ? names[value] + " (" + value + ")" : String.valueOf(value);
     }
 
     private static int towerCapacityWh(SystemInfo info) {

@@ -97,24 +97,24 @@ The number of balancing cells includes the 5th module only with the option enabl
 
 ### Properties
 
-| Property                       | Description                                                                                         |
-|--------------------------------|-----------------------------------------------------------------------------------------------------|
-| `serialNumber`                 | Serial number of the system, as reported by the battery                                             |
-| `modelId`                      | Module type: `HVS` or `HVM`                                                                         |
-| `firmwareVersion`              | BMU firmware currently in use, e.g. `3.26-B`                                                        |
-| `bmuFirmwareA`, `bmuFirmwareB` | BMU firmware in slot A and slot B                                                                   |
-| `bmsFirmware`                  | BMS firmware currently in use                                                                       |
-| `towers`                       | Number of towers                                                                                    |
-| `modulesPerTower`              | Number of modules per tower                                                                         |
-| `cellsPerModule`               | Number of cells per module                                                                          |
-| `temperatureSensorsPerModule`  | Number of temperature sensors per module                                                            |
-| `nominalCapacity`              | Capacity of the system when new, e.g. `7.68 kWh` (HVS and HVM only, see [Capacity](#capacity))      |
-| `parameterTable`               | Version of the parameter table                                                                      |
-| `inverterType`                 | Inverter setting of the battery, e.g. `Fronius HV (0)`, or only the number if the name is not known |
-| `application`                  | Application setting of the battery (as a number)                                                    |
-| `phase`                        | Phase setting of the battery (as a number)                                                          |
-| `tower<n>SerialNumber`         | Serial number of the BMS of tower n (after the first cell measurement)                              |
-| `tower<n>Firmware`             | BMS firmware of tower n, slot A and slot B                                                          |
+| Property                       | Description                                                                                                                    |
+|--------------------------------|--------------------------------------------------------------------------------------------------------------------------------|
+| `serialNumber`                 | Serial number of the system, as reported by the battery                                                                        |
+| `modelId`                      | Module type: `HVS` or `HVM`                                                                                                    |
+| `firmwareVersion`              | BMU firmware currently in use, e.g. `3.26-B`                                                                                   |
+| `bmuFirmwareA`, `bmuFirmwareB` | BMU firmware in slot A and slot B                                                                                              |
+| `bmsFirmware`                  | BMS firmware currently in use                                                                                                  |
+| `towers`                       | Number of towers                                                                                                               |
+| `modulesPerTower`              | Number of modules per tower                                                                                                    |
+| `cellsPerModule`               | Number of cells per module                                                                                                     |
+| `temperatureSensorsPerModule`  | Number of temperature sensors per module                                                                                       |
+| `nominalCapacity`              | Capacity of the system when new, e.g. `7.68 kWh` (HVS and HVM only, see [Capacity](#capacity))                                 |
+| `parameterTable`               | Version of the parameter table                                                                                                 |
+| `inverterType`                 | Inverter setting of the battery, e.g. `Fronius HV (0)`, or only the number if the name is not known                            |
+| `application`                  | Application setting of the battery: `Off Grid (0)`, `On Grid (1)` or `Backup (2)`, or only the number if the name is not known |
+| `phase`                        | Phase setting of the battery: `Single-phase (0)` or `Three-phase (1)`, or only the number if the name is not known             |
+| `tower<n>SerialNumber`         | Serial number of the BMS of tower n (after the first cell measurement)                                                         |
+| `tower<n>Firmware`             | BMS firmware of tower n, slot A and slot B                                                                                     |
 
 ## Channels
 
