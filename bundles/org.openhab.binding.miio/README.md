@@ -273,7 +273,7 @@ This will change the communication method and the Mi IO binding can communicate 
 
 # Mi IO Devices
 
-Currently the miio binding supports more than 630 different models.
+Currently the miio binding supports more than 640 different models.
 
 | Device                             | ThingType        | Device Model           | Supported    | Remark     |
 |------------------------------------|------------------|------------------------|--------------|------------|
@@ -423,6 +423,10 @@ Currently the miio binding supports more than 630 different models.
 | IKEA GU10 warm white               | miio:lumi        | [ikea.light.led1650r5](#ikea-light-led1650r5) | Experimental | Needs to have the Xiaomi gateway configured in the binding as bridge.<br />Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | IKEA E14 warm white                | miio:lumi        | [ikea.light.led1649c5](#ikea-light-led1649c5) | Experimental | Needs to have the Xiaomi gateway configured in the binding as bridge.<br />Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | leshow fan                         | miio:basic       | [leshow.fan.ss4](#leshow-fan-ss4) | Experimental | The Mi Home app sends the commands of this device via the cloud, so it may not accept local commands. If it does not respond, set the communication method of the thing to `cloud` (advanced thing configuration, requires the Cloud Connector). The device only accepts commands while it is switched on.<br />Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Mi Smart Baseboard Heater 1S       | miio:basic       | [leshow.heater.bs1s](#leshow-heater-bs1s) | Experimental | The Mi Home app controls this heater through the cloud. If the local connection does not answer, set `communication` to `cloud` in the thing configuration.<br />Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Xiaomi Graphene Baseboard Heater   | miio:basic       | [leshow.heater.bs3](#leshow-heater-bs3) | Experimental | The Mi Home app controls this heater through the cloud. If the local connection does not answer, set `communication` to `cloud` in the thing configuration.<br />Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Xiaomi Smart Tower Heater Lite     | miio:basic       | [leshow.heater.nfj2lx](#leshow-heater-nfj2lx) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Xiaomi Smart Tower Heater Lite     | miio:basic       | [leshow.heater.nfj3lx](#leshow-heater-nfj3lx) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Aqara Wall Switch(No Neutral, Single Rocker) | miio:unsupported | lumi.ctrl_neutral1.v1  | No           |            |
 | Aqara Wall Switch (No Neutral, Double Rocker) | miio:unsupported | lumi.ctrl_neutral2.v1  | No           |            |
 | Xiaomiyoupin Curtain Controller (Wi-Fi) | miio:basic       | [lumi.curtain.hagl05](#lumi-curtain-hagl05) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
@@ -728,6 +732,7 @@ Currently the miio binding supports more than 630 different models.
 | Mijia Smart Pet Food Feeder 2      | miio:basic       | [xiaomi.feeder.pi2001](#xiaomi-feeder-pi2001) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Mijia Smart Dehumidifier 13L       | miio:basic       | [xiaomi.derh.13l](#xiaomi-derh-13l) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Xiaomi Smart Dehumidifier Lite     | miio:basic       | [xiaomi.derh.lite](#xiaomi-derh-lite) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Xiaomi Smart Graphene Heater       | miio:basic       | [xiaomi.heater.nb1](#xiaomi-heater-nb1) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Xiaomi Smart Evaporative Humidifier | miio:basic       | [xiaomi.humidifier.3lite](#xiaomi-humidifier-3lite) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Mijia Mist-Free Humidifier 3 400mL/h | miio:basic       | [xiaomi.humidifier.4lite](#xiaomi-humidifier-4lite) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Mijia Smart Evaporative Humidifier Pro | miio:basic       | [xiaomi.humidifier.600ek](#xiaomi-humidifier-600ek) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
@@ -921,13 +926,16 @@ Currently the miio binding supports more than 630 different models.
 | Smartmi Standing Fan 2S            | miio:basic       | [zhimi.fan.za4](#zhimi-fan-za4) | Yes          |            |
 | Smartmi Standing Fan 3             | miio:basic       | [zhimi.fan.za5](#zhimi-fan-za5) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Mi Smart Space Heater S            | miio:basic       | [zhimi.heater.ma2](#zhimi-heater-ma2) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Mi Smart Space Heater S            | miio:basic       | [zhimi.heater.ma2a](#zhimi-heater-ma2a) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Mi Smart Baseboard Heater E        | miio:basic       | [zhimi.heater.ma3](#zhimi-heater-ma3) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Mi Smart Space Heater S            | miio:basic       | [zhimi.heater.mc2](#zhimi-heater-mc2) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Mi Smart Space Heater S            | miio:basic       | [zhimi.heater.mc2a](#zhimi-heater-mc2a) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Smartmi Smart Fan                  | miio:basic       | [zhimi.heater.na1](#zhimi-heater-na1) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Smartmi Smart Fan Heater           | miio:basic       | [zhimi.heater.nb1](#zhimi-heater-nb1) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Smartmi Radiant Heater Smart Version | miio:basic       | [zhimi.heater.za1](#zhimi-heater-za1) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Smartmi Smart Convector Heater 1S  | miio:basic       | [zhimi.heater.za2](#zhimi-heater-za2) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Smartmi Smart Convector Heater 1S  | miio:basic       | [zhimi.heater.zb1](#zhimi-heater-zb1) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Smartmi Smart Convector Heater 1S  | miio:basic       | [zhimi.heater.zb1a](#zhimi-heater-zb1a) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Smartmi Evaporative Humidifier     | miio:basic       | [zhimi.humidifier.ca1](#zhimi-humidifier-ca1) | Yes          |            |
 | Smartmi Evaporative Humidifer 2    | miio:basic       | [zhimi.humidifier.ca4](#zhimi-humidifier-ca4) | Yes          |            |
 | Smartmi Evaporative Humidifier 3   | miio:basic       | [zhimi.humidifier.ca6](#zhimi-humidifier-ca6) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
@@ -5209,6 +5217,76 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | buzzer                     | Switch               | Notification Sound                       |            |
 | led                        | Switch               | Light                                    | Write only, the state is not reported by the device |
 | fault                      | Number               | Device Fault                             |            |
+
+### Mi Smart Baseboard Heater 1S (<a name="leshow-heater-bs1s">leshow.heater.bs1s</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| on                         | Switch               | Power                                    |            |
+| fault                      | Number               | Fault                                    | Value mapping `["0"="No Faults"]` |
+| target_temperature         | Number:Temperature   | Target Temperature                       |            |
+| temperature                | Number:Temperature   | Temperature                              |            |
+| mode                       | Number               | Low Power Mode                           | 0 = Off, 1 = On. The device can also report 2 = maximum, continuous heating (shown in the Mi Home app, which never sets it) |
+| countdown_time             | Number:Time          | Power-Off Timer                          | Hours until the heater turns off, 0 = no timer |
+| environment_temperature    | Number:Temperature   | Environment Temperature                  |            |
+| physical_controls_locked   | Switch               | Child Lock                               |            |
+| alarm                      | Switch               | Notification Sound                       |            |
+| sleep                      | Switch               | Sleep                                    |            |
+| fan                        | Switch               | Fan                                      | Auxiliary heating with the fan |
+| pcbtemp                    | Number:Temperature   | PCB Temperature                          |            |
+
+### Xiaomi Graphene Baseboard Heater (<a name="leshow-heater-bs3">leshow.heater.bs3</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| on                         | Switch               | Power                                    |            |
+| fault                      | Number               | Fault                                    | Value mapping `["0"="No Faults"]` |
+| target_temperature         | Number:Temperature   | Target Temperature                       |            |
+| temperature                | Number:Temperature   | Temperature                              |            |
+| mode                       | Number               | Low Power Mode                           | 0 = Off, 1 = On. The device can also report 2 = maximum, continuous heating (shown in the Mi Home app, which never sets it) |
+| countdown_time             | Number:Time          | Power-Off Timer                          | Hours until the heater turns off, 0 = no timer |
+| environment_temperature    | Number:Temperature   | Environment Temperature                  |            |
+| physical_controls_locked   | Switch               | Child Lock                               |            |
+| alarm                      | Switch               | Notification Sound                       |            |
+| sleep                      | Switch               | Sleep                                    |            |
+| fan                        | Switch               | Fan                                      | Auxiliary heating with the fan |
+| pcbtemp                    | Number:Temperature   | PCB Temperature                          |            |
+
+### Xiaomi Smart Tower Heater Lite (<a name="leshow-heater-nfj2lx">leshow.heater.nfj2lx</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| on                         | Switch               | Power                                    |            |
+| fault                      | Number               | Fault                                    | Value mapping `["0"="No Faults","1"="Ambient Temperature Too Low","2"="Ambient Temperature Too High","3"="Plug Temperature Too Low","4"="Plug Temperature Too High"]` |
+| target_temperature         | Number:Temperature   | Target Temperature                       |            |
+| heater_temperature         | Number:Temperature   | Heater Temperature                       |            |
+| mode                       | Number               | Mode                                     | Value mapping `["0"="Constant Temperature","1"="Hot","2"="Warm","3"="Natural"]` |
+| countdown_time             | Number:Time          | Power-Off Timer                          | Minutes until the heater turns off, 0 = no timer |
+| temperature                | Number:Temperature   | Temperature                              |            |
+| physical_controls_locked   | Switch               | Child Lock                               |            |
+| alarm                      | Switch               | Notification Sound                       |            |
+| auto_light_off             | Switch               | Auto Light Off                           |            |
+| oscillation                | Switch               | Oscillation                              |            |
+| pcbtemp                    | Number:Temperature   | PCB Temperature                          |            |
+| indicator                  | Switch               | Indicator                                |            |
+
+### Xiaomi Smart Tower Heater Lite (<a name="leshow-heater-nfj3lx">leshow.heater.nfj3lx</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| on                         | Switch               | Power                                    |            |
+| fault                      | Number               | Fault                                    | Value mapping `["0"="No Faults","1"="Ambient Temperature Too Low","2"="Ambient Temperature Too High","3"="Plug Temperature Too Low","4"="Plug Temperature Too High"]` |
+| target_temperature         | Number:Temperature   | Target Temperature                       |            |
+| heater_temperature         | Number:Temperature   | Heater Temperature                       |            |
+| mode                       | Number               | Mode                                     | Value mapping `["0"="Constant Temperature","1"="Hot","2"="Warm","3"="Natural"]` |
+| countdown_time             | Number:Time          | Power-Off Timer                          | Minutes until the heater turns off, 0 = no timer |
+| temperature                | Number:Temperature   | Temperature                              |            |
+| physical_controls_locked   | Switch               | Child Lock                               |            |
+| alarm                      | Switch               | Notification Sound                       |            |
+| auto_light_off             | Switch               | Auto Light Off                           |            |
+| oscillation                | Switch               | Oscillation                              |            |
+| pcbtemp                    | Number:Temperature   | PCB Temperature                          |            |
+| indicator                  | Switch               | Indicator                                |            |
 
 ### Xiaomiyoupin Curtain Controller (Wi-Fi) (<a name="lumi-curtain-hagl05">lumi.curtain.hagl05</a>) Channels
 
@@ -10378,6 +10456,24 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | delay_remain_time          | Number:Time          | Turn-Off Delay Remaining                 |            |
 | actions                    | String               | Actions                                  | The filter reset is not yet confirmed on a device; Value mapping `["reset-filter"="Reset Filter"]` |
 
+### Xiaomi Smart Graphene Heater (<a name="xiaomi-heater-nb1">xiaomi.heater.nb1</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| on                         | Switch               | Power                                    |            |
+| fault                      | Number               | Fault                                    | Value mapping `["0"="No Faults","1"="Temperature Error"]` |
+| mode                       | Number               | Mode                                     | Value mapping `["0"="Constant Temperature","1"="Natural","2"="Warm","3"="Hot"]` |
+| target_temperature         | Number:Temperature   | Target Temperature                       |            |
+| temperature                | Number:Temperature   | Temperature                              |            |
+| oscillation                | Switch               | Oscillation                              |            |
+| indicator                  | Switch               | Indicator                                |            |
+| alarm                      | Switch               | Notification Sound                       |            |
+| physical_controls_locked   | Switch               | Child Lock                               |            |
+| delay                      | Switch               | Power-Off Timer                          |            |
+| delay_time                 | Number:Time          | Power-Off Timer Duration                 |            |
+| delay_remain_time          | Number:Time          | Power-Off Timer Remaining                |            |
+| country_code               | Number               | Country Code                             | Value mapping `["1"="US","2"="EU","44"="UK","66"="TH","82"="KR","86"="CN","91"="IN","886"="TW","81"="JP"]` |
+
 ### Xiaomi Smart Evaporative Humidifier (<a name="xiaomi-humidifier-3lite">xiaomi.humidifier.3lite</a>) Channels
 
 | Channel                    | Type                 | Description                              | Comment    |
@@ -14830,80 +14926,113 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 
 | Channel                    | Type                 | Description                              | Comment    |
 |----------------------------|----------------------|------------------------------------------|------------|
-| on                         | Switch               | Heater - Switch Status                   |            |
-| fault                      | Number               | Heater - Fault                           | Value mapping `["0"="No Error","1"="NTC Connect Error","2"="High Temperature Alarm","3"="EEPROM Error","4"="Multi Errors"]` |
-| target_temperature         | Number:Temperature   | Heater - Target Temperature              |            |
-| countdown_time             | Number:Time          | Countdown - Countdown Time               |            |
-| temperature                | Number:Temperature   | Environment - Temperature                |            |
-| physical_controls_locked   | Switch               | Physical Control Locked - Physical Control Locked |            |
-| alarm                      | Switch               | Alarm - Alarm                            |            |
-| brightness                 | Number:Dimensionless | Indicator Light - Brightness             | Value mapping `["0"="Bright","1"="Dark","2"="Extinguished"]` |
-| hw_enable                  | Switch               | Private Service - Hw Enable              |            |
-| use_time                   | Number:Time          | Private Service - Use Time               |            |
+| on                         | Switch               | Power                                    |            |
+| fault                      | Number               | Fault                                    | Value mapping `["0"="No Error","1"="NTC Connect Error","2"="High Temperature Alarm","3"="EEPROM Error","4"="Multi Errors"]` |
+| target_temperature         | Number:Temperature   | Target Temperature                       |            |
+| heat_level                 | Number               | Heating Power                            | Value mapping `["1"="900 W","2"="1300 W","3"="2200 W"]` |
+| countdown_time             | Number:Time          | Power-Off Timer                          | Hours until the heater turns off, 0 = no timer |
+| temperature                | Number:Temperature   | Temperature                              |            |
+| physical_controls_locked   | Switch               | Child Lock                               |            |
+| alarm                      | Switch               | Notification Sound                       |            |
+| brightness                 | Number               | Indicator                                | Value mapping `["0"="On","1"="Off"]` |
+| hw_enable                  | Switch               | Continuous Heating                       | ON: heats without the target temperature cut-out (shown as keep heating in the Mi Home app) |
+| use_time                   | Number:Time          | Run Time                                 |            |
+
+### Mi Smart Space Heater S (<a name="zhimi-heater-ma2a">zhimi.heater.ma2a</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| on                         | Switch               | Power                                    |            |
+| fault                      | Number               | Fault                                    |            |
+| target_temperature         | Number:Temperature   | Target Temperature                       |            |
+| heat_level                 | Number               | Heating Power                            | Value mapping `["1"="900 W","2"="1300 W","3"="2200 W"]` |
+| countdown_time             | Number:Time          | Power-Off Timer                          | Hours until the heater turns off, 0 = no timer |
+| temperature                | Number:Temperature   | Temperature                              |            |
+| physical_controls_locked   | Switch               | Child Lock                               |            |
+| alarm                      | Switch               | Notification Sound                       |            |
+| indicator                  | Switch               | Indicator                                |            |
+| hw_enable                  | Switch               | Continuous Heating                       | ON: heats without the target temperature cut-out (shown as keep heating in the Mi Home app) |
+| use_time                   | Number:Time          | Run Time                                 |            |
 
 ### Mi Smart Baseboard Heater E (<a name="zhimi-heater-ma3">zhimi.heater.ma3</a>) Channels
 
 | Channel                    | Type                 | Description                              | Comment    |
 |----------------------------|----------------------|------------------------------------------|------------|
-| actions                    | String               | Actions                                  | Value mapping `["private-service-toggle-switch"="Toggle Private Service"]` |
-| on                         | Switch               | Heater - Switch Status                   |            |
-| fault                      | Number               | Heater - Fault                           | Value mapping `["0"="No Error","1"="NTC Connect Error","2"="High Temperature Alarm","3"="EEPROM Error","4"="Multi Errors"]` |
-| target_temperature         | Number:Temperature   | Heater - Target Temperature              |            |
-| mode                       | Number               | Heater - Mode                            | Value mapping `["0"="Auto","1"="LL Mode","2"="HH Mode"]` |
-| countdown_time             | Number:Time          | Countdown - Countdown Time               |            |
-| temperature                | Number:Temperature   | Environment - Temperature                |            |
-| physical_controls_locked   | Switch               | Physical Control Locked - Physical Control Locked |            |
-| alarm                      | Switch               | Alarm - Alarm                            |            |
-| brightness                 | Number:Dimensionless | Indicator Light - Brightness             | Value mapping `["0"="Bright","1"="Dark","2"="Extinguished"]` |
-| use_time                   | Number:Time          | Private Service - Use Time               |            |
+| actions                    | String               | Actions                                  | Value mapping `["private-service-toggle-switch"="Toggle Power"]` |
+| on                         | Switch               | Power                                    |            |
+| fault                      | Number               | Fault                                    | Value mapping `["0"="No Error","1"="NTC Connect Error","2"="High Temperature Alarm","3"="EEPROM Error","4"="Multi Errors"]` |
+| target_temperature         | Number:Temperature   | Target Temperature                       |            |
+| mode                       | Number               | Low Power Mode                           | 0 = Off, 1 = On. The device can also report 2 = heating without the target temperature cut-out (keep heating in the Mi Home app, which never sets it) |
+| countdown_time             | Number:Time          | Power-Off Timer                          | Seconds until the heater turns off, 0 = no timer; the Mi Home app sets whole hours (0 to 12 h) |
+| temperature                | Number:Temperature   | Temperature                              |            |
+| physical_controls_locked   | Switch               | Child Lock                               |            |
+| alarm                      | Switch               | Notification Sound                       |            |
+| brightness                 | Number               | Indicator Brightness                     | Value mapping `["0"="Bright","1"="Dim","2"="Off"]` |
+| use_time                   | Number:Time          | Run Time                                 |            |
 
 ### Mi Smart Space Heater S (<a name="zhimi-heater-mc2">zhimi.heater.mc2</a>) Channels
 
 | Channel                    | Type                 | Description                              | Comment    |
 |----------------------------|----------------------|------------------------------------------|------------|
-| on                         | Switch               | Heater - Power                           |            |
-| fault                      | Number               | Heater - Device Fault                    | Value mapping `["0"="No Error","1"="NTC Connect Error","2"="High Temperature Alarm","3"="EEPROM Error","4"="Multi Errors"]` |
-| target_temperature         | Number:Temperature   | Heater - Target Temperature              |            |
-| countdown_time             | Number:Time          | Countdown - Countdown Time               |            |
-| temperature                | Number:Temperature   | Environment - Temperature                |            |
-| physical_controls_locked   | Switch               | Physical Control Locked - Physical Control Locked |            |
-| alarm                      | Switch               | Alarm - Alarm                            |            |
-| brightness                 | Number               | Indicator Light - Brightness             | Value mapping `["0"="Bright","1"="Dark","2"="Extinguished"]` |
-| hw_enable                  | Switch               | Private Service - Hw Enable              |            |
-| use_time                   | Number:Time          | Private Service - Use Time               |            |
-| country_code               | Number               | Private Service - Country Code           | Value mapping `["0"="Unknown","1"="US","82"="KR","44"="EU","81"="JP","7"="RU","86"="CN","852"="HK","886"="TW","33"="FR"]` |
+| on                         | Switch               | Power                                    |            |
+| fault                      | Number               | Fault                                    | Value mapping `["0"="No Error","1"="NTC Connect Error","2"="High Temperature Alarm","3"="EEPROM Error","4"="Multi Errors"]` |
+| target_temperature         | Number:Temperature   | Target Temperature                       |            |
+| countdown_time             | Number:Time          | Power-Off Timer                          | Hours until the heater turns off, 0 = no timer |
+| temperature                | Number:Temperature   | Temperature                              |            |
+| physical_controls_locked   | Switch               | Child Lock                               |            |
+| alarm                      | Switch               | Notification Sound                       |            |
+| brightness                 | Number               | Indicator                                | Value mapping `["0"="On","1"="Off"]` |
+| hw_enable                  | Switch               | Continuous Heating                       | ON: heats without the target temperature cut-out (shown as keep heating in the Mi Home app) |
+| use_time                   | Number:Time          | Run Time                                 |            |
+| country_code               | Number               | Country Code                             | Value mapping `["0"="Unknown","1"="US","82"="KR","44"="EU","81"="JP","7"="RU","86"="CN","852"="HK","886"="TW","33"="FR"]` |
+
+### Mi Smart Space Heater S (<a name="zhimi-heater-mc2a">zhimi.heater.mc2a</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| on                         | Switch               | Power                                    |            |
+| fault                      | Number               | Fault                                    | Value mapping `["0"="No Faults"]` |
+| target_temperature         | Number:Temperature   | Target Temperature                       |            |
+| countdown_time             | Number:Time          | Power-Off Timer                          | Hours until the heater turns off, 0 = no timer |
+| temperature                | Number:Temperature   | Temperature                              |            |
+| physical_controls_locked   | Switch               | Child Lock                               |            |
+| alarm                      | Switch               | Notification Sound                       |            |
+| indicator                  | Switch               | Indicator                                |            |
+| hw_enable                  | Switch               | Continuous Heating                       | ON: heats without the target temperature cut-out (shown as keep heating in the Mi Home app) |
+| use_time                   | Number:Time          | Run Time                                 |            |
+| country_code               | Number               | Country Code                             | Value mapping `["0"="Unknown","44"="EU","82"="KR","86"="CN"]` |
 
 ### Smartmi Smart Fan (<a name="zhimi-heater-na1">zhimi.heater.na1</a>) Channels
 
 | Channel                    | Type                 | Description                              | Comment    |
 |----------------------------|----------------------|------------------------------------------|------------|
-| on                         | Switch               | Heater - Power                           |            |
-| fault                      | Number               | Heater - Device Fault                    | Value mapping `["0"="No Error","1"="NTC Connect Error","2"="High Temperature Alarm","3"="EEPROM Error","4"="Multi Errors"]` |
-| heat_level                 | Number               | Heater - Heat Level                      | Value mapping `["1"="High","2"="Low"]` |
-| mode                       | Number               | Heater - Mode                            | Value mapping `["0"="Fan not swing","1"="Fan swing"]` |
-| alarm                      | Switch               | Alarm - Alarm                            |            |
-| countdown_time             | Number:Time          | Countdown - Countdown Time               |            |
-| brightness                 | Number               | Indicator Light - Brightness             | Value mapping `["0"="Bright","1"="Dark","2"="Extinguished"]` |
-| physical_controls_locked   | Switch               | Physical Control Locked - Physical Control Locked |            |
-| return_to_middle           | Switch               | Private Service - Return To Middle       |            |
+| on                         | Switch               | Power                                    |            |
+| fault                      | Number               | Fault                                    | Value mapping `["0"="No Error","1"="NTC Connect Error","2"="High Temperature Alarm","3"="EEPROM Error","4"="Multi Errors"]` |
+| heat_level                 | Number               | Heat Level                               | Value mapping `["1"="Hot","2"="Warm"]` |
+| mode                       | Number               | Oscillation                              | Value mapping `["0"="Off","1"="On"]` |
+| alarm                      | Switch               | Notification Sound                       |            |
+| countdown_time             | Number:Time          | Power-Off Timer                          | Hours until the heater turns off, 0 = no timer |
+| brightness                 | Number               | Indicator Light                          | Value mapping `["0"="Bright","1"="Dim","2"="Off"]` |
+| physical_controls_locked   | Switch               | Child Lock                               |            |
+| return_to_middle           | Switch               | Auto Recenter                            |            |
 
 ### Smartmi Smart Fan Heater (<a name="zhimi-heater-nb1">zhimi.heater.nb1</a>) Channels
 
 | Channel                    | Type                 | Description                              | Comment    |
 |----------------------------|----------------------|------------------------------------------|------------|
-| on                         | Switch               | Heater - Power                           |            |
-| fault                      | Number               | Heater - Device Fault                    | Value mapping `["0"="No Error","1"="NTC Connect Error","2"="High Temperature Alarm","3"="EEPROM Error","4"="Multi Errors"]` |
-| heat_level                 | Number               | Heater - Heat Level                      | Value mapping `["1"="High","2"="Low"]` |
-| mode                       | Number               | Heater - Mode                            | Value mapping `["0"="Fan not swing","1"="Fan swing"]` |
-| target_temperature         | Number:Temperature   | Heater - Target Temperature              |            |
-| temperature                | Number:Temperature   | Environment - Temperature                |            |
-| alarm                      | Switch               | Alarm - Alarm                            |            |
-| countdown_time             | Number:Time          | Countdown - Countdown Time               |            |
-| brightness                 | Number               | Indicator Light - Brightness             | Value mapping `["0"="Bright","1"="Dark","2"="Extinguished"]` |
-| physical_controls_locked   | Switch               | Physical Control Locked - Physical Control Locked |            |
-| return_to_middle           | Switch               | Private Service - Return To Middle       |            |
-| country_code               | Number               | Private Service - Country Code           | Value mapping `["0"="Unknown","1"="US","82"="KR","44"="EU","81"="JP","7"="RU","86"="CN","852"="HK","886"="TW","33"="FR"]` |
-| hw_en                      | Switch               | Private Service - Hw En                  |            |
+| on                         | Switch               | Power                                    |            |
+| fault                      | Number               | Fault                                    | Value mapping `["0"="No Error","1"="NTC Connect Error","2"="High Temperature Alarm","3"="EEPROM Error","4"="Multi Errors"]` |
+| heat_level                 | Number               | Heat Level                               | Value mapping `["1"="Hot","2"="Warm"]` |
+| mode                       | Number               | Oscillation                              | Value mapping `["0"="Off","1"="On"]` |
+| target_temperature         | Number:Temperature   | Target Temperature                       |            |
+| temperature                | Number:Temperature   | Temperature                              |            |
+| alarm                      | Switch               | Notification Sound                       |            |
+| countdown_time             | Number:Time          | Power-Off Timer                          | Hours until the heater turns off, 0 = no timer |
+| brightness                 | Number               | Indicator Light                          | Value mapping `["0"="Bright","1"="Dim","2"="Off"]` |
+| physical_controls_locked   | Switch               | Child Lock                               |            |
+| return_to_middle           | Switch               | Auto Recenter                            |            |
+| country_code               | Number               | Country Code                             | Value mapping `["0"="Unknown","1"="US","82"="KR","44"="EU","81"="JP","7"="RU","86"="CN","852"="HK","886"="TW","33"="FR"]` |
+| hw_en                      | Switch               | Constant Temperature                     | ON: keeps the target temperature. OFF: heats without the target temperature cut-out (keep heating in the Mi Home app) |
 
 ### Smartmi Radiant Heater Smart Version (<a name="zhimi-heater-za1">zhimi.heater.za1</a>) Channels
 
@@ -14911,11 +15040,12 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 |----------------------------|----------------------|------------------------------------------|------------|
 | power                      | Switch               | Power                                    |            |
 | target_temperature         | Number:Temperature   | Target Temperature                       |            |
-| brightness                 | Dimmer               | Brightness                               |            |
-| buzzer                     | Switch               | Buzzer Status                            |            |
+| brightness                 | Number               | Display Brightness                       | Value mapping `["0"="Bright","1"="Dim","2"="Off"]` |
+| poweroff_time              | Number:Time          | Power-Off Timer                          | Seconds until the heater turns off, 0 = no timer; the Mi Home app sets whole hours (0 to 8 h) |
+| buzzer                     | Switch               | Notification Sound                       |            |
 | relative_humidity          | Number:Dimensionless | Relative Humidity                        |            |
 | childlock                  | Switch               | Child Lock                               |            |
-| HWSwitch                   | Switch               | HW Switch                                |            |
+| hw_switch                  | Switch               | Constant Temperature                     | ON: keeps the target temperature. OFF: heats without the target temperature cut-out (keep heating in the Mi Home app) |
 | temperature                | Number:Temperature   | Temperature                              |            |
 | usedhours                  | Number:Time          | Run Time                                 |            |
 
@@ -14923,32 +15053,47 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 
 | Channel                    | Type                 | Description                              | Comment    |
 |----------------------------|----------------------|------------------------------------------|------------|
-| fault                      | Number               | Heater - Device Fault                    | Value mapping `["0"="No Error","1"="NTC Connect Error","2"="High Temperature Alarm","3"="EEPROM Error","4"="Multi Errors"]` |
-| on                         | Switch               | Heater - Power                           |            |
-| target-temperature         | Number:Temperature   | Heater - Target Temperature              |            |
-| alarm                      | Switch               | Alarm - Alarm                            |            |
-| countdown-time             | Number:Time          | Countdown - Countdown Time               |            |
-| relative-humidity          | Number:Dimensionless | Environment - Relative Humidity          |            |
-| temperature                | Number:Temperature   | Environment - Temperature                |            |
-| brightness                 | Number               | Indicator Light - Brightness             | Value mapping `["0"="Bright","1"="Dark","2"="Extinguished"]` |
-| physical-controls-locked   | Switch               | Physical Control Locked - Physical Controls Locked |            |
-| use-time                   | Number:Time          | Private-Service - Use Time               |            |
+| fault                      | Number               | Fault                                    | Value mapping `["0"="No Error","1"="NTC Connect Error","2"="High Temperature Alarm","3"="EEPROM Error","4"="Multi Errors"]` |
+| on                         | Switch               | Power                                    |            |
+| target_temperature         | Number:Temperature   | Target Temperature                       |            |
+| alarm                      | Switch               | Notification Sound                       |            |
+| countdown_time             | Number:Time          | Power-Off Timer                          | Hours until the heater turns off, 0 = no timer |
+| relative_humidity          | Number:Dimensionless | Relative Humidity                        |            |
+| temperature                | Number:Temperature   | Temperature                              |            |
+| brightness                 | Number               | Screen Brightness                        | Value mapping `["0"="Bright","1"="Dim","2"="Off"]` |
+| physical_controls_locked   | Switch               | Child Lock                               |            |
+| use_time                   | Number:Time          | Run Time                                 |            |
 
 ### Smartmi Smart Convector Heater 1S (<a name="zhimi-heater-zb1">zhimi.heater.zb1</a>) Channels
 
 | Channel                    | Type                 | Description                              | Comment    |
 |----------------------------|----------------------|------------------------------------------|------------|
-| on                         | Switch               | Heater - Power                           |            |
-| fault                      | Number               | Heater - Device Fault                    | Value mapping `["0"="No Error","1"="NTC Connect Error","2"="High Temperature Alarm","3"="EEPROM Error","4"="Multi Errors"]` |
-| target-temperature         | Number:Temperature   | Heater - Target Temperature              |            |
-| alarm                      | Switch               | Alarm - Alarm                            |            |
-| countdown-time             | Number:Time          | Countdown - Countdown Time               |            |
-| relative-humidity          | Number:Dimensionless | Environment - Relative Humidity          |            |
-| temperature                | Number:Temperature   | Environment - Temperature                |            |
-| brightness                 | Number               | Indicator Light - Brightness             | Value mapping `["0"="Bright","1"="Dark","2"="Extinguished"]` |
-| physical-controls-locked   | Switch               | Physical Control Locked - Physical Controls Locked |            |
-| use-time                   | Number:Time          | Private-Service - Use Time               |            |
-| country-code               | Number               | Private-Service - Country-Code           | Value mapping `["0"="Unknown","1"="US","82"="KR","44"="EU","81"="JP","7"="RU","86"="CN","852"="HK","886"="TW","33"="FR"]` |
+| on                         | Switch               | Power                                    |            |
+| fault                      | Number               | Fault                                    | Value mapping `["0"="No Error","1"="NTC Connect Error","2"="High Temperature Alarm","3"="EEPROM Error","4"="Multi Errors"]` |
+| target_temperature         | Number:Temperature   | Target Temperature                       |            |
+| alarm                      | Switch               | Notification Sound                       |            |
+| countdown_time             | Number:Time          | Power-Off Timer                          | Hours until the heater turns off, 0 = no timer |
+| relative_humidity          | Number:Dimensionless | Relative Humidity                        |            |
+| temperature                | Number:Temperature   | Temperature                              |            |
+| brightness                 | Number               | Screen Brightness                        | Value mapping `["0"="Bright","1"="Dim","2"="Off"]` |
+| physical_controls_locked   | Switch               | Child Lock                               |            |
+| use_time                   | Number:Time          | Run Time                                 |            |
+| country_code               | Number               | Country Code                             | Value mapping `["0"="Unknown","1"="US","82"="KR","44"="EU","81"="JP","7"="RU","86"="CN","852"="HK","886"="TW","33"="FR"]` |
+
+### Smartmi Smart Convector Heater 1S (<a name="zhimi-heater-zb1a">zhimi.heater.zb1a</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| fault                      | Number               | Fault                                    | Value mapping `["0"="No Error","1"="NTC Connect Error","2"="High Temperature Alarm","3"="EEPROM Error","4"="Multi Errors"]` |
+| on                         | Switch               | Power                                    |            |
+| target_temperature         | Number:Temperature   | Target Temperature                       |            |
+| alarm                      | Switch               | Notification Sound                       |            |
+| countdown_time             | Number:Time          | Power-Off Timer                          | Hours until the heater turns off, 0 = no timer |
+| relative_humidity          | Number:Dimensionless | Relative Humidity                        |            |
+| temperature                | Number:Temperature   | Temperature                              |            |
+| brightness                 | Number               | Screen Brightness                        | Value mapping `["0"="Bright","1"="Dim","2"="Off"]` |
+| physical_controls_locked   | Switch               | Child Lock                               |            |
+| use_time                   | Number:Time          | Run Time                                 |            |
 
 ### Smartmi Evaporative Humidifier (<a name="zhimi-humidifier-ca1">zhimi.humidifier.ca1</a>) Channels
 
@@ -19728,6 +19873,88 @@ Number:Time off_delay_time "Power-Off Timer" (G_fan) {channel="miio:basic:fan:of
 Switch buzzer "Notification Sound" (G_fan) {channel="miio:basic:fan:buzzer"}
 Switch led "Light" (G_fan) {channel="miio:basic:fan:led"}
 Number fault "Device Fault" (G_fan) {channel="miio:basic:fan:fault"}
+```
+
+### Mi Smart Baseboard Heater 1S (leshow.heater.bs1s) item file lines
+
+note: Autogenerated example. Replace the id (heater) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_heater "Mi Smart Baseboard Heater 1S" <status>
+Switch on "Power" (G_heater) {channel="miio:basic:heater:on"}
+Number fault "Fault" (G_heater) {channel="miio:basic:heater:fault"}
+Number:Temperature target_temperature "Target Temperature" (G_heater) {channel="miio:basic:heater:target_temperature"}
+Number:Temperature temperature "Temperature" (G_heater) {channel="miio:basic:heater:temperature"}
+Number mode "Low Power Mode" (G_heater) {channel="miio:basic:heater:mode"}
+Number:Time countdown_time "Power-Off Timer" (G_heater) {channel="miio:basic:heater:countdown_time"}
+Number:Temperature environment_temperature "Environment Temperature" (G_heater) {channel="miio:basic:heater:environment_temperature"}
+Switch physical_controls_locked "Child Lock" (G_heater) {channel="miio:basic:heater:physical_controls_locked"}
+Switch alarm "Notification Sound" (G_heater) {channel="miio:basic:heater:alarm"}
+Switch sleep "Sleep" (G_heater) {channel="miio:basic:heater:sleep"}
+Switch fan "Fan" (G_heater) {channel="miio:basic:heater:fan"}
+Number:Temperature pcbtemp "PCB Temperature" (G_heater) {channel="miio:basic:heater:pcbtemp"}
+```
+
+### Xiaomi Graphene Baseboard Heater (leshow.heater.bs3) item file lines
+
+note: Autogenerated example. Replace the id (heater) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_heater "Xiaomi Graphene Baseboard Heater" <status>
+Switch on "Power" (G_heater) {channel="miio:basic:heater:on"}
+Number fault "Fault" (G_heater) {channel="miio:basic:heater:fault"}
+Number:Temperature target_temperature "Target Temperature" (G_heater) {channel="miio:basic:heater:target_temperature"}
+Number:Temperature temperature "Temperature" (G_heater) {channel="miio:basic:heater:temperature"}
+Number mode "Low Power Mode" (G_heater) {channel="miio:basic:heater:mode"}
+Number:Time countdown_time "Power-Off Timer" (G_heater) {channel="miio:basic:heater:countdown_time"}
+Number:Temperature environment_temperature "Environment Temperature" (G_heater) {channel="miio:basic:heater:environment_temperature"}
+Switch physical_controls_locked "Child Lock" (G_heater) {channel="miio:basic:heater:physical_controls_locked"}
+Switch alarm "Notification Sound" (G_heater) {channel="miio:basic:heater:alarm"}
+Switch sleep "Sleep" (G_heater) {channel="miio:basic:heater:sleep"}
+Switch fan "Fan" (G_heater) {channel="miio:basic:heater:fan"}
+Number:Temperature pcbtemp "PCB Temperature" (G_heater) {channel="miio:basic:heater:pcbtemp"}
+```
+
+### Xiaomi Smart Tower Heater Lite (leshow.heater.nfj2lx) item file lines
+
+note: Autogenerated example. Replace the id (heater) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_heater "Xiaomi Smart Tower Heater Lite" <status>
+Switch on "Power" (G_heater) {channel="miio:basic:heater:on"}
+Number fault "Fault" (G_heater) {channel="miio:basic:heater:fault"}
+Number:Temperature target_temperature "Target Temperature" (G_heater) {channel="miio:basic:heater:target_temperature"}
+Number:Temperature heater_temperature "Heater Temperature" (G_heater) {channel="miio:basic:heater:heater_temperature"}
+Number mode "Mode" (G_heater) {channel="miio:basic:heater:mode"}
+Number:Time countdown_time "Power-Off Timer" (G_heater) {channel="miio:basic:heater:countdown_time"}
+Number:Temperature temperature "Temperature" (G_heater) {channel="miio:basic:heater:temperature"}
+Switch physical_controls_locked "Child Lock" (G_heater) {channel="miio:basic:heater:physical_controls_locked"}
+Switch alarm "Notification Sound" (G_heater) {channel="miio:basic:heater:alarm"}
+Switch auto_light_off "Auto Light Off" (G_heater) {channel="miio:basic:heater:auto_light_off"}
+Switch oscillation "Oscillation" (G_heater) {channel="miio:basic:heater:oscillation"}
+Number:Temperature pcbtemp "PCB Temperature" (G_heater) {channel="miio:basic:heater:pcbtemp"}
+Switch indicator "Indicator" (G_heater) {channel="miio:basic:heater:indicator"}
+```
+
+### Xiaomi Smart Tower Heater Lite (leshow.heater.nfj3lx) item file lines
+
+note: Autogenerated example. Replace the id (heater) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_heater "Xiaomi Smart Tower Heater Lite" <status>
+Switch on "Power" (G_heater) {channel="miio:basic:heater:on"}
+Number fault "Fault" (G_heater) {channel="miio:basic:heater:fault"}
+Number:Temperature target_temperature "Target Temperature" (G_heater) {channel="miio:basic:heater:target_temperature"}
+Number:Temperature heater_temperature "Heater Temperature" (G_heater) {channel="miio:basic:heater:heater_temperature"}
+Number mode "Mode" (G_heater) {channel="miio:basic:heater:mode"}
+Number:Time countdown_time "Power-Off Timer" (G_heater) {channel="miio:basic:heater:countdown_time"}
+Number:Temperature temperature "Temperature" (G_heater) {channel="miio:basic:heater:temperature"}
+Switch physical_controls_locked "Child Lock" (G_heater) {channel="miio:basic:heater:physical_controls_locked"}
+Switch alarm "Notification Sound" (G_heater) {channel="miio:basic:heater:alarm"}
+Switch auto_light_off "Auto Light Off" (G_heater) {channel="miio:basic:heater:auto_light_off"}
+Switch oscillation "Oscillation" (G_heater) {channel="miio:basic:heater:oscillation"}
+Number:Temperature pcbtemp "PCB Temperature" (G_heater) {channel="miio:basic:heater:pcbtemp"}
+Switch indicator "Indicator" (G_heater) {channel="miio:basic:heater:indicator"}
 ```
 
 ### Xiaomiyoupin Curtain Controller (Wi-Fi) (lumi.curtain.hagl05) item file lines
@@ -25594,6 +25821,27 @@ Number:Time delay_remain_time "Turn-Off Delay Remaining" (G_derh) {channel="miio
 String actions "Actions" (G_derh) {channel="miio:basic:derh:actions"}
 ```
 
+### Xiaomi Smart Graphene Heater (xiaomi.heater.nb1) item file lines
+
+note: Autogenerated example. Replace the id (heater) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_heater "Xiaomi Smart Graphene Heater" <status>
+Switch on "Power" (G_heater) {channel="miio:basic:heater:on"}
+Number fault "Fault" (G_heater) {channel="miio:basic:heater:fault"}
+Number mode "Mode" (G_heater) {channel="miio:basic:heater:mode"}
+Number:Temperature target_temperature "Target Temperature" (G_heater) {channel="miio:basic:heater:target_temperature"}
+Number:Temperature temperature "Temperature" (G_heater) {channel="miio:basic:heater:temperature"}
+Switch oscillation "Oscillation" (G_heater) {channel="miio:basic:heater:oscillation"}
+Switch indicator "Indicator" (G_heater) {channel="miio:basic:heater:indicator"}
+Switch alarm "Notification Sound" (G_heater) {channel="miio:basic:heater:alarm"}
+Switch physical_controls_locked "Child Lock" (G_heater) {channel="miio:basic:heater:physical_controls_locked"}
+Switch delay "Power-Off Timer" (G_heater) {channel="miio:basic:heater:delay"}
+Number:Time delay_time "Power-Off Timer Duration" (G_heater) {channel="miio:basic:heater:delay_time"}
+Number:Time delay_remain_time "Power-Off Timer Remaining" (G_heater) {channel="miio:basic:heater:delay_remain_time"}
+Number country_code "Country Code" (G_heater) {channel="miio:basic:heater:country_code"}
+```
+
 ### Xiaomi Smart Evaporative Humidifier (xiaomi.humidifier.3lite) item file lines
 
 note: Autogenerated example. Replace the id (humidifier) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
@@ -30606,16 +30854,36 @@ note: Autogenerated example. Replace the id (heater) in the channel with your ow
 
 ```java
 Group G_heater "Mi Smart Space Heater S" <status>
-Switch on "Heater - Switch Status" (G_heater) {channel="miio:basic:heater:on"}
-Number fault "Heater - Fault" (G_heater) {channel="miio:basic:heater:fault"}
-Number:Temperature target_temperature "Heater - Target Temperature" (G_heater) {channel="miio:basic:heater:target_temperature"}
-Number:Time countdown_time "Countdown - Countdown Time" (G_heater) {channel="miio:basic:heater:countdown_time"}
-Number:Temperature temperature "Environment - Temperature" (G_heater) {channel="miio:basic:heater:temperature"}
-Switch physical_controls_locked "Physical Control Locked - Physical Control Locked" (G_heater) {channel="miio:basic:heater:physical_controls_locked"}
-Switch alarm "Alarm - Alarm" (G_heater) {channel="miio:basic:heater:alarm"}
-Number:Dimensionless brightness "Indicator Light - Brightness" (G_heater) {channel="miio:basic:heater:brightness"}
-Switch hw_enable "Private Service - Hw Enable" (G_heater) {channel="miio:basic:heater:hw_enable"}
-Number:Time use_time "Private Service - Use Time" (G_heater) {channel="miio:basic:heater:use_time"}
+Switch on "Power" (G_heater) {channel="miio:basic:heater:on"}
+Number fault "Fault" (G_heater) {channel="miio:basic:heater:fault"}
+Number:Temperature target_temperature "Target Temperature" (G_heater) {channel="miio:basic:heater:target_temperature"}
+Number heat_level "Heating Power" (G_heater) {channel="miio:basic:heater:heat_level"}
+Number:Time countdown_time "Power-Off Timer" (G_heater) {channel="miio:basic:heater:countdown_time"}
+Number:Temperature temperature "Temperature" (G_heater) {channel="miio:basic:heater:temperature"}
+Switch physical_controls_locked "Child Lock" (G_heater) {channel="miio:basic:heater:physical_controls_locked"}
+Switch alarm "Notification Sound" (G_heater) {channel="miio:basic:heater:alarm"}
+Number brightness "Indicator" (G_heater) {channel="miio:basic:heater:brightness"}
+Switch hw_enable "Continuous Heating" (G_heater) {channel="miio:basic:heater:hw_enable"}
+Number:Time use_time "Run Time" (G_heater) {channel="miio:basic:heater:use_time"}
+```
+
+### Mi Smart Space Heater S (zhimi.heater.ma2a) item file lines
+
+note: Autogenerated example. Replace the id (heater) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_heater "Mi Smart Space Heater S" <status>
+Switch on "Power" (G_heater) {channel="miio:basic:heater:on"}
+Number fault "Fault" (G_heater) {channel="miio:basic:heater:fault"}
+Number:Temperature target_temperature "Target Temperature" (G_heater) {channel="miio:basic:heater:target_temperature"}
+Number heat_level "Heating Power" (G_heater) {channel="miio:basic:heater:heat_level"}
+Number:Time countdown_time "Power-Off Timer" (G_heater) {channel="miio:basic:heater:countdown_time"}
+Number:Temperature temperature "Temperature" (G_heater) {channel="miio:basic:heater:temperature"}
+Switch physical_controls_locked "Child Lock" (G_heater) {channel="miio:basic:heater:physical_controls_locked"}
+Switch alarm "Notification Sound" (G_heater) {channel="miio:basic:heater:alarm"}
+Switch indicator "Indicator" (G_heater) {channel="miio:basic:heater:indicator"}
+Switch hw_enable "Continuous Heating" (G_heater) {channel="miio:basic:heater:hw_enable"}
+Number:Time use_time "Run Time" (G_heater) {channel="miio:basic:heater:use_time"}
 ```
 
 ### Mi Smart Baseboard Heater E (zhimi.heater.ma3) item file lines
@@ -30625,16 +30893,16 @@ note: Autogenerated example. Replace the id (heater) in the channel with your ow
 ```java
 Group G_heater "Mi Smart Baseboard Heater E" <status>
 String actions "Actions" (G_heater) {channel="miio:basic:heater:actions"}
-Switch on "Heater - Switch Status" (G_heater) {channel="miio:basic:heater:on"}
-Number fault "Heater - Fault" (G_heater) {channel="miio:basic:heater:fault"}
-Number:Temperature target_temperature "Heater - Target Temperature" (G_heater) {channel="miio:basic:heater:target_temperature"}
-Number mode "Heater - Mode" (G_heater) {channel="miio:basic:heater:mode"}
-Number:Time countdown_time "Countdown - Countdown Time" (G_heater) {channel="miio:basic:heater:countdown_time"}
-Number:Temperature temperature "Environment - Temperature" (G_heater) {channel="miio:basic:heater:temperature"}
-Switch physical_controls_locked "Physical Control Locked - Physical Control Locked" (G_heater) {channel="miio:basic:heater:physical_controls_locked"}
-Switch alarm "Alarm - Alarm" (G_heater) {channel="miio:basic:heater:alarm"}
-Number:Dimensionless brightness "Indicator Light - Brightness" (G_heater) {channel="miio:basic:heater:brightness"}
-Number:Time use_time "Private Service - Use Time" (G_heater) {channel="miio:basic:heater:use_time"}
+Switch on "Power" (G_heater) {channel="miio:basic:heater:on"}
+Number fault "Fault" (G_heater) {channel="miio:basic:heater:fault"}
+Number:Temperature target_temperature "Target Temperature" (G_heater) {channel="miio:basic:heater:target_temperature"}
+Number mode "Low Power Mode" (G_heater) {channel="miio:basic:heater:mode"}
+Number:Time countdown_time "Power-Off Timer" (G_heater) {channel="miio:basic:heater:countdown_time"}
+Number:Temperature temperature "Temperature" (G_heater) {channel="miio:basic:heater:temperature"}
+Switch physical_controls_locked "Child Lock" (G_heater) {channel="miio:basic:heater:physical_controls_locked"}
+Switch alarm "Notification Sound" (G_heater) {channel="miio:basic:heater:alarm"}
+Number brightness "Indicator Brightness" (G_heater) {channel="miio:basic:heater:brightness"}
+Number:Time use_time "Run Time" (G_heater) {channel="miio:basic:heater:use_time"}
 ```
 
 ### Mi Smart Space Heater S (zhimi.heater.mc2) item file lines
@@ -30643,17 +30911,36 @@ note: Autogenerated example. Replace the id (heater) in the channel with your ow
 
 ```java
 Group G_heater "Mi Smart Space Heater S" <status>
-Switch on "Heater - Power" (G_heater) {channel="miio:basic:heater:on"}
-Number fault "Heater - Device Fault" (G_heater) {channel="miio:basic:heater:fault"}
-Number:Temperature target_temperature "Heater - Target Temperature" (G_heater) {channel="miio:basic:heater:target_temperature"}
-Number:Time countdown_time "Countdown - Countdown Time" (G_heater) {channel="miio:basic:heater:countdown_time"}
-Number:Temperature temperature "Environment - Temperature" (G_heater) {channel="miio:basic:heater:temperature"}
-Switch physical_controls_locked "Physical Control Locked - Physical Control Locked" (G_heater) {channel="miio:basic:heater:physical_controls_locked"}
-Switch alarm "Alarm - Alarm" (G_heater) {channel="miio:basic:heater:alarm"}
-Number brightness "Indicator Light - Brightness" (G_heater) {channel="miio:basic:heater:brightness"}
-Switch hw_enable "Private Service - Hw Enable" (G_heater) {channel="miio:basic:heater:hw_enable"}
-Number:Time use_time "Private Service - Use Time" (G_heater) {channel="miio:basic:heater:use_time"}
-Number country_code "Private Service - Country Code" (G_heater) {channel="miio:basic:heater:country_code"}
+Switch on "Power" (G_heater) {channel="miio:basic:heater:on"}
+Number fault "Fault" (G_heater) {channel="miio:basic:heater:fault"}
+Number:Temperature target_temperature "Target Temperature" (G_heater) {channel="miio:basic:heater:target_temperature"}
+Number:Time countdown_time "Power-Off Timer" (G_heater) {channel="miio:basic:heater:countdown_time"}
+Number:Temperature temperature "Temperature" (G_heater) {channel="miio:basic:heater:temperature"}
+Switch physical_controls_locked "Child Lock" (G_heater) {channel="miio:basic:heater:physical_controls_locked"}
+Switch alarm "Notification Sound" (G_heater) {channel="miio:basic:heater:alarm"}
+Number brightness "Indicator" (G_heater) {channel="miio:basic:heater:brightness"}
+Switch hw_enable "Continuous Heating" (G_heater) {channel="miio:basic:heater:hw_enable"}
+Number:Time use_time "Run Time" (G_heater) {channel="miio:basic:heater:use_time"}
+Number country_code "Country Code" (G_heater) {channel="miio:basic:heater:country_code"}
+```
+
+### Mi Smart Space Heater S (zhimi.heater.mc2a) item file lines
+
+note: Autogenerated example. Replace the id (heater) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_heater "Mi Smart Space Heater S" <status>
+Switch on "Power" (G_heater) {channel="miio:basic:heater:on"}
+Number fault "Fault" (G_heater) {channel="miio:basic:heater:fault"}
+Number:Temperature target_temperature "Target Temperature" (G_heater) {channel="miio:basic:heater:target_temperature"}
+Number:Time countdown_time "Power-Off Timer" (G_heater) {channel="miio:basic:heater:countdown_time"}
+Number:Temperature temperature "Temperature" (G_heater) {channel="miio:basic:heater:temperature"}
+Switch physical_controls_locked "Child Lock" (G_heater) {channel="miio:basic:heater:physical_controls_locked"}
+Switch alarm "Notification Sound" (G_heater) {channel="miio:basic:heater:alarm"}
+Switch indicator "Indicator" (G_heater) {channel="miio:basic:heater:indicator"}
+Switch hw_enable "Continuous Heating" (G_heater) {channel="miio:basic:heater:hw_enable"}
+Number:Time use_time "Run Time" (G_heater) {channel="miio:basic:heater:use_time"}
+Number country_code "Country Code" (G_heater) {channel="miio:basic:heater:country_code"}
 ```
 
 ### Smartmi Smart Fan (zhimi.heater.na1) item file lines
@@ -30662,15 +30949,15 @@ note: Autogenerated example. Replace the id (heater) in the channel with your ow
 
 ```java
 Group G_heater "Smartmi Smart Fan" <status>
-Switch on "Heater - Power" (G_heater) {channel="miio:basic:heater:on"}
-Number fault "Heater - Device Fault" (G_heater) {channel="miio:basic:heater:fault"}
-Number heat_level "Heater - Heat Level" (G_heater) {channel="miio:basic:heater:heat_level"}
-Number mode "Heater - Mode" (G_heater) {channel="miio:basic:heater:mode"}
-Switch alarm "Alarm - Alarm" (G_heater) {channel="miio:basic:heater:alarm"}
-Number:Time countdown_time "Countdown - Countdown Time" (G_heater) {channel="miio:basic:heater:countdown_time"}
-Number brightness "Indicator Light - Brightness" (G_heater) {channel="miio:basic:heater:brightness"}
-Switch physical_controls_locked "Physical Control Locked - Physical Control Locked" (G_heater) {channel="miio:basic:heater:physical_controls_locked"}
-Switch return_to_middle "Private Service - Return To Middle" (G_heater) {channel="miio:basic:heater:return_to_middle"}
+Switch on "Power" (G_heater) {channel="miio:basic:heater:on"}
+Number fault "Fault" (G_heater) {channel="miio:basic:heater:fault"}
+Number heat_level "Heat Level" (G_heater) {channel="miio:basic:heater:heat_level"}
+Number mode "Oscillation" (G_heater) {channel="miio:basic:heater:mode"}
+Switch alarm "Notification Sound" (G_heater) {channel="miio:basic:heater:alarm"}
+Number:Time countdown_time "Power-Off Timer" (G_heater) {channel="miio:basic:heater:countdown_time"}
+Number brightness "Indicator Light" (G_heater) {channel="miio:basic:heater:brightness"}
+Switch physical_controls_locked "Child Lock" (G_heater) {channel="miio:basic:heater:physical_controls_locked"}
+Switch return_to_middle "Auto Recenter" (G_heater) {channel="miio:basic:heater:return_to_middle"}
 ```
 
 ### Smartmi Smart Fan Heater (zhimi.heater.nb1) item file lines
@@ -30679,19 +30966,19 @@ note: Autogenerated example. Replace the id (heater) in the channel with your ow
 
 ```java
 Group G_heater "Smartmi Smart Fan Heater" <status>
-Switch on "Heater - Power" (G_heater) {channel="miio:basic:heater:on"}
-Number fault "Heater - Device Fault" (G_heater) {channel="miio:basic:heater:fault"}
-Number heat_level "Heater - Heat Level" (G_heater) {channel="miio:basic:heater:heat_level"}
-Number mode "Heater - Mode" (G_heater) {channel="miio:basic:heater:mode"}
-Number:Temperature target_temperature "Heater - Target Temperature" (G_heater) {channel="miio:basic:heater:target_temperature"}
-Number:Temperature temperature "Environment - Temperature" (G_heater) {channel="miio:basic:heater:temperature"}
-Switch alarm "Alarm - Alarm" (G_heater) {channel="miio:basic:heater:alarm"}
-Number:Time countdown_time "Countdown - Countdown Time" (G_heater) {channel="miio:basic:heater:countdown_time"}
-Number brightness "Indicator Light - Brightness" (G_heater) {channel="miio:basic:heater:brightness"}
-Switch physical_controls_locked "Physical Control Locked - Physical Control Locked" (G_heater) {channel="miio:basic:heater:physical_controls_locked"}
-Switch return_to_middle "Private Service - Return To Middle" (G_heater) {channel="miio:basic:heater:return_to_middle"}
-Number country_code "Private Service - Country Code" (G_heater) {channel="miio:basic:heater:country_code"}
-Switch hw_en "Private Service - Hw En" (G_heater) {channel="miio:basic:heater:hw_en"}
+Switch on "Power" (G_heater) {channel="miio:basic:heater:on"}
+Number fault "Fault" (G_heater) {channel="miio:basic:heater:fault"}
+Number heat_level "Heat Level" (G_heater) {channel="miio:basic:heater:heat_level"}
+Number mode "Oscillation" (G_heater) {channel="miio:basic:heater:mode"}
+Number:Temperature target_temperature "Target Temperature" (G_heater) {channel="miio:basic:heater:target_temperature"}
+Number:Temperature temperature "Temperature" (G_heater) {channel="miio:basic:heater:temperature"}
+Switch alarm "Notification Sound" (G_heater) {channel="miio:basic:heater:alarm"}
+Number:Time countdown_time "Power-Off Timer" (G_heater) {channel="miio:basic:heater:countdown_time"}
+Number brightness "Indicator Light" (G_heater) {channel="miio:basic:heater:brightness"}
+Switch physical_controls_locked "Child Lock" (G_heater) {channel="miio:basic:heater:physical_controls_locked"}
+Switch return_to_middle "Auto Recenter" (G_heater) {channel="miio:basic:heater:return_to_middle"}
+Number country_code "Country Code" (G_heater) {channel="miio:basic:heater:country_code"}
+Switch hw_en "Constant Temperature" (G_heater) {channel="miio:basic:heater:hw_en"}
 ```
 
 ### Smartmi Radiant Heater Smart Version (zhimi.heater.za1) item file lines
@@ -30702,11 +30989,12 @@ note: Autogenerated example. Replace the id (heater) in the channel with your ow
 Group G_heater "Smartmi Radiant Heater Smart Version" <status>
 Switch power "Power" (G_heater) {channel="miio:basic:heater:power"}
 Number:Temperature target_temperature "Target Temperature" (G_heater) {channel="miio:basic:heater:target_temperature"}
-Dimmer brightness "Brightness" (G_heater) {channel="miio:basic:heater:brightness"}
-Switch buzzer "Buzzer Status" (G_heater) {channel="miio:basic:heater:buzzer"}
+Number brightness "Display Brightness" (G_heater) {channel="miio:basic:heater:brightness"}
+Number:Time poweroff_time "Power-Off Timer" (G_heater) {channel="miio:basic:heater:poweroff_time"}
+Switch buzzer "Notification Sound" (G_heater) {channel="miio:basic:heater:buzzer"}
 Number:Dimensionless relative_humidity "Relative Humidity" (G_heater) {channel="miio:basic:heater:relative_humidity"}
 Switch childlock "Child Lock" (G_heater) {channel="miio:basic:heater:childlock"}
-Switch HWSwitch "HW Switch" (G_heater) {channel="miio:basic:heater:HWSwitch"}
+Switch hw_switch "Constant Temperature" (G_heater) {channel="miio:basic:heater:hw_switch"}
 Number:Temperature temperature "Temperature" (G_heater) {channel="miio:basic:heater:temperature"}
 Number:Time usedhours "Run Time" (G_heater) {channel="miio:basic:heater:usedhours"}
 ```
@@ -30717,16 +31005,16 @@ note: Autogenerated example. Replace the id (heater) in the channel with your ow
 
 ```java
 Group G_heater "Smartmi Smart Convector Heater 1S" <status>
-Number fault "Heater - Device Fault" (G_heater) {channel="miio:basic:heater:fault"}
-Switch on "Heater - Power" (G_heater) {channel="miio:basic:heater:on"}
-Number:Temperature target_temperature "Heater - Target Temperature" (G_heater) {channel="miio:basic:heater:target-temperature"}
-Switch alarm "Alarm - Alarm" (G_heater) {channel="miio:basic:heater:alarm"}
-Number:Time countdown_time "Countdown - Countdown Time" (G_heater) {channel="miio:basic:heater:countdown-time"}
-Number:Dimensionless relative_humidity "Environment - Relative Humidity" (G_heater) {channel="miio:basic:heater:relative-humidity"}
-Number:Temperature temperature "Environment - Temperature" (G_heater) {channel="miio:basic:heater:temperature"}
-Number brightness "Indicator Light - Brightness" (G_heater) {channel="miio:basic:heater:brightness"}
-Switch physical_controls_locked "Physical Control Locked - Physical Controls Locked" (G_heater) {channel="miio:basic:heater:physical-controls-locked"}
-Number:Time use_time "Private-Service - Use Time" (G_heater) {channel="miio:basic:heater:use-time"}
+Number fault "Fault" (G_heater) {channel="miio:basic:heater:fault"}
+Switch on "Power" (G_heater) {channel="miio:basic:heater:on"}
+Number:Temperature target_temperature "Target Temperature" (G_heater) {channel="miio:basic:heater:target_temperature"}
+Switch alarm "Notification Sound" (G_heater) {channel="miio:basic:heater:alarm"}
+Number:Time countdown_time "Power-Off Timer" (G_heater) {channel="miio:basic:heater:countdown_time"}
+Number:Dimensionless relative_humidity "Relative Humidity" (G_heater) {channel="miio:basic:heater:relative_humidity"}
+Number:Temperature temperature "Temperature" (G_heater) {channel="miio:basic:heater:temperature"}
+Number brightness "Screen Brightness" (G_heater) {channel="miio:basic:heater:brightness"}
+Switch physical_controls_locked "Child Lock" (G_heater) {channel="miio:basic:heater:physical_controls_locked"}
+Number:Time use_time "Run Time" (G_heater) {channel="miio:basic:heater:use_time"}
 ```
 
 ### Smartmi Smart Convector Heater 1S (zhimi.heater.zb1) item file lines
@@ -30735,17 +31023,35 @@ note: Autogenerated example. Replace the id (heater) in the channel with your ow
 
 ```java
 Group G_heater "Smartmi Smart Convector Heater 1S" <status>
-Switch on "Heater - Power" (G_heater) {channel="miio:basic:heater:on"}
-Number fault "Heater - Device Fault" (G_heater) {channel="miio:basic:heater:fault"}
-Number:Temperature target_temperature "Heater - Target Temperature" (G_heater) {channel="miio:basic:heater:target-temperature"}
-Switch alarm "Alarm - Alarm" (G_heater) {channel="miio:basic:heater:alarm"}
-Number:Time countdown_time "Countdown - Countdown Time" (G_heater) {channel="miio:basic:heater:countdown-time"}
-Number:Dimensionless relative_humidity "Environment - Relative Humidity" (G_heater) {channel="miio:basic:heater:relative-humidity"}
-Number:Temperature temperature "Environment - Temperature" (G_heater) {channel="miio:basic:heater:temperature"}
-Number brightness "Indicator Light - Brightness" (G_heater) {channel="miio:basic:heater:brightness"}
-Switch physical_controls_locked "Physical Control Locked - Physical Controls Locked" (G_heater) {channel="miio:basic:heater:physical-controls-locked"}
-Number:Time use_time "Private-Service - Use Time" (G_heater) {channel="miio:basic:heater:use-time"}
-Number country_code "Private-Service - Country-Code" (G_heater) {channel="miio:basic:heater:country-code"}
+Switch on "Power" (G_heater) {channel="miio:basic:heater:on"}
+Number fault "Fault" (G_heater) {channel="miio:basic:heater:fault"}
+Number:Temperature target_temperature "Target Temperature" (G_heater) {channel="miio:basic:heater:target_temperature"}
+Switch alarm "Notification Sound" (G_heater) {channel="miio:basic:heater:alarm"}
+Number:Time countdown_time "Power-Off Timer" (G_heater) {channel="miio:basic:heater:countdown_time"}
+Number:Dimensionless relative_humidity "Relative Humidity" (G_heater) {channel="miio:basic:heater:relative_humidity"}
+Number:Temperature temperature "Temperature" (G_heater) {channel="miio:basic:heater:temperature"}
+Number brightness "Screen Brightness" (G_heater) {channel="miio:basic:heater:brightness"}
+Switch physical_controls_locked "Child Lock" (G_heater) {channel="miio:basic:heater:physical_controls_locked"}
+Number:Time use_time "Run Time" (G_heater) {channel="miio:basic:heater:use_time"}
+Number country_code "Country Code" (G_heater) {channel="miio:basic:heater:country_code"}
+```
+
+### Smartmi Smart Convector Heater 1S (zhimi.heater.zb1a) item file lines
+
+note: Autogenerated example. Replace the id (heater) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_heater "Smartmi Smart Convector Heater 1S" <status>
+Number fault "Fault" (G_heater) {channel="miio:basic:heater:fault"}
+Switch on "Power" (G_heater) {channel="miio:basic:heater:on"}
+Number:Temperature target_temperature "Target Temperature" (G_heater) {channel="miio:basic:heater:target_temperature"}
+Switch alarm "Notification Sound" (G_heater) {channel="miio:basic:heater:alarm"}
+Number:Time countdown_time "Power-Off Timer" (G_heater) {channel="miio:basic:heater:countdown_time"}
+Number:Dimensionless relative_humidity "Relative Humidity" (G_heater) {channel="miio:basic:heater:relative_humidity"}
+Number:Temperature temperature "Temperature" (G_heater) {channel="miio:basic:heater:temperature"}
+Number brightness "Screen Brightness" (G_heater) {channel="miio:basic:heater:brightness"}
+Switch physical_controls_locked "Child Lock" (G_heater) {channel="miio:basic:heater:physical_controls_locked"}
+Number:Time use_time "Run Time" (G_heater) {channel="miio:basic:heater:use_time"}
 ```
 
 ### Smartmi Evaporative Humidifier (zhimi.humidifier.ca1) item file lines
