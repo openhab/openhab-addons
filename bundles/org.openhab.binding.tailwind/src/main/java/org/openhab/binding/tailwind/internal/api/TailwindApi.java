@@ -19,9 +19,9 @@ import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.tailwind.internal.TailwindBindingConstants;
@@ -153,8 +153,9 @@ public class TailwindApi {
         long start = System.nanoTime();
         ContentResponse response;
         try {
-            response = httpClient.newRequest(requestUrl).method(HttpMethod.POST).header(TOKEN_HEADER, token)
-                    .content(new StringContentProvider(body)).timeout(TIMEOUT_SECONDS, TimeUnit.SECONDS).send();
+            response = httpClient.newRequest(requestUrl).method(HttpMethod.POST)
+                    .headers(headers -> headers.put(TOKEN_HEADER, token)).body(new StringRequestContent(body))
+                    .timeout(TIMEOUT_SECONDS, TimeUnit.SECONDS).send();
         } catch (ExecutionException e) {
             logger.debug("{} to {} failed after {} ms: {}", name, host(requestUrl), millisSince(start), e.getMessage());
             if (e.getCause() instanceof UnknownHostException) {

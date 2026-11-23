@@ -18,19 +18,20 @@ import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.TimeoutException;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentProvider;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.http.HttpFields;
+import org.eclipse.jetty.io.Content;
 import org.mockito.Answers;
 
 import com.google.gson.JsonObject;
@@ -105,17 +106,15 @@ public class FakeController {
         String[] token = new String[1];
         String[] content = new String[1];
         doAnswer(invocation -> {
-            token[0] = invocation.getArgument(1);
+            HttpFields.Mutable headers = HttpFields.build();
+            invocation.<Consumer<HttpFields.Mutable>> getArgument(0).accept(headers);
+            token[0] = headers.get("TOKEN");
             return request;
-        }).when(request).header(anyString(), anyString());
+        }).when(request).headers(any());
         doAnswer(invocation -> {
-            StringBuilder text = new StringBuilder();
-            for (ByteBuffer buffer : (ContentProvider) invocation.getArgument(0)) {
-                text.append(StandardCharsets.UTF_8.decode(buffer.duplicate()));
-            }
-            content[0] = text.toString();
+            content[0] = Content.Source.asString(invocation.<Request.Content> getArgument(0), StandardCharsets.UTF_8);
             return request;
-        }).when(request).content(any());
+        }).when(request).body(any());
         doAnswer(invocation -> {
             if (interrupted) {
                 throw new InterruptedException();
