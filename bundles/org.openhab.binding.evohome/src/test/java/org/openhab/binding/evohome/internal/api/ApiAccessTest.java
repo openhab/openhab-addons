@@ -24,9 +24,9 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.Request;
 import org.eclipse.jetty.http.HttpFields;
 import org.eclipse.jetty.http.HttpMethod;
 import org.junit.jupiter.api.BeforeEach;
@@ -44,7 +44,7 @@ class ApiAccessTest {
     private final HttpClient http = mock(HttpClient.class);
     private final Request request = mock(Request.class, RETURNS_SELF);
     private final ContentResponse response = mock(ContentResponse.class);
-    private final HttpFields headers = new HttpFields();
+    private final HttpFields.Mutable headers = HttpFields.build();
     private final ApiAccess api = new ApiAccess(http);
 
     @BeforeEach

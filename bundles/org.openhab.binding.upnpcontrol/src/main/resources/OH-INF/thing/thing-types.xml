@@ -146,8 +146,8 @@
 		<description>Loudness</description>
 		<category>SoundVolume</category>
 		<tags>
-			<tag>Switch</tag>
-			<tag>SoundVolume</tag>
+			<point>Switch</point>
+			<property>SoundVolume</property>
 		</tags>
 	</channel-type>
 	<channel-type id="stop">
@@ -155,8 +155,8 @@
 		<label>Stop</label>
 		<description>Stop the player</description>
 		<tags>
-			<tag>Switch</tag>
-			<tag>MediaControl</tag>
+			<point>Switch</point>
+			<property>MediaControl</property>
 		</tags>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
@@ -165,8 +165,8 @@
 		<label>Repeat</label>
 		<description>Repeat the selection</description>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
+			<point>Switch</point>
+			<property>Mode</property>
 		</tags>
 	</channel-type>
 	<channel-type id="shuffle">
@@ -174,8 +174,8 @@
 		<label>Shuffle</label>
 		<description>Random shuffle the selection</description>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
+			<point>Switch</point>
+			<property>Mode</property>
 		</tags>
 	</channel-type>
 	<channel-type id="onlyplayone">
@@ -183,8 +183,8 @@
 		<label>Only Play One</label>
 		<description>Stop playback after playing one media entry from queue</description>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
+			<point>Switch</point>
+			<property>Mode</property>
 		</tags>
 	</channel-type>
 	<channel-type id="uri">
@@ -192,8 +192,8 @@
 		<label>URI</label>
 		<description>Now playing URI</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 	</channel-type>
 	<channel-type id="favoriteselect">
@@ -224,8 +224,8 @@
 		<label>Album</label>
 		<description>Now playing album</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -234,8 +234,8 @@
 		<label>Album Art</label>
 		<description>Now playing album art</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -244,8 +244,8 @@
 		<label>Creator</label>
 		<description>Now playing creator</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -254,8 +254,8 @@
 		<label>Publisher</label>
 		<description>Now playing publisher</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -264,8 +264,8 @@
 		<label>Genre</label>
 		<description>Now playing genre</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -274,8 +274,8 @@
 		<label>Track Number</label>
 		<description>Now playing track number</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -284,8 +284,8 @@
 		<label>Track Duration</label>
 		<description>Now playing track duration</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Duration</tag>
+			<point>Status</point>
+			<property>Duration</property>
 		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
@@ -294,8 +294,8 @@
 		<label>Track Position</label>
 		<description>Now playing track position</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Progress</tag>
+			<point>Control</point>
+			<property>Progress</property>
 		</tags>
 		<state pattern="%d %unit%"/>
 	</channel-type>
@@ -305,8 +305,8 @@
 		<description>Track position as percentage of track duration</description>
 		<category>MediaControl</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>Progress</tag>
+			<point>Control</point>
+			<property>Progress</property>
 		</tags>
 	</channel-type>
 
@@ -315,8 +315,8 @@
 		<label>Renderer</label>
 		<description>Select AV renderer</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>MediaControl</tag>
+			<point>Control</point>
+			<property>MediaControl</property>
 		</tags>
 	</channel-type>
 	<channel-type id="browse">

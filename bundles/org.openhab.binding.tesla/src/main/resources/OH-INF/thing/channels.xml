@@ -33,8 +33,8 @@
 		<label>Route Location</label>
 		<description>Location of the destination</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>GeoLocation</tag>
+			<point>Status</point>
+			<property>GeoLocation</property>
 		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
@@ -43,8 +43,8 @@
 		<label>Distance To Arrival</label>
 		<description>Distance to drive to the destination (in miles)</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Progress</tag>
+			<point>Status</point>
+			<property>Progress</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"></state>
 	</channel-type>
@@ -54,8 +54,8 @@
 		<description>Minutes to drive to the destination</description>
 		<category>Time</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Progress</tag>
+			<point>Status</point>
+			<property>Progress</property>
 		</tags>
 		<state pattern="%d %unit%" readOnly="true"></state>
 	</channel-type>
@@ -65,8 +65,8 @@
 		<description>Number of minutes to fully charge the battery</description>
 		<category>Time</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Progress</tag>
+			<point>Status</point>
+			<property>Progress</property>
 		</tags>
 		<state pattern="%d %unit%" readOnly="true"></state>
 	</channel-type>
@@ -83,8 +83,8 @@
 		<label>Auto Conditioning</label>
 		<description>Turns on auto-conditioning (a/c or heating)</description>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Airconditioning</tag>
+			<point>Switch</point>
+			<property>Airconditioning</property>
 		</tags>
 	</channel-type>
 	<channel-type id="autoparkstate" advanced="true">
@@ -122,8 +122,8 @@
 		<label>Battery Level</label>
 		<description>State of the battery in %</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Energy</tag>
+			<point>Status</point>
+			<property>Energy</property>
 		</tags>
 		<state pattern="%.1f %%" readOnly="true"></state>
 	</channel-type>
@@ -263,8 +263,8 @@
 		<label>Charging State</label>
 		<description>“Starting”, “Complete”, “Charging”, “Disconnected”, “Stopped”, “NoPower”</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Power</tag>
+			<point>Status</point>
+			<property>Power</property>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -323,8 +323,8 @@
 		<label>Climate</label>
 		<description>Climate status indicator</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Airconditioning</tag>
+			<point>Status</point>
+			<property>Airconditioning</property>
 		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
@@ -333,8 +333,8 @@
 		<label>Driver Front Door</label>
 		<description>Indicates if the front door at the driver's side is opened</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>OpenState</tag>
+			<point>Status</point>
+			<property>OpenState</property>
 		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
@@ -343,8 +343,8 @@
 		<label>Driver Front Window</label>
 		<description>Indicates if the front window at the driver's side is open</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>OpenState</tag>
+			<point>Status</point>
+			<property>OpenState</property>
 		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
@@ -353,8 +353,8 @@
 		<label>Door Lock</label>
 		<description>Lock or unlock the car</description>
 		<tags>
-			<tag>Switch</tag>
-			<tag>LockState</tag>
+			<point>Switch</point>
+			<property>LockState</property>
 		</tags>
 	</channel-type>
 	<channel-type id="driverreardoor" advanced="true">
@@ -362,8 +362,8 @@
 		<label>Driver Rear Door</label>
 		<description>Indicates if the rear door at the driver's side is opened</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>OpenState</tag>
+			<point>Status</point>
+			<property>OpenState</property>
 		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
@@ -372,8 +372,8 @@
 		<label>Driver Rear Window</label>
 		<description>Indicates if the rear window at the driver's side is open</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>OpenState</tag>
+			<point>Status</point>
+			<property>OpenState</property>
 		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
@@ -423,8 +423,8 @@
 		<label>Front Trunk</label>
 		<description>Indicates if the front trunk is opened, or open the front trunk when ON is received</description>
 		<tags>
-			<tag>Switch</tag>
-			<tag>OpenState</tag>
+			<point>Switch</point>
+			<property>OpenState</property>
 		</tags>
 	</channel-type>
 	<channel-type id="gpstimestamp" advanced="true">
@@ -466,8 +466,8 @@
 		<label>Inside Temperature</label>
 		<description>Indicates the inside temperature of the vehicle</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"></state>
 	</channel-type>
@@ -488,8 +488,8 @@
 		<label>Location</label>
 		<description>The actual position of the vehicle</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>GeoLocation</tag>
+			<point>Status</point>
+			<property>GeoLocation</property>
 		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
@@ -576,8 +576,8 @@
 		<label>Odometer</label>
 		<description>Odometer of the vehicle</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Progress</tag>
+			<point>Measurement</point>
+			<property>Progress</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"></state>
 	</channel-type>
@@ -604,8 +604,8 @@
 		<label>Passenger Front Door</label>
 		<description>Indicates if the front door at the passenger's side is opened</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>OpenState</tag>
+			<point>Status</point>
+			<property>OpenState</property>
 		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
@@ -614,8 +614,8 @@
 		<label>Passenger Front Window</label>
 		<description>Indicates if the front window at the passenger's side is open</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>OpenState</tag>
+			<point>Status</point>
+			<property>OpenState</property>
 		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
@@ -624,8 +624,8 @@
 		<label>Passenger Rear Door</label>
 		<description>Indicates if the rear door at the passenger's side is opened</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>OpenState</tag>
+			<point>Status</point>
+			<property>OpenState</property>
 		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
@@ -634,8 +634,8 @@
 		<label>Passenger Rear Window</label>
 		<description>Indicates if the rear window at the passenger's side is open</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>OpenState</tag>
+			<point>Status</point>
+			<property>OpenState</property>
 		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
@@ -767,8 +767,8 @@
 		<label>Speed</label>
 		<description>Vehicle speed</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Speed</tag>
+			<point>Measurement</point>
+			<property>Speed</property>
 		</tags>
 		<state pattern="%d %unit%" readOnly="true"></state>
 	</channel-type>
@@ -789,8 +789,8 @@
 		<label>Sunroof State</label>
 		<description>Valid states are “unknown”, “open”, “closed”, “vent”, “comfort”. Accepts commands "close" and "vent".</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
+			<point>Status</point>
+			<property>Mode</property>
 		</tags>
 		<command>
 			<options>
@@ -804,8 +804,8 @@
 		<label>Sunroof</label>
 		<description>Indicates the opening state of the sunroof (0% closed, 100% fully open)</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>OpenLevel</tag>
+			<point>Control</point>
+			<property>OpenLevel</property>
 		</tags>
 		<state pattern="%d %%" readOnly="true"></state>
 	</channel-type>
@@ -827,8 +827,8 @@
 		<label>Tire Pressure Front Left</label>
 		<description>Pressure of the front left tire</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Pressure</tag>
+			<point>Measurement</point>
+			<property>Pressure</property>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"></state>
 	</channel-type>
@@ -837,8 +837,8 @@
 		<label>Tire Pressure Front Right</label>
 		<description>Pressure of the front right tire</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Pressure</tag>
+			<point>Measurement</point>
+			<property>Pressure</property>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"></state>
 	</channel-type>
@@ -847,8 +847,8 @@
 		<label>Tire Pressure Rear Left</label>
 		<description>Pressure of the rear left tire</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Pressure</tag>
+			<point>Measurement</point>
+			<property>Pressure</property>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"></state>
 	</channel-type>
@@ -857,8 +857,8 @@
 		<label>Tire Pressure Rear Right</label>
 		<description>Pressure of the rear right tire</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Pressure</tag>
+			<point>Measurement</point>
+			<property>Pressure</property>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"></state>
 	</channel-type>
@@ -867,7 +867,7 @@
 		<label>Tire Pressure Warning</label>
 		<description>Indicates if the vehicle reports a pressure warning for any tire</description>
 		<tags>
-			<tag>Alarm</tag>
+			<point>Alarm</point>
 		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
@@ -894,8 +894,8 @@
 		<label>User Present</label>
 		<description>Indicates if a person is present in the vehicle</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Presence</tag>
+			<point>Status</point>
+			<property>Presence</property>
 		</tags>
 		<state readOnly="true"></state>
 	</channel-type>

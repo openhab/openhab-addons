@@ -10,8 +10,8 @@
 		<description>Central lock state (ON = locked). Send ON to lock and OFF to unlock the vehicle.</description>
 		<category>Lock</category>
 		<tags>
-			<tag>Switch</tag>
-			<tag>LockState</tag>
+			<point>Switch</point>
+			<property>LockState</property>
 		</tags>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
@@ -21,8 +21,8 @@
 		<label>Door</label>
 		<category>Door</category>
 		<tags>
-			<tag>OpenState</tag>
-			<tag>Status</tag>
+			<point>Status</point>
+			<property>OpenState</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -32,8 +32,8 @@
 		<label>Window</label>
 		<category>Window</category>
 		<tags>
-			<tag>OpenState</tag>
-			<tag>Status</tag>
+			<point>Status</point>
+			<property>OpenState</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -43,8 +43,8 @@
 		<label>Engine Running</label>
 		<description>Indicates whether the engine is running.</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Power</tag>
+			<point>Status</point>
+			<property>Power</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -53,7 +53,7 @@
 		<item-type unitHint="km">Number:Length</item-type>
 		<label>Distance</label>
 		<tags>
-			<tag>Measurement</tag>
+			<point>Measurement</point>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -62,7 +62,7 @@
 		<item-type unitHint="km">Number:Length</item-type>
 		<label>Range</label>
 		<tags>
-			<tag>Measurement</tag>
+			<point>Measurement</point>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
@@ -72,7 +72,7 @@
 		<label>Availability</label>
 		<description>Indicates whether the vehicle is available for remote commands, or why it is unavailable.</description>
 		<tags>
-			<tag>Status</tag>
+			<point>Status</point>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -92,8 +92,8 @@
 		<description>Amount of fuel in the tank.</description>
 		<category>Oil</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Level</tag>
+			<point>Measurement</point>
+			<property>Level</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -104,8 +104,8 @@
 		<description>State of charge of the high voltage battery.</description>
 		<category>BatteryLevel</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>StateOfCharge</tag>
+			<point>Measurement</point>
+			<property>StateOfCharge</property>
 		</tags>
 		<state readOnly="true" min="0" max="100" pattern="%.0f %%"/>
 	</channel-type>
@@ -115,7 +115,7 @@
 		<label>Charger Connection Status</label>
 		<category>Energy</category>
 		<tags>
-			<tag>Status</tag>
+			<point>Status</point>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -131,7 +131,7 @@
 		<label>Charging Status</label>
 		<category>Energy</category>
 		<tags>
-			<tag>Status</tag>
+			<point>Status</point>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -150,7 +150,7 @@
 		<label>Charging Type</label>
 		<category>Energy</category>
 		<tags>
-			<tag>Status</tag>
+			<point>Status</point>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -166,7 +166,7 @@
 		<label>Charger Power Status</label>
 		<category>Energy</category>
 		<tags>
-			<tag>Status</tag>
+			<point>Status</point>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -185,8 +185,8 @@
 		<description>Estimated time until the target battery level is reached.</description>
 		<category>Time</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Duration</tag>
+			<point>Measurement</point>
+			<property>Duration</property>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
@@ -196,8 +196,8 @@
 		<label>Charging Current Limit</label>
 		<category>Energy</category>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Current</tag>
+			<point>Setpoint</point>
+			<property>Current</property>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
@@ -207,8 +207,8 @@
 		<label>Charging Power</label>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point>Measurement</point>
+			<property>Power</property>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
@@ -217,8 +217,8 @@
 		<item-type unitHint="km/h">Number:Speed</item-type>
 		<label>Average Speed</label>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Speed</tag>
+			<point>Measurement</point>
+			<property>Speed</property>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
@@ -228,7 +228,7 @@
 		<label>Average Fuel Consumption</label>
 		<description>Average fuel consumption in l/100km since the manual trip meter was reset.</description>
 		<tags>
-			<tag>Calculation</tag>
+			<point>Calculation</point>
 		</tags>
 		<state readOnly="true" pattern="%.1f l/100km"/>
 	</channel-type>
@@ -238,8 +238,8 @@
 		<label>Average Energy Consumption</label>
 		<description>Average energy consumption in kWh/100km since the manual trip meter was reset.</description>
 		<tags>
-			<tag>Calculation</tag>
-			<tag>Energy</tag>
+			<point>Calculation</point>
+			<property>Energy</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f kWh/100km"/>
 	</channel-type>
@@ -249,7 +249,7 @@
 		<label>Heading</label>
 		<description>Direction the vehicle is heading to.</description>
 		<tags>
-			<tag>Measurement</tag>
+			<point>Measurement</point>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
@@ -260,8 +260,8 @@
 		<description>Time the location was recorded.</description>
 		<category>Time</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
+			<point>Status</point>
+			<property>Timestamp</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -270,7 +270,7 @@
 		<item-type>String</item-type>
 		<label>Service Warning</label>
 		<tags>
-			<tag>Alarm</tag>
+			<point>Alarm</point>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -295,8 +295,8 @@
 		<description>Remaining time until the next service.</description>
 		<category>Time</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Duration</tag>
+			<point>Measurement</point>
+			<property>Duration</property>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
@@ -307,8 +307,8 @@
 		<description>Remaining engine hours until the next service.</description>
 		<category>Time</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Duration</tag>
+			<point>Measurement</point>
+			<property>Duration</property>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
@@ -317,8 +317,8 @@
 		<item-type>String</item-type>
 		<label>Level Warning</label>
 		<tags>
-			<tag>Alarm</tag>
-			<tag>Level</tag>
+			<point>Alarm</point>
+			<property>Level</property>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -334,8 +334,8 @@
 		<label>Oil Level Warning</label>
 		<category>Oil</category>
 		<tags>
-			<tag>Alarm</tag>
-			<tag>Oil</tag>
+			<point>Alarm</point>
+			<property>Oil</property>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -352,8 +352,8 @@
 		<item-type>String</item-type>
 		<label>Tyre Pressure Warning</label>
 		<tags>
-			<tag>Alarm</tag>
-			<tag>Pressure</tag>
+			<point>Alarm</point>
+			<property>Pressure</property>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -372,8 +372,8 @@
 		<description>ON if at least one exterior light reports a failure.</description>
 		<category>Light</category>
 		<tags>
-			<tag>Alarm</tag>
-			<tag>Light</tag>
+			<point>Alarm</point>
+			<property>Light</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -384,8 +384,8 @@
 		<description>Comma separated list of exterior lights reporting a failure, e.g. brakeLightLeft.</description>
 		<category>Light</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Light</tag>
+			<point>Status</point>
+			<property>Light</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -397,8 +397,8 @@
 			command was sent.</description>
 		<category>Climate</category>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Airconditioning</tag>
+			<point>Switch</point>
+			<property>Airconditioning</property>
 		</tags>
 	</channel-type>
 
@@ -408,8 +408,8 @@
 		<description>Send ON to start and OFF to stop the engine remotely. Switches back to OFF once the start command was
 			sent.</description>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Power</tag>
+			<point>Switch</point>
+			<property>Power</property>
 		</tags>
 	</channel-type>
 
@@ -418,7 +418,7 @@
 		<label>Honk and Flash</label>
 		<description>Makes the vehicle honk and/or flash its lights.</description>
 		<tags>
-			<tag>Control</tag>
+			<point>Control</point>
 		</tags>
 		<command>
 			<options>
@@ -436,8 +436,8 @@
 			once the command was sent.</description>
 		<category>Lock</category>
 		<tags>
-			<tag>Switch</tag>
-			<tag>LockState</tag>
+			<point>Switch</point>
+			<property>LockState</property>
 		</tags>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
@@ -447,7 +447,7 @@
 		<label>Last Command Status</label>
 		<description>Result of the last remote command, e.g. COMPLETED or REJECTED.</description>
 		<tags>
-			<tag>Status</tag>
+			<point>Status</point>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>

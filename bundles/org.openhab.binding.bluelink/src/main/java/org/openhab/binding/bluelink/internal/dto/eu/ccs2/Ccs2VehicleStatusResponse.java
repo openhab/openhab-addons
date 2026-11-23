@@ -295,10 +295,10 @@ public record Ccs2VehicleStatusResponse(String resCode, @SerializedName("Service
     public record ValueUnit(@SerializedName("Unit") int unit, @SerializedName("Value") double value) {
     }
 
-    public record FrontRow<T> (@SerializedName("Driver") T driver, @SerializedName("Passenger") T passenger) {
+    public record FrontRow<T>(@SerializedName("Driver") T driver, @SerializedName("Passenger") T passenger) {
     }
 
-    public record GenericRow<T> (@SerializedName("Left") T left, @SerializedName("Right") T right) {
+    public record GenericRow<T>(@SerializedName("Left") T left, @SerializedName("Right") T right) {
     }
 
     // Location & Coordinates

@@ -93,4 +93,11 @@
 		</instruction-set>
 	</thing-type>
 
+	<thing-type uid="deconz:thermostat">
+		<instruction-set targetVersion="1">
+			<!-- Recreated as a Switch when the thermostat reports externalwindowopen. -->
+			<remove-channel id="externalwindowopen"/>
+		</instruction-set>
+	</thing-type>
+
 </update:update-descriptions>

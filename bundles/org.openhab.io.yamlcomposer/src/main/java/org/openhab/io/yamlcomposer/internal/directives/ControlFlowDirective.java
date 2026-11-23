@@ -24,6 +24,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * @author Jimmy Tanagra - Initial contribution
  */
 @NonNullByDefault
-public sealed interface ControlFlowDirective
-        extends Directive permits IfDirective, ElseIfDirective, ElseDirective, ForDirective {
+public sealed interface ControlFlowDirective extends Directive
+        permits IfDirective, ElseIfDirective, ElseDirective, ForDirective {
 }

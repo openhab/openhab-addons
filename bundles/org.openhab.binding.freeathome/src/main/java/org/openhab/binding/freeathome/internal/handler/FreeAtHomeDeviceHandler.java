@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Future;
 
@@ -80,7 +81,7 @@ public class FreeAtHomeDeviceHandler extends BaseThingHandler implements FreeAtH
     private Bundle bundle;
 
     private final Map<ChannelUID, FreeAtHomeDatapointGroup> mapChannelUID = new ConcurrentHashMap<>();
-    private final Map<String, ChannelUID> mapEventToChannelUID = new ConcurrentHashMap<>();
+    private final Map<String, Set<ChannelUID>> mapEventToChannelUIDs = new ConcurrentHashMap<>();
 
     private volatile boolean disposed = false;
     private long initializationGeneration = 0;
@@ -240,7 +241,7 @@ public class FreeAtHomeDeviceHandler extends BaseThingHandler implements FreeAtH
         // Remove mapping tables
         mapChannelUID.clear();
 
-        mapEventToChannelUID.clear();
+        mapEventToChannelUIDs.clear();
 
         logger.debug("Device removed - device id: {}", registeredDeviceId);
     }
@@ -387,24 +388,25 @@ public class FreeAtHomeDeviceHandler extends BaseThingHandler implements FreeAtH
 
     @Override
     public void onDeviceStateChanged(String event, String valueString) {
-        // Get the channle UID belonging to this event
-        ChannelUID channelUID = mapEventToChannelUID.get(event);
+        Set<ChannelUID> channelUIDs = mapEventToChannelUIDs.get(event);
 
         try {
-            if (channelUID != null) {
-                // get the value State Converter for the channel
-                FreeAtHomeDatapointGroup dpg = mapChannelUID.get(channelUID);
+            if (channelUIDs != null) {
+                for (ChannelUID channelUID : channelUIDs) {
+                    // get the value State Converter for the channel
+                    FreeAtHomeDatapointGroup dpg = mapChannelUID.get(channelUID);
 
-                if (dpg != null) {
-                    State state;
-                    state = dpg.getValueStateConverter().convertToState(valueString);
+                    if (dpg != null) {
+                        State state;
+                        state = dpg.getValueStateConverter().convertToState(valueString);
 
-                    // Handle state change
-                    handleEventBasedUpdate(channelUID, state);
+                        // Handle state change
+                        handleEventBasedUpdate(channelUID, state);
 
-                    // if it is virtual device, give a feedback to free@home also
-                    if (isThingHandlesVirtualDevice()) {
-                        feedbackForVirtualDevice(channelUID, valueString);
+                        // if it is virtual device, give a feedback to free@home also
+                        if (isThingHandlesVirtualDevice()) {
+                            feedbackForVirtualDevice(channelUID, valueString);
+                        }
                     }
                 }
             }
@@ -548,7 +550,7 @@ public class FreeAtHomeDeviceHandler extends BaseThingHandler implements FreeAtH
                         String eventDatapointID = device.getDeviceId() + "/" + channel.getChannelId() + "/"
                                 + outputDatapoint.getDatapointId();
 
-                        mapEventToChannelUID.put(eventDatapointID, channelUID);
+                        registerForStateEvents(eventDatapointID, channelUID);
                     }
 
                     // add the datapoint group to the mapping channel
@@ -613,7 +615,7 @@ public class FreeAtHomeDeviceHandler extends BaseThingHandler implements FreeAtH
                     String eventDatapointID = device.getDeviceId() + "/" + channel.getChannelId() + "/"
                             + outputDatapoint.getDatapointId();
 
-                    mapEventToChannelUID.put(eventDatapointID, channelUID);
+                    registerForStateEvents(eventDatapointID, channelUID);
                 }
 
                 // add the datapoint group to the mapping channel
@@ -623,6 +625,12 @@ public class FreeAtHomeDeviceHandler extends BaseThingHandler implements FreeAtH
                         device.getDeviceId() + device.getDeviceLabel(), channelTypeUID.getAsString());
             }
         }
+    }
+
+    private void registerForStateEvents(String eventDatapointID, ChannelUID channelUID) {
+        Objects.requireNonNull(
+                mapEventToChannelUIDs.computeIfAbsent(eventDatapointID, k -> ConcurrentHashMap.newKeySet()))
+                .add(channelUID);
     }
 
     // Create a channel UID. Makes sure that the channel UID is unique and generated the same way every time
@@ -647,7 +655,7 @@ public class FreeAtHomeDeviceHandler extends BaseThingHandler implements FreeAtH
 
         mapChannelUID.clear();
 
-        mapEventToChannelUID.clear();
+        mapEventToChannelUIDs.clear();
     }
 
     private boolean isThingHandlesVirtualDevice() {

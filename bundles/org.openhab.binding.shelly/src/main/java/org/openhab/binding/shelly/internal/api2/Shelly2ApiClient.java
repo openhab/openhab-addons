@@ -454,6 +454,7 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
             profile.settings.sleepMode = new ShellySensorSleepMode();
             profile.settings.sleepMode.unit = "m";
             profile.settings.sleepMode.period = dc.sys.sleep != null ? dc.sys.sleep.wakeupPeriod / 60 : 720;
+            profile.wakeupPeriodAssumed = dc.sys.sleep == null;
         }
 
         if (profile.isFlood) {

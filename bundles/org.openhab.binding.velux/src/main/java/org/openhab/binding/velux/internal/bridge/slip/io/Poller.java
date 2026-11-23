@@ -79,9 +79,8 @@ public class Poller implements Callable<Boolean> {
         while (!Thread.currentThread().isInterrupted()) {
             try {
                 byt = inputStream.read(); // throws IOException
-                // end of stream is OK => continue polling
                 if (byt < 0) {
-                    continue;
+                    throw new IOException("Bridge closed the connection");
                 }
             } catch (SocketTimeoutException e) {
                 // socket read time out is OK => continue polling

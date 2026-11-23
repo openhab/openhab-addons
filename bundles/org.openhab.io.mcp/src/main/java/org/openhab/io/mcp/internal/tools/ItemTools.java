@@ -22,7 +22,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
-import java.util.function.Function;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -39,6 +38,7 @@ import org.openhab.core.items.events.ItemEventFactory;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
 import org.openhab.core.types.TypeParser;
+import org.openhab.io.mcp.internal.auth.McpUser;
 import org.openhab.io.mcp.internal.util.FuzzyItemMatcher;
 import org.openhab.io.mcp.internal.util.ItemStateFormatter;
 import org.slf4j.Logger;
@@ -67,7 +67,7 @@ public class ItemTools {
     private final EventPublisher eventPublisher;
     private final McpJsonMapper jsonMapper;
     private final FuzzyItemMatcher fuzzyMatcher;
-    private final Function<String, @Nullable String> usernameForSession;
+    private final Paging paging;
 
     /**
      * Constructs a new {@code ItemTools} instance with the required openHAB services.
@@ -76,19 +76,19 @@ public class ItemTools {
      * @param itemBuilderFactory factory for creating new item builders
      * @param metadataRegistry the metadata registry used for fuzzy matching, may be {@code null}
      * @param eventPublisher the event publisher for sending commands and state updates
-     * @param usernameForSession resolves the authenticated username for an MCP session id, used as the
-     *            actor in the source string of published events
      * @param jsonMapper the JSON mapper for serializing tool results
+     * @param maxItemsPerPage upper bound for the {@code limit} argument of the paginated list tool; values
+     *            below 1 are treated as 1
      */
     public ItemTools(ItemRegistry itemRegistry, ItemBuilderFactory itemBuilderFactory,
-            @Nullable MetadataRegistry metadataRegistry, EventPublisher eventPublisher,
-            Function<String, @Nullable String> usernameForSession, McpJsonMapper jsonMapper) {
+            @Nullable MetadataRegistry metadataRegistry, EventPublisher eventPublisher, McpJsonMapper jsonMapper,
+            int maxItemsPerPage) {
         this.itemRegistry = itemRegistry;
         this.itemBuilderFactory = itemBuilderFactory;
         this.eventPublisher = eventPublisher;
-        this.usernameForSession = usernameForSession;
         this.jsonMapper = jsonMapper;
         this.fuzzyMatcher = new FuzzyItemMatcher(metadataRegistry);
+        this.paging = Paging.of(maxItemsPerPage);
     }
 
     /**
@@ -166,8 +166,7 @@ public class ItemTools {
         properties.put("group", Map.of("type", "string", "description", "Filter items that are members of this group"));
         properties.put("recursive", Map.of("type", "boolean", "description",
                 "When filtering by group, include items in nested subgroups (default: true)"));
-        properties.put("limit", Map.of("type", "integer", "description", "Maximum results to return (default: 50)"));
-        properties.put("offset", Map.of("type", "integer", "description", "Number of results to skip (default: 0)"));
+        paging.addSchemaProperties(properties);
 
         return McpSchema.Tool.builder().name("search_items").description(
                 "Search for items by name, label, synonyms, type, tags, or group membership. Returns matching items ranked by relevance with their current state. Use this when you need to find specific items or don't know the exact item name.")
@@ -190,8 +189,6 @@ public class ItemTools {
         List<String> tags = getStringListArg(args, "tags");
         String group = getStringArg(args, "group");
         boolean recursive = getBooleanArg(args, "recursive", true);
-        int limit = getIntArg(args, "limit", 50);
-        int offset = getIntArg(args, "offset", 0);
 
         Iterable<Item> source;
         if (group != null) {
@@ -238,19 +235,15 @@ public class ItemTools {
             matchingItems.add(si.item);
         }
 
-        int total = matchingItems.size();
-        List<Item> page = matchingItems.subList(Math.min(offset, total), Math.min(offset + limit, total));
+        Map<String, Object> response = new HashMap<>();
+        List<Item> page = paging.page(matchingItems, args, response);
 
         List<Map<String, Object>> items = new ArrayList<>();
         for (Item item : page) {
             items.add(buildItemSummary(item));
         }
 
-        Map<String, Object> response = new HashMap<>();
         response.put("items", items);
-        response.put("total", total);
-        response.put("offset", offset);
-        response.put("limit", limit);
         return textResult(jsonMapper, response);
     }
 
@@ -353,7 +346,7 @@ public class ItemTools {
         }
 
         String previousState = ItemStateFormatter.formatState(item.getState());
-        String source = AbstractEvent.buildSource(MCP_EVENT_SOURCE, usernameForSession.apply(exchange.sessionId()));
+        String source = eventSource(exchange);
         eventPublisher.post(ItemEventFactory.createCommandEvent(itemName, command, source));
         logger.debug("Sent command '{}' to item '{}' (source={})", command, itemName, source);
 
@@ -380,7 +373,7 @@ public class ItemTools {
         }
 
         String previousState = ItemStateFormatter.formatState(item.getState());
-        String source = AbstractEvent.buildSource(MCP_EVENT_SOURCE, usernameForSession.apply(exchange.sessionId()));
+        String source = eventSource(exchange);
         eventPublisher.post(ItemEventFactory.createStateEvent(itemName, state, source));
 
         Map<String, Object> result = new HashMap<>();
@@ -590,6 +583,11 @@ public class ItemTools {
             }
         }
         return true;
+    }
+
+    private static String eventSource(McpSyncServerExchange exchange) {
+        McpUser user = McpUser.of(exchange);
+        return AbstractEvent.buildSource(MCP_EVENT_SOURCE, user != null ? user.name() : null);
     }
 
     private void appendSuggestions(StringBuilder msg, List<String> missingNames) {

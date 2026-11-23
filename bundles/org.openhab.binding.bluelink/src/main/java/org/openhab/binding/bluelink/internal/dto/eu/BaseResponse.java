@@ -22,6 +22,6 @@ import com.google.gson.annotations.SerializedName;
  * @param <T> the type of the result message
  * @author Florian Hotze - Initial contribution
  */
-public record BaseResponse<T> (String retCode, String resCode, @Nullable @SerializedName("resMsg") T result,
+public record BaseResponse<T>(String retCode, String resCode, @Nullable @SerializedName("resMsg") T result,
         String msgId) {
 }

@@ -1,0 +1,290 @@
+{
+	"deviceMapping": {
+		"id": [
+			"viomi.dishwasher.m02"
+		],
+		"channels": [
+			{
+				"property": "power",
+				"friendlyName": "Power",
+				"channel": "power",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_power",
+						"parameterType": "ONOFFNUMBER"
+					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch",
+					"Power"
+				]
+			},
+			{
+				"property": "wash_status",
+				"friendlyName": "Status",
+				"channel": "status",
+				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "0",
+							"label": "Off"
+						},
+						{
+							"value": "1",
+							"label": "Standby"
+						},
+						{
+							"value": "2",
+							"label": "Washing"
+						},
+						{
+							"value": "3",
+							"label": "Paused"
+						},
+						{
+							"value": "4",
+							"label": "Finished"
+						},
+						{
+							"value": "5",
+							"label": "Scheduled"
+						},
+						{
+							"value": "6",
+							"label": "Drying"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "status",
+				"tags": [
+					"Status"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Off\",\"1\"\u003d\"Standby\",\"2\"\u003d\"Washing\",\"3\"\u003d\"Paused\",\"4\"\u003d\"Finished\",\"5\"\u003d\"Scheduled\",\"6\"\u003d\"Drying\"]`"
+			},
+			{
+				"property": "program",
+				"friendlyName": "Program",
+				"channel": "program",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "Standard"
+						},
+						{
+							"value": "1",
+							"label": "Eco"
+						},
+						{
+							"value": "2",
+							"label": "Quick"
+						},
+						{
+							"value": "3",
+							"label": "Intensive"
+						},
+						{
+							"value": "4",
+							"label": "Glassware"
+						},
+						{
+							"value": "7",
+							"label": "Sterilize"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_program",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "settings",
+				"tags": [
+					"Control",
+					"Mode"
+				],
+				"readmeComment": "Selecting a program starts washing, as in the app."
+			},
+			{
+				"property": "wash_process",
+				"friendlyName": "Wash Step",
+				"channel": "wash_process",
+				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "0",
+							"label": "Not Running"
+						},
+						{
+							"value": "1",
+							"label": "Prewash"
+						},
+						{
+							"value": "2",
+							"label": "Wash"
+						},
+						{
+							"value": "3",
+							"label": "Rinse"
+						},
+						{
+							"value": "4",
+							"label": "Dry"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "status",
+				"tags": [
+					"Status"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Not Running\",\"1\"\u003d\"Prewash\",\"2\"\u003d\"Wash\",\"3\"\u003d\"Rinse\",\"4\"\u003d\"Dry\"]`"
+			},
+			{
+				"property": "left_time",
+				"friendlyName": "Remaining Time",
+				"channel": "remaining_time",
+				"type": "Number:Time",
+				"unit": "seconds",
+				"stateDescription": {
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "time",
+				"tags": [
+					"Status",
+					"Duration"
+				]
+			},
+			{
+				"property": "wash_temp",
+				"friendlyName": "Water Temperature",
+				"channel": "water_temperature",
+				"type": "Number:Temperature",
+				"unit": "celsius",
+				"stateDescription": {
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "temperature",
+				"tags": [
+					"Measurement",
+					"Temperature"
+				]
+			},
+			{
+				"property": "child_lock",
+				"friendlyName": "Child Lock",
+				"channel": "child_lock",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_child_lock",
+						"parameterType": "ONOFFNUMBER"
+					}
+				],
+				"category": "lock",
+				"tags": [
+					"Switch"
+				]
+			},
+			{
+				"property": "",
+				"friendlyName": "Control",
+				"channel": "control",
+				"type": "String",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "pause",
+							"label": "Pause"
+						},
+						{
+							"value": "resume",
+							"label": "Resume"
+						},
+						{
+							"value": "cancel",
+							"label": "Cancel"
+						}
+					]
+				},
+				"refresh": false,
+				"actions": [
+					{
+						"command": "set_wash_status",
+						"parameterType": "NONE",
+						"parameters": [
+							3
+						],
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "pause",
+									"returnValue": 3
+								}
+							]
+						}
+					},
+					{
+						"command": "set_wash_status",
+						"parameterType": "NONE",
+						"parameters": [
+							2
+						],
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "resume",
+									"returnValue": 2
+								}
+							]
+						}
+					},
+					{
+						"command": "set_wash_status",
+						"parameterType": "NONE",
+						"parameters": [
+							1
+						],
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "cancel",
+									"returnValue": 1
+								}
+							]
+						}
+					}
+				],
+				"category": "settings",
+				"tags": [
+					"Control"
+				],
+				"readmeComment": "Value mapping `[\"pause\"\u003d\"Pause\",\"resume\"\u003d\"Resume\",\"cancel\"\u003d\"Cancel\"]`"
+			}
+		],
+		"experimental": true
+	}
+}

@@ -57,6 +57,7 @@
 /bundles/org.openhab.binding.bluetooth.grundfosalpha/ @tisoft @jlaur
 /bundles/org.openhab.binding.bluetooth.hdpowerview/ @andrewfg
 /bundles/org.openhab.binding.bluetooth.listener/ @docbender
+/bundles/org.openhab.binding.bluetooth.miflora/ @lukasbrinias
 /bundles/org.openhab.binding.bluetooth.radoneye/ @petero-dk
 /bundles/org.openhab.binding.bluetooth.roaming/ @cpmeister
 /bundles/org.openhab.binding.bluetooth.ruuvitag/ @ssalonen
@@ -529,6 +530,7 @@
 /bundles/org.openhab.voice.googletts/ @gbicskei
 /bundles/org.openhab.voice.mactts/ @kaikreuzer
 /bundles/org.openhab.voice.marytts/ @kaikreuzer
+/bundles/org.openhab.voice.microwakewordks/ @digitaldan
 /bundles/org.openhab.voice.mimictts/ @dalgwen
 /bundles/org.openhab.voice.openaitts/ @Artur-Fedjukevits
 /bundles/org.openhab.voice.picotts/ @FlorianSW

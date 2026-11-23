@@ -9,6 +9,10 @@
 				<type>roborock:current-room</type>
 			</add-channel>
 		</instruction-set>
+		<instruction-set targetVersion="2">
+			<remove-channel id="room-mapping" groupIds="info"/>
+			<remove-channel id="routine-mapping" groupIds="info"/>
+		</instruction-set>
 	</thing-type>
 
 </update:update-descriptions>

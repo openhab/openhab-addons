@@ -17,7 +17,8 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 import static org.openhab.binding.evohome.internal.EvohomeBindingConstants.*;
 
-import java.nio.ByteBuffer;
+import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -38,11 +39,11 @@ import java.util.concurrent.locks.LockSupport;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentProvider;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.Request;
 import org.eclipse.jetty.http.HttpFields;
+import org.eclipse.jetty.io.Content;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -479,7 +480,7 @@ class EvohomeCommandSequenceTest {
         return mock(ContentResponse.class, invocation -> switch (invocation.getMethod().getName()) {
             case "getStatus" -> code;
             case "getContentAsString" -> json;
-            case "getHeaders" -> new HttpFields();
+            case "getHeaders" -> HttpFields.build();
             default -> RETURNS_DEFAULTS.answer(invocation);
         });
     }
@@ -536,15 +537,18 @@ class EvohomeCommandSequenceTest {
         }
 
         private List<JsonObject> commandBodies() {
-            ArgumentCaptor<ContentProvider> content = ArgumentCaptor.forClass(ContentProvider.class);
-            verify(request, atLeastOnce()).content(content.capture(), eq("application/json"));
-            return content.getAllValues().stream().map(provider -> {
-                StringBuilder body = new StringBuilder();
-                for (ByteBuffer buffer : provider) {
-                    body.append(StandardCharsets.UTF_8.decode(buffer.duplicate()));
-                }
-                return JsonParser.parseString(body.toString()).getAsJsonObject();
-            }).toList();
+            ArgumentCaptor<Request.Content> content = ArgumentCaptor.forClass(Request.Content.class);
+            verify(request, atLeastOnce()).body(content.capture());
+            return content.getAllValues().stream().filter(body -> "application/json".equals(body.getContentType()))
+                    .map(body -> {
+                        try {
+                            body.rewind();
+                            return JsonParser.parseString(Content.Source.asString(body, StandardCharsets.UTF_8))
+                                    .getAsJsonObject();
+                        } catch (IOException e) {
+                            throw new UncheckedIOException(e);
+                        }
+                    }).toList();
         }
 
         @Override

@@ -10,8 +10,8 @@
 		<description>Garage door state</description>
 		<category>garagedoor</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>OpenState</tag>
+			<point>Control</point>
+			<property>OpenState</property>
 		</tags>
 	</channel-type>
 </thing:thing-descriptions>

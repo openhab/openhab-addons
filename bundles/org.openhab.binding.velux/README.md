@@ -563,6 +563,7 @@ Therefore, on the one hand you can use the Web Frontend for manual control and o
 
 If you get this error first make sure that you entered the right password (the one below SSID on the back of the hub).
 If the error persists, it may be due to the temporary Wi-Fi Access Point blocking the LAN (as described above).
+The binding retries communication failures automatically, but it cannot recover a KLF 200 whose network stack remains stuck.
 To recover from this, first disable the bridge in the UI, disconnect the LAN cable, power cycle your KLF200 and wait a few minutes.
 Then reconnect the LAN cable and re-enable the bridge in the UI again.
 DO NOT try to connect anything to the temporary Wi-Fi Access Point during this process!!

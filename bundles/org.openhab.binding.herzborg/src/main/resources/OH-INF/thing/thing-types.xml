@@ -54,8 +54,8 @@
 		<description>Curtain position control</description>
 		<category>Blinds</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>OpenLevel</tag>
+			<point>Control</point>
+			<property>OpenLevel</property>
 		</tags>
 	</channel-type>
 	<channel-type id="mode">

@@ -126,11 +126,10 @@ public class NetatmoConstants {
     public static final String PATH_API = "api";
     public static final String PATH_COMMAND = "command";
     public static final String PATH_STATE = "setstate";
+    public static final String PATH_WEBHOOK = "webhooks/v1/";
     public static final String SUB_PATH_PERSON_AWAY = "setpersonsaway";
     public static final String SUB_PATH_PERSON_HOME = "setpersonshome";
     public static final String SUB_PATH_HOMES_DATA = "homesdata";
-    public static final String SUB_PATH_ADD_WEBHOOK = "addwebhook";
-    public static final String SUB_PATH_DROP_WEBHOOK = "dropwebhook";
     public static final String SUB_PATH_SET_ROOM_THERMPOINT = "setroomthermpoint";
     public static final String SUB_PATH_SET_THERM_MODE = "setthermmode";
     public static final String SUB_PATH_SWITCH_SCHEDULE = "switchschedule";
@@ -247,7 +246,8 @@ public class NetatmoConstants {
         NONE();
 
         public static final String ALL_SCOPES = EnumSet.allOf(FeatureArea.class).stream().map(fa -> fa.scopes)
-                .flatMap(Set::stream).map(Scope::name).map(String::toLowerCase).collect(Collectors.joining(" "));
+                .flatMap(Set::stream).map(Scope::name).sorted().map(String::toLowerCase)
+                .collect(Collectors.joining(" "));
 
         public final Set<Scope> scopes;
 
@@ -458,7 +458,9 @@ public class NetatmoConstants {
         @SerializedName("40")
         JSON_GIVEN_HAS_AN_INVALID_ENCODING,
         @SerializedName("41")
-        DEVICE_IS_UNREACHABLE
+        DEVICE_IS_UNREACHABLE,
+        @SerializedName("WH009")
+        WEBHOOK_LIMIT_REACHED
     }
 
     public enum HomeStatusError {

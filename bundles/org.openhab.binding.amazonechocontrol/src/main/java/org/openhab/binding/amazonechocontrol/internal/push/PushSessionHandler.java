@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
  * @author Jan N. Klug - Initial contribution
  */
 @NonNullByDefault
-public class PushSessionHandler extends Session.Listener.Adapter {
+public class PushSessionHandler implements Session.Listener {
     private final Logger logger = LoggerFactory.getLogger(PushSessionHandler.class);
     private final Listener listener;
 
@@ -35,15 +35,19 @@ public class PushSessionHandler extends Session.Listener.Adapter {
     }
 
     @Override
-    public void onClose(@NonNullByDefault({}) Session session, @NonNullByDefault({}) GoAwayFrame frame) {
+    public void onClose(@NonNullByDefault({}) Session session, @NonNullByDefault({}) GoAwayFrame frame,
+            @NonNullByDefault({}) Callback callback) {
         logger.debug("Session {} closed, reason {}", session.hashCode(), frame.getError());
         listener.onSessionClosed(session.hashCode());
+        callback.succeeded();
     }
 
     @Override
-    public void onFailure(@NonNullByDefault({}) Session session, @NonNullByDefault({}) Throwable failure) {
+    public void onFailure(@NonNullByDefault({}) Session session, @NonNullByDefault({}) Throwable failure,
+            @NonNullByDefault({}) Callback callback) {
         logger.warn("Session {} failed: {}", session.hashCode(), failure.getMessage());
         listener.onSessionFailed(session.hashCode());
+        callback.succeeded();
     }
 
     @Override

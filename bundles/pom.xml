@@ -95,6 +95,7 @@
     <module>org.openhab.binding.bluetooth.grundfosalpha</module>
     <module>org.openhab.binding.bluetooth.hdpowerview</module>
     <module>org.openhab.binding.bluetooth.listener</module>
+    <module>org.openhab.binding.bluetooth.miflora</module>
     <module>org.openhab.binding.bluetooth.radoneye</module>
     <module>org.openhab.binding.bluetooth.roaming</module>
     <module>org.openhab.binding.bluetooth.ruuvitag</module>
@@ -547,6 +548,7 @@
     <module>org.openhab.voice.googletts</module>
     <module>org.openhab.voice.mactts</module>
     <module>org.openhab.voice.marytts</module>
+    <module>org.openhab.voice.microwakewordks</module>
     <module>org.openhab.voice.mimictts</module>
     <module>org.openhab.voice.openaitts</module>
     <module>org.openhab.voice.picotts</module>
@@ -832,7 +834,7 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>xml-maven-plugin</artifactId>
-        <version>1.3.0</version>
+        <version>1.4.0</version>
         <configuration>
           <validationSets>
             <validationSet>
@@ -849,6 +851,46 @@
             <goals>
               <goal>validate</goal>
             </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <!-- Warn on deprecated channel XML 'tag' element -->
+      <plugin>
+        <groupId>org.codehaus.gmavenplus</groupId>
+        <artifactId>gmavenplus-plugin</artifactId>
+        <version>4.1.1</version>
+        <dependencies>
+          <dependency>
+            <groupId>org.apache.groovy</groupId>
+            <artifactId>groovy</artifactId>
+            <version>4.0.22</version>
+          </dependency>
+          <dependency>
+            <groupId>org.apache.groovy</groupId>
+            <artifactId>groovy-ant</artifactId>
+            <version>4.0.22</version>
+          </dependency>
+        </dependencies>
+        <executions>
+          <execution>
+            <id>warn-deprecated-channel-tags</id>
+            <goals>
+              <goal>execute</goal>
+            </goals>
+            <phase>generate-resources</phase>
+            <configuration>
+              <scripts>
+                <script><![CDATA[
+                  def files = new File(project.basedir, 'src/main/resources/OH-INF/thing')
+                    .listFiles({ f -> f.name.endsWith('.xml') } as FileFilter)
+                    ?.findAll { it.text =~ /<tag[\s>\/]/ } ?: []
+                  if (!files.isEmpty()) {
+                    log.warn("DEPRECATED: channel XML element 'tag' is deprecated; use 'point' and 'property' instead. Affected files: " + files.collect { project.basedir.toPath().relativize(it.toPath()) }.join(', '))
+                  }
+                ]]></script>
+              </scripts>
+            </configuration>
           </execution>
         </executions>
       </plugin>

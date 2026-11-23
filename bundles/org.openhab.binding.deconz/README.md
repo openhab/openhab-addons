@@ -140,7 +140,7 @@ The sensor devices support some of the following channels:
 | dark                | Switch                   | R           | Light level is below the darkness threshold                                               | lightsensor, sometimes for presencesensor         |
 | daylight            | Switch                   | R           | Light level is above the daylight threshold                                               | lightsensor                                       |
 | enabled             | Switch                   | R/W         | This channel activates or deactivates the sensor                                          | presencesensor                                    |
-| externalwindowopen  | Contact                  | R/W         | Forward a status to a thermostat (some devices)                                           | thermostat                                        |
+| externalwindowopen  | Switch                   | R/W         | Forward a window status to a thermostat: ON for open, OFF for closed (some devices)       | thermostat                                        |
 | fire                | Switch                   | R           | Status of a fire: `ON` = fire was detected; `OFF` = no fire detected                      | firesensor                                        |
 | gesture             | Number                   | R           | A gesture that was performed with the switch                                              | switch                                            |
 | humidity            | Number:Dimensionless     | R           | Humidity in %                                                                             | humiditysensor                                    |
@@ -173,6 +173,8 @@ The specification of your sensor depends on the deCONZ capabilities.
 Have a detailed look for [supported devices](https://github.com/dresden-elektronik/deconz-rest-plugin/wiki/Supported-Devices).
 
 The `last_seen` channel is added when it is available AND the `lastSeenPolling` parameter of this sensor is used to enable polling.
+
+When upgrading from a version where `externalwindowopen` used a Contact Item, replace that Item with a Switch Item and update rules to send `ON` for an open window and `OFF` for a closed window.
 
 Other devices support
 

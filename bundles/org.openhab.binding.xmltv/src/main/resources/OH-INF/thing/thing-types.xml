@@ -133,8 +133,8 @@
 		<label>Start Time</label>
 		<description>Program start time</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
+			<point>Status</point>
+			<property>Timestamp</property>
 		</tags>
 		<state readOnly="true" pattern="%1$tF %1$tR"/>
 	</channel-type>
@@ -144,8 +144,8 @@
 		<label>End Time</label>
 		<description>Program end time</description>
 		<tags>
-			<tag>Forecast</tag>
-			<tag>Timestamp</tag>
+			<point>Forecast</point>
+			<property>Timestamp</property>
 		</tags>
 		<state readOnly="true" pattern="%1$tF %1$tR"/>
 	</channel-type>
@@ -155,8 +155,8 @@
 		<label>Elapsed Time</label>
 		<description>Elapsed time of the currently playing program.</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Duration</tag>
+			<point>Measurement</point>
+			<property>Duration</property>
 		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
@@ -180,8 +180,8 @@
 		<label>Progress</label>
 		<description>Relative progression of the current program.</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Progress</tag>
+			<point>Status</point>
+			<property>Progress</property>
 		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>

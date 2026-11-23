@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0
+		https://openhab.org/schemas/config-description-1.0.0.xsd">
+	<config-description uri="voice:microwakewordks">
+		<parameter name="probabilityCutoff" type="decimal" min="0" max="1" step="0.01">
+			<label>Probability Cutoff</label>
+			<description>Average probability above which the wake word counts as detected. Lower values detect the wake word more
+				easily but cause more false detections. Leave empty to use the cutoff of the model.</description>
+		</parameter>
+	</config-description>
+</config-description:config-descriptions>

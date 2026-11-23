@@ -23,6 +23,7 @@ import java.net.UnknownHostException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
+import org.openhab.binding.shelly.internal.config.ShellyApiConfiguration;
 
 /**
  * Tests for {@link ShellyThingTable}.
@@ -40,16 +41,77 @@ public class ShellyThingTableTest {
 
     private static final String GATEWAY_IP = "192.168.1.100";
     private static final int CLIENT_PORT = 8080;
+    private static final String ANNOUNCED_IP = "192.168.1.17";
+    private static final String SERVICE_NAME = "shellyplussmoke-666edfe225ed";
+    private static final String OTHER_SERVICE_NAME = "shellyplussmoke-aabbccddeeff";
     private static final String CLIENT_KEY = GATEWAY_IP + ":" + CLIENT_PORT;
 
-    // Returns a mock that answers true to checkRepresentation only for the supplied keys.
+    // Returns a mock that answers true to isIdentifiedBy only for the supplied keys.
     // Mockito's default for unmatched boolean calls is false, which is correct here.
     private static ShellyThingInterface stubThing(String... keys) {
         ShellyThingInterface thing = mock(ShellyThingInterface.class);
         for (String key : keys) {
-            when(thing.checkRepresentation(key)).thenReturn(true);
+            when(thing.isIdentifiedBy(key)).thenReturn(true);
         }
         return thing;
+    }
+
+    private static ShellyThingInterface announcedThing(String realm, String... keys) {
+        ShellyThingInterface thing = stubThing(keys);
+        ShellyApiConfiguration apiConfig = mock(ShellyApiConfiguration.class);
+        when(apiConfig.getRealm()).thenReturn(realm);
+        when(thing.getApiConfig()).thenReturn(apiConfig);
+        return thing;
+    }
+
+    @Test
+    void findAnnouncedThingMatchesServiceName() {
+        ShellyThingInterface other = announcedThing(OTHER_SERVICE_NAME, OTHER_SERVICE_NAME);
+        ShellyThingInterface thing = announcedThing(SERVICE_NAME, SERVICE_NAME);
+
+        ShellyThingTable table = new ShellyThingTable();
+        table.addThing("other", other);
+        table.addThing("thing", thing);
+
+        assertThat(table.findAnnouncedThing(SERVICE_NAME, ANNOUNCED_IP), is(thing));
+    }
+
+    @Test
+    void findAnnouncedThingReturnsNullForUnknownDevice() {
+        ShellyThingTable table = new ShellyThingTable();
+        table.addThing("other", announcedThing(OTHER_SERVICE_NAME, OTHER_SERVICE_NAME));
+
+        assertThat(table.findAnnouncedThing(SERVICE_NAME, ANNOUNCED_IP), is(nullValue()));
+    }
+
+    @Test
+    void findAnnouncedThingMatchesUninitializedThingsFileThingByIpAddress() {
+        ShellyThingInterface thing = announcedThing("", ANNOUNCED_IP);
+
+        ShellyThingTable table = new ShellyThingTable();
+        table.addThing("thing", thing);
+
+        assertThat(table.findAnnouncedThing(SERVICE_NAME, ANNOUNCED_IP), is(thing));
+    }
+
+    @Test
+    void findAnnouncedThingIgnoresThingOfOtherDeviceAtSameIpAddress() {
+        ShellyThingTable table = new ShellyThingTable();
+        table.addThing("other", announcedThing(OTHER_SERVICE_NAME, OTHER_SERVICE_NAME, ANNOUNCED_IP));
+
+        assertThat(table.findAnnouncedThing(SERVICE_NAME, ANNOUNCED_IP), is(nullValue()));
+    }
+
+    @Test
+    void findAnnouncedThingPrefersServiceNameOverIpAddress() {
+        ShellyThingInterface uninitialized = announcedThing("", ANNOUNCED_IP);
+        ShellyThingInterface thing = announcedThing(SERVICE_NAME, SERVICE_NAME);
+
+        ShellyThingTable table = new ShellyThingTable();
+        table.addThing("uninitialized", uninitialized);
+        table.addThing("thing", thing);
+
+        assertThat(table.findAnnouncedThing(SERVICE_NAME, ANNOUNCED_IP), is(thing));
     }
 
     @Test

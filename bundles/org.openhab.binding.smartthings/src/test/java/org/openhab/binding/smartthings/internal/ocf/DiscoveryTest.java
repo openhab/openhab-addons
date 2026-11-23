@@ -21,9 +21,9 @@ import java.net.InetSocketAddress;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import org.eclipse.californium.core.CoapResource;
 import org.eclipse.californium.core.CoapServer;
@@ -211,7 +211,7 @@ class DiscoveryTest {
             var working = new CoapServer(CoapTransport.networkConfiguration());
             incomplete.addEndpoint(incompleteEndpoint);
             working.addEndpoint(workingEndpoint);
-            var requests = new AtomicInteger();
+            var metadataRequested = new CompletableFuture<String>();
             var incompleteOic = new CoapResource("oic");
             incompleteOic.add(resource("res", listing));
             incompleteOic.add(resource("d", device));
@@ -220,13 +220,22 @@ class DiscoveryTest {
                 @Override
                 @NonNullByDefault({})
                 public void handleGET(CoapExchange exchange) {
-                    requests.incrementAndGet();
                     exchange.accept();
+                    metadataRequested.complete(missing);
                 }
             });
             incomplete.add(incompleteOic);
             var workingOic = new CoapResource("oic");
-            workingOic.add(resource("res", listing));
+            workingOic.add(new CoapResource("res") {
+                @Override
+                @NonNullByDefault({})
+                public void handleGET(CoapExchange exchange) {
+                    exchange.accept();
+                    // Let the incomplete probe reach the missing metadata before this port can win.
+                    metadataRequested.thenRun(
+                            () -> exchange.respond(ResponseCode.CONTENT, listing, MediaTypeRegistry.APPLICATION_CBOR));
+                }
+            });
             workingOic.add(resource("d", device));
             workingOic.add(resource("p", platform));
             working.add(workingOic);
@@ -238,7 +247,7 @@ class DiscoveryTest {
                 var found = Discovery.discoverSamsung(loopback, ports, 5);
                 assertEquals(IDENTITY, found.deviceId(), missing);
                 assertEquals(49155, found.securePort(), missing);
-                assertTrue(requests.get() > 0, missing);
+                assertEquals(missing, metadataRequested.getNow(""));
             } finally {
                 incomplete.destroy();
                 working.destroy();

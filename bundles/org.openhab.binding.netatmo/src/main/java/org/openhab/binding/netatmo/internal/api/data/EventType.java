@@ -29,145 +29,196 @@ import com.google.gson.annotations.SerializedName;
 public enum EventType {
     UNKNOWN(ModuleType.UNKNOWN),
 
-    @SerializedName("topology_changed") // Module configuration changed
+    /** Module configuration changed */
+    @SerializedName("topology_changed")
     TOPOLOGY_CHANGED(ModuleType.ACCOUNT),
 
-    @SerializedName("webhook_activation") // Ack of a 'webhook set' Api Call
+    /** A user linked the webhook to their account */
+    @SerializedName("webhook_activation")
     WEBHOOK_ACTIVATION(ModuleType.ACCOUNT),
 
-    @SerializedName("person") // When the Indoor Camera detects a face
+    /** A user deleted their link to the webhook */
+    @SerializedName("webhook_deletion")
+    WEBHOOK_DELETION(ModuleType.ACCOUNT),
+
+    /** Indoor Camera detects a face */
+    @SerializedName("person")
     PERSON(ModuleType.PERSON, ModuleType.WELCOME),
 
-    @SerializedName("person_away") // When geofencing indicates that the person has left the home
+    /** Geofencing indicates that the person has left the home */
+    @SerializedName("person_away")
     PERSON_AWAY(ModuleType.PERSON, ModuleType.HOME),
 
-    @SerializedName("person_home") // When the person is declared at home
+    /** Person is declared at home */
+    @SerializedName("person_home")
     PERSON_HOME(ModuleType.PERSON, ModuleType.HOME),
 
-    @SerializedName("outdoor") // When the Outdoor Camera detects a human, a car or an animal
+    /** Outdoor Camera detects a human, a car or an animal */
+    @SerializedName("outdoor")
     OUTDOOR(ModuleType.PRESENCE, ModuleType.DOORBELL),
 
-    @SerializedName("daily_summary") // When the Outdoor Camera video summary of the last 24 hours is available
+    /** Outdoor Camera video summary of the last 24 hours is available */
+    @SerializedName("daily_summary")
     DAILY_SUMMARY(ModuleType.PRESENCE),
 
-    @SerializedName("vehicle") // When the Outdoor Camera detects a car
+    /** Outdoor Camera detects a car */
+    @SerializedName("vehicle")
     VEHICLE(ModuleType.PRESENCE),
 
-    @SerializedName("movement") // When the Indoor Camera detects motion
+    /** Indoor Camera detects motion */
+    @SerializedName("movement")
     MOVEMENT(ModuleType.WELCOME),
 
-    @SerializedName("alarm_started") // When the Indoor Camera triggers alarm
+    /** Indoor Camera triggers alarm */
+    @SerializedName("alarm_started")
     ALARM_STARTED(ModuleType.WELCOME),
 
-    @SerializedName("human") // When the camera detects human motion
+    /** Camera detects human motion */
+    @SerializedName("human")
     HUMAN(ModuleType.WELCOME, ModuleType.PRESENCE, ModuleType.DOORBELL),
 
-    @SerializedName("animal") // When the camera detects animal motion
+    /** Camera detects animal motion */
+    @SerializedName("animal")
     ANIMAL(ModuleType.WELCOME, ModuleType.PRESENCE),
 
-    @SerializedName("new_module") // A new Module has been paired with the Indoor Camera
+    /** A new Module has been paired with the Indoor Camera */
+    @SerializedName("new_module")
     NEW_MODULE(ModuleType.WELCOME),
 
-    @SerializedName("module_connect") // Module is connected with the Indoor Camera
+    /** Module is connected with the Indoor Camera */
+    @SerializedName("module_connect")
     MODULE_CONNECT(ModuleType.WELCOME),
 
-    @SerializedName("module_disconnect") // Module lost its connection with the Indoor Camera
+    /** Module lost its connection with the Indoor Camera */
+    @SerializedName("module_disconnect")
     MODULE_DISCONNECT(ModuleType.WELCOME),
 
-    @SerializedName("module_low_battery") // Module's battery is low
+    /** Module's battery is low */
+    @SerializedName("module_low_battery")
     MODULE_LOW_BATTERY(ModuleType.WELCOME),
 
-    @SerializedName("module_end_update") // Module's firmware update is over
+    /** Module's firmware update is over */
+    @SerializedName("module_end_update")
     MODULE_END_UPDATE(ModuleType.WELCOME),
 
-    @SerializedName("tag_big_move") // Module's firmware update is over
+    /** Big move detected on Door Tag */
+    @SerializedName("tag_big_move")
     TAG_BIG_MOVE(ModuleType.WELCOME),
 
-    @SerializedName("tag_open") // Module's firmware update is over
+    /** Tag detects door is open */
+    @SerializedName("tag_open")
     TAG_OPEN(ModuleType.WELCOME),
 
-    @SerializedName("tag_small_move") // Module's firmware update is over
+    /** Small move detected on Door Tag */
+    @SerializedName("tag_small_move")
     TAG_SMALL_MOVE(ModuleType.WELCOME),
 
-    @SerializedName("connection") // When the camera connects to Netatmo servers
+    /** Camera connects to Netatmo servers */
+    @SerializedName("connection")
     CONNECTION(ModuleType.WELCOME, ModuleType.PRESENCE),
 
-    @SerializedName("disconnection") // When the camera loses connection with Netatmo servers
+    /** Camera loses connection with Netatmo servers */
+    @SerializedName("disconnection")
     DISCONNECTION(ModuleType.WELCOME, ModuleType.PRESENCE),
 
-    @SerializedName("on") // When Camera Monitoring is resumed
+    /** Camera Monitoring is resumed */
+    @SerializedName("on")
     ON(ModuleType.WELCOME, ModuleType.PRESENCE),
 
-    @SerializedName("off") // When Camera Monitoring is turned off
+    /** Camera Monitoring is turned off */
+    @SerializedName("off")
     OFF(ModuleType.WELCOME, ModuleType.PRESENCE),
 
-    @SerializedName("boot") // When the Camera is booting
+    /** Camera is booting */
+    @SerializedName("boot")
     BOOT(ModuleType.WELCOME, ModuleType.PRESENCE),
 
-    @SerializedName("sd") // When Camera SD Card status changes
+    /** Camera SD Card status changes */
+    @SerializedName("sd")
     SD(ModuleType.WELCOME, ModuleType.PRESENCE),
 
-    @SerializedName("alim") // When Camera power supply status changes
+    /** Camera power supply status changes */
+    @SerializedName("alim")
     ALIM(ModuleType.WELCOME, ModuleType.PRESENCE),
 
-    @SerializedName("siren_tampered") // When the siren has been tampered
+    /** Siren has been tampered */
+    @SerializedName("siren_tampered")
     SIREN_TAMPERED(ModuleType.WELCOME),
 
-    @SerializedName("accepted_call") // When a call is incoming
+    /** A call is incoming */
+    @SerializedName("accepted_call")
     ACCEPTED_CALL(ModuleType.DOORBELL),
 
-    @SerializedName("incoming_call") // When a call as been answered by a user
+    /** A call as been answered by a user */
+    @SerializedName("incoming_call")
     INCOMING_CALL(ModuleType.DOORBELL),
 
-    @SerializedName("rtc") // Button pressed
+    /** Button pressed */
+    @SerializedName("rtc")
     RTC(ModuleType.DOORBELL),
 
-    @SerializedName("missed_call") // When a call has not been answered by anyone
+    /** A call has not been answered by anyone */
+    @SerializedName("missed_call")
     MISSED_CALL(ModuleType.DOORBELL),
 
-    @SerializedName("hush") // When the smoke detection is activated or deactivated
+    /** Smoke detection is activated or deactivated */
+    @SerializedName("hush")
     HUSH(ModuleType.SMOKE_DETECTOR),
 
-    @SerializedName("smoke") // When smoke is detected or smoke is cleared
+    /** Smoke is detected or smoke is cleared */
+    @SerializedName("smoke")
     SMOKE(ModuleType.SMOKE_DETECTOR),
 
-    @SerializedName("tampered") // When smoke detector is ready or tampered
+    /** Smoke detector is ready or tampered */
+    @SerializedName("tampered")
     TAMPERED(ModuleType.SMOKE_DETECTOR, ModuleType.CO_DETECTOR),
 
-    @SerializedName("wifi_status") // When wifi status is updated
+    /** Wifi status is updated */
+    @SerializedName("wifi_status")
     WIFI_STATUS(ModuleType.SMOKE_DETECTOR, ModuleType.CO_DETECTOR),
 
-    @SerializedName("battery_status") // When battery status is too low
+    /** Battery status is too low */
+    @SerializedName("battery_status")
     BATTERY_STATUS(ModuleType.SMOKE_DETECTOR, ModuleType.CO_DETECTOR),
 
-    @SerializedName("detection_chamber_status") // When the detection chamber is dusty or clean
+    /** Detection chamber is dusty or clean */
+    @SerializedName("detection_chamber_status")
     DETECTION_CHAMBER_STATUS(ModuleType.SMOKE_DETECTOR),
 
-    @SerializedName("sound_test") // Sound test result
+    /** Sound test result */
+    @SerializedName("sound_test")
     SOUND_TEST(ModuleType.SMOKE_DETECTOR, ModuleType.CO_DETECTOR),
 
+    /** A new device was detected */
     @SerializedName("new_device")
     NEW_DEVICE(ModuleType.HOME),
 
+    /** CO alarm raised */
     @SerializedName("co_detected")
     CO_DETECTED(ModuleType.CO_DETECTOR),
 
-    @SerializedName("alarm_event") // an alarm event arrived on a weather station module
+    /** An alarm event arrived on a weather station module */
+    @SerializedName("alarm_event")
     ALARM_EVENT(ModuleType.WEATHER_STATION),
 
-    @SerializedName("entered") // the alarm was raised
+    /** An alarm was raised */
+    @SerializedName("entered")
     ALARM_ENTERED(ModuleType.WEATHER_STATION),
 
-    @SerializedName("exited") // the alarm is stopped
+    /** The alarm is stopped */
+    @SerializedName("exited")
     ALARM_EXITED(ModuleType.WEATHER_STATION),
 
-    @SerializedName("display_change") // a manual action has been done on the thermostat
+    /** A manual action has been done on the thermostat */
+    @SerializedName("display_change")
     DISPLAY_CHANGE(ModuleType.THERMOSTAT),
 
-    @SerializedName("set_point") // a setpoint has been set
+    /** A setpoint has been set */
+    @SerializedName("set_point")
     SET_POINT(ModuleType.THERMOSTAT),
 
-    @SerializedName("cancel_set_point") // manual setpoint ended
+    /** Manual setpoint ended */
+    @SerializedName("cancel_set_point")
     CANCEL_SET_POINT(ModuleType.THERMOSTAT);
 
     public static final EnumSet<EventType> AS_SET = EnumSet.allOf(EventType.class);
