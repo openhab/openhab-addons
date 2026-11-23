@@ -245,8 +245,8 @@
 		<label>Eco Hybrid</label>
 		<description>Eco hybrid drying option of the selected course</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
+			<point>Status</point>
+			<property>Mode</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -256,8 +256,8 @@
 		<label>Steam</label>
 		<description>Steam option of the selected course</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
+			<point>Status</point>
+			<property>Mode</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -267,8 +267,8 @@
 		<label>Pre-Wash</label>
 		<description>Pre-wash option of the selected course</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
+			<point>Status</point>
+			<property>Mode</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -278,8 +278,8 @@
 		<label>TurboWash</label>
 		<description>TurboWash option of the selected course</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
+			<point>Status</point>
+			<property>Mode</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -289,8 +289,8 @@
 		<label>Medic Rinse</label>
 		<description>Medic rinse option of the selected course</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
+			<point>Status</point>
+			<property>Mode</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -300,8 +300,8 @@
 		<label>Soil Level</label>
 		<description>Soil level of the selected course</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
+			<point>Status</point>
+			<property>Mode</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -311,8 +311,8 @@
 		<label>Steam Softener</label>
 		<description>Steam softener option of the selected course</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
+			<point>Status</point>
+			<property>Mode</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -322,8 +322,8 @@
 		<label>Dry Level</label>
 		<description>Dry level used for remote start</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Mode</tag>
+			<point>Control</point>
+			<property>Mode</property>
 		</tags>
 	</channel-type>
 
@@ -332,8 +332,8 @@
 		<label>Eco Hybrid</label>
 		<description>Eco hybrid drying option used for remote start</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Mode</tag>
+			<point>Control</point>
+			<property>Mode</property>
 		</tags>
 	</channel-type>
 
@@ -342,8 +342,8 @@
 		<label>Steam</label>
 		<description>Steam option used for remote start</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Mode</tag>
+			<point>Control</point>
+			<property>Mode</property>
 		</tags>
 	</channel-type>
 
@@ -352,8 +352,8 @@
 		<label>Pre-Wash</label>
 		<description>Pre-wash option used for remote start</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Mode</tag>
+			<point>Control</point>
+			<property>Mode</property>
 		</tags>
 	</channel-type>
 
@@ -362,8 +362,8 @@
 		<label>TurboWash</label>
 		<description>TurboWash option used for remote start</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Mode</tag>
+			<point>Control</point>
+			<property>Mode</property>
 		</tags>
 	</channel-type>
 
@@ -372,8 +372,8 @@
 		<label>Medic Rinse</label>
 		<description>Medic rinse option used for remote start</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Mode</tag>
+			<point>Control</point>
+			<property>Mode</property>
 		</tags>
 	</channel-type>
 
@@ -382,8 +382,8 @@
 		<label>Soil Level</label>
 		<description>Soil level used for remote start</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Mode</tag>
+			<point>Control</point>
+			<property>Mode</property>
 		</tags>
 	</channel-type>
 
@@ -392,8 +392,8 @@
 		<label>Steam Softener</label>
 		<description>Steam softener option used for remote start</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Mode</tag>
+			<point>Control</point>
+			<property>Mode</property>
 		</tags>
 	</channel-type>
 

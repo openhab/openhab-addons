@@ -225,7 +225,7 @@
 		<label>Total Memory</label>
 		<description>Total RAM available on the device</description>
 		<tags>
-			<tag>Measurement</tag>
+			<point>Measurement</point>
 		</tags>
 		<state pattern="%.0f %unit%" readOnly="true">
 		</state>
@@ -236,7 +236,7 @@
 		<label>Free Memory</label>
 		<description>Currently free RAM on the device</description>
 		<tags>
-			<tag>Measurement</tag>
+			<point>Measurement</point>
 		</tags>
 		<state pattern="%.0f %unit%" readOnly="true">
 		</state>
@@ -247,7 +247,7 @@
 		<label>Total Filesystem Size</label>
 		<description>Total size of the device's internal filesystem</description>
 		<tags>
-			<tag>Measurement</tag>
+			<point>Measurement</point>
 		</tags>
 		<state pattern="%.0f %unit%" readOnly="true">
 		</state>
@@ -258,7 +258,7 @@
 		<label>Free Filesystem Space</label>
 		<description>Currently free space on the device's internal filesystem</description>
 		<tags>
-			<tag>Measurement</tag>
+			<point>Measurement</point>
 		</tags>
 		<state pattern="%.0f %unit%" readOnly="true">
 		</state>
@@ -310,8 +310,8 @@
 		<description>Highest internal device temperature measured since the Thing was initialized</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true">
 		</state>

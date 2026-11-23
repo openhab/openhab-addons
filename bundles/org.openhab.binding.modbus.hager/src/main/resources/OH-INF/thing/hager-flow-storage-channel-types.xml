@@ -22,7 +22,7 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Battery State of Charge</label>
 		<tags>
-			<tag>Measurement</tag>
+			<point>Measurement</point>
 		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>

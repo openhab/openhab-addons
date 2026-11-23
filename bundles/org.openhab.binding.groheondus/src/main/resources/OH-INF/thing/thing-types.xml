@@ -118,8 +118,8 @@
 		<description>The time the device last transmitted data to the GROHE ONDUS cloud.</description>
 		<category>Time</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
+			<point>Status</point>
+			<property>Timestamp</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>

@@ -68,8 +68,8 @@
 		<item-type>Number:Power</item-type>
 		<label>PowerMeter Power (ΣL)</label>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point>Measurement</point>
+			<property>Power</property>
 		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
@@ -77,8 +77,8 @@
 		<item-type>Number:Power</item-type>
 		<label>PowerMeter Power (L1)</label>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point>Measurement</point>
+			<property>Power</property>
 		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
@@ -86,8 +86,8 @@
 		<item-type>Number:Power</item-type>
 		<label>PowerMeter Power (L2)</label>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point>Measurement</point>
+			<property>Power</property>
 		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
@@ -95,8 +95,8 @@
 		<item-type>Number:Power</item-type>
 		<label>PowerMeter Power (L3)</label>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point>Measurement</point>
+			<property>Power</property>
 		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
@@ -104,8 +104,8 @@
 		<item-type>Number:ElectricPotential</item-type>
 		<label>PowerMeter Voltage (L1)</label>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Voltage</tag>
+			<point>Measurement</point>
+			<property>Voltage</property>
 		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
@@ -113,8 +113,8 @@
 		<item-type>Number:ElectricPotential</item-type>
 		<label>PowerMeter Voltage (L2)</label>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Voltage</tag>
+			<point>Measurement</point>
+			<property>Voltage</property>
 		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
@@ -122,8 +122,8 @@
 		<item-type>Number:ElectricPotential</item-type>
 		<label>PowerMeter Voltage (L3)</label>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Voltage</tag>
+			<point>Measurement</point>
+			<property>Voltage</property>
 		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
@@ -131,8 +131,8 @@
 		<item-type>Number:Energy</item-type>
 		<label>PowerMeter Energy (ΣL)</label>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
@@ -140,8 +140,8 @@
 		<item-type>Number:Energy</item-type>
 		<label>PowerMeter Energy (L1)</label>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
@@ -149,8 +149,8 @@
 		<item-type>Number:Energy</item-type>
 		<label>PowerMeter Energy (L2)</label>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
@@ -158,8 +158,8 @@
 		<item-type>Number:Energy</item-type>
 		<label>PowerMeter Energy (L3)</label>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>

@@ -168,8 +168,8 @@
 		<description>Loxone's window position control.</description>
 		<category>Window</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>OpenLevel</tag>
+			<point>Control</point>
+			<property>OpenLevel</property>
 		</tags>
 		<state min="0" max="100"/>
 		<config-description>
@@ -191,8 +191,8 @@
 			and closing require Miniserver 12.1 or newer.</description>
 		<category>garagedoor</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>OpenLevel</tag>
+			<point>Control</point>
+			<property>OpenLevel</property>
 		</tags>
 		<state min="0" max="100" pattern="%d %%"/>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>

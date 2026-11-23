@@ -99,8 +99,8 @@
 		<label>Operating Mode</label>
 		<description>Pump operating mode</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Mode</tag>
+			<point>Control</point>
+			<property>Mode</property>
 		</tags>
 		<state>
 			<options>
@@ -118,8 +118,8 @@
 		<label>Control Mode</label>
 		<description>Pump control mode</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Mode</tag>
+			<point>Control</point>
+			<property>Mode</property>
 		</tags>
 		<state>
 			<options>

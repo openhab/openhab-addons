@@ -420,8 +420,8 @@
 		<description>Controls the color of the light.</description>
 		<category>ColorLight</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>Color</tag>
+			<point>Control</point>
+			<property>Color</property>
 		</tags>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
