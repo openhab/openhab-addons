@@ -76,7 +76,7 @@ public final class HttpParser {
      * @param message the parsed message, or {@code null} if more data is needed
      * @param remainder unconsumed bytes (the full input when {@code message} is {@code null})
      */
-    public record ParseResult<T> (@Nullable T message, byte[] remainder) {
+    public record ParseResult<T>(@Nullable T message, byte[] remainder) {
     }
 
     private record RawMessage(@Nullable String firstLine, CaseInsensitiveMap<String> headers, Object body,

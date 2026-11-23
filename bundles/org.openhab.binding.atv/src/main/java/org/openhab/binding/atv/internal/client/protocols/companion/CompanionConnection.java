@@ -257,7 +257,7 @@ public final class CompanionConnection {
             }
         }
 
-        if (currentSocket != null && error != null) {
+        if (currentSocket != null) {
             try {
                 currentSocket.close();
             } catch (IOException ignored) {

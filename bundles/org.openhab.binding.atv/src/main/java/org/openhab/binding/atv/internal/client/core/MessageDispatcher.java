@@ -56,7 +56,7 @@ public class MessageDispatcher<T extends Enum<T>, M> {
     private final DeviceLoop loop;
     private final ConcurrentMap<T, CopyOnWriteArrayList<Entry<M>>> listeners = new ConcurrentHashMap<>();
 
-    private record Entry<M> (Predicate<M> filter, Consumer<M> listener) {
+    private record Entry<M>(Predicate<M> filter, Consumer<M> listener) {
     }
 
     /**

@@ -49,9 +49,9 @@ import javax.jmdns.ServiceListener;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.api.Response;
-import org.eclipse.jetty.client.util.InputStreamResponseListener;
+import org.eclipse.jetty.client.InputStreamResponseListener;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.Response;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.atv.internal.AtvBindingConstants;
 import org.openhab.binding.atv.internal.AtvDynamicCommandDescriptionProvider;
@@ -380,7 +380,10 @@ public class AtvHandler extends BaseThingHandler {
             case CHANNEL_REPEAT -> atv.remoteControl().setRepeat(RepeatState.valueOf(value));
             case CHANNEL_POSITION -> {
                 if (command instanceof QuantityType<?> quantity) {
-                    atv.remoteControl().setPosition(Duration.ofSeconds(quantity.longValue()));
+                    QuantityType<?> seconds = quantity.toUnit(Units.SECOND);
+                    if (seconds != null) {
+                        atv.remoteControl().setPosition(Duration.ofSeconds(seconds.longValue()));
+                    }
                 }
             }
             case CHANNEL_PLAY_URL -> resolveMediaSource(value).ifPresent(source -> atv.stream().playUrl(source));

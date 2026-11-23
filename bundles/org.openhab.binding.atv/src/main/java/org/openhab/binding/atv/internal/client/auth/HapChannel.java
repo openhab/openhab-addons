@@ -236,6 +236,10 @@ public abstract class HapChannel implements AutoCloseable {
             PairVerifyProcedure verifier, String address, int port, String salt, String outputInfo, String inputInfo) {
         EncryptionKeys keys = verifier.encryptionKeys(salt, outputInfo, inputInfo);
         T channel = factory.apply(keys.outputKey(), keys.inputKey());
-        return channel.connect(address, port).thenApply(v -> channel);
+        return channel.connect(address, port).whenComplete((v, error) -> {
+            if (error != null) {
+                channel.close();
+            }
+        }).thenApply(v -> channel);
     }
 }
