@@ -17,7 +17,7 @@
 	<channel-type id="push-mode" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Push Mode</label>
-		<description>This thing receives push event via Netatmo Webhooks</description>
+		<description>This thing receives push events via Netatmo Webhooks</description>
 		<tags>
 			<tag>Switch</tag>
 			<tag>Mode</tag>
