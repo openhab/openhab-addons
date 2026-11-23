@@ -56,6 +56,24 @@ public class SolarmanChannelTypeProviderTest {
         assertEquals(expectedPattern, stateDescription.getPattern());
     }
 
+    @ParameterizedTest
+    @MethodSource("readOnlyFlags")
+    void testStateReadOnlyFollowsItem(@Nullable Boolean isReadOnly, boolean expectedReadOnly) {
+        ParameterItem item = createItem(9, "", BigDecimal.ONE);
+        if (isReadOnly != null) {
+            item.setIsReadOnly(isReadOnly);
+        }
+
+        StateDescription stateDescription = provider.buildChannelType(CHANNEL_TYPE_UID, item).getState();
+
+        assertNotNull(stateDescription);
+        assertEquals(expectedReadOnly, stateDescription.isReadOnly());
+    }
+
+    private static Stream<Arguments> readOnlyFlags() {
+        return Stream.of(Arguments.of(null, true), Arguments.of(true, true), Arguments.of(false, false));
+    }
+
     private static Stream<Arguments> itemPatterns() {
         return Stream.of(Arguments.of(createLookupItem(), "String", null),
                 Arguments.of(createItem(5, "", BigDecimal.ONE), "String", null),

@@ -29,7 +29,7 @@ import javax.xml.soap.SOAPMessage;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.api.ContentResponse;
+import org.eclipse.jetty.client.ContentResponse;
 import org.openhab.binding.tr064.internal.dto.scpd.root.SCPDServiceType;
 import org.openhab.binding.tr064.internal.phonebook.Phonebook;
 import org.openhab.binding.tr064.internal.soap.SOAPRequest;

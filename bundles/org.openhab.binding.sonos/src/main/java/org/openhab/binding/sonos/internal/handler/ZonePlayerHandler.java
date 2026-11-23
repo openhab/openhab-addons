@@ -3411,6 +3411,9 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
         } else {
             logger.debug("UPnP device {} is absent (thing {})", getUDN(), getThing().getUID());
             updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR);
+            synchronized (upnpLock) {
+                subscriptionState.clear();
+            }
         }
     }
 

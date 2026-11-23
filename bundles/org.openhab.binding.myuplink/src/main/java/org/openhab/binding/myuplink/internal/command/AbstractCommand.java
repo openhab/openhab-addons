@@ -23,11 +23,11 @@ import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.BufferingResponseListener;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.api.Response;
-import org.eclipse.jetty.client.api.Result;
-import org.eclipse.jetty.client.util.BufferingResponseListener;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.Response;
+import org.eclipse.jetty.client.Result;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
@@ -274,8 +274,10 @@ public abstract class AbstractCommand extends BufferingResponseListener implemen
         logger.debug("[{}] running command", getClass().getSimpleName());
 
         // we want to receive json only, so explicitely set this!
-        request.header(HttpHeader.ACCEPT, "application/json");
-        request.header(HttpHeader.ACCEPT_ENCODING, StandardCharsets.UTF_8.name());
+        request.headers(h -> {
+            h.add(HttpHeader.ACCEPT, "application/json");
+            h.add(HttpHeader.ACCEPT_ENCODING, StandardCharsets.UTF_8.name());
+        });
 
         // this should be the default for myUplink Cloud API
         request.followRedirects(false);
@@ -283,7 +285,7 @@ public abstract class AbstractCommand extends BufferingResponseListener implemen
         // add authentication data for every request. Handling this here makes it obsolete to implement for each and
         // every command
         if (!accessToken.isBlank()) {
-            request.header(HttpHeader.AUTHORIZATION, WEB_REQUEST_BEARER_TOKEN_PREFIX + accessToken);
+            request.headers(h -> h.add(HttpHeader.AUTHORIZATION, WEB_REQUEST_BEARER_TOKEN_PREFIX + accessToken));
         }
 
         prepareRequest(request).send(this);

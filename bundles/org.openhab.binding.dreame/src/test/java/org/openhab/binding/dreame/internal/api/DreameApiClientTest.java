@@ -18,6 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.RETURNS_SELF;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -28,12 +29,15 @@ import java.time.Instant;
 import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.http.HttpFields;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.openhab.binding.dreame.internal.model.DreameDevice;
 import org.openhab.binding.dreame.internal.model.DreameMapData;
 import org.openhab.binding.dreame.internal.model.DreameMowingStatistics;
@@ -72,7 +76,13 @@ class DreameApiClientTest {
         assertEquals(List.of(), client.getDevices());
 
         verify(request, times(3)).send();
-        verify(request).header("Dreame-Auth", "new-token");
+        ArgumentCaptor<Consumer<HttpFields.Mutable>> headers = ArgumentCaptor.captor();
+        verify(request, atLeastOnce()).headers(headers.capture());
+        assertTrue(headers.getAllValues().stream().anyMatch(block -> {
+            HttpFields.Mutable fields = HttpFields.build();
+            block.accept(fields);
+            return "new-token".equals(fields.get("Dreame-Auth"));
+        }));
     }
 
     private static ContentResponse response(String json) {

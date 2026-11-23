@@ -26,9 +26,9 @@ import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
+import org.eclipse.jetty.client.FormRequestContent;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.util.FormContentProvider;
 import org.eclipse.jetty.util.Fields;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -302,8 +302,7 @@ public class GeneracMobileLinkAccountHandler extends BaseBridgeHandler {
                 }
                 String stepPath = passwordStep ? "/u/login/password" : "/u/login/identifier";
                 response = httpClient.POST(AUTH_BASE + stepPath).param("state", form.select("input[name=state]").val())
-                        .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS).content(new FormContentProvider(fields))
-                        .send();
+                        .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS).body(new FormRequestContent(fields)).send();
                 logger.debug("Login {} response status {}", stepPath, response.getStatus());
                 // Auth0 returns 400 when it rejects the credentials
                 if (response.getStatus() == 400) {

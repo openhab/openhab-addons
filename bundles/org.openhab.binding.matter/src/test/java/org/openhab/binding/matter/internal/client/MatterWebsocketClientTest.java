@@ -22,7 +22,6 @@ import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 import java.math.BigInteger;
 import java.net.ServerSocket;
@@ -38,15 +37,10 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
-import org.eclipse.jetty.servlet.ServletContextHandler;
-import org.eclipse.jetty.servlet.ServletHolder;
-import org.eclipse.jetty.websocket.api.RemoteEndpoint;
+import org.eclipse.jetty.websocket.api.Callback;
 import org.eclipse.jetty.websocket.api.Session;
-import org.eclipse.jetty.websocket.api.WebSocketAdapter;
-import org.eclipse.jetty.websocket.api.WebSocketPolicy;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
-import org.eclipse.jetty.websocket.servlet.WebSocketServlet;
-import org.eclipse.jetty.websocket.servlet.WebSocketServletFactory;
+import org.eclipse.jetty.websocket.server.WebSocketUpgradeHandler;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.matter.internal.client.dto.Endpoint;
@@ -439,9 +433,8 @@ class MatterWebsocketClientTest {
         Server server = new Server();
         ServerConnector connector = new ServerConnector(server);
         server.addConnector(connector);
-        ServletContextHandler context = new ServletContextHandler();
-        context.addServlet(new ServletHolder(new ClosingServlet()), "/");
-        server.setHandler(context);
+        server.setHandler(WebSocketUpgradeHandler.from(server,
+                container -> container.addMapping("/", (request, response, callback) -> new ClosingSocket())));
         server.start();
         try {
             long threadsBefore = webSocketClientThreads();
@@ -498,20 +491,10 @@ class MatterWebsocketClientTest {
     /**
      * Closes every connection right away, like the Matter server does when the controller fails to start
      */
-    public static class ClosingServlet extends WebSocketServlet {
-        private static final long serialVersionUID = 1L;
-
+    public static class ClosingSocket implements Session.Listener.AutoDemanding {
         @Override
-        public void configure(@Nullable WebSocketServletFactory factory) {
-            Objects.requireNonNull(factory).register(ClosingSocket.class);
-        }
-    }
-
-    public static class ClosingSocket extends WebSocketAdapter {
-        @Override
-        public void onWebSocketConnect(@Nullable Session session) {
-            super.onWebSocketConnect(session);
-            Objects.requireNonNull(session).close(1002, "MdnsService unavailable");
+        public void onWebSocketOpen(@Nullable Session session) {
+            Objects.requireNonNull(session).close(1002, "MdnsService unavailable", Callback.NOOP);
         }
     }
 
@@ -535,9 +518,6 @@ class MatterWebsocketClientTest {
      */
     private void connectMockSession() {
         Session session = mock(Session.class);
-        when(session.getPolicy()).thenReturn(WebSocketPolicy.newClientPolicy());
-        RemoteEndpoint remote = mock(RemoteEndpoint.class);
-        when(session.getRemote()).thenReturn(remote);
-        client.onWebSocketConnect(session);
+        client.onWebSocketOpen(session);
     }
 }

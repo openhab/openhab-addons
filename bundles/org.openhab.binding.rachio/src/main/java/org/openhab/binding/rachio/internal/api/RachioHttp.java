@@ -26,10 +26,10 @@ import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpStatus;
 import org.slf4j.Logger;
@@ -143,15 +143,15 @@ public class RachioHttp {
 
             Request request = httpClient.newRequest(location).method(method)
                     .timeout(HTTP_TIMEOUT_MS, TimeUnit.MILLISECONDS)
-                    .header(HttpHeader.USER_AGENT, SERVLET_WEBHOOK_USER_AGENT);
+                    .headers(h -> h.put(HttpHeader.USER_AGENT, SERVLET_WEBHOOK_USER_AGENT));
             if (!apikey.isEmpty()) {
-                request.header(HttpHeader.AUTHORIZATION, "Bearer " + apikey);
+                request.headers(h -> h.put(HttpHeader.AUTHORIZATION, "Bearer " + apikey));
             }
             if (method.equals(HTTP_METHOD_PUT) || method.equals(HTTP_METHOD_POST)) {
-                request.content(new StringContentProvider(reqDatas != null ? reqDatas : "", StandardCharsets.UTF_8),
-                        SERVLET_WEBHOOK_APPLICATION_JSON);
+                request.body(new StringRequestContent(SERVLET_WEBHOOK_APPLICATION_JSON,
+                        reqDatas != null ? reqDatas : "", StandardCharsets.UTF_8));
             } else {
-                request.header(HttpHeader.CONTENT_TYPE, SERVLET_WEBHOOK_APPLICATION_JSON);
+                request.headers(h -> h.put(HttpHeader.CONTENT_TYPE, SERVLET_WEBHOOK_APPLICATION_JSON));
             }
             logger.trace("RachioHttp[Call #{}]: Call Rachio cloud service: {} '{}'", apiCall, request.getMethod(),
                     sanitizeForLogging(result.url));

@@ -34,12 +34,12 @@ import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.CompletableResponseListener;
+import org.eclipse.jetty.client.ContentResponse;
+import org.eclipse.jetty.client.FormRequestContent;
 import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.Request;
 import org.eclipse.jetty.client.WWWAuthenticationProtocolHandler;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.FormContentProvider;
-import org.eclipse.jetty.client.util.FutureResponseListener;
 import org.eclipse.jetty.util.Fields;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -158,7 +158,7 @@ public class BiancaAccountClient {
         try {
             logger.debug("Starting isolated account HTTP client");
             httpClient.start();
-            httpClient.getCookieStore().removeAll();
+            httpClient.getHttpCookieStore().clear();
             // OAuth is handled here; retain 401 responses even when no WWW-Authenticate challenge is present.
             httpClient.getProtocolHandlers().remove(WWWAuthenticationProtocolHandler.NAME);
             return operation.load(login);
@@ -470,17 +470,24 @@ public class BiancaAccountClient {
             }
             Request request = httpClient.newRequest(target).followRedirects(false)
                     .timeout(Math.min(remaining, TimeUnit.SECONDS.toNanos(10)), TimeUnit.NANOSECONDS)
-                    .header("User-Agent", USER_AGENT).header("Accept-Language", "en-US");
-            if (apiRequest) {
-                request.header("Authorization", "Bearer " + bearer).header("Salesforce-Auth", "1").header("Brand", "0")
-                        .header("Device-Language", "en").header("Device-Model", "openHAB")
-                        .header("Device-Os", "Java 21").header("App-Version-Name", "3.14.1")
-                        .header("App-Version-Code", "226");
-            }
+                    .headers(headers -> {
+                        headers.put("User-Agent", USER_AGENT);
+                        headers.put("Accept-Language", "en-US");
+                        if (apiRequest) {
+                            headers.put("Authorization", "Bearer " + bearer);
+                            headers.put("Salesforce-Auth", "1");
+                            headers.put("Brand", "0");
+                            headers.put("Device-Language", "en");
+                            headers.put("Device-Model", "openHAB");
+                            headers.put("Device-Os", "Java 21");
+                            headers.put("App-Version-Name", "3.14.1");
+                            headers.put("App-Version-Code", "226");
+                        }
+                    });
             if (!form.isEmpty()) {
                 Fields fields = new Fields();
                 form.forEach(fields::add);
-                request.method("POST").content(new FormContentProvider(fields));
+                request.method("POST").body(new FormRequestContent(fields));
             }
             logger.debug("Account HTTP request {}: {} ({})", requests, form.isEmpty() ? "GET" : "POST",
                     apiRequest ? "appliance API" : "login");
@@ -489,10 +496,8 @@ public class BiancaAccountClient {
                 if (result.isCancelled()) {
                     throw new InterruptedException();
                 }
-                FutureResponseListener listener = new FutureResponseListener(request, 4 * 1024 * 1024);
-                request.send(listener);
-                ContentResponse response = listener.get(Math.min(remaining, TimeUnit.SECONDS.toNanos(10)),
-                        TimeUnit.NANOSECONDS);
+                ContentResponse response = new CompletableResponseListener(request, 4 * 1024 * 1024).send()
+                        .get(Math.min(remaining, TimeUnit.SECONDS.toNanos(10)), TimeUnit.NANOSECONDS);
                 logger.debug("Account HTTP response {}: status {}", requests, response.getStatus());
                 return response;
             } finally {

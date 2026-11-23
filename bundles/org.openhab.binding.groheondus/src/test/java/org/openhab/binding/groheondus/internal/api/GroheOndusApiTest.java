@@ -18,7 +18,6 @@ import static org.mockito.Mockito.*;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.CookieStore;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -32,9 +31,10 @@ import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.http.HttpCookieStore;
 import org.eclipse.jetty.http.HttpFields;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -62,7 +62,7 @@ class GroheOndusApiTest {
     void setUp() {
         TimeZoneProvider timeZoneProvider = mock(TimeZoneProvider.class);
         when(timeZoneProvider.getTimeZone()).thenReturn(ZONE);
-        when(httpClient.getCookieStore()).thenReturn(mock(CookieStore.class));
+        when(httpClient.getHttpCookieStore()).thenReturn(mock(HttpCookieStore.class));
         when(httpClient.newRequest(anyString())).thenAnswer(invocation -> createRequest(invocation.getArgument(0)));
         api = new GroheOndusApi(httpClient, timeZoneProvider);
     }
@@ -87,7 +87,7 @@ class GroheOndusApiTest {
     }
 
     private static ContentResponse response(int status, String body) {
-        return response(status, body, new HttpFields());
+        return response(status, body, HttpFields.EMPTY);
     }
 
     private static ContentResponse response(int status, String body, HttpFields headers) {
@@ -131,8 +131,8 @@ class GroheOndusApiTest {
 
     @Test
     void webFormLogin() throws Exception {
-        HttpFields redirect = new HttpFields();
-        redirect.put("Location", "ondus://idp2-apigw.cloud.grohe.com/v3/iot/oidc/token?code=xyz");
+        HttpFields redirect = HttpFields.build().put("Location",
+                "ondus://idp2-apigw.cloud.grohe.com/v3/iot/oidc/token?code=xyz");
         responses.put("oidc/login", response(200, fixture("login-page.html")));
         responses.put("login-actions/authenticate", response(302, "", redirect));
         responses.put("oidc/token", response(200, TOKEN_JSON));

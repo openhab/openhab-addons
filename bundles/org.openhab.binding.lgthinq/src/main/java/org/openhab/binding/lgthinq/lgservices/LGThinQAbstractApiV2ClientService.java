@@ -18,8 +18,6 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.Map;
 
-import javax.ws.rs.core.UriBuilder;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -37,6 +35,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+
+import jakarta.ws.rs.core.UriBuilder;
 
 /**
  * The {@link LGThinQAbstractApiV2ClientService} - Specialized abstract class that implements methods and services to

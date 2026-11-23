@@ -21,10 +21,10 @@ import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
@@ -583,13 +583,15 @@ public class HDPowerViewWebTargets {
                 logger.trace("JSON command = {}", jsonCommand);
             }
         }
-        Request request = httpClient.newRequest(url).method(method).header("Connection", "close").accept("*/*")
-                .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+        Request request = httpClient.newRequest(url).method(method).headers(h -> {
+            h.add("Connection", "close");
+            h.add(HttpHeader.ACCEPT, "*/*");
+        }).timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS);
         if (query != null) {
             request.param(query.getKey(), query.getValue());
         }
         if (jsonCommand != null) {
-            request.header(HttpHeader.CONTENT_TYPE, "application/json").content(new StringContentProvider(jsonCommand));
+            request.body(new StringRequestContent("application/json", jsonCommand));
         }
         ContentResponse response;
         try {

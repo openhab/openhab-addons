@@ -47,7 +47,7 @@ public class MeterReadingHelper {
         for (int idx = 0; idx < incomingConso.length; idx++) {
             Consommation conso = incomingConso[idx];
             conso.dateIndex = conso.dateIndex.withHour(0).withMinute(0).withSecond(0);
-            conso.consommation *= 1000.00;
+            conso.consommation *= 1000.0f;
         }
 
         if (currentMeterReading.data.consommation == null) {

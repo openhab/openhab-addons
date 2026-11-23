@@ -44,10 +44,10 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import org.eclipse.jetty.client.BytesRequestContent;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.BytesContentProvider;
+import org.eclipse.jetty.client.Request;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -437,12 +437,12 @@ public abstract class DLinkHNAPCommunication {
         final Iterator<?> it = action.getMimeHeaders().getAllHeaders();
         while (it.hasNext()) {
             final MimeHeader header = (MimeHeader) it.next();
-            request.header(header.getName(), header.getValue());
+            request.headers(h -> h.add(header.getName(), header.getValue()));
         }
 
         try (final ByteArrayOutputStream os = new ByteArrayOutputStream()) {
             action.writeTo(os);
-            request.content(new BytesContentProvider(os.toByteArray()));
+            request.body(new BytesRequestContent(os.toByteArray()));
             final ContentResponse response = request.send();
             try (final ByteArrayInputStream is = new ByteArrayInputStream(response.getContent())) {
                 result = parser.parse(is);
