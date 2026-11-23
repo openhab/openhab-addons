@@ -1,7 +1,8 @@
 {
 	"deviceMapping": {
 		"id": [
-			"zhimi.heater.za2"
+			"zhimi.heater.za2",
+			"zhimi.heater.zb1a"
 		],
 		"propertyMethod": "get_properties",
 		"maxProperties": 1,
