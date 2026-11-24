@@ -224,12 +224,12 @@ public class Go2RtcCameraServlet extends HttpServlet {
         return "http://" + ipAddress + ":" + port + PATH + "/" + thingId;
     }
 
-    public void addProvider(String thingId, BrowserStreamProvider provider) {
+    public synchronized void addProvider(String thingId, BrowserStreamProvider provider) {
         providers.put(thingId, provider);
         registerAlias(thingId);
     }
 
-    public void removeProvider(String thingId, BrowserStreamProvider provider) {
+    public synchronized void removeProvider(String thingId, BrowserStreamProvider provider) {
         if (!providers.remove(thingId, provider)) {
             return;
         }
@@ -244,7 +244,7 @@ public class Go2RtcCameraServlet extends HttpServlet {
     }
 
     @Deactivate
-    void deactivate() {
+    synchronized void deactivate() {
         aliases.values().forEach(registration -> {
             try {
                 registration.unregister();
@@ -265,25 +265,23 @@ public class Go2RtcCameraServlet extends HttpServlet {
         if (!THING_ID.matcher(thingId).matches()) {
             return;
         }
-        synchronized (aliases) {
-            if (aliases.containsKey(thingId)) {
-                return;
+        if (aliases.containsKey(thingId)) {
+            return;
+        }
+        Dictionary<String, Object> props = new Hashtable<>();
+        String path = PATH + "/" + thingId;
+        props.put(HttpWhiteboardConstants.HTTP_WHITEBOARD_SERVLET_PATTERN, new String[] { path, path + "/*" });
+        props.put(HttpWhiteboardConstants.HTTP_WHITEBOARD_SERVLET_NAME, "homekit-camera-" + thingId);
+        props.put(HttpWhiteboardConstants.HTTP_WHITEBOARD_CONTEXT_SELECT, UI_OR_DEFAULT_CONTEXT);
+        props.put("service.ranking", Integer.valueOf(100));
+        try {
+            ServiceRegistration<Servlet> registration = bundleContext.registerService(Servlet.class, new CameraAlias(),
+                    props);
+            if (registration != null) {
+                aliases.put(thingId, registration);
             }
-            Dictionary<String, Object> props = new Hashtable<>();
-            String path = PATH + "/" + thingId;
-            props.put(HttpWhiteboardConstants.HTTP_WHITEBOARD_SERVLET_PATTERN, new String[] { path, path + "/*" });
-            props.put(HttpWhiteboardConstants.HTTP_WHITEBOARD_SERVLET_NAME, "homekit-camera-" + thingId);
-            props.put(HttpWhiteboardConstants.HTTP_WHITEBOARD_CONTEXT_SELECT, UI_OR_DEFAULT_CONTEXT);
-            props.put("service.ranking", Integer.valueOf(100));
-            try {
-                ServiceRegistration<Servlet> registration = bundleContext.registerService(Servlet.class,
-                        new CameraAlias(), props);
-                if (registration != null) {
-                    aliases.put(thingId, registration);
-                }
-            } catch (IllegalStateException e) {
-                // The bundle is stopping.
-            }
+        } catch (IllegalStateException e) {
+            // The bundle is stopping.
         }
     }
 

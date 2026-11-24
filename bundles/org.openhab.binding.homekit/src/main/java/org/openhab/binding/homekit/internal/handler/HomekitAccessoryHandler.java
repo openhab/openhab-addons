@@ -537,6 +537,7 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler
                         .withType(CHANNEL_TYPE_CAMERA_URL).build();
                 uniqueChannelsMap.put(CHANNEL_CAMERA_URL, cameraUrlChannel);
                 logChannelInformation(cameraUrlChannel);
+                cameraServlet.addProvider(thing.getUID().getId(), this);
             }
         }
 
@@ -631,8 +632,11 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler
     public void initialize() {
         super.initialize();
         // Register before go2rtc is ready. Otherwise a camera whose bridge is still starting is a 404, and the Main UI
-        // error page reports that the URL was not found.
-        cameraServlet.addProvider(thing.getUID().getId(), this);
+        // error page reports that the URL was not found. Only cameras have the camera URL channel; a bridged camera
+        // gets it when its accessory is loaded, see createChannels().
+        if (thing.getChannel(CHANNEL_CAMERA_URL) != null) {
+            cameraServlet.addProvider(thing.getUID().getId(), this);
+        }
         if (isBridgedAccessory) {
             Bridge bridge = getBridge();
             if (bridge == null) {

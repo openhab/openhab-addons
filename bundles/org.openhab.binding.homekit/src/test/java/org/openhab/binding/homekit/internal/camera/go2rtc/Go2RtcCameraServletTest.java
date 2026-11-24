@@ -18,13 +18,18 @@ import static org.mockito.Mockito.*;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.Dictionary;
+import java.util.List;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.openhab.core.net.NetworkAddressService;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceRegistration;
 
+import jakarta.servlet.Servlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -59,6 +64,29 @@ class Go2RtcCameraServletTest {
         assertEquals(HttpServletResponse.SC_NOT_FOUND, captured.status);
         verify(captured.response, never()).sendError(anyInt());
         verify(captured.response, never()).sendError(anyInt(), anyString());
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    void aliasFollowsProviderLifecycle() {
+        BundleContext bundleContext = mock(BundleContext.class);
+        List<ServiceRegistration<Servlet>> registrations = new ArrayList<>();
+        when(bundleContext.registerService(eq(Servlet.class), any(Servlet.class), any(Dictionary.class)))
+                .thenAnswer(invocation -> {
+                    ServiceRegistration<Servlet> registration = mock(ServiceRegistration.class);
+                    registrations.add(registration);
+                    return registration;
+                });
+        Go2RtcCameraServlet servlet = new Go2RtcCameraServlet(mock(NetworkAddressService.class), bundleContext);
+        Go2RtcCameraServlet.BrowserStreamProvider provider = provider();
+        servlet.addProvider("55bcd1cd8b1e", provider);
+        servlet.removeProvider("55bcd1cd8b1e", provider);
+        servlet.addProvider("55bcd1cd8b1e", provider);
+        assertEquals(2, registrations.size());
+        verify(registrations.get(0)).unregister();
+        verify(registrations.get(1), never()).unregister();
+        servlet.deactivate();
+        verify(registrations.get(1)).unregister();
     }
 
     private static Go2RtcCameraServlet servlet() {
