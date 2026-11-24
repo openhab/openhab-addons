@@ -5255,7 +5255,6 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | alarm                      | Switch               | Notification Sound                       |            |
 | sleep                      | Switch               | Sleep                                    |            |
 | fan                        | Switch               | Fan                                      | Auxiliary heating with the fan |
-| pcbtemp                    | Number:Temperature   | PCB Temperature                          |            |
 
 ### Xiaomi Graphene Baseboard Heater (<a name="leshow-heater-bs3">leshow.heater.bs3</a>) Channels
 
@@ -5272,7 +5271,6 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | alarm                      | Switch               | Notification Sound                       |            |
 | sleep                      | Switch               | Sleep                                    |            |
 | fan                        | Switch               | Fan                                      | Auxiliary heating with the fan |
-| pcbtemp                    | Number:Temperature   | PCB Temperature                          |            |
 
 ### Xiaomi Smart Tower Heater Lite (<a name="leshow-heater-nfj2lx">leshow.heater.nfj2lx</a>) Channels
 
@@ -5289,7 +5287,6 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | alarm                      | Switch               | Notification Sound                       |            |
 | auto_light_off             | Switch               | Auto Light Off                           |            |
 | oscillation                | Switch               | Oscillation                              |            |
-| pcbtemp                    | Number:Temperature   | PCB Temperature                          |            |
 | indicator                  | Switch               | Indicator                                |            |
 
 ### Xiaomi Smart Tower Heater Lite (<a name="leshow-heater-nfj3lx">leshow.heater.nfj3lx</a>) Channels
@@ -5307,7 +5304,6 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | alarm                      | Switch               | Notification Sound                       |            |
 | auto_light_off             | Switch               | Auto Light Off                           |            |
 | oscillation                | Switch               | Oscillation                              |            |
-| pcbtemp                    | Number:Temperature   | PCB Temperature                          |            |
 | indicator                  | Switch               | Indicator                                |            |
 
 ### Xiaomiyoupin Curtain Controller (Wi-Fi) (<a name="lumi-curtain-hagl05">lumi.curtain.hagl05</a>) Channels
@@ -20496,7 +20492,6 @@ Switch physical_controls_locked "Child Lock" (G_heater) {channel="miio:basic:hea
 Switch alarm "Notification Sound" (G_heater) {channel="miio:basic:heater:alarm"}
 Switch sleep "Sleep" (G_heater) {channel="miio:basic:heater:sleep"}
 Switch fan "Fan" (G_heater) {channel="miio:basic:heater:fan"}
-Number:Temperature pcbtemp "PCB Temperature" (G_heater) {channel="miio:basic:heater:pcbtemp"}
 ```
 
 ### Xiaomi Graphene Baseboard Heater (leshow.heater.bs3) item file lines
@@ -20516,7 +20511,6 @@ Switch physical_controls_locked "Child Lock" (G_heater) {channel="miio:basic:hea
 Switch alarm "Notification Sound" (G_heater) {channel="miio:basic:heater:alarm"}
 Switch sleep "Sleep" (G_heater) {channel="miio:basic:heater:sleep"}
 Switch fan "Fan" (G_heater) {channel="miio:basic:heater:fan"}
-Number:Temperature pcbtemp "PCB Temperature" (G_heater) {channel="miio:basic:heater:pcbtemp"}
 ```
 
 ### Xiaomi Smart Tower Heater Lite (leshow.heater.nfj2lx) item file lines
@@ -20536,7 +20530,6 @@ Switch physical_controls_locked "Child Lock" (G_heater) {channel="miio:basic:hea
 Switch alarm "Notification Sound" (G_heater) {channel="miio:basic:heater:alarm"}
 Switch auto_light_off "Auto Light Off" (G_heater) {channel="miio:basic:heater:auto_light_off"}
 Switch oscillation "Oscillation" (G_heater) {channel="miio:basic:heater:oscillation"}
-Number:Temperature pcbtemp "PCB Temperature" (G_heater) {channel="miio:basic:heater:pcbtemp"}
 Switch indicator "Indicator" (G_heater) {channel="miio:basic:heater:indicator"}
 ```
 
@@ -20557,7 +20550,6 @@ Switch physical_controls_locked "Child Lock" (G_heater) {channel="miio:basic:hea
 Switch alarm "Notification Sound" (G_heater) {channel="miio:basic:heater:alarm"}
 Switch auto_light_off "Auto Light Off" (G_heater) {channel="miio:basic:heater:auto_light_off"}
 Switch oscillation "Oscillation" (G_heater) {channel="miio:basic:heater:oscillation"}
-Number:Temperature pcbtemp "PCB Temperature" (G_heater) {channel="miio:basic:heater:pcbtemp"}
 Switch indicator "Indicator" (G_heater) {channel="miio:basic:heater:indicator"}
 ```
 

@@ -266,29 +266,6 @@
 					"Airflow"
 				],
 				"readmeComment": "Auxiliary heating with the fan"
-			},
-			{
-				"property": "pcbtemp",
-				"siid": 9,
-				"piid": 1,
-				"friendlyName": "PCB Temperature",
-				"channel": "pcbtemp",
-				"type": "Number:Temperature",
-				"unit": "celsius",
-				"stateDescription": {
-					"minimum": -30,
-					"maximum": 100,
-					"step": 1,
-					"pattern": "%.0f %unit%",
-					"readOnly": true
-				},
-				"refresh": true,
-				"actions": [],
-				"category": "temperature",
-				"tags": [
-					"Measurement",
-					"Temperature"
-				]
 			}
 		]
 	}
