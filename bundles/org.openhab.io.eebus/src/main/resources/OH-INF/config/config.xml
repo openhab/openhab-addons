@@ -59,7 +59,7 @@
 		<parameter name="deviceType" type="text" groupName="identity">
 			<label>SPINE Device Type</label>
 			<description>SPINE device type reported to pairing partners.</description>
-			<default>GENERIC</default>
+			<default>ENERGY_MANAGEMENT_SYSTEM</default>
 			<advanced>true</advanced>
 			<options>
 				<option value="GENERIC">Generic</option>
