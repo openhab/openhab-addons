@@ -176,7 +176,7 @@ public class Go2RtcDataPump implements AutoCloseable {
             packet[9] = (byte) (AUDIO_SYNC_SOURCE >>> 16);
             packet[10] = (byte) (AUDIO_SYNC_SOURCE >>> 8);
             packet[11] = (byte) AUDIO_SYNC_SOURCE;
-            int srtpLength = owner.crypto.talkSession().encrypt(packet, length, srtpBuffer);
+            int srtpLength = owner.protectTalk(packet, length, srtpBuffer);
             synchronized (sessionMonitor) {
                 if (Objects.equals(session, owner)) {
                     audioSocket.send(new DatagramPacket(srtpBuffer, srtpLength, owner.crypto.talkAddress()));
@@ -192,6 +192,7 @@ public class Go2RtcDataPump implements AutoCloseable {
         private final SrtpReceiver audioSource;
         private final SrtpReceiver videoSource;
         private @Nullable FfmpegRtpTranscoder audioTranscoder;
+        private int talkSequence;
 
         private SessionState(Session crypto, int audioClockRate, Go2RtcDataPump pump) {
             this.crypto = crypto;
@@ -199,6 +200,18 @@ public class Go2RtcDataPump implements AutoCloseable {
             videoReport = new RtcpReceiverReport(VIDEO_SYNC_SOURCE, VIDEO_CLOCK_RATE);
             audioSource = pump.new SrtpReceiver(this, crypto.audioSession(), audioReport, AUDIO_CHANNEL);
             videoSource = pump.new SrtpReceiver(this, crypto.videoSession(), videoReport, VIDEO_CHANNEL);
+        }
+
+        /**
+         * Assigns the next session-wide sequence number to the talk packet and encrypts it. Browser talk streams
+         * restart their sequence numbers, so reusing them would reuse SRTP packet indexes and keystream under
+         * the same key.
+         */
+        private synchronized int protectTalk(byte[] packet, int length, byte[] srtp) {
+            packet[2] = (byte) (talkSequence >>> 8);
+            packet[3] = (byte) talkSequence;
+            talkSequence = (talkSequence + 1) & 0xFFFF;
+            return crypto.talkSession().encrypt(packet, length, srtp);
         }
     }
 

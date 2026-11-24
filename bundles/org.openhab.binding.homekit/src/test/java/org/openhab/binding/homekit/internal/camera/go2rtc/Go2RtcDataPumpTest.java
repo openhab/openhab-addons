@@ -80,7 +80,7 @@ class Go2RtcDataPumpTest {
     void testAudioListenAndTalkShareEndpoints(boolean replaceSession) throws Exception {
         InetAddress loopback = InetAddress.getByName("127.0.0.1");
         byte[] cameraRtp = { (byte) 0x80, 110, 0, 1, 0, 0, 0, 0, 0x12, 0x34, 0x56, 0x79, 1, 2, 3 };
-        byte[] talkRtp = { (byte) 0x80, 110, 0, 1, 0, 0, 0, 0, 0x12, 0x34, 0x56, 0x78, 4, 5, 6 };
+        byte[] talkRtp = { (byte) 0x80, 110, 0, 0, 0, 0, 0, 0, 0x12, 0x34, 0x56, 0x78, 4, 5, 6 };
         SrtpParameters cameraParameters = SrtpParameters.random();
         SrtpParameters talkParameters = SrtpParameters.random();
         try (var executor = Executors.newVirtualThreadPerTaskExecutor();
@@ -142,6 +142,57 @@ class Go2RtcDataPumpTest {
             byte[] encrypted = new byte[2048];
             int encryptedLength = SrtpSession.create(cameraParameters).encrypt(cameraRtp, cameraRtp.length, encrypted);
             camera.send(new DatagramPacket(encrypted, encryptedLength, packet.getSocketAddress()));
+            relay.get(10, TimeUnit.SECONDS);
+        }
+    }
+
+    @Test
+    @Timeout(30)
+    void testTalkRestartWithinSessionDoesNotReuseSrtpIndex() throws Exception {
+        InetAddress loopback = InetAddress.getByName("127.0.0.1");
+        byte[] talkRtp = { (byte) 0x80, 110, 0, 0, 0, 0, 0, 0, 0x12, 0x34, 0x56, 0x78, 4, 5, 6 };
+        SrtpParameters talkParameters = SrtpParameters.random();
+        try (var executor = Executors.newVirtualThreadPerTaskExecutor();
+                ServerSocket server = new ServerSocket(0, 1, loopback);
+                DatagramSocket camera = new DatagramSocket(0, loopback);
+                Go2RtcDataPump pump = new Go2RtcDataPump(List.of(OPUS), List.of(H264), null)) {
+            server.setSoTimeout(10000);
+            camera.setSoTimeout(10000);
+            var relay = executor.submit(() -> {
+                try (Socket publisher = server.accept()) {
+                    publisher.setSoTimeout(10000);
+                    respond(publisher, "ANNOUNCE", "SETUP", "SETUP", "RECORD");
+                    for (int i = 0; i < 2; i++) {
+                        try (Socket talk = server.accept()) {
+                            talk.setSoTimeout(10000);
+                            respond(talk, "DESCRIBE", "SETUP", "PLAY");
+                            var out = talk.getOutputStream();
+                            out.write(new byte[] { '$', 0, 0, (byte) talkRtp.length });
+                            out.write(talkRtp);
+                            out.flush();
+                            talk.getInputStream().readAllBytes();
+                        }
+                    }
+                }
+                return null;
+            });
+
+            pump.connect(server.getLocalPort(), "listen", "talk");
+            pump.startSession(SrtpParameters.random(), SrtpParameters.random(), talkParameters, SrtpParameters.random(),
+                    loopback.getHostAddress(), camera.getLocalPort());
+            var receiver = SrtpSession.create(talkParameters);
+            byte[] received = new byte[2048];
+            byte[] decoded = new byte[2048];
+            for (int i = 0; i < 2; i++) {
+                pump.startTalk();
+                DatagramPacket packet = new DatagramPacket(received, received.length);
+                camera.receive(packet);
+                int decodedLength = receiver.decrypt(received, packet.getLength(), decoded);
+                assertEquals(talkRtp.length, decodedLength, "Talk packet " + i + " must not be a replay");
+                assertArrayEquals(Arrays.copyOfRange(talkRtp, 12, talkRtp.length),
+                        Arrays.copyOfRange(decoded, 12, decodedLength));
+                pump.stopTalk();
+            }
             relay.get(10, TimeUnit.SECONDS);
         }
     }
