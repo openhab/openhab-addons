@@ -59,7 +59,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Stamate Viorel - Initial contribution
  */
-@Component(service = { EEBus.class }, configurationPid = EEBusSettings.CONFIG_PID, property = {
+@Component(service = { EEBus.class }, immediate = true, configurationPid = EEBusSettings.CONFIG_PID, property = {
         Constants.SERVICE_PID + "=org.openhab.eebus" })
 @ConfigurableService(category = "io", label = "EEBus Integration", description_uri = "io:eebus")
 @NonNullByDefault
