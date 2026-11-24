@@ -66,14 +66,18 @@ class KlapCipher {
     }
 
     /**
-     * Decrypts a signed message. The signature is not checked, as the device doesn't require it either.
+     * Checks the signature of a message for the request with the given sequence number and decrypts it.
      */
     String decrypt(byte[] message, int seq) throws GeneralSecurityException {
         if (message.length < SIGNATURE_LENGTH) {
             throw new GeneralSecurityException("KLAP message shorter than its signature");
         }
-        byte[] plain = cipher(Cipher.DECRYPT_MODE, seq).doFinal(message, SIGNATURE_LENGTH,
-                message.length - SIGNATURE_LENGTH);
+        byte[] cipherText = Arrays.copyOfRange(message, SIGNATURE_LENGTH, message.length);
+        if (!MessageDigest.isEqual(Arrays.copyOf(message, SIGNATURE_LENGTH),
+                sha256(signatureKey, sequenceBytes(seq), cipherText))) {
+            throw new GeneralSecurityException("KLAP message signature doesn't match");
+        }
+        byte[] plain = cipher(Cipher.DECRYPT_MODE, seq).doFinal(cipherText);
         return new String(plain, StandardCharsets.UTF_8);
     }
 
@@ -98,6 +102,10 @@ class KlapCipher {
 
     static byte[] sha1(byte[] value) throws GeneralSecurityException {
         return digest("SHA-1", value);
+    }
+
+    static byte[] md5(byte[]... parts) throws GeneralSecurityException {
+        return digest("MD5", parts);
     }
 
     private static byte[] digest(String algorithm, byte[]... parts) throws GeneralSecurityException {

@@ -16,6 +16,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 import static org.openhab.binding.tapocontrol.internal.constants.TapoErrorCode.*;
@@ -27,6 +28,7 @@ import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.eclipse.jetty.client.HttpClient;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -83,6 +85,28 @@ class KlapProtocolTest {
 
         assertThat(error.getCode(), is(ERR_API_HAND_SHAKE_FAILED.getCode()));
         verify(transport, times(1)).login();
+    }
+
+    @Test
+    void blankCredentialsFailWithoutContactingTheDevice() {
+        HttpClient httpClient = mock(HttpClient.class);
+        when(connector.getHttpClient()).thenReturn(httpClient);
+        KlapProtocol realTransportProtocol = new KlapProtocol(connector);
+
+        TapoErrorHandler error = assertThrows(TapoErrorHandler.class,
+                () -> realTransportProtocol.login(new TapoCredentials("", "")));
+
+        assertThat(error.getCode(), is(ERR_API_HAND_SHAKE_FAILED.getCode()));
+        verify(httpClient, never()).newRequest(anyString());
+        realTransportProtocol.logout();
+    }
+
+    @Test
+    void wakeUpAddressHasNoPort() {
+        assertThat(KlapProtocol.hostWithoutPort("192.168.1.20:80"), is("192.168.1.20"));
+        assertThat(KlapProtocol.hostWithoutPort("fe80::1:80"), is("fe80::1"));
+        assertThat(KlapProtocol.hostWithoutPort("[fe80::1]:80"), is("fe80::1"));
+        assertThat(KlapProtocol.hostWithoutPort("tapo-plug.local:80"), is("tapo-plug.local"));
     }
 
     @Test

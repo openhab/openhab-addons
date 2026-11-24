@@ -395,8 +395,10 @@ To use KLAP, add a `tplinkbridge:account` Thing from the TP-Link Bridge binding 
 A Thing with an `account` always uses KLAP, and a Thing without one uses the old protocol, so only set it once the device runs the secured firmware.
 The Thing UID and its item links stay the same when you set the parameter.
 
-The binding tries the account password first and then the key the Kasa app stores on some devices.
-If the device accepts neither, or the account Thing doesn't exist or isn't ONLINE, the Thing goes OFFLINE with a configuration error.
+The binding tries the account password first, then the key the Kasa app stores on some devices, and then the fixed credentials of devices that were never registered to an account.
+It supports both versions of KLAP that Kasa firmware uses.
+If the device accepts none of them, or the account Thing doesn't exist or isn't ONLINE, the Thing goes OFFLINE with a configuration error.
+After the device rejected the credentials, the binding logs in again only once per refresh interval.
 Set the `ipAddress` of such a device, because discovery doesn't find devices with secured firmware.
 
 ```java

@@ -14,6 +14,7 @@ package org.openhab.binding.tplinkbridge.klap;
 
 import java.io.IOException;
 import java.io.InterruptedIOException;
+import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
 import java.security.MessageDigest;
@@ -31,6 +32,8 @@ import org.eclipse.jetty.client.BytesRequestContent;
 import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.http.HttpCookie;
+import org.eclipse.jetty.http.HttpCookieStore;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.tplinkbridge.TPLinkCredentials;
@@ -38,12 +41,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Client side of TP-Link's KLAP protocol (version 2 auth hash), which carries an opaque JSON payload over HTTP to a
- * device. It is payload neutral: Kasa devices exchange IOT JSON over it and Tapo devices SMART JSON.
+ * Client side of TP-Link's KLAP protocol, which carries an opaque JSON payload over HTTP to a device. It is payload
+ * neutral: Kasa devices exchange IOT JSON over it and Tapo devices SMART JSON.
  * <p>
  * The session is established on first use and renewed shortly before it expires or when the device rejects it. All
- * candidate credentials are checked against a single handshake1 response, so alternatives cost no extra round trip.
- * The credentials are fetched again at every login, so changes on the account bridge apply on the next login.
+ * candidate credentials are checked against a single handshake1 response in both KLAP versions, so alternatives cost
+ * no extra round trip. Version 1 (MD5 auth hash) is used by older Kasa firmware, version 2 (SHA auth hash) by Tapo
+ * and newer Kasa firmware. The credentials are fetched again at every exchange and login, so changes on the account
+ * bridge apply on the next login.
  *
  * @author Christopher Smith - Initial contribution, derived from the tapocontrol KLAP session by Christian Wild
  */
@@ -64,14 +69,17 @@ public class KlapTransport {
     private final Supplier<List<TPLinkCredentials>> credentials;
 
     private @Nullable String host;
-    private @Nullable KlapCipher cipher;
-    private String cookie = "";
-    private long renewAt;
+    // Volatile so that close() can drop the session without waiting for an exchange in progress
+    private volatile @Nullable KlapCipher cipher;
+    private volatile String cookie = "";
+    private volatile long renewAt;
 
     /**
      * @param httpClient started HTTP client
      * @param host device address, optionally with a port
-     * @param credentials candidate credentials in order of preference, fetched at every login
+     * @param credentials candidate credentials in order of preference, fetched outside the transport's lock at every
+     *            exchange and login. They are tried as given, including blank ones, and an empty list fails the login
+     *            without contacting the device.
      */
     public KlapTransport(HttpClient httpClient, @Nullable String host, Supplier<List<TPLinkCredentials>> credentials) {
         this.httpClient = httpClient;
@@ -96,11 +104,18 @@ public class KlapTransport {
      * @throws KlapAuthenticationException if no candidate credential is accepted
      * @throws IOException on any other communication failure
      */
-    public synchronized String exchange(String payload) throws IOException {
+    public String exchange(String payload) throws IOException {
+        List<TPLinkCredentials> candidates = credentials.get();
+        synchronized (this) {
+            return exchange(payload, candidates);
+        }
+    }
+
+    private String exchange(String payload, List<TPLinkCredentials> candidates) throws IOException {
         for (int attempt = 1;; attempt++) {
             KlapCipher activeCipher = cipher;
             if (activeCipher == null || !isLoggedIn()) {
-                activeCipher = handshake();
+                activeCipher = handshake(candidates);
             }
             int seq = activeCipher.nextSequence();
             byte[] body;
@@ -133,29 +148,32 @@ public class KlapTransport {
      * @throws KlapAuthenticationException if no candidate credential is accepted
      * @throws IOException on any other communication failure
      */
-    public synchronized void login() throws IOException {
-        handshake();
+    public void login() throws IOException {
+        List<TPLinkCredentials> candidates = credentials.get();
+        synchronized (this) {
+            handshake(candidates);
+        }
     }
 
     /**
      * @return whether there is a session that isn't about to expire
      */
-    public synchronized boolean isLoggedIn() {
+    public boolean isLoggedIn() {
         return cipher != null && System.currentTimeMillis() < renewAt;
     }
 
     /**
-     * Drops the current session. The next {@link #exchange(String)} logs in again.
+     * Drops the current session. The next {@link #exchange(String)} logs in again. It doesn't wait for an exchange in
+     * progress, so it can be called while a Thing is disposed.
      */
-    public synchronized void close() {
+    public void close() {
         cipher = null;
         cookie = "";
         renewAt = 0;
     }
 
-    private KlapCipher handshake() throws IOException {
+    private KlapCipher handshake(List<TPLinkCredentials> candidates) throws IOException {
         close();
-        List<TPLinkCredentials> candidates = credentials.get().stream().filter(TPLinkCredentials::areSet).toList();
         if (candidates.isEmpty()) {
             throw new KlapAuthenticationException("No TP-Link account credentials available");
         }
@@ -188,30 +206,24 @@ public class KlapTransport {
             byte[] remoteSeed = Arrays.copyOfRange(content, 0, SEED_LENGTH);
             byte[] serverHash = Arrays.copyOfRange(content, SEED_LENGTH, content.length);
 
-            byte @Nullable [] authHash = null;
-            for (TPLinkCredentials candidate : candidates) {
-                byte[] hash = authHash(candidate);
-                if (MessageDigest.isEqual(KlapCipher.sha256(localSeed, remoteSeed, hash), serverHash)) {
-                    authHash = hash;
-                    break;
-                }
-            }
-            if (authHash == null) {
+            Match match = findMatch(candidates, localSeed, remoteSeed, serverHash);
+            if (match == null) {
                 throw new KlapAuthenticationException("The device rejected the TP-Link account credentials");
             }
+            Version version = match.version();
+            byte[] authHash = match.authHash();
 
             cookie = sessionCookie;
-            ContentResponse handshake2 = post(url("handshake2"), KlapCipher.sha256(remoteSeed, localSeed, authHash));
+            ContentResponse handshake2 = post(url("handshake2"), version.clientHash(localSeed, remoteSeed, authHash));
             if (handshake2.getStatus() != 200) {
-                cookie = "";
-                throw new KlapAuthenticationException(
-                        "The device rejected KLAP handshake2, HTTP status " + handshake2.getStatus());
+                // handshake1 already proved the credentials, so this is a device or communication problem
+                throw new IOException("Unexpected KLAP handshake2 response, HTTP status " + handshake2.getStatus());
             }
             KlapCipher newCipher = new KlapCipher(localSeed, remoteSeed, authHash);
             cipher = newCipher;
             long timeoutMs = timeoutSeconds * 1000;
             renewAt = System.currentTimeMillis() + timeoutMs - Math.min(RENEW_MARGIN_MS, timeoutMs / 2);
-            logger.trace("KLAP session established with {}", host);
+            logger.trace("KLAP {} session established with {}", version, host);
             return newCipher;
         } catch (GeneralSecurityException e) {
             close();
@@ -222,9 +234,74 @@ public class KlapTransport {
         }
     }
 
-    private static byte[] authHash(TPLinkCredentials credentials) throws GeneralSecurityException {
-        return KlapCipher.sha256(KlapCipher.sha1(credentials.username().getBytes(StandardCharsets.UTF_8)),
-                KlapCipher.sha1(credentials.password().getBytes(StandardCharsets.UTF_8)));
+    private static @Nullable Match findMatch(List<TPLinkCredentials> candidates, byte[] localSeed, byte[] remoteSeed,
+            byte[] serverHash) throws GeneralSecurityException {
+        for (TPLinkCredentials candidate : candidates) {
+            for (Version version : Version.values()) {
+                byte[] authHash = version.authHash(candidate);
+                if (MessageDigest.isEqual(version.serverHash(localSeed, remoteSeed, authHash), serverHash)) {
+                    return new Match(version, authHash);
+                }
+            }
+        }
+        return null;
+    }
+
+    private record Match(Version version, byte[] authHash) {
+    }
+
+    /**
+     * The two KLAP versions differ only in the auth hash and the handshake hashes. The session cipher is the same.
+     */
+    private enum Version {
+        V1 {
+            @Override
+            byte[] authHash(TPLinkCredentials credentials) throws GeneralSecurityException {
+                return KlapCipher.md5(KlapCipher.md5(bytes(credentials.username())),
+                        KlapCipher.md5(bytes(credentials.password())));
+            }
+
+            @Override
+            byte[] serverHash(byte[] localSeed, byte[] remoteSeed, byte[] authHash) throws GeneralSecurityException {
+                return KlapCipher.sha256(localSeed, authHash);
+            }
+
+            @Override
+            byte[] clientHash(byte[] localSeed, byte[] remoteSeed, byte[] authHash) throws GeneralSecurityException {
+                return KlapCipher.sha256(remoteSeed, authHash);
+            }
+        },
+        V2 {
+            @Override
+            byte[] authHash(TPLinkCredentials credentials) throws GeneralSecurityException {
+                return KlapCipher.sha256(KlapCipher.sha1(bytes(credentials.username())),
+                        KlapCipher.sha1(bytes(credentials.password())));
+            }
+
+            @Override
+            byte[] serverHash(byte[] localSeed, byte[] remoteSeed, byte[] authHash) throws GeneralSecurityException {
+                return KlapCipher.sha256(localSeed, remoteSeed, authHash);
+            }
+
+            @Override
+            byte[] clientHash(byte[] localSeed, byte[] remoteSeed, byte[] authHash) throws GeneralSecurityException {
+                return KlapCipher.sha256(remoteSeed, localSeed, authHash);
+            }
+        };
+
+        abstract byte[] authHash(TPLinkCredentials credentials) throws GeneralSecurityException;
+
+        /** The hash the device sends in its handshake1 response. */
+        abstract byte[] serverHash(byte[] localSeed, byte[] remoteSeed, byte[] authHash)
+                throws GeneralSecurityException;
+
+        /** The hash the client sends in handshake2. */
+        abstract byte[] clientHash(byte[] localSeed, byte[] remoteSeed, byte[] authHash)
+                throws GeneralSecurityException;
+
+        private static byte[] bytes(String value) {
+            return value.getBytes(StandardCharsets.UTF_8);
+        }
     }
 
     private Request url(String command) throws IOException {
@@ -241,8 +318,10 @@ public class KlapTransport {
             request.headers(headers -> headers.put(HttpHeader.COOKIE, sessionCookie));
         }
         try {
-            return request.method(HttpMethod.POST).body(new BytesRequestContent(body))
+            ContentResponse response = request.method(HttpMethod.POST).body(new BytesRequestContent(body))
                     .timeout(TIMEOUT_MS, TimeUnit.MILLISECONDS).send();
+            forgetStoredSessionCookies(request.getURI());
+            return response;
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new InterruptedIOException("Interrupted while waiting for the device");
@@ -251,6 +330,19 @@ public class KlapTransport {
         } catch (ExecutionException e) {
             Throwable cause = e.getCause();
             throw new IOException(cause != null ? cause.getMessage() : e.getMessage(), e);
+        }
+    }
+
+    /**
+     * The HTTP client also stores the session cookie from handshake1 and would send it along with the one this
+     * transport sets, and even with the next handshake1 after the session was dropped.
+     */
+    private void forgetStoredSessionCookies(URI uri) {
+        HttpCookieStore store = httpClient.getHttpCookieStore();
+        for (HttpCookie stored : store.match(uri)) {
+            if (SESSION_COOKIE.equals(stored.getName()) || SESSION_TIMEOUT.equalsIgnoreCase(stored.getName())) {
+                store.remove(uri, stored);
+            }
         }
     }
 }

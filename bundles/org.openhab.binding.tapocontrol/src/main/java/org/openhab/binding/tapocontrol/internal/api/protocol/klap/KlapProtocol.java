@@ -79,7 +79,8 @@ public class KlapProtocol implements TapoProtocolInterface {
     @Override
     public boolean login(TapoCredentials tapoCredentials) throws TapoErrorHandler {
         logger.trace("({}) login to device", uid);
-        credentials = List.of(new TPLinkCredentials(tapoCredentials.username(), tapoCredentials.password()));
+        TPLinkCredentials account = new TPLinkCredentials(tapoCredentials.username(), tapoCredentials.password());
+        credentials = account.areSet() ? List.of(account) : List.of();
         transport.setHost(httpDelegator.getBaseUrl());
         transport.close();
         try {
@@ -190,13 +191,23 @@ public class KlapProtocol implements TapoProtocolInterface {
         try {
             // Without a bridge the reply only wakes the device and isn't added to discovery
             var udpSender = new TapoUdpDiscovery(httpDelegator.getThingUID());
-            String host = httpDelegator.getBaseUrl().split(":")[0];
-            udpSender.sendAllPorts(InetAddress.getByName(host));
+            udpSender.sendAllPorts(InetAddress.getByName(hostWithoutPort(httpDelegator.getBaseUrl())));
             return true;
         } catch (Exception e) {
             logger.trace("({}) UDP wake-up failed: {}", uid, e.getMessage());
             return false;
         }
+    }
+
+    /**
+     * @param baseUrl the address followed by {@code :} and the port, as {@code TapoDeviceConnector.getBaseUrl()}
+     *            builds it, such as {@code 192.168.1.20:80}, {@code fe80::1:80} or {@code [fe80::1]:80}
+     * @return the address without the port and without the brackets of an IPv6 literal
+     */
+    static String hostWithoutPort(String baseUrl) {
+        int colon = baseUrl.lastIndexOf(':');
+        String host = colon > 0 ? baseUrl.substring(0, colon) : baseUrl;
+        return host.startsWith("[") && host.endsWith("]") ? host.substring(1, host.length() - 1) : host;
     }
 
     /************************

@@ -29,10 +29,30 @@ import org.openhab.binding.tplinkbridge.TPLinkCredentials;
 public class KlapConnectionTest {
 
     @Test
-    public void testTriesAccountPasswordThenKasaSetupKey() {
+    public void testTriesAccountThenSetupKeysThenDefaults() {
+        TPLinkCredentials account = new TPLinkCredentials(" User@Example.com", "secret");
+
+        assertEquals(
+                List.of(account, new TPLinkCredentials(" User@Example.com", "kasaSetup"),
+                        new TPLinkCredentials("user@example.com", "kasaSetup"),
+                        new TPLinkCredentials("kasa@tp-link.net", "kasaSetup"),
+                        new TPLinkCredentials("test@tp-link.net", "test"), new TPLinkCredentials("", "")),
+                KlapConnection.candidates(account));
+    }
+
+    @Test
+    public void testDoesNotRepeatTheSetupKeyForANormalizedEmail() {
         TPLinkCredentials account = new TPLinkCredentials("user@example.com", "secret");
 
-        assertEquals(List.of(account, new TPLinkCredentials("user@example.com", "kasaSetup")),
+        assertEquals(
+                List.of(account, new TPLinkCredentials("user@example.com", "kasaSetup"),
+                        new TPLinkCredentials("kasa@tp-link.net", "kasaSetup"),
+                        new TPLinkCredentials("test@tp-link.net", "test"), new TPLinkCredentials("", "")),
                 KlapConnection.candidates(account));
+    }
+
+    @Test
+    public void testTriesNothingWithoutAccountCredentials() {
+        assertEquals(List.of(), KlapConnection.candidates(new TPLinkCredentials("", "")));
     }
 }

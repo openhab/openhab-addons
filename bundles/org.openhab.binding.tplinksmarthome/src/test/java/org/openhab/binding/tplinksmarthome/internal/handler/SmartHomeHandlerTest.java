@@ -20,6 +20,7 @@ import static org.openhab.binding.tplinksmarthome.internal.TPLinkSmartHomeBindin
 
 import java.io.IOException;
 import java.io.InterruptedIOException;
+import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
@@ -58,6 +59,7 @@ import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
+import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
 
@@ -227,6 +229,49 @@ public class SmartHomeHandlerTest {
 
         verify(connection, times(1)).sendCommand(Commands.getSysinfo());
         assertLastStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
+    }
+
+    @Test
+    public void testRejectedCredentialsAreNotTriedAgainForEveryChannel() throws IOException {
+        configuration.put(CONFIG_REFRESH, 60);
+        when(connection.sendCommand(Commands.getSysinfo()))
+                .thenThrow(new KlapAuthenticationException("The device rejected the TP-Link account credentials"));
+        handler.initialize();
+
+        handler.handleCommand(ChannelUIDConstants.CHANNEL_UID_RSSI, RefreshType.REFRESH);
+        handler.handleCommand(CHANNEL_UID_SWITCH, RefreshType.REFRESH);
+        handler.refreshChannels();
+
+        verify(connection, times(1)).sendCommand(Commands.getSysinfo());
+        assertLastStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
+    }
+
+    @Test
+    public void testRefreshChannelsReadsTheDeviceOnceForAllChannels() throws IOException {
+        when(thing.getChannels()).thenReturn(List.of(ChannelBuilder.create(CHANNEL_UID_SWITCH).build(),
+                ChannelBuilder.create(ChannelUIDConstants.CHANNEL_UID_RSSI).build()));
+        when(connection.sendCommand(Commands.getSysinfo())).thenThrow(new IOException("timeout"));
+        handler.initialize();
+
+        handler.refreshChannels();
+
+        // One refresh with its retries, not one per channel
+        verify(connection, times(5)).sendCommand(Commands.getSysinfo());
+    }
+
+    @Test
+    public void testCommandWhileAccountIsOfflineKeepsTheAccountError() throws IOException {
+        useAccount(ThingStatus.OFFLINE);
+        handler.initialize();
+
+        handler.handleCommand(CHANNEL_UID_SWITCH, OnOffType.ON);
+
+        verify(smartHomeDevice, never()).handleCommand(any(), any());
+        ArgumentCaptor<ThingStatusInfo> statusInfoCaptor = ArgumentCaptor.forClass(ThingStatusInfo.class);
+        verify(callback, atLeastOnce()).statusUpdated(eq(thing), statusInfoCaptor.capture());
+        assertEquals(ThingStatusDetail.CONFIGURATION_ERROR, statusInfoCaptor.getValue().getStatusDetail());
+        assertEquals("The TP-Link account 'tplinkbridge:account:home' doesn't exist or isn't ONLINE.",
+                statusInfoCaptor.getValue().getDescription());
     }
 
     @Test

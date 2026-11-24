@@ -89,6 +89,11 @@ public class SmartHomeHandler extends BaseThingHandler {
      */
     private @NonNullByDefault({}) ExpiringCache<@Nullable DeviceState> fastCache;
     private @Nullable ThingUID accountUid;
+    /**
+     * After the device rejected the credentials, refreshes don't log in again before this time, so a poll or the
+     * REFRESH commands for several channels don't each send a failed login to the device.
+     */
+    private volatile long loginRetryAt;
 
     /**
      * Constructor.
@@ -135,6 +140,9 @@ public class SmartHomeHandler extends BaseThingHandler {
         try {
             if (command instanceof RefreshType) {
                 updateChannelState(channelUid, localFastCache.getValue());
+            } else if (!isAccountAvailable()) {
+                logger.debug("Command {} for channel {} ignored while the TP-Link account is unavailable", command,
+                        channelUid.getId());
             } else if (smartHomeDevice.handleCommand(channelUid, command)) {
                 // After a command always refresh the cache to make sure the cache has the latest data
                 updateChannelState(channelUid, forceCacheUpdate());
@@ -169,6 +177,7 @@ public class SmartHomeHandler extends BaseThingHandler {
             return;
         }
         accountUid = null;
+        loginRetryAt = 0;
         if (usesAccount(configuration)) {
             // Only port 9999 discovery reports a device's address, and devices that need KLAP no longer answer it
             if (StringUtil.isBlank(configuration.ipAddress)) {
@@ -230,6 +239,19 @@ public class SmartHomeHandler extends BaseThingHandler {
                 && accountThing.getHandler() instanceof TPLinkAccount account ? account : null;
     }
 
+    /**
+     * @return whether the Thing needs no account or its account is ONLINE. Sets a configuration error otherwise.
+     */
+    private boolean isAccountAvailable() {
+        final ThingUID uid = accountUid;
+        if (uid != null && account(uid) == null) {
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
+                    String.format("The TP-Link account '%s' doesn't exist or isn't ONLINE.", uid));
+            return false;
+        }
+        return true;
+    }
+
     private TPLinkCredentials accountCredentials() {
         final ThingUID uid = accountUid;
         final TPLinkAccount account = uid == null ? null : account(uid);
@@ -251,11 +273,8 @@ public class SmartHomeHandler extends BaseThingHandler {
     }
 
     private @Nullable DeviceState refreshCache() {
-        final ThingUID uid = accountUid;
-        if (uid != null && account(uid) == null) {
-            // Polling goes on, so the Thing recovers once the account is ONLINE
-            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
-                    String.format("The TP-Link account '%s' doesn't exist or isn't ONLINE.", uid));
+        // Polling goes on, so the Thing recovers once the account is ONLINE
+        if (!isAccountAvailable() || System.currentTimeMillis() < loginRetryAt) {
             return null;
         }
         int retry = 1;
@@ -276,6 +295,8 @@ public class SmartHomeHandler extends BaseThingHandler {
                 Thread.currentThread().interrupt();
                 return null;
             } catch (final KlapAuthenticationException e) {
+                loginRetryAt = System.currentTimeMillis()
+                        + TimeUnit.SECONDS.toMillis(Math.max(1, configuration.refresh));
                 updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
                 return null;
             } catch (final IOException e) {
@@ -354,7 +375,9 @@ public class SmartHomeHandler extends BaseThingHandler {
         if (localCache == null) {
             return;
         }
-        getThing().getChannels().forEach(channel -> updateChannelState(channel.getUID(), localCache.getValue()));
+        // Read once, as a failed refresh isn't cached and would otherwise be repeated for every channel
+        final @Nullable DeviceState deviceState = localCache.getValue();
+        getThing().getChannels().forEach(channel -> updateChannelState(channel.getUID(), deviceState));
     }
 
     /**
