@@ -46,13 +46,16 @@ Number:Power My_Charging_Limit "EV Charging Limit" { eebus="lpc" [ nominalMax=11
 | `lpc`           | Limitation of Power Consumption   | `Number:Power`        |
 | `lpp`           | Limitation of Power Production    | `Number:Power`        |
 
-Configuration parameters (all optional, in watts / ISO 8601 duration):
+Configuration parameters (all optional):
 
 | Parameter          | Default (lpc) | Default (lpp) | Description                                                                          |
 |---------------------|----------------|-----------------|-----------------------------------------------------------------------------------------|
 | `nominalMax`        | `4200`         | `0`             | Maximum consumption/production this installation could ever draw/feed in.               |
 | `failsafeLimit`      | = `nominalMax`  | = `nominalMax`   | Limit applied if the pairing partner's heartbeat is lost. Review and set this deliberately - it is not a safe default. |
 | `failsafeDuration`   | `PT2H`         | `PT2H`          | ISO 8601 duration the failsafe limit stays valid for.                                    |
+
+Use non-negative whole watts for power values and a positive ISO 8601 duration for `failsafeDuration`.
+If a supplied value is invalid, the add-on logs a warning and skips the item.
 
 LPP's `nominalMax` defaults to `0` rather than a nonzero placeholder - claiming export capacity you haven't actually configured would misreport this installation's real capability to the CEM.
 Set it explicitly to whatever this installation can actually feed back.
