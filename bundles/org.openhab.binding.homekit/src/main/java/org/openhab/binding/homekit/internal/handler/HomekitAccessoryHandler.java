@@ -140,6 +140,7 @@ import com.google.gson.JsonPrimitive;
  *
  * @author Andrew Fiddian-Green - Initial contribution
  * @author Andrew Fiddian-Green - Camera talk-back channel
+ * @author Andrew Fiddian-Green - Publish camera URL when the channel is linked
  */
 @NonNullByDefault
 public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler
@@ -569,6 +570,8 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler
         if (command == RefreshType.REFRESH) {
             if (CHANNEL_SNAPSHOT.equals(channelUID.getId())) {
                 scheduleSnapshotRefresh();
+            } else if (CHANNEL_CAMERA_URL.equals(channelUID.getId())) {
+                publishCameraUrl();
             } else {
                 requestManualRefresh();
             }
@@ -1137,6 +1140,10 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler
             if (channel == null) {
                 return; // OH core ensures this does not happen
             }
+            if (CHANNEL_CAMERA_URL.equals(channelUID.getId())) {
+                publishCameraUrl();
+                return;
+            }
             final Long aid = getAccessoryId();
             if (aid == null) {
                 return; // error will already have been logged elsewhere
@@ -1637,13 +1644,7 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler
                 logger.debug("{} startGo2rtc() endPoint={}", thing.getUID(), go2rtcEndpoint);
             }
 
-            String viewerUrl = cameraServlet.viewerUrl(thing.getUID().getId());
-            if (viewerUrl != null) {
-                updateState(new ChannelUID(thing.getUID(), CHANNEL_CAMERA_URL), new StringType(viewerUrl));
-            } else {
-                logger.warn("{} openHAB network address or HTTP port unavailable, camera URL not published",
-                        thing.getUID());
-            }
+            publishCameraUrl();
             logger.debug("{} startGo2rtc() succeeded", thing.getUID());
             succeeded = true;
         } catch (InterruptedException e) {
@@ -1671,6 +1672,21 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler
                 }
             }
         }
+    }
+
+    /**
+     * Publishes the browser URL of this camera. openHAB keeps channel state on the linked item, so a publish before the
+     * item is linked is discarded. The URL does not depend on go2rtc already being ready.
+     */
+    private void publishCameraUrl() {
+        String viewerUrl = cameraServlet.viewerUrl(thing.getUID().getId());
+        if (viewerUrl == null) {
+            logger.warn("{} openHAB network address or HTTP port unavailable, camera URL not published",
+                    thing.getUID());
+            return;
+        }
+        updateState(new ChannelUID(thing.getUID(), CHANNEL_CAMERA_URL), new StringType(viewerUrl));
+        logger.debug("{} camera URL {}", thing.getUID(), viewerUrl);
     }
 
     /**
