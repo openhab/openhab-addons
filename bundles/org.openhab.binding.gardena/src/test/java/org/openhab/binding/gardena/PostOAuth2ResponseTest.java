@@ -20,6 +20,8 @@ import org.openhab.binding.gardena.internal.model.dto.api.PostOAuth2Response;
 
 /**
  * Tests for Gardena OAuth token renewal decisions.
+ *
+ * @author Kovács László - Initial contribution
  */
 @NonNullByDefault
 public class PostOAuth2ResponseTest {
