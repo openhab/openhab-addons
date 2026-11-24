@@ -499,6 +499,7 @@ public enum MiIoDevices {
             "Mi Smart Ultra Electricity Saving Air Conditioner (1.5HP/Inverter/New China Energy Label Level 1)",
             THING_TYPE_BASIC),
     XIAOMI_AIRP_CPA4("xiaomi.airp.cpa4", "Xiaomi Smart Air Purifier 4 Compact", THING_TYPE_BASIC),
+    XIAOMI_AIRP_MB5("xiaomi.airp.mb5", "Mijia Smart Air Purifier 6", THING_TYPE_BASIC),
     XIAOMI_AIRP_MB6("xiaomi.airp.mb6", "Mijia Smart Air Purifier MAX", THING_TYPE_BASIC),
     XIAOMI_AIRP_MEB1("xiaomi.airp.meb1", "Xiaomi Smart Air Purifier Elite", THING_TYPE_BASIC),
     XIAOMI_AIRP_MEB2("xiaomi.airp.meb2", "Mijia Smart Air Purifier Elite", THING_TYPE_BASIC),
