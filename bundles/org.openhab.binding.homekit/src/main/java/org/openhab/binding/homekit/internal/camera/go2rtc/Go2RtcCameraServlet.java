@@ -288,7 +288,6 @@ public class Go2RtcCameraServlet extends HttpServlet {
         }
     }
 
-    @NonNullByDefault
     private final class CameraAlias extends HttpServlet {
 
         private static final long serialVersionUID = 1L;
