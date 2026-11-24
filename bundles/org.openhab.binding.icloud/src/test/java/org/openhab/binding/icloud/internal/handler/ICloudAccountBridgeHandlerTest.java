@@ -53,7 +53,7 @@ import org.openhab.core.thing.binding.builder.BridgeBuilder;
 class ICloudAccountBridgeHandlerTest {
 
     private static final String PENDING = "Please provide 2-FA code in thing configuration.";
-    private static final String INVALID = "Invalid 2-FA code. Please provide a new code in thing configuration.";
+    private static final String INVALID = "Invalid 2-FA-code.";
     private static final ThingTypeUID BRIDGE_TYPE = new ThingTypeUID("icloud", "account");
 
     private ICloudService service = mock(ICloudService.class);
@@ -150,12 +150,12 @@ class ICloudAccountBridgeHandlerTest {
     }
 
     @Test
-    void pendingAtLogin() throws Exception {
+    void codeRequestedAtLogin() throws Exception {
         createHandler("secret", null);
         requireTwoFa();
         initAndWait();
 
-        assertStatuses(UNKNOWN, offline(ThingStatusDetail.AUTHORIZATION_PENDING, PENDING));
+        assertStatuses(UNKNOWN, offline(ThingStatusDetail.CONFIGURATION_ERROR, PENDING));
         verify(service, never()).validate2faCode(anyString());
     }
 
@@ -168,12 +168,12 @@ class ICloudAccountBridgeHandlerTest {
 
         initAndWait();
 
-        assertStatuses(UNKNOWN, offline(ThingStatusDetail.AUTHORIZATION_PENDING, PENDING));
+        assertStatuses(UNKNOWN, offline(ThingStatusDetail.CONFIGURATION_ERROR, PENDING));
         verify(service, never()).validate2faCode(anyString());
     }
 
     @Test
-    void blankCodeStaysPending() throws Exception {
+    void blankCodeKeepsWaitingForCode() throws Exception {
         createHandler("secret", "   ");
         requireTwoFa();
         initAndWait();
@@ -181,12 +181,12 @@ class ICloudAccountBridgeHandlerTest {
 
         initAndWait();
 
-        assertStatuses(UNKNOWN, offline(ThingStatusDetail.AUTHORIZATION_PENDING, PENDING));
+        assertStatuses(UNKNOWN, offline(ThingStatusDetail.CONFIGURATION_ERROR, PENDING));
         verify(service, never()).validate2faCode(anyString());
     }
 
     @Test
-    void invalidCodeIsPendingWithDistinctDescription() throws Exception {
+    void invalidCodeIsReported() throws Exception {
         createHandler("secret", null);
         requireTwoFa();
         initAndWait();
@@ -195,8 +195,7 @@ class ICloudAccountBridgeHandlerTest {
 
         initWithCode("111111");
 
-        assertStatuses(UNKNOWN, offline(ThingStatusDetail.AUTHORIZATION_PENDING, INVALID));
-        assertNotEquals(PENDING, INVALID);
+        assertStatuses(UNKNOWN, offline(ThingStatusDetail.CONFIGURATION_ERROR, INVALID));
     }
 
     @Test
@@ -212,7 +211,7 @@ class ICloudAccountBridgeHandlerTest {
 
         initAndWait();
 
-        assertStatuses(UNKNOWN, offline(ThingStatusDetail.AUTHORIZATION_PENDING, PENDING));
+        assertStatuses(UNKNOWN, offline(ThingStatusDetail.CONFIGURATION_ERROR, PENDING));
         verify(service, times(1)).validate2faCode("111111");
     }
 
@@ -234,7 +233,7 @@ class ICloudAccountBridgeHandlerTest {
     }
 
     @Test
-    void validCodeRecoversFromPending() throws Exception {
+    void validCodeBringsAccountOnline() throws Exception {
         createHandler("secret", null);
         requireTwoFa();
         initAndWait();

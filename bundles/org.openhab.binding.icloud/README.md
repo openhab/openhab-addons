@@ -35,7 +35,6 @@ First start by adding the Apple ID and password to your account Thing configurat
 You will receive a notification with a code on one of your Apple devices then.
 Add this code to the code parameter of the Thing then and wait.
 The binding should be reinitialized and perform the authentication.
-While the binding waits for the code, or after a code was rejected, the account Thing is `OFFLINE` with status detail `AUTHORIZATION_PENDING`.
 
 ### Device Thing
 

@@ -232,7 +232,7 @@ public class ICloudAccountBridgeHandler extends BaseBridgeHandler {
             // Still waiting for user to update config.
             logger.warn("ICloud authentication requires 2-FA code. Please provide code configuration for thing '{}'.",
                     getThing().getUID().getAsString());
-            updateStatus(ThingStatusDetail.AUTHORIZATION_PENDING, "Please provide 2-FA code in thing configuration.");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Please provide 2-FA code in thing configuration.");
             return false;
         } else {
             // 2-FA-Code was requested in previous call of this method.
@@ -245,8 +245,7 @@ public class ICloudAccountBridgeHandler extends BaseBridgeHandler {
             if (!success) {
                 authState = AuthState.INITIAL;
                 logger.warn("ICloud token invalid.");
-                updateStatus(ThingStatusDetail.AUTHORIZATION_PENDING,
-                        "Invalid 2-FA code. Please provide a new code in thing configuration.");
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Invalid 2-FA-code.");
                 return false;
             }
             org.openhab.core.config.core.Configuration config2 = editConfiguration();
@@ -353,8 +352,7 @@ public class ICloudAccountBridgeHandler extends BaseBridgeHandler {
                         "iCloud authentication requires 2-FA code. Please provide code configuration for thing '{}'.",
                         getThing().getUID().getAsString());
                 authState = AuthState.WAIT_FOR_CODE;
-                updateStatus(ThingStatusDetail.AUTHORIZATION_PENDING,
-                        "Please provide 2-FA code in thing configuration.");
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Please provide 2-FA code in thing configuration.");
                 return false;
             }
 
