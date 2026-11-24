@@ -14,8 +14,9 @@ package org.openhab.binding.homekit.internal.camera.go2rtc;
 
 import java.io.IOException;
 import java.net.DatagramSocket;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.ServerSocket;
-import java.net.SocketException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
@@ -23,6 +24,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * Builds the go2rtc YAML configuration.
  *
  * @author Andrew Fiddian-Green - Initial contribution
+ * @author Andrew Fiddian-Green - Avoid Windows excluded UDP ports
  */
 @NonNullByDefault
 public final class Go2RtcConfig {
@@ -40,7 +42,7 @@ public final class Go2RtcConfig {
     public record Address(String host, int apiPort, int webRtcPort, int rtspPort) {
     }
 
-    private static final int MAX_PORT_ATTEMPTS = 10;
+    private static final int MAX_PORT_ATTEMPTS = 50;
 
     private Go2RtcConfig() {
     }
@@ -79,19 +81,25 @@ public final class Go2RtcConfig {
 
     /**
      * Returns a port that is free for both TCP and UDP, as go2rtc listens on both for WebRTC.
-     * Retries when the UDP side of a TCP-free port is already in use.
+     * <p>
+     * UDP is bound first. On Windows, a TCP ephemeral port is often inside a UDP excluded range, so binding UDP to a
+     * port chosen for TCP fails most of a short retry loop.
      */
     public static int freeTcpUdpPort() throws IOException {
+        InetAddress wildcard = InetAddress.getByAddress(new byte[] { 0, 0, 0, 0 });
+        IOException lastFailure = null;
         for (int attempt = 0; attempt < MAX_PORT_ATTEMPTS; attempt++) {
-            try (ServerSocket tcp = new ServerSocket(0)) {
-                int port = tcp.getLocalPort();
-                try (DatagramSocket udp = new DatagramSocket(port)) {
+            try (DatagramSocket udp = new DatagramSocket(0, wildcard)) {
+                int port = udp.getLocalPort();
+                try (ServerSocket tcp = new ServerSocket()) {
+                    tcp.bind(new InetSocketAddress(wildcard, port));
                     return port;
-                } catch (SocketException e) {
-                    // UDP port in use; try another
                 }
+            } catch (IOException e) {
+                lastFailure = e;
             }
         }
-        throw new IOException("No port free for both TCP and UDP after " + MAX_PORT_ATTEMPTS + " attempts");
+        throw new IOException("No port free for both TCP and UDP after " + MAX_PORT_ATTEMPTS + " attempts",
+                lastFailure);
     }
 }
