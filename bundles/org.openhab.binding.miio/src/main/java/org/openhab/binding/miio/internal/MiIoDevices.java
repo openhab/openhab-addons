@@ -439,6 +439,7 @@ public enum MiIoDevices {
     VIOMI_WATERHEATER_E4("viomi.waterheater.e4", "VIOMI Internet electric water heater 50L(Premium Version)",
             THING_TYPE_BASIC),
     XIAOMI_AIRC_HA9H00("xiaomi.airc.ha9h00", "Mijia Air Conditioner Eco 18000BTU", THING_TYPE_BASIC),
+    XIAOMI_AIRC_HAAH00("xiaomi.airc.haah00", "Mijia Air Conditioner Pro Eco 12000BTU (Heating)", THING_TYPE_BASIC),
     XIAOMI_AIRC_HABH00("xiaomi.airc.habh00", "Mijia Air Conditioner Pro Eco 12000BTU (Cooling)", THING_TYPE_BASIC),
     XIAOMI_AIRC_HB1H00("xiaomi.airc.hb1h00", "Mijia Air Conditioner Eco 24000BTU", THING_TYPE_BASIC),
     XIAOMI_AIRC_HB2H00("xiaomi.airc.hb2h00", "Mijia Air Conditioner Eco 9000BTU", THING_TYPE_BASIC),
