@@ -35,7 +35,7 @@ public class EEBusSettings {
 
     public String deviceId = "d:_i:openHAB:eebus-01";
     public String friendlyName = "openHAB";
-    public String deviceType = "GENERIC";
+    public String deviceType = "ENERGY_MANAGEMENT_SYSTEM";
     public String entityType = "CEM";
 
     public String connectPolicy = "TRUSTED";
