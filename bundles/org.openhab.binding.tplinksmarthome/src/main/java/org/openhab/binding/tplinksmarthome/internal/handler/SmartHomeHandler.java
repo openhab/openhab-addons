@@ -15,6 +15,7 @@ package org.openhab.binding.tplinksmarthome.internal.handler;
 import static org.openhab.binding.tplinksmarthome.internal.TPLinkSmartHomeBindingConstants.*;
 
 import java.io.IOException;
+import java.io.InterruptedIOException;
 import java.time.Duration;
 import java.util.Collection;
 import java.util.List;
@@ -121,9 +122,14 @@ public class SmartHomeHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(final ChannelUID channelUid, final Command command) {
+        final ExpiringCache<@Nullable DeviceState> localFastCache = fastCache;
+        if (localFastCache == null) {
+            // initialize() stopped early, e.g. because the account bridge is offline
+            return;
+        }
         try {
             if (command instanceof RefreshType) {
-                updateChannelState(channelUid, fastCache.getValue());
+                updateChannelState(channelUid, localFastCache.getValue());
             } else if (smartHomeDevice.handleCommand(channelUid, command)) {
                 // After a command always refresh the cache to make sure the cache has the latest data
                 updateChannelState(channelUid, forceCacheUpdate());
@@ -149,6 +155,8 @@ public class SmartHomeHandler extends BaseThingHandler {
             refreshJob.cancel(true);
             refreshJob = null;
         }
+        cache = null;
+        fastCache = null;
         if (connection != null) {
             connection.close();
         }
@@ -162,6 +170,12 @@ public class SmartHomeHandler extends BaseThingHandler {
             return;
         }
         if (usesAccountBridge()) {
+            // Only port 9999 discovery reports a device's address, and devices that need KLAP no longer answer it
+            if (StringUtil.isBlank(configuration.ipAddress)) {
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
+                        "Set the ip address of a device that uses the TP-Link account bridge.");
+                return;
+            }
             final Bridge bridge = getBridge();
             if (bridge == null || bridge.getStatus() != ThingStatus.ONLINE) {
                 updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
@@ -219,8 +233,12 @@ public class SmartHomeHandler extends BaseThingHandler {
      * @return the refreshed value
      */
     private @Nullable DeviceState forceCacheUpdate() {
-        cache.invalidateValue();
-        return cache.getValue();
+        final ExpiringCache<@Nullable DeviceState> localCache = cache;
+        if (localCache == null) {
+            return null;
+        }
+        localCache.invalidateValue();
+        return localCache.getValue();
     }
 
     private @Nullable DeviceState refreshCache() {
@@ -237,6 +255,10 @@ public class SmartHomeHandler extends BaseThingHandler {
                     updateStatus(ThingStatus.ONLINE);
                 }
                 return deviceState;
+            } catch (final InterruptedIOException e) {
+                // dispose() cancelled this refresh, so don't retry or change the status of the next initialization
+                Thread.currentThread().interrupt();
+                return null;
             } catch (final KlapAuthenticationException e) {
                 updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
                 return null;
@@ -312,7 +334,11 @@ public class SmartHomeHandler extends BaseThingHandler {
 
     void refreshChannels() {
         logger.trace("Update Channels for:{}", thing.getUID());
-        getThing().getChannels().forEach(channel -> updateChannelState(channel.getUID(), cache.getValue()));
+        final ExpiringCache<@Nullable DeviceState> localCache = cache;
+        if (localCache == null) {
+            return;
+        }
+        getThing().getChannels().forEach(channel -> updateChannelState(channel.getUID(), localCache.getValue()));
     }
 
     /**

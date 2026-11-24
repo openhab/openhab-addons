@@ -132,8 +132,20 @@ class KlapTransportTest {
     }
 
     @Test
-    void renewsSessionNearItsTimeout() throws IOException {
+    void keepsShortSessionUntilItIsAboutToExpire() throws IOException {
         device.sessionTimeoutSeconds = 30;
+
+        transport.login();
+
+        assertThat(transport.isLoggedIn(), is(true));
+        transport.exchange(REQUEST);
+        transport.exchange(REQUEST);
+        assertThat(device.handshakes.get(), is(1));
+    }
+
+    @Test
+    void renewsSessionNearItsTimeout() throws IOException {
+        device.sessionTimeoutSeconds = 0;
 
         transport.exchange(REQUEST);
         transport.exchange(REQUEST);

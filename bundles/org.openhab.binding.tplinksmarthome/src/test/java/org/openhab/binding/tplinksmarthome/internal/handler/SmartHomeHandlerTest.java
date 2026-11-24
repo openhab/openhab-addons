@@ -19,6 +19,7 @@ import static org.openhab.binding.tplinksmarthome.internal.ChannelUIDConstants.C
 import static org.openhab.binding.tplinksmarthome.internal.TPLinkSmartHomeBindingConstants.*;
 
 import java.io.IOException;
+import java.io.InterruptedIOException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
@@ -208,6 +209,52 @@ public class SmartHomeHandlerTest {
 
         verify(connection, times(5)).sendCommand(Commands.getSysinfo());
         assertLastStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+    }
+
+    @Test
+    public void testCommandsWhileAccountBridgeOfflineAreIgnored() throws IOException {
+        when(thing.getBridgeUID()).thenReturn(BRIDGE_UID);
+        when(callback.getBridge(BRIDGE_UID)).thenReturn(bridge);
+        when(bridge.getStatus()).thenReturn(ThingStatus.OFFLINE);
+        handler.initialize();
+
+        handler.handleCommand(ChannelUIDConstants.CHANNEL_UID_RSSI, RefreshType.REFRESH);
+        handler.handleCommand(CHANNEL_UID_SWITCH, OnOffType.ON);
+        handler.refreshChannels();
+
+        verify(smartHomeDevice, never()).handleCommand(any(), any());
+        verify(connection, never()).sendCommand(any());
+        assertLastStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+    }
+
+    @Test
+    public void testAccountBridgeWithoutIpAddressReportsConfigurationError() {
+        configuration.remove(CONFIG_IP);
+        configuration.put(CONFIG_DEVICE_ID, "8006588E50AD389303FF31AB6302907A17442F16");
+        when(thing.getBridgeUID()).thenReturn(BRIDGE_UID);
+        when(callback.getBridge(BRIDGE_UID)).thenReturn(bridge);
+        when(bridge.getStatus()).thenReturn(ThingStatus.ONLINE);
+
+        handler.initialize();
+
+        assertLastStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
+    }
+
+    @Test
+    public void testInterruptedRefreshIsNotRetriedAndKeepsStatus() throws IOException {
+        when(connection.sendCommand(Commands.getSysinfo()))
+                .thenThrow(new InterruptedIOException("Interrupted while waiting for the device"));
+        handler.initialize();
+
+        try {
+            handler.handleCommand(ChannelUIDConstants.CHANNEL_UID_RSSI, RefreshType.REFRESH);
+
+            assertTrue(Thread.currentThread().isInterrupted());
+        } finally {
+            Thread.interrupted();
+        }
+        verify(connection, times(1)).sendCommand(Commands.getSysinfo());
+        assertLastStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE);
     }
 
     private SmartHomeHandler newHandler() {

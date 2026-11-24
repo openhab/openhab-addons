@@ -56,6 +56,8 @@ public class KlapProtocol implements TapoProtocolInterface {
     private final KlapTransport transport;
     private final String uid;
     private volatile List<TPLinkCredentials> credentials = List.of();
+    /** Keeps each response handled before the next request is sent, so an older response can't overwrite a newer. */
+    private final Object requestLock = new Object();
     private ExecutorService executor = Executors.newVirtualThreadPerTaskExecutor();
 
     /***********************
@@ -121,8 +123,7 @@ public class KlapProtocol implements TapoProtocolInterface {
      */
     @Override
     public void sendRequest(TapoRequest tapoRequest) throws TapoErrorHandler {
-        String response = exchange(tapoRequest);
-        asyncResponseReceived(response, tapoRequest.method());
+        exchangeAndHandle(tapoRequest);
     }
 
     /**
@@ -136,12 +137,18 @@ public class KlapProtocol implements TapoProtocolInterface {
         }
         executor.submit(() -> {
             try {
-                asyncResponseReceived(exchange(tapoRequest), tapoRequest.method());
+                exchangeAndHandle(tapoRequest);
             } catch (TapoErrorHandler e) {
                 logger.debug("({}) sendAsyncRequest failed '{}'", uid, e.getMessage());
                 httpDelegator.handleError(e);
             }
         });
+    }
+
+    private void exchangeAndHandle(TapoBaseRequestInterface tapoRequest) throws TapoErrorHandler {
+        synchronized (requestLock) {
+            asyncResponseReceived(exchange(tapoRequest), tapoRequest.method());
+        }
     }
 
     /**
@@ -181,9 +188,8 @@ public class KlapProtocol implements TapoProtocolInterface {
      */
     private boolean sendUdpDiscoveryMessage() {
         try {
-            var bridge = httpDelegator.getBridge();
-            var udpSender = bridge != null ? new TapoUdpDiscovery(bridge)
-                    : new TapoUdpDiscovery(httpDelegator.getThingUID());
+            // Without a bridge the reply only wakes the device and isn't added to discovery
+            var udpSender = new TapoUdpDiscovery(httpDelegator.getThingUID());
             String host = httpDelegator.getBaseUrl().split(":")[0];
             udpSender.sendAllPorts(InetAddress.getByName(host));
             return true;

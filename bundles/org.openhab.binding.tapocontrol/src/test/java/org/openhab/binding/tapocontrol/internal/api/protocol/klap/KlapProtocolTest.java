@@ -21,7 +21,11 @@ import static org.mockito.Mockito.*;
 import static org.openhab.binding.tapocontrol.internal.constants.TapoErrorCode.*;
 
 import java.io.IOException;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -109,6 +113,35 @@ class KlapProtocolTest {
         protocol.sendAsyncRequest(new TapoRequest("get_device_info"));
 
         verify(connector, timeout(10_000)).handleResponse(any(), eq("get_device_info"));
+    }
+
+    @Test
+    void asynchronousResponseIsHandledBeforeTheNextRequestIsSent() throws Exception {
+        AtomicInteger exchanges = new AtomicInteger();
+        AtomicBoolean handling = new AtomicBoolean();
+        AtomicBoolean overlapped = new AtomicBoolean();
+        CountDownLatch secondExchange = new CountDownLatch(1);
+        when(transport.exchange(any())).thenAnswer(invocation -> {
+            if (exchanges.incrementAndGet() > 1) {
+                overlapped.compareAndSet(false, handling.get());
+                secondExchange.countDown();
+            }
+            return DEVICE_INFO;
+        });
+        doAnswer(invocation -> {
+            if (handling.compareAndSet(false, true)) {
+                // give a second request the chance to overtake while the first response is handled
+                secondExchange.await(1, TimeUnit.SECONDS);
+                handling.set(false);
+            }
+            return null;
+        }).when(connector).handleResponse(any(), any());
+
+        protocol.sendAsyncRequest(new TapoRequest("get_device_info"));
+        protocol.sendAsyncRequest(new TapoRequest("set_device_info"));
+
+        verify(connector, timeout(10_000).times(2)).handleResponse(any(), any());
+        assertThat(overlapped.get(), is(false));
     }
 
     @Test

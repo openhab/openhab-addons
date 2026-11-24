@@ -52,7 +52,7 @@ public class KlapTransport {
 
     private static final int SEED_LENGTH = 16;
     private static final long TIMEOUT_MS = 5_000;
-    /** Renew a session this long before the device would expire it. */
+    /** Renew a session this long, or half its lifetime if that is shorter, before the device would expire it. */
     private static final long RENEW_MARGIN_MS = 40_000;
     private static final long DEFAULT_SESSION_TIMEOUT_S = 86_400;
     private static final String SESSION_COOKIE = "TP_SESSIONID";
@@ -66,7 +66,7 @@ public class KlapTransport {
     private @Nullable String host;
     private @Nullable KlapCipher cipher;
     private String cookie = "";
-    private long expiresAt;
+    private long renewAt;
 
     /**
      * @param httpClient started HTTP client
@@ -141,7 +141,7 @@ public class KlapTransport {
      * @return whether there is a session that isn't about to expire
      */
     public synchronized boolean isLoggedIn() {
-        return cipher != null && System.currentTimeMillis() < expiresAt - RENEW_MARGIN_MS;
+        return cipher != null && System.currentTimeMillis() < renewAt;
     }
 
     /**
@@ -150,7 +150,7 @@ public class KlapTransport {
     public synchronized void close() {
         cipher = null;
         cookie = "";
-        expiresAt = 0;
+        renewAt = 0;
     }
 
     private KlapCipher handshake() throws IOException {
@@ -209,7 +209,8 @@ public class KlapTransport {
             }
             KlapCipher newCipher = new KlapCipher(localSeed, remoteSeed, authHash);
             cipher = newCipher;
-            expiresAt = System.currentTimeMillis() + timeoutSeconds * 1000;
+            long timeoutMs = timeoutSeconds * 1000;
+            renewAt = System.currentTimeMillis() + timeoutMs - Math.min(RENEW_MARGIN_MS, timeoutMs / 2);
             logger.trace("KLAP session established with {}", host);
             return newCipher;
         } catch (GeneralSecurityException e) {
