@@ -855,6 +855,46 @@
         </executions>
       </plugin>
 
+      <!-- Warn on deprecated channel XML 'tag' element -->
+      <plugin>
+        <groupId>org.codehaus.gmavenplus</groupId>
+        <artifactId>gmavenplus-plugin</artifactId>
+        <version>4.1.1</version>
+        <dependencies>
+          <dependency>
+            <groupId>org.apache.groovy</groupId>
+            <artifactId>groovy</artifactId>
+            <version>4.0.22</version>
+          </dependency>
+          <dependency>
+            <groupId>org.apache.groovy</groupId>
+            <artifactId>groovy-ant</artifactId>
+            <version>4.0.22</version>
+          </dependency>
+        </dependencies>
+        <executions>
+          <execution>
+            <id>warn-deprecated-channel-tags</id>
+            <goals>
+              <goal>execute</goal>
+            </goals>
+            <phase>generate-resources</phase>
+            <configuration>
+              <scripts>
+                <script><![CDATA[
+                  def files = new File(project.basedir, 'src/main/resources/OH-INF/thing')
+                    .listFiles({ f -> f.name.endsWith('.xml') } as FileFilter)
+                    ?.findAll { it.text =~ /<tag[\s>\/]/ } ?: []
+                  if (!files.isEmpty()) {
+                    log.warn("DEPRECATED: channel XML element 'tag' is deprecated; use 'point' and 'property' instead. Affected files: " + files.collect { project.basedir.toPath().relativize(it.toPath()) }.join(', '))
+                  }
+                ]]></script>
+              </scripts>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
     </plugins>
   </build>
 

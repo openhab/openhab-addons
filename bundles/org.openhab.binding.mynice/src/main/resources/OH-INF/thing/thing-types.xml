@@ -102,8 +102,8 @@
 		<description>Position of the gate or state if moving</description>
 		<category>door</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Position</tag>
+			<point>Status</point>
+			<property>Position</property>
 		</tags>
 		<state>
 			<options>
@@ -191,8 +191,8 @@
 		<description>Courtesy Light illuminates the area around your gates.</description>
 		<category>lightbulb</category>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Light</tag>
+			<point>Switch</point>
+			<property>Light</property>
 		</tags>
 		<config-description>
 			<parameter name="duration" type="integer" min="0" unit="s" step="1">

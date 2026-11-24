@@ -21,8 +21,8 @@
 		<label>Open Status</label>
 		<category>Contact</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>OpenState</tag>
+			<point>Status</point>
+			<property>OpenState</property>
 		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
@@ -31,8 +31,8 @@
 		<label>Motion Detected</label>
 		<category>Motion</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Motion</tag>
+			<point>Status</point>
+			<property>Motion</property>
 		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
@@ -41,8 +41,8 @@
 		<label>Smoke Detected</label>
 		<category>Smoke</category>
 		<tags>
-			<tag>Alarm</tag>
-			<tag>Smoke</tag>
+			<point>Alarm</point>
+			<property>Smoke</property>
 		</tags>
 		<state readOnly="true"></state>
 	</channel-type>

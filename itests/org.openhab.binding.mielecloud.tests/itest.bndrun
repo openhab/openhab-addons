@@ -86,7 +86,6 @@ Fragment-Host: org.openhab.binding.mielecloud
 	org.openhab.core.semantics;version='[5.3.0,5.3.1)',\
 	org.glassfish.hk2.osgi-resource-locator;version='[1.0.3,1.0.4)',\
 	org.eclipse.jetty.xml;version='[12.1.14,12.1.15)',\
-	org.osgi.service.servlet;version='[2.0.0,2.0.1)',\
 	org.ops4j.pax.web.pax-web-api;version='[11.1.4,11.1.5)',\
 	org.ops4j.pax.web.pax-web-compatibility-servlet;version='[11.1.4,11.1.5)',\
 	org.ops4j.pax.web.pax-web-jetty;version='[11.1.4,11.1.5)',\

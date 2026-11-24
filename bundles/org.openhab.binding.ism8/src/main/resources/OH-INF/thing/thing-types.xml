@@ -22,7 +22,7 @@
 		<item-type>Switch</item-type>
 		<label>Digital DataPoint</label>
 		<tags>
-			<tag>Switch</tag>
+			<point>Switch</point>
 		</tags>
 		<config-description>
 			<parameter name="id" type="integer" required="true">
@@ -46,7 +46,7 @@
 		<item-type>Switch</item-type>
 		<label>Digital Readonly DataPoint</label>
 		<tags>
-			<tag>Status</tag>
+			<point>Status</point>
 		</tags>
 		<state readOnly="true"/>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
@@ -72,7 +72,7 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Percentage Readonly DataPoint</label>
 		<tags>
-			<tag>Measurement</tag>
+			<point>Measurement</point>
 		</tags>
 		<state readOnly="true"/>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
@@ -95,7 +95,7 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Percentage DataPoint</label>
 		<tags>
-			<tag>Setpoint</tag>
+			<point>Setpoint</point>
 		</tags>
 		<config-description>
 			<parameter name="id" type="integer" required="true">
@@ -116,7 +116,7 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Numeric Readonly DataPoint</label>
 		<tags>
-			<tag>Measurement</tag>
+			<point>Measurement</point>
 		</tags>
 		<state readOnly="true"/>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
@@ -140,8 +140,8 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Temperature Readonly DataPoint</label>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true"/>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
@@ -165,8 +165,8 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Temperature DataPoint</label>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true"/>
 		<config-description>
@@ -189,8 +189,8 @@
 		<item-type>Number:Pressure</item-type>
 		<label>Pressure Readonly DataPoint</label>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Pressure</tag>
+			<point>Measurement</point>
+			<property>Pressure</property>
 		</tags>
 		<state readOnly="true"/>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
@@ -213,8 +213,8 @@
 		<item-type>Number:Power</item-type>
 		<label>Power Readonly DataPoint</label>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point>Measurement</point>
+			<property>Power</property>
 		</tags>
 		<state readOnly="true"/>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
@@ -237,7 +237,7 @@
 		<item-type>Number:VolumetricFlowRate</item-type>
 		<label>Flowrate Readonly DataPoint</label>
 		<tags>
-			<tag>Measurement</tag>
+			<point>Measurement</point>
 		</tags>
 		<state readOnly="true"/>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
@@ -261,8 +261,8 @@
 		<item-type>Number:Energy</item-type>
 		<label>Active Energy Readonly DataPoint</label>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state readOnly="true"/>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
@@ -286,8 +286,8 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Mode Readonly DataPoint</label>
 		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
+			<point>Status</point>
+			<property>Mode</property>
 		</tags>
 		<state readOnly="true"/>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
@@ -312,8 +312,8 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Mode DataPoint</label>
 		<tags>
-			<tag>Control</tag>
-			<tag>Mode</tag>
+			<point>Control</point>
+			<property>Mode</property>
 		</tags>
 		<config-description>
 			<parameter name="id" type="integer" required="true">

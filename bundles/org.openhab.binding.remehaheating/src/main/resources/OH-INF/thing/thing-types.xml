@@ -66,8 +66,8 @@
 		<description>Current room temperature</description>
 		<category>temperature</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -78,8 +78,8 @@
 		<description>Target room temperature</description>
 		<category>temperature</category>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state min="5" max="30" step="0.5" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -90,8 +90,8 @@
 		<description>Current hot water temperature</description>
 		<category>temperature</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -102,8 +102,8 @@
 		<description>Target hot water temperature</description>
 		<category>temperature</category>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -114,8 +114,8 @@
 		<description>System water pressure</description>
 		<category>pressure</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Pressure</tag>
+			<point>Measurement</point>
+			<property>Pressure</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -126,8 +126,8 @@
 		<description>Outdoor temperature</description>
 		<category>temperature</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -137,7 +137,7 @@
 		<label>Status</label>
 		<description>Boiler status</description>
 		<tags>
-			<tag>Status</tag>
+			<point>Status</point>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -147,7 +147,7 @@
 		<label>Hot Water Mode</label>
 		<description>Domestic hot water zone mode</description>
 		<tags>
-			<tag>Control</tag>
+			<point>Control</point>
 		</tags>
 		<state>
 			<options>
@@ -163,7 +163,7 @@
 		<label>Hot Water Status</label>
 		<description>Hot water status</description>
 		<tags>
-			<tag>Status</tag>
+			<point>Status</point>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -173,7 +173,7 @@
 		<label>Thermal Mode</label>
 		<description>Active thermal mode of the appliance, e.g. heating or hot water</description>
 		<tags>
-			<tag>Status</tag>
+			<point>Status</point>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -183,7 +183,7 @@
 		<label>Operating Mode</label>
 		<description>Operating mode of the appliance</description>
 		<tags>
-			<tag>Status</tag>
+			<point>Status</point>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -193,7 +193,7 @@
 		<label>Seasonal Mode</label>
 		<description>Seasonal mode of the appliance, e.g. winter or summer</description>
 		<tags>
-			<tag>Status</tag>
+			<point>Status</point>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -203,7 +203,7 @@
 		<label>Holiday Mode Active</label>
 		<description>Indicates whether the holiday schedule is currently active</description>
 		<tags>
-			<tag>Status</tag>
+			<point>Status</point>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -213,7 +213,7 @@
 		<label>Zone Mode</label>
 		<description>Mode of the climate zone, e.g. scheduling or manual</description>
 		<tags>
-			<tag>Status</tag>
+			<point>Status</point>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -223,7 +223,7 @@
 		<label>Heating Demand</label>
 		<description>Current comfort demand of the climate zone, e.g. whether the appliance is producing heat</description>
 		<tags>
-			<tag>Status</tag>
+			<point>Status</point>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -234,8 +234,8 @@
 		<description>Target room temperature of the next schedule switch point</description>
 		<category>temperature</category>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -246,8 +246,8 @@
 		<description>Time of the next schedule switch point of the climate zone</description>
 		<category>time</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
+			<point>Status</point>
+			<property>Timestamp</property>
 		</tags>
 		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM"/>
 	</channel-type>
@@ -257,7 +257,7 @@
 		<label>Fireplace Mode Active</label>
 		<description>Indicates whether the fireplace mode of the climate zone is active</description>
 		<tags>
-			<tag>Status</tag>
+			<point>Status</point>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -268,8 +268,8 @@
 		<description>Time of the next schedule switch point of the hot water zone</description>
 		<category>time</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
+			<point>Status</point>
+			<property>Timestamp</property>
 		</tags>
 		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM"/>
 	</channel-type>
@@ -279,7 +279,7 @@
 		<label>Hot Water Legionella</label>
 		<description>Indicates whether the anti-legionella function of the hot water zone is enabled</description>
 		<tags>
-			<tag>Status</tag>
+			<point>Status</point>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -297,8 +297,8 @@
 		<description>Base setpoint of the heating curve of the climate zone</description>
 		<category>temperature</category>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" min="15" max="60" step="0.5" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -309,8 +309,8 @@
 		<description>Maximum flow temperature of the heating curve of the climate zone</description>
 		<category>temperature</category>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -320,7 +320,7 @@
 		<label>Water Pressure OK</label>
 		<description>Water pressure status</description>
 		<tags>
-			<tag>Status</tag>
+			<point>Status</point>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>

@@ -303,9 +303,9 @@ class RachioZoneChannelTest {
         String cloudXml = readThingXml("cloud.xml");
 
         assertThat(zoneXml, containsString("<semantic-equipment-tag>Irrigation</semantic-equipment-tag>"));
-        assertThat(zoneXml, containsString("<tag>Measurement</tag>"));
-        assertThat(zoneXml, containsString("<tag>Water</tag>"));
-        assertThat(valveXml, containsString("<tag>StateOfCharge</tag>"));
+        assertThat(zoneXml, containsString("<point>Measurement</point>"));
+        assertThat(zoneXml, containsString("<property>Water</property>"));
+        assertThat(valveXml, containsString("<property>StateOfCharge</property>"));
         assertThat(cloudXml, containsString("<semantic-equipment-tag>WebService</semantic-equipment-tag>"));
     }
 

@@ -9,8 +9,8 @@
 		<description>Send a notification message to this client. The message is displayed as an overlay on the client's
 			screen.</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>MediaControl</tag>
+			<point>Control</point>
+			<property>MediaControl</property>
 		</tags>
 	</channel-type>
 	<channel-type id="playing-item-id-channel">
@@ -18,8 +18,8 @@
 		<label>Playing Item ID</label>
 		<description>Unique identifier of the item currently playing.</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -28,8 +28,8 @@
 		<label>Playing Item Name</label>
 		<description>Name (title) of the item currently playing.</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -38,8 +38,8 @@
 		<label>Series Name</label>
 		<description>Series name for the currently playing item. Present only when the item is an episode.</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -48,8 +48,8 @@
 		<label>Season Name</label>
 		<description>Season name for the currently playing item. Present only when the item is an episode.</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -58,8 +58,8 @@
 		<label>Season Number</label>
 		<description>Season number of the currently playing episode (integer). Present only when item is an episode.</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -68,8 +68,8 @@
 		<label>Episode Number</label>
 		<description>Episode number of the currently playing episode (integer). Present only when item is an episode.</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -78,8 +78,8 @@
 		<label>Genres</label>
 		<description>Comma-separated list of genres for the currently playing item.</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -88,8 +88,8 @@
 		<label>Item Type</label>
 		<description>Media type of the currently playing item (e.g. Movie, Episode, Music).</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -103,8 +103,8 @@
 			]]>
 		</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Progress</tag>
+			<point>Control</point>
+			<property>Progress</property>
 		</tags>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
@@ -118,8 +118,8 @@
 			]]>
 		</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Progress</tag>
+			<point>Control</point>
+			<property>Progress</property>
 		</tags>
 		<state pattern="%.0f %unit%"/>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
@@ -129,8 +129,8 @@
 		<label>Total Duration</label>
 		<description>Total duration of the currently playing item. Read-only.</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Duration</tag>
+			<point>Status</point>
+			<property>Duration</property>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
@@ -139,8 +139,8 @@
 		<label>Play by Terms</label>
 		<description>Play media matching the given search terms (title, series, or other metadata).</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>MediaControl</tag>
+			<point>Control</point>
+			<property>MediaControl</property>
 		</tags>
 	</channel-type>
 	<channel-type id="play-next-by-terms-channel">
@@ -148,8 +148,8 @@
 		<label>Play Next by Terms</label>
 		<description>Add the first media matching the terms as the next item in the playback queue.</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>MediaControl</tag>
+			<point>Control</point>
+			<property>MediaControl</property>
 		</tags>
 	</channel-type>
 	<channel-type id="play-last-by-terms-channel">
@@ -157,8 +157,8 @@
 		<label>Play Last by Terms</label>
 		<description>Add the first media matching the terms to the end of the playback queue.</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>MediaControl</tag>
+			<point>Control</point>
+			<property>MediaControl</property>
 		</tags>
 	</channel-type>
 	<channel-type id="browse-by-terms-channel">
@@ -166,8 +166,8 @@
 		<label>Browse by Terms</label>
 		<description>Query the server for media matching the given search terms.</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>MediaControl</tag>
+			<point>Control</point>
+			<property>MediaControl</property>
 		</tags>
 	</channel-type>
 	<channel-type id="play-by-id-channel">
@@ -175,8 +175,8 @@
 		<label>Play by ID</label>
 		<description>Play a media item identified by the given server ID.</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>MediaControl</tag>
+			<point>Control</point>
+			<property>MediaControl</property>
 		</tags>
 	</channel-type>
 	<channel-type id="play-next-by-id-channel">
@@ -184,8 +184,8 @@
 		<label>Play Next by ID</label>
 		<description>Add the specified media ID as the next item in the playback queue.</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>MediaControl</tag>
+			<point>Control</point>
+			<property>MediaControl</property>
 		</tags>
 	</channel-type>
 	<channel-type id="play-last-by-id-channel">
@@ -193,8 +193,8 @@
 		<label>Play Last by ID</label>
 		<description>Add the specified media ID to the end of the playback queue.</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>MediaControl</tag>
+			<point>Control</point>
+			<property>MediaControl</property>
 		</tags>
 	</channel-type>
 	<channel-type id="browse-by-id-channel">
@@ -202,8 +202,8 @@
 		<label>Browse by ID</label>
 		<description>Retrieve metadata or browse media based on the specified server ID.</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>MediaControl</tag>
+			<point>Control</point>
+			<property>MediaControl</property>
 		</tags>
 	</channel-type>
 	<channel-type id="media-stop-channel">
@@ -217,8 +217,8 @@
 			]]>
 		</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>MediaControl</tag>
+			<point>Control</point>
+			<property>MediaControl</property>
 		</tags>
 	</channel-type>
 	<channel-type id="media-shuffle-channel">
@@ -234,8 +234,8 @@
 			]]>
 		</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>MediaControl</tag>
+			<point>Control</point>
+			<property>MediaControl</property>
 		</tags>
 	</channel-type>
 	<channel-type id="media-repeat-channel">
@@ -254,8 +254,8 @@
 			]]>
 		</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>MediaControl</tag>
+			<point>Control</point>
+			<property>MediaControl</property>
 		</tags>
 		<state>
 			<options>
@@ -284,8 +284,8 @@
 			]]>
 		</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>MediaControl</tag>
+			<point>Control</point>
+			<property>MediaControl</property>
 		</tags>
 		<state>
 			<options>
@@ -308,8 +308,8 @@
 			]]>
 		</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>MediaControl</tag>
+			<point>Control</point>
+			<property>MediaControl</property>
 		</tags>
 	</channel-type>
 	<channel-type id="media-subtitle-channel">
@@ -330,8 +330,8 @@
 			]]>
 		</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>MediaControl</tag>
+			<point>Control</point>
+			<property>MediaControl</property>
 		</tags>
 	</channel-type>
 	<channel-type id="playing-item-image-channel">
@@ -342,8 +342,8 @@
 			<p>The image is fetched from the Jellyfin server and published as binary data. The image type (Primary, Backdrop, etc.) and maximum width are configurable per client.</p>
 		]]></description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
