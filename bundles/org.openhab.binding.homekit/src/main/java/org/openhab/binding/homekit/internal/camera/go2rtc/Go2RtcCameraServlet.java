@@ -52,8 +52,7 @@ import jakarta.servlet.http.HttpServletResponse;
         HttpWhiteboardConstants.HTTP_WHITEBOARD_SERVLET_NAME + "=homekit-camera",
         // The Main UI context also owns "/". Without this select the UI servlet handles a camera path the default
         // context did not claim, sendError(404)s, and its error page replaces the response with the UI not-found page.
-        HttpWhiteboardConstants.HTTP_WHITEBOARD_CONTEXT_SELECT + "="
-                + Go2RtcCameraServlet.UI_OR_DEFAULT_CONTEXT,
+        HttpWhiteboardConstants.HTTP_WHITEBOARD_CONTEXT_SELECT + "=" + Go2RtcCameraServlet.UI_OR_DEFAULT_CONTEXT,
         "service.ranking:Integer=100" })
 public class Go2RtcCameraServlet extends HttpServlet {
 
@@ -97,7 +96,7 @@ public class Go2RtcCameraServlet extends HttpServlet {
     private static final String WEBRTC_SUFFIX = "/webrtc";
     private static final String TALK_SUFFIX = "/talk";
     private static final Pattern THING_ID = Pattern.compile("[A-Za-z0-9._-]+");
-    private static final String UI_OR_DEFAULT_CONTEXT = "(|(osgi.http.whiteboard.context.name=default)"
+    protected static final String UI_OR_DEFAULT_CONTEXT = "(|(osgi.http.whiteboard.context.name=default)"
             + "(osgi.http.whiteboard.context.name=org.openhab.ui.context))";
 
     private static final String VIEWER_PAGE = """
@@ -383,8 +382,7 @@ public class Go2RtcCameraServlet extends HttpServlet {
      * {@code /webrtc} or {@code /talk} suffix removed. An exact servlet mapping leaves path info empty, so the ID is
      * also taken from the request URI.
      */
-    private @Nullable BrowserStreamProvider providerFor(HttpServletRequest request,
-            @Nullable String pathInfoOverride) {
+    private @Nullable BrowserStreamProvider providerFor(HttpServletRequest request, @Nullable String pathInfoOverride) {
         String thingId = thingId(pathInfoOverride != null ? pathInfoOverride : request.getPathInfo());
         if (thingId == null) {
             thingId = thingId(requestUriPath(request));
@@ -397,8 +395,8 @@ public class Go2RtcCameraServlet extends HttpServlet {
             return null;
         }
         int camera = path.indexOf(PATH + "/");
-        String id = camera >= 0 ? path.substring(camera + PATH.length() + 1) : path.startsWith("/") ? path.substring(1)
-                : path;
+        String id = camera >= 0 ? path.substring(camera + PATH.length() + 1)
+                : path.startsWith("/") ? path.substring(1) : path;
         int slash = id.indexOf('/');
         if (slash >= 0) {
             id = id.substring(0, slash);
