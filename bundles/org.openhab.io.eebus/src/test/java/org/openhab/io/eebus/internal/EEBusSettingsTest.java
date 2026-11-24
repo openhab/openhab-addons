@@ -14,6 +14,8 @@ package org.openhab.io.eebus.internal;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.util.Set;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 
@@ -43,5 +45,11 @@ class EEBusSettingsTest {
         EEBusSettings policy = new EEBusSettings();
         policy.connectPolicy = "NONE";
         assertTrue(new EEBusSettings().requiresRestart(policy));
+    }
+
+    @Test
+    void trustedSkisAreTrimmedAndDeduplicated() {
+        assertEquals(Set.of("abc", "def"), EEBusImpl.parseTrustedSkis("abc,abc, abc, ,def,"));
+        assertTrue(EEBusImpl.parseTrustedSkis(" , , ").isEmpty());
     }
 }

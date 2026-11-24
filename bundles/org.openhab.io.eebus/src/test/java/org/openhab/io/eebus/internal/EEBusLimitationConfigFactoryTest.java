@@ -78,4 +78,31 @@ class EEBusLimitationConfigFactoryTest {
         assertEquals(0, limitationConfig.getLoadControlLimit().toDouble());
         assertEquals(EEBusLimitationConfigFactory.DEFAULT_FAILSAFE_DURATION, limitationConfig.getFailsafeDurationMin());
     }
+
+    @Test
+    void acceptsNumericTextFromMetadata() {
+        SimpleLimitationConfig config = EEBusLimitationConfigFactory
+                .lpc(Map.of("nominalMax", "11000", "failsafeLimit", "1000"));
+
+        assertEquals(11000, config.getNominalMax().toDouble());
+        assertEquals(1000, config.getFailsafeLimit().toDouble());
+    }
+
+    @Test
+    void rejectsInvalidExplicitLimits() {
+        for (Object limit : new Object[] { "invalid", "", true, -1, 1.5, Double.NaN, "9223372036854775808" }) {
+            assertThrows(IllegalArgumentException.class,
+                    () -> EEBusLimitationConfigFactory.lpc(Map.of("failsafeLimit", limit)));
+            assertThrows(IllegalArgumentException.class,
+                    () -> EEBusLimitationConfigFactory.lpp(Map.of("nominalMax", limit)));
+        }
+    }
+
+    @Test
+    void rejectsInvalidExplicitDurations() {
+        for (Object duration : new Object[] { "two hours", "", 7200, "PT0S", "-PT1H" }) {
+            assertThrows(IllegalArgumentException.class,
+                    () -> EEBusLimitationConfigFactory.lpc(Map.of("failsafeDuration", duration)));
+        }
+    }
 }

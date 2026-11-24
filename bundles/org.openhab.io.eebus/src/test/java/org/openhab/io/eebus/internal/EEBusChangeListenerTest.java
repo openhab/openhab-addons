@@ -14,16 +14,20 @@ package org.openhab.io.eebus.internal;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ScheduledExecutorService;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.openhab.core.common.registry.RegistryChangeListener;
@@ -42,6 +46,7 @@ import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.UnDefType;
 import org.openmuc.jeebus.spine.api.Entity;
 import org.openmuc.jeebus.usecase.powerlimitation.controllablesystem.ActiveLimit;
+import org.openmuc.jeebus.usecase.powerlimitation.controllablesystem.LimitationUseCaseImpl;
 
 /**
  * Tests for {@link EEBusChangeListener}.
@@ -59,6 +64,19 @@ class EEBusChangeListenerTest {
     private final EventPublisher eventPublisher = mock(EventPublisher.class);
     private final Entity entity = mock(Entity.class);
 
+    private final List<EEBusChangeListener> listeners = new ArrayList<>();
+
+    private EEBusChangeListener createListener() {
+        EEBusChangeListener listener = new EEBusChangeListener(itemRegistry, metadataRegistry, eventPublisher, entity);
+        listeners.add(listener);
+        return listener;
+    }
+
+    @AfterEach
+    void stopListeners() {
+        listeners.forEach(EEBusChangeListener::stop);
+    }
+
     private static Metadata lpcMetadata(Map<String, Object> config) {
         return new Metadata(METADATA_KEY, "lpc", config);
     }
@@ -69,7 +87,7 @@ class EEBusChangeListenerTest {
         when(itemRegistry.getItems()).thenReturn(List.of(item));
         when(metadataRegistry.get(METADATA_KEY)).thenReturn(lpcMetadata(Map.of()));
 
-        EEBusChangeListener listener = new EEBusChangeListener(itemRegistry, metadataRegistry, eventPublisher, entity);
+        EEBusChangeListener listener = createListener();
         verify(entity, times(1)).addUseCase(any());
 
         // Simulates a full item/metadata registry reload where the same item is still tagged -
@@ -83,7 +101,7 @@ class EEBusChangeListenerTest {
     @Test
     void allItemsChangedStillBindsAGenuinelyNewlyTaggedItem() {
         when(itemRegistry.getItems()).thenReturn(List.of());
-        EEBusChangeListener listener = new EEBusChangeListener(itemRegistry, metadataRegistry, eventPublisher, entity);
+        EEBusChangeListener listener = createListener();
         verify(entity, times(0)).addUseCase(any());
 
         Item item = new NumberItem(ITEM_NAME);
@@ -101,7 +119,7 @@ class EEBusChangeListenerTest {
         Metadata original = lpcMetadata(Map.of("nominalMax", 4200));
         when(metadataRegistry.get(METADATA_KEY)).thenReturn(original);
 
-        new EEBusChangeListener(itemRegistry, metadataRegistry, eventPublisher, entity);
+        createListener();
         verify(entity, times(1)).addUseCase(any());
 
         @SuppressWarnings("unchecked")
@@ -126,7 +144,7 @@ class EEBusChangeListenerTest {
         when(metadataRegistry.get(METADATA_KEY)).thenReturn(lpcMetadata(Map.of()));
         when(metadataRegistry.get(lppKey)).thenReturn(new Metadata(lppKey, "lpp", Map.of()));
 
-        new EEBusChangeListener(itemRegistry, metadataRegistry, eventPublisher, entity);
+        createListener();
 
         verify(entity, times(2)).addUseCase(any());
     }
@@ -135,7 +153,7 @@ class EEBusChangeListenerTest {
     void deactivatedLimitSetsTheItemToUndef() throws Exception {
         when(itemRegistry.getItems()).thenReturn(List.of());
         when(itemRegistry.getItem(ITEM_NAME)).thenReturn(new NumberItem(ITEM_NAME));
-        EEBusChangeListener listener = new EEBusChangeListener(itemRegistry, metadataRegistry, eventPublisher, entity);
+        EEBusChangeListener listener = createListener();
 
         // jEEBus passes null as the active limit in the CONTROLLED and AUTONOMOUS states
         listener.onLimitUpdate(ITEM_NAME, null);
@@ -151,7 +169,7 @@ class EEBusChangeListenerTest {
     void activeLimitIsPostedAsACommandInWatts() throws Exception {
         when(itemRegistry.getItems()).thenReturn(List.of());
         when(itemRegistry.getItem(ITEM_NAME)).thenReturn(new NumberItem(ITEM_NAME));
-        EEBusChangeListener listener = new EEBusChangeListener(itemRegistry, metadataRegistry, eventPublisher, entity);
+        EEBusChangeListener listener = createListener();
         ActiveLimit limit = mock(ActiveLimit.class);
         when(limit.getResultingValue()).thenReturn(4200.0);
         when(limit.getUnit()).thenReturn("W");
@@ -168,7 +186,7 @@ class EEBusChangeListenerTest {
     void limitUpdatesAfterStopAreIgnored() throws Exception {
         when(itemRegistry.getItems()).thenReturn(List.of());
         when(itemRegistry.getItem(ITEM_NAME)).thenReturn(new NumberItem(ITEM_NAME));
-        EEBusChangeListener listener = new EEBusChangeListener(itemRegistry, metadataRegistry, eventPublisher, entity);
+        EEBusChangeListener listener = createListener();
 
         listener.stop();
         listener.onLimitUpdate(ITEM_NAME, null);
@@ -185,7 +203,7 @@ class EEBusChangeListenerTest {
         when(metadataRegistry.get(METADATA_KEY)).thenReturn(lpcMetadata(Map.of("failsafeDuration", "two hours")));
         when(metadataRegistry.get(lppKey)).thenReturn(new Metadata(lppKey, "lpp", Map.of()));
 
-        EEBusChangeListener listener = new EEBusChangeListener(itemRegistry, metadataRegistry, eventPublisher, entity);
+        EEBusChangeListener listener = createListener();
 
         verify(entity, times(1)).addUseCase(any());
         assertTrue(listener.getLpcItemName().isEmpty());
@@ -196,10 +214,50 @@ class EEBusChangeListenerTest {
     void failedInitialScanUnregistersTheListeners() {
         when(itemRegistry.getItems()).thenThrow(new IllegalStateException("registry not ready"));
 
-        assertThrows(IllegalStateException.class,
-                () -> new EEBusChangeListener(itemRegistry, metadataRegistry, eventPublisher, entity));
+        assertThrows(IllegalStateException.class, this::createListener);
 
         verify(itemRegistry).removeRegistryChangeListener(any());
         verify(metadataRegistry).removeRegistryChangeListener(any());
+    }
+
+    @Test
+    void stopShutsDownExecutor() {
+        when(itemRegistry.getItems()).thenReturn(List.of(new NumberItem(ITEM_NAME)));
+        when(metadataRegistry.get(METADATA_KEY)).thenReturn(lpcMetadata(Map.of()));
+        List<ScheduledExecutorService> executors = captureExecutors(false);
+
+        EEBusChangeListener listener = createListener();
+        ScheduledExecutorService executor = executors.getFirst();
+        assertFalse(executor.isShutdown());
+
+        listener.stop();
+
+        assertTrue(executor.isShutdown());
+    }
+
+    @Test
+    void failedRegistrationShutsDownExecutor() {
+        when(itemRegistry.getItems()).thenReturn(List.of(new NumberItem(ITEM_NAME)));
+        when(metadataRegistry.get(METADATA_KEY)).thenReturn(lpcMetadata(Map.of()));
+        List<ScheduledExecutorService> executors = captureExecutors(true);
+
+        EEBusChangeListener listener = createListener();
+
+        assertTrue(executors.getFirst().isShutdown());
+        assertTrue(listener.getLpcItemName().isEmpty());
+    }
+
+    private List<ScheduledExecutorService> captureExecutors(boolean failRegistration) {
+        LimitationExecutorAccess access = new LimitationExecutorAccess();
+        List<ScheduledExecutorService> executors = new ArrayList<>();
+        doAnswer(invocation -> {
+            LimitationUseCaseImpl useCase = invocation.getArgument(0);
+            executors.add(access.getExecutor(useCase));
+            if (failRegistration) {
+                throw new IllegalStateException("registration failed");
+            }
+            return null;
+        }).when(entity).addUseCase(any());
+        return executors;
     }
 }
