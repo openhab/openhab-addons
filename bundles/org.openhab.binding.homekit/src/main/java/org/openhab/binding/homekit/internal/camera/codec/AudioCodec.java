@@ -191,12 +191,14 @@ public record AudioCodec(AudioCodecType codecType, int channels, boolean constan
     }
 
     /**
-     * Returns the RTP packet times in ms that HomeKit Table 9-20 allows for a codec and sample rate. AAC-ELD at 16 kHz
-     * must use 30 or 60 ms, and the other codecs allow 20, 40 or 60 ms.
+     * Returns the RTP packet times in ms that the binding can bridge for a codec and sample rate. HomeKit Table 9-20
+     * allows AAC-ELD at 16 kHz to use 30 or 60 ms, and the other codecs 20, 40 or 60 ms. AAC-ELD is transcoded with
+     * 480-sample access units, so only the packet time carrying exactly one access unit (30 ms at 16 kHz, 20 ms at 24
+     * kHz) is usable. Longer packets would need several access units per RTP packet, which is not implemented.
      */
     private static int[] allowedPacketTimesMs(AudioCodecType codecType, int sampleRateKhz) {
-        if (codecType == AudioCodecType.AAC_ELD && sampleRateKhz == 16) {
-            return new int[] { 30, 60 };
+        if (codecType == AudioCodecType.AAC_ELD) {
+            return new int[] { 480 / sampleRateKhz };
         }
         return new int[] { 20, 40, 60 };
     }

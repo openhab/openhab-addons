@@ -85,9 +85,17 @@ class AudioCodecTest {
 
     @Test
     void testKeepsAdvertisedRtpTimeAllowedForRate() {
-        byte[] tlv = tlv(entryWithRtpTime(AudioCodecType.AAC_ELD, 60, 0x01));
+        byte[] tlv = tlv(entryWithRtpTime(AudioCodecType.AAC_ELD, 30, 0x01));
 
-        assertEquals(List.of(new AudioCodec(AudioCodecType.AAC_ELD, 1, 16, 60)), AudioCodec.decode(tlv));
+        assertEquals(List.of(new AudioCodec(AudioCodecType.AAC_ELD, 1, 16, 30)), AudioCodec.decode(tlv));
+    }
+
+    @Test
+    void testSkipsAacEldRtpTimeThatTranscoderCannotFrame() {
+        assertEquals(List.of(), AudioCodec.decode(tlv(entryWithRtpTime(AudioCodecType.AAC_ELD, 60, 0x01))));
+        assertEquals(List.of(), AudioCodec.decode(tlv(entryWithRtpTime(AudioCodecType.AAC_ELD, 40, 0x02))));
+        assertEquals(List.of(new AudioCodec(AudioCodecType.AAC_ELD, 1, 24, 20)),
+                AudioCodec.decode(tlv(entryWithRtpTime(AudioCodecType.AAC_ELD, 20, 0x02))));
     }
 
     @Test
