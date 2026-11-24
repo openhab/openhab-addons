@@ -28,7 +28,6 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.icloud.internal.ICloudApiResponseException;
 import org.openhab.binding.icloud.internal.ICloudDeviceInformationListener;
 import org.openhab.binding.icloud.internal.ICloudService;
-import org.openhab.binding.icloud.internal.RetryException;
 import org.openhab.binding.icloud.internal.configuration.ICloudAccountThingConfiguration;
 import org.openhab.binding.icloud.internal.handler.dto.json.response.ICloudAccountDataResponse;
 import org.openhab.binding.icloud.internal.handler.dto.json.response.ICloudDeviceInformation;
@@ -52,6 +51,7 @@ import org.slf4j.LoggerFactory;
  * @author Patrik Gfeller - Initial contribution
  * @author Hans-Jörg Merk - Extended support with initial Contribution
  * @author Simon Spielmann - Rework for new iCloud API
+ * @author Simon Spielmann - Recover status after bridge and communication failures
  */
 @NonNullByDefault
 public class ICloudAccountBridgeHandler extends BaseBridgeHandler {
@@ -64,9 +64,17 @@ public class ICloudAccountBridgeHandler extends BaseBridgeHandler {
 
     private @Nullable ExpiringCache<String> iCloudDeviceInformationCache;
 
-    private AuthState authState = AuthState.INITIAL;
+    private volatile AuthState authState = AuthState.INITIAL;
 
     private final Object synchronizeRefresh = new Object();
+
+    private final Object lifecycleLock = new Object();
+
+    /**
+     * Incremented on every {@link #dispose()}, so that an init task of a previous lifecycle, which may still be
+     * running (e.g. when the 2-FA code handling re-initializes the handler), cannot schedule a refresh job.
+     */
+    private int lifecycleGeneration;
 
     private Set<ICloudDeviceInformationListener> deviceInformationListeners = Collections
             .synchronizedSet(new HashSet<>());
@@ -120,23 +128,37 @@ public class ICloudAccountBridgeHandler extends BaseBridgeHandler {
 
         updateStatus(ThingStatus.UNKNOWN);
 
-        // Init has to be done async becaue it requires sync network calls, which are not allowed in init.
-        Callable<?> asyncInit = () -> {
-            callApiWithRetryAndExceptionHandling(() -> {
-                logger.debug("Dummy call for initial authentication.");
+        synchronized (lifecycleLock) {
+            final int generation = lifecycleGeneration;
+            // Init has to be done async becaue it requires sync network calls, which are not allowed in init.
+            Callable<?> asyncInit = () -> {
+                callApiWithRetryAndExceptionHandling(() -> {
+                    logger.debug("Dummy call for initial authentication.");
+                    return null;
+                });
+                scheduleRefresh(generation);
                 return null;
-            });
-            if (authState == AuthState.AUTHENTICATED) {
-                ICloudAccountThingConfiguration config = getConfigAs(ICloudAccountThingConfiguration.class);
-                this.refreshJob = this.scheduler.scheduleWithFixedDelay(this::refreshData, 0,
-                        config.refreshTimeInMinutes, MINUTES);
-            } else {
-                cancelRefresh();
-            }
-            return null;
-        };
-        initTask = this.scheduler.schedule(asyncInit, 0, TimeUnit.SECONDS);
+            };
+            initTask = this.scheduler.schedule(asyncInit, 0, TimeUnit.SECONDS);
+        }
         logger.debug("iCloud bridge handler initialized.");
+    }
+
+    /**
+     * Schedules the periodic refresh. It is also scheduled if the initial login failed, so that transient
+     * failures are retried with the next refresh instead of leaving the bridge offline until it is re-initialized.
+     */
+    private void scheduleRefresh(int generation) {
+        ICloudAccountThingConfiguration config = getConfigAs(ICloudAccountThingConfiguration.class);
+        long initialDelay = authState == AuthState.AUTHENTICATED ? 0 : config.refreshTimeInMinutes;
+        synchronized (lifecycleLock) {
+            if (generation != lifecycleGeneration) {
+                return;
+            }
+            cancelRefresh();
+            this.refreshJob = this.scheduler.scheduleWithFixedDelay(this::refreshData, initialDelay,
+                    config.refreshTimeInMinutes, MINUTES);
+        }
     }
 
     // Package-private to allow replacing the service in unit tests.
@@ -147,7 +169,6 @@ public class ICloudAccountBridgeHandler extends BaseBridgeHandler {
     private <@Nullable T> T callApiWithRetryAndExceptionHandling(Callable<T> wrapped) {
         int retryCount = 1;
         boolean success = false;
-        Throwable lastException = null;
         synchronized (synchronizeRefresh) {
             if (this.iCloudService == null) {
                 ICloudAccountThingConfiguration config = getConfigAs(ICloudAccountThingConfiguration.class);
@@ -177,28 +198,34 @@ public class ICloudAccountBridgeHandler extends BaseBridgeHandler {
                 return null;
             }
 
+            // Intermediate results are not reported, so a single call sets the bridge status only once.
+            String failure = "iCloud request failed";
             do {
+                if (authState != AuthState.AUTHENTICATED && !checkLogin()) {
+                    // checkLogin() has reported the status.
+                    return null;
+                }
                 try {
-                    if (authState == AuthState.AUTHENTICATED) {
-                        return wrapped.call();
-                    } else {
-                        checkLogin();
-                    }
+                    return wrapped.call();
                 } catch (ICloudApiResponseException e) {
                     logger.debug("ICloudApiResponseException with status code {}", e.getStatusCode());
-                    lastException = e;
+                    failure = "iCloud request failed with HTTP status " + e.getStatusCode();
                     if (e.getStatusCode() == 421 || e.getStatusCode() == 450 || e.getStatusCode() == 500) {
                         logger.debug("Authentication error detected (code {}), triggering re-authentication",
                                 e.getStatusCode());
-                        checkLogin();
+                        authState = AuthState.INITIAL;
                     }
                 } catch (IllegalStateException e) {
-                    logger.debug("Need to authenticate first.", e);
-                    updateStatus(ThingStatus.OFFLINE, "Wait for login");
-                    return null;
+                    // Thrown if the session lacks the web service URLs. Only a new login provides them.
+                    logger.debug("iCloud session is not usable, triggering re-authentication.", e);
+                    failure = "iCloud session is not usable";
+                    authState = AuthState.INITIAL;
                 } catch (IOException e) {
-                    logger.warn("Unable to refresh device data", e);
+                    logger.debug("Unable to refresh device data", e);
                     updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                    return null;
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
                     return null;
                 } catch (Exception e) {
                     logger.debug("Unexpected exception occurred", e);
@@ -210,10 +237,16 @@ public class ICloudAccountBridgeHandler extends BaseBridgeHandler {
                 try {
                     Thread.sleep(200);
                 } catch (InterruptedException e) {
-                    Thread.interrupted();
+                    Thread.currentThread().interrupt();
+                    return null;
                 }
             } while (retryCount < 3);
-            throw new RetryException(lastException);
+
+            // Transient server errors such as HTTP 503 end up here. They are reported as communication error, the
+            // next refresh retries the request.
+            logger.debug("iCloud request failed after retries: {}", failure);
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, failure);
+            return null;
         }
     }
 
@@ -267,12 +300,14 @@ public class ICloudAccountBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void dispose() {
-        cancelRefresh();
-
-        final ScheduledFuture<?> localInitTask = this.initTask;
-        if (localInitTask != null) {
-            localInitTask.cancel(true);
-            this.initTask = null;
+        synchronized (lifecycleLock) {
+            lifecycleGeneration++;
+            final ScheduledFuture<?> localInitTask = this.initTask;
+            if (localInitTask != null) {
+                localInitTask.cancel(true);
+                this.initTask = null;
+            }
+            cancelRefresh();
         }
         super.dispose();
     }
@@ -365,10 +400,34 @@ public class ICloudAccountBridgeHandler extends BaseBridgeHandler {
                 }
             }
 
+            // ONLINE is reported by the caller once the actual request succeeded.
             authState = AuthState.AUTHENTICATED;
-            updateStatus(ThingStatus.ONLINE);
             logger.debug("iCloud bridge handler authenticated.");
             return true;
+        } catch (IOException e) {
+            // authState is left unchanged, so the login is retried with the next refresh.
+            logger.debug("iCloud authentication failed due to a communication error.", e);
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            return false;
+        } catch (ICloudApiResponseException e) {
+            int statusCode = e.getStatusCode();
+            if (statusCode == 502 || statusCode == 503 || statusCode == 504) {
+                logger.debug("iCloud authentication failed due to a temporary server error.", e);
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
+                        "iCloud login failed with HTTP status " + statusCode);
+            } else {
+                // Like pyicloud, any other HTTP error of the login is treated as a rejected login (e.g. invalid
+                // credentials or a locked account). Retrying it automatically could get the account locked.
+                authState = AuthState.USER_PW_INVALID;
+                logger.warn("iCloud login was rejected with HTTP status {}.", statusCode);
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
+                        "iCloud login rejected with HTTP status " + statusCode);
+                this.iCloudService = null;
+            }
+            return false;
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            return false;
         } catch (Exception e) {
             updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
             return false;
@@ -377,22 +436,33 @@ public class ICloudAccountBridgeHandler extends BaseBridgeHandler {
 
     /**
      * Refresh iCloud device data.
+     *
+     * Never throws: this method runs as a periodic scheduled job, which would be cancelled silently by an uncaught
+     * exception, and is also called from device handlers.
      */
     public void refreshData() {
+        // These states need a user action (new 2-FA code or credentials), which re-initializes the handler.
+        AuthState localAuthState = authState;
+        if (localAuthState == AuthState.WAIT_FOR_CODE || localAuthState == AuthState.USER_PW_INVALID) {
+            logger.debug("Skipping iCloud refresh, waiting for configuration change (AuthState={}).", localAuthState);
+            return;
+        }
         logger.debug("iCloud bridge refreshing data ...");
         synchronized (this.synchronizeRefresh) {
             ExpiringCache<String> localCache = this.iCloudDeviceInformationCache;
             if (localCache == null) {
                 return;
             }
-            String json = localCache.getValue();
-            logger.trace("json: {}", json);
-
-            if (json == null) {
-                return;
-            }
-
             try {
+                String json = localCache.getValue();
+                logger.trace("json: {}", json);
+
+                if (json == null) {
+                    // The failure has already been reported. Do not keep it cached, so the next refresh retries.
+                    localCache.invalidateValue();
+                    return;
+                }
+
                 ICloudAccountDataResponse iCloudData = JsonUtils.fromJson(json, ICloudAccountDataResponse.class);
                 if (iCloudData == null) {
                     return;
@@ -402,17 +472,24 @@ public class ICloudAccountBridgeHandler extends BaseBridgeHandler {
                     updateStatus(ThingStatus.ONLINE);
                     informDeviceInformationListeners(iCloudData.getICloudDeviceInformationList());
                 } else {
-                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
-                            "Status = " + statusCode + ", Response = " + json);
+                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "iCloud reported status " + statusCode);
                 }
                 logger.debug("iCloud bridge data refresh complete.");
             } catch (RuntimeException e) {
+                logger.debug("iCloud refresh failed.", e);
                 updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "iCloud response invalid: " + e.getMessage());
             }
         }
     }
 
     private void informDeviceInformationListeners(List<ICloudDeviceInformation> deviceInformationList) {
-        this.deviceInformationListeners.forEach(discovery -> discovery.deviceInformationUpdate(deviceInformationList));
+        // A failing listener must neither prevent the update of the other listeners nor take the bridge offline.
+        for (ICloudDeviceInformationListener listener : List.copyOf(deviceInformationListeners)) {
+            try {
+                listener.deviceInformationUpdate(deviceInformationList);
+            } catch (RuntimeException e) {
+                logger.warn("Failed to process iCloud device information in {}", listener, e);
+            }
+        }
     }
 }
