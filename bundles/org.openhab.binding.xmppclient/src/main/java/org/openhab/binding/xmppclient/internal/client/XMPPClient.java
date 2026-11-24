@@ -22,7 +22,6 @@ import java.util.Set;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.jivesoftware.smack.AbstractXMPPConnection;
-import org.jivesoftware.smack.ConnectionConfiguration;
 import org.jivesoftware.smack.ConnectionConfiguration.SecurityMode;
 import org.jivesoftware.smack.ConnectionListener;
 import org.jivesoftware.smack.ReconnectionManager;
@@ -106,7 +105,7 @@ public class XMPPClient implements IncomingChatMessageListener, ConnectionListen
                     .setSecurityMode(securityMode) //
                     .addEnabledSaslMechanism(SCRAMSHA1Mechanism.NAME);
 
-            if (securityMode == ConnectionConfiguration.SecurityMode.required) {
+            if (securityMode == SecurityMode.required) {
                 configBuilder.addEnabledSaslMechanism(SASLMechanism.PLAIN);
             }
 
