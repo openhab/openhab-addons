@@ -5,9 +5,6 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<thing-type id="hs300">
-		<supported-bridge-type-refs>
-			<bridge-type-ref bindingId="tplinkbridge" id="account"/>
-		</supported-bridge-type-refs>
 		<label>HS300</label>
 		<description>TP-Link HS300 Smart Wi-Fi Power Strip</description>
 		<category>PowerOutlet</category>

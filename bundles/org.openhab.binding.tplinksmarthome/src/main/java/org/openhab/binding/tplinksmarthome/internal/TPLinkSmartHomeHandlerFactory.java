@@ -27,6 +27,7 @@ import org.openhab.binding.tplinksmarthome.internal.device.SwitchDevice;
 import org.openhab.binding.tplinksmarthome.internal.handler.SmartHomeHandler;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingRegistry;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
@@ -40,7 +41,7 @@ import org.osgi.service.component.annotations.Reference;
  *
  * @author Christian Fischer - Initial contribution
  * @author Hilbrand Bouwkamp - Specific handlers for different type of devices.
- * @author Christopher Smith - HTTP client for KLAP connections
+ * @author Christopher Smith - HTTP client and account lookup for KLAP connections
  */
 @NonNullByDefault
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.tplinksmarthome")
@@ -49,12 +50,14 @@ public class TPLinkSmartHomeHandlerFactory extends BaseThingHandlerFactory {
     private @NonNullByDefault({}) TPLinkIpAddressService ipAddressService;
     private final TPLinkStateDescriptionProvider stateDescriptionProvider;
     private final HttpClientFactory httpClientFactory;
+    private final ThingRegistry thingRegistry;
 
     @Activate
     public TPLinkSmartHomeHandlerFactory(final @Reference TPLinkStateDescriptionProvider stateDescriptionProvider,
-            final @Reference HttpClientFactory httpClientFactory) {
+            final @Reference HttpClientFactory httpClientFactory, final @Reference ThingRegistry thingRegistry) {
         this.stateDescriptionProvider = stateDescriptionProvider;
         this.httpClientFactory = httpClientFactory;
+        this.thingRegistry = thingRegistry;
     }
 
     @Override
@@ -102,7 +105,7 @@ public class TPLinkSmartHomeHandlerFactory extends BaseThingHandlerFactory {
                 return null;
         }
         return new SmartHomeHandler(thing, device, type, ipAddressService, stateDescriptionProvider,
-                httpClientFactory.getCommonHttpClient());
+                httpClientFactory.getCommonHttpClient(), thingRegistry);
     }
 
     @Reference

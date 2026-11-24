@@ -34,6 +34,7 @@ import org.openhab.binding.tplinksmarthome.internal.device.SwitchDevice;
 import org.openhab.binding.tplinksmarthome.internal.handler.SmartHomeHandler;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingRegistry;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
@@ -47,6 +48,7 @@ public class TPLinkSmartHomeHandlerFactoryTest {
     private static final String SMART_HOME_DEVICE_FIELD = "smartHomeDevice";
     private @Mock TPLinkStateDescriptionProvider stateDescriptionProvider;
     private @Mock HttpClientFactory httpClientFactory;
+    private @Mock ThingRegistry thingRegistry;
 
     private TPLinkSmartHomeHandlerFactory factory;
 
@@ -73,7 +75,7 @@ public class TPLinkSmartHomeHandlerFactoryTest {
 
     @BeforeEach
     public void setUp() {
-        factory = new TPLinkSmartHomeHandlerFactory(stateDescriptionProvider, httpClientFactory);
+        factory = new TPLinkSmartHomeHandlerFactory(stateDescriptionProvider, httpClientFactory, thingRegistry);
     }
 
     public static List<Object[]> data() {

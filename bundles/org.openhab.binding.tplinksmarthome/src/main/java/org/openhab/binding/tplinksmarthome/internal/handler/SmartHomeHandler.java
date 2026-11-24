@@ -43,12 +43,12 @@ import org.openhab.core.cache.ExpiringCache;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
-import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingRegistry;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
-import org.openhab.core.thing.ThingStatusInfo;
+import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
@@ -63,7 +63,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Christian Fischer - Initial contribution
  * @author Hilbrand Bouwkamp - Rewrite to generic TP-Link Smart Home Handler
- * @author Christopher Smith - KLAP connection through the shared TP-Link account bridge
+ * @author Christopher Smith - KLAP connection with the credentials of a shared TP-Link account
  */
 @NonNullByDefault
 public class SmartHomeHandler extends BaseThingHandler {
@@ -78,6 +78,7 @@ public class SmartHomeHandler extends BaseThingHandler {
     private final int forceRefreshThreshold;
     private final TPLinkStateDescriptionProvider stateDescriptionProvider;
     private final HttpClient httpClient;
+    private final ThingRegistry thingRegistry;
 
     private @NonNullByDefault({}) TPLinkSmartHomeConfiguration configuration;
     private @NonNullByDefault({}) Connection connection;
@@ -87,6 +88,7 @@ public class SmartHomeHandler extends BaseThingHandler {
      * Cache to avoid refresh is called multiple time in 1 second.
      */
     private @NonNullByDefault({}) ExpiringCache<@Nullable DeviceState> fastCache;
+    private @Nullable ThingUID accountUid;
 
     /**
      * Constructor.
@@ -97,12 +99,15 @@ public class SmartHomeHandler extends BaseThingHandler {
      * @param ipAddressService Cache keeping track of ip addresses of tp link devices
      * @param stateDescriptionProvider
      * @param httpClient HTTP client for devices that are reached over KLAP
+     * @param thingRegistry registry to look up the TP-Link account Thing of devices that are reached over KLAP
      */
     public SmartHomeHandler(final Thing thing, final SmartHomeDevice smartHomeDevice,
             final TPLinkSmartHomeThingType type, final TPLinkIpAddressService ipAddressService,
-            final TPLinkStateDescriptionProvider stateDescriptionProvider, final HttpClient httpClient) {
+            final TPLinkStateDescriptionProvider stateDescriptionProvider, final HttpClient httpClient,
+            final ThingRegistry thingRegistry) {
         super(thing);
         this.httpClient = httpClient;
+        this.thingRegistry = thingRegistry;
         this.smartHomeDevice = smartHomeDevice;
         this.ipAddressService = ipAddressService;
         this.forceRefreshThreshold = type.getDeviceType() == DeviceType.SWITCH
@@ -124,7 +129,7 @@ public class SmartHomeHandler extends BaseThingHandler {
     public void handleCommand(final ChannelUID channelUid, final Command command) {
         final ExpiringCache<@Nullable DeviceState> localFastCache = fastCache;
         if (localFastCache == null) {
-            // initialize() stopped early, e.g. because the account bridge is offline
+            // initialize() stopped early because of a configuration error
             return;
         }
         try {
@@ -141,12 +146,6 @@ public class SmartHomeHandler extends BaseThingHandler {
         } catch (final IOException e) {
             updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
-    }
-
-    @Override
-    public void bridgeStatusChanged(final ThingStatusInfo bridgeStatusInfo) {
-        dispose();
-        initialize();
     }
 
     @Override
@@ -169,16 +168,19 @@ public class SmartHomeHandler extends BaseThingHandler {
             updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "No ip address or the device id configured.");
             return;
         }
-        if (usesAccountBridge()) {
+        accountUid = null;
+        if (usesAccount(configuration)) {
             // Only port 9999 discovery reports a device's address, and devices that need KLAP no longer answer it
             if (StringUtil.isBlank(configuration.ipAddress)) {
                 updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
-                        "Set the ip address of a device that uses the TP-Link account bridge.");
+                        "Set the ip address of a device that uses a TP-Link account.");
                 return;
             }
-            final Bridge bridge = getBridge();
-            if (bridge == null || bridge.getStatus() != ThingStatus.ONLINE) {
-                updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
+            try {
+                accountUid = new ThingUID(configuration.account);
+            } catch (final IllegalArgumentException e) {
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
+                        String.format("The account '%s' isn't a Thing UID.", configuration.account));
                 return;
             }
         }
@@ -209,22 +211,29 @@ public class SmartHomeHandler extends BaseThingHandler {
      * @return new Connection object
      */
     Connection createConnection(final TPLinkSmartHomeConfiguration config) {
-        return usesAccountBridge() ? new KlapConnection(httpClient, config.ipAddress, this::accountCredentials)
+        return usesAccount(config) ? new KlapConnection(httpClient, config.ipAddress, this::accountCredentials)
                 : new Connection(config.ipAddress);
     }
 
     /**
      * A device whose firmware secures the legacy protocol only speaks KLAP, which needs the TP-Link account. Users
-     * signal this by giving the Thing an account bridge.
+     * signal this by setting the Thing's account. It isn't a parent bridge, because openHAB doesn't initialize a
+     * Thing without a bridge when its type supports one, and most devices still use the legacy protocol.
      */
-    private boolean usesAccountBridge() {
-        return getThing().getBridgeUID() != null;
+    private static boolean usesAccount(final TPLinkSmartHomeConfiguration config) {
+        return !StringUtil.isBlank(config.account);
+    }
+
+    private @Nullable TPLinkAccount account(final ThingUID uid) {
+        final Thing accountThing = thingRegistry.get(uid);
+        return accountThing != null && accountThing.getStatus() == ThingStatus.ONLINE
+                && accountThing.getHandler() instanceof TPLinkAccount account ? account : null;
     }
 
     private TPLinkCredentials accountCredentials() {
-        final Bridge bridge = getBridge();
-        return bridge != null && bridge.getHandler() instanceof TPLinkAccount account ? account.getCredentials()
-                : new TPLinkCredentials("", "");
+        final ThingUID uid = accountUid;
+        final TPLinkAccount account = uid == null ? null : account(uid);
+        return account == null ? new TPLinkCredentials("", "") : account.getCredentials();
     }
 
     /**
@@ -242,6 +251,13 @@ public class SmartHomeHandler extends BaseThingHandler {
     }
 
     private @Nullable DeviceState refreshCache() {
+        final ThingUID uid = accountUid;
+        if (uid != null && account(uid) == null) {
+            // Polling goes on, so the Thing recovers once the account is ONLINE
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
+                    String.format("The TP-Link account '%s' doesn't exist or isn't ONLINE.", uid));
+            return null;
+        }
         int retry = 1;
 
         while (true) {

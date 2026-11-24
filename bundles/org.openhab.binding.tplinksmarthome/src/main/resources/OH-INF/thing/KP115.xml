@@ -5,9 +5,6 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<thing-type id="kp115">
-		<supported-bridge-type-refs>
-			<bridge-type-ref bindingId="tplinkbridge" id="account"/>
-		</supported-bridge-type-refs>
 		<label>KP115</label>
 		<description>TP-Link KP115 Kasa Wi-Fi Smart Plug with Energy Monitoring - Slim Edition</description>
 		<category>PowerOutlet</category>

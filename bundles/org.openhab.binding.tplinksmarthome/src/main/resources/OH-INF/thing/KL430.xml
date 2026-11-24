@@ -5,9 +5,6 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<thing-type id="kl430">
-		<supported-bridge-type-refs>
-			<bridge-type-ref bindingId="tplinkbridge" id="account"/>
-		</supported-bridge-type-refs>
 		<label>KL430</label>
 		<description>TP-Link KL430 Kasa Smart Light Strip, Multicolour</description>
 		<category>Lightbulb</category>

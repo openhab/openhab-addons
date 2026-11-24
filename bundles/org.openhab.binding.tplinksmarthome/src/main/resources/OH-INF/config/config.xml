@@ -15,6 +15,11 @@
 			<label>Device Id</label>
 			<description>The id of the device.</description>
 		</parameter>
+		<parameter name="account" type="text">
+			<context>thing</context>
+			<label>TP-Link Account</label>
+			<description>The TP-Link account Thing to log in with, for a device that no longer answers on port 9999.</description>
+		</parameter>
 		<parameter name="transitionPeriod" type="integer" min="0">
 			<label>Transition Period</label>
 			<description>Time the transition to the new state takes in milliseconds.</description>
@@ -39,6 +44,11 @@
 			<label>Device Id</label>
 			<description>The id of the device.</description>
 		</parameter>
+		<parameter name="account" type="text">
+			<context>thing</context>
+			<label>TP-Link Account</label>
+			<description>The TP-Link account Thing to log in with, for a device that no longer answers on port 9999.</description>
+		</parameter>
 		<parameter name="refresh" type="integer" min="1">
 			<label>Refresh Rate</label>
 			<description>Refresh of device state in seconds.</description>
@@ -56,6 +66,11 @@
 		<parameter name="deviceId" type="text">
 			<label>Device Id</label>
 			<description>The id of the device.</description>
+		</parameter>
+		<parameter name="account" type="text">
+			<context>thing</context>
+			<label>TP-Link Account</label>
+			<description>The TP-Link account Thing to log in with, for a device that no longer answers on port 9999.</description>
 		</parameter>
 		<parameter name="refresh" type="integer" min="1">
 			<label>Refresh Rate</label>

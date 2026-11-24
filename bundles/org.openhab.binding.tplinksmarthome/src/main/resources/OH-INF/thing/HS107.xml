@@ -5,9 +5,6 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<thing-type id="hs107">
-		<supported-bridge-type-refs>
-			<bridge-type-ref bindingId="tplinkbridge" id="account"/>
-		</supported-bridge-type-refs>
 		<label>HS107</label>
 		<description>TP-Link HS107 Smart Wi-Fi Plug, 2-Outlets</description>
 		<category>PowerOutlet</category>

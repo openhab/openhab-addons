@@ -5,9 +5,6 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<thing-type id="kl60">
-		<supported-bridge-type-refs>
-			<bridge-type-ref bindingId="tplinkbridge" id="account"/>
-		</supported-bridge-type-refs>
 		<label>KL60</label>
 		<description>Kasa Filament Smart Bulb, Warm Amber</description>
 		<category>Lightbulb</category>

@@ -7,7 +7,9 @@ The bridge only stores the credentials.
 The bindings that use it are:
 
 - TP-Link Smart Home (`tplinksmarthome`), for Kasa devices whose firmware requires KLAP.
+  Its Things name the bridge in their `account` parameter, because most Kasa devices need no account.
 - Tapo Control (`tapocontrol`), for Tapo devices.
+  Its Things use the bridge as their parent bridge.
 
 The bridge doesn't contact the TP-Link cloud or any device itself, so wrong credentials show up as login errors on the device Things, not on the bridge.
 

@@ -376,12 +376,13 @@ Manually starting a discovery can also be used to set the ip address directly in
 
 The Thing has the following configuration parameters:
 
-| Parameter          | Description                                                                                  |
-|--------------------|----------------------------------------------------------------------------------------------|
-| deviceId           | The TP-Link id of the device.                                                                |
-| ipAddress          | IP Address of the device.                                                                    |
-| refresh            | Refresh interval in seconds. Optional. The default is 30 seconds, and 1 second for switches. |
-| transitionPeriod   | Duration of state changes in milliseconds, only for light bulbs, default 0.                  |
+| Parameter        | Description                                                                                         |
+|------------------|-----------------------------------------------------------------------------------------------------|
+| deviceId         | The TP-Link id of the device.                                                                       |
+| ipAddress        | IP Address of the device.                                                                           |
+| refresh          | Refresh interval in seconds. Optional. The default is 30 seconds, and 1 second for switches.        |
+| transitionPeriod | Duration of state changes in milliseconds, only for light bulbs, default 0.                         |
+| account          | UID of a `tplinkbridge:account` Thing. Optional. Only for devices with secured firmware, see below. |
 
 Either `deviceId` or `ipAddress` must be set.
 
@@ -390,18 +391,18 @@ Either `deviceId` or `ipAddress` must be set.
 Newer Kasa firmware secures the local protocol on port 9999, so the binding can no longer reach the device the old way.
 Such devices speak TP-Link's KLAP protocol instead, which needs the e-mail address and password of the TP-Link account the device is registered to.
 
-To use KLAP, add a `tplinkbridge:account` bridge from the TP-Link Bridge binding with your account credentials and set it as the Thing's parent bridge.
-A Thing with an account bridge always uses KLAP, and a Thing without one uses the old protocol, so only set the bridge once the device runs the secured firmware.
-The Thing UID and its item links stay the same when you change the parent bridge.
+To use KLAP, add a `tplinkbridge:account` Thing from the TP-Link Bridge binding with your account credentials, and set the device Thing's `account` parameter to its UID.
+A Thing with an `account` always uses KLAP, and a Thing without one uses the old protocol, so only set it once the device runs the secured firmware.
+The Thing UID and its item links stay the same when you set the parameter.
 
 The binding tries the account password first and then the key the Kasa app stores on some devices.
-If the device accepts neither, the Thing goes OFFLINE with a configuration error.
-Set the `ipAddress` of such a device, because discovery may not find devices with secured firmware.
+If the device accepts neither, or the account Thing doesn't exist or isn't ONLINE, the Thing goes OFFLINE with a configuration error.
+Set the `ipAddress` of such a device, because discovery doesn't find devices with secured firmware.
 
 ```java
 Bridge tplinkbridge:account:home "TP-Link Account" [ username="user@example.com", password="secret" ]
 
-Thing tplinksmarthome:ep10:home:lamp "Desk Lamp" (tplinkbridge:account:home) [ ipAddress="192.168.1.20" ]
+Thing tplinksmarthome:ep10:lamp "Desk Lamp" [ ipAddress="192.168.1.20", account="tplinkbridge:account:home" ]
 ```
 
 ## Channels
