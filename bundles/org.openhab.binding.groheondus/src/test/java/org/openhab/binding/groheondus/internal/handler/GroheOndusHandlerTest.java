@@ -93,6 +93,16 @@ class GroheOndusHandlerTest {
     }
 
     @Test
+    void appliancePropertiesNoLongerReportedAreRemoved() {
+        Map<String, String> current = Map.of(PROPERTY_APPLIANCE_NAME, "Old name", Thing.PROPERTY_FIRMWARE_VERSION,
+                "1.0", "applianceId", "abc");
+        Map<String, String> reported = Map.of(PROPERTY_APPLIANCE_NAME, "New name");
+
+        assertEquals(Map.of(PROPERTY_APPLIANCE_NAME, "New name", "applianceId", "abc"),
+                GroheOndusBaseHandler.mergeApplianceProperties(current, reported));
+    }
+
+    @Test
     void deviceIsSilentWhenLastReportIsTooOld() {
         Duration maxAge = Duration.ofHours(48);
         Instant now = Instant.parse("2026-11-18T20:00:00Z");
