@@ -141,6 +141,7 @@ import com.google.gson.JsonPrimitive;
  * @author Andrew Fiddian-Green - Initial contribution
  * @author Andrew Fiddian-Green - Camera talk-back channel
  * @author Andrew Fiddian-Green - Publish camera URL when the channel is linked
+ * @author Andrew Fiddian-Green - Register each camera with the viewer servlet
  */
 @NonNullByDefault
 public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler
@@ -629,6 +630,9 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler
     @Override
     public void initialize() {
         super.initialize();
+        // Register before go2rtc is ready. Otherwise a camera whose bridge is still starting is a 404, and the Main UI
+        // error page reports that the URL was not found.
+        cameraServlet.addProvider(thing.getUID().getId(), this);
         if (isBridgedAccessory) {
             Bridge bridge = getBridge();
             if (bridge == null) {
@@ -1833,28 +1837,27 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler
 
     @Override
     public boolean openBrowserStream() throws InterruptedException {
-        Go2RtcProcess process;
-        Go2RtcEndpoint endpoint;
-        synchronized (this) {
-            process = go2rtcProcess;
-            endpoint = go2rtcEndpoint;
-        }
-        if (process == null || endpoint == null || disposing.get()) {
-            return false;
-        }
-        synchronized (this) {
-            go2rtcDemand.hold(Instant.now().plusSeconds(BROWSER_DEMAND_HOLD_SECONDS));
-        }
-        requestGo2rtcDemandCheck();
-
         Instant deadline = Instant.now().plusSeconds(BROWSER_OPEN_TIMEOUT_SECONDS);
         while (!disposing.get() && Instant.now().isBefore(deadline)) {
-            try {
-                if (process.hasProducers(Go2RtcConfig.API_HOST, endpoint.apiPort(), endpoint.stream())) {
-                    return true;
+            startGo2rtcIfAvailable();
+            Go2RtcProcess process;
+            Go2RtcEndpoint endpoint;
+            synchronized (this) {
+                process = go2rtcProcess;
+                endpoint = go2rtcEndpoint;
+                if (process != null && endpoint != null) {
+                    go2rtcDemand.hold(Instant.now().plusSeconds(BROWSER_DEMAND_HOLD_SECONDS));
                 }
-            } catch (IOException e) {
-                logger.debug("{} cannot read go2rtc producers: {}", thing.getUID(), e.getMessage());
+            }
+            if (process != null && endpoint != null) {
+                requestGo2rtcDemandCheck();
+                try {
+                    if (process.hasProducers(Go2RtcConfig.API_HOST, endpoint.apiPort(), endpoint.stream())) {
+                        return true;
+                    }
+                } catch (IOException e) {
+                    logger.debug("{} cannot read go2rtc producers: {}", thing.getUID(), e.getMessage());
+                }
             }
             Thread.sleep(BROWSER_OPEN_POLL_MILLIS);
         }

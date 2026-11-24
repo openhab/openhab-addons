@@ -14,20 +14,26 @@ package org.openhab.binding.homekit.internal.camera.go2rtc;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.Dictionary;
+import java.util.Hashtable;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.net.HttpServiceUtil;
 import org.openhab.core.net.NetworkAddressService;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.servlet.whiteboard.HttpWhiteboardConstants;
 
 import jakarta.servlet.Servlet;
+import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -38,11 +44,17 @@ import jakarta.servlet.http.HttpServletResponse;
  * therefore never contacts go2rtc directly, so its certificate and scheme do not matter to the browser.
  *
  * @author Andrew Fiddian-Green - Initial contribution
+ * @author Andrew Fiddian-Green - Serve every camera on the Main UI HTTP context
  */
 @NonNullByDefault
 @Component(immediate = true, service = { Servlet.class, Go2RtcCameraServlet.class }, property = {
         HttpWhiteboardConstants.HTTP_WHITEBOARD_SERVLET_PATTERN + "=" + Go2RtcCameraServlet.PATH + "/*",
-        HttpWhiteboardConstants.HTTP_WHITEBOARD_SERVLET_NAME + "=homekit-camera" })
+        HttpWhiteboardConstants.HTTP_WHITEBOARD_SERVLET_NAME + "=homekit-camera",
+        // The Main UI context also owns "/". Without this select the UI servlet handles a camera path the default
+        // context did not claim, sendError(404)s, and its error page replaces the response with the UI not-found page.
+        HttpWhiteboardConstants.HTTP_WHITEBOARD_CONTEXT_SELECT + "="
+                + Go2RtcCameraServlet.UI_OR_DEFAULT_CONTEXT,
+        "service.ranking:Integer=100" })
 public class Go2RtcCameraServlet extends HttpServlet {
 
     /**
@@ -84,6 +96,9 @@ public class Go2RtcCameraServlet extends HttpServlet {
 
     private static final String WEBRTC_SUFFIX = "/webrtc";
     private static final String TALK_SUFFIX = "/talk";
+    private static final Pattern THING_ID = Pattern.compile("[A-Za-z0-9._-]+");
+    private static final String UI_OR_DEFAULT_CONTEXT = "(|(osgi.http.whiteboard.context.name=default)"
+            + "(osgi.http.whiteboard.context.name=org.openhab.ui.context))";
 
     private static final String VIEWER_PAGE = """
             <!DOCTYPE html>
@@ -178,6 +193,7 @@ public class Go2RtcCameraServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
     private final Map<String, BrowserStreamProvider> providers = new ConcurrentHashMap<>();
+    private final Map<String, ServiceRegistration<Servlet>> aliases = new ConcurrentHashMap<>();
     private final NetworkAddressService networkAddressService;
     private final BundleContext bundleContext;
 
@@ -211,18 +227,86 @@ public class Go2RtcCameraServlet extends HttpServlet {
 
     public void addProvider(String thingId, BrowserStreamProvider provider) {
         providers.put(thingId, provider);
+        registerAlias(thingId);
     }
 
     public void removeProvider(String thingId, BrowserStreamProvider provider) {
-        providers.remove(thingId, provider);
+        if (!providers.remove(thingId, provider)) {
+            return;
+        }
+        ServiceRegistration<Servlet> registration = aliases.remove(thingId);
+        if (registration != null) {
+            try {
+                registration.unregister();
+            } catch (IllegalStateException e) {
+                // The whiteboard already dropped the registration.
+            }
+        }
+    }
+
+    @Deactivate
+    void deactivate() {
+        aliases.values().forEach(registration -> {
+            try {
+                registration.unregister();
+            } catch (IllegalStateException e) {
+                // The whiteboard already dropped the registration.
+            }
+        });
+        aliases.clear();
+        providers.clear();
+    }
+
+    /**
+     * Registers an exact path for this camera in the default and Main UI HTTP contexts. The UI servlet is mapped to
+     * {@code /*} in the UI context; an exact camera path wins over that mapping, so the UI cannot answer the URL with
+     * its not-found page.
+     */
+    private void registerAlias(String thingId) {
+        if (!THING_ID.matcher(thingId).matches()) {
+            return;
+        }
+        synchronized (aliases) {
+            if (aliases.containsKey(thingId)) {
+                return;
+            }
+            Dictionary<String, Object> props = new Hashtable<>();
+            String path = PATH + "/" + thingId;
+            props.put(HttpWhiteboardConstants.HTTP_WHITEBOARD_SERVLET_PATTERN, new String[] { path, path + "/*" });
+            props.put(HttpWhiteboardConstants.HTTP_WHITEBOARD_SERVLET_NAME, "homekit-camera-" + thingId);
+            props.put(HttpWhiteboardConstants.HTTP_WHITEBOARD_CONTEXT_SELECT, UI_OR_DEFAULT_CONTEXT);
+            props.put("service.ranking", Integer.valueOf(100));
+            try {
+                ServiceRegistration<Servlet> registration = bundleContext.registerService(Servlet.class,
+                        new CameraAlias(), props);
+                if (registration != null) {
+                    aliases.put(thingId, registration);
+                }
+            } catch (IllegalStateException e) {
+                // The bundle is stopping.
+            }
+        }
+    }
+
+    @NonNullByDefault
+    private final class CameraAlias extends HttpServlet {
+
+        private static final long serialVersionUID = 1L;
+
+        @Override
+        @NonNullByDefault({})
+        protected void service(HttpServletRequest request, HttpServletResponse response)
+                throws ServletException, IOException {
+            Go2RtcCameraServlet.this.service(request, response);
+        }
     }
 
     @Override
     @NonNullByDefault({})
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        BrowserStreamProvider provider = providerFor(request.getPathInfo());
+        BrowserStreamProvider provider = providerFor(request, null);
         if (provider == null) {
-            response.sendError(HttpServletResponse.SC_NOT_FOUND);
+            reject(response, HttpServletResponse.SC_NOT_FOUND);
             return;
         }
         boolean available;
@@ -230,13 +314,14 @@ public class Go2RtcCameraServlet extends HttpServlet {
             available = provider.openBrowserStream();
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            response.sendError(HttpServletResponse.SC_SERVICE_UNAVAILABLE);
+            reject(response, HttpServletResponse.SC_SERVICE_UNAVAILABLE);
             return;
         }
         if (!available) {
-            response.sendError(HttpServletResponse.SC_SERVICE_UNAVAILABLE, "camera stream not available");
+            reject(response, HttpServletResponse.SC_SERVICE_UNAVAILABLE);
             return;
         }
+        response.setStatus(HttpServletResponse.SC_OK);
         response.setContentType("text/html;charset=UTF-8");
         response.setHeader("Cache-Control", "no-store");
         response.getWriter().write(VIEWER_PAGE);
@@ -246,25 +331,22 @@ public class Go2RtcCameraServlet extends HttpServlet {
     @NonNullByDefault({})
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String pathInfo = request.getPathInfo();
-        if (pathInfo == null) {
-            response.sendError(HttpServletResponse.SC_NOT_FOUND);
-            return;
-        }
-        boolean talk = pathInfo.endsWith(TALK_SUFFIX);
+        boolean talk = pathInfo != null && pathInfo.endsWith(TALK_SUFFIX);
         String suffix = talk ? TALK_SUFFIX : WEBRTC_SUFFIX;
-        if (!talk && !pathInfo.endsWith(WEBRTC_SUFFIX)) {
-            response.sendError(HttpServletResponse.SC_NOT_FOUND);
+        if (pathInfo == null || (!talk && !pathInfo.endsWith(WEBRTC_SUFFIX))) {
+            reject(response, HttpServletResponse.SC_NOT_FOUND);
             return;
         }
-        BrowserStreamProvider provider = providerFor(pathInfo.substring(0, pathInfo.length() - suffix.length()));
+        BrowserStreamProvider provider = providerFor(request,
+                pathInfo.substring(0, pathInfo.length() - suffix.length()));
         if (provider == null) {
-            response.sendError(HttpServletResponse.SC_NOT_FOUND);
+            reject(response, HttpServletResponse.SC_NOT_FOUND);
             return;
         }
         final int maxOfferBytes = 64 * 1024;
         byte[] offerBytes = request.getInputStream().readNBytes(maxOfferBytes + 1);
         if (offerBytes.length > maxOfferBytes) {
-            response.sendError(HttpServletResponse.SC_REQUEST_ENTITY_TOO_LARGE);
+            reject(response, HttpServletResponse.SC_REQUEST_ENTITY_TOO_LARGE);
             return;
         }
         String offer = new String(offerBytes, StandardCharsets.UTF_8);
@@ -272,25 +354,67 @@ public class Go2RtcCameraServlet extends HttpServlet {
         try {
             answer = talk ? provider.answerBrowserTalkOffer(offer) : provider.answerBrowserOffer(offer);
         } catch (IOException e) {
-            response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "camera stream not reachable");
+            reject(response, HttpServletResponse.SC_BAD_GATEWAY);
             return;
         }
         if (answer == null) {
-            response.sendError(HttpServletResponse.SC_SERVICE_UNAVAILABLE, "camera stream not available");
+            reject(response, HttpServletResponse.SC_SERVICE_UNAVAILABLE);
             return;
         }
+        response.setStatus(HttpServletResponse.SC_OK);
         response.setContentType("application/sdp");
         response.setHeader("Cache-Control", "no-store");
         response.getWriter().write(answer);
     }
 
     /**
-     * Returns the provider for the thing ID in the given path info, which has the form {@code /<thingId>}.
+     * Sets the status without {@link HttpServletResponse#sendError(int)}. sendError dispatches to the Main UI 404
+     * error page, which replaces this response with the UI not-found page.
      */
-    private @Nullable BrowserStreamProvider providerFor(@Nullable String pathInfo) {
-        if (pathInfo == null || pathInfo.length() < 2 || pathInfo.indexOf('/', 1) != -1) {
+    private static void reject(HttpServletResponse response, int status) throws IOException {
+        response.setStatus(status);
+        response.setContentType("text/plain;charset=UTF-8");
+        response.setHeader("Cache-Control", "no-store");
+        response.getWriter().write("camera stream not available");
+    }
+
+    /**
+     * Returns the provider for the thing ID in the request. {@code pathInfoOverride} is the path info with a
+     * {@code /webrtc} or {@code /talk} suffix removed. An exact servlet mapping leaves path info empty, so the ID is
+     * also taken from the request URI.
+     */
+    private @Nullable BrowserStreamProvider providerFor(HttpServletRequest request,
+            @Nullable String pathInfoOverride) {
+        String thingId = thingId(pathInfoOverride != null ? pathInfoOverride : request.getPathInfo());
+        if (thingId == null) {
+            thingId = thingId(requestUriPath(request));
+        }
+        return thingId == null ? null : providers.get(thingId);
+    }
+
+    private static @Nullable String thingId(@Nullable String path) {
+        if (path == null) {
             return null;
         }
-        return providers.get(pathInfo.substring(1));
+        int camera = path.indexOf(PATH + "/");
+        String id = camera >= 0 ? path.substring(camera + PATH.length() + 1) : path.startsWith("/") ? path.substring(1)
+                : path;
+        int slash = id.indexOf('/');
+        if (slash >= 0) {
+            id = id.substring(0, slash);
+        }
+        return id.isEmpty() ? null : id;
+    }
+
+    private static @Nullable String requestUriPath(HttpServletRequest request) {
+        String uri = request.getRequestURI();
+        if (uri == null) {
+            return null;
+        }
+        String contextPath = request.getContextPath();
+        if (contextPath != null && !contextPath.isEmpty() && uri.startsWith(contextPath)) {
+            return uri.substring(contextPath.length());
+        }
+        return uri;
     }
 }
