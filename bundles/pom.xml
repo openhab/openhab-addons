@@ -109,6 +109,7 @@
     <module>org.openhab.binding.bsblan</module>
     <module>org.openhab.binding.bticinosmarther</module>
     <module>org.openhab.binding.buienradar</module>
+    <module>org.openhab.binding.bydbatterybox</module>
     <module>org.openhab.binding.caddx</module>
     <module>org.openhab.binding.caldav</module>
     <module>org.openhab.binding.candy</module>
