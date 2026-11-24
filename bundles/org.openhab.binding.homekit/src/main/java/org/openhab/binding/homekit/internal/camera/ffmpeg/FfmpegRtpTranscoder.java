@@ -182,10 +182,16 @@ public final class FfmpegRtpTranscoder implements RtpPacketSource, RtpPacketSink
                 }
             }
         } catch (IOException e) {
-            LOGGER.debug("ffmpeg output closed", e);
+            // close() destroys ffmpeg, which closes this stream. That is a normal talk-session end, not a failure.
+            if (!closed) {
+                LOGGER.debug("ffmpeg output closed: {}", e.getMessage());
+            }
         }
         try {
-            LOGGER.debug("ffmpeg exited with code {}", p.waitFor());
+            int code = p.waitFor();
+            if (!closed) {
+                LOGGER.debug("ffmpeg exited with code {}", code);
+            }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
