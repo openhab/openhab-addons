@@ -47,7 +47,20 @@ Once the account bridge is configured, the appliances in your account will be di
 | pollingInterval          | Retrieved from API,      | Interval in seconds to get new data from the API      |
 |                          | usually 900              | The `sense` thing uses 900 by default.                |
 
-The name of the appliance, as set in the GROHE ONDUS app, is available as the Thing property `applianceName`.
+#### Properties
+
+The following Thing properties are filled from the GROHE ONDUS cloud and refreshed on every poll.
+Properties the cloud does not report for an appliance are left out, and removed if the cloud stops reporting them.
+
+| Property            | Description                                                      |
+|---------------------|------------------------------------------------------------------|
+| applianceName       | Name of the appliance, as set in the GROHE ONDUS app             |
+| vendor              | Always `GROHE`                                                   |
+| modelId             | `Sense` or `Sense Guard`                                         |
+| serialNumber        | Serial number of the appliance                                   |
+| firmwareVersion     | Firmware version of the appliance                                |
+| installationDate    | Date the appliance was registered, as reported by the cloud      |
+| measurementInterval | Interval in seconds at which a Sense Guard takes measurements    |
 
 #### Channels
 
