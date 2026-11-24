@@ -13,8 +13,10 @@
 package org.openhab.io.eebus.internal;
 
 import java.net.InetSocketAddress;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -192,12 +194,9 @@ public class EEBusImpl implements EEBus, ReadyService.ReadyTracker {
         this.shipCommunication = null;
     }
 
-    private static Set<String> parseTrustedSkis(String trustedSkis) {
-        if (trustedSkis.isBlank()) {
-            return Set.of();
-        }
-        return Set.of(trustedSkis.split(",")).stream().map(String::trim).filter(s -> !s.isEmpty())
-                .collect(java.util.stream.Collectors.toSet());
+    static Set<String> parseTrustedSkis(String trustedSkis) {
+        return Arrays.stream(trustedSkis.split(",")).map(String::trim).filter(ski -> !ski.isEmpty())
+                .collect(Collectors.toSet());
     }
 
     @Override

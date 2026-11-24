@@ -12,8 +12,11 @@
  */
 package org.openhab.io.eebus.internal;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ScheduledExecutorService;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -33,6 +36,7 @@ import org.openhab.core.types.Command;
 import org.openhab.core.types.UnDefType;
 import org.openmuc.jeebus.spine.api.Entity;
 import org.openmuc.jeebus.usecase.powerlimitation.controllablesystem.ActiveLimit;
+import org.openmuc.jeebus.usecase.powerlimitation.controllablesystem.LimitationUseCaseImpl;
 import org.openmuc.jeebus.usecase.powerlimitation.controllablesystem.lpc.LpcCs;
 import org.openmuc.jeebus.usecase.powerlimitation.controllablesystem.lpp.LppCs;
 import org.slf4j.Logger;
@@ -66,6 +70,8 @@ public class EEBusChangeListener implements ItemRegistryChangeListener {
     private final Entity entity;
 
     private final RegistryChangeListener<Metadata> metadataChangeListener;
+    private final LimitationExecutorAccess limitationExecutorAccess = new LimitationExecutorAccess();
+    private final List<ScheduledExecutorService> limitationExecutors = new ArrayList<>(2);
 
     private volatile @Nullable String lpcItemName;
     private volatile @Nullable String lppItemName;
@@ -111,7 +117,11 @@ public class EEBusChangeListener implements ItemRegistryChangeListener {
     }
 
     public void stop() {
-        stopped = true;
+        synchronized (this) {
+            stopped = true;
+            limitationExecutors.forEach(ScheduledExecutorService::shutdownNow);
+            limitationExecutors.clear();
+        }
         itemRegistry.removeRegistryChangeListener(this);
         metadataRegistry.removeRegistryChangeListener(metadataChangeListener);
     }
@@ -193,6 +203,9 @@ public class EEBusChangeListener implements ItemRegistryChangeListener {
     }
 
     private synchronized void bind(Metadata metadata) {
+        if (stopped) {
+            return;
+        }
         String itemName = metadata.getUID().getItemName();
         String value = metadata.getValue();
         Map<String, Object> config = metadata.getConfiguration();
@@ -223,8 +236,7 @@ public class EEBusChangeListener implements ItemRegistryChangeListener {
             return;
         }
         LpcCs cs = new LpcCs(EEBusLimitationConfigFactory.lpc(config));
-        cs.addListener((event, state, limit) -> onLimitUpdate(itemName, limit));
-        entity.addUseCase(cs);
+        registerUseCase(cs, itemName);
         lpcItemName = itemName;
         logger.info("EEBus: LPC bound to item {}", itemName);
     }
@@ -240,10 +252,21 @@ public class EEBusChangeListener implements ItemRegistryChangeListener {
             return;
         }
         LppCs cs = new LppCs(EEBusLimitationConfigFactory.lpp(config));
-        cs.addListener((event, state, limit) -> onLimitUpdate(itemName, limit));
-        entity.addUseCase(cs);
+        registerUseCase(cs, itemName);
         lppItemName = itemName;
         logger.info("EEBus: LPP bound to item {}", itemName);
+    }
+
+    private void registerUseCase(LimitationUseCaseImpl useCase, String itemName) {
+        ScheduledExecutorService executor = limitationExecutorAccess.getExecutor(useCase);
+        try {
+            useCase.addListener((event, state, limit) -> onLimitUpdate(itemName, limit));
+            entity.addUseCase(useCase);
+            limitationExecutors.add(executor);
+        } catch (RuntimeException e) {
+            executor.shutdownNow();
+            throw e;
+        }
     }
 
     /**
@@ -252,8 +275,7 @@ public class EEBusChangeListener implements ItemRegistryChangeListener {
      * e.g. after LIMIT_DEACTIVATED or INIT_TIMEOUT).
      */
     void onLimitUpdate(String itemName, @Nullable ActiveLimit limit) {
-        // jEEBus 1.1.0 does not shut down the state machine's executor when the use case is closed,
-        // so its timers can still fire after the node was stopped.
+        // Ignore callbacks that arrive as the state machine is shutting down.
         if (stopped) {
             return;
         }

@@ -12,6 +12,9 @@
  */
 package org.openhab.io.eebus.internal;
 
+import java.math.BigDecimal;
+import java.time.Duration;
+import java.time.format.DateTimeParseException;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -36,43 +39,69 @@ import org.openmuc.jeebus.usecase.powerlimitation.controllablesystem.SimpleLimit
 public final class EEBusLimitationConfigFactory {
 
     private static final int SCALED_NUMBER_SCALE = 0;
-    static final double DEFAULT_NOMINAL_MAX_WATTS = 4200;
+    static final long DEFAULT_NOMINAL_MAX_WATTS = 4200;
     static final String DEFAULT_FAILSAFE_DURATION = "PT2H";
 
     private EEBusLimitationConfigFactory() {
     }
 
     public static SimpleLimitationConfig lpc(Map<String, Object> config) {
-        double nominalMaxWatts = numberOrDefault(config, "nominalMax", DEFAULT_NOMINAL_MAX_WATTS);
-        double failsafeWatts = numberOrDefault(config, "failsafeLimit", nominalMaxWatts);
-        String failsafeDuration = stringOrDefault(config, "failsafeDuration", DEFAULT_FAILSAFE_DURATION);
+        long nominalMaxWatts = wattsOrDefault(config, "nominalMax", DEFAULT_NOMINAL_MAX_WATTS);
+        long failsafeWatts = wattsOrDefault(config, "failsafeLimit", nominalMaxWatts);
+        String failsafeDuration = failsafeDuration(config);
 
-        ScaledNumberWrapper nominalMax = new ScaledNumberWrapper((long) nominalMaxWatts, SCALED_NUMBER_SCALE);
-        ScaledNumberWrapper failsafe = new ScaledNumberWrapper((long) failsafeWatts, SCALED_NUMBER_SCALE);
+        ScaledNumberWrapper nominalMax = new ScaledNumberWrapper(nominalMaxWatts, SCALED_NUMBER_SCALE);
+        ScaledNumberWrapper failsafe = new ScaledNumberWrapper(failsafeWatts, SCALED_NUMBER_SCALE);
         // loadControlLimit (the initial/default active limit) starts at nominalMax, i.e.
         // unrestricted until the CEM says otherwise.
         return new SimpleLimitationConfig(failsafeDuration, failsafe, nominalMax, nominalMax);
     }
 
     public static SimpleLimitationConfig lpp(Map<String, Object> config) {
-        double nominalMaxWatts = numberOrDefault(config, "nominalMax", 0);
-        double failsafeWatts = numberOrDefault(config, "failsafeLimit", nominalMaxWatts);
-        String failsafeDuration = stringOrDefault(config, "failsafeDuration", DEFAULT_FAILSAFE_DURATION);
+        long nominalMaxWatts = wattsOrDefault(config, "nominalMax", 0);
+        long failsafeWatts = wattsOrDefault(config, "failsafeLimit", nominalMaxWatts);
+        String failsafeDuration = failsafeDuration(config);
 
-        ScaledNumberWrapper nominalMax = new ScaledNumberWrapper((long) nominalMaxWatts, SCALED_NUMBER_SCALE);
-        ScaledNumberWrapper failsafe = new ScaledNumberWrapper((long) failsafeWatts, SCALED_NUMBER_SCALE);
+        ScaledNumberWrapper nominalMax = new ScaledNumberWrapper(nominalMaxWatts, SCALED_NUMBER_SCALE);
+        ScaledNumberWrapper failsafe = new ScaledNumberWrapper(failsafeWatts, SCALED_NUMBER_SCALE);
         // Per the jEEBus reference usage: for LPP the load-control (default) limit is negative,
         // while nominal max and failsafe remain positive.
         return new SimpleLimitationConfig(failsafeDuration, failsafe, nominalMax.negate(), nominalMax);
     }
 
-    private static double numberOrDefault(Map<String, Object> config, String key, double defaultValue) {
+    private static long wattsOrDefault(Map<String, Object> config, String key, long defaultValue) {
+        if (!config.containsKey(key)) {
+            return defaultValue;
+        }
         Object value = config.get(key);
-        return value instanceof Number number ? number.doubleValue() : defaultValue;
+        if (value instanceof Number || value instanceof String) {
+            try {
+                long watts = new BigDecimal(value.toString().trim()).longValueExact();
+                if (watts >= 0) {
+                    return watts;
+                }
+            } catch (NumberFormatException | ArithmeticException e) {
+                throw new IllegalArgumentException(key + " must be a non-negative whole number of watts", e);
+            }
+        }
+        throw new IllegalArgumentException(key + " must be a non-negative whole number of watts");
     }
 
-    private static String stringOrDefault(Map<String, Object> config, String key, String defaultValue) {
-        Object value = config.get(key);
-        return value instanceof String string && !string.isBlank() ? string : defaultValue;
+    private static String failsafeDuration(Map<String, Object> config) {
+        String key = "failsafeDuration";
+        if (!config.containsKey(key)) {
+            return DEFAULT_FAILSAFE_DURATION;
+        }
+        if (config.get(key) instanceof String value) {
+            try {
+                Duration duration = Duration.parse(value.trim());
+                if (duration.isPositive()) {
+                    return duration.toString();
+                }
+            } catch (DateTimeParseException e) {
+                throw new IllegalArgumentException(key + " must be a positive ISO 8601 duration", e);
+            }
+        }
+        throw new IllegalArgumentException(key + " must be a positive ISO 8601 duration");
     }
 }
