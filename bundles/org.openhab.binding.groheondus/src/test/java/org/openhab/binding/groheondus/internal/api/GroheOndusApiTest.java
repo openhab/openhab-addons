@@ -324,6 +324,8 @@ class GroheOndusApiTest {
         assertEquals("abc", GroheOndusApi.decodeSerialNumber("abc"));
         // Valid hex, but not printable ASCII
         assertEquals("00ff", GroheOndusApi.decodeSerialNumber("00ff"));
+        // Fullwidth digits are Unicode hex digits, but not accepted by HexFormat
+        assertEquals("\uFF13\uFF11", GroheOndusApi.decodeSerialNumber("\uFF13\uFF11"));
         assertNull(GroheOndusApi.decodeSerialNumber(null));
     }
 

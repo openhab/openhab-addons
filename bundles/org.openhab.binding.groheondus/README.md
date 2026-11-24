@@ -50,7 +50,7 @@ Once the account bridge is configured, the appliances in your account will be di
 #### Properties
 
 The following Thing properties are filled from the GROHE ONDUS cloud and refreshed on every poll.
-Properties the cloud does not report for an appliance are left out.
+Properties the cloud does not report for an appliance are left out, and removed if the cloud stops reporting them.
 
 | Property            | Description                                                      |
 |---------------------|------------------------------------------------------------------|

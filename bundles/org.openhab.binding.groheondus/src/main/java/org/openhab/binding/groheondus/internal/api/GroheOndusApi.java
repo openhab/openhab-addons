@@ -428,7 +428,7 @@ public class GroheOndusApi {
             return value;
         }
         String text = value.trim();
-        if (text.length() % 2 != 0 || !text.chars().allMatch(c -> Character.digit(c, 16) >= 0)) {
+        if (text.length() % 2 != 0 || !text.chars().allMatch(HexFormat::isHexDigit)) {
             return text;
         }
         byte[] bytes = HexFormat.of().parseHex(text);

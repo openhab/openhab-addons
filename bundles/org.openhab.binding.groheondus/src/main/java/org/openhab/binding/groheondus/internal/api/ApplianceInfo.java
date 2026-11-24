@@ -19,6 +19,7 @@ import static org.openhab.binding.groheondus.internal.GroheOndusBindingConstants
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -42,6 +43,11 @@ public record ApplianceInfo(ApplianceRef ref, String name, int type, @Nullable I
         @Nullable String installationDate, @Nullable Integer measurementPeriod) {
     public static final int TYPE_SENSE = 101;
     public static final int TYPE_SENSE_GUARD = 103;
+
+    /** Keys of all Thing properties that {@link #properties()} may return */
+    public static final Set<String> PROPERTY_KEYS = Set.of(PROPERTY_APPLIANCE_NAME, Thing.PROPERTY_VENDOR,
+            Thing.PROPERTY_MODEL_ID, Thing.PROPERTY_SERIAL_NUMBER, Thing.PROPERTY_FIRMWARE_VERSION,
+            PROPERTY_INSTALLATION_DATE, PROPERTY_MEASUREMENT_INTERVAL);
 
     private static final String VENDOR = "GROHE";
 

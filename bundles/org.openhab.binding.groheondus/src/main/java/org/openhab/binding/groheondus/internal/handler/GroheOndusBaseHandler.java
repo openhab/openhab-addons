@@ -19,7 +19,9 @@ import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
@@ -216,7 +218,7 @@ public abstract class GroheOndusBaseHandler<S> extends BaseThingHandler {
                 return;
             }
             adjustPollingInterval(appliance);
-            updateProperties(appliance.properties());
+            updateApplianceProperties(appliance.properties());
             S snapshot = fetch(api, appliance);
             Instant newestSample = getNewestSampleTime(snapshot);
             Instant lastTransmission = appliance.lastTransmission();
@@ -262,6 +264,25 @@ public abstract class GroheOndusBaseHandler<S> extends BaseThingHandler {
         String key = Boolean.FALSE.equals(connected) ? "error.device.disconnected" : "error.device.silent";
         logger.debug("Device {} has not reported since {} (connected: {})", thing.getUID(), since, connected);
         updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/" + key + " [\"" + since + "\"]");
+    }
+
+    /**
+     * Replaces the appliance properties so that values the cloud no longer reports are removed, as
+     * {@link #updateProperties(Map)} only adds or changes entries.
+     */
+    private void updateApplianceProperties(Map<String, String> reported) {
+        Map<String, String> current = getThing().getProperties();
+        Map<String, String> merged = mergeApplianceProperties(current, reported);
+        if (!merged.equals(current)) {
+            updateThing(editThing().withProperties(merged).build());
+        }
+    }
+
+    static Map<String, String> mergeApplianceProperties(Map<String, String> current, Map<String, String> reported) {
+        Map<String, String> merged = new HashMap<>(current);
+        merged.keySet().removeAll(ApplianceInfo.PROPERTY_KEYS);
+        merged.putAll(reported);
+        return merged;
     }
 
     /**
