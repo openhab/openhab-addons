@@ -372,10 +372,14 @@ public class Property implements AttributeChanged {
 
     private CompletableFuture<@Nullable Void> unsubscribe() {
         initialized = false;
-        final ChannelState channelState = this.channelState;
-        return CompletableFuture.allOf(
-                channelState == null ? CompletableFuture.completedFuture(null) : channelState.stop(),
-                attributes.unsubscribe());
+        CompletableFuture<@Nullable Void> metadataStopped = attributes.unsubscribe();
+        // A repeated MQTT unsubscribe may finish before an earlier ChannelState.stop(). Drain that
+        // operation first so its delayed internalStop cannot clear a cached state reused on restart.
+        CompletableFuture<@Nullable Void> valueStopped = channelOperations.handle((v, error) -> null).thenCompose(v -> {
+            final ChannelState channelState = this.channelState;
+            return channelState == null ? CompletableFuture.completedFuture(null) : channelState.stop();
+        });
+        return CompletableFuture.allOf(metadataStopped, valueStopped);
     }
 
     public ChannelUID getChannelUID() {

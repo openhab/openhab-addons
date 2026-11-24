@@ -476,10 +476,11 @@ class MetadataSubscriptionTests {
         ChannelState previous = property.getChannelState();
         assertNotNull(previous);
         CompletableFuture<Boolean> unsubscribed = new CompletableFuture<>();
-        doAnswer(invocation -> unsubscribed.thenApply(result -> {
+        AtomicBoolean firstUnsubscribe = new AtomicBoolean(true);
+        doAnswer(invocation -> {
             listeners.remove(previous);
-            return result;
-        })).when(connection).unsubscribe(anyString(), same(previous));
+            return firstUnsubscribe.getAndSet(false) ? unsubscribed : CompletableFuture.completedFuture(true);
+        }).when(connection).unsubscribe(anyString(), same(previous));
         attributes.name = "First update";
         listener.get().attributeChanged("name", "First update", connection, scheduler, true);
         attributes.name = "Second update";
@@ -529,5 +530,52 @@ class MetadataSubscriptionTests {
         device.startChannels(connection, scheduler, 0, mock(HomieThingHandler.class)).get(5, TimeUnit.SECONDS);
         verify(connection).subscribe(eq("homie/device/restored/cached"), same(cached.getChannelState()));
         device.stop().get(5, TimeUnit.SECONDS);
+    }
+
+    @Test
+    void propertyShutdownDrainsPendingStopBeforeRestartingCachedChannel() throws Exception {
+        Set<MqttMessageSubscriber> listeners = trackValueListeners();
+        PropertyAttributes attributes = spy(new PropertyAttributes());
+        stubAttributes(attributes);
+        AtomicReference<AbstractMqttAttributeClass.AttributeChanged> listener = new AtomicReference<>();
+        doAnswer(invocation -> {
+            listener.set(invocation.getArgument(3));
+            return CompletableFuture.completedFuture(null);
+        }).when(attributes).subscribeAndReceive(any(), any(), anyString(), any(), anyInt());
+        Property property = node.createProperty("property", attributes);
+        property.subscribe(connection, scheduler, 500).get(5, TimeUnit.SECONDS);
+        property.startChannel(connection, scheduler, 0).get(5, TimeUnit.SECONDS);
+        ChannelState cached = property.getChannelState();
+        assertNotNull(cached);
+        CompletableFuture<Boolean> firstStop = new CompletableFuture<>();
+        AtomicBoolean firstUnsubscribe = new AtomicBoolean(true);
+        // The connection removes the consumer before the wire unsubscribe completes;
+        // a repeated call returns immediately.
+        doAnswer(invocation -> {
+            listeners.remove(cached);
+            return firstUnsubscribe.getAndSet(false) ? firstStop : CompletableFuture.completedFuture(true);
+        }).when(connection).unsubscribe(anyString(), same(cached));
+        attributes.name = "Updated name";
+        listener.get().attributeChanged("name", "Updated name", connection, scheduler, true);
+        CompletableFuture<@Nullable Void> stopped = property.stop();
+        TimeoutException metadataFailure = new TimeoutException("Metadata refresh failed");
+        doReturn(CompletableFuture.failedFuture(metadataFailure)).when(attributes).subscribeAndReceive(any(), any(),
+                anyString(), any(), anyInt());
+        CompletableFuture<@Nullable Void> restarted = property.subscribe(connection, scheduler, 500);
+        assertFalse(stopped.isDone(), "Shutdown must wait for the pending ChannelState.stop()");
+        assertFalse(restarted.isDone(), "Restart must not reuse the cached channel before its old stop finishes");
+        verify(connection, times(1)).unsubscribe(anyString(), same(cached));
+        firstStop.complete(true);
+        stopped.get(5, TimeUnit.SECONDS);
+        assertSame(metadataFailure,
+                assertThrows(ExecutionException.class, () -> restarted.get(5, TimeUnit.SECONDS)).getCause());
+        property.startChannel(connection, scheduler, 0).get(5, TimeUnit.SECONDS);
+        assertSame(cached, property.getChannelState());
+        assertTrue(cached.hasSubscribed());
+        assertSame(callback, cached.getChannelStateUpdateListener());
+        assertEquals(Set.of(cached), listeners);
+        property.stop().get(5, TimeUnit.SECONDS);
+        assertTrue(listeners.isEmpty());
+        assertNull(cached.getChannelStateUpdateListener());
     }
 }
