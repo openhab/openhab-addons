@@ -20,6 +20,7 @@ import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 
 import javax.measure.Unit;
 
@@ -324,22 +325,34 @@ public abstract class VerisureThingHandler<@NonNull T extends VerisureThingDTO> 
 
     private static final int ALERT_LIMIT_REFRESH_DELAY_SECONDS = 10;
 
-    protected void changeAlertLimit(List<Threshold> thresholds, @Nullable String deviceLabel, BigDecimal installationId,
-            String sensorType, boolean isMin, Command command) {
+    protected final Object alertLimitLock = new Object();
+
+    /**
+     * Changes one alert limit of a device. The caller must hold {@link #alertLimitLock} while it reads the current
+     * limits and calls this method, so that a preceding change is included.
+     *
+     * @param currentThresholds the current limits of the device
+     * @param updateThresholds stores the limits after a successful change
+     */
+    protected void changeAlertLimit(List<Threshold> currentThresholds, Consumer<List<Threshold>> updateThresholds,
+            @Nullable String deviceLabel, BigDecimal installationId, String sensorType, boolean isMin,
+            Command command) {
         VerisureSession session = getSession();
         if (session == null) {
             return;
         }
         if (deviceLabel == null
-                || thresholds.stream().noneMatch(threshold -> sensorType.equals(threshold.getSensorType()))) {
+                || currentThresholds.stream().noneMatch(threshold -> sensorType.equals(threshold.getSensorType()))) {
             logger.warn("Device {} has no alert limits for {}", config.getDeviceId(), sensorType);
             return;
         }
 
         // The API replaces all limits of the device, so the unchanged ones are sent along
         JsonArray input = new JsonArray();
-        for (Threshold current : thresholds) {
+        List<Threshold> changedThresholds = new ArrayList<>();
+        for (Threshold current : currentThresholds) {
             Threshold threshold = new Threshold(current);
+            changedThresholds.add(threshold);
             if (sensorType.equals(threshold.getSensorType()) && !applyAlertLimitCommand(threshold, isMin, command)) {
                 logger.warn("Command {} is not supported for the alert limit", command);
                 return;
@@ -370,6 +383,7 @@ public abstract class VerisureThingHandler<@NonNull T extends VerisureThingDTO> 
                 installationId);
         if (httpResultCode == HttpStatus.OK_200) {
             logger.debug("Alert limits successfully changed!");
+            updateThresholds.accept(changedThresholds);
             scheduleImmediateRefresh(ALERT_LIMIT_REFRESH_DELAY_SECONDS);
         } else {
             logger.warn("Failed to change alert limits, HTTP result code: {}", httpResultCode);

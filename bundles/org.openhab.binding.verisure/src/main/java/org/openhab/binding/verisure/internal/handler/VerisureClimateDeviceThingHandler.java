@@ -91,17 +91,20 @@ public class VerisureClimateDeviceThingHandler extends VerisureThingHandler<Veri
     }
 
     private void handleThreshold(String sensorType, boolean isMin, Command command) {
-        VerisureSession session = getSession();
-        VerisureClimatesDTO climateJSON = session != null
-                ? session.getVerisureThing(config.getDeviceId(), getVerisureThingClass())
-                : null;
-        List<Climate> climateList = climateJSON != null ? climateJSON.getData().getInstallation().getClimates() : null;
-        if (climateJSON == null || climateList == null || climateList.isEmpty()) {
-            return;
+        synchronized (alertLimitLock) {
+            VerisureSession session = getSession();
+            VerisureClimatesDTO climateJSON = session != null
+                    ? session.getVerisureThing(config.getDeviceId(), getVerisureThingClass())
+                    : null;
+            List<Climate> climateList = climateJSON != null ? climateJSON.getData().getInstallation().getClimates()
+                    : null;
+            if (climateJSON == null || climateList == null || climateList.isEmpty()) {
+                return;
+            }
+            Climate climate = climateList.get(0);
+            changeAlertLimit(climate.getThresholds(), climate::setThresholds, climate.getDevice().getDeviceLabel(),
+                    climateJSON.getSiteId(), sensorType, isMin, command);
         }
-        Climate climate = climateList.get(0);
-        changeAlertLimit(climate.getThresholds(), climate.getDevice().getDeviceLabel(), climateJSON.getSiteId(),
-                sensorType, isMin, command);
     }
 
     @Override

@@ -79,17 +79,20 @@ public class VerisureMiceDetectionThingHandler extends VerisureThingHandler<Veri
     }
 
     private void handleThreshold(boolean isMin, Command command) {
-        VerisureSession session = getSession();
-        VerisureMiceDetectionDTO miceDetectionJSON = session != null
-                ? session.getVerisureThing(config.getDeviceId(), getVerisureThingClass())
-                : null;
-        List<Mouse> miceList = miceDetectionJSON != null ? miceDetectionJSON.getData().getInstallation().getMice()
-                : null;
-        if (miceDetectionJSON == null || miceList == null || miceList.isEmpty()) {
-            return;
+        synchronized (alertLimitLock) {
+            VerisureSession session = getSession();
+            VerisureMiceDetectionDTO miceDetectionJSON = session != null
+                    ? session.getVerisureThing(config.getDeviceId(), getVerisureThingClass())
+                    : null;
+            List<Mouse> miceList = miceDetectionJSON != null ? miceDetectionJSON.getData().getInstallation().getMice()
+                    : null;
+            if (miceDetectionJSON == null || miceList == null || miceList.isEmpty()) {
+                return;
+            }
+            changeAlertLimit(miceDetectionJSON.getThresholds(), miceDetectionJSON::setThresholds,
+                    miceList.get(0).getDevice().getDeviceLabel(), miceDetectionJSON.getSiteId(),
+                    Threshold.SENSOR_TYPE_TEMPERATURE, isMin, command);
         }
-        changeAlertLimit(miceDetectionJSON.getThresholds(), miceList.get(0).getDevice().getDeviceLabel(),
-                miceDetectionJSON.getSiteId(), Threshold.SENSOR_TYPE_TEMPERATURE, isMin, command);
     }
 
     @Override

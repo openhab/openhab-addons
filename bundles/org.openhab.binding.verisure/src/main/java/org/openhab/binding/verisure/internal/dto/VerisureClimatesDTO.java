@@ -92,6 +92,10 @@ public class VerisureClimatesDTO extends VerisureBaseThingDTO {
             return localThresholds != null ? localThresholds : List.of();
         }
 
+        public void setThresholds(List<Threshold> thresholds) {
+            this.thresholds = thresholds;
+        }
+
         public @Nullable Threshold getThreshold(String sensorType) {
             return getThresholds().stream().filter(threshold -> sensorType.equals(threshold.getSensorType()))
                     .findFirst().orElse(null);

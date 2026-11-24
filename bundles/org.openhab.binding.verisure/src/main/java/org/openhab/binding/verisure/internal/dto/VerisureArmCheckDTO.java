@@ -37,11 +37,13 @@ public class VerisureArmCheckDTO {
         return status != null ? status.status : null;
     }
 
-    public List<Violation> getViolations() {
+    /**
+     * @return the violations, or null if the response has no result
+     */
+    public @Nullable List<Violation> getViolations() {
         DryRunStatus dryRunStatus = getDryRunStatus();
         Result result = dryRunStatus != null ? dryRunStatus.result : null;
-        List<Violation> violations = result != null ? result.deviceViolations : null;
-        return violations != null ? violations : List.of();
+        return result != null ? result.deviceViolations : null;
     }
 
     private @Nullable DryRunStatus getDryRunStatus() {

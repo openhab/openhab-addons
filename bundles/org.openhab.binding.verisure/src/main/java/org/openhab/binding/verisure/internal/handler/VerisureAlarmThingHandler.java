@@ -81,6 +81,8 @@ public class VerisureAlarmThingHandler extends VerisureThingHandler<VerisureAlar
             CHANNEL_ARM_CHECK_RESULT, CHANNEL_VACATION_MODE_START, CHANNEL_VACATION_MODE_END);
 
     private @Nullable ScheduledFuture<?> armCheckJob;
+    // Incremented on dispose, so that an arm check started before it is dropped
+    private int armCheckSession;
 
     public VerisureAlarmThingHandler(Thing thing) {
         super(thing);
@@ -88,10 +90,13 @@ public class VerisureAlarmThingHandler extends VerisureThingHandler<VerisureAlar
 
     @Override
     public void dispose() {
-        ScheduledFuture<?> job = armCheckJob;
-        if (job != null) {
-            job.cancel(true);
-            armCheckJob = null;
+        synchronized (this) {
+            armCheckSession++;
+            ScheduledFuture<?> job = armCheckJob;
+            if (job != null) {
+                job.cancel(true);
+                armCheckJob = null;
+            }
         }
         super.dispose();
     }
@@ -180,16 +185,17 @@ public class VerisureAlarmThingHandler extends VerisureThingHandler<VerisureAlar
             logger.debug("Arm check is already running");
             return;
         }
-        armCheckJob = scheduler.schedule(this::requestArmCheck, 0, TimeUnit.SECONDS);
+        int checkSession = armCheckSession;
+        armCheckJob = scheduler.schedule(() -> requestArmCheck(checkSession), 0, TimeUnit.SECONDS);
     }
 
-    private void requestArmCheck() {
+    private void requestArmCheck(int checkSession) {
         VerisureSession session = getSession();
         VerisureAlarmsDTO alarm = session != null
                 ? session.getVerisureThing(config.getDeviceId(), getVerisureThingClass())
                 : null;
         if (session == null || alarm == null) {
-            finishArmCheck(ARM_CHECK_FAILED);
+            finishArmCheck(checkSession, ARM_CHECK_FAILED);
             return;
         }
         BigDecimal installationId = alarm.getSiteId();
@@ -200,10 +206,10 @@ public class VerisureAlarmThingHandler extends VerisureThingHandler<VerisureAlar
         JsonObject response = session.postGraphQL(createOperationJSON(operation, query, variables), installationId);
         if (response != null && response.get("data") instanceof JsonObject data
                 && data.get("armStateDryRun") instanceof JsonPrimitive transactionId) {
-            scheduleArmCheckPoll(installationId, transactionId.getAsString(), 1);
+            scheduleArmCheckPoll(checkSession, installationId, transactionId.getAsString(), 1);
         } else {
             logger.debug("Arm check could not be started: {}", response);
-            finishArmCheck(isThrottled(response) ? ARM_CHECK_THROTTLED : ARM_CHECK_FAILED);
+            finishArmCheck(checkSession, isThrottled(response) ? ARM_CHECK_THROTTLED : ARM_CHECK_FAILED);
         }
     }
 
@@ -220,15 +226,19 @@ public class VerisureAlarmThingHandler extends VerisureThingHandler<VerisureAlar
         return false;
     }
 
-    private void scheduleArmCheckPoll(BigDecimal installationId, String transactionId, int attempt) {
-        armCheckJob = scheduler.schedule(() -> pollArmCheck(installationId, transactionId, attempt),
+    private synchronized void scheduleArmCheckPoll(int checkSession, BigDecimal installationId, String transactionId,
+            int attempt) {
+        if (checkSession != armCheckSession) {
+            return;
+        }
+        armCheckJob = scheduler.schedule(() -> pollArmCheck(checkSession, installationId, transactionId, attempt),
                 ARM_CHECK_POLL_SECONDS, TimeUnit.SECONDS);
     }
 
-    private void pollArmCheck(BigDecimal installationId, String transactionId, int attempt) {
+    private void pollArmCheck(int checkSession, BigDecimal installationId, String transactionId, int attempt) {
         VerisureSession session = getSession();
         if (session == null) {
-            finishArmCheck(ARM_CHECK_FAILED);
+            finishArmCheck(checkSession, ARM_CHECK_FAILED);
             return;
         }
         String operation = "ArmStateDryRunStatus";
@@ -247,14 +257,20 @@ public class VerisureAlarmThingHandler extends VerisureThingHandler<VerisureAlar
         String status = armCheck != null ? armCheck.getStatus() : null;
         logger.debug("Arm check status {} after {} polls", status, attempt);
         if (armCheck != null && VerisureArmCheckDTO.STATUS_DONE.equals(status)) {
-            finishArmCheck(formatViolations(session, armCheck.getViolations()));
+            List<Violation> violations = armCheck.getViolations();
+            if (violations != null) {
+                finishArmCheck(checkSession, formatViolations(session, violations));
+            } else {
+                logger.debug("Arm check is done, but the response has no result: {}", response);
+                finishArmCheck(checkSession, ARM_CHECK_FAILED);
+            }
         } else if (VerisureArmCheckDTO.STATUS_FAILED.equals(status)
                 || VerisureArmCheckDTO.STATUS_STATE_CHANGE_FAILED.equals(status)) {
-            finishArmCheck(ARM_CHECK_FAILED);
+            finishArmCheck(checkSession, ARM_CHECK_FAILED);
         } else if (attempt >= ARM_CHECK_MAX_POLLS) {
-            finishArmCheck(ARM_CHECK_TIMEOUT);
+            finishArmCheck(checkSession, ARM_CHECK_TIMEOUT);
         } else {
-            scheduleArmCheckPoll(installationId, transactionId, attempt + 1);
+            scheduleArmCheckPoll(checkSession, installationId, transactionId, attempt + 1);
         }
     }
 
@@ -275,7 +291,10 @@ public class VerisureAlarmThingHandler extends VerisureThingHandler<VerisureAlar
         }).collect(Collectors.joining(", "));
     }
 
-    private void finishArmCheck(String result) {
+    private synchronized void finishArmCheck(int checkSession, String result) {
+        if (checkSession != armCheckSession) {
+            return;
+        }
         logger.debug("Arm check result: {}", result);
         updateState(CHANNEL_ARM_CHECK_RESULT, new StringType(result));
         updateState(CHANNEL_ARM_CHECK, OnOffType.OFF);
