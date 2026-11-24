@@ -91,8 +91,8 @@
 		<description>ON when night mode is enabled in the TailWind app. In night mode the controller closes the doors
 			automatically during the hours set in the app.</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
+			<point>Status</point>
+			<property>Mode</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -103,8 +103,8 @@
 		<description>Brightness of the status LED of the controller</description>
 		<category>Light</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>Brightness</tag>
+			<point>Control</point>
+			<property>Brightness</property>
 		</tags>
 		<state min="0" max="100" pattern="%d %%"/>
 	</channel-type>
@@ -115,8 +115,8 @@
 		<description>Strength of the Wi-Fi signal the controller receives</description>
 		<category>QualityOfService</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>RSSI</tag>
+			<point>Measurement</point>
+			<property>RSSI</property>
 		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
@@ -147,8 +147,8 @@
 		<description>Whether the door is open or closed</description>
 		<category>GarageDoor</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>OpenState</tag>
+			<point>Status</point>
+			<property>OpenState</property>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -164,8 +164,8 @@
 		<description>Opens, partially opens or closes the door. The state is the current status of the door.</description>
 		<category>GarageDoor</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>OpenState</tag>
+			<point>Control</point>
+			<property>OpenState</property>
 		</tags>
 		<state>
 			<options>
