@@ -109,6 +109,7 @@
     <module>org.openhab.binding.bsblan</module>
     <module>org.openhab.binding.bticinosmarther</module>
     <module>org.openhab.binding.buienradar</module>
+    <module>org.openhab.binding.bydbatterybox</module>
     <module>org.openhab.binding.caddx</module>
     <module>org.openhab.binding.caldav</module>
     <module>org.openhab.binding.candy</module>
@@ -532,7 +533,6 @@
     <module>org.openhab.binding.yeelight</module>
     <module>org.openhab.binding.zoneminder</module>
     <module>org.openhab.binding.zwavejs</module>
-    <module>org.openhab.binding.zway</module>
     <!-- persistence -->
     <module>org.openhab.persistence.dynamodb</module>
     <module>org.openhab.persistence.influxdb</module>
@@ -859,17 +859,12 @@
       <plugin>
         <groupId>org.codehaus.gmavenplus</groupId>
         <artifactId>gmavenplus-plugin</artifactId>
-        <version>4.1.1</version>
+        <version>5.1.0</version>
         <dependencies>
           <dependency>
             <groupId>org.apache.groovy</groupId>
             <artifactId>groovy</artifactId>
-            <version>4.0.22</version>
-          </dependency>
-          <dependency>
-            <groupId>org.apache.groovy</groupId>
-            <artifactId>groovy-ant</artifactId>
-            <version>4.0.22</version>
+            <version>${groovy.version}</version>
           </dependency>
         </dependencies>
         <executions>

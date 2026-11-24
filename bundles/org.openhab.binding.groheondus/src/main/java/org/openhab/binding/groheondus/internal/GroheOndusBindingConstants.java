@@ -41,6 +41,8 @@ public class GroheOndusBindingConstants {
     public static final String CHANNEL_CONFIG_TIMEFRAME = "timeframe";
 
     public static final String PROPERTY_APPLIANCE_NAME = "applianceName";
+    public static final String PROPERTY_INSTALLATION_DATE = "installationDate";
+    public static final String PROPERTY_MEASUREMENT_INTERVAL = "measurementInterval";
 
     public static final int DEFAULT_POLLING_INTERVAL = 900;
 }
