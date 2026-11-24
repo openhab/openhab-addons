@@ -139,6 +139,11 @@ public class ICloudAccountBridgeHandler extends BaseBridgeHandler {
         logger.debug("iCloud bridge handler initialized.");
     }
 
+    // Package-private to allow replacing the service in unit tests.
+    ICloudService createICloudService(String appleId, String password) {
+        return new ICloudService(appleId, password, storage);
+    }
+
     private <@Nullable T> T callApiWithRetryAndExceptionHandling(Callable<T> wrapped) {
         int retryCount = 1;
         boolean success = false;
@@ -150,7 +155,7 @@ public class ICloudAccountBridgeHandler extends BaseBridgeHandler {
                 final String localPassword = config.password;
 
                 if (localAppleId != null && localPassword != null) {
-                    this.iCloudService = new ICloudService(localAppleId, localPassword, this.storage);
+                    this.iCloudService = createICloudService(localAppleId, localPassword);
                 } else {
                     updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Apple ID or password is not set!");
                     return null;
@@ -227,19 +232,21 @@ public class ICloudAccountBridgeHandler extends BaseBridgeHandler {
             // Still waiting for user to update config.
             logger.warn("ICloud authentication requires 2-FA code. Please provide code configuration for thing '{}'.",
                     getThing().getUID().getAsString());
-            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Please provide 2-FA code in thing configuration.");
+            updateStatus(ThingStatusDetail.AUTHORIZATION_PENDING, "Please provide 2-FA code in thing configuration.");
             return false;
         } else {
             // 2-FA-Code was requested in previous call of this method.
             // User has provided code in config.
             logger.debug("Code is given in thing configuration '{}'. Trying to validate code...",
                     getThing().getUID().getAsString());
-            storage.put(AUTH_CODE_KEY, lastTriedCode);
             success = localICloudService.validate2faCode(code);
+            // Remember the code only after Apple answered, so a failed validation request can be retried with it.
+            storage.put(AUTH_CODE_KEY, code);
             if (!success) {
                 authState = AuthState.INITIAL;
                 logger.warn("ICloud token invalid.");
-                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Invalid 2-FA-code.");
+                updateStatus(ThingStatusDetail.AUTHORIZATION_PENDING,
+                        "Invalid 2-FA code. Please provide a new code in thing configuration.");
                 return false;
             }
             org.openhab.core.config.core.Configuration config2 = editConfiguration();
@@ -346,7 +353,8 @@ public class ICloudAccountBridgeHandler extends BaseBridgeHandler {
                         "iCloud authentication requires 2-FA code. Please provide code configuration for thing '{}'.",
                         getThing().getUID().getAsString());
                 authState = AuthState.WAIT_FOR_CODE;
-                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Please provide 2-FA code in thing configuration.");
+                updateStatus(ThingStatusDetail.AUTHORIZATION_PENDING,
+                        "Please provide 2-FA code in thing configuration.");
                 return false;
             }
 
