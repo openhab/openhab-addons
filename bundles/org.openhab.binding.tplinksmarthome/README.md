@@ -385,6 +385,25 @@ The Thing has the following configuration parameters:
 
 Either `deviceId` or `ipAddress` must be set.
 
+### Devices with Secured Firmware
+
+Newer Kasa firmware secures the local protocol on port 9999, so the binding can no longer reach the device the old way.
+Such devices speak TP-Link's KLAP protocol instead, which needs the e-mail address and password of the TP-Link account the device is registered to.
+
+To use KLAP, add a `tplinkbridge:account` bridge from the TP-Link Bridge binding with your account credentials and set it as the Thing's parent bridge.
+A Thing with an account bridge always uses KLAP, and a Thing without one uses the old protocol, so only set the bridge once the device runs the secured firmware.
+The Thing UID and its item links stay the same when you change the parent bridge.
+
+The binding tries the account password first and then the key the Kasa app stores on some devices.
+If the device accepts neither, the Thing goes OFFLINE with a configuration error.
+Set the `ipAddress` of such a device, because discovery may not find devices with secured firmware.
+
+```java
+Bridge tplinkbridge:account:home "TP-Link Account" [ username="user@example.com", password="secret" ]
+
+Thing tplinksmarthome:ep10:home:lamp "Desk Lamp" (tplinkbridge:account:home) [ ipAddress="192.168.1.20" ]
+```
+
 ## Channels
 
 All devices support some of the following channels:

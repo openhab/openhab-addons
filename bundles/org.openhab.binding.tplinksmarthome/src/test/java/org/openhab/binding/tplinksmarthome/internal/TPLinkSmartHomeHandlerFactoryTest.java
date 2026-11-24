@@ -19,6 +19,7 @@ import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.List;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -31,6 +32,7 @@ import org.openhab.binding.tplinksmarthome.internal.device.PowerStripDevice;
 import org.openhab.binding.tplinksmarthome.internal.device.RangeExtenderDevice;
 import org.openhab.binding.tplinksmarthome.internal.device.SwitchDevice;
 import org.openhab.binding.tplinksmarthome.internal.handler.SmartHomeHandler;
+import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 
@@ -44,8 +46,9 @@ public class TPLinkSmartHomeHandlerFactoryTest {
 
     private static final String SMART_HOME_DEVICE_FIELD = "smartHomeDevice";
     private @Mock TPLinkStateDescriptionProvider stateDescriptionProvider;
+    private @Mock HttpClientFactory httpClientFactory;
 
-    private final TPLinkSmartHomeHandlerFactory factory = new TPLinkSmartHomeHandlerFactory(stateDescriptionProvider);
+    private TPLinkSmartHomeHandlerFactory factory;
 
     // @formatter:off
     private static final List<Object[]> TESTS = Arrays.asList(new Object[][] {
@@ -67,6 +70,11 @@ public class TPLinkSmartHomeHandlerFactoryTest {
     // @formatter:on
 
     private @Mock Thing thing;
+
+    @BeforeEach
+    public void setUp() {
+        factory = new TPLinkSmartHomeHandlerFactory(stateDescriptionProvider, httpClientFactory);
+    }
 
     public static List<Object[]> data() {
         return TESTS;

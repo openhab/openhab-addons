@@ -5,6 +5,9 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<thing-type id="re270">
+		<supported-bridge-type-refs>
+			<bridge-type-ref bindingId="tplinkbridge" id="account"/>
+		</supported-bridge-type-refs>
 		<label>RE270K</label>
 		<description>TP-Link AC750 Wi-Fi Range Extender with Smart Plug</description>
 		<category>PowerOutlet</category>

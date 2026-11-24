@@ -5,6 +5,9 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<thing-type id="es20m">
+		<supported-bridge-type-refs>
+			<bridge-type-ref bindingId="tplinkbridge" id="account"/>
+		</supported-bridge-type-refs>
 		<label>ES20M</label>
 		<description>TP-Link ES20M Smart Wi-Fi Light Switch, Motion-Activated</description>
 		<category>WallSwitch</category>

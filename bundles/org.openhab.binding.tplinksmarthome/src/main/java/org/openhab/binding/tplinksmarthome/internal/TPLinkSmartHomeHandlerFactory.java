@@ -25,6 +25,7 @@ import org.openhab.binding.tplinksmarthome.internal.device.RangeExtenderDevice;
 import org.openhab.binding.tplinksmarthome.internal.device.SmartHomeDevice;
 import org.openhab.binding.tplinksmarthome.internal.device.SwitchDevice;
 import org.openhab.binding.tplinksmarthome.internal.handler.SmartHomeHandler;
+import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
@@ -39,6 +40,7 @@ import org.osgi.service.component.annotations.Reference;
  *
  * @author Christian Fischer - Initial contribution
  * @author Hilbrand Bouwkamp - Specific handlers for different type of devices.
+ * @author Christopher Smith - HTTP client for KLAP connections
  */
 @NonNullByDefault
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.tplinksmarthome")
@@ -46,10 +48,13 @@ public class TPLinkSmartHomeHandlerFactory extends BaseThingHandlerFactory {
 
     private @NonNullByDefault({}) TPLinkIpAddressService ipAddressService;
     private final TPLinkStateDescriptionProvider stateDescriptionProvider;
+    private final HttpClientFactory httpClientFactory;
 
     @Activate
-    public TPLinkSmartHomeHandlerFactory(final @Reference TPLinkStateDescriptionProvider stateDescriptionProvider) {
+    public TPLinkSmartHomeHandlerFactory(final @Reference TPLinkStateDescriptionProvider stateDescriptionProvider,
+            final @Reference HttpClientFactory httpClientFactory) {
         this.stateDescriptionProvider = stateDescriptionProvider;
+        this.httpClientFactory = httpClientFactory;
     }
 
     @Override
@@ -96,7 +101,8 @@ public class TPLinkSmartHomeHandlerFactory extends BaseThingHandlerFactory {
             default:
                 return null;
         }
-        return new SmartHomeHandler(thing, device, type, ipAddressService, stateDescriptionProvider);
+        return new SmartHomeHandler(thing, device, type, ipAddressService, stateDescriptionProvider,
+                httpClientFactory.getCommonHttpClient());
     }
 
     @Reference

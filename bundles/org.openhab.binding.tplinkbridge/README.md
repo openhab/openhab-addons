@@ -4,7 +4,12 @@ This binding provides one TP-Link account that Kasa and Tapo devices share.
 You enter your TP-Link credentials once, on a `tplinkbridge:account` bridge, and Things of other TP-Link bindings use them to log in to their devices.
 
 The bridge only stores the credentials.
-It doesn't contact the TP-Link cloud or any device itself, so wrong credentials show up as login errors on the device Things, not on the bridge.
+The bindings that use it are:
+
+- TP-Link Smart Home (`tplinksmarthome`), for Kasa devices whose firmware requires KLAP.
+- Tapo Control (`tapocontrol`), for Tapo devices.
+
+The bridge doesn't contact the TP-Link cloud or any device itself, so wrong credentials show up as login errors on the device Things, not on the bridge.
 
 ## Supported Things
 

@@ -5,6 +5,9 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<thing-type id="kl110">
+		<supported-bridge-type-refs>
+			<bridge-type-ref bindingId="tplinkbridge" id="account"/>
+		</supported-bridge-type-refs>
 		<label>KL110</label>
 		<description>TP-Link KL110 Smart Wi-Fi LED Bulb with Brightness</description>
 		<category>Lightbulb</category>
