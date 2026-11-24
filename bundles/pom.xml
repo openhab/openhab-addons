@@ -859,17 +859,12 @@
       <plugin>
         <groupId>org.codehaus.gmavenplus</groupId>
         <artifactId>gmavenplus-plugin</artifactId>
-        <version>4.1.1</version>
+        <version>5.1.0</version>
         <dependencies>
           <dependency>
             <groupId>org.apache.groovy</groupId>
             <artifactId>groovy</artifactId>
-            <version>4.0.22</version>
-          </dependency>
-          <dependency>
-            <groupId>org.apache.groovy</groupId>
-            <artifactId>groovy-ant</artifactId>
-            <version>4.0.22</version>
+            <version>${groovy.version}</version>
           </dependency>
         </dependencies>
         <executions>
