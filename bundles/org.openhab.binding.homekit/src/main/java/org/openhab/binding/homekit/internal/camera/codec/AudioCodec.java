@@ -68,9 +68,16 @@ public record AudioCodec(AudioCodecType codecType, int channels, boolean constan
         while (offset + 2 <= tlv.length) {
             int type = tlv[offset] & 0xFF;
             int start = offset + 2;
-            int end = Math.min(start + (tlv[offset + 1] & 0xFF), tlv.length);
+            int end = start + (tlv[offset + 1] & 0xFF);
+            if (end > tlv.length) {
+                return List.of();
+            }
             if (type == TYPE_AUDIO_CODEC_CONFIGURATION) {
-                decodeEntry(Arrays.copyOfRange(tlv, start, end), result);
+                try {
+                    decodeEntry(Arrays.copyOfRange(tlv, start, end), result);
+                } catch (SecurityException e) {
+                    return List.of();
+                }
             }
             offset = end;
         }

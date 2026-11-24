@@ -172,8 +172,14 @@ public class Go2RtcInstaller {
             if (entry == null) {
                 throw new IOException("Could not find " + expected + " inside archive " + url);
             }
-            try (InputStream in = zip.getInputStream(entry)) {
-                Files.copy(in, destBinary, StandardCopyOption.REPLACE_EXISTING);
+            Path extracted = Files.createTempFile(destBinary.getParent(), "go2rtc-extract-", ".tmp");
+            try {
+                try (InputStream in = zip.getInputStream(entry)) {
+                    Files.copy(in, extracted, StandardCopyOption.REPLACE_EXISTING);
+                }
+                Files.move(extracted, destBinary, StandardCopyOption.REPLACE_EXISTING);
+            } finally {
+                Files.deleteIfExists(extracted);
             }
         }
     }

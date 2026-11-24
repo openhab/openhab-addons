@@ -156,6 +156,7 @@ public class Go2RtcCameraServlet extends HttpServlet {
                 talkButton.addEventListener('click', async () => {
                   if (talk) { stopTalk(); return; }
                   const pc = new RTCPeerConnection({});
+                  talkButton.disabled = true;
                   try {
                     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
                     talk = { pc, stream };
@@ -168,6 +169,8 @@ public class Go2RtcCameraServlet extends HttpServlet {
                     message.textContent = 'Talk failed: ' + e.message;
                     pc.close();
                     stopTalk();
+                  } finally {
+                    talkButton.disabled = false;
                   }
                 });
               } else {

@@ -76,9 +76,14 @@ public final class FfmpegRtpTranscoder implements RtpPacketSource, RtpPacketSink
      */
     private FfmpegRtpTranscoder(String ffmpeg, IntFunction<String> inputSdp, List<String> inputArgs,
             List<String> encoderArgs, int payloadType) throws IOException {
-        loopback = InetAddress.getLoopbackAddress();
+        loopback = InetAddress.getByAddress(new byte[] { 127, 0, 0, 1 });
         inputSocket = new DatagramSocket();
-        outputSocket = new DatagramSocket(0, loopback);
+        try {
+            outputSocket = new DatagramSocket(0, loopback);
+        } catch (IOException | RuntimeException e) {
+            inputSocket.close();
+            throw e;
+        }
         Launch launch;
         try {
             launch = launch(ffmpeg, inputSdp, inputArgs, encoderArgs, payloadType, outputSocket.getLocalPort());
