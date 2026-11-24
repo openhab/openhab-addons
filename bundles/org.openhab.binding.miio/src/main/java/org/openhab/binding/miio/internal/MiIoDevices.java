@@ -502,6 +502,7 @@ public enum MiIoDevices {
     XIAOMI_AIRP_MA6("xiaomi.airp.ma6", "Mijia Smart Air Purifier 6", THING_TYPE_BASIC),
     XIAOMI_AIRP_MB5("xiaomi.airp.mb5", "Mijia Smart Air Purifier 6", THING_TYPE_BASIC),
     XIAOMI_AIRP_MB6("xiaomi.airp.mb6", "Mijia Smart Air Purifier MAX", THING_TYPE_BASIC),
+    XIAOMI_AIRP_MC6("xiaomi.airp.mc6", "Mijia Smart Air Purifier 6 Plus", THING_TYPE_BASIC),
     XIAOMI_AIRP_MEB1("xiaomi.airp.meb1", "Xiaomi Smart Air Purifier Elite", THING_TYPE_BASIC),
     XIAOMI_AIRP_MEB2("xiaomi.airp.meb2", "Mijia Smart Air Purifier Elite", THING_TYPE_BASIC),
     XIAOMI_COOKER_CMK7("xiaomi.cooker.cmk7", "Xiaomi Smart Multifunctional Rice Cooker", THING_TYPE_BASIC),
