@@ -15087,7 +15087,7 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 
 | Channel                    | Type                 | Description                              | Comment    |
 |----------------------------|----------------------|------------------------------------------|------------|
-| actions                    | String               | Actions                                  | Value mapping `["air-purifier-toggle"="Toggle Power","filter-reset-filter-life"="Reset Filter Life","custom-service-toggle-mode"="Toggle Mode"]` |
+| actions                    | String               | Actions                                  | Value mapping `["air-purifier-toggle"="Toggle Power","custom-service-toggle-mode"="Toggle Mode"]` |
 | on                         | Switch               | Power                                    |            |
 | fault                      | Number               | Fault                                    | Value mapping `["0"="No Faults","2"="Motor Error","3"="Particle Sensor Error"]` |
 | mode                       | Number               | Mode                                     | Value mapping `["0"="Auto","1"="Sleep","2"="Manual"]` |

@@ -18,10 +18,6 @@
 							"label": "Toggle Power"
 						},
 						{
-							"value": "filter-reset-filter-life",
-							"label": "Reset Filter Life"
-						},
-						{
 							"value": "custom-service-toggle-mode",
 							"label": "Toggle Mode"
 						}
@@ -46,20 +42,6 @@
 					{
 						"command": "action",
 						"parameterType": "EMPTY",
-						"siid": 4,
-						"aiid": 1,
-						"condition": {
-							"name": "matchValue",
-							"parameters": [
-								{
-									"matchValue": "filter-reset-filter-life"
-								}
-							]
-						}
-					},
-					{
-						"command": "action",
-						"parameterType": "EMPTY",
 						"siid": 8,
 						"aiid": 1,
 						"condition": {
@@ -73,7 +55,7 @@
 					}
 				],
 				"category": "settings",
-				"readmeComment": "Value mapping `[\"air-purifier-toggle\"\u003d\"Toggle Power\",\"filter-reset-filter-life\"\u003d\"Reset Filter Life\",\"custom-service-toggle-mode\"\u003d\"Toggle Mode\"]`"
+				"readmeComment": "Value mapping `[\"air-purifier-toggle\"\u003d\"Toggle Power\",\"custom-service-toggle-mode\"\u003d\"Toggle Mode\"]`"
 			},
 			{
 				"property": "on",
