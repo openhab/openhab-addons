@@ -20,6 +20,7 @@ import org.jivesoftware.smack.SmackConfiguration;
 import org.jivesoftware.smack.java7.XmppHostnameVerifier;
 import org.jivesoftware.smack.provider.ProviderManager;
 import org.jivesoftware.smack.roster.Roster;
+import org.jivesoftware.smack.sasl.javax.SASLJavaXSmackInitializer;
 import org.jivesoftware.smack.util.DNSUtil;
 import org.jivesoftware.smack.util.dns.javax.JavaxResolver;
 import org.jivesoftware.smack.util.stringencoder.Base64;
@@ -75,6 +76,11 @@ public class XMPPClientHandlerFactory extends BaseThingHandlerFactory {
     @Activate
     protected void activate(ComponentContext componentContext) {
         super.activate(componentContext);
+
+        // Initialize Javax SASL mechanisms explicitly because Smack's automatic
+        // initializer discovery cannot cross OSGi bundle classloader boundaries.
+        new SASLJavaXSmackInitializer().initialize();
+
         SmackXmlParser.setXmlPullParserFactory(new Xpp3XmlPullParserFactory());
 
         Roster.setRosterLoadedAtLoginDefault(false);

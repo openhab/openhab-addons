@@ -22,6 +22,7 @@ import java.util.Set;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.jivesoftware.smack.AbstractXMPPConnection;
+import org.jivesoftware.smack.ConnectionConfiguration;
 import org.jivesoftware.smack.ConnectionConfiguration.SecurityMode;
 import org.jivesoftware.smack.ConnectionListener;
 import org.jivesoftware.smack.ReconnectionManager;
@@ -32,6 +33,8 @@ import org.jivesoftware.smack.chat2.Chat;
 import org.jivesoftware.smack.chat2.ChatManager;
 import org.jivesoftware.smack.chat2.IncomingChatMessageListener;
 import org.jivesoftware.smack.packet.Message;
+import org.jivesoftware.smack.sasl.SASLMechanism;
+import org.jivesoftware.smack.sasl.core.SCRAMSHA1Mechanism;
 import org.jivesoftware.smack.tcp.XMPPTCPConnection;
 import org.jivesoftware.smack.tcp.XMPPTCPConnectionConfiguration;
 import org.jivesoftware.smackx.disco.ServiceDiscoveryManager;
@@ -95,13 +98,19 @@ public class XMPPClient implements IncomingChatMessageListener, ConnectionListen
         XMPPTCPConnectionConfiguration config;
 
         try {
-            config = XMPPTCPConnectionConfiguration.builder() //
+            var configBuilder = XMPPTCPConnectionConfiguration.builder() //
                     .setHost(serverHost) //
                     .setPort(port) //
                     .setUsernameAndPassword(login, password) //
                     .setXmppDomain(domain) //
-                    .setSecurityMode(securityMode)//
-                    .build();
+                    .setSecurityMode(securityMode) //
+                    .addEnabledSaslMechanism(SCRAMSHA1Mechanism.NAME);
+
+            if (securityMode == ConnectionConfiguration.SecurityMode.required) {
+                configBuilder.addEnabledSaslMechanism(SASLMechanism.PLAIN);
+            }
+
+            config = configBuilder.build();
         } catch (XmppStringprepException e) {
             throw new XMPPClientConfigException(Objects.requireNonNullElse(e.getMessage(), "Unknown error message"));
         }
