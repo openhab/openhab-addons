@@ -380,7 +380,7 @@ public class Device implements AbstractMqttAttributeClass.AttributeChanged {
      * @param node The removed node.
      */
     protected void notifyNodeRemoved(Node node) {
-        node.stop();
+        node.remove();
         node.properties.stream().forEach(property -> node.notifyPropertyRemoved(property));
         callback.nodeRemoved(node);
     }

@@ -19,6 +19,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.atomic.AtomicReference;
@@ -88,6 +89,8 @@ public class Property implements AttributeChanged {
     private final DeviceCallback callback;
     protected boolean initialized = false;
     private final AtomicReference<SubscriptionContext> subscription = new AtomicReference<>(new SubscriptionContext());
+    private final Object lifecycleLock = new Object();
+    private volatile boolean removed;
     private CompletableFuture<@Nullable Void> channelOperations = CompletableFuture.completedFuture(null);
 
     /**
@@ -121,6 +124,9 @@ public class Property implements AttributeChanged {
     public CompletableFuture<@Nullable Void> subscribe(MqttBrokerConnection connection,
             ScheduledExecutorService scheduler, int timeout) {
         SubscriptionContext context = newSubscriptionContext(null);
+        if (context == null) {
+            return CompletableFuture.failedFuture(new CancellationException("Property removed"));
+        }
         return context
                 .run(() -> attributes.subscribeAndReceive(connection, scheduler, topic,
                         (name, value, broker, executor,
@@ -134,7 +140,7 @@ public class Property implements AttributeChanged {
                 })).thenCompose(future -> future);
     }
 
-    private SubscriptionContext newSubscriptionContext(@Nullable SubscriptionContext expected) {
+    private @Nullable SubscriptionContext newSubscriptionContext(@Nullable SubscriptionContext expected) {
         CompletableFuture<@Nullable Void> predecessor = new CompletableFuture<>();
         SubscriptionContext context = new SubscriptionContext(predecessor);
         // Reserve the reset before publishing the context, so concurrent value starts wait for it.
@@ -147,14 +153,19 @@ public class Property implements AttributeChanged {
             return CompletableFuture.completedFuture(null);
         });
         final SubscriptionContext previous;
-        if (expected == null) {
-            previous = subscription.getAndSet(context);
-        } else if (subscription.compareAndSet(expected, context)) {
-            previous = expected;
-        } else {
-            // The concurrent owner may already be stopping. Do not revive it by retrying here;
-            // the device tolerates child supersession while still propagating device shutdown.
-            return subscription.get();
+        synchronized (lifecycleLock) {
+            if (removed || parentNode.isRemoved()) {
+                return null;
+            }
+            if (expected == null) {
+                previous = subscription.getAndSet(context);
+            } else if (subscription.compareAndSet(expected, context)) {
+                previous = expected;
+            } else {
+                // The concurrent owner may already be stopping. Do not revive it by retrying here;
+                // the device tolerates child supersession while still propagating device shutdown.
+                return subscription.get();
+            }
         }
         previous.stop(this::unsubscribe).whenComplete((v, error) -> {
             if (error == null) {
@@ -170,7 +181,12 @@ public class Property implements AttributeChanged {
         return queueChannelOperation(context, () -> {
             final ChannelState previous = channelState;
             CompletableFuture<@Nullable Void> stopped = previous == null ? CompletableFuture.completedFuture(null)
-                    : previous.stop();
+                    : previous.stop().exceptionallyCompose(error -> {
+                        // MQTT removes the local consumer before its wire unsubscribe completes.
+                        // Retry the local stop to clear ChannelState's subscribed flag after failure.
+                        logger.debug("Value unsubscribe failed; resetting cached channel state", error);
+                        return previous.stop();
+                    });
             return stopped.thenCompose(v -> context.run(() -> {
                 initialized = true;
                 attributesReceived();
@@ -372,7 +388,19 @@ public class Property implements AttributeChanged {
      * @return Returns a future that completes as soon as all unsubscriptions have been performed.
      */
     public CompletableFuture<@Nullable Void> stop() {
-        return subscription.get().stop(this::unsubscribe);
+        final SubscriptionContext context;
+        synchronized (lifecycleLock) {
+            context = subscription.get();
+        }
+        return context.stop(this::unsubscribe);
+    }
+
+    // Schema removal is terminal for this instance; ordinary stop still permits cached-value recovery.
+    void remove() {
+        synchronized (lifecycleLock) {
+            removed = true;
+        }
+        stop();
     }
 
     private CompletableFuture<@Nullable Void> unsubscribe() {
@@ -456,9 +484,15 @@ public class Property implements AttributeChanged {
      */
     public CompletableFuture<@Nullable Void> startChannel(MqttBrokerConnection connection,
             ScheduledExecutorService scheduler, int timeout) {
+        if (removed || parentNode.isRemoved()) {
+            return CompletableFuture.failedFuture(new CancellationException("Property removed"));
+        }
         SubscriptionContext current = subscription.get();
         // Cached channels remain usable when their parent node's metadata could not be refreshed.
         SubscriptionContext context = current.isActive() ? current : newSubscriptionContext(current);
+        if (context == null) {
+            return CompletableFuture.failedFuture(new CancellationException("Property removed"));
+        }
         return context.run(() -> queueChannelOperation(context, () -> {
             final ChannelState channelState = this.channelState;
             if (channelState == null) {

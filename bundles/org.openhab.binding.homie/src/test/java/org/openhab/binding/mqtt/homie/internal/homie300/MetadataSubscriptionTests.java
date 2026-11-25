@@ -874,4 +874,105 @@ class MetadataSubscriptionTests {
             release.countDown();
         }
     }
+
+    @ParameterizedTest
+    @ValueSource(booleans = { false, true })
+    void staleStartCannotReviveRemovedProperty(boolean removeNode) throws Exception {
+        Set<MqttMessageSubscriber> listeners = trackValueListeners();
+        Property property = spy(addCachedDeviceProperty());
+        node.properties.put("property", property);
+        device.subscribe(connection, scheduler, 500).get(5, TimeUnit.SECONDS);
+        CountDownLatch entered = new CountDownLatch(1);
+        CountDownLatch release = new CountDownLatch(1);
+        doAnswer(invocation -> {
+            entered.countDown();
+            assertTrue(release.await(5, TimeUnit.SECONDS), "Property start was not released");
+            return invocation.callRealMethod();
+        }).when(property).startChannel(any(), any(), anyInt());
+        CompletableFuture<@Nullable Void> started = CompletableFuture
+                .supplyAsync(() -> property.startChannel(connection, scheduler, 0)).thenCompose(future -> future);
+        try {
+            assertTrue(entered.await(5, TimeUnit.SECONDS), "Property start did not begin");
+            if (removeNode) {
+                deviceAttributes.nodes = new String[0];
+                device.attributeChanged("nodes", new String[0], connection, scheduler, true);
+                assertEquals(0, device.nodes.stream().count());
+            } else {
+                nodeAttributes.properties = new String[0];
+                node.attributeChanged("properties", new String[0], connection, scheduler, true);
+                assertEquals(0, node.properties.stream().count());
+            }
+            release.countDown();
+            started.handle((v, error) -> null).get(5, TimeUnit.SECONDS);
+            assertTrue(started.isCompletedExceptionally(), "A removed property must reject stale starts");
+            CompletableFuture<@Nullable Void> metadata = property.subscribe(connection, scheduler, 500);
+            metadata.handle((v, error) -> null).get(5, TimeUnit.SECONDS);
+            assertTrue(metadata.isCompletedExceptionally(), "Removed metadata must not be reopened");
+            assertTrue(listeners.isEmpty(), "Removed properties must not retain value listeners");
+            if (removeNode) {
+                CompletableFuture<@Nullable Void> removedMetadata = node.subscribe(connection, scheduler, 500);
+                removedMetadata.handle((v, error) -> null).get(5, TimeUnit.SECONDS);
+                assertTrue(removedMetadata.isCompletedExceptionally(), "Removed nodes must not be reopened");
+            }
+            Node replacementNode = removeNode ? spy(device.createNode("node", nodeAttributes)) : node;
+            PropertyAttributes replacementAttributes = spy(new PropertyAttributes());
+            stubAttributes(replacementAttributes);
+            Property replacement = replacementNode.createProperty("property", replacementAttributes);
+            doReturn(replacement).when(replacementNode).createProperty("property");
+            nodeAttributes.properties = new String[] { "property" };
+            if (removeNode) {
+                doReturn(replacementNode).when(device).createNode("node");
+                deviceAttributes.nodes = new String[] { "node" };
+                device.attributeChanged("nodes", new String[] { "node" }, connection, scheduler, true);
+            } else {
+                node.attributeChanged("properties", new String[] { "property" }, connection, scheduler, true);
+            }
+            assertSame(replacement, device.nodes.get("node").properties.get("property"));
+            replacement.startChannel(connection, scheduler, 0).get(5, TimeUnit.SECONDS);
+            ChannelState current = replacement.getChannelState();
+            assertNotNull(current);
+            assertEquals(Set.of(current), listeners, "Reintroduced IDs must use fresh subscriptions");
+            device.stop().get(5, TimeUnit.SECONDS);
+            assertTrue(listeners.isEmpty());
+        } finally {
+            release.countDown();
+            started.handle((v, error) -> null).get(5, TimeUnit.SECONDS);
+            property.stop().get(5, TimeUnit.SECONDS);
+        }
+    }
+
+    @Test
+    void metadataRefreshRecoversAfterValueUnsubscribeFailure() throws Exception {
+        Set<MqttMessageSubscriber> listeners = trackValueListeners();
+        Property property = addCachedDeviceProperty();
+        AtomicReference<AbstractMqttAttributeClass.AttributeChanged> listener = new AtomicReference<>();
+        doAnswer(invocation -> {
+            listener.set(invocation.getArgument(3));
+            return CompletableFuture.completedFuture(null);
+        }).when(property.attributes).subscribeAndReceive(any(), any(), anyString(), any(), anyInt());
+        property.subscribe(connection, scheduler, 500).get(5, TimeUnit.SECONDS);
+        property.startChannel(connection, scheduler, 0).get(5, TimeUnit.SECONDS);
+        ChannelState previous = property.getChannelState();
+        assertNotNull(previous);
+        AtomicBoolean first = new AtomicBoolean(true);
+        doAnswer(invocation -> {
+            listeners.remove(previous);
+            return first.getAndSet(false) ? CompletableFuture.failedFuture(new TimeoutException())
+                    : CompletableFuture.completedFuture(true);
+        }).when(connection).unsubscribe(anyString(), same(previous));
+        clearInvocations(callback);
+        property.attributes.name = "Changed";
+        listener.get().attributeChanged("name", "Changed", connection, scheduler, true);
+        property.startChannel(connection, scheduler, 0).get(5, TimeUnit.SECONDS);
+        ChannelState current = property.getChannelState();
+        assertNotNull(current);
+        assertNotSame(previous, current);
+        var definition = property.getChannelDefinition();
+        assertNotNull(definition);
+        assertEquals("Changed", definition.getLabel());
+        assertEquals(Set.of(current), listeners);
+        verify(callback).propertyAddedOrChanged(property);
+        property.stop().get(5, TimeUnit.SECONDS);
+        assertTrue(listeners.isEmpty());
+    }
 }

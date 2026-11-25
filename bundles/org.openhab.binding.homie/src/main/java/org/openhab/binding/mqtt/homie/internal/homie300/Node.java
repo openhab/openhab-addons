@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.atomic.AtomicReference;
@@ -64,6 +65,7 @@ public class Node implements AbstractMqttAttributeClass.AttributeChanged {
     private boolean metadataReconciled = false;
     private final AtomicReference<SubscriptionContext> subscription = new AtomicReference<>(new SubscriptionContext());
     private final Object lifecycleLock = new Object();
+    private volatile boolean removed;
     private CompletableFuture<@Nullable Void> cleanupBarrier = CompletableFuture.completedFuture(null);
 
     /**
@@ -96,6 +98,9 @@ public class Node implements AbstractMqttAttributeClass.AttributeChanged {
         final CompletableFuture<@Nullable Void> previousCleanup;
         final ChildMap<Property> outgoingProperties;
         synchronized (lifecycleLock) {
+            if (removed) {
+                return CompletableFuture.failedFuture(new CancellationException("Node removed"));
+            }
             previous = subscription.getAndSet(context);
             previousCleanup = cleanupBarrier;
             outgoingProperties = properties;
@@ -166,6 +171,17 @@ public class Node implements AbstractMqttAttributeClass.AttributeChanged {
         }
         completeCleanup(context, outgoingProperties, previousCleanup, stopped);
         return stopped;
+    }
+
+    boolean isRemoved() {
+        return removed;
+    }
+
+    void remove() {
+        synchronized (lifecycleLock) {
+            removed = true;
+        }
+        stop();
     }
 
     private void completeCleanup(SubscriptionContext context, ChildMap<Property> outgoingProperties,
@@ -251,7 +267,7 @@ public class Node implements AbstractMqttAttributeClass.AttributeChanged {
      * @param property The removed property.
      */
     protected void notifyPropertyRemoved(Property property) {
-        property.stop();
+        property.remove();
         callback.propertyRemoved(property);
     }
 
