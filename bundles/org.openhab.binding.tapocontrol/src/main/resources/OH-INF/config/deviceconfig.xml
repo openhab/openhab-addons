@@ -23,6 +23,7 @@
 				<option value="AES">Secured HTTP Protocol</option>
 				<option value="KLAP">Secured KLAP HTTP Protocol</option>
 				<option value="KASA">Legacy Kasa Protocol</option>
+				<option value="KASA_KLAP">Kasa Protocol over KLAP</option>
 			</options>
 			<limitToOptions>true</limitToOptions>
 			<default>AES</default>

@@ -28,6 +28,7 @@ import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.tapocontrol.internal.api.protocol.TapoProtocolEnum;
 import org.openhab.binding.tapocontrol.internal.api.protocol.TapoProtocolInterface;
 import org.openhab.binding.tapocontrol.internal.api.protocol.aes.SecurePassthrough;
+import org.openhab.binding.tapocontrol.internal.api.protocol.kasa.KasaKlapProtocol;
 import org.openhab.binding.tapocontrol.internal.api.protocol.kasa.KasaXorProtocol;
 import org.openhab.binding.tapocontrol.internal.api.protocol.klap.KlapProtocol;
 import org.openhab.binding.tapocontrol.internal.api.protocol.passthrough.PassthroughProtocol;
@@ -93,6 +94,9 @@ public class TapoDeviceConnector implements TapoConnectorInterface {
             case KASA:
                 logger.trace("({}) selected kasa xor-protocol '{}'", uid, protocol);
                 return new KasaXorProtocol(this, device.getIpAddress(), device.isDimmerSwitch());
+            case KASA_KLAP:
+                logger.trace("({}) selected kasa klap-protocol '{}'", uid, protocol);
+                return new KasaKlapProtocol(this, device.isDimmerSwitch());
             default:
                 logger.debug("({}) unknown protocol '{}'", uid, protocol);
                 handleError(new TapoErrorHandler(NO_ERROR, protocol));

@@ -26,7 +26,8 @@ public enum TapoProtocolEnum {
     PASSTHROUGH(""),
     SECUREPASSTROUGH("AES"),
     KLAP("KLAP"),
-    KASA("KASA");
+    KASA("KASA"),
+    KASA_KLAP("KASA_KLAP");
 
     public final String value;
 

@@ -45,6 +45,7 @@ import org.slf4j.LoggerFactory;
  * Handler class for TAPO Smart Home thing discovery
  *
  * @author Christian Wild - Initial contribution
+ * @author Christopher Smith - Kasa vendor property
  */
 @NonNullByDefault
 public class TapoDiscoveryService extends AbstractDiscoveryService implements ThingHandlerService {
@@ -256,7 +257,7 @@ public class TapoDiscoveryService extends AbstractDiscoveryService implements Th
 
         /* create properties */
         Map<String, Object> properties = new HashMap<>();
-        properties.put(Thing.PROPERTY_VENDOR, DEVICE_VENDOR);
+        properties.put(Thing.PROPERTY_VENDOR, getDeviceVendor(thingTypeUID));
         properties.put(Thing.PROPERTY_MAC_ADDRESS, formatMac(deviceMAC, MAC_DIVISION_CHAR));
         properties.put(Thing.PROPERTY_FIRMWARE_VERSION, device.fwVer());
         properties.put(Thing.PROPERTY_HARDWARE_VERSION, device.deviceHwVer());
@@ -268,7 +269,7 @@ public class TapoDiscoveryService extends AbstractDiscoveryService implements Th
         if (device.ip().length() >= 7) {
             properties.put(TapoDeviceConfiguration.CONFIG_DEVICE_IP, device.ip());
             properties.put(TapoDeviceConfiguration.CONFIG_HTTP_PORT, device.encryptionSchema().httpPort());
-            properties.put(TapoDeviceConfiguration.CONFIG_PROTOCOL, device.encryptionSchema().encryptType());
+            properties.put(TapoDeviceConfiguration.CONFIG_PROTOCOL, device.protocol());
         }
 
         logger.debug("device {} discovered with mac {}", deviceModel, deviceMAC);

@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.tapocontrol.internal.discovery.dto;
 
-import static org.openhab.binding.tapocontrol.internal.api.protocol.TapoProtocolEnum.SECUREPASSTROUGH;
+import static org.openhab.binding.tapocontrol.internal.api.protocol.TapoProtocolEnum.*;
 import static org.openhab.binding.tapocontrol.internal.helpers.TapoEncoder.isBase64Encoded;
 
 import java.util.Base64;
@@ -28,6 +28,7 @@ import com.google.gson.annotations.SerializedName;
  * TapoDiscoveryResult Data Class
  *
  * @author Christian Wild - Initial contribution
+ * @author Christopher Smith - Select the Kasa KLAP protocol for Kasa IOT devices
  */
 @NonNullByDefault
 public record TapoDiscoveryResult(@Expose @SerializedName("factory_default") boolean factoryDefault,
@@ -42,6 +43,8 @@ public record TapoDiscoveryResult(@Expose @SerializedName("factory_default") boo
         @Expose @SerializedName(value = "deviceType", alternate = "device_type") String deviceType, @Expose String fwId,
         @Expose String fwVer, @Expose String hwId, @Expose String ip, @Expose String isSameRegion,
         @Expose String oemId) {
+
+    private static final String KASA_IOT_DEVICE_TYPE_PREFIX = "IOT.";
 
     public record EncryptionSchema(@Expose @SerializedName("is_support_https") boolean isSupportHttps,
             @Expose @SerializedName("encrypt_type") String encryptType,
@@ -140,6 +143,18 @@ public record TapoDiscoveryResult(@Expose @SerializedName("factory_default") boo
     public EncryptionSchema encryptionSchema() {
         return Objects.requireNonNullElse(encryptionSchema,
                 new EncryptionSchema(false, SECUREPASSTROUGH.toString(), 80, 0));
+    }
+
+    /**
+     * Protocol to configure for the device. Kasa devices report an {@code IOT.*} device type and keep the Kasa IOT
+     * command set when their firmware moves to KLAP, so they need {@code KASA_KLAP} rather than the Tapo KLAP protocol.
+     */
+    public String protocol() {
+        String encryptType = encryptionSchema().encryptType();
+        if (KLAP.toString().equals(encryptType) && deviceType().startsWith(KASA_IOT_DEVICE_TYPE_PREFIX)) {
+            return KASA_KLAP.toString();
+        }
+        return encryptType;
     }
 
     @Override
