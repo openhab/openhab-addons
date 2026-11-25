@@ -36,6 +36,7 @@ import org.openhab.binding.tplinksmarthome.internal.TPLinkSmartHomeConfiguration
 import org.openhab.binding.tplinksmarthome.internal.TPLinkSmartHomeThingType;
 import org.openhab.binding.tplinksmarthome.internal.TPLinkSmartHomeThingType.DeviceType;
 import org.openhab.binding.tplinksmarthome.internal.TPLinkStateDescriptionProvider;
+import org.openhab.binding.tplinksmarthome.internal.UnsupportedProtocolException;
 import org.openhab.binding.tplinksmarthome.internal.device.BulbDevice;
 import org.openhab.binding.tplinksmarthome.internal.device.DeviceState;
 import org.openhab.binding.tplinksmarthome.internal.device.SmartHomeDevice;
@@ -90,8 +91,9 @@ public class SmartHomeHandler extends BaseThingHandler {
     private @NonNullByDefault({}) ExpiringCache<@Nullable DeviceState> fastCache;
     private @Nullable ThingUID accountUid;
     /**
-     * After the device rejected the credentials, refreshes don't log in again before this time, so a poll or the
-     * REFRESH commands for several channels don't each send a failed login to the device.
+     * After the device rejected the credentials or answered in a protocol this binding doesn't speak, refreshes don't
+     * log in again before this time, so a poll or the REFRESH commands for several channels don't each send a failed
+     * request to the device.
      */
     private volatile long loginRetryAt;
 
@@ -149,7 +151,7 @@ public class SmartHomeHandler extends BaseThingHandler {
             } else {
                 logger.debug("Command {} is not supported for channel: {}", command, channelUid.getId());
             }
-        } catch (final KlapAuthenticationException e) {
+        } catch (final KlapAuthenticationException | UnsupportedProtocolException e) {
             updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
         } catch (final IOException e) {
             updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
@@ -294,7 +296,7 @@ public class SmartHomeHandler extends BaseThingHandler {
                 // dispose() cancelled this refresh, so don't retry or change the status of the next initialization
                 Thread.currentThread().interrupt();
                 return null;
-            } catch (final KlapAuthenticationException e) {
+            } catch (final KlapAuthenticationException | UnsupportedProtocolException e) {
                 loginRetryAt = System.currentTimeMillis()
                         + TimeUnit.SECONDS.toMillis(Math.max(1, configuration.refresh));
                 updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());

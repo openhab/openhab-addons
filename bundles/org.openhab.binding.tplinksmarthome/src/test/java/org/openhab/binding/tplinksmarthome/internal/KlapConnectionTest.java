@@ -12,13 +12,14 @@
  */
 package org.openhab.binding.tplinksmarthome.internal;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.tplinkbridge.TPLinkCredentials;
+import org.openhab.binding.tplinksmarthome.internal.model.ModelTestUtil;
 
 /**
  * Tests for {@link KlapConnection}.
@@ -54,5 +55,16 @@ public class KlapConnectionTest {
     @Test
     public void testTriesNothingWithoutAccountCredentials() {
         assertEquals(List.of(), KlapConnection.candidates(new TPLinkCredentials("", "")));
+    }
+
+    @Test
+    public void testRecognizesResponseOfSmartProtocol() {
+        assertTrue(KlapConnection.isSmartProtocolResponse("{\"error_code\":-1010}"));
+    }
+
+    @Test
+    public void testKasaResponseIsNotSmartProtocol() throws Exception {
+        assertFalse(KlapConnection.isSmartProtocolResponse(ModelTestUtil.readJson("plug_get_sysinfo_response")));
+        assertFalse(KlapConnection.isSmartProtocolResponse("not json"));
     }
 }

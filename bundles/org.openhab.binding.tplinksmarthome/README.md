@@ -357,6 +357,11 @@ Devices can be auto discovered in the same local network as the openHAB applicat
 It is possible to connect to devices on a different network, but these must be added manually by `ipAddress`.
 It is not possible to connect to devices on a different network using `deviceId` as configuration.
 
+Devices on [secured firmware](#devices-with-secured-firmware) are discovered too, on UDP port 20002.
+Their Inbox entry is labeled with the model and "(secured firmware)", and has the device's `ipAddress`.
+If there is exactly one `tplinkbridge:account` Thing, the entry also has that `account`; otherwise set it after adding the Thing.
+The device id is filled in once the Thing is online.
+
 ## Thing Configuration
 
 The thingId is the product type in lower case. For example `HS100` has thingId `hs100`.
@@ -399,7 +404,11 @@ The binding tries the account password first, then the key the Kasa app stores o
 It supports both versions of KLAP that Kasa firmware uses.
 If the device accepts none of them, or the account Thing doesn't exist or isn't ONLINE, the Thing goes OFFLINE with a configuration error.
 After the device rejected the credentials, the binding logs in again only once per refresh interval.
-Set the `ipAddress` of such a device, because discovery doesn't find devices with secured firmware.
+Give such a device a fixed IP address in your router, or keep discovery running so the Thing follows the device to a new address.
+
+Newer hardware revisions of some Kasa models, such as the EP25 hardware 2.6, HS200 hardware 5.26 and HS220 hardware 3.26, no longer speak the Kasa protocol over KLAP but TP-Link's newer SMART protocol, which this binding doesn't support.
+Discovery leaves them out, and a Thing for such a device goes OFFLINE with a configuration error that says so.
+The [Tapo Control Binding](https://www.openhab.org/addons/bindings/tapocontrol/) speaks the SMART protocol and may support them.
 
 ```java
 Bridge tplinkbridge:account:home "TP-Link Account" [ username="user@example.com", password="secret" ]

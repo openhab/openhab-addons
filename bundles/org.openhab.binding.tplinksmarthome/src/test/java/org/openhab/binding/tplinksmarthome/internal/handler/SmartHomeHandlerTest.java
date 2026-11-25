@@ -45,6 +45,7 @@ import org.openhab.binding.tplinksmarthome.internal.TPLinkSmartHomeConfiguration
 import org.openhab.binding.tplinksmarthome.internal.TPLinkSmartHomeDiscoveryService;
 import org.openhab.binding.tplinksmarthome.internal.TPLinkSmartHomeThingType;
 import org.openhab.binding.tplinksmarthome.internal.TPLinkStateDescriptionProvider;
+import org.openhab.binding.tplinksmarthome.internal.UnsupportedProtocolException;
 import org.openhab.binding.tplinksmarthome.internal.device.SmartHomeDevice;
 import org.openhab.binding.tplinksmarthome.internal.model.ModelTestUtil;
 import org.openhab.core.config.core.Configuration;
@@ -272,6 +273,18 @@ public class SmartHomeHandlerTest {
         assertEquals(ThingStatusDetail.CONFIGURATION_ERROR, statusInfoCaptor.getValue().getStatusDetail());
         assertEquals("The TP-Link account 'tplinkbridge:account:home' doesn't exist or isn't ONLINE.",
                 statusInfoCaptor.getValue().getDescription());
+    }
+
+    @Test
+    public void testSmartProtocolReportsConfigurationErrorWithoutRetries() throws IOException {
+        when(connection.sendCommand(Commands.getSysinfo()))
+                .thenThrow(new UnsupportedProtocolException("The device uses TP-Link's newer SMART protocol"));
+        handler.initialize();
+
+        handler.handleCommand(ChannelUIDConstants.CHANNEL_UID_RSSI, RefreshType.REFRESH);
+
+        verify(connection, times(1)).sendCommand(Commands.getSysinfo());
+        assertLastStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
     }
 
     @Test

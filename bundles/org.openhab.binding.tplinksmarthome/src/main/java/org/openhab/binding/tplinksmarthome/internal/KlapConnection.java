@@ -28,6 +28,10 @@ import org.openhab.binding.tplinkbridge.klap.KlapTransport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonParser;
+
 /**
  * Connection that sends the Kasa JSON commands over KLAP instead of the legacy XOR protocol on port 9999. Kasa
  * firmware that secures the local protocol only accepts this.
@@ -92,7 +96,24 @@ public class KlapConnection extends Connection {
         logger.trace("Executing command over KLAP: {}", command);
         String response = transport.exchange(command);
         logger.trace("Command response: {}", response);
+        if (isSmartProtocolResponse(response)) {
+            throw new UnsupportedProtocolException(
+                    "The device uses TP-Link's newer SMART protocol, which this binding doesn't support. Newer hardware revisions of some Kasa models use it; the Tapo Control binding may support the device.");
+        }
         return response;
+    }
+
+    /**
+     * Kasa JSON responses are keyed by module, such as {@code system}, with an {@code err_code} inside each module.
+     * Devices on the SMART protocol answer a Kasa command with a top-level {@code error_code} instead.
+     */
+    static boolean isSmartProtocolResponse(String response) {
+        try {
+            JsonElement json = JsonParser.parseString(response);
+            return json.isJsonObject() && json.getAsJsonObject().has("error_code");
+        } catch (JsonParseException e) {
+            return false;
+        }
     }
 
     @Override
