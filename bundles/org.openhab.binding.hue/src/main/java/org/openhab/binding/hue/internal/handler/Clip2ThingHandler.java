@@ -1624,8 +1624,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 serviceContributorsCache.values().stream()
                         .filter(r -> r.getType() == ResourceType.ZIGBEE_CONNECTIVITY
                                 || r.getType() == ResourceType.ZGP_CONNECTIVITY)
-                        .filter(r -> Objects.nonNull(r.getZigbeeStatus())).findFirst()
-                        .ifPresent(this::updateConnectivityState);
+                        .findFirst().ifPresent(this::updateConnectivityState);
                 if (!hasConnectivityIssue) {
                     updateStatus(ThingStatus.ONLINE);
                 }
@@ -1638,9 +1637,6 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.api2.conf-error.assets-not-loaded");
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
-            } catch (RuntimeException e) {
-                logger.warn("{} -> updateDependencies() {}", resourceId, e.getMessage(), e);
-                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR);
             }
         }
     }
