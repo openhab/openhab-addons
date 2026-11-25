@@ -12,13 +12,13 @@
  */
 package org.openhab.binding.lametrictime.internal.api.common.impl;
 
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 import com.google.gson.Gson;
+
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.ClientBuilder;
 
 /**
  * Abstract class for clients.

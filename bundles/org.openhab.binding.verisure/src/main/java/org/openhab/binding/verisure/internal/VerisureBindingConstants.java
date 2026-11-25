@@ -105,6 +105,9 @@ public class VerisureBindingConstants {
     public static final String CHANNEL_DOOR_WINDOW_TRIGGER_CHANNEL = "doorWindowTriggerChannel";
     public static final String CHANNEL_GATEWAY_TRIGGER_CHANNEL = "gatewayTriggerChannel";
     public static final String CHANNEL_BATTERY_STATUS = "lowBattery";
+    public static final String CHANNEL_BATTERY_LEVEL = "batteryLevel";
+    public static final String CHANNEL_SYSTEM_HEALTH = "systemHealth";
+    public static final String CHANNEL_SYSTEM_HEALTH_ALERTS = "systemHealthAlerts";
 
     // Trigger channel events
     public static final String TRIGGER_EVENT_LOCK = "LOCK";
@@ -136,8 +139,6 @@ public class VerisureBindingConstants {
     public static final String ALARM_COMMAND = BASE_URL + "/remotecontrol/armstatechange.cmd";
     public static final String SMARTLOCK_LOCK_COMMAND = BASE_URL + "/remotecontrol/lockunlock.cmd";
     public static final String SMARTLOCK_SET_COMMAND = BASE_URL + "/overview/setdoorlock.cmd";
-    public static final String SMARTLOCK_AUTORELOCK_COMMAND = BASE_URL + "/settings/setautorelock.cmd";
-    public static final String SMARTLOCK_VOLUME_COMMAND = BASE_URL + "/settings/setvolume.cmd";
 
     public static final String SMARTPLUG_COMMAND = BASE_URL + "/settings/smartplug/onoffplug.cmd";
     public static final String START_REDIRECT = "/se/start.html";
@@ -151,11 +152,11 @@ public class VerisureBindingConstants {
     public static final String SET_INSTALLATION = BASE_URL + "/setinstallation?giid=";
     public static final String BASEURL_API = "https://m-api02.verisure.com";
     public static final String START_GRAPHQL = "/graphql";
+    public static final String START_GRAPHQL_MYPAGES = "/graphql/mypages";
     public static final String AUTH_TOKEN = "/auth/token";
     public static final String AUTH_LOGIN = "/auth/login";
 
     public static final String ALARMSTATUS_PATH = "/remotecontrol";
-    public static final String SMARTLOCK_PATH = "/overview/doorlock/";
     public static final String DOORWINDOW_PATH = "/settings/doorwindow";
     public static final String USERTRACKING_PATH = "/overview/usertrackingcontacts";
     public static final String CLIMATEDEVICE_PATH = "/overview/climatedevice";
@@ -165,5 +166,4 @@ public class VerisureBindingConstants {
     public static final String TEMPERATURE_CONTROL_PATH = "/overview/temperaturecontrol";
     public static final String MOUSEDETECTION_PATH = "/overview/mousedetection";
     public static final String CAMERA_PATH = "/overview/camera";
-    public static final String BATTERY_STATUS = "/batterywizard/choose/device?_";
 }

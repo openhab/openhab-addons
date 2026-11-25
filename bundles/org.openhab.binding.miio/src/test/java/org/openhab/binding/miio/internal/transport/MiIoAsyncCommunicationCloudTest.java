@@ -54,8 +54,14 @@ public class MiIoAsyncCommunicationCloudTest {
 
     @BeforeEach
     public void setUp() {
-        communication = new MiIoAsyncCommunication("127.0.0.1", new byte[16], DEVICE_ID, 1, 1000, cloudConnector);
+        communication = createCommunication(true);
+    }
+
+    private MiIoAsyncCommunication createCommunication(boolean cloudCommunication) {
+        MiIoAsyncCommunication communication = new MiIoAsyncCommunication("127.0.0.1", new byte[16], DEVICE_ID, 1, 1000,
+                cloudConnector, cloudCommunication);
         communication.getListeners().add(listener);
+        return communication;
     }
 
     private MiIoSendCommand command(String method) {
@@ -135,5 +141,38 @@ public class MiIoAsyncCommunicationCloudTest {
         assertTrue(result.isError());
         verify(listener).onStatusUpdated(ThingStatusDetail.COMMUNICATION_ERROR);
         verifyNoMoreInteractions(listener);
+    }
+
+    @Test
+    public void successfulCloudRpcCommandForDirectDeviceDoesNotChangeStatus() throws MiCloudException {
+        when(cloudConnector.sendRPCCommand(anyString(), anyString(), any(MiIoSendCommand.class)))
+                .thenReturn("{\"id\":1,\"result\":[]}");
+
+        MiIoSendCommand result = createCommunication(false).sendMiIoSendCommand(command("get_prop"));
+
+        assertFalse(result.isError());
+        verifyNoInteractions(listener);
+    }
+
+    @Test
+    public void failingCloudRpcCommandForDirectDeviceDoesNotChangeStatus() throws MiCloudException {
+        when(cloudConnector.sendRPCCommand(anyString(), anyString(), any(MiIoSendCommand.class)))
+                .thenThrow(new MiCloudException("Cannot execute request. Cloud service not available"));
+
+        MiIoSendCommand result = createCommunication(false).sendMiIoSendCommand(command("get_prop"));
+
+        assertTrue(result.isError());
+        verifyNoInteractions(listener);
+    }
+
+    @Test
+    public void failingCustomCloudRequestForDirectDeviceDoesNotChangeStatus() throws MiCloudException {
+        when(cloudConnector.sendCloudCommand(anyString(), anyString(), anyString()))
+                .thenThrow(new MiCloudException("Cannot execute request. Cloud service not available"));
+
+        MiIoSendCommand result = createCommunication(false).sendMiIoSendCommand(command("/v2/recipes/query"));
+
+        assertTrue(result.isError());
+        verifyNoInteractions(listener);
     }
 }

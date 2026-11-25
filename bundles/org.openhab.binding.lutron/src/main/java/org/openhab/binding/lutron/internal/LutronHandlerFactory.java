@@ -55,6 +55,7 @@ import org.openhab.binding.lutron.internal.handler.VirtualKeypadHandler;
 import org.openhab.binding.lutron.internal.handler.WciHandler;
 import org.openhab.binding.lutron.internal.hw.HwConstants;
 import org.openhab.binding.lutron.internal.hw.HwDimmerHandler;
+import org.openhab.binding.lutron.internal.hw.HwKeypadHandler;
 import org.openhab.binding.lutron.internal.hw.HwSerialBridgeHandler;
 import org.openhab.binding.lutron.internal.hw.HwTelnetBridgeHandler;
 import org.openhab.binding.lutron.internal.radiora.RadioRAConstants;
@@ -101,7 +102,7 @@ public class LutronHandlerFactory extends BaseThingHandlerFactory {
 
     // Used by the HwDiscoveryService
     public static final Set<ThingTypeUID> HW_DISCOVERABLE_DEVICE_TYPES_UIDS = Collections
-            .unmodifiableSet(Set.of(HwConstants.THING_TYPE_HWDIMMER));
+            .unmodifiableSet(Set.of(HwConstants.THING_TYPE_HWDIMMER, HwConstants.THING_TYPE_HWKEYPAD));
 
     // Other types that can be initiated but not discovered
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
@@ -208,6 +209,8 @@ public class LutronHandlerFactory extends BaseThingHandlerFactory {
             return new HwTelnetBridgeHandler((Bridge) thing);
         } else if (thingTypeUID.equals(HwConstants.THING_TYPE_HWDIMMER)) {
             return new HwDimmerHandler(thing);
+        } else if (thingTypeUID.equals(HwConstants.THING_TYPE_HWKEYPAD)) {
+            return new HwKeypadHandler(thing);
         }
 
         return null;

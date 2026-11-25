@@ -9,8 +9,8 @@
 		<label>3D</label>
 		<description>Change the 3D mode, if your TV supports it</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>MediaControl</tag>
+			<point>Control</point>
+			<property>MediaControl</property>
 		</tags>
 	</channel-type>
 
@@ -19,8 +19,8 @@
 		<label>3D Extended</label>
 		<description>Change the 3D option, if your TV supports it</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>MediaControl</tag>
+			<point>Control</point>
+			<property>MediaControl</property>
 		</tags>
 	</channel-type>
 
@@ -60,8 +60,8 @@
 		<label>Auto Sleep</label>
 		<description>Set Auto Sleep</description>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
+			<point>Switch</point>
+			<property>Mode</property>
 		</tags>
 	</channel-type>
 
@@ -70,8 +70,8 @@
 		<label>Auto Volume</label>
 		<description>Automatically adjust the volume level</description>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
+			<point>Switch</point>
+			<property>Mode</property>
 		</tags>
 	</channel-type>
 
@@ -80,8 +80,8 @@
 		<label>Backlight</label>
 		<description>Display backlight brightness</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Brightness</tag>
+			<point>Control</point>
+			<property>Brightness</property>
 		</tags>
 	</channel-type>
 
@@ -102,8 +102,8 @@
 		<label>Brightness</label>
 		<description>Adjust screen brightness</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Brightness</tag>
+			<point>Control</point>
+			<property>Brightness</property>
 		</tags>
 	</channel-type>
 
@@ -118,8 +118,8 @@
 		<label>Color</label>
 		<description>Adjust screen color</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Color</tag>
+			<point>Control</point>
+			<property>Color</property>
 		</tags>
 	</channel-type>
 
@@ -128,8 +128,8 @@
 		<label>Color Temperature</label>
 		<description>Color temperature of the display</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>ColorTemperature</tag>
+			<point>Status</point>
+			<property>ColorTemperature</property>
 		</tags>
 		<state>
 			<options>
@@ -145,8 +145,8 @@
 		<label>Color Temperature</label>
 		<description>Color temperature of the display (between 0 and 100)</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>ColorTemperature</tag>
+			<point>Control</point>
+			<property>ColorTemperature</property>
 		</tags>
 	</channel-type>
 
@@ -155,8 +155,8 @@
 		<label>DPM Select</label>
 		<description>Set the DPM (Display Power Management) function</description>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Power</tag>
+			<point>Switch</point>
+			<property>Power</property>
 		</tags>
 	</channel-type>
 
@@ -187,7 +187,7 @@
 		<label>Fan Fault</label>
 		<description>Check the fan fault of the TV</description>
 		<tags>
-			<tag>Status</tag>
+			<point>Status</point>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -203,8 +203,8 @@
 		<label>H Position</label>
 		<description>Set the horizontal position</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Position</tag>
+			<point>Control</point>
+			<property>Position</property>
 		</tags>
 	</channel-type>
 
@@ -338,8 +338,8 @@
 		<label>Lamp Fault</label>
 		<description>Check the lamp fault of the TV</description>
 		<tags>
-			<tag>Alarm</tag>
-			<tag>Light</tag>
+			<point>Alarm</point>
+			<property>Light</property>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -354,8 +354,8 @@
 		<label>Natural Mode</label>
 		<description>To assign the Tile Natural mode for Tiling function</description>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
+			<point>Switch</point>
+			<property>Mode</property>
 		</tags>
 	</channel-type>
 
@@ -390,8 +390,8 @@
 		<label>Picture Mode</label>
 		<description>To adjust picture mode</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Mode</tag>
+			<point>Control</point>
+			<property>Mode</property>
 		</tags>
 		<state>
 			<options>
@@ -411,8 +411,8 @@
 		<label>Power</label>
 		<description>Power on/off</description>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Power</tag>
+			<point>Switch</point>
+			<property>Power</property>
 		</tags>
 	</channel-type>
 
@@ -421,8 +421,8 @@
 		<label>Power Indicator</label>
 		<description>To set the LED for Power Indicator</description>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Light</tag>
+			<point>Switch</point>
+			<property>Light</property>
 		</tags>
 	</channel-type>
 
@@ -431,8 +431,8 @@
 		<label>Power Saving</label>
 		<description>Set the Power saving mode</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Power</tag>
+			<point>Control</point>
+			<property>Power</property>
 		</tags>
 		<state>
 			<options>
@@ -455,8 +455,8 @@
 		<label>Screen Mute</label>
 		<description>Select screen mute on/off</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Mode</tag>
+			<point>Control</point>
+			<property>Mode</property>
 		</tags>
 		<state>
 			<options>
@@ -506,8 +506,8 @@
 		<label>Sound Mode</label>
 		<description>To adjust sound mode</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Mode</tag>
+			<point>Control</point>
+			<property>Mode</property>
 		</tags>
 		<state>
 			<options>
@@ -534,8 +534,8 @@
 		<label>Speaker</label>
 		<description>Turn the speaker on or off</description>
 		<tags>
-			<tag>Switch</tag>
-			<tag>SoundVolume</tag>
+			<point>Switch</point>
+			<property>SoundVolume</property>
 		</tags>
 	</channel-type>
 
@@ -545,8 +545,8 @@
 		<label>Temperature Value</label>
 		<description>Read the inside temperature value</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -593,8 +593,8 @@
 		<label>Horizontal Position</label>
 		<description>Set the horizontal position</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Position</tag>
+			<point>Control</point>
+			<property>Position</property>
 		</tags>
 	</channel-type>
 
@@ -617,8 +617,8 @@
 		<label>Vertical Position</label>
 		<description>Set the vertical position</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Position</tag>
+			<point>Control</point>
+			<property>Position</property>
 		</tags>
 	</channel-type>
 
@@ -645,8 +645,8 @@
 		<label>V Position</label>
 		<description>Set the vertical position</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Position</tag>
+			<point>Control</point>
+			<property>Position</property>
 		</tags>
 	</channel-type>
 
@@ -656,8 +656,8 @@
 		<description>Volume control (%)</description>
 		<category>SoundVolume</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>SoundVolume</tag>
+			<point>Control</point>
+			<property>SoundVolume</property>
 		</tags>
 	</channel-type>
 
@@ -667,8 +667,8 @@
 		<description>Mute on/off</description>
 		<category>Mute</category>
 		<tags>
-			<tag>Switch</tag>
-			<tag>SoundVolume</tag>
+			<point>Switch</point>
+			<property>SoundVolume</property>
 		</tags>
 	</channel-type>
 

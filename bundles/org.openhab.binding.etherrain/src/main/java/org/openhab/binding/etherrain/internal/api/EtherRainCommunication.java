@@ -31,8 +31,8 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
 import org.openhab.binding.etherrain.internal.EtherRainException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

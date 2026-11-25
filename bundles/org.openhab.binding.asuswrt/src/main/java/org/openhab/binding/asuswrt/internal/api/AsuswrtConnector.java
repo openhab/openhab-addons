@@ -33,7 +33,7 @@ import javax.net.ssl.SSLKeyException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.api.ContentResponse;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.asuswrt.internal.structures.AsuswrtConfiguration;
 import org.openhab.binding.asuswrt.internal.structures.AsuswrtCredentials;

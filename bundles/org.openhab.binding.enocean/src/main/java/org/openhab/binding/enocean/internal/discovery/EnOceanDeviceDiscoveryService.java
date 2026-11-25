@@ -185,7 +185,7 @@ public class EnOceanDeviceDiscoveryService extends AbstractDiscoveryService impl
         Integer offset = bridgeHandler.getNextSenderId(enoceanId);
         if (offset != null) {
             byte[] newSenderId = bridgeHandler.getBaseId();
-            newSenderId[3] += offset;
+            newSenderId[3] = (byte) (newSenderId[3] + offset);
 
             // send response
             EEP response = EEPFactory.buildResponseEEPFromTeachInERP1(msg, newSenderId, true);

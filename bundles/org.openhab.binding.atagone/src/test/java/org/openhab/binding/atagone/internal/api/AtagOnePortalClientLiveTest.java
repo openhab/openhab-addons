@@ -62,7 +62,7 @@ class AtagOnePortalClientLiveTest {
         String password = credentials.getProperty("password", "").trim();
         assertFalse(email.isEmpty() || password.isEmpty(), "email= and password= must both be filled in");
 
-        HttpClient portalHttp = new HttpClient(new org.eclipse.jetty.util.ssl.SslContextFactory.Client());
+        HttpClient portalHttp = new HttpClient();
         portalHttp.start();
         RetrieveReplyDTO remote;
         try {

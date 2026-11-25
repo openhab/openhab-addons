@@ -28,7 +28,6 @@ import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.OnOffType;
-import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StopMoveType;
@@ -495,22 +494,6 @@ public final class CommandMapper {
             double invertedPercent = (100.0 - percent.doubleValue()) / 100.0;
             double scaled = min + invertedPercent * (max - min);
             return Optional.of(new ServiceCall(domain, service, entityId, Map.of(paramKey, scaled)));
-        }
-        return Optional.empty();
-    }
-
-    /**
-     * Maps {@link OpenClosedType} commands to domain {@code open_cover} or {@code close_cover} services.
-     *
-     * @param command the incoming openHAB command
-     * @param domain the target Home Assistant domain
-     * @param entityId the target entity ID
-     * @return an {@link Optional} containing the service call if matched, otherwise empty
-     */
-    public static Optional<ServiceCall> onOpenClosed(Command command, String domain, String entityId) {
-        if (command instanceof OpenClosedType openClosed) {
-            String service = openClosed == OpenClosedType.OPEN ? "open_cover" : "close_cover";
-            return Optional.of(new ServiceCall(domain, service, entityId));
         }
         return Optional.empty();
     }

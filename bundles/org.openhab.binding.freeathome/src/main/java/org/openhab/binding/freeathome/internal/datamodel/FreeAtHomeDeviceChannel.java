@@ -267,7 +267,7 @@ public class FreeAtHomeDeviceChannel {
                 logger.debug("Door ring sensor channel - Channel FID: 0x{}", channelFunctionID);
 
                 FreeAtHomeDatapointGroup newDatapointGroup = new FreeAtHomeDatapointGroup();
-                newDatapointGroup.addDatapointToGroup(DatapointDirection.OUTPUT, 2, channelId, channelObject);
+                newDatapointGroup.addEventOutputToGroup(2, channelId, channelObject);
 
                 addDatapointGroup(newDatapointGroup);
 

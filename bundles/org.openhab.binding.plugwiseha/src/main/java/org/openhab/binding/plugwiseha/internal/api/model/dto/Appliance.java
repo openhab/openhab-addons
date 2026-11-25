@@ -103,155 +103,155 @@ public class Appliance extends PlugwiseBaseModel implements PlugwiseComparableDa
     }
 
     public Optional<Double> getTemperature() {
-        return this.pointLogs.getTemperature();
+        return getPointLogs().getTemperature();
     }
 
     public Optional<String> getTemperatureUnit() {
-        return this.pointLogs.getTemperatureUnit();
+        return getPointLogs().getTemperatureUnit();
     }
 
     public Optional<Double> getSetpointTemperature() {
-        return this.pointLogs.getThermostatTemperature();
+        return getPointLogs().getThermostatTemperature();
     }
 
     public Optional<String> getSetpointTemperatureUnit() {
-        return this.pointLogs.getThermostatTemperatureUnit();
+        return getPointLogs().getThermostatTemperatureUnit();
     }
 
     public Optional<Double> getOffsetTemperature() {
-        return this.pointLogs.getOffsetTemperature();
+        return getPointLogs().getOffsetTemperature();
     }
 
     public Optional<String> getOffsetTemperatureUnit() {
-        return this.pointLogs.getOffsetTemperatureUnit();
+        return getPointLogs().getOffsetTemperatureUnit();
     }
 
     public Optional<Boolean> getRelayState() {
-        return this.pointLogs.getRelayState();
+        return getPointLogs().getRelayState();
     }
 
     public Optional<Boolean> getRelayLockState() {
-        return this.actuatorFunctionalities.getRelayLockState();
+        return getActuatorFunctionalities().getRelayLockState();
     }
 
     public Optional<Double> getBatteryLevel() {
-        return this.pointLogs.getBatteryLevel();
+        return getPointLogs().getBatteryLevel();
     }
 
     public Optional<Double> getPowerUsage() {
-        return this.pointLogs.getPowerUsage();
+        return getPointLogs().getPowerUsage();
     }
 
     public Optional<Double> getValvePosition() {
-        return this.pointLogs.getValvePosition();
+        return getPointLogs().getValvePosition();
     }
 
     public Optional<Double> getWaterPressure() {
-        return this.pointLogs.getWaterPressure();
+        return getPointLogs().getWaterPressure();
     }
 
     public Optional<Boolean> getCHState() {
-        return this.pointLogs.getCHState();
+        return getPointLogs().getCHState();
     }
 
     public Optional<Boolean> getCoolingState() {
-        return this.pointLogs.getCoolingState();
+        return getPointLogs().getCoolingState();
     }
 
     public Optional<Double> getIntendedBoilerTemp() {
-        return this.pointLogs.getIntendedBoilerTemp();
+        return getPointLogs().getIntendedBoilerTemp();
     }
 
     public Optional<String> getIntendedBoilerTempUnit() {
-        return this.pointLogs.getIntendedBoilerTempUnit();
+        return getPointLogs().getIntendedBoilerTempUnit();
     }
 
     public Optional<Double> getReturnWaterTemp() {
-        return this.pointLogs.getReturnWaterTemp();
+        return getPointLogs().getReturnWaterTemp();
     }
 
     public Optional<String> getReturnWaterTempUnit() {
-        return this.pointLogs.getReturnWaterTempUnit();
+        return getPointLogs().getReturnWaterTempUnit();
     }
 
     public Optional<Boolean> getFlameState() {
-        return this.pointLogs.getFlameState();
+        return getPointLogs().getFlameState();
     }
 
     public Optional<Double> getBurnerFailedStarts() {
-        return this.cumulativeLogs.getBurnerFailedStarts();
+        return getCumulativeLogs().getBurnerFailedStarts();
     }
 
     public Optional<Double> getBurnerStarts() {
-        return this.cumulativeLogs.getBurnerStarts();
+        return getCumulativeLogs().getBurnerStarts();
     }
 
     public Optional<Double> getBurnerOpTime() {
-        return this.cumulativeLogs.getBurnerOpTime();
+        return getCumulativeLogs().getBurnerOpTime();
     }
 
     public Optional<Double> getBurnerDHWOPTime() {
-        return this.cumulativeLogs.getBurnerDHWOPTime();
+        return getCumulativeLogs().getBurnerDHWOPTime();
     }
 
     public Optional<Double> getBurnerFailedIgnitions() {
-        return this.cumulativeLogs.getBurnerFailedIgnitions();
+        return getCumulativeLogs().getBurnerFailedIgnitions();
     }
 
     public Optional<Boolean> getIntendedHeatingState() {
-        return this.pointLogs.getIntendedHeatingState();
+        return getPointLogs().getIntendedHeatingState();
     }
 
     public Optional<Double> getModulationLevel() {
-        return this.pointLogs.getModulationLevel();
+        return getPointLogs().getModulationLevel();
     }
 
     public Optional<Double> getOTAppFaultCode() {
-        return this.pointLogs.getOTAppFaultCode();
+        return getPointLogs().getOTAppFaultCode();
     }
 
     public Optional<Double> getDHWTemp() {
-        return this.pointLogs.getDHWTemp();
+        return getPointLogs().getDHWTemp();
     }
 
     public Optional<String> getDHWTempUnit() {
-        return this.pointLogs.getDHWTempUnit();
+        return getPointLogs().getDHWTempUnit();
     }
 
     public Optional<Double> getOTOEMFaultcode() {
-        return this.pointLogs.getOTOEMFaultcode();
+        return getPointLogs().getOTOEMFaultcode();
     }
 
     public Optional<Double> getBoilerTemp() {
-        return this.pointLogs.getBoilerTemp();
+        return getPointLogs().getBoilerTemp();
     }
 
     public Optional<String> getBoilerTempUnit() {
-        return this.pointLogs.getBoilerTempUnit();
+        return getPointLogs().getBoilerTempUnit();
     }
 
     public Optional<Double> getDHTSetpoint() {
-        return this.pointLogs.getDHTSetpoint();
+        return getPointLogs().getDHTSetpoint();
     }
 
     public Optional<String> getDHTSetpointUnit() {
-        return this.pointLogs.getDHTSetpointUnit();
+        return getPointLogs().getDHTSetpointUnit();
     }
 
     public Optional<Double> getMaxBoilerTemp() {
-        return this.pointLogs.getMaxBoilerTemp();
+        return getPointLogs().getMaxBoilerTemp();
     }
 
     public Optional<String> getMaxBoilerTempUnit() {
-        return this.pointLogs.getMaxBoilerTempUnit();
+        return getPointLogs().getMaxBoilerTempUnit();
     }
 
     public Optional<Boolean> getDHWComfortMode() {
-        return this.pointLogs.getDHWComfortMode();
+        return getPointLogs().getDHWComfortMode();
     }
 
     public Optional<Boolean> getDHWState() {
-        return this.pointLogs.getDHWState();
+        return getPointLogs().getDHWState();
     }
 
     public boolean isZigbeeDevice() {

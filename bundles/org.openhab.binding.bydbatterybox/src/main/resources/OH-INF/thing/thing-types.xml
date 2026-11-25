@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="bydbatterybox"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="hv-premium">
+		<label>BYD Battery-Box Premium</label>
+		<description>BYD Battery-Box Premium HVS/HVM, read over its local network interface. Only the tower and module channel
+			groups the battery reports are kept.</description>
+		<semantic-equipment-tag>Battery</semantic-equipment-tag>
+
+		<channel-groups>
+			<channel-group id="status" typeId="status"/>
+			<channel-group id="tower-1" typeId="tower">
+				<label>Tower 1</label>
+			</channel-group>
+			<channel-group id="tower-1-module-1" typeId="module">
+				<label>Tower 1 Module 1</label>
+			</channel-group>
+			<channel-group id="tower-1-module-2" typeId="module">
+				<label>Tower 1 Module 2</label>
+			</channel-group>
+			<channel-group id="tower-1-module-3" typeId="module">
+				<label>Tower 1 Module 3</label>
+			</channel-group>
+			<channel-group id="tower-1-module-4" typeId="module">
+				<label>Tower 1 Module 4</label>
+			</channel-group>
+			<channel-group id="tower-1-module-5" typeId="module">
+				<label>Tower 1 Module 5</label>
+			</channel-group>
+			<channel-group id="tower-1-module-6" typeId="module">
+				<label>Tower 1 Module 6</label>
+			</channel-group>
+			<channel-group id="tower-1-module-7" typeId="module">
+				<label>Tower 1 Module 7</label>
+			</channel-group>
+			<channel-group id="tower-1-module-8" typeId="module">
+				<label>Tower 1 Module 8</label>
+			</channel-group>
+			<channel-group id="tower-2" typeId="tower">
+				<label>Tower 2</label>
+			</channel-group>
+			<channel-group id="tower-2-module-1" typeId="module">
+				<label>Tower 2 Module 1</label>
+			</channel-group>
+			<channel-group id="tower-2-module-2" typeId="module">
+				<label>Tower 2 Module 2</label>
+			</channel-group>
+			<channel-group id="tower-2-module-3" typeId="module">
+				<label>Tower 2 Module 3</label>
+			</channel-group>
+			<channel-group id="tower-2-module-4" typeId="module">
+				<label>Tower 2 Module 4</label>
+			</channel-group>
+			<channel-group id="tower-2-module-5" typeId="module">
+				<label>Tower 2 Module 5</label>
+			</channel-group>
+			<channel-group id="tower-2-module-6" typeId="module">
+				<label>Tower 2 Module 6</label>
+			</channel-group>
+			<channel-group id="tower-2-module-7" typeId="module">
+				<label>Tower 2 Module 7</label>
+			</channel-group>
+			<channel-group id="tower-2-module-8" typeId="module">
+				<label>Tower 2 Module 8</label>
+			</channel-group>
+			<channel-group id="tower-3" typeId="tower">
+				<label>Tower 3</label>
+			</channel-group>
+			<channel-group id="tower-3-module-1" typeId="module">
+				<label>Tower 3 Module 1</label>
+			</channel-group>
+			<channel-group id="tower-3-module-2" typeId="module">
+				<label>Tower 3 Module 2</label>
+			</channel-group>
+			<channel-group id="tower-3-module-3" typeId="module">
+				<label>Tower 3 Module 3</label>
+			</channel-group>
+			<channel-group id="tower-3-module-4" typeId="module">
+				<label>Tower 3 Module 4</label>
+			</channel-group>
+			<channel-group id="tower-3-module-5" typeId="module">
+				<label>Tower 3 Module 5</label>
+			</channel-group>
+			<channel-group id="tower-3-module-6" typeId="module">
+				<label>Tower 3 Module 6</label>
+			</channel-group>
+			<channel-group id="tower-3-module-7" typeId="module">
+				<label>Tower 3 Module 7</label>
+			</channel-group>
+			<channel-group id="tower-3-module-8" typeId="module">
+				<label>Tower 3 Module 8</label>
+			</channel-group>
+			<channel-group id="events" typeId="events"/>
+			<channel-group id="diagnostics" typeId="diagnostics"/>
+		</channel-groups>
+
+		<properties>
+			<property name="vendor">BYD</property>
+		</properties>
+
+		<representation-property>serialNumber</representation-property>
+
+		<config-description>
+			<parameter name="hostname" type="text" required="true">
+				<context>network-address</context>
+				<label>Hostname</label>
+				<description>Hostname or IP address of the battery, or of the forwarding host.</description>
+			</parameter>
+			<parameter name="port" type="integer" min="1" max="65535">
+				<label>Port</label>
+				<description>Port of the battery.</description>
+				<default>8080</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="refreshInterval" type="integer" unit="s" min="30">
+				<label>Refresh Interval</label>
+				<description>Seconds between two status readings.</description>
+				<default>60</default>
+			</parameter>
+			<parameter name="detailInterval" type="integer" unit="s" min="0">
+				<label>Cell Detail Interval</label>
+				<description>Seconds between two measurements of the cell voltages and temperatures. 0 turns them off. Rounded up to
+					a multiple of the refresh interval.</description>
+				<default>600</default>
+			</parameter>
+			<parameter name="eventLogInterval" type="integer" unit="s" min="0">
+				<label>Event Log Interval</label>
+				<description>Seconds between two readings of the event logs, at least 150. 0 turns them off. Rounded up to a
+					multiple of the refresh interval.</description>
+				<default>600</default>
+			</parameter>
+			<parameter name="readExtendedCells" type="boolean">
+				<label>Read Cells 129-160</label>
+				<description>Also reads cells 129-160 of towers with 5 modules, using a second measurement of about 3 seconds per
+					tower. Without it, these cells are reported as undefined.</description>
+				<default>false</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="connectionTimeout" type="integer" unit="s" min="1" max="30">
+				<label>Connection Timeout</label>
+				<description>Seconds to wait for the battery to connect and to answer.</description>
+				<default>5</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+</thing:thing-descriptions>

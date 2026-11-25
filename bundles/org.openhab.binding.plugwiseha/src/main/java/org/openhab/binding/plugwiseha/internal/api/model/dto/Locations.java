@@ -36,7 +36,9 @@ public class Locations extends PlugwiseHACollection<Location> {
                     originalLocationIsOlder = originalLocation.isOlderThan(location);
                 }
 
-                if (originalLocation != null && originalLocationIsOlder) {
+                if (originalLocation == null) {
+                    this.put(id, location);
+                } else if (originalLocationIsOlder) {
                     PointLogs updatedPointLogs = location.getPointLogs();
                     if (updatedPointLogs != null) {
                         updatedPointLogs.merge(originalLocation.getPointLogs());

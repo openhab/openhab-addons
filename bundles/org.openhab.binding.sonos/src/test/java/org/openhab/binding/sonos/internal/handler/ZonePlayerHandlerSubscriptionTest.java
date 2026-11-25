@@ -15,6 +15,7 @@ package org.openhab.binding.sonos.internal.handler;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
@@ -50,6 +51,7 @@ import org.openhab.core.thing.binding.builder.ThingBuilder;
  * Tests which event subscriptions a player sets up.
  *
  * @author Martin Littkovsky - Initial contribution
+ * @author Leo Siepel - Subscription recovery tests
  */
 @ExtendWith(MockitoExtension.class)
 @NonNullByDefault
@@ -113,6 +115,40 @@ public class ZonePlayerHandlerSubscriptionTest {
         surround.onValueReceived("ZoneGroupState", STANDALONE_SURROUND, TOPOLOGY);
 
         verify(upnpIOService, timeout(5000)).addSubscription(surround, RENDERING_CONTROL,
+                ZonePlayerHandler.SUBSCRIPTION_DURATION);
+    }
+
+    @Test
+    public void playerResubscribesAfterDisappearingBetweenPolls() {
+        registered.set(true);
+        verify(upnpIOService, timeout(5000)).addSubscription(surround, LAST_SUBSCRIBED_SERVICE,
+                ZonePlayerHandler.SUBSCRIPTION_DURATION);
+        doAnswer(invocation -> {
+            surround.getThing().setStatusInfo(invocation.getArgument(1));
+            return null;
+        }).when(callback).statusUpdated(any(), any());
+
+        // No poll observes the device missing from the UPnP registry.
+        surround.onStatusChanged(false);
+        surround.onStatusChanged(true);
+
+        verify(upnpIOService, timeout(5000).times(2)).addSubscription(surround, "AVTransport",
+                ZonePlayerHandler.SUBSCRIPTION_DURATION);
+        verify(upnpIOService, timeout(5000).times(2)).addSubscription(surround, LAST_SUBSCRIBED_SERVICE,
+                ZonePlayerHandler.SUBSCRIPTION_DURATION);
+    }
+
+    @Test
+    public void failedSubscriptionIsRetriedWithoutReplacingOtherSubscriptions() {
+        registered.set(true);
+        verify(upnpIOService, timeout(5000)).addSubscription(surround, LAST_SUBSCRIBED_SERVICE,
+                ZonePlayerHandler.SUBSCRIPTION_DURATION);
+
+        surround.onServiceSubscribed("AVTransport", false);
+
+        verify(upnpIOService, timeout(5000).times(2)).addSubscription(surround, "AVTransport",
+                ZonePlayerHandler.SUBSCRIPTION_DURATION);
+        verify(upnpIOService).addSubscription(surround, LAST_SUBSCRIBED_SERVICE,
                 ZonePlayerHandler.SUBSCRIPTION_DURATION);
     }
 

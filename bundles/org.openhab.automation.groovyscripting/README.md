@@ -49,6 +49,21 @@ The script uses the [LoggerFactory](https://www.slf4j.org/apidocs/org/slf4j/Logg
     ... [INFO ] [.openhab.core.automation.examples:-2   ] - Hello, World!
 ```
 
+## Using external libraries
+
+Use Groovy's `@Grab` annotation to load libraries from Maven repositories when a script is compiled.
+Grape resolves and caches the libraries on the openHAB server.
+
+```groovy
+@Grab('org.apache.commons:commons-csv:1.10.0')
+import org.apache.commons.csv.CSVParser
+import org.apache.commons.csv.CSVFormat
+
+def rows = CSVParser.parse('room,temperature\nKitchen,21', CSVFormat.DEFAULT).records
+```
+
+See the [Groovy Grape documentation](https://docs.groovy-lang.org/docs/groovy-6.0.0/html/documentation/grape.html) for dependency coordinates and custom repositories.
+
 ## `scriptExtension.importPreset` limitation
 
 For explicit presets `scriptExtension.importPreset` imports instance variables, but not classes.

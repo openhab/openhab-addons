@@ -27,6 +27,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.solarman.internal.defmodel.Lookup;
 import org.openhab.binding.solarman.internal.defmodel.ParameterItem;
+import org.openhab.binding.solarman.internal.defmodel.Validation;
 import org.openhab.binding.solarman.internal.enums.IntegerValueType;
 import org.openhab.binding.solarman.internal.modbus.SolarmanLoggerConnection;
 import org.openhab.binding.solarman.internal.modbus.SolarmanLoggerConnector;
@@ -52,7 +53,7 @@ import org.slf4j.LoggerFactory;
 public class SolarmanRegisterUpdater {
     private static final Logger logger = LoggerFactory.getLogger(SolarmanRegisterUpdater.class);
 
-    private static final Pattern TIME_PATTERN = Pattern.compile("^([0-1][0-9])|(2[0-3]):[0-5][0-9]");
+    private static final Pattern TIME_PATTERN = Pattern.compile("^([01][0-9]|2[0-3]):([0-5][0-9])$");
 
     private final SolarmanLoggerConnector solarmanLoggerConnector;
     private final SolarmanProtocol solarmanProtocol;
@@ -138,7 +139,7 @@ public class SolarmanRegisterUpdater {
             }
         };
 
-        if (decimalValue != null) {
+        if (decimalValue != null && isWithinValidation(channelUID, channelToUpdate, decimalValue)) {
             long value = convertNumericValue(decimalValue, channelToUpdate.getOffset(), channelToUpdate.getScale())
                     .longValue();
             if (IntegerValueType.UNSIGNED == integerValueType) {
@@ -184,8 +185,8 @@ public class SolarmanRegisterUpdater {
             String timeString = string.toString();
             final Matcher timeMatcher = TIME_PATTERN.matcher(timeString);
             if (timeMatcher.matches()) {
-                final int hour = Integer.parseInt(timeString.substring(0, 2));
-                final int minute = Integer.parseInt(timeString.substring(3, 5));
+                final int hour = Integer.parseInt(timeMatcher.group(1));
+                final int minute = Integer.parseInt(timeMatcher.group(2));
                 final short value = (short) (hour * 100 + minute);
                 byte[] data = ByteBuffer.allocate(2).putShort(value).array();
                 writeRegisters(channelToUpdate.getRegisters().getFirst(), 1, data);
@@ -195,6 +196,24 @@ public class SolarmanRegisterUpdater {
         } else {
             logUnexpectedCommand(channelUID, command);
         }
+    }
+
+    private boolean isWithinValidation(ChannelUID channelUID, ParameterItem channelToUpdate, DecimalType value) {
+        final Validation validation = channelToUpdate.getValidation();
+        if (validation == null) {
+            return true;
+        }
+
+        final BigDecimal min = validation.getMin();
+        final BigDecimal max = validation.getMax();
+        final BigDecimal decimal = value.toBigDecimal();
+        if ((min != null && decimal.compareTo(min) < 0) || (max != null && decimal.compareTo(max) > 0)) {
+            logger.warn("Value {} for channel '{}' is outside the allowed range [{}, {}], not writing",
+                    decimal.toPlainString(), channelUID, min != null ? min.toPlainString() : "-",
+                    max != null ? max.toPlainString() : "-");
+            return false;
+        }
+        return true;
     }
 
     private BigDecimal convertNumericValue(DecimalType decimal, @Nullable BigDecimal offset,

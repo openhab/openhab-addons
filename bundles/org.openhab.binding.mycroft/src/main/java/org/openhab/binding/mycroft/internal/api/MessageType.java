@@ -15,8 +15,6 @@ package org.openhab.binding.mycroft.internal.api;
 import java.util.Objects;
 import java.util.stream.Stream;
 
-import javax.validation.constraints.NotNull;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.mycroft.internal.api.dto.BaseMessage;
 import org.openhab.binding.mycroft.internal.api.dto.MessageAudioNext;
@@ -82,8 +80,8 @@ public enum MessageType {
     mycroft_configuration_mycroftai__configurationskillupdate_remote(
             "mycroft-configuration.mycroftai:ConfigurationSkillupdate_remote", BaseMessage.class);
 
-    private @NotNull Class<? extends BaseMessage> messageTypeClass;
-    private @NotNull String messageTypeName;
+    private Class<? extends BaseMessage> messageTypeClass;
+    private String messageTypeName;
 
     MessageType(String messageTypeName, Class<? extends BaseMessage> messageType) {
         this.messageTypeClass = messageType;
@@ -95,11 +93,10 @@ public enum MessageType {
      *
      * @return The message type class associated with this type
      */
-    public @NotNull Class<? extends BaseMessage> getMessageTypeClass() {
+    public Class<? extends BaseMessage> getMessageTypeClass() {
         return messageTypeClass;
     }
 
-    @NotNull
     public static MessageType fromString(String asString) {
         return Objects.requireNonNull(Stream.of(values())
                 .filter(messageType -> messageType.messageTypeName.equals(asString)).findFirst().orElse(any));

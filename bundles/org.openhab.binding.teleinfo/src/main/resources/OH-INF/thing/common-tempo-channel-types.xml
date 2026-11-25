@@ -10,8 +10,8 @@
 		<description>Total consumed energy at high rate pricing on red days</description>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
@@ -22,8 +22,8 @@
 		<description>Total consumed energy at low rate pricing on red days</description>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
@@ -34,8 +34,8 @@
 		<description>Total consumed energy at high rate pricing on white days</description>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
@@ -46,8 +46,8 @@
 		<description>Total consumed energy at low rate pricing on white days</description>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
@@ -58,8 +58,8 @@
 		<description>Total consumed energy at high rate pricing on blue days</description>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
@@ -70,8 +70,8 @@
 		<description>Total consumed energy at low rate pricing on blue days</description>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
@@ -82,8 +82,8 @@
 		<description>Following day color</description>
 		<category>Energy</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state pattern="%s" readOnly="true">
 			<options>
@@ -100,8 +100,8 @@
 		<description>Circuit 1 program</description>
 		<category>Energy</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state pattern="%s" readOnly="true">
 			<options>
@@ -118,8 +118,8 @@
 		<description>Circuit 2 program</description>
 		<category>Energy</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state pattern="%s" readOnly="true">
 			<options>

@@ -51,8 +51,8 @@
 		<item-type>DateTime</item-type>
 		<label>Collection Date</label>
 		<tags>
-			<tag>Forecast</tag>
-			<tag>Timestamp</tag>
+			<point>Forecast</point>
+			<property>Timestamp</property>
 		</tags>
 		<state pattern="%1$tY-%1$tm-%1$td" readOnly="true"></state>
 	</channel-type>

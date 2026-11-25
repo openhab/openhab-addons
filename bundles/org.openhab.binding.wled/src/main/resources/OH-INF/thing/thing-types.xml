@@ -134,8 +134,8 @@
 		<description>Allows you to fade and turn all segments ON and OFF at the same time</description>
 		<category>ColorLight</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>Brightness</tag>
+			<point>Control</point>
+			<property>Brightness</property>
 		</tags>
 	</channel-type>
 
@@ -145,8 +145,8 @@
 		<description>Allows you to exit FX mode and use the LEDS like a normal light</description>
 		<category>ColorLight</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>Color</tag>
+			<point>Control</point>
+			<property>Color</property>
 		</tags>
 	</channel-type>
 
@@ -156,8 +156,8 @@
 		<description>Changes the brightness of the whole segment</description>
 		<category>ColorLight</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>Brightness</tag>
+			<point>Control</point>
+			<property>Brightness</property>
 		</tags>
 	</channel-type>
 
@@ -394,8 +394,8 @@
 		<description>How long the WLED device has been running since it was last started. Needs firmware 0.14.0 or newer.</description>
 		<category>Time</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Duration</tag>
+			<point>Measurement</point>
+			<property>Duration</property>
 		</tags>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
@@ -413,8 +413,8 @@
 		<description>Quality of the Wi-Fi signal that the WLED device receives. Needs firmware 0.14.0 or newer.</description>
 		<category>QualityOfService</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>SignalStrength</tag>
+			<point>Measurement</point>
+			<property>SignalStrength</property>
 		</tags>
 		<state min="0" max="100" pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
@@ -424,8 +424,8 @@
 		<label>Estimated Current</label>
 		<description>The current that WLED estimates the LEDs are using. Needs firmware 0.14.0 or newer.</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Current</tag>
+			<point>Measurement</point>
+			<property>Current</property>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>

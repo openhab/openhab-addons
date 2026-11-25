@@ -59,6 +59,12 @@ To enable DEBUG logging for the binding, login to Karaf console and enter:
 
 - `refresh` - Specifies the refresh interval in seconds
 
+- `climateRefresh` - Specifies how often, in minutes, Verisure is asked to fetch the latest temperature and humidity values from the climate sensors. Default is 0, which disables the request.
+  - Without the request, Verisure updates the climate values about once per hour.
+  - The sensors measure on their own schedule, typically every 10 to 30 minutes. The request does not trigger a new measurement, it only makes the latest measurement available. An interval shorter than 10 minutes is therefore not useful.
+  - The request is sent together with a regular refresh, so the effective interval is never shorter than `refresh`. The new values are available within a minute and show up in the next refresh.
+  - It is not known whether the request affects the battery life of the sensors.
+
 - `pin` - The username's pin code to arm/disarm alarm and lock/unlock door. In the case of more than one installation and different pin-codes, use a comma separated string where pin-code matches order of installations. The installation order can be found using DEBUG log settings.
   - Two installations where the first listed installation uses a 6 digit pin-code and second listed installation uses a 4 digit pin-code: 123456,1234
 
@@ -89,6 +95,8 @@ The following channels are supported:
 |---------------------|-----------|---------------------------------------------------------------------------------------------------------------------|
 | changedByUser       | String    | This channel reports the user that last changed the state of the alarm.                                             |
 | changedVia          | String    | This channel reports the method used to change the status.                                                          |
+| systemHealth        | String    | This channel reports the highest urgency among the system health alerts: INFORMATION, WARNING or CRITICAL.          |
+| systemHealthAlerts  | String    | This channel reports the types of the system health alerts that need attention, comma separated.                    |
 | timestamp           | DateTime  | This channel reports the last time the alarm status was changed.                                                    |
 | installationName    | String    | This channel reports the installation name.                                                                         |
 | installationId      | Number    | This channel reports the installation ID.                                                                           |
@@ -119,6 +127,8 @@ The following channels are supported:
 | autoRelock              | Switch    | This channel is used to configure auto-lock functionality. Only supported for users with Administrator rights.                                                |
 | smartLockVolume         | String    | This channel is used to set the volume level. Available volume settings are "SILENCE", "LOW" and "HIGH". Only supported for users with Administrator rights.  |
 | smartLockVoiceLevel     | String    | This channel is used to set the voice level. Available voice level settings are "ESSENTIAL" and "NORMAL". Only supported for users with Administrator rights. |
+| lowBattery              | Switch    | This channel reports if the battery level is low.                                                                                                             |
+| batteryLevel            | Number    | This channel reports the estimated battery level in percent.                                                                                                  |
 | smartLockTriggerChannel | trigger   | This is a trigger channel that receives events.                                                                                                               |
 
 ### Verisure SmartPlug
@@ -162,6 +172,7 @@ The following channels are supported:
 | installationName            | String             | This channel reports the installation name.                                  |
 | installationId              | Number             | This channel reports the installation ID.                                    |
 | lowBattery                  | Switch             | This channel reports if the battery level is low.                            |
+| batteryLevel                | Number             | This channel reports the estimated battery level in percent.                 |
 | smokeDetectorTriggerChannel | trigger            | This is a trigger channel that receives events.                              |
 
 ### Verisure Water Detector
@@ -203,6 +214,7 @@ The following channels are supported:
 | installationName    | String             | This channel reports the installation name.                 |
 | installationId      | Number             | This channel reports the installation ID.                   |
 | lowBattery          | Switch             | This channel reports if the battery level is low.           |
+| batteryLevel        | Number             | This channel reports the estimated battery level in percent. |
 | sirenTriggerChannel | trigger            | This is a trigger channel that receives events.             |
 
 ### Verisure Night Control
@@ -224,6 +236,7 @@ The following channels are supported:
 | installationName           | String             | This channel reports the installation name.                 |
 | installationId             | Number             | This channel reports the installation ID.                   |
 | lowBattery                 | Switch             | This channel reports if the battery level is low.           |
+| batteryLevel               | Number             | This channel reports the estimated battery level in percent. |
 | nightControlTriggerChannel | trigger            | This is a trigger channel that receives events.             |
 
 ### Verisure DoorWindow Sensor
@@ -245,6 +258,7 @@ The following channels are supported:
 | installationName         | String    | This channel reports the installation name.                                  |
 | installationId           | Number    | This channel reports the installation ID.                                    |
 | lowBattery               | Switch    | This channel reports if the battery level is low.                            |
+| batteryLevel             | Number    | This channel reports the estimated battery level in percent.                 |
 | doorWindowTriggerChannel | trigger   | This is a trigger channel that receives events.                              |
 
 ### Verisure User Presence

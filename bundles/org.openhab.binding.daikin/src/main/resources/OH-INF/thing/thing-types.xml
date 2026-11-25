@@ -100,8 +100,8 @@
 		<description>Power for the AC unit</description>
 		<category>Switch</category>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Power</tag>
+			<point>Switch</point>
+			<property>Power</property>
 		</tags>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
@@ -112,8 +112,8 @@
 		<description>The set point temperature</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f %unit%" step="0.5"/>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
@@ -132,8 +132,8 @@
 		<label>Mode</label>
 		<description>Current mode of the AC unit</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Mode</tag>
+			<point>Control</point>
+			<property>Mode</property>
 		</tags>
 		<state>
 			<options>
@@ -167,8 +167,8 @@
 		<label>Fan</label>
 		<description>Current fan speed setting of the AC unit</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Level</tag>
+			<point>Control</point>
+			<property>Level</property>
 		</tags>
 		<state>
 			<options>
@@ -189,8 +189,8 @@
 		<label>Fan Swing</label>
 		<description>Current fan swing setting of the AC unit</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Airflow</tag>
+			<point>Control</point>
+			<property>Airflow</property>
 		</tags>
 		<state>
 			<options>
@@ -481,8 +481,8 @@
 		<label>Fan</label>
 		<description>Current fan speed setting of the AC unit</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Level</tag>
+			<point>Control</point>
+			<property>Level</property>
 		</tags>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
@@ -492,8 +492,8 @@
 		<label>Zone 1</label>
 		<description>Zone 1 for the AC unit</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Airflow</tag>
+			<point>Control</point>
+			<property>Airflow</property>
 		</tags>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
@@ -503,8 +503,8 @@
 		<label>Zone 2</label>
 		<description>Zone 2 for the AC unit</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Airflow</tag>
+			<point>Control</point>
+			<property>Airflow</property>
 		</tags>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
@@ -514,8 +514,8 @@
 		<label>Zone 3</label>
 		<description>Zone 3 for the AC unit</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Airflow</tag>
+			<point>Control</point>
+			<property>Airflow</property>
 		</tags>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
@@ -525,8 +525,8 @@
 		<label>Zone 4</label>
 		<description>Zone 4 for the AC unit</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Airflow</tag>
+			<point>Control</point>
+			<property>Airflow</property>
 		</tags>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
@@ -536,8 +536,8 @@
 		<label>Zone 5</label>
 		<description>Zone 5 for the AC unit</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Airflow</tag>
+			<point>Control</point>
+			<property>Airflow</property>
 		</tags>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
@@ -547,8 +547,8 @@
 		<label>Zone 6</label>
 		<description>Zone 6 for the AC unit</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Airflow</tag>
+			<point>Control</point>
+			<property>Airflow</property>
 		</tags>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
@@ -558,8 +558,8 @@
 		<label>Zone 7</label>
 		<description>Zone 7 for the AC unit</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Airflow</tag>
+			<point>Control</point>
+			<property>Airflow</property>
 		</tags>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
@@ -569,8 +569,8 @@
 		<label>Zone 8</label>
 		<description>Zone 8 for the AC unit</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Airflow</tag>
+			<point>Control</point>
+			<property>Airflow</property>
 		</tags>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>

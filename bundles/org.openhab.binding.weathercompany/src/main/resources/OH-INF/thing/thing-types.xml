@@ -322,8 +322,8 @@
 		<label>Precipitation Chance</label>
 		<description>Chance of precipitation</description>
 		<tags>
-			<tag>Forecast</tag>
-			<tag>Rain</tag>
+			<point>Forecast</point>
+			<property>Rain</property>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
@@ -334,8 +334,8 @@
 		<description>Forecasted measurable liquid precipitation during 24 hour period</description>
 		<category>Rain</category>
 		<tags>
-			<tag>Forecast</tag>
-			<tag>Rain</tag>
+			<point>Forecast</point>
+			<property>Rain</property>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
@@ -346,8 +346,8 @@
 		<description>Precipitation rate</description>
 		<category>Rain</category>
 		<tags>
-			<tag>Forecast</tag>
-			<tag>Rain</tag>
+			<point>Forecast</point>
+			<property>Rain</property>
 		</tags>
 		<state readOnly="true" pattern="%.7f %unit%"/>
 	</channel-type>
@@ -358,8 +358,8 @@
 		<description>Forecasted measurable snow precipitation during 24 hour period</description>
 		<category>Rain</category>
 		<tags>
-			<tag>Forecast</tag>
-			<tag>Precipitation</tag>
+			<point>Forecast</point>
+			<property>Precipitation</property>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
@@ -370,8 +370,8 @@
 		<description>Precipitation total</description>
 		<category>Rain</category>
 		<tags>
-			<tag>Forecast</tag>
-			<tag>Precipitation</tag>
+			<point>Forecast</point>
+			<property>Precipitation</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -381,8 +381,8 @@
 		<label>Precipitation Type</label>
 		<description>Precipitation type</description>
 		<tags>
-			<tag>Forecast</tag>
-			<tag>Precipitation</tag>
+			<point>Forecast</point>
+			<property>Precipitation</property>
 		</tags>
 		<state readOnly="true" pattern="%s"></state>
 	</channel-type>
@@ -393,8 +393,8 @@
 		<description>Barometric Pressure</description>
 		<category>Pressure</category>
 		<tags>
-			<tag>Forecast</tag>
-			<tag>Pressure</tag>
+			<point>Forecast</point>
+			<property>Pressure</property>
 		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
@@ -425,8 +425,8 @@
 		<label>Relative Humidity</label>
 		<description>Forecasted relative humidity</description>
 		<tags>
-			<tag>Forecast</tag>
-			<tag>Humidity</tag>
+			<point>Forecast</point>
+			<property>Humidity</property>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
@@ -465,8 +465,8 @@
 		<description>Forecasted temperature</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Forecast</tag>
-			<tag>Temperature</tag>
+			<point>Forecast</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -490,8 +490,8 @@
 		<label>UV Description</label>
 		<description>UV description</description>
 		<tags>
-			<tag>Forecast</tag>
-			<tag>Ultraviolet</tag>
+			<point>Forecast</point>
+			<property>Ultraviolet</property>
 		</tags>
 		<state readOnly="true" pattern="%s"></state>
 	</channel-type>
@@ -501,8 +501,8 @@
 		<label>UV Index</label>
 		<description>UV index</description>
 		<tags>
-			<tag>Forecast</tag>
-			<tag>Ultraviolet</tag>
+			<point>Forecast</point>
+			<property>Ultraviolet</property>
 		</tags>
 		<state readOnly="true" pattern="%.0f"></state>
 	</channel-type>
@@ -519,8 +519,8 @@
 		<label>Wind Direction</label>
 		<description>Wind direction</description>
 		<tags>
-			<tag>Forecast</tag>
-			<tag>Wind</tag>
+			<point>Forecast</point>
+			<property>Wind</property>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
@@ -530,8 +530,8 @@
 		<label>Wind Direction Cardinal</label>
 		<description>Wind direction cardinal</description>
 		<tags>
-			<tag>Forecast</tag>
-			<tag>Wind</tag>
+			<point>Forecast</point>
+			<property>Wind</property>
 		</tags>
 		<state readOnly="true" pattern="%s"></state>
 	</channel-type>
@@ -541,8 +541,8 @@
 		<label>Wind Phrase</label>
 		<description>Wind phrase</description>
 		<tags>
-			<tag>Forecast</tag>
-			<tag>Wind</tag>
+			<point>Forecast</point>
+			<property>Wind</property>
 		</tags>
 		<state readOnly="true" pattern="%s"></state>
 	</channel-type>
@@ -552,8 +552,8 @@
 		<label>Wind Speed</label>
 		<description>Wind speed</description>
 		<tags>
-			<tag>Forecast</tag>
-			<tag>Wind</tag>
+			<point>Forecast</point>
+			<property>Wind</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>

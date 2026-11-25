@@ -144,7 +144,7 @@ public class VerisureAlarmThingHandler extends VerisureThingHandler<VerisureAlar
             getThing().getChannels().stream().map(Channel::getUID)
                     .filter(channelUID -> isLinked(channelUID) && !"timestamp".equals(channelUID.getId()))
                     .forEach(channelUID -> {
-                        State state = getValue(channelUID.getId(), armState);
+                        State state = getValue(channelUID.getId(), armState, alarmsJSON);
                         updateState(channelUID, state);
                     });
             updateTimeStamp(armState.getDate());
@@ -154,8 +154,14 @@ public class VerisureAlarmThingHandler extends VerisureThingHandler<VerisureAlar
         }
     }
 
-    public State getValue(String channelId, ArmState armState) {
+    public State getValue(String channelId, ArmState armState, VerisureAlarmsDTO alarmsJSON) {
         switch (channelId) {
+            case CHANNEL_SYSTEM_HEALTH:
+                String systemHealth = alarmsJSON.getSystemHealth();
+                return systemHealth != null ? new StringType(systemHealth) : UnDefType.UNDEF;
+            case CHANNEL_SYSTEM_HEALTH_ALERTS:
+                String systemHealthAlerts = alarmsJSON.getSystemHealthAlerts();
+                return systemHealthAlerts != null ? new StringType(systemHealthAlerts) : UnDefType.UNDEF;
             case CHANNEL_ALARM_STATUS:
                 return new StringType(armState.getStatusType());
             case CHANNEL_CHANGED_BY_USER:

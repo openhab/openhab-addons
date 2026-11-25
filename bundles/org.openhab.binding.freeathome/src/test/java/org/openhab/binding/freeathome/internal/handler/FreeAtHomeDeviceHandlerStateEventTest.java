@@ -12,7 +12,10 @@
  */
 package org.openhab.binding.freeathome.internal.handler;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.openhab.binding.freeathome.internal.FreeAtHomeBindingConstants.BRIDGE_TYPE_UID;
@@ -25,6 +28,8 @@ import java.util.Map;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.openhab.binding.freeathome.internal.datamodel.FreeAtHomeDeviceDescription;
 import org.openhab.binding.freeathome.internal.type.FreeAtHomeChannelTypeProvider;
 import org.openhab.binding.freeathome.internal.util.FreeAtHomeHttpCommunicationException;
@@ -42,6 +47,7 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
+import org.openhab.core.types.RefreshType;
 
 import com.google.gson.JsonParser;
 
@@ -154,6 +160,41 @@ public class FreeAtHomeDeviceHandlerStateEventTest {
 
         verify(callback).stateUpdated(STATUS_INDICATION_CHANNEL, new DecimalType(68));
         verify(callback).stateUpdated(ECO_MODE_CHANNEL, OnOffType.ON);
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = { "1f", "1e" })
+    public void doorCallUpdatesOnlyOnLiveEvents(String functionId) throws FreeAtHomeHttpCommunicationException {
+        ChannelUID call = new ChannelUID(DEVICE_UID, "ch0000", "timed-start-stop");
+        when(callback.isChannelLinked(call)).thenReturn(true);
+        when(bridgeHandler.getDatapoint(DEVICE_ID, "ch0000", "odp0000")).thenReturn("1");
+
+        initialize("""
+                "functionID": "%s", "displayName": "Call",
+                "inputs": {}, "outputs": { "odp0000": { "pairingID": 2 } }
+                """.formatted(functionId), List.of(ChannelBuilder.create(call).build()));
+        handler.handleCommand(call, RefreshType.REFRESH);
+
+        verify(callback, never()).stateUpdated(eq(call), any());
+        verify(bridgeHandler, never()).getDatapoint(DEVICE_ID, "ch0000", "odp0000");
+
+        handler.onDeviceStateChanged(DEVICE_ID + "/ch0000/odp0000", "1");
+
+        verify(callback).stateUpdated(call, OnOffType.ON);
+    }
+
+    @Test
+    public void doorOpenerRefreshReadsItsFeedback() throws FreeAtHomeHttpCommunicationException {
+        ChannelUID opener = new ChannelUID(DEVICE_UID, "ch0000", "timed-start-stop");
+        when(callback.isChannelLinked(opener)).thenReturn(true);
+        when(bridgeHandler.getDatapoint(DEVICE_ID, "ch0000", "odp0000")).thenReturn("0");
+
+        initialize("""
+                "functionID": "1a", "displayName": "Door opener",
+                "inputs": { "idp0000": { "pairingID": 2 } }, "outputs": { "odp0000": { "pairingID": 256 } }
+                """, List.of(ChannelBuilder.create(opener).build()));
+
+        verify(callback).stateUpdated(opener, OnOffType.OFF);
     }
 
     @Test

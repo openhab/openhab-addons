@@ -261,8 +261,8 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Actual Temperature</label>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -270,8 +270,8 @@
 		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Actual Humidity</label>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Humidity</tag>
+			<point>Measurement</point>
+			<property>Humidity</property>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
@@ -289,8 +289,8 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Desired Heat</label>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -298,8 +298,8 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Desired Cool</label>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -307,8 +307,8 @@
 		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Desired Humidity</label>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Humidity</tag>
+			<point>Setpoint</point>
+			<property>Humidity</property>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
@@ -316,8 +316,8 @@
 		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Desired Dehumidity</label>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Humidity</tag>
+			<point>Setpoint</point>
+			<property>Humidity</property>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
@@ -355,8 +355,8 @@
 		<item-type>Number</item-type>
 		<label>Actual Air Quality Score</label>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>AirQuality</tag>
+			<point>Measurement</point>
+			<property>AirQuality</property>
 		</tags>
 		<state readOnly="true" pattern="%d"/>
 	</channel-type>
@@ -364,8 +364,8 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Actual CO2</label>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>CO2</tag>
+			<point>Measurement</point>
+			<property>CO2</property>
 		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
@@ -373,8 +373,8 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Actual VOC</label>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>VOC</tag>
+			<point>Measurement</point>
+			<property>VOC</property>
 		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
@@ -502,8 +502,8 @@
 		<item-type>String</item-type>
 		<label>HVAC Mode</label>
 		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
+			<point>Status</point>
+			<property>Mode</property>
 		</tags>
 		<state readOnly="false" pattern="%s"/>
 	</channel-type>
@@ -1249,8 +1249,8 @@
 		<item-type>Switch</item-type>
 		<label>Is Occupied</label>
 		<tags>
-			<tag>Status</tag>
-			<tag>Presence</tag>
+			<point>Status</point>
+			<property>Presence</property>
 		</tags>
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
@@ -1429,8 +1429,8 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Temperature</label>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -1438,8 +1438,8 @@
 		<item-type>Number:Pressure</item-type>
 		<label>Pressure</label>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Pressure</tag>
+			<point>Measurement</point>
+			<property>Pressure</property>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
@@ -1447,8 +1447,8 @@
 		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Relative Humidity</label>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Humidity</tag>
+			<point>Measurement</point>
+			<property>Humidity</property>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
@@ -1456,8 +1456,8 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Dewpoint</label>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -1470,8 +1470,8 @@
 		<item-type>Number:Speed</item-type>
 		<label>Wind Speed</label>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Wind</tag>
+			<point>Measurement</point>
+			<property>Wind</property>
 		</tags>
 		<state readOnly="true" pattern="%.0f  %unit%"/>
 	</channel-type>
@@ -1479,8 +1479,8 @@
 		<item-type>Number:Speed</item-type>
 		<label>Wind Gust</label>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Wind</tag>
+			<point>Measurement</point>
+			<property>Wind</property>
 		</tags>
 		<state readOnly="true" pattern="%.0f  %unit%"/>
 	</channel-type>
@@ -1488,8 +1488,8 @@
 		<item-type>String</item-type>
 		<label>Wind Direction</label>
 		<tags>
-			<tag>Status</tag>
-			<tag>Wind</tag>
+			<point>Status</point>
+			<property>Wind</property>
 		</tags>
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
@@ -1497,8 +1497,8 @@
 		<item-type>Number:Angle</item-type>
 		<label>Wind Bearing</label>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Wind</tag>
+			<point>Measurement</point>
+			<property>Wind</property>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
@@ -1511,8 +1511,8 @@
 		<item-type>Number:Temperature</item-type>
 		<label>High Temperature</label>
 		<tags>
-			<tag>Forecast</tag>
-			<tag>Temperature</tag>
+			<point>Forecast</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -1520,8 +1520,8 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Low Temperature</label>
 		<tags>
-			<tag>Forecast</tag>
-			<tag>Temperature</tag>
+			<point>Forecast</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -1824,8 +1824,8 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Sensor Temperature</label>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -1833,8 +1833,8 @@
 		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Sensor Humidity</label>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Humidity</tag>
+			<point>Measurement</point>
+			<property>Humidity</property>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
@@ -1842,8 +1842,8 @@
 		<item-type>Switch</item-type>
 		<label>Sensor Occupancy</label>
 		<tags>
-			<tag>Status</tag>
-			<tag>Presence</tag>
+			<point>Status</point>
+			<property>Presence</property>
 		</tags>
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>

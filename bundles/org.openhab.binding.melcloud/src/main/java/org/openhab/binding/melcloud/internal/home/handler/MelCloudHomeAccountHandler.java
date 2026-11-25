@@ -453,7 +453,7 @@ public class MelCloudHomeAccountHandler extends BaseBridgeHandler {
                 realtimeGeneration.incrementAndGet();
                 throw e;
             }
-            // Success: onRealtimeConnected() already ran via the listener's onWebSocketConnect callback.
+            // Success: onRealtimeConnected() already ran via the listener's onWebSocketOpen callback.
         } catch (MelCloudCommException | IOException | ExecutionException | TimeoutException
                 | IllegalArgumentException e) {
             logger.debug("MELCloud Home WebSocket connect failed, will retry: {}", e.getMessage());

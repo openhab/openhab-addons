@@ -181,15 +181,15 @@ public class RemoteControllerWebSocket extends RemoteController implements Liste
         client = callback.getLegacyCipherSuites()
                 ? webSocketFactory.createWebSocketClient("samsungtv", legacyCipherSuiteFactory())
                 : webSocketFactory.createWebSocketClient("samsungtv");
-        client.addLifeCycleListener(this);
+        client.addEventListener(this);
 
         webSocketRemote = new WebSocketRemote(this);
         webSocketArt = new WebSocketArt(this);
         webSocketV2 = new WebSocketV2(this);
     }
 
-    private static SslContextFactory legacyCipherSuiteFactory() {
-        SslContextFactory sslContextFactory = new SslContextFactory.Client( /* trustall= */ true);
+    private static SslContextFactory.Client legacyCipherSuiteFactory() {
+        SslContextFactory.Client sslContextFactory = new SslContextFactory.Client( /* trustall= */ true);
         sslContextFactory.setExcludeCipherSuites();
         return sslContextFactory;
     }
@@ -217,7 +217,6 @@ public class RemoteControllerWebSocket extends RemoteController implements Liste
             logger.debug("{}: RemoteControllerWebSocket start Client", host);
             try {
                 client.start();
-                client.setMaxBinaryMessageBufferSize(1024 * 1024);
                 // websocket connect will be done in lifetime handler
                 return;
             } catch (Exception e) {
@@ -309,7 +308,7 @@ public class RemoteControllerWebSocket extends RemoteController implements Liste
             return;
         }
         previousUpdateCurrentApp = Instant.now();
-        if (webSocketV2.isNotConnected()) {
+        if (!webSocketV2.isConnected()) {
             logger.debug("{}: Cannot retrieve current app webSocketV2 is not connected", host);
             return;
         }

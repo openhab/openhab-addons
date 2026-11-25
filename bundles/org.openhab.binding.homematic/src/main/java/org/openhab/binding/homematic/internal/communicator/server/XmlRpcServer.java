@@ -13,19 +13,19 @@
 package org.openhab.binding.homematic.internal.communicator.server;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.net.InetSocketAddress;
+import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Request;
+import org.eclipse.jetty.server.Response;
 import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.server.handler.AbstractHandler;
+import org.eclipse.jetty.util.Callback;
 import org.openhab.binding.homematic.internal.common.HomematicConfig;
 import org.openhab.binding.homematic.internal.communicator.message.RpcRequest;
 import org.openhab.binding.homematic.internal.communicator.message.XmlRpcRequest;
@@ -119,29 +119,31 @@ public class XmlRpcServer implements RpcServer {
      * @author Martin Herbst
      */
     @NonNullByDefault({})
-    private class ResponseHandler extends AbstractHandler {
+    private class ResponseHandler extends Handler.Abstract {
         @Override
-        public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response)
-                throws IOException, ServletException {
-            response.setContentType("text/xml;charset=ISO-8859-1");
-            response.setStatus(HttpServletResponse.SC_OK);
-            final PrintWriter respWriter = response.getWriter();
+        public boolean handle(Request request, Response response, Callback callback) {
+            response.setStatus(200);
+            response.getHeaders().put("Content-Type", "text/xml;charset=ISO-8859-1");
+            String returnValue;
             try {
-                XmlRpcResponse xmlResponse = new XmlRpcResponse(request.getInputStream(), config.getEncoding());
+                XmlRpcResponse xmlResponse = new XmlRpcResponse(Request.asInputStream(request), config.getEncoding());
                 if (logger.isTraceEnabled()) {
                     logger.trace("Server parsed XmlRpcMessage:\n{}", xmlResponse);
                 }
-                final String returnValue = rpcResponseHander.handleMethodCall(xmlResponse.getMethodName(),
+                returnValue = rpcResponseHander.handleMethodCall(xmlResponse.getMethodName(),
                         xmlResponse.getResponseData());
                 if (logger.isTraceEnabled()) {
                     logger.trace("Server XmlRpcResponse:\n{}", returnValue);
                 }
-                respWriter.println(returnValue);
-            } catch (SAXException | ParserConfigurationException ex) {
+            } catch (SAXException | ParserConfigurationException | IOException ex) {
                 logger.error("{}", ex.getMessage(), ex);
-                respWriter.println(XML_EMPTY_STRING);
+                returnValue = XML_EMPTY_STRING;
             }
-            baseRequest.setHandled(true);
+            // Content.Sink.write(..., String, ...) would encode UTF-8, the declared charset is ISO-8859-1
+            response.write(true,
+                    ByteBuffer.wrap((returnValue + System.lineSeparator()).getBytes(StandardCharsets.ISO_8859_1)),
+                    callback);
+            return true;
         }
     }
 }

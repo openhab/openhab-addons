@@ -63,8 +63,8 @@
 		<description>Position of the blind: 0% is fully open, 100% is fully closed</description>
 		<category>Blinds</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>OpenLevel</tag>
+			<point>Control</point>
+			<property>OpenLevel</property>
 		</tags>
 		<state min="0" max="100" step="1" pattern="%d %%"/>
 	</channel-type>
@@ -75,8 +75,8 @@
 		<description>Tilt of the slats at the current height: 0% is closed with the bottom side visible, 50% is open, 100% is
 			closed with the top side visible</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Tilt</tag>
+			<point>Control</point>
+			<property>Tilt</property>
 		</tags>
 		<state min="0" max="100" step="1" pattern="%d %%"/>
 	</channel-type>
@@ -87,8 +87,8 @@
 		<description>Slat angle as estimated by the motor (0-180°). The estimate drifts from the real slats when the blind
 			changes direction; use the tilt channel to control the slats.</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Tilt</tag>
+			<point>Control</point>
+			<property>Tilt</property>
 		</tags>
 		<state min="0" max="180" step="1" pattern="%d %unit%"/>
 	</channel-type>
@@ -99,8 +99,8 @@
 		<description>Wi-Fi signal strength of the motor</description>
 		<category>QualityOfService</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>RSSI</tag>
+			<point>Measurement</point>
+			<property>RSSI</property>
 		</tags>
 		<state readOnly="true" pattern="%d dBm"/>
 	</channel-type>

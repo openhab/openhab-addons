@@ -23,10 +23,10 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.tedee.internal.TedeeBindingConstants;
@@ -163,9 +163,8 @@ public class TedeeApi implements TedeeClient {
         headers.add(header);
         callback.add("headers", headers);
 
-        Request request = newRequest("/callback", HttpMethod.POST).header("Content-Type", "application/json");
-
-        request.content(new StringContentProvider("application/json", callback.toString(), StandardCharsets.UTF_8));
+        Request request = newRequest("/callback", HttpMethod.POST)
+                .body(new StringRequestContent("application/json", callback.toString(), StandardCharsets.UTF_8));
 
         ContentResponse response = execute(request);
 
@@ -188,9 +187,8 @@ public class TedeeApi implements TedeeClient {
         headers.add(header);
         callback.add("headers", headers);
 
-        Request request = newRequest("/callback/" + callbackId, HttpMethod.PUT).header("Content-Type",
-                "application/json");
-        request.content(new StringContentProvider("application/json", callback.toString(), StandardCharsets.UTF_8));
+        Request request = newRequest("/callback/" + callbackId, HttpMethod.PUT)
+                .body(new StringRequestContent("application/json", callback.toString(), StandardCharsets.UTF_8));
 
         ContentResponse response = execute(request);
 
@@ -210,7 +208,7 @@ public class TedeeApi implements TedeeClient {
 
     private void post(String path) throws TedeeApiException {
         Request request = newRequest(path, HttpMethod.POST);
-        request.header("Content-Length", "0");
+        request.headers(h -> h.put("Content-Length", "0"));
         ContentResponse response = execute(request);
         if (response.getStatus() != HttpStatus.NO_CONTENT_204) {
             throw error(response);
@@ -235,8 +233,11 @@ public class TedeeApi implements TedeeClient {
     }
 
     private ContentResponse execute(Request request) throws TedeeApiException {
-        request.header("api_token", encryptedToken());
-        request.header("Accept", "application/json");
+        String token = encryptedToken();
+        request.headers(h -> {
+            h.put("api_token", token);
+            h.put("Accept", "application/json");
+        });
         try {
             return request.send();
         } catch (InterruptedException e) {

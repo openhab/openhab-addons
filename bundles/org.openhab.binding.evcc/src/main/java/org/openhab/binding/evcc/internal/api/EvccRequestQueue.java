@@ -21,10 +21,10 @@ import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.core.common.ThreadPoolManager;
@@ -102,11 +102,10 @@ public class EvccRequestQueue {
         }
         try {
             Request request = httpClient.newRequest(url).timeout(5, TimeUnit.SECONDS).method(method)
-                    .header(HttpHeader.ACCEPT, "application/json");
+                    .headers(h -> h.put(HttpHeader.ACCEPT, "application/json"));
 
             if (!payload.isJsonNull()) {
-                request.content(new StringContentProvider(payload.toString())).header(HttpHeader.CONTENT_TYPE,
-                        "application/json");
+                request.body(new StringRequestContent("application/json", payload.toString()));
             }
 
             requestQueue.add(new QueuedRequest(request, onSuccess, onError));

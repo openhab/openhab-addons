@@ -18,14 +18,14 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Dictionary;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -34,15 +34,17 @@ import org.openhab.binding.bticinosmarther.internal.api.dto.Sender;
 import org.openhab.binding.bticinosmarther.internal.api.exception.SmartherGatewayException;
 import org.openhab.binding.bticinosmarther.internal.util.StringUtil;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
-import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.http.HttpService;
-import org.osgi.service.http.NamespaceException;
+import org.osgi.service.servlet.whiteboard.HttpWhiteboardConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import jakarta.servlet.Servlet;
+import jakarta.servlet.http.HttpServlet;
 
 /**
  * The {@code SmartherAccountService} class manages the servlets and bind authorization servlet to Bridges.
@@ -63,41 +65,41 @@ public class SmartherAccountService {
 
     private final Set<SmartherAccountHandler> handlers = ConcurrentHashMap.newKeySet();
 
-    private @Nullable HttpService httpService;
     private @Nullable BundleContext bundleContext;
+
+    private final List<ServiceRegistration<?>> registrations = new ArrayList<>();
 
     @Activate
     protected void activate(ComponentContext componentContext, Map<String, Object> properties) {
+        BundleContext localBundleContext = componentContext.getBundleContext();
+        this.bundleContext = localBundleContext;
         try {
-            this.bundleContext = componentContext.getBundleContext();
+            // Register the authorization servlet and its images
+            registerServlet(localBundleContext, AUTH_SERVLET_ALIAS, createAuthorizationServlet());
+            Dictionary<String, Object> resourceProps = new Hashtable<>();
+            resourceProps.put(HttpWhiteboardConstants.HTTP_WHITEBOARD_RESOURCE_PATTERN,
+                    AUTH_SERVLET_ALIAS + IMG_SERVLET_ALIAS + "/*");
+            resourceProps.put(HttpWhiteboardConstants.HTTP_WHITEBOARD_RESOURCE_PREFIX, "/" + IMAGE_PATH);
+            registrations.add(localBundleContext.registerService(Object.class, new Object(), resourceProps));
 
-            final HttpService localHttpService = this.httpService;
-            if (localHttpService != null) {
-                // Register the authorization servlet
-                localHttpService.registerServlet(AUTH_SERVLET_ALIAS, createAuthorizationServlet(), new Hashtable<>(),
-                        localHttpService.createDefaultHttpContext());
-                localHttpService.registerResources(AUTH_SERVLET_ALIAS + IMG_SERVLET_ALIAS, IMAGE_PATH, null);
-
-                // Register the notification servlet
-                localHttpService.registerServlet(NOTIFY_SERVLET_ALIAS, createNotificationServlet(), new Hashtable<>(),
-                        localHttpService.createDefaultHttpContext());
-            }
-        } catch (NamespaceException | ServletException | IOException e) {
+            // Register the notification servlet
+            registerServlet(localBundleContext, NOTIFY_SERVLET_ALIAS, createNotificationServlet());
+        } catch (IOException e) {
             logger.warn("Error during Smarther servlet startup", e);
         }
     }
 
+    private void registerServlet(BundleContext context, String alias, HttpServlet servlet) {
+        Dictionary<String, Object> props = new Hashtable<>();
+        props.put(HttpWhiteboardConstants.HTTP_WHITEBOARD_SERVLET_NAME, alias);
+        props.put(HttpWhiteboardConstants.HTTP_WHITEBOARD_SERVLET_PATTERN, new String[] { alias, alias + "/*" });
+        registrations.add(context.registerService(Servlet.class, servlet, props));
+    }
+
     @Deactivate
     protected void deactivate(ComponentContext componentContext) {
-        final HttpService localHttpService = this.httpService;
-        if (localHttpService != null) {
-            // Unregister the authorization servlet
-            localHttpService.unregister(AUTH_SERVLET_ALIAS);
-            localHttpService.unregister(AUTH_SERVLET_ALIAS + IMG_SERVLET_ALIAS);
-
-            // Unregister the notification servlet
-            localHttpService.unregister(NOTIFY_SERVLET_ALIAS);
-        }
+        registrations.forEach(ServiceRegistration::unregister);
+        registrations.clear();
     }
 
     /**
@@ -278,14 +280,5 @@ public class SmartherAccountService {
         final Optional<SmartherAccountHandler> maybeHandler = handlers.stream().filter(l -> l.hasLocation(plantId))
                 .findFirst();
         return (maybeHandler.isPresent()) ? maybeHandler.get() : null;
-    }
-
-    @Reference
-    protected void setHttpService(HttpService httpService) {
-        this.httpService = httpService;
-    }
-
-    protected void unsetHttpService(HttpService httpService) {
-        this.httpService = null;
     }
 }

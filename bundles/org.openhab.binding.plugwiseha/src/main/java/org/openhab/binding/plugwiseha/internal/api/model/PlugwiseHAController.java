@@ -106,8 +106,11 @@ public class PlugwiseHAController {
      * 
      * @throws PlugwiseHAException
      */
-    public void refresh() throws PlugwiseHAException {
-        domainObjects = this.getUpdatedDomainObjects();
+    public synchronized void refresh() throws PlugwiseHAException {
+        DomainObjects updatedDomainObjects = getUpdatedDomainObjects();
+        if (updatedDomainObjects != null) {
+            domainObjects = updatedDomainObjects;
+        }
     }
 
     // Public API methods

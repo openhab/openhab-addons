@@ -25,12 +25,12 @@ import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.Request;
 import org.eclipse.jetty.http.HttpFields;
 import org.eclipse.jetty.http.HttpMethod;
+import org.eclipse.jetty.io.Content;
 import org.junit.jupiter.api.Test;
 
 import com.google.gson.Gson;
@@ -64,7 +64,7 @@ public class CloudTest {
         when(mockHttpClient.newRequest(anyString())).thenReturn(mockRequest);
         when(mockRequest.method(HttpMethod.POST)).thenReturn(mockRequest);
         when(mockRequest.timeout(anyLong(), any(TimeUnit.class))).thenReturn(mockRequest);
-        when(mockRequest.content(any(StringContentProvider.class))).thenReturn(mockRequest);
+        when(mockRequest.body(any())).thenReturn(mockRequest);
         when(mockRequest.getHeaders()).thenReturn(mockHeaders); // Attach mocked headers
         when(mockRequest.send()).thenReturn(mockResponse);
 
@@ -117,16 +117,16 @@ public class CloudTest {
         when(mockHttpClient.newRequest(anyString())).thenReturn(mockRequest);
         when(mockRequest.method(HttpMethod.POST)).thenReturn(mockRequest);
         when(mockRequest.timeout(anyLong(), any(TimeUnit.class))).thenReturn(mockRequest);
-        when(mockRequest.content(any(StringContentProvider.class))).thenReturn(mockRequest);
+        when(mockRequest.body(any())).thenReturn(mockRequest);
         when(mockRequest.getHeaders()).thenReturn(mockHeaders); // Attach mocked headers
         when(mockRequest.send()).thenReturn(mockResponse);
 
         ByteBuffer requestContent = ByteBuffer.allocate(2048);
         doAnswer(invocation -> {
-            StringContentProvider contentProvider = invocation.getArgument(0);
-            contentProvider.iterator().forEachRemaining(requestContent::put);
+            Request.Content content = invocation.getArgument(0);
+            requestContent.put(Content.Source.asByteBuffer(content));
             return mockRequest;
-        }).when(mockRequest).content(any(StringContentProvider.class));
+        }).when(mockRequest).body(any(Request.Content.class));
 
         // Define behavior of ContentResponse
         when(mockResponse.getStatus()).thenReturn(200);
@@ -183,7 +183,7 @@ public class CloudTest {
         when(mockHttpClient.newRequest(anyString())).thenReturn(mockRequest);
         when(mockRequest.method(HttpMethod.POST)).thenReturn(mockRequest);
         when(mockRequest.timeout(anyLong(), any(TimeUnit.class))).thenReturn(mockRequest);
-        when(mockRequest.content(any(StringContentProvider.class))).thenReturn(mockRequest);
+        when(mockRequest.body(any(Request.Content.class))).thenReturn(mockRequest);
         when(mockRequest.getHeaders()).thenReturn(mockHeaders);
         when(mockRequest.send()).thenReturn(mockResponse);
         when(mockResponse.getContentAsString())
@@ -191,10 +191,10 @@ public class CloudTest {
 
         ByteBuffer requestContent = ByteBuffer.allocate(2048);
         doAnswer(invocation -> {
-            StringContentProvider contentProvider = invocation.getArgument(0);
-            contentProvider.iterator().forEachRemaining(requestContent::put);
+            Request.Content content = invocation.getArgument(0);
+            requestContent.put(Content.Source.asByteBuffer(content));
             return mockRequest;
-        }).when(mockRequest).content(any(StringContentProvider.class));
+        }).when(mockRequest).body(any(Request.Content.class));
 
         CloudProvider provider = new CloudProvider("SmartHome", "ac21b9f9cbfe4ca5a88562ef25e2b768", "1010",
                 "https://mp-prod.appsmb.com/mas/v5/app/proxy?alias=", "xhdiwjnchekd4d512chdjx5d8e4c394D2D7S",
@@ -256,7 +256,7 @@ public class CloudTest {
         when(mockHttpClient.newRequest(any(String.class))).thenReturn(mockRequest);
         when(mockRequest.method(HttpMethod.POST)).thenReturn(mockRequest);
         when(mockRequest.timeout(any(Long.class), any(TimeUnit.class))).thenReturn(mockRequest);
-        when(mockRequest.content(any(StringContentProvider.class))).thenReturn(mockRequest);
+        when(mockRequest.body(any())).thenReturn(mockRequest);
         when(mockRequest.getHeaders()).thenReturn(mockHeaders);
         when(mockRequest.send()).thenReturn(mockResponse);
 
