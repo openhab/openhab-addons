@@ -16,8 +16,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -46,6 +48,7 @@ import org.slf4j.LoggerFactory;
  * It corresponds to a ChannelGroup.
  *
  * @author David Graeff - Initial contribution
+ * @author Cody Cutrer - Restore metadata subscriptions for existing channels
  */
 @NonNullByDefault
 public class Node implements AbstractMqttAttributeClass.AttributeChanged {
@@ -58,7 +61,12 @@ public class Node implements AbstractMqttAttributeClass.AttributeChanged {
     public final DeviceCallback callback;
     protected final ChannelGroupUID channelGroupUID;
     private final String topic;
-    private boolean initialized = false;
+    private boolean metadataReady = false;
+    private boolean metadataReconciled = false;
+    private final AtomicReference<SubscriptionContext> subscription = new AtomicReference<>(new SubscriptionContext());
+    private final Object lifecycleLock = new Object();
+    private volatile boolean removed;
+    private CompletableFuture<@Nullable Void> cleanupBarrier = CompletableFuture.completedFuture(null);
 
     /**
      * Creates a Homie Node.
@@ -84,23 +92,64 @@ public class Node implements AbstractMqttAttributeClass.AttributeChanged {
      */
     public CompletableFuture<@Nullable Void> subscribe(MqttBrokerConnection connection,
             ScheduledExecutorService scheduler, int timeout) {
-        return attributes.subscribeAndReceive(connection, scheduler, topic, this, timeout)
-                // On success, create all properties and tell the handler about this node
-                .thenCompose(b -> attributesReceived(connection, scheduler, timeout))
-                // No matter if values have been received or not -> the subscriptions have been performed
-                .whenComplete((r, e) -> {
-                    initialized = true;
-                });
+        CompletableFuture<@Nullable Void> predecessor = new CompletableFuture<>();
+        SubscriptionContext context = new SubscriptionContext(predecessor);
+        final SubscriptionContext previous;
+        final CompletableFuture<@Nullable Void> previousCleanup;
+        final ChildMap<Property> outgoingProperties;
+        synchronized (lifecycleLock) {
+            if (removed) {
+                return CompletableFuture.failedFuture(new CancellationException("Node removed"));
+            }
+            previous = subscription.getAndSet(context);
+            previousCleanup = cleanupBarrier;
+            outgoingProperties = properties;
+            cleanupBarrier = predecessor;
+        }
+        completeCleanup(previous, outgoingProperties, previousCleanup, predecessor);
+        return context.run(() -> {
+            metadataReady = false;
+            metadataReconciled = false;
+            return attributes.subscribeAndReceive(connection, scheduler, topic,
+                    (name, value, broker, executor, complete) -> context.run(() -> {
+                        attributeChanged(context, name, value, broker, executor, complete);
+                        return CompletableFuture.completedFuture(null);
+                    }), timeout);
+        }).thenCompose(v -> context.run(() -> attributesReceived(context, connection, scheduler, timeout)))
+                .handle((v, error) -> context.run(() -> {
+                    metadataReady = true;
+                    return error == null ? CompletableFuture.<@Nullable Void> completedFuture(null)
+                            : CompletableFuture.<@Nullable Void> failedFuture(error);
+                })).thenCompose(future -> future);
     }
 
     public CompletableFuture<@Nullable Void> attributesReceived(MqttBrokerConnection connection,
             ScheduledExecutorService scheduler, int timeout) {
+        SubscriptionContext context = subscription.get();
+        return context.run(() -> attributesReceived(context, connection, scheduler, timeout));
+    }
+
+    private CompletableFuture<@Nullable Void> attributesReceived(SubscriptionContext context,
+            MqttBrokerConnection connection, ScheduledExecutorService scheduler, int timeout) {
+        // Parent metadata is ready before child metadata. Continue processing schema and state updates
+        // while the child subscriptions are pending.
+        metadataReady = true;
+        metadataReconciled = true;
         callback.nodeAddedOrChanged(this);
-        return applyProperties(connection, scheduler, timeout);
+        // ChildMap.apply only subscribes newly discovered children. Existing children also need
+        // metadata subscriptions after restoration or a reconnect.
+        List<Property> existing = properties.stream().toList();
+        return applyProperties(connection, scheduler, timeout).thenCompose(v -> context.run(() -> CompletableFuture
+                .allOf(existing.stream().filter(child -> child.equals(properties.get(child.propertyID)))
+                        .map(child -> child.subscribe(connection, scheduler, timeout))
+                        .toArray(CompletableFuture[]::new))
+                .exceptionally(error -> {
+                    logger.debug("Could not subscribe to restored properties", error);
+                    return null;
+                })));
     }
 
     public void nodeRestoredFromConfig() {
-        initialized = true;
         attributes.name = nodeID;
     }
 
@@ -110,8 +159,54 @@ public class Node implements AbstractMqttAttributeClass.AttributeChanged {
      * @return Returns a future that completes as soon as all unsubscriptions have been performed.
      */
     public CompletableFuture<@Nullable Void> stop() {
-        return attributes.unsubscribe().thenCompose(b -> CompletableFuture
-                .allOf(properties.stream().map(Property::stop).toArray(CompletableFuture[]::new)));
+        CompletableFuture<@Nullable Void> stopped = new CompletableFuture<>();
+        final SubscriptionContext context;
+        final CompletableFuture<@Nullable Void> previousCleanup;
+        final ChildMap<Property> outgoingProperties;
+        synchronized (lifecycleLock) {
+            context = subscription.get();
+            previousCleanup = cleanupBarrier;
+            outgoingProperties = properties;
+            cleanupBarrier = stopped;
+        }
+        completeCleanup(context, outgoingProperties, previousCleanup, stopped);
+        return stopped;
+    }
+
+    boolean isRemoved() {
+        return removed;
+    }
+
+    void remove() {
+        synchronized (lifecycleLock) {
+            removed = true;
+        }
+        stop();
+    }
+
+    private void completeCleanup(SubscriptionContext context, ChildMap<Property> outgoingProperties,
+            CompletableFuture<@Nullable Void> previousCleanup, CompletableFuture<@Nullable Void> completion) {
+        CompletableFuture<@Nullable Void> stopped = context.stop(() -> unsubscribe(outgoingProperties));
+        // Register the full cleanup barrier before publishing a successor. The final scan catches
+        // cached value contexts opened after node metadata stopped, and cannot run after restart.
+        CompletableFuture<@Nullable Void> children = CompletableFuture
+                .allOf(stopped.handle((v, error) -> null), previousCleanup.handle((v, error) -> null))
+                .thenCompose(v -> CompletableFuture
+                        .allOf(outgoingProperties.stream().map(Property::stop).toArray(CompletableFuture[]::new)));
+        CompletableFuture.allOf(stopped, children).whenComplete((v, error) -> {
+            if (error == null) {
+                completion.complete(null);
+            } else {
+                completion.completeExceptionally(error);
+            }
+        });
+    }
+
+    private CompletableFuture<@Nullable Void> unsubscribe(ChildMap<Property> outgoingProperties) {
+        return CompletableFuture.allOf(
+                CompletableFuture
+                        .allOf(outgoingProperties.stream().map(Property::stop).toArray(CompletableFuture[]::new)),
+                attributes.unsubscribe());
     }
 
     /**
@@ -172,7 +267,7 @@ public class Node implements AbstractMqttAttributeClass.AttributeChanged {
      * @param property The removed property.
      */
     protected void notifyPropertyRemoved(Property property) {
-        property.stop();
+        property.remove();
         callback.propertyRemoved(property);
     }
 
@@ -189,12 +284,21 @@ public class Node implements AbstractMqttAttributeClass.AttributeChanged {
     @Override
     public void attributeChanged(String name, Object value, MqttBrokerConnection connection,
             ScheduledExecutorService scheduler, boolean allMandatoryFieldsReceived) {
-        if (!initialized || !allMandatoryFieldsReceived) {
+        SubscriptionContext context = subscription.get();
+        context.run(() -> {
+            attributeChanged(context, name, value, connection, scheduler, allMandatoryFieldsReceived);
+            return CompletableFuture.completedFuture(null);
+        });
+    }
+
+    private void attributeChanged(SubscriptionContext context, String name, Object value,
+            MqttBrokerConnection connection, ScheduledExecutorService scheduler, boolean allMandatoryFieldsReceived) {
+        if (!metadataReady || !allMandatoryFieldsReceived) {
             return;
         }
         // Special case: Not all fields were known before
-        if (!attributes.isComplete()) {
-            attributesReceived(connection, scheduler, 500);
+        if (!metadataReconciled || !attributes.isComplete()) {
+            attributesReceived(context, connection, scheduler, 500);
         } else if ("properties".equals(name)) {
             applyProperties(connection, scheduler, 500);
         }
