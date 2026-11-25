@@ -63,6 +63,8 @@ public class Node implements AbstractMqttAttributeClass.AttributeChanged {
     private boolean metadataReady = false;
     private boolean metadataReconciled = false;
     private final AtomicReference<SubscriptionContext> subscription = new AtomicReference<>(new SubscriptionContext());
+    private final Object lifecycleLock = new Object();
+    private CompletableFuture<@Nullable Void> cleanupBarrier = CompletableFuture.completedFuture(null);
 
     /**
      * Creates a Homie Node.
@@ -90,14 +92,16 @@ public class Node implements AbstractMqttAttributeClass.AttributeChanged {
             ScheduledExecutorService scheduler, int timeout) {
         CompletableFuture<@Nullable Void> predecessor = new CompletableFuture<>();
         SubscriptionContext context = new SubscriptionContext(predecessor);
-        SubscriptionContext previous = subscription.getAndSet(context);
-        previous.stop(this::unsubscribe).whenComplete((v, error) -> {
-            if (error == null) {
-                predecessor.complete(null);
-            } else {
-                predecessor.completeExceptionally(error);
-            }
-        });
+        final SubscriptionContext previous;
+        final CompletableFuture<@Nullable Void> previousCleanup;
+        final ChildMap<Property> outgoingProperties;
+        synchronized (lifecycleLock) {
+            previous = subscription.getAndSet(context);
+            previousCleanup = cleanupBarrier;
+            outgoingProperties = properties;
+            cleanupBarrier = predecessor;
+        }
+        completeCleanup(previous, outgoingProperties, previousCleanup, predecessor);
         return context.run(() -> {
             metadataReady = false;
             metadataReconciled = false;
@@ -150,17 +154,42 @@ public class Node implements AbstractMqttAttributeClass.AttributeChanged {
      * @return Returns a future that completes as soon as all unsubscriptions have been performed.
      */
     public CompletableFuture<@Nullable Void> stop() {
-        CompletableFuture<@Nullable Void> stopped = subscription.get().stop(this::unsubscribe);
-        // Cached value channels can open new property contexts even if node metadata did not reconnect.
-        CompletableFuture<@Nullable Void> children = stopped.handle((v, error) -> null)
-                .thenCompose(v -> CompletableFuture
-                        .allOf(properties.stream().map(Property::stop).toArray(CompletableFuture[]::new)));
-        return CompletableFuture.allOf(stopped, children);
+        CompletableFuture<@Nullable Void> stopped = new CompletableFuture<>();
+        final SubscriptionContext context;
+        final CompletableFuture<@Nullable Void> previousCleanup;
+        final ChildMap<Property> outgoingProperties;
+        synchronized (lifecycleLock) {
+            context = subscription.get();
+            previousCleanup = cleanupBarrier;
+            outgoingProperties = properties;
+            cleanupBarrier = stopped;
+        }
+        completeCleanup(context, outgoingProperties, previousCleanup, stopped);
+        return stopped;
     }
 
-    private CompletableFuture<@Nullable Void> unsubscribe() {
+    private void completeCleanup(SubscriptionContext context, ChildMap<Property> outgoingProperties,
+            CompletableFuture<@Nullable Void> previousCleanup, CompletableFuture<@Nullable Void> completion) {
+        CompletableFuture<@Nullable Void> stopped = context.stop(() -> unsubscribe(outgoingProperties));
+        // Register the full cleanup barrier before publishing a successor. The final scan catches
+        // cached value contexts opened after node metadata stopped, and cannot run after restart.
+        CompletableFuture<@Nullable Void> children = CompletableFuture
+                .allOf(stopped.handle((v, error) -> null), previousCleanup.handle((v, error) -> null))
+                .thenCompose(v -> CompletableFuture
+                        .allOf(outgoingProperties.stream().map(Property::stop).toArray(CompletableFuture[]::new)));
+        CompletableFuture.allOf(stopped, children).whenComplete((v, error) -> {
+            if (error == null) {
+                completion.complete(null);
+            } else {
+                completion.completeExceptionally(error);
+            }
+        });
+    }
+
+    private CompletableFuture<@Nullable Void> unsubscribe(ChildMap<Property> outgoingProperties) {
         return CompletableFuture.allOf(
-                CompletableFuture.allOf(properties.stream().map(Property::stop).toArray(CompletableFuture[]::new)),
+                CompletableFuture
+                        .allOf(outgoingProperties.stream().map(Property::stop).toArray(CompletableFuture[]::new)),
                 attributes.unsubscribe());
     }
 

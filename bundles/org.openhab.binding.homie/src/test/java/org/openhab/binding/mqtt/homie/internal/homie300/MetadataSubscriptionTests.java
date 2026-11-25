@@ -770,4 +770,48 @@ class MetadataSubscriptionTests {
         assertEquals(Set.of(cached), listeners, "Cached value listener must be registered again after a failed stop");
         property.stop().get(5, TimeUnit.SECONDS);
     }
+
+    @Test
+    void nodeRestartWaitsForFinalOutgoingPropertyCleanup() throws Exception {
+        Set<MqttMessageSubscriber> listeners = trackValueListeners();
+        Property property = addCachedDeviceProperty();
+        AtomicReference<AbstractMqttAttributeClass.AttributeChanged> listener = new AtomicReference<>();
+        doAnswer(invocation -> {
+            listener.set(invocation.getArgument(3));
+            return CompletableFuture.completedFuture(null);
+        }).when(property.attributes).subscribeAndReceive(any(), any(), anyString(), any(), anyInt());
+        node.subscribe(connection, scheduler, 500).get(5, TimeUnit.SECONDS);
+        CompletableFuture<@Nullable Void> metadataStopped = new CompletableFuture<>();
+        doReturn(metadataStopped).when(nodeAttributes).unsubscribe();
+        CompletableFuture<@Nullable Void> stopped = node.stop();
+        // Device recovery may use cached values even though the node metadata subscription is stopped.
+        property.startChannel(connection, scheduler, 0).get(5, TimeUnit.SECONDS);
+        ChannelState cached = property.getChannelState();
+        assertNotNull(cached);
+        assertEquals(Set.of(cached), listeners);
+        CompletableFuture<Boolean> valueStopped = new CompletableFuture<>();
+        doAnswer(invocation -> {
+            listeners.remove(cached);
+            return valueStopped;
+        }).when(connection).unsubscribe(anyString(), same(cached));
+        CompletableFuture<@Nullable Void> restarted = node.subscribe(connection, scheduler, 500);
+        metadataStopped.complete(null);
+        assertFalse(stopped.isDone(), "The final outgoing property stop is still pending");
+        assertFalse(restarted.isDone(), "Node restart must wait for all outgoing property cleanup");
+        verify(nodeAttributes, times(1)).subscribeAndReceive(any(), any(), anyString(), any(), anyInt());
+        valueStopped.complete(true);
+        stopped.get(5, TimeUnit.SECONDS);
+        restarted.get(5, TimeUnit.SECONDS);
+        verify(property.attributes, times(2)).subscribeAndReceive(any(), any(), anyString(), any(), anyInt());
+        clearInvocations(callback);
+        property.attributes.name = "After restart";
+        listener.get().attributeChanged("name", "After restart", connection, scheduler, true);
+        verify(callback).propertyAddedOrChanged(property);
+        property.startChannel(connection, scheduler, 0).get(5, TimeUnit.SECONDS);
+        ChannelState current = property.getChannelState();
+        assertNotNull(current);
+        assertEquals(Set.of(current), listeners);
+        node.stop().get(5, TimeUnit.SECONDS);
+        assertTrue(listeners.isEmpty());
+    }
 }

@@ -258,8 +258,14 @@ public class HomieImplementationTest extends MqttOSGiTest {
         assertThat(device.attributes.homie, is("3.0"));
         assertThat(device.attributes.name, is("Name"));
         assertThat(device.attributes.state, is(ReadyState.ready));
-        assertThat(device.attributes.nodes.length, is(1));
+        assertArrayEquals(new String[] { "testnode" }, device.attributes.nodes);
         verify(callback).readyStateChanged(eq(ReadyState.ready));
+        publish(DEVICE_TOPIC + "/$state", "init").get(5, TimeUnit.SECONDS);
+        waitForAssert(() -> verify(callback).readyStateChanged(ReadyState.init));
+        assertThat(device.attributes.state, is(ReadyState.init));
+        publish(DEVICE_TOPIC + "/$state", "ready").get(5, TimeUnit.SECONDS);
+        waitForAssert(() -> verify(callback, times(2)).readyStateChanged(ReadyState.ready));
+        assertThat(device.attributes.state, is(ReadyState.ready));
 
         // Expect 1 node
         assertThat(device.nodes.size(), is(1));
