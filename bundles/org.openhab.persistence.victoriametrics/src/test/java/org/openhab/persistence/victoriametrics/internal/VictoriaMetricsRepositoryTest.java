@@ -21,7 +21,6 @@ import static org.mockito.Mockito.*;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.LinkedHashMap;
@@ -31,15 +30,18 @@ import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.DefaultLocation;
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentProvider;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.http.HttpFields;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
+import org.eclipse.jetty.io.Content;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -108,7 +110,7 @@ public class VictoriaMetricsRepositoryTest {
     }
 
     @Test
-    public void writeUsesPrometheusFormatWithMilliseconds() {
+    public void writeUsesPrometheusFormatWithMilliseconds() throws IOException {
         VictoriaMetricsRepository repository = createRepository();
         Instant time = Instant.ofEpochMilli(1_767_225_600_123L);
         VictoriaMetricsPoint point1 = VictoriaMetricsPoint.newBuilder("Temperature").withTime(time)
@@ -128,7 +130,7 @@ public class VictoriaMetricsRepositoryTest {
     }
 
     @Test
-    public void writeComponentsAsSeparateSamples() {
+    public void writeComponentsAsSeparateSamples() throws IOException {
         VictoriaMetricsRepository repository = createRepository();
         Map<String, BigDecimal> components = new LinkedHashMap<>();
         components.put("hue", new BigDecimal("120.5"));
@@ -148,7 +150,7 @@ public class VictoriaMetricsRepositoryTest {
     }
 
     @Test
-    public void writeStringStateAsLabel() {
+    public void writeStringStateAsLabel() throws IOException {
         VictoriaMetricsRepository repository = createRepository();
         VictoriaMetricsPoint point = VictoriaMetricsPoint.newBuilder("Mode")
                 .withTime(Instant.ofEpochMilli(1_767_225_600_123L)).withStringState("Say \"hi\"")
@@ -162,7 +164,7 @@ public class VictoriaMetricsRepositoryTest {
     }
 
     @Test
-    public void writeEmptyStringStateWithoutLabel() {
+    public void writeEmptyStringStateWithoutLabel() throws IOException {
         VictoriaMetricsRepository repository = createRepository();
         VictoriaMetricsPoint point = VictoriaMetricsPoint.newBuilder("Mode")
                 .withTime(Instant.ofEpochMilli(1_767_225_600_123L)).withStringState("").withTag("item", "Mode").build();
@@ -192,7 +194,7 @@ public class VictoriaMetricsRepositoryTest {
         createRepository(Map.of(VictoriaMetricsConfiguration.URL_PARAM, URL, VictoriaMetricsConfiguration.USER_PARAM,
                 "user", VictoriaMetricsConfiguration.PASSWORD_PARAM, "pass", VictoriaMetricsConfiguration.TOKEN_PARAM,
                 "token")).connect();
-        verify(request).header(HttpHeader.AUTHORIZATION, "Basic dXNlcjpwYXNz");
+        assertThat(capturedAuthorization(), is("Basic dXNlcjpwYXNz"));
     }
 
     @Test
@@ -200,13 +202,13 @@ public class VictoriaMetricsRepositoryTest {
         createRepository(
                 Map.of(VictoriaMetricsConfiguration.URL_PARAM, URL, VictoriaMetricsConfiguration.TOKEN_PARAM, "token"))
                 .connect();
-        verify(request).header(HttpHeader.AUTHORIZATION, "Bearer token");
+        assertThat(capturedAuthorization(), is("Bearer token"));
     }
 
     @Test
     public void noAuthenticationByDefault() {
         createRepository().connect();
-        verify(request, never()).header(eq(HttpHeader.AUTHORIZATION), any());
+        verify(request, never()).headers(any());
     }
 
     @Test
@@ -343,13 +345,17 @@ public class VictoriaMetricsRepositoryTest {
                 .build();
     }
 
-    private String capturedContent() {
-        ArgumentCaptor<ContentProvider> captor = ArgumentCaptor.forClass(ContentProvider.class);
-        verify(request).content(captor.capture());
-        StringBuilder content = new StringBuilder();
-        for (ByteBuffer buffer : captor.getValue()) {
-            content.append(StandardCharsets.UTF_8.decode(buffer));
-        }
-        return content.toString();
+    private String capturedContent() throws IOException {
+        ArgumentCaptor<Request.Content> captor = ArgumentCaptor.forClass(Request.Content.class);
+        verify(request).body(captor.capture());
+        return Content.Source.asString(captor.getValue(), StandardCharsets.UTF_8);
+    }
+
+    private @Nullable String capturedAuthorization() {
+        ArgumentCaptor<Consumer<HttpFields.Mutable>> captor = ArgumentCaptor.captor();
+        verify(request).headers(captor.capture());
+        HttpFields.Mutable headers = HttpFields.build();
+        captor.getValue().accept(headers);
+        return headers.get(HttpHeader.AUTHORIZATION);
     }
 }

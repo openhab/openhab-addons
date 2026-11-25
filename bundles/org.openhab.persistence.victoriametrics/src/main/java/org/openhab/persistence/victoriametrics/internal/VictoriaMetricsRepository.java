@@ -37,12 +37,12 @@ import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.api.Response;
-import org.eclipse.jetty.client.util.InputStreamResponseListener;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.InputStreamResponseListener;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.Response;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
@@ -142,7 +142,7 @@ public class VictoriaMetricsRepository {
                 .collect(Collectors.joining("\n", "", "\n"));
         try {
             ContentResponse response = newRequest(PATH_IMPORT).method(HttpMethod.POST)
-                    .content(new StringContentProvider("text/plain", body, StandardCharsets.UTF_8)).send();
+                    .body(new StringRequestContent("text/plain", body, StandardCharsets.UTF_8)).send();
             int status = response.getStatus();
             if (HttpStatus.isSuccess(status)) {
                 return true;
@@ -357,14 +357,16 @@ public class VictoriaMetricsRepository {
         Request request = httpClient.newRequest(baseUrl + path).timeout(REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS);
         String user = configuration.getUser();
         String token = configuration.getToken();
+        String authorization;
         if (!user.isEmpty()) {
             String credentials = user + ":" + configuration.getPassword();
-            request.header(HttpHeader.AUTHORIZATION,
-                    "Basic " + Base64.getEncoder().encodeToString(credentials.getBytes(StandardCharsets.UTF_8)));
+            authorization = "Basic " + Base64.getEncoder().encodeToString(credentials.getBytes(StandardCharsets.UTF_8));
         } else if (!token.isEmpty()) {
-            request.header(HttpHeader.AUTHORIZATION, "Bearer " + token);
+            authorization = "Bearer " + token;
+        } else {
+            return request;
         }
-        return request;
+        return request.headers(headers -> headers.put(HttpHeader.AUTHORIZATION, authorization));
     }
 
     /**
