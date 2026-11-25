@@ -26,6 +26,7 @@ import static org.openhab.persistence.influxdb.internal.InfluxDBConfiguration.UR
 import static org.openhab.persistence.influxdb.internal.InfluxDBConfiguration.USER_PARAM;
 import static org.openhab.persistence.influxdb.internal.InfluxDBConfiguration.VERSION_PARAM;
 
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -38,8 +39,14 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
+import org.openhab.core.i18n.UnitProvider;
 import org.openhab.core.items.ItemRegistry;
 import org.openhab.core.items.MetadataRegistry;
+import org.openhab.core.library.CoreItemFactory;
+import org.openhab.core.library.items.ColorItem;
+import org.openhab.core.library.items.DimmerItem;
+import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.PercentType;
 import org.openhab.core.persistence.FilterCriteria;
 import org.openhab.persistence.influxdb.internal.InfluxDBMetadataService;
 import org.openhab.persistence.influxdb.internal.InfluxDBRepository;
@@ -230,6 +237,29 @@ public class InfluxDBPersistenceServiceTest {
         assertThat(secondBatch.size(), is(1));
         assertThat(secondBatch.get(0).getTags().get("item"), is("accepted"));
         verify(influxDBRepositoryMock, never()).disconnect();
+        instance.deactivate();
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void timestampedStateIsConvertedToTheItemStateType() throws UnexpectedConditionException {
+        InfluxDBPersistenceService instance = getService(VALID_V2_CONFIGURATION);
+        instance.setItemFactory(new CoreItemFactory(mock(UnitProvider.class)));
+        when(influxDBRepositoryMock.isConnected()).thenReturn(true);
+
+        instance.store(new DimmerItem("dimmer"), ZonedDateTime.now(), OnOffType.ON);
+        instance.store(new ColorItem("color"), ZonedDateTime.now(), PercentType.HUNDRED);
+
+        ArgumentCaptor<List<InfluxPoint>> captor = ArgumentCaptor.forClass(List.class);
+        verify(influxDBRepositoryMock, timeout(10000).atLeastOnce()).write(captor.capture());
+        List<InfluxPoint> points = captor.getAllValues().stream().flatMap(List::stream).toList();
+        assertThat(points.size(), is(2));
+        InfluxPoint dimmer = points.stream().filter(p -> "dimmer".equals(p.getTags().get("item"))).findFirst().get();
+        InfluxPoint color = points.stream().filter(p -> "color".equals(p.getTags().get("item"))).findFirst().get();
+        // ON is stored as 100 (%), not as the digital value 1
+        assertThat(dimmer.getValue(), is(PercentType.HUNDRED.toBigDecimal()));
+        // a Color item is restored with new HSBType(String), so it needs an HSB string, not a scalar
+        assertThat(color.getValue(), is("0,0,100"));
         instance.deactivate();
     }
 

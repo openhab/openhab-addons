@@ -399,8 +399,7 @@ public class InfluxDBPersistenceService implements ModifiablePersistenceService 
             for (String itemType : factory.getSupportedItemTypes()) {
                 Item item = factory.createItem(itemType, "influxItem");
                 if (item != null) {
-                    item.getAcceptedCommandTypes().stream()
-                            .filter(commandType -> commandType.isAssignableFrom(State.class)).findFirst()
+                    item.getAcceptedCommandTypes().stream().filter(State.class::isAssignableFrom).findFirst()
                             .map(commandType -> (Class<? extends State>) commandType.asSubclass(State.class))
                             .ifPresent(desiredClass -> desiredClasses.put(itemType, desiredClass));
                 }
