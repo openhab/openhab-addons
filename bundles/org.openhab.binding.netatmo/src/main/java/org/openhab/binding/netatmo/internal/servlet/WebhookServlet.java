@@ -185,14 +185,14 @@ public abstract class WebhookServlet extends NetatmoServlet {
             if (dataListeners.get(id) instanceof CommonInterface handler
                     && event.getEventType().validFor(handler.getModuleType())) {
                 logger.trace("Dispatching webhook event to {}", id);
-                handler.setNewData(event);
+                handler.setNewData(event.ignoringForThingUpdate());
             }
         });
     }
 
     public void registerDataListener(CommonInterface handler) {
         String id = handler.getId();
-        logger.debug("Registering webhook listener '{}' for module {}'", id, handler.getModuleType());
+        logger.debug("Registering webhook listener for '{}' ({})", handler.getThing().getLabel(), id);
         dataListeners.put(id, handler);
     }
 
