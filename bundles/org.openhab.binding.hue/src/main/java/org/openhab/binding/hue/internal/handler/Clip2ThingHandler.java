@@ -1640,7 +1640,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 Thread.currentThread().interrupt();
             } catch (RuntimeException e) {
                 logger.warn("{} -> updateDependencies() {}", resourceId, e.getMessage(), e);
-                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.communication-error");
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR);
             }
         }
     }
