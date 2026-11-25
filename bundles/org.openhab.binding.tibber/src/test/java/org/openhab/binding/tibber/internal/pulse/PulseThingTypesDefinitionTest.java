@@ -278,7 +278,10 @@ class PulseThingTypesDefinitionTest {
         Element tags = child(channelType, "tags");
         assertNotNull(tags);
         Set<String> result = new HashSet<>();
-        children(tags, "tag").forEach(tag -> result.add(tag.getTextContent().trim()));
+        // "point" and "property" since core 5.3, "tag" before (still accepted, deprecated)
+        for (String name : List.of("point", "property", "tag")) {
+            children(tags, name).forEach(tag -> result.add(tag.getTextContent().trim()));
+        }
         return result;
     }
 

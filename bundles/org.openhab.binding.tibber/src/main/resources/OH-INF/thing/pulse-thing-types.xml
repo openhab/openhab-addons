@@ -101,8 +101,8 @@
 		<label>Power</label>
 		<description>Net active power, positive when drawn from the grid and negative when fed into it.</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point>Measurement</point>
+			<property>Power</property>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
@@ -112,8 +112,8 @@
 		<label>Energy Import</label>
 		<description>Total energy drawn from the grid. Keeps its last value when the meter goes stale.</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state readOnly="true" pattern="%.3f %unit%"/>
 	</channel-type>
@@ -123,8 +123,8 @@
 		<label>Energy Export</label>
 		<description>Total energy fed into the grid. Keeps its last value when the meter goes stale.</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state readOnly="true" pattern="%.3f %unit%"/>
 	</channel-type>
@@ -134,8 +134,8 @@
 		<label>Phase Power</label>
 		<description>Active power on one phase.</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point>Measurement</point>
+			<property>Power</property>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
@@ -145,8 +145,8 @@
 		<label>Phase Voltage</label>
 		<description>Voltage on one phase.</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Voltage</tag>
+			<point>Measurement</point>
+			<property>Voltage</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -156,8 +156,8 @@
 		<label>Phase Current</label>
 		<description>Current on one phase.</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Current</tag>
+			<point>Measurement</point>
+			<property>Current</property>
 		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
@@ -167,8 +167,8 @@
 		<label>Frequency</label>
 		<description>Grid frequency.</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Frequency</tag>
+			<point>Measurement</point>
+			<property>Frequency</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -178,8 +178,8 @@
 		<label>Last Update</label>
 		<description>Time of the latest valid reading received for this meter.</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
+			<point>Status</point>
+			<property>Timestamp</property>
 		</tags>
 		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS"/>
 	</channel-type>

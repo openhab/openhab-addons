@@ -108,7 +108,10 @@ class MergedDefinitionsTest {
 
     private static Set<String> tags(Element channelType) {
         Set<String> result = new HashSet<>();
-        children(only(channelType, "tags"), "tag").forEach(tag -> result.add(tag.getTextContent().trim()));
+        // "point" and "property" since core 5.3, "tag" before (still accepted, deprecated)
+        for (String name : List.of("point", "property", "tag")) {
+            children(only(channelType, "tags"), name).forEach(tag -> result.add(tag.getTextContent().trim()));
+        }
         return result;
     }
 
