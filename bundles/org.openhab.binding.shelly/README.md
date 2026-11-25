@@ -2744,6 +2744,8 @@ end
 |         | playRadioFavId     | Number   | r/w       | Start playback of a radio favorite by its id                                      |
 | control | thermostatEnable   | Switch   | r/w       | Enable or disable the Wall Display thermostat                                     |
 |         | targetTemp         | Number   | r/w       | Thermostat target temperature in °C                                               |
+|         | schedule           | Switch   | r/w       | ON: The thermostat follows its schedule                                           |
+|         | selectedProfile    | String   | r/w       | Id of the active schedule profile, the profile names are offered as options       |
 
 The `media` group is only available while the media player is configured on the Wall Display.
 Media library and radio favorite ids can be looked up in the Shelly app; there is no channel to browse them.
@@ -2754,6 +2756,13 @@ The `control` group is labeled `Thermostat Control` on the Wall Display.
 Its `thermostatEnable` and `targetTemp` channels are only available while the thermostat is enabled in the Shelly app.
 The thermostat's current temperature and controlled output are shown by the existing `sensors#temperature` and `relay#output` channels.
 Enabling or disabling the thermostat in the Shelly app adds or removes these channels with the next status update, so the Thing doesn't need to be re-created.
+
+The `schedule` and `selectedProfile` channels are available when the thermostat reports a schedule.
+`selectedProfile` accepts the id or the name of a profile.
+The ids and names of the profiles configured in the Shelly app are offered as options (for a Selection widget).
+Profiles and schedule rules themselves can only be edited in the Shelly app.
+The list of profiles is read when the Thing is initialized, and again when the device reports a profile that is not in the list yet.
+Renamed profiles are picked up when the Thing is initialized again, e.g. after a device restart.
 
 The `sensors` group's `batteryLevel` and `lowBattery` channels are only available while a battery-operated sensor is attached to the Wall Display.
 Pairing a sensor after the Thing was created adds them with the next status update, unpairing the sensor removes them again.

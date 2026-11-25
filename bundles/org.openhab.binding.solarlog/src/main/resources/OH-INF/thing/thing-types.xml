@@ -44,8 +44,8 @@
 		<label>Last Update</label>
 		<description>Last Update Time</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
+			<point>Status</point>
+			<property>Timestamp</property>
 		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
@@ -54,8 +54,8 @@
 		<label>PAC</label>
 		<description>Total output PAC from all of the inverters</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point>Measurement</point>
+			<property>Power</property>
 		</tags>
 		<state readOnly="true" pattern="%d W"></state>
 	</channel-type>
@@ -64,8 +64,8 @@
 		<label>PDC</label>
 		<description>Total output PDC from all of the inverters</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point>Measurement</point>
+			<property>Power</property>
 		</tags>
 		<state readOnly="true" pattern="%d W"></state>
 	</channel-type>
@@ -74,8 +74,8 @@
 		<label>UAC</label>
 		<description>Average voltage UAC from the inverter</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Voltage</tag>
+			<point>Measurement</point>
+			<property>Voltage</property>
 		</tags>
 		<state readOnly="true" pattern="%d V"></state>
 	</channel-type>
@@ -84,8 +84,8 @@
 		<label>UDC</label>
 		<description>Average voltage UDC from the inverter</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Voltage</tag>
+			<point>Measurement</point>
+			<property>Voltage</property>
 		</tags>
 		<state readOnly="true" pattern="%d V"></state>
 	</channel-type>
@@ -94,8 +94,8 @@
 		<label>Yield Day</label>
 		<description>Total yield for the day from all of the inverters</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state readOnly="true" pattern="%d Wh"></state>
 	</channel-type>
@@ -104,8 +104,8 @@
 		<label>Yield Yesterday</label>
 		<description>Total yield for the previous day from all of the inverters</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state readOnly="true" pattern="%d Wh"></state>
 	</channel-type>
@@ -114,8 +114,8 @@
 		<label>Yield Month</label>
 		<description>Total yield for the month from all of the inverters</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state readOnly="true" pattern="%d Wh"></state>
 	</channel-type>
@@ -124,8 +124,8 @@
 		<label>Yield Year</label>
 		<description>Total yield for the year from all of the inverters</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state readOnly="true" pattern="%d Wh"></state>
 	</channel-type>
@@ -134,8 +134,8 @@
 		<label>Yield Total</label>
 		<description>Total yield from all of the inverters</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state readOnly="true" pattern="%d Wh"></state>
 	</channel-type>
@@ -144,8 +144,8 @@
 		<label>Consumption PAC</label>
 		<description>Current total consumption PAC from all of the consumption meters (W)</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point>Measurement</point>
+			<property>Power</property>
 		</tags>
 		<state readOnly="true" pattern="%d W"></state>
 	</channel-type>
@@ -154,8 +154,8 @@
 		<label>Consumption Today</label>
 		<description>Total consumption from all of the consumption meters</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state readOnly="true" pattern="%d Wh"></state>
 	</channel-type>
@@ -164,8 +164,8 @@
 		<label>Consumption Yesterday</label>
 		<description>Total consumption for the previous day from all of the consumption meters</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state readOnly="true" pattern="%d Wh"></state>
 	</channel-type>
@@ -174,8 +174,8 @@
 		<label>Consumption Month</label>
 		<description>Total consumption for the month from all of the consumption meters</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state readOnly="true" pattern="%d Wh"></state>
 	</channel-type>
@@ -190,8 +190,8 @@
 		<label>Consumption Total</label>
 		<description>Accumulated total consumption from all consumption meters</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state readOnly="true" pattern="%d Wh"></state>
 	</channel-type>

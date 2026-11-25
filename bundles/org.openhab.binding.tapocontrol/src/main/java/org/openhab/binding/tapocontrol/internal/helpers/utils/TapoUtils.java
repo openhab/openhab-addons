@@ -27,6 +27,7 @@ import org.openhab.core.thing.ThingTypeUID;
  * Utility Helper Functions
  *
  * @author Christian Wild - Initial Initial contribution
+ * @author Christopher Smith - Kasa vendor and dimmer plug labels
  */
 @NonNullByDefault
 public class TapoUtils {
@@ -141,6 +142,11 @@ public class TapoUtils {
                 deviceModel = DEVICE_HS200;
             } else if (deviceModel.startsWith(DEVICE_HS220)) {
                 deviceModel = DEVICE_HS220;
+            } else if (deviceModel.startsWith(DEVICE_KP405)) {
+                deviceModel = DEVICE_KP405;
+            } else if (deviceModel.startsWith(DEVICE_EP40 + "M")) {
+                // EP40M is a different (Matter) device; keep it from being truncated to EP40
+                deviceModel = DEVICE_EP40 + "M";
             } else {
                 // Keep legacy behavior of only first 4 characters
                 deviceModel = deviceModel.substring(0, 4);
@@ -149,6 +155,16 @@ public class TapoUtils {
         } catch (Exception e) {
             return "";
         }
+    }
+
+    /**
+     * Get the brand a device is sold under
+     *
+     * @param deviceUID ThingTypeUID of the device
+     * @return "Kasa" for Kasa devices, otherwise "Tapo"
+     */
+    public static String getDeviceVendor(ThingTypeUID deviceUID) {
+        return KASA_DEVICE_UIDS.contains(deviceUID) ? DEVICE_VENDOR_KASA : DEVICE_VENDOR;
     }
 
     /**
@@ -182,13 +198,16 @@ public class TapoUtils {
                 deviceLabel = DEVICE_DESCRIPTION_MOTION_SENSOR;
             } else if (SUPPORTED_WEATHER_SENSORS.contains(deviceUID)) {
                 deviceLabel = DEVICE_DESCRIPTION_TEMP_SENSOR;
+            } else if (KP405_THING_TYPE.equals(deviceUID)) {
+                deviceLabel = DEVICE_DESCRIPTION_DIMMER_PLUG;
             } else if (SUPPORTED_LIGHT_SWITCH_UIDS.contains(deviceUID)) {
                 deviceLabel = DEVICE_DESCRIPTION_LIGHT_SWITCH;
             }
+            String vendor = getDeviceVendor(deviceUID);
             if (alias.length() > 0) {
-                return String.format("%s %s %s (%s)", DEVICE_VENDOR, deviceModel, deviceLabel, alias);
+                return String.format("%s %s %s (%s)", vendor, deviceModel, deviceLabel, alias);
             }
-            return String.format("%s %s %s", DEVICE_VENDOR, deviceModel, deviceLabel);
+            return String.format("%s %s %s", vendor, deviceModel, deviceLabel);
         } catch (Exception e) {
             return "";
         }

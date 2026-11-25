@@ -452,11 +452,26 @@ public abstract class BaseMetadata {
                 return ColorUtil.xyToHsb(ColorUtil.kelvinToXY(2500 + (4000 * cold / 255)));
             }
             return UnDefType.UNDEF;
+        } else if (value instanceof Map<?, ?> map && isPartialRgbColorMap(map)) {
+            logger.debug("Node {}, channel {}, incomplete RGB color value", nodeId, id);
+            return UnDefType.UNDEF;
         } else {
-            logger.warn("Node {}, unexpected value type for color: {}, please file a bug report", nodeId,
-                    value.getClass().getName());
+            logger.warn("Node {}, channel {}, unexpected value type for color: {}, please file a bug report", nodeId,
+                    id, value.getClass().getName());
             return UnDefType.UNDEF;
         }
+    }
+
+    private boolean isPartialRgbColorMap(Map<?, ?> map) {
+        List<String> components = List.of(RED, GREEN, BLUE);
+        return components.stream().anyMatch(map::containsKey)
+                && components.stream().filter(map::containsKey).allMatch(component -> {
+                    if (map.get(component) instanceof Number number) {
+                        double value = number.doubleValue();
+                        return value >= 0 && value <= 255 && value == Math.rint(value);
+                    }
+                    return false;
+                });
     }
 
     /*

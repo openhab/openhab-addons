@@ -307,7 +307,7 @@ public class JRubyScriptEngineConfiguration {
 
                 Bundler.settings.temporary(auto_install: true) do
                   require "bundler/setup"
-                  Bundler.require
+                  Bundler.require(:default, :openhab)
                 end
                 """;
 

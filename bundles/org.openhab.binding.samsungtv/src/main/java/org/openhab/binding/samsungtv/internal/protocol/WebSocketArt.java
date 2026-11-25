@@ -64,7 +64,7 @@ import com.google.gson.JsonSyntaxException;
  * @author Nick Waterton - added slideshow handling, upload/download, refactoring
  */
 @NonNullByDefault
-class WebSocketArt extends WebSocketBase {
+public class WebSocketArt extends WebSocketBase {
     private final Logger logger = LoggerFactory.getLogger(WebSocketArt.class);
 
     private String host = "";

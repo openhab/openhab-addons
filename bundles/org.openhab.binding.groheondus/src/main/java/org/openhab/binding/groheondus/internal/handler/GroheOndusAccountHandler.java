@@ -12,19 +12,18 @@
  */
 package org.openhab.binding.groheondus.internal.handler;
 
-import java.io.IOException;
-import java.lang.reflect.Field;
-import java.time.Duration;
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import javax.security.auth.login.LoginException;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.groheondus.internal.GroheOndusAccountConfiguration;
+import org.openhab.binding.groheondus.internal.api.GroheOndusApi;
+import org.openhab.binding.groheondus.internal.api.GroheOndusApiException;
+import org.openhab.binding.groheondus.internal.api.GroheOndusAuthenticationException;
+import org.openhab.binding.groheondus.internal.api.dto.TokenResponse;
+import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.storage.Storage;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
@@ -35,37 +34,64 @@ import org.openhab.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.github.floriansw.ondus.api.OndusService;
-import io.github.floriansw.ondus.api.model.RefreshTokenResponse;
-
 /**
+ * Authenticates against the GROHE ONDUS cloud and keeps the access token fresh.
+ *
  * @author Florian Schmidt and Arne Wohlert - Initial contribution
+ * @author Arne Seime - Use own API client, asynchronous login and retry with backoff
  */
 @NonNullByDefault
 public class GroheOndusAccountHandler extends BaseBridgeHandler {
 
-    public static final String BASE_URL = "https://idp2-apigw.cloud.grohe.com";
-
     private static final String STORAGE_KEY_REFRESH_TOKEN = "refreshToken";
+    private static final long TOKEN_REFRESH_MARGIN_SECONDS = 300;
+    private static final long MIN_TOKEN_REFRESH_DELAY_SECONDS = 30;
+    private static final long[] RETRY_DELAYS_SECONDS = { 60, 120, 300, 600 };
 
     private final Logger logger = LoggerFactory.getLogger(GroheOndusAccountHandler.class);
 
-    private Storage<String> storage;
-    private @Nullable OndusService ondusService;
-    private @Nullable String authorizationHeader;
-    private @Nullable ScheduledFuture<?> reloginFuture;
+    private final Storage<String> storage;
+    private final GroheOndusApi api;
 
-    public GroheOndusAccountHandler(Bridge bridge, Storage<String> storage) {
+    private @Nullable ScheduledFuture<?> authenticationFuture;
+    private int failedAttempts;
+    // Incremented on initialize/dispose so that an authentication still running for an earlier lifecycle is ignored
+    private int generation;
+
+    public GroheOndusAccountHandler(Bridge bridge, Storage<String> storage, HttpClient httpClient,
+            TimeZoneProvider timeZoneProvider) {
         super(bridge);
         this.storage = storage;
+        this.api = new GroheOndusApi(httpClient, timeZoneProvider);
     }
 
-    public OndusService getService() {
-        OndusService ret = this.ondusService;
-        if (ret == null) {
-            throw new IllegalStateException("OndusService requested, which is null (UNINITIALIZED)");
+    @Override
+    public void initialize() {
+        GroheOndusAccountConfiguration config = getConfigAs(GroheOndusAccountConfiguration.class);
+        if (config.username.isBlank() || config.password.isBlank()) {
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.login.missing.credentials");
+            return;
         }
-        return ret;
+        updateStatus(ThingStatus.UNKNOWN);
+        synchronized (this) {
+            generation++;
+            failedAttempts = 0;
+            scheduleAuthentication(0);
+        }
+    }
+
+    @Override
+    public void dispose() {
+        synchronized (this) {
+            generation++;
+            ScheduledFuture<?> future = authenticationFuture;
+            if (future != null) {
+                future.cancel(true);
+                authenticationFuture = null;
+            }
+        }
+        api.clearAuthentication();
+        super.dispose();
     }
 
     @Override
@@ -73,110 +99,87 @@ public class GroheOndusAccountHandler extends BaseBridgeHandler {
         // Nothing to do for bridge
     }
 
-    @Override
-    public void dispose() {
-        this.ondusService = null;
-        this.authorizationHeader = null;
+    /**
+     * @return the API client, or null while the account is not authenticated
+     */
+    public @Nullable GroheOndusApi getApi() {
+        return getThing().getStatus() == ThingStatus.ONLINE && api.isAuthenticated() ? api : null;
+    }
 
-        ScheduledFuture<?> reloginFuture = this.reloginFuture;
-        if (reloginFuture != null) {
-            reloginFuture.cancel(true);
+    /**
+     * Called when a request was rejected because the access token is no longer valid.
+     */
+    public synchronized void reauthenticate() {
+        if (api.isAuthenticated()) {
+            logger.debug("Access token rejected, re-authenticating");
+            api.clearAuthentication();
+            scheduleAuthentication(0);
         }
-        super.dispose();
     }
 
-    public @Nullable String getAuthorizationHeader() {
-        return authorizationHeader;
+    private synchronized void scheduleAuthentication(long delaySeconds) {
+        ScheduledFuture<?> future = authenticationFuture;
+        if (future != null) {
+            // Do not interrupt: this may be called from the running authentication task itself
+            future.cancel(false);
+        }
+        int scheduledGeneration = generation;
+        authenticationFuture = scheduler.schedule(() -> authenticate(scheduledGeneration), delaySeconds,
+                TimeUnit.SECONDS);
     }
 
-    private void login() {
+    private void authenticate(int scheduledGeneration) {
         GroheOndusAccountConfiguration config = getConfigAs(GroheOndusAccountConfiguration.class);
-        if (config.username.isBlank() || config.password.isBlank()) {
-            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.login.missing.credentials");
-        } else {
-            // Config appears to be ok, lets try
-            try {
-                OndusService ondusService;
-                if (storage.containsKey(STORAGE_KEY_REFRESH_TOKEN)) {
-                    try {
-                        logger.debug("Trying to login using refresh token");
-                        ondusService = OndusService.login(storage.get(STORAGE_KEY_REFRESH_TOKEN));
-                    } catch (LoginException e) {
-                        logger.debug("Refresh token invalid, try again with username and password");
-                        ondusService = OndusService.loginWebform(config.username, config.password);
-                    }
-                } else {
-                    logger.debug("No refresh token found, trying to log in using username and password");
-                    ondusService = OndusService.loginWebform(config.username, config.password);
-                }
-                this.ondusService = ondusService;
-                this.authorizationHeader = extractAuthorizationHeader(ondusService);
-
-                // Assuming everything went fine...
-                Instant expiresAt = ondusService.authorizationExpiresAt();
-                // Refresh 5 minutes before expiry
-                Instant refreshTime = expiresAt.minus(5, ChronoUnit.MINUTES);
-                final OndusService ondusServiceInner = ondusService;
-                if (refreshTime.isAfter(Instant.now())) {
-                    Duration durationUntilRefresh = Duration.between(Instant.now(), refreshTime);
-                    reloginFuture = scheduler.schedule(() -> {
-                        try {
-                            logger.debug("Refreshing token");
-                            this.storage.put(STORAGE_KEY_REFRESH_TOKEN, ondusServiceInner.refreshAuthorization());
-                            this.authorizationHeader = extractAuthorizationHeader(ondusServiceInner);
-                            logger.debug("Refreshed token, token expires at {}",
-                                    ondusServiceInner.authorizationExpiresAt());
-                        } catch (Exception e) {
-                            logger.debug("Could not refresh token for GROHE ONDUS account, removing refresh token", e);
-                            this.storage.remove(STORAGE_KEY_REFRESH_TOKEN);
-                            this.authorizationHeader = null;
-                        }
-                        login();
-                    }, durationUntilRefresh.getSeconds(), TimeUnit.SECONDS);
-                    logger.debug("Scheduled token refresh at {}", refreshTime);
-                    updateStatus(ThingStatus.ONLINE);
-                } else {
-                    // Refresh time in the past (happens)
-                    logger.debug("Refresh time for token was in the past, waiting a minute and retrying");
-                    this.storage.remove(STORAGE_KEY_REFRESH_TOKEN);
-                    reloginFuture = scheduler.schedule(this::login, 1, TimeUnit.MINUTES);
-                }
-
-            } catch (LoginException e) {
-                logger.debug("Grohe api login failed", e);
-                this.authorizationHeader = null;
-                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.login.failed");
-            } catch (IOException e) {
-                logger.debug("Communication error while logging into the grohe api", e);
-                this.authorizationHeader = null;
-                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-
-                // Cleanup and retry
-                this.storage.remove(STORAGE_KEY_REFRESH_TOKEN);
-                reloginFuture = scheduler.schedule(this::login, 1, TimeUnit.MINUTES);
-            }
-        }
-    }
-
-    private @Nullable String extractAuthorizationHeader(OndusService ondusService) {
         try {
-            Field refreshTokenResponseField = OndusService.class.getDeclaredField("refreshTokenResponse");
-            refreshTokenResponseField.setAccessible(true);
-            Object refreshTokenResponse = refreshTokenResponseField.get(ondusService);
-            if (refreshTokenResponse instanceof RefreshTokenResponse tokenResponse) {
-                String accessToken = tokenResponse.getAccessToken().trim();
-                if (!accessToken.isBlank()) {
-                    return "Bearer " + accessToken;
+            TokenResponse token = null;
+            String refreshToken = storage.get(STORAGE_KEY_REFRESH_TOKEN);
+            if (refreshToken != null) {
+                try {
+                    logger.debug("Authenticating using refresh token");
+                    token = api.authenticateWithRefreshToken(refreshToken);
+                } catch (GroheOndusAuthenticationException e) {
+                    logger.debug("Refresh token rejected, logging in with username and password");
+                    storage.remove(STORAGE_KEY_REFRESH_TOKEN);
                 }
             }
-        } catch (NoSuchFieldException | IllegalAccessException e) {
-            logger.debug("Could not access ONDUS authorization token", e);
+            if (token == null) {
+                logger.debug("Authenticating using username and password");
+                token = api.authenticateWithCredentials(config.username, config.password);
+            }
+            synchronized (this) {
+                if (scheduledGeneration != generation) {
+                    return;
+                }
+                storage.put(STORAGE_KEY_REFRESH_TOKEN, token.refreshToken);
+                failedAttempts = 0;
+                long refreshDelay = Math.max(MIN_TOKEN_REFRESH_DELAY_SECONDS,
+                        token.expiresIn - TOKEN_REFRESH_MARGIN_SECONDS);
+                logger.debug("Authenticated, refreshing token in {}s", refreshDelay);
+                scheduleAuthentication(refreshDelay);
+            }
+            updateStatus(ThingStatus.ONLINE);
+        } catch (GroheOndusAuthenticationException e) {
+            logger.debug("Login to GROHE ONDUS failed: {}", e.getMessage());
+            synchronized (this) {
+                if (scheduledGeneration != generation) {
+                    return;
+                }
+                api.clearAuthentication();
+            }
+            // No automatic retry with rejected credentials; updating the configuration re-initializes the handler
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.login.failed");
+        } catch (GroheOndusApiException e) {
+            long retryDelay;
+            synchronized (this) {
+                if (scheduledGeneration != generation) {
+                    return;
+                }
+                retryDelay = RETRY_DELAYS_SECONDS[Math.min(failedAttempts, RETRY_DELAYS_SECONDS.length - 1)];
+                failedAttempts++;
+                scheduleAuthentication(retryDelay);
+            }
+            logger.debug("Could not authenticate with GROHE ONDUS, retrying in {}s", retryDelay, e);
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
-        return null;
-    }
-
-    @Override
-    public void initialize() {
-        login();
     }
 }

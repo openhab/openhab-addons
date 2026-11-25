@@ -115,7 +115,7 @@ public class WebthingChannelLinkTest {
                 mock(org.eclipse.jetty.websocket.client.WebSocketClient.class));
         var listener = mock(ChannelHandler.ItemChangedListener.class);
         handler.observeChannel(channelUID, listener);
-        handler.handleCommand(channelUID, OpenClosedType.OPEN);
+        handler.handleCommand(channelUID, new StringType("OPEN"));
 
         verifyNoInteractions(listener);
     }

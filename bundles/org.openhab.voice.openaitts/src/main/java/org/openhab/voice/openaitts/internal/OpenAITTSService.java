@@ -30,11 +30,11 @@ import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.CompletableResponseListener;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.FutureResponseListener;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.core.audio.AudioFormat;
@@ -155,12 +155,12 @@ public class OpenAITTSService extends AbstractCachedTTSService {
 
         try {
             Request request = httpClient.newRequest(config.apiUrl).method(HttpMethod.POST)
-                    .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS)
-                    .header("Authorization", "Bearer " + config.apiKey).header("Content-Type", "application/json")
-                    .content(new StringContentProvider(queryJson));
-            FutureResponseListener listener = new FutureResponseListener(request, MAX_RESPONSE_BYTES);
-            request.send(listener);
-            ContentResponse response = listener.get(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+                    .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS).headers(headers -> {
+                        headers.put("Authorization", "Bearer " + config.apiKey);
+                        headers.put("Content-Type", "application/json");
+                    }).body(new StringRequestContent(queryJson));
+            ContentResponse response = new CompletableResponseListener(request, MAX_RESPONSE_BYTES).send()
+                    .get(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS);
 
             if (response.getStatus() == HttpStatus.OK_200) {
                 byte[] audio = response.getContent();

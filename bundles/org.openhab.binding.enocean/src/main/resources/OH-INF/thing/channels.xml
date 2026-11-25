@@ -31,8 +31,8 @@
 		<description>The switch channel allows to switch something on and off.</description>
 		<category>Switch</category>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Power</tag>
+			<point>Switch</point>
+			<property>Power</property>
 		</tags>
 	</channel-type>
 
@@ -43,8 +43,8 @@
 		<description>The switch channel allows to switch channel A on and off.</description>
 		<category>Switch</category>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Power</tag>
+			<point>Switch</point>
+			<property>Power</property>
 		</tags>
 	</channel-type>
 
@@ -55,8 +55,8 @@
 		<description>The switch channel allows to switch channel B on and off.</description>
 		<category>Switch</category>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Power</tag>
+			<point>Switch</point>
+			<property>Power</property>
 		</tags>
 	</channel-type>
 
@@ -67,8 +67,8 @@
 		<description>Rollershutter</description>
 		<category>Blinds</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>OpenLevel</tag>
+			<point>Control</point>
+			<property>OpenLevel</property>
 		</tags>
 		<config-description>
 			<parameter name="shutTime" type="integer">
@@ -107,8 +107,8 @@
 		<description>Dimmer</description>
 		<category>Light</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>Brightness</tag>
+			<point>Control</point>
+			<property>Brightness</property>
 		</tags>
 		<config-description>
 			<parameter name="rampingTime" type="integer">
@@ -135,8 +135,8 @@
 		<description>Current temperature in degree Celsius</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -147,8 +147,8 @@
 		<description>Relative humidity level in percentages</description>
 		<category>Humidity</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Humidity</tag>
+			<point>Measurement</point>
+			<property>Humidity</property>
 		</tags>
 		<state min="0" max="100" pattern="%.1f %%" readOnly="true"/>
 	</channel-type>
@@ -159,8 +159,8 @@
 		<description>CO2 level in ppm</description>
 		<category>Carbondioxide</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>CO2</tag>
+			<point>Measurement</point>
+			<property>CO2</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -171,8 +171,8 @@
 		<description>CO level in ppm</description>
 		<category>Gas</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>CO</tag>
+			<point>Measurement</point>
+			<property>CO</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -183,8 +183,8 @@
 		<description>Volatile organic compounds level in ppm/</description>
 		<category>Gas</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>VOC</tag>
+			<point>Measurement</point>
+			<property>VOC</property>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
@@ -203,8 +203,8 @@
 		<description>Total volatile organic compounds level in ppb/</description>
 		<category>Gas</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>VOC</tag>
+			<point>Measurement</point>
+			<property>VOC</property>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
@@ -246,8 +246,8 @@
 		<label>Contact</label>
 		<description>Contact channel</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>OpenState</tag>
+			<point>Status</point>
+			<property>OpenState</property>
 		</tags>
 		<config-description>
 			<parameter name="inverted" type="boolean">
@@ -362,8 +362,8 @@
 		<label>Instant Power</label>
 		<description>Instant power consumption in Watts</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point>Measurement</point>
+			<property>Power</property>
 		</tags>
 		<state pattern="%d %unit%" readOnly="true"/>
 		<config-description>
@@ -385,8 +385,8 @@
 		<label>Total Usage</label>
 		<description>Used energy in Kilowatt hours</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 		<config-description>
@@ -424,8 +424,8 @@
 		<label>Battery Voltage</label>
 		<description>Voltage of the battery</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Voltage</tag>
+			<point>Measurement</point>
+			<property>Voltage</property>
 		</tags>
 		<state pattern="%f %unit%" readOnly="true"/>
 	</channel-type>
@@ -435,8 +435,8 @@
 		<label>Energy Storage</label>
 		<description>?</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Voltage</tag>
+			<point>Measurement</point>
+			<property>Voltage</property>
 		</tags>
 		<state pattern="%f %unit%" readOnly="true"/>
 	</channel-type>
@@ -468,8 +468,8 @@
 		<description>Received Signal Strength Indication</description>
 		<category>QualityOfService</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>RSSI</tag>
+			<point>Measurement</point>
+			<property>RSSI</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -494,8 +494,8 @@
 		<description>Vibration alarm state.</description>
 		<category>Switch</category>
 		<tags>
-			<tag>Alarm</tag>
-			<tag>Vibration</tag>
+			<point>Alarm</point>
+			<property>Vibration</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -505,8 +505,8 @@
 		<label>Lux</label>
 		<description>Illumination in lux</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Illuminance</tag>
+			<point>Measurement</point>
+			<property>Illuminance</property>
 		</tags>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
@@ -516,8 +516,8 @@
 		<label>Sun West</label>
 		<description>Illumination in lux</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Illuminance</tag>
+			<point>Measurement</point>
+			<property>Illuminance</property>
 		</tags>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
@@ -527,8 +527,8 @@
 		<label>Sun South/North</label>
 		<description>Illumination in lux</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Illuminance</tag>
+			<point>Measurement</point>
+			<property>Illuminance</property>
 		</tags>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
@@ -538,8 +538,8 @@
 		<label>Sun East</label>
 		<description>Illumination in lux</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Illuminance</tag>
+			<point>Measurement</point>
+			<property>Illuminance</property>
 		</tags>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
@@ -591,8 +591,8 @@
 		<description>Blind Angle</description>
 		<category>Blinds</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Tilt</tag>
+			<point>Measurement</point>
+			<property>Tilt</property>
 		</tags>
 		<state pattern="%d %unit%"/>
 	</channel-type>
@@ -657,8 +657,8 @@
 		<description>Rain indicator</description>
 		<category>Switch</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Rain</tag>
+			<point>Status</point>
+			<property>Rain</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -705,8 +705,8 @@
 		<label>Set Point</label>
 		<description>Desired temperature</description>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state min="10" max="30"/>
 	</channel-type>
@@ -716,8 +716,8 @@
 		<label>Feed Temperature</label>
 		<description>Water temperature in the radiator input</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -765,8 +765,8 @@
 		<label>Smoke Detected</label>
 		<description>Smoke detection sensor state.</description>
 		<tags>
-			<tag>Alarm</tag>
-			<tag>Smoke</tag>
+			<point>Alarm</point>
+			<property>Smoke</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -776,7 +776,7 @@
 		<label>Sensor Fault Mode</label>
 		<description>Sensor activated fault mode.</description>
 		<tags>
-			<tag>Alarm</tag>
+			<point>Alarm</point>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -835,8 +835,8 @@
 		<label>Indoor Air Analysis</label>
 		<description>Indoor air quality analysis based on temperature and humidity</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>AirQuality</tag>
+			<point>Status</point>
+			<property>AirQuality</property>
 		</tags>
 		<state>
 			<options>
@@ -966,8 +966,8 @@
 		<label>Air Quality Value</label>
 		<description>Air quality value of first sensor in percentages</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>AirQuality</tag>
+			<point>Measurement</point>
+			<property>AirQuality</property>
 		</tags>
 		<state min="0" max="100" pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -977,8 +977,8 @@
 		<label>Air Quality Value</label>
 		<description>Air quality value of second sensor in percentages</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>AirQuality</tag>
+			<point>Measurement</point>
+			<property>AirQuality</property>
 		</tags>
 		<state min="0" max="100" pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -989,8 +989,8 @@
 		<description>Current outdoor air temperature in degree Celsius</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -1001,8 +1001,8 @@
 		<description>Current supply air temperature in degree Celsius</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -1013,8 +1013,8 @@
 		<description>Current indoor air temperature in degree Celsius</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -1025,8 +1025,8 @@
 		<description>Current exhaust air temperature in degree Celsius</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -1036,8 +1036,8 @@
 		<label>Supply Air Fan Air Flow Rate</label>
 		<description>Current supply air fan air flow rate</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Airflow</tag>
+			<point>Measurement</point>
+			<property>Airflow</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -1047,8 +1047,8 @@
 		<label>Exhaust Air Fan Air Flow Rate</label>
 		<description>Current exhaust air fan air flow rate</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Airflow</tag>
+			<point>Measurement</point>
+			<property>Airflow</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -1058,8 +1058,8 @@
 		<label>Supply Fan Speed</label>
 		<description>Supply fan speed in revolutions per minutes</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Speed</tag>
+			<point>Measurement</point>
+			<property>Speed</property>
 		</tags>
 		<state min="0" max="100" pattern="%.1f rpm" readOnly="true"/>
 	</channel-type>
@@ -1069,8 +1069,8 @@
 		<label>Exhaust Fan Speed</label>
 		<description>Exhaust fan speed in revolutions per minutes</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Speed</tag>
+			<point>Measurement</point>
+			<property>Speed</property>
 		</tags>
 		<state min="0" max="100" pattern="%.1f rpm" readOnly="true"/>
 	</channel-type>

@@ -109,6 +109,7 @@
     <module>org.openhab.binding.bsblan</module>
     <module>org.openhab.binding.bticinosmarther</module>
     <module>org.openhab.binding.buienradar</module>
+    <module>org.openhab.binding.bydbatterybox</module>
     <module>org.openhab.binding.caddx</module>
     <module>org.openhab.binding.caldav</module>
     <module>org.openhab.binding.candy</module>
@@ -532,7 +533,6 @@
     <module>org.openhab.binding.yeelight</module>
     <module>org.openhab.binding.zoneminder</module>
     <module>org.openhab.binding.zwavejs</module>
-    <module>org.openhab.binding.zway</module>
     <!-- persistence -->
     <module>org.openhab.persistence.dynamodb</module>
     <module>org.openhab.persistence.influxdb</module>
@@ -851,6 +851,41 @@
             <goals>
               <goal>validate</goal>
             </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <!-- Warn on deprecated channel XML 'tag' element -->
+      <plugin>
+        <groupId>org.codehaus.gmavenplus</groupId>
+        <artifactId>gmavenplus-plugin</artifactId>
+        <version>5.1.0</version>
+        <dependencies>
+          <dependency>
+            <groupId>org.apache.groovy</groupId>
+            <artifactId>groovy</artifactId>
+            <version>${groovy.version}</version>
+          </dependency>
+        </dependencies>
+        <executions>
+          <execution>
+            <id>warn-deprecated-channel-tags</id>
+            <goals>
+              <goal>execute</goal>
+            </goals>
+            <phase>generate-resources</phase>
+            <configuration>
+              <scripts>
+                <script><![CDATA[
+                  def files = new File(project.basedir, 'src/main/resources/OH-INF/thing')
+                    .listFiles({ f -> f.name.endsWith('.xml') } as FileFilter)
+                    ?.findAll { it.text =~ /<tag[\s>\/]/ } ?: []
+                  if (!files.isEmpty()) {
+                    log.warn("DEPRECATED: channel XML element 'tag' is deprecated; use 'point' and 'property' instead. Affected files: " + files.collect { project.basedir.toPath().relativize(it.toPath()) }.join(', '))
+                  }
+                ]]></script>
+              </scripts>
+            </configuration>
           </execution>
         </executions>
       </plugin>

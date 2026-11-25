@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.pentair.internal;
 
+import java.util.HexFormat;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
@@ -26,7 +28,7 @@ public class TestUtilities {
     public static byte[] parsehex(String in) {
         String out = in.replaceAll("\\s", "");
 
-        return javax.xml.bind.DatatypeConverter.parseHexBinary(out);
+        return HexFormat.of().parseHex(out);
     }
 
     private static int hexToBin(byte in) {

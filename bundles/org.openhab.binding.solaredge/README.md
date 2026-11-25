@@ -70,6 +70,7 @@ Monitoring API V2 retrieves available meter and storage telemetry independently 
 - **liveDataPollingInterval** (optional)<br>
 Interval (minutes) in which live data values are retrieved from SolarEdge.
 Monitoring API V1 requires at least 10 minutes; Monitoring API V2 and the private API allow intervals down to 1 minute.
+The interval can be configured up to 1440 minutes (24 hours).
 For V2, select an interval that fits the credits and calls-per-minute limit of your developer tier. (Default: 10)
 
 - **aggregateDataPollingInterval** (optional)<br>

@@ -58,6 +58,7 @@ import org.slf4j.LoggerFactory;
  * and defines Devices, Nodes and Properties, corresponding to Things, Channel Groups and Channels respectively.
  *
  * @author David Graeff - Initial contribution
+ * @author Cody Cutrer - Reconcile metadata after subscription completion
  */
 @NonNullByDefault
 public class HomieThingHandler extends AbstractMQTTThingHandler implements DeviceCallback, Consumer<List<Object>> {
@@ -260,15 +261,23 @@ public class HomieThingHandler extends AbstractMQTTThingHandler implements Devic
         if (!device.isInitialized()) {
             return;
         }
-        updateProperty(HomieBindingConstants.HOMIE_PROPERTY_VERSION, device.attributes.homie);
-        updateThingType();
-        updateChannels();
         final MqttBrokerConnection connection = this.connection;
         if (connection != null) {
             device.startChannels(connection, scheduler, attributeReceiveTimeout, this).thenRun(() -> {
                 logger.debug("Homie device {} fully attached (accept)", config.deviceid);
             });
+        } else {
+            updateDescription();
         }
+    }
+
+    /**
+     * Reconciles the Thing description from the initialized device before starting value subscriptions.
+     */
+    public void updateDescription() {
+        updateProperty(HomieBindingConstants.HOMIE_PROPERTY_VERSION, device.attributes.homie);
+        updateThingType();
+        updateChannels();
     }
 
     /**

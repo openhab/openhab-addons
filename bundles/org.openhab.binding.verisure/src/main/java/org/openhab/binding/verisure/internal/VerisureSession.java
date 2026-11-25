@@ -15,8 +15,6 @@ package org.openhab.binding.verisure.internal;
 import static org.openhab.binding.verisure.internal.VerisureBindingConstants.*;
 
 import java.math.BigDecimal;
-import java.net.CookieStore;
-import java.net.HttpCookie;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
@@ -25,6 +23,7 @@ import java.util.Arrays;
 import java.util.Base64;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -36,21 +35,23 @@ import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.BytesRequestContent;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.HttpResponseException;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.BytesContentProvider;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.http.HttpCookie;
+import org.eclipse.jetty.http.HttpCookieStore;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
-import org.eclipse.jetty.util.HttpCookieStore;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.openhab.binding.verisure.internal.dto.VerisureAlarmsDTO;
 import org.openhab.binding.verisure.internal.dto.VerisureBaseThingDTO.Gui;
 import org.openhab.binding.verisure.internal.dto.VerisureBatteryStatusDTO;
+import org.openhab.binding.verisure.internal.dto.VerisureBatteryStatusDTO.Battery;
 import org.openhab.binding.verisure.internal.dto.VerisureBroadbandConnectionsDTO;
 import org.openhab.binding.verisure.internal.dto.VerisureClimatesDTO;
 import org.openhab.binding.verisure.internal.dto.VerisureDoorWindowsDTO;
@@ -60,9 +61,10 @@ import org.openhab.binding.verisure.internal.dto.VerisureGatewayDTO.Communicatio
 import org.openhab.binding.verisure.internal.dto.VerisureInstallationsDTO;
 import org.openhab.binding.verisure.internal.dto.VerisureInstallationsDTO.Owainstallation;
 import org.openhab.binding.verisure.internal.dto.VerisureMiceDetectionDTO;
-import org.openhab.binding.verisure.internal.dto.VerisureSmartLockDTO;
+import org.openhab.binding.verisure.internal.dto.VerisureSmartLockConfigurationDTO;
 import org.openhab.binding.verisure.internal.dto.VerisureSmartLocksDTO;
 import org.openhab.binding.verisure.internal.dto.VerisureSmartPlugsDTO;
+import org.openhab.binding.verisure.internal.dto.VerisureSystemHealthDTO;
 import org.openhab.binding.verisure.internal.dto.VerisureThingDTO;
 import org.openhab.binding.verisure.internal.dto.VerisureUserPresencesDTO;
 import org.openhab.binding.verisure.internal.handler.VerisureThingHandler;
@@ -70,6 +72,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSyntaxException;
 
 /**
@@ -91,6 +98,8 @@ public class VerisureSession {
     private final Map<BigDecimal, VerisureInstallation> verisureInstallations = new ConcurrentHashMap<>();
     private static final List<String> APISERVERLIST = Arrays.asList("https://mypages-api01.verisure.com",
             "https://mypages-api02.verisure.com");
+    private long climateRefreshIntervalMs = 0;
+    private final Map<BigDecimal, Long> lastClimateRefresh = new ConcurrentHashMap<>();
     private int apiServerInUseIndex = 0;
     private int numberOfEvents = 15;
     private static final int REQUEST_TIMEOUT_MS = 10_000;
@@ -148,7 +157,7 @@ public class VerisureSession {
             int httpResultCode = setSessionCookieAuthLogin();
             if (httpResultCode == HttpStatus.OK_200) {
                 configureInstallationInstance(installationId);
-                return postVerisureAPI(url, data);
+                return postVerisureAPI(url, data, GraphQLErrors.FAIL);
             } else {
                 return httpResultCode;
             }
@@ -240,8 +249,8 @@ public class VerisureSession {
 
     public @Nullable String getCsrfToken() throws ExecutionException, InterruptedException, TimeoutException {
         String html = null;
-        CookieStore originalCookieStore = httpClient.getCookieStore();
-        httpClient.setCookieStore(new HttpCookieStore.Empty());
+        HttpCookieStore originalCookieStore = cookieStore().getDelegate();
+        cookieStore().setDelegate(new HttpCookieStore.Empty());
 
         ContentResponse response = httpClient.newRequest(LOGIN).method(HttpMethod.GET).send();
         html = response.getContentAsString();
@@ -249,12 +258,12 @@ public class VerisureSession {
 
         try {
             URI authUri = new URI(apiServerInUse);
-            addRequiredCookies(httpClient.getCookieStore(), originalCookieStore, authUri);
+            addRequiredCookies(httpClient.getHttpCookieStore(), originalCookieStore, authUri);
         } catch (URISyntaxException e) {
             Throwable cause = e.getCause();
             logger.debug("Invalid URI: {}", cause != null ? cause.getMessage() : e.getMessage());
         }
-        httpClient.setCookieStore(originalCookieStore);
+        cookieStore().setDelegate(originalCookieStore);
 
         Document htmlDocument = Jsoup.parse(html);
         Element nameInput = htmlDocument.select("input[name=_csrf]").first();
@@ -276,8 +285,8 @@ public class VerisureSession {
     }
 
     private void analyzeCookies() {
-        CookieStore c = httpClient.getCookieStore();
-        List<HttpCookie> cookies = c.getCookies();
+        HttpCookieStore c = httpClient.getHttpCookieStore();
+        List<HttpCookie> cookies = c.all();
         final List<HttpCookie> unmodifiableList = List.of(cookies.toArray(new HttpCookie[] {}));
         unmodifiableList.forEach(cookie -> {
             logger.trace("Response Cookie: {}", cookie);
@@ -300,13 +309,12 @@ public class VerisureSession {
         });
     }
 
-    private boolean addRequiredCookies(CookieStore from, CookieStore to, URI authUri) {
+    private boolean addRequiredCookies(HttpCookieStore from, HttpCookieStore to, URI authUri) {
         boolean hasAllRequired = true;
         String[] requiredCookies = { VID, USER_NAME, JSESSIONID };
 
         for (String cookieName : requiredCookies) {
-            Optional<HttpCookie> cookie = from.getCookies().stream().filter(c -> c.getName().equals(cookieName))
-                    .findFirst();
+            Optional<HttpCookie> cookie = from.all().stream().filter(c -> c.getName().equals(cookieName)).findFirst();
             if (cookie.isPresent()) {
                 logger.debug("Adding cookie: {}", cookieName);
                 to.add(authUri, cookie.get());
@@ -365,7 +373,7 @@ public class VerisureSession {
     }
 
     private boolean refreshTokens() {
-        CookieStore originalCookieStore = httpClient.getCookieStore();
+        HttpCookieStore originalCookieStore = cookieStore().getDelegate();
 
         if (vsRefresh.isEmpty()) {
             logger.debug("No refresh token available, need full login");
@@ -373,14 +381,14 @@ public class VerisureSession {
         }
 
         try {
-            CookieStore tempCookieStore = new HttpCookieStore();
+            HttpCookieStore tempCookieStore = new HttpCookieStore.Default();
             URI authUri = new URI(apiServerInUse);
             if (!addRequiredCookies(originalCookieStore, tempCookieStore, authUri)) {
                 logger.debug("Missing required Incapsula cookies, might fail");
             }
-            HttpCookie vsRefreshCookie = new HttpCookie(VS_RESFRESH, vsRefresh);
+            HttpCookie vsRefreshCookie = HttpCookie.build(VS_RESFRESH, vsRefresh).build();
             tempCookieStore.add(authUri, vsRefreshCookie);
-            httpClient.setCookieStore(tempCookieStore);
+            cookieStore().setDelegate(tempCookieStore);
         } catch (URISyntaxException e) {
             Throwable cause = e.getCause();
             logger.debug("Invalid URI: {}", cause != null ? cause.getMessage() : e.getMessage());
@@ -406,21 +414,6 @@ public class VerisureSession {
         }
     }
 
-    private <T> @Nullable T getJSONVerisureAPI(String url, Class<T> jsonClass)
-            throws ExecutionException, InterruptedException, TimeoutException, JsonSyntaxException {
-        logger.debug("HTTP GET: {}", BASE_URL + url);
-
-        ContentResponse response = httpClient.GET(BASE_URL + url + "?_=" + System.currentTimeMillis());
-        String content = response.getContentAsString();
-        logTraceWithPattern(response.getStatus(), content);
-
-        if (response.getStatus() != HttpStatus.OK_200) {
-            logger.debug("HTTP GET {} returned status {}, ignoring response", url, response.getStatus());
-            return null;
-        }
-        return gson.fromJson(content, jsonClass);
-    }
-
     private ContentResponse postVerisureAPI(String url, String data, boolean isJSON)
             throws ExecutionException, InterruptedException, TimeoutException {
         logger.debug("postVerisureAPI URL: {} Data:{}", url, data);
@@ -430,42 +423,59 @@ public class VerisureSession {
 
         // 1. General Headers
         if (isJSON) {
-            request.header(HttpHeader.CONTENT_TYPE, "application/json");
+            request.headers(h -> h.add(HttpHeader.CONTENT_TYPE, "application/json"));
         } else {
             if (csrf != null) {
-                request.header("X-CSRF-TOKEN", csrf);
+                request.headers(h -> h.add("X-CSRF-TOKEN", csrf));
             }
         }
 
         // Mimic Browser - add Accept-Language and Accept-Encoding
-        request.header(HttpHeader.ACCEPT, "application/json").header(HttpHeader.ORIGIN, "https://mypages.verisure.com")
-                .header(HttpHeader.ACCEPT_LANGUAGE, "sv-SE,sv;q=0.9,en-US;q=0.8,en;q=0.7")
-                .header(HttpHeader.ACCEPT_ENCODING, "gzip, deflate, br, zstd");
+        request.headers(h -> {
+            h.add(HttpHeader.ACCEPT, "application/json");
+            h.add(HttpHeader.ORIGIN, "https://mypages.verisure.com");
+            h.add(HttpHeader.ACCEPT_LANGUAGE, "sv-SE,sv;q=0.9,en-US;q=0.8,en;q=0.7");
+            h.add(HttpHeader.ACCEPT_ENCODING, "gzip, deflate, br, zstd");
+        });
 
         // 2. Authentication Logic
         if (url.contains(AUTH_LOGIN) || url.contains(AUTH_TOKEN)) {
-            request.header("APPLICATION_ID", "MyPages_Login");
+            request.headers(h -> h.add("APPLICATION_ID", "MyPages_Login"));
             // Add Sec-Fetch headers for auth endpoints (same-site)
-            request.header("Sec-Fetch-Dest", "empty").header("Sec-Fetch-Mode", "cors").header("Sec-Fetch-Site",
-                    "same-site");
+            request.headers(h -> {
+                h.add("Sec-Fetch-Dest", "empty");
+                h.add("Sec-Fetch-Mode", "cors");
+                h.add("Sec-Fetch-Site", "same-site");
+            });
             if (url.contains(AUTH_LOGIN)) {
                 String basicAuthentication = Base64.getEncoder().encodeToString((userName + ":" + password).getBytes());
-                request.header("authorization", "Basic " + basicAuthentication);
+                request.headers(h -> h.add("authorization", "Basic " + basicAuthentication));
             }
         } else {
             // Add Bearer Token for GraphQL and other API calls
             if (vsAccess != null && !vsAccess.isEmpty()) {
-                request.header(HttpHeader.AUTHORIZATION, "Bearer " + vsAccess);
+                request.headers(h -> h.add(HttpHeader.AUTHORIZATION, "Bearer " + vsAccess));
+            }
+
+            // The schema served by this endpoint depends on the application id
+            if (url.endsWith(START_GRAPHQL_MYPAGES)) {
+                request.headers(h -> h.add("APPLICATION_ID", "MyPages_Login"));
             }
 
             // Handle Legacy Login Headers for j_spring_security_check
             if (url.contains(LOGON_SUF)) {
                 // Note: Content-Type is set via request.content() below, don't set it here to avoid duplicates
-                request.header(HttpHeader.REFERER, "https://mypages.verisure.com/login")
-                        .header("X-Vs-Refresh", vsRefresh).header("X-Vs-Single-Sign-On", "false");
+                request.headers(h -> {
+                    h.add(HttpHeader.REFERER, "https://mypages.verisure.com/login");
+                    h.add("X-Vs-Refresh", vsRefresh);
+                    h.add("X-Vs-Single-Sign-On", "false");
+                });
                 // Add Sec-Fetch headers for same-origin request
-                request.header("Sec-Fetch-Dest", "empty").header("Sec-Fetch-Mode", "cors").header("Sec-Fetch-Site",
-                        "same-origin");
+                request.headers(h -> {
+                    h.add("Sec-Fetch-Dest", "empty");
+                    h.add("Sec-Fetch-Mode", "cors");
+                    h.add("Sec-Fetch-Site", "same-origin");
+                });
             }
         }
 
@@ -475,25 +485,25 @@ public class VerisureSession {
                 // URL encode the username (e.g. '@' -> '%40')
                 // Note: the 'data' parameter is ignored for LOGON_SUF - we always use userName
                 String encodedData = "j_username=" + java.net.URLEncoder.encode(userName, StandardCharsets.UTF_8);
-                request.content(new BytesContentProvider(encodedData.getBytes(StandardCharsets.UTF_8)),
-                        "application/x-www-form-urlencoded; charset=UTF-8");
+                request.body(new BytesRequestContent("application/x-www-form-urlencoded; charset=UTF-8",
+                        encodedData.getBytes(StandardCharsets.UTF_8)));
             } else if (isJSON) {
-                // For JSON requests, use BytesContentProvider without content-type to avoid duplicate header
-                // Content-Type is already set above via request.header()
-                request.content(new BytesContentProvider(data.getBytes(StandardCharsets.UTF_8)));
+                // For JSON requests, use BytesRequestContent without content-type to avoid duplicate header
+                // Content-Type is already set above via request.headers(h -> h.add())
+                request.body(new BytesRequestContent(data.getBytes(StandardCharsets.UTF_8)));
             } else {
-                request.content(new BytesContentProvider(data.getBytes(StandardCharsets.UTF_8)),
-                        "application/x-www-form-urlencoded; charset=UTF-8");
+                request.body(new BytesRequestContent("application/x-www-form-urlencoded; charset=UTF-8",
+                        data.getBytes(StandardCharsets.UTF_8)));
             }
         }
 
         logger.debug("HTTP POST Request {}.", request.toString());
         // Log cookies being sent for debugging
         if (url.contains(LOGON_SUF)) {
-            CookieStore cookieStore = httpClient.getCookieStore();
+            HttpCookieStore cookieStore = httpClient.getHttpCookieStore();
             try {
                 URI requestUri = new URI(url);
-                List<HttpCookie> cookies = cookieStore.get(requestUri);
+                List<HttpCookie> cookies = cookieStore.match(requestUri);
                 logger.debug("Cookies being sent to {}: {}", url, cookies);
             } catch (URISyntaxException e) {
                 logger.debug("Could not parse URI for cookie logging");
@@ -531,7 +541,16 @@ public class VerisureSession {
         throw new PostToAPIException("Failed to POST to API");
     }
 
+    private enum GraphQLErrors {
+        IGNORE,
+        FAIL
+    }
+
     private int postVerisureAPI(String urlString, String data) {
+        return postVerisureAPI(urlString, data, GraphQLErrors.IGNORE);
+    }
+
+    private int postVerisureAPI(String urlString, String data, GraphQLErrors graphQLErrors) {
         String url;
         if (urlString.contains("https://mypages.verisure.com")) {
             url = urlString;
@@ -557,6 +576,11 @@ public class VerisureSession {
                         }
                     } else {
                         logTraceWithPattern(httpStatus, content);
+                        String error = graphQLErrors == GraphQLErrors.FAIL ? getGraphQLError(content) : null;
+                        if (error != null) {
+                            logger.warn("Command rejected by the API: {}", error);
+                            return HttpStatus.BAD_REQUEST_400;
+                        }
                         return httpStatus;
                     }
                 } else if (httpStatus == HttpStatus.BAD_REQUEST_400) {
@@ -578,6 +602,29 @@ public class VerisureSession {
             }
         }
         return HttpStatus.SERVICE_UNAVAILABLE_503;
+    }
+
+    /**
+     * The API reports a failed GraphQL operation as HTTP 200 with an errors array.
+     */
+    private @Nullable String getGraphQLError(String content) {
+        try {
+            JsonElement root = JsonParser.parseString(content);
+            if (root.isJsonArray() && !root.getAsJsonArray().isEmpty()) {
+                root = root.getAsJsonArray().get(0);
+            }
+            if (!root.isJsonObject() || !(root.getAsJsonObject().get("errors") instanceof JsonArray errors)
+                    || errors.isEmpty() || !errors.get(0).isJsonObject()) {
+                return null;
+            }
+            JsonObject error = errors.get(0).getAsJsonObject();
+            if (error.get("data") instanceof JsonObject data && data.get("errorMessage") instanceof JsonPrimitive msg) {
+                return msg.getAsString();
+            }
+            return error.get("message") instanceof JsonPrimitive msg ? msg.getAsString() : error.toString();
+        } catch (JsonSyntaxException e) {
+            return null;
+        }
     }
 
     private int setSessionCookieAuthLogin() throws ExecutionException, InterruptedException, TimeoutException {
@@ -653,19 +700,23 @@ public class VerisureSession {
                 vsAccess = "";
                 logger.debug("Attempting to log in to {}, remove all cookies to ensure a fresh session", BASE_URL);
                 URI authUri = new URI(BASE_URL);
-                CookieStore store = httpClient.getCookieStore();
-                store.get(authUri).forEach(cookie -> {
+                HttpCookieStore store = httpClient.getHttpCookieStore();
+                store.match(authUri).forEach(cookie -> {
                     store.remove(authUri, cookie);
                 });
 
                 // Step 1: GET the login page first to acquire WAF/Imperva cookies
                 logger.debug("Fetching login page to acquire WAF cookies");
-                Request loginPageRequest = httpClient.newRequest(LOGIN).method(HttpMethod.GET).header(HttpHeader.ACCEPT,
-                        "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8")
-                        .header(HttpHeader.ACCEPT_LANGUAGE, "sv-SE,sv;q=0.9,en-US;q=0.8,en;q=0.7")
-                        .header(HttpHeader.ACCEPT_ENCODING, "gzip, deflate, br, zstd")
-                        .header("Sec-Fetch-Dest", "document").header("Sec-Fetch-Mode", "navigate")
-                        .header("Sec-Fetch-Site", "none").header("Sec-Fetch-User", "?1");
+                Request loginPageRequest = httpClient.newRequest(LOGIN).method(HttpMethod.GET).headers(h -> {
+                    h.add(HttpHeader.ACCEPT,
+                            "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8");
+                    h.add(HttpHeader.ACCEPT_LANGUAGE, "sv-SE,sv;q=0.9,en-US;q=0.8,en;q=0.7");
+                    h.add(HttpHeader.ACCEPT_ENCODING, "gzip, deflate, br, zstd");
+                    h.add("Sec-Fetch-Dest", "document");
+                    h.add("Sec-Fetch-Mode", "navigate");
+                    h.add("Sec-Fetch-Site", "none");
+                    h.add("Sec-Fetch-User", "?1");
+                });
                 loginPageRequest.timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS);
                 ContentResponse loginPageResponse = loginPageRequest.send();
                 logger.debug("Login page response status: {}", loginPageResponse.getStatus());
@@ -687,9 +738,8 @@ public class VerisureSession {
                 // Step 3: Add the username cookie (required by j_spring_security_check)
                 try {
                     URI mypagesUri = new URI(BASE_URL);
-                    HttpCookie usernameCookie = new HttpCookie(USERNAME, userName);
-                    usernameCookie.setDomain("mypages.verisure.com");
-                    usernameCookie.setPath("/");
+                    HttpCookie usernameCookie = HttpCookie.build(USERNAME, userName).domain("mypages.verisure.com")
+                            .path("/").build();
                     store.add(mypagesUri, usernameCookie);
                     logger.debug("Added username cookie: {}", userName);
                 } catch (URISyntaxException e) {
@@ -709,10 +759,12 @@ public class VerisureSession {
 
                 // Step 5: Verify login by accessing status page
                 url = STATUS;
-                Request request = httpClient.newRequest(url).method(HttpMethod.GET).header(HttpHeader.ACCEPT,
-                        "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7")
-                        .header(HttpHeader.ACCEPT_LANGUAGE, "sv-SE,sv;q=0.9,en-US;q=0.8,en;q=0.7")
-                        .header(HttpHeader.REFERER, "https://mypages.verisure.com/login").followRedirects(false);
+                Request request = httpClient.newRequest(url).method(HttpMethod.GET).headers(h -> {
+                    h.add(HttpHeader.ACCEPT,
+                            "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7");
+                    h.add(HttpHeader.ACCEPT_LANGUAGE, "sv-SE,sv;q=0.9,en-US;q=0.8,en;q=0.7");
+                    h.add(HttpHeader.REFERER, "https://mypages.verisure.com/login");
+                }).followRedirects(false);
 
                 ContentResponse response = request.send();
                 String content = response.getContentAsString();
@@ -757,10 +809,12 @@ public class VerisureSession {
             try {
                 configureInstallationInstance(installation.getInstallationId());
                 updateAlarmStatus(installation);
-                updateSmartLockStatus(installation);
+                Map<String, Battery> batteryStatus = getBatteryStatus(installation);
+                updateSmartLockStatus(installation, batteryStatus);
                 updateMiceDetectionStatus(installation);
-                updateClimateStatus(installation);
-                updateDoorWindowStatus(installation);
+                refreshClimateSensors(installation);
+                updateClimateStatus(installation, batteryStatus);
+                updateDoorWindowStatus(installation, batteryStatus);
                 updateUserPresenceStatus(installation);
                 updateSmartPlugStatus(installation);
                 updateBroadbandConnectionStatus(installation);
@@ -794,8 +848,12 @@ public class VerisureSession {
         String queryQLAlarmStatus = createOperationJSON(operation, variables, query);
         logger.debug("Querying API for alarm status!");
         try {
-            VerisureThingDTO thing = postJSONVerisureAPI(url, queryQLAlarmStatus, VerisureAlarmsDTO.class);
+            VerisureAlarmsDTO thing = postJSONVerisureAPI(url, queryQLAlarmStatus, VerisureAlarmsDTO.class);
             logger.debug("REST Response ({})", thing);
+            VerisureSystemHealthDTO systemHealth = getSystemHealth(installation);
+            if (systemHealth != null) {
+                thing.setSystemHealth(systemHealth.getUrgency(), systemHealth.getAlertTypes());
+            }
             // Set unique deviceID
             String deviceId = "alarm" + installationId;
             thing.setDeviceId(deviceId);
@@ -805,7 +863,8 @@ public class VerisureSession {
         }
     }
 
-    private synchronized void updateSmartLockStatus(VerisureInstallation installation) {
+    private synchronized void updateSmartLockStatus(VerisureInstallation installation,
+            Map<String, Battery> batteryStatus) {
         BigDecimal installationId = installation.getInstallationId();
         String url = START_GRAPHQL;
         String operation = "DoorLock";
@@ -820,7 +879,8 @@ public class VerisureSession {
             VerisureSmartLocksDTO thing = postJSONVerisureAPI(url, queryQLSmartLock, VerisureSmartLocksDTO.class);
             logger.debug("REST Response ({})", thing);
             List<VerisureSmartLocksDTO.Doorlock> doorLockList = thing.getData().getInstallation().getDoorlocks();
-            if (doorLockList != null) {
+            if (doorLockList != null && !doorLockList.isEmpty()) {
+                VerisureSmartLockConfigurationDTO configuration = getSmartLockConfiguration(installation);
                 doorLockList.forEach(doorLock -> {
                     VerisureSmartLocksDTO slThing = new VerisureSmartLocksDTO();
                     VerisureSmartLocksDTO.Installation inst = new VerisureSmartLocksDTO.Installation();
@@ -834,16 +894,10 @@ public class VerisureSession {
                         // Set location
                         slThing.setLocation(doorLock.getDevice().getArea());
                         slThing.setDeviceId(deviceId);
-
-                        // Fetch more info from old endpoint
-                        try {
-                            VerisureSmartLockDTO smartLockThing = getJSONVerisureAPI(
-                                    SMARTLOCK_PATH + slThing.getDeviceId(), VerisureSmartLockDTO.class);
-                            logger.debug("REST Response ({})", smartLockThing);
-                            slThing.setSmartLockJSON(smartLockThing);
-                        } catch (ExecutionException | InterruptedException | TimeoutException | JsonSyntaxException e) {
-                            logger.warn("Failed to query for smartlock status: {}", e.getMessage());
+                        if (configuration != null) {
+                            slThing.setConfiguration(configuration.getConfiguration(deviceId));
                         }
+                        slThing.setBattery(batteryStatus.get(VerisureThingConfiguration.normalizeDeviceId(deviceId)));
                         notifyListenersIfChanged(slThing, installation, deviceId);
                     }
                 });
@@ -892,20 +946,110 @@ public class VerisureSession {
         }
     }
 
-    private @Nullable VerisureBatteryStatusDTO getBatteryStatus(String deviceId,
-            VerisureBatteryStatusDTO @Nullable [] batteryStatus) {
-        if (batteryStatus != null) {
-            for (VerisureBatteryStatusDTO verisureBatteryStatusDTO : batteryStatus) {
-                String id = verisureBatteryStatusDTO.getId();
-                if (id != null && id.equals(deviceId)) {
-                    return verisureBatteryStatusDTO;
-                }
-            }
+    private @Nullable VerisureSmartLockConfigurationDTO getSmartLockConfiguration(VerisureInstallation installation) {
+        String operation = "DoorLockConfiguration";
+        String query = "query " + operation
+                + "($giid: String!) {\n installation(giid: $giid) {\n smartLocks {\n device {\n deviceLabel\n __typename\n }\n configuration {\n ... on YaleLockConfiguration {\n autoLockEnabled\n voiceLevel\n volume\n __typename\n }\n __typename\n }\n __typename\n }\n __typename\n }\n}\n";
+        VariablesDTO variables = new VariablesDTO();
+        variables.setGiid(installation.getInstallationId().toString());
+        logger.debug("Querying API for smart lock configuration");
+
+        try {
+            return postJSONVerisureAPI(START_GRAPHQL, createOperationJSON(operation, variables, query),
+                    VerisureSmartLockConfigurationDTO.class);
+        } catch (ExecutionException | InterruptedException | TimeoutException | JsonSyntaxException
+                | PostToAPIException e) {
+            logger.debug("Failed to query for smart lock configuration: {}", e.getMessage());
+            return null;
         }
-        return null;
     }
 
-    private synchronized void updateClimateStatus(VerisureInstallation installation) {
+    private @Nullable VerisureSystemHealthDTO getSystemHealth(VerisureInstallation installation) {
+        String operation = "SystemHealth";
+        String query = "query " + operation
+                + "($giid: String!) {\n installation(giid: $giid) {\n systemHealthAlerts {\n urgencyType\n alertType\n __typename\n }\n __typename\n }\n}\n";
+        logger.debug("Querying API for system health");
+
+        try {
+            return postJSONVerisureAPI(START_GRAPHQL_MYPAGES, createSingleOperationJSON(operation, installation, query),
+                    VerisureSystemHealthDTO.class);
+        } catch (ExecutionException | InterruptedException | TimeoutException | JsonSyntaxException
+                | PostToAPIException e) {
+            logger.debug("Failed to query for system health: {}", e.getMessage());
+            return null;
+        }
+    }
+
+    /**
+     * The /graphql/mypages endpoint answers a list with a list, so send a single operation.
+     */
+    private String createSingleOperationJSON(String operation, VerisureInstallation installation, String query) {
+        VariablesDTO variables = new VariablesDTO();
+        variables.setGiid(installation.getInstallationId().toString());
+        OperationDTO operationJSON = new OperationDTO();
+        operationJSON.setOperationName(operation);
+        operationJSON.setVariables(variables);
+        operationJSON.setQuery(query);
+        return gson.toJson(operationJSON);
+    }
+
+    /**
+     * @param minutes how often the climate sensors are asked to report fresh values, 0 to never ask
+     */
+    public void setClimateRefreshInterval(int minutes) {
+        climateRefreshIntervalMs = TimeUnit.MINUTES.toMillis(Math.max(0, minutes));
+    }
+
+    /**
+     * Asks the climate sensors of an installation to report fresh values if the configured interval has passed.
+     * The sensors answer asynchronously, so the values show up in a later refresh.
+     */
+    private void refreshClimateSensors(VerisureInstallation installation) {
+        long interval = climateRefreshIntervalMs;
+        if (interval <= 0) {
+            return;
+        }
+        BigDecimal installationId = installation.getInstallationId();
+        long now = System.currentTimeMillis();
+        Long last = lastClimateRefresh.get(installationId);
+        if (last != null && now - last < interval) {
+            return;
+        }
+        lastClimateRefresh.put(installationId, now);
+        String operation = "RefreshClimateSensorValues";
+        VariablesDTO variables = new VariablesDTO();
+        variables.setGiid(installationId.toString());
+        String query = "mutation " + operation + "($giid: String!) {\n ClimateRefreshSensorValues(giid: $giid)\n}\n";
+        logger.debug("Asking climate sensors to report fresh values");
+        int httpResultCode = postVerisureAPI(START_GRAPHQL, createOperationJSON(operation, variables, query),
+                GraphQLErrors.FAIL);
+        if (httpResultCode != HttpStatus.OK_200) {
+            logger.debug("Failed to refresh climate sensors, HTTP result code {}", httpResultCode);
+        }
+    }
+
+    private Map<String, Battery> getBatteryStatus(VerisureInstallation installation) {
+        String operation = "BatteryStatus";
+        String query = "query " + operation
+                + "($giid: String!) {\n installation(giid: $giid) {\n deviceBatteryLifeCycle {\n devices {\n device {\n deviceLabel\n __typename\n }\n status\n predictionData {\n estimatedBatteryPercentage\n __typename\n }\n __typename\n }\n __typename\n }\n __typename\n }\n}\n";
+        logger.debug("Querying API for battery status");
+
+        try {
+            VerisureBatteryStatusDTO batteryStatus = postJSONVerisureAPI(START_GRAPHQL_MYPAGES,
+                    createSingleOperationJSON(operation, installation, query), VerisureBatteryStatusDTO.class);
+            Map<String, Battery> result = new HashMap<>();
+            batteryStatus.getBatteryByDeviceLabel().forEach((deviceLabel, battery) -> result
+                    .put(VerisureThingConfiguration.normalizeDeviceId(deviceLabel), battery));
+            return result;
+        } catch (ExecutionException | InterruptedException | TimeoutException | JsonSyntaxException
+                | PostToAPIException e) {
+            logger.debug("Failed to query for battery status: {}", e.getMessage());
+            return Map.of();
+        }
+    }
+
+    private synchronized void updateClimateStatus(VerisureInstallation installation,
+            Map<String, Battery> batteryStatus) {
         BigDecimal installationId = installation.getInstallationId();
         String url = START_GRAPHQL;
         VariablesDTO variables = new VariablesDTO();
@@ -951,18 +1095,7 @@ public class VerisureSession {
                     // Set unique deviceID
                     String deviceId = climate.getDevice().getDeviceLabel();
                     if (deviceId != null) {
-                        try {
-                            VerisureBatteryStatusDTO[] batteryStatusThingArray = getJSONVerisureAPI(BATTERY_STATUS,
-                                    VerisureBatteryStatusDTO[].class);
-                            VerisureBatteryStatusDTO batteryStatus = getBatteryStatus(deviceId,
-                                    batteryStatusThingArray);
-                            if (batteryStatus != null) {
-                                logger.debug("REST Response ({})", batteryStatus);
-                                cThing.setBatteryStatus(batteryStatus);
-                            }
-                        } catch (ExecutionException | InterruptedException | TimeoutException | JsonSyntaxException e) {
-                            logger.debug("Failed to query for battery status: {}", e.getMessage());
-                        }
+                        cThing.setBattery(batteryStatus.get(VerisureThingConfiguration.normalizeDeviceId(deviceId)));
                         // Set location
                         cThing.setLocation(climate.getDevice().getArea());
                         notifyListenersIfChanged(cThing, installation, deviceId);
@@ -975,7 +1108,8 @@ public class VerisureSession {
         }
     }
 
-    private synchronized void updateDoorWindowStatus(VerisureInstallation installation) {
+    private synchronized void updateDoorWindowStatus(VerisureInstallation installation,
+            Map<String, Battery> batteryStatus) {
         BigDecimal installationId = installation.getInstallationId();
         String url = START_GRAPHQL;
         String operation = "DoorWindow";
@@ -1002,18 +1136,7 @@ public class VerisureSession {
                     // Set unique deviceID
                     String deviceId = doorWindow.getDevice().getDeviceLabel();
                     if (deviceId != null) {
-                        try {
-                            VerisureBatteryStatusDTO[] batteryStatusThingArray = getJSONVerisureAPI(BATTERY_STATUS,
-                                    VerisureBatteryStatusDTO[].class);
-                            VerisureBatteryStatusDTO batteryStatus = getBatteryStatus(deviceId,
-                                    batteryStatusThingArray);
-                            if (batteryStatus != null) {
-                                logger.debug("REST Response ({})", batteryStatus);
-                                dThing.setBatteryStatus(batteryStatus);
-                            }
-                        } catch (ExecutionException | InterruptedException | TimeoutException | JsonSyntaxException e) {
-                            logger.debug("Failed to query for battery status: {}", e.getMessage());
-                        }
+                        dThing.setBattery(batteryStatus.get(VerisureThingConfiguration.normalizeDeviceId(deviceId)));
                         // Set location
                         dThing.setLocation(doorWindow.getDevice().getArea());
                         notifyListenersIfChanged(dThing, installation, deviceId);
@@ -1289,6 +1412,52 @@ public class VerisureSession {
 
         public PostToAPIException(String message) {
             super(message);
+        }
+    }
+
+    private SwitchableCookieStore cookieStore() {
+        return (SwitchableCookieStore) httpClient.getHttpCookieStore();
+    }
+
+    /**
+     * Jetty 12 cannot replace the cookie store of a started client, so {@link VerisureHandlerFactory} installs this
+     * store before starting the client and the session switches the store it delegates to.
+     */
+    @NonNullByDefault({})
+    static class SwitchableCookieStore implements HttpCookieStore {
+        private volatile HttpCookieStore delegate = new HttpCookieStore.Default();
+
+        HttpCookieStore getDelegate() {
+            return delegate;
+        }
+
+        void setDelegate(HttpCookieStore delegate) {
+            this.delegate = delegate;
+        }
+
+        @Override
+        public boolean add(URI uri, HttpCookie cookie) {
+            return delegate.add(uri, cookie);
+        }
+
+        @Override
+        public List<HttpCookie> all() {
+            return delegate.all();
+        }
+
+        @Override
+        public List<HttpCookie> match(URI uri) {
+            return delegate.match(uri);
+        }
+
+        @Override
+        public boolean remove(URI uri, HttpCookie cookie) {
+            return delegate.remove(uri, cookie);
+        }
+
+        @Override
+        public boolean clear() {
+            return delegate.clear();
         }
     }
 }

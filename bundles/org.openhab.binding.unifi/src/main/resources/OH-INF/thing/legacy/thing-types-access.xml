@@ -160,7 +160,7 @@
 		<description>Toggles this access method</description>
 		<category>Switch</category>
 		<tags>
-			<tag>Switch</tag>
+			<point>Switch</point>
 		</tags>
 	</channel-type>
 
@@ -169,7 +169,7 @@
 		<label>Face Anti-Spoofing</label>
 		<description>Level of face anti-spoofing protection: high, medium, or none</description>
 		<tags>
-			<tag>Control</tag>
+			<point>Control</point>
 		</tags>
 		<state>
 			<options>
@@ -185,7 +185,7 @@
 		<label>Face Detect Distance</label>
 		<description>Maximum distance for face detection: near, medium, or far</description>
 		<tags>
-			<tag>Control</tag>
+			<point>Control</point>
 		</tags>
 		<state>
 			<options>
@@ -202,7 +202,7 @@
 		<description>System-wide emergency mode: normal, lockdown, or evacuation</description>
 		<category>Alarm</category>
 		<tags>
-			<tag>Alarm</tag>
+			<point>Alarm</point>
 		</tags>
 		<state>
 			<options>
@@ -296,7 +296,7 @@
 		<label>Online</label>
 		<description>Whether the device is currently online</description>
 		<tags>
-			<tag>Status</tag>
+			<point>Status</point>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -306,8 +306,8 @@
 		<label>Doorbell</label>
 		<category>Door</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>OpenState</tag>
+			<point>Status</point>
+			<property>OpenState</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -318,8 +318,8 @@
 		<label>Lock</label>
 		<category>Lock</category>
 		<tags>
-			<tag>Switch</tag>
-			<tag>LockState</tag>
+			<point>Switch</point>
+			<property>LockState</property>
 		</tags>
 	</channel-type>
 
@@ -328,8 +328,8 @@
 		<label>Door Position</label>
 		<category>Door</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>OpenState</tag>
+			<point>Status</point>
+			<property>OpenState</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -338,7 +338,7 @@
 		<item-type>String</item-type>
 		<label>Lock Rule</label>
 		<tags>
-			<tag>Status</tag>
+			<point>Status</point>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -359,8 +359,8 @@
 		<label>Last Unlock</label>
 		<category>Time</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
+			<point>Status</point>
+			<property>Timestamp</property>
 		</tags>
 		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS"/>
 	</channel-type>
@@ -369,7 +369,7 @@
 		<item-type>String</item-type>
 		<label>Last Actor</label>
 		<tags>
-			<tag>Status</tag>
+			<point>Status</point>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -379,8 +379,8 @@
 		<label>Keep Unlocked</label>
 		<category>Lock</category>
 		<tags>
-			<tag>Switch</tag>
-			<tag>LockState</tag>
+			<point>Switch</point>
+			<property>LockState</property>
 		</tags>
 	</channel-type>
 
@@ -389,8 +389,8 @@
 		<label>Keep Locked</label>
 		<category>Lock</category>
 		<tags>
-			<tag>Switch</tag>
-			<tag>LockState</tag>
+			<point>Switch</point>
+			<property>LockState</property>
 		</tags>
 	</channel-type>
 
@@ -400,7 +400,7 @@
 		<description>The number of minutes the door will be unlocked for</description>
 		<category>Time</category>
 		<tags>
-			<tag>Control</tag>
+			<point>Control</point>
 		</tags>
 		<state pattern="%d min"/>
 	</channel-type>
@@ -411,7 +411,7 @@
 		<description>The time the door will be unlocked until</description>
 		<category>Time</category>
 		<tags>
-			<tag>Control</tag>
+			<point>Control</point>
 		</tags>
 	</channel-type>
 
@@ -420,7 +420,7 @@
 		<label>Door Thumbnail</label>
 		<category>Door</category>
 		<tags>
-			<tag>Status</tag>
+			<point>Status</point>
 		</tags>
 	</channel-type>
 </thing:thing-descriptions>

@@ -10,8 +10,8 @@
 		<description>Volume of an audio device as a percentage</description>
 		<category>SoundVolume</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>SoundVolume</tag>
+			<point>Control</point>
+			<property>SoundVolume</property>
 		</tags>
 		<state min="0" max="100" step="1" pattern="%d" readOnly="false">
 		</state>
@@ -21,8 +21,8 @@
 		<label>Mute</label>
 		<description>Mutes the device</description>
 		<tags>
-			<tag>Switch</tag>
-			<tag>SoundVolume</tag>
+			<point>Switch</point>
+			<property>SoundVolume</property>
 		</tags>
 	</channel-type>
 	<channel-type id="state" advanced="true">

@@ -10,7 +10,7 @@
 		<label>Alarm Zone A Status</label>
 		<description>Status of the A zone of your alarm</description>
 		<tags>
-			<tag>Alarm</tag>
+			<point>Alarm</point>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -21,7 +21,7 @@
 		<label>Alarm Zone B Status</label>
 		<description>Status of the B zone of your alarm</description>
 		<tags>
-			<tag>Alarm</tag>
+			<point>Alarm</point>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -32,7 +32,7 @@
 		<label>Alarm Zone ABC Status</label>
 		<description>Status of the ABC zone of your alarm</description>
 		<tags>
-			<tag>Alarm</tag>
+			<point>Alarm</point>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -43,7 +43,7 @@
 		<label>OASIS PGX Status</label>
 		<description>Status of the PGX switch of your OASIS alarm</description>
 		<tags>
-			<tag>Status</tag>
+			<point>Status</point>
 		</tags>
 	</channel-type>
 
@@ -53,7 +53,7 @@
 		<label>OASIS PGY Status</label>
 		<description>Status of the PGY switch of your OASIS alarm</description>
 		<tags>
-			<tag>Status</tag>
+			<point>Status</point>
 		</tags>
 	</channel-type>
 
@@ -70,7 +70,7 @@
 		<label>JA-100 PGM Status</label>
 		<description>Status of the PGM switch of your JA-100 alarm</description>
 		<tags>
-			<tag>Status</tag>
+			<point>Status</point>
 		</tags>
 	</channel-type>
 
@@ -80,7 +80,7 @@
 		<label>Alarm</label>
 		<description>Alarm events from your system</description>
 		<tags>
-			<tag>Alarm</tag>
+			<point>Alarm</point>
 		</tags>
 		<state readOnly="true"/>
 		<event>
@@ -159,8 +159,8 @@
 		<label>Alarm State</label>
 		<description>A channel used for controlling the alarm state</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
+			<point>Status</point>
+			<property>Mode</property>
 		</tags>
 		<state>
 			<options>
@@ -177,8 +177,8 @@
 		<label>Alarm State</label>
 		<description>A channel used for controlling the alarm state</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
+			<point>Status</point>
+			<property>Mode</property>
 		</tags>
 		<state>
 			<options>
@@ -195,8 +195,8 @@
 		<label>Sensor Temperature</label>
 		<description>The current temperature reported by the sensor</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -207,8 +207,8 @@
 		<label>Thermostat Temperature</label>
 		<description>The current temperature reported by the thermostat</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>

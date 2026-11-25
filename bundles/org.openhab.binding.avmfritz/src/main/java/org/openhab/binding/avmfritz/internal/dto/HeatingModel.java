@@ -17,11 +17,11 @@ import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.*;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlRootElement;
-
 import org.eclipse.jdt.annotation.Nullable;
+
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 /**
  * See {@link DeviceListModel}.

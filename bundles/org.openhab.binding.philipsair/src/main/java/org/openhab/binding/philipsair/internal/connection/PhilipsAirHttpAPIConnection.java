@@ -27,10 +27,10 @@ import javax.crypto.IllegalBlockSizeException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.philipsair.internal.PhilipsAirConfiguration;
 import org.openhab.binding.philipsair.internal.model.PhilipsAirPurifierDataDTO;
@@ -167,7 +167,7 @@ public class PhilipsAirHttpAPIConnection extends PhilipsAirAPIConnection {
 
             Request request = httpClient.newRequest(url).method(method);
             if (method == PUT && (content != null && !content.isEmpty())) {
-                request.content(new StringContentProvider(content));
+                request.body(new StringRequestContent(content));
             }
 
             ContentResponse contentResponse = request.timeout(REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS).send();

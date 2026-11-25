@@ -15,8 +15,6 @@ package org.openhab.binding.groheondus.internal.discovery;
 import static org.openhab.binding.groheondus.internal.GroheOndusBindingConstants.THING_TYPE_SENSE;
 import static org.openhab.binding.groheondus.internal.GroheOndusBindingConstants.THING_TYPE_SENSEGUARD;
 
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -25,6 +23,9 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.groheondus.internal.api.ApplianceInfo;
+import org.openhab.binding.groheondus.internal.api.GroheOndusApi;
+import org.openhab.binding.groheondus.internal.api.GroheOndusApiException;
 import org.openhab.binding.groheondus.internal.handler.GroheOndusAccountHandler;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
@@ -33,11 +34,9 @@ import org.openhab.core.thing.ThingUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.github.floriansw.ondus.api.OndusService;
-import io.github.floriansw.ondus.api.model.BaseAppliance;
-
 /**
  * @author Florian Schmidt - Initial contribution
+ * @author Arne Seime - Use own API client
  */
 @NonNullByDefault
 public class GroheOndusDiscoveryService extends AbstractDiscoveryService {
@@ -64,42 +63,40 @@ public class GroheOndusDiscoveryService extends AbstractDiscoveryService {
         // Remove old results - or they will stay there forever
         removeOlderResults(getTimestampOfLastScan(), null, bridgeHandler.getThing().getUID());
 
-        OndusService service;
-        try {
-            service = bridgeHandler.getService();
-        } catch (IllegalStateException e) {
-            logger.debug("No instance of OndusService given.", e);
+        GroheOndusApi api = bridgeHandler.getApi();
+        if (api == null) {
+            logger.debug("Account {} is not online, skipping discovery", bridgeHandler.getThing().getUID());
             return;
         }
-        List<BaseAppliance> discoveredAppliances = new ArrayList<>();
+        List<ApplianceInfo> discoveredAppliances;
         try {
-            discoveredAppliances = service.appliances();
-        } catch (IOException e) {
-            logger.debug("Could not discover appliances.", e);
+            discoveredAppliances = api.getAppliances();
+        } catch (GroheOndusApiException e) {
+            logger.debug("Could not discover appliances: {}", e.getMessage());
+            return;
         }
 
+        ThingUID bridgeUID = bridgeHandler.getThing().getUID();
         discoveredAppliances.forEach(appliance -> {
-            ThingUID bridgeUID = bridgeHandler.getThing().getUID();
-            ThingUID thingUID = null;
-            switch (appliance.getType()) {
-                case io.github.floriansw.ondus.api.model.guard.Appliance.TYPE:
-                    thingUID = new ThingUID(THING_TYPE_SENSEGUARD, bridgeUID, appliance.getApplianceId());
-                    break;
-                case io.github.floriansw.ondus.api.model.sense.Appliance.TYPE:
-                    thingUID = new ThingUID(THING_TYPE_SENSE, bridgeUID, appliance.getApplianceId());
-                    break;
-                default:
-                    return;
+            String applianceId = appliance.ref().applianceId();
+            ThingUID thingUID = switch (appliance.type()) {
+                case ApplianceInfo.TYPE_SENSE_GUARD -> new ThingUID(THING_TYPE_SENSEGUARD, bridgeUID, applianceId);
+                case ApplianceInfo.TYPE_SENSE -> new ThingUID(THING_TYPE_SENSE, bridgeUID, applianceId);
+                default -> null;
+            };
+            if (thingUID == null) {
+                logger.debug("Ignoring unsupported appliance type {} ({})", appliance.type(), appliance.name());
+                return;
             }
 
-            Map<String, Object> properties = new HashMap<>();
-            properties.put(PROPERTY_LOCATION_ID, appliance.getRoom().getLocation().getId());
-            properties.put(PROPERTY_ROOM_ID, appliance.getRoom().getId());
-            properties.put(PROPERTY_APPLIANCE_ID, appliance.getApplianceId());
+            Map<String, Object> properties = new HashMap<>(appliance.properties());
+            properties.put(PROPERTY_LOCATION_ID, appliance.ref().locationId());
+            properties.put(PROPERTY_ROOM_ID, appliance.ref().roomId());
+            properties.put(PROPERTY_APPLIANCE_ID, applianceId);
 
             DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
-                    .withBridge(bridgeUID).withLabel(appliance.getName())
-                    .withRepresentationProperty(PROPERTY_APPLIANCE_ID).build();
+                    .withBridge(bridgeUID).withLabel(appliance.name()).withRepresentationProperty(PROPERTY_APPLIANCE_ID)
+                    .build();
 
             thingDiscovered(discoveryResult);
         });

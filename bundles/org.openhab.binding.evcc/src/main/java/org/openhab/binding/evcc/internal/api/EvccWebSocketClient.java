@@ -12,9 +12,9 @@
  */
 package org.openhab.binding.evcc.internal.api;
 
-import java.io.IOException;
 import java.net.URI;
 import java.nio.ByteBuffer;
+import java.time.Duration;
 import java.util.Optional;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -23,6 +23,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.websocket.api.Callback;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.slf4j.Logger;
@@ -91,9 +92,9 @@ public class EvccWebSocketClient {
     public void start() {
         stopped = false;
         try {
-            client.getPolicy().setIdleTimeout(0); // Jetty 9
-            client.getPolicy().setMaxTextMessageSize(1024 * 1024);
-            client.getPolicy().setMaxTextMessageBufferSize(1024 * 1024);
+            client.setIdleTimeout(Duration.ZERO);
+            // Jetty 12 has no separate message buffer size; the message limit alone bounds assembly
+            client.setMaxTextMessageSize(1024 * 1024);
             client.start();
             connect();
         } catch (Exception e) {
@@ -169,11 +170,8 @@ public class EvccWebSocketClient {
             return;
         }
         unansweredPings.incrementAndGet();
-        try {
-            s.getRemote().sendPing(ByteBuffer.allocate(0));
-        } catch (IOException e) {
-            logger.debug("Failed to send EVCC WebSocket ping: {}", e.getMessage());
-        }
+        s.sendPing(ByteBuffer.allocate(0), Callback.from(() -> {
+        }, e -> logger.debug("Failed to send EVCC WebSocket ping: {}", e.getMessage())));
     }
 
     private void stopWatchdog() {

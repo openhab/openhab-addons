@@ -26,8 +26,6 @@ import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.function.Consumer;
 
-import javax.xml.bind.JAXBException;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.emotiva.internal.dto.EmotivaControlDTO;
@@ -40,6 +38,8 @@ import org.openhab.binding.emotiva.internal.protocol.EmotivaUdpResponse;
 import org.openhab.binding.emotiva.internal.protocol.EmotivaXmlUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import jakarta.xml.bind.JAXBException;
 
 /**
  * This service handles sending UDP message to Emotiva devices.

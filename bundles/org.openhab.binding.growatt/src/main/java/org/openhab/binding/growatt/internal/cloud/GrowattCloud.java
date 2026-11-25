@@ -13,7 +13,7 @@
 package org.openhab.binding.growatt.internal.cloud;
 
 import java.lang.reflect.Type;
-import java.net.HttpCookie;
+import java.net.URI;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.time.DateTimeException;
@@ -32,10 +32,11 @@ import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
+import org.eclipse.jetty.client.FormRequestContent;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.FormContentProvider;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.http.HttpCookie;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.util.Fields;
@@ -223,8 +224,8 @@ public class GrowattCloud implements AutoCloseable {
      * @throws GrowattApiException if any error occurs.
      */
     private void refreshCookies() throws GrowattApiException {
-        List<HttpCookie> cookies = httpClient.getCookieStore().getCookies();
-        if (cookies.isEmpty() || cookies.stream().anyMatch(HttpCookie::hasExpired)) {
+        List<HttpCookie> cookies = httpClient.getHttpCookieStore().match(URI.create(SERVER_URL));
+        if (cookies.isEmpty()) {
             postLoginCredentials();
         }
     }
@@ -269,12 +270,12 @@ public class GrowattCloud implements AutoCloseable {
         }
 
         if (fields != null) {
-            request.content(new FormContentProvider(fields), FORM_CONTENT);
+            request.body(new FormRequestContent(fields));
         }
 
         if (logger.isTraceEnabled()) {
             logger.trace("{} {}{} {} {}", method, request.getPath(), params == null ? "" : "?" + request.getQuery(),
-                    request.getVersion(), fields == null ? "" : "? " + FormContentProvider.convert(fields));
+                    request.getVersion(), fields == null ? "" : fields);
         }
 
         ContentResponse response;

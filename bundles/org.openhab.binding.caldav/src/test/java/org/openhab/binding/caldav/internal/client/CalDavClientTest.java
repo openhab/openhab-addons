@@ -44,6 +44,8 @@ import javax.net.ssl.SSLException;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.transport.HttpClientTransportOverHTTP;
+import org.eclipse.jetty.io.ClientConnector;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
@@ -572,9 +574,9 @@ class CalDavClientTest {
         SslContextFactory.Client verified = new SslContextFactory.Client();
         verified.setTrustStorePath(store.toString());
         verified.setTrustStorePassword("fixture-password");
-        HttpClient trusted = new HttpClient(verified);
-        HttpClient untrusted = new HttpClient(new SslContextFactory.Client());
-        HttpClient insecure = new HttpClient(new SslContextFactory.Client(true));
+        HttpClient trusted = httpClient(verified);
+        HttpClient untrusted = httpClient(new SslContextFactory.Client());
+        HttpClient insecure = httpClient(new SslContextFactory.Client(true));
         try {
             server.start();
             trusted.start();
@@ -658,5 +660,11 @@ class CalDavClientTest {
             }
         }
         return false;
+    }
+
+    private static HttpClient httpClient(SslContextFactory.Client sslContextFactory) {
+        ClientConnector connector = new ClientConnector();
+        connector.setSslContextFactory(sslContextFactory);
+        return new HttpClient(new HttpClientTransportOverHTTP(connector));
     }
 }

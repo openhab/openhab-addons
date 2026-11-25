@@ -79,6 +79,7 @@ public class VerisureHandlerFactory extends BaseThingHandlerFactory {
     public VerisureHandlerFactory(@Reference HttpClientFactory httpClientFactory) {
         this.httpClient = httpClientFactory.createHttpClient(VerisureBindingConstants.BINDING_ID);
         this.httpClient.setRequestBufferSize(REQUEST_BUFFER_SIZE);
+        this.httpClient.setHttpCookieStore(new VerisureSession.SwitchableCookieStore());
         try {
             this.httpClient.start();
         } catch (Exception e) {

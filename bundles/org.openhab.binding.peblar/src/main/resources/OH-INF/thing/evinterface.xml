@@ -29,8 +29,8 @@
 		<label>Control Pilot State</label>
 		<description>IEC 61851 Control Pilot state (e.g. State A, State B, State C)</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
+			<point>Status</point>
+			<property>Mode</property>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -50,8 +50,8 @@
 		<description>Cable lock state; ON means the cable is locked</description>
 		<category>Lock</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>LockState</tag>
+			<point>Status</point>
+			<property>LockState</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -66,8 +66,8 @@
 		</description>
 		<category>Energy</category>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Current</tag>
+			<point>Setpoint</point>
+			<property>Current</property>
 		</tags>
 		<state min="0" max="32000" pattern="%.0f %unit%"/>
 	</channel-type>
@@ -77,8 +77,8 @@
 		<label>Charge Current Limit Source</label>
 		<description>Source that is currently limiting the charge current</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
+			<point>Status</point>
+			<property>Mode</property>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -102,8 +102,8 @@
 		<label>Force Single Phase</label>
 		<description>Force the charger to use a single phase only</description>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
+			<point>Switch</point>
+			<property>Mode</property>
 		</tags>
 
 	</channel-type>

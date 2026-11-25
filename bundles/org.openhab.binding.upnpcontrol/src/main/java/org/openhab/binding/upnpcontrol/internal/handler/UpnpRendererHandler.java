@@ -50,6 +50,8 @@ import org.openhab.binding.upnpcontrol.internal.services.UpnpRenderingControlCon
 import org.openhab.binding.upnpcontrol.internal.util.UpnpControlUtil;
 import org.openhab.binding.upnpcontrol.internal.util.UpnpXMLParser;
 import org.openhab.core.audio.AudioFormat;
+import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.io.net.http.HttpUtil;
 import org.openhab.core.io.transport.upnp.UpnpIOService;
 import org.openhab.core.library.types.DecimalType;
@@ -163,8 +165,10 @@ public class UpnpRendererHandler extends UpnpHandler {
     public UpnpRendererHandler(Thing thing, UpnpIOService upnpIOService, UpnpAudioSinkReg audioSinkReg,
             UpnpDynamicStateDescriptionProvider upnpStateDescriptionProvider,
             UpnpDynamicCommandDescriptionProvider upnpCommandDescriptionProvider,
-            UpnpControlBindingConfiguration configuration) {
-        super(thing, upnpIOService, configuration, upnpStateDescriptionProvider, upnpCommandDescriptionProvider);
+            UpnpControlBindingConfiguration configuration, TranslationProvider translationProvider,
+            LocaleProvider localeProvider) {
+        super(thing, upnpIOService, configuration, upnpStateDescriptionProvider, upnpCommandDescriptionProvider,
+                translationProvider, localeProvider);
 
         serviceSubscriptions.add(AV_TRANSPORT);
         serviceSubscriptions.add(RENDERING_CONTROL);
@@ -274,9 +278,9 @@ public class UpnpRendererHandler extends UpnpHandler {
             if (UpnpChannelName.channelIdToUpnpChannelName(name) != null) {
                 createChannel(UpnpChannelName.channelIdToUpnpChannelName(name));
             } else {
-                String label = String.format("@text/channel.upnpcontrol.vendorvolume.label [ \"%s\" ]", audioChannel);
-                createChannel(name, label, "@text/channel.upnpcontrol.vendorvolume.description", ITEM_TYPE_VOLUME,
-                        CHANNEL_TYPE_VOLUME);
+                createChannel(name, "@text/channel.upnpcontrol.vendorvolume.label",
+                        "@text/channel.upnpcontrol.vendorvolume.description", ITEM_TYPE_VOLUME, CHANNEL_TYPE_VOLUME,
+                        audioChannel);
             }
         }
         if (config.mute && !UPNP_MASTER.equals(audioChannel)) {
@@ -284,9 +288,9 @@ public class UpnpRendererHandler extends UpnpHandler {
             if (UpnpChannelName.channelIdToUpnpChannelName(name) != null) {
                 createChannel(UpnpChannelName.channelIdToUpnpChannelName(name));
             } else {
-                String label = String.format("@text/channel.upnpcontrol.vendormute.label [ \"%s\" ]", audioChannel);
-                createChannel(name, label, "@text/channel.upnpcontrol.vendormute.description", ITEM_TYPE_MUTE,
-                        CHANNEL_TYPE_MUTE);
+                createChannel(name, "@text/channel.upnpcontrol.vendormute.label",
+                        "@text/channel.upnpcontrol.vendormute.description", ITEM_TYPE_MUTE, CHANNEL_TYPE_MUTE,
+                        audioChannel);
             }
         }
         if (config.loudness) {
@@ -294,9 +298,9 @@ public class UpnpRendererHandler extends UpnpHandler {
             if (UpnpChannelName.channelIdToUpnpChannelName(name) != null) {
                 createChannel(UpnpChannelName.channelIdToUpnpChannelName(name));
             } else {
-                String label = String.format("@text/channel.upnpcontrol.vendorloudness.label [ \"%s\" ]", audioChannel);
-                createChannel(name, label, "@text/channel.upnpcontrol.vendorloudness.description", ITEM_TYPE_LOUDNESS,
-                        CHANNEL_TYPE_LOUDNESS);
+                createChannel(name, "@text/channel.upnpcontrol.vendorloudness.label",
+                        "@text/channel.upnpcontrol.vendorloudness.description", ITEM_TYPE_LOUDNESS,
+                        CHANNEL_TYPE_LOUDNESS, audioChannel);
             }
         }
     }

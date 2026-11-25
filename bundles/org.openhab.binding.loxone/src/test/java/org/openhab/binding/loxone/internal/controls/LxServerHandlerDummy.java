@@ -54,6 +54,9 @@ public class LxServerHandlerDummy implements LxServerHandlerApi {
     Map<LxUuid, LxControl> controls;
     Map<LxUuid, LxControl> extraControls = new HashMap<>();
     Map<ChannelUID, StateDescription> stateDescriptions = new HashMap<>();
+    Map<ChannelUID, State> channelStates = new HashMap<>();
+
+    boolean failActions;
 
     public LxServerHandlerDummy() {
         GsonBuilder builder = new GsonBuilder();
@@ -80,6 +83,9 @@ public class LxServerHandlerDummy implements LxServerHandlerApi {
 
     @Override
     public void sendAction(LxUuid id, String operation) throws IOException {
+        if (failActions) {
+            throw new IOException("Simulated communication error.");
+        }
         actionQueue.add(id + "/" + operation);
     }
 
@@ -96,6 +102,7 @@ public class LxServerHandlerDummy implements LxServerHandlerApi {
 
     @Override
     public void setChannelState(ChannelUID channelId, State state) {
+        channelStates.put(channelId, state);
     }
 
     @Override

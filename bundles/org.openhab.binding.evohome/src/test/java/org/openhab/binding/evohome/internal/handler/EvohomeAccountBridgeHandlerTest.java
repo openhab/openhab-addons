@@ -30,9 +30,9 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.Request;
 import org.eclipse.jetty.http.HttpFields;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -112,7 +112,7 @@ class EvohomeAccountBridgeHandlerTest {
         return mock(ContentResponse.class, invocation -> switch (invocation.getMethod().getName()) {
             case "getStatus" -> code;
             case "getContentAsString" -> json;
-            case "getHeaders" -> new HttpFields();
+            case "getHeaders" -> HttpFields.build();
             default -> RETURNS_DEFAULTS.answer(invocation);
         });
     }
@@ -624,7 +624,7 @@ class EvohomeAccountBridgeHandlerTest {
         EvohomeHeatingZoneHandler zone = attachedZone("zone");
         when(zone.hasScheduleLinks()).thenReturn(true);
         ContentResponse throttled = response(status, "{}");
-        HttpFields fields = new HttpFields();
+        HttpFields.Mutable fields = HttpFields.build();
         fields.put("Retry-After", "120");
         when(throttled.getHeaders()).thenReturn(fields);
         when(request.send()).thenReturn(response(200, TOKEN), response(200, ACCOUNT),
@@ -663,7 +663,7 @@ class EvohomeAccountBridgeHandlerTest {
                 .thenAnswer(invocation -> {
                     assertTrue(handler.requestScheduleRefresh("zone"));
                     ContentResponse throttled = response(429, "{}");
-                    HttpFields fields = new HttpFields();
+                    HttpFields.Mutable fields = HttpFields.build();
                     fields.put("Retry-After", "120");
                     when(throttled.getHeaders()).thenReturn(fields);
                     return throttled;

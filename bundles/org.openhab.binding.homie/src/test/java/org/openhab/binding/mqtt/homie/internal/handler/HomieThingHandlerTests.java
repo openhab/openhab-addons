@@ -21,7 +21,9 @@ import static org.mockito.Mockito.*;
 import static org.openhab.binding.homie.internal.handler.ThingChannelConstants.TEST_HOMIE_THING;
 
 import java.lang.reflect.Field;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -29,12 +31,15 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -62,19 +67,23 @@ import org.openhab.binding.mqtt.handler.AbstractBrokerHandler;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.io.transport.mqtt.MqttBrokerConnection;
+import org.openhab.core.io.transport.mqtt.MqttMessageSubscriber;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.test.storage.VolatileStorageService;
 import org.openhab.core.thing.Channel;
+import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
+import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.thing.type.ChannelKind;
 import org.openhab.core.thing.type.ChannelType;
 import org.openhab.core.thing.type.ChannelTypeRegistry;
+import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.thing.type.ThingTypeBuilder;
 import org.openhab.core.thing.type.ThingTypeRegistry;
 import org.openhab.core.types.RefreshType;
@@ -84,6 +93,7 @@ import org.openhab.core.util.BundleResolver;
  * Tests cases for {@link HomieThingHandler}.
  *
  * @author David Graeff - Initial contribution
+ * @author Cody Cutrer - Restored channel metadata regression tests
  */
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -289,6 +299,140 @@ public class HomieThingHandlerTests {
         verify(connectionMock, times(1)).publish(any(), any(), anyInt(), anyBoolean());
     }
 
+    @ParameterizedTest
+    @ValueSource(booleans = { false, true })
+    public void restoredNodeReceivesNewProperties(boolean addedWhileOffline) throws Exception {
+        Map<String, String> retained = new HashMap<>();
+        retained.put(deviceTopic + "/$homie", "4.0.0");
+        retained.put(deviceTopic + "/$name", "device");
+        retained.put(deviceTopic + "/$state", "ready");
+        retained.put(deviceTopic + "/$nodes", "telemetry");
+        retained.put(deviceTopic + "/telemetry/$name", "Telemetry");
+        retained.put(deviceTopic + "/telemetry/$type", "telemetry");
+        retained.put(deviceTopic + "/telemetry/$properties", addedWhileOffline ? "status,lastUpdate" : "status");
+        for (String property : List.of("status", "lastUpdate")) {
+            String topic = deviceTopic + "/telemetry/" + property;
+            retained.put(topic + "/$name", property);
+            retained.put(topic + "/$datatype", "lastUpdate".equals(property) ? "datetime" : "string");
+            retained.put(topic + "/$settable", "false");
+            retained.put(topic + "/$retained", "true");
+            retained.put(topic + "/$unit", "none");
+            retained.put(topic + "/$format", "none");
+        }
+        Map<String, MqttMessageSubscriber> subscribers = new HashMap<>();
+        doAnswer(i -> {
+            String topic = i.getArgument(0);
+            MqttMessageSubscriber subscriber = i.getArgument(1);
+            subscribers.put(topic, subscriber);
+            String payload = retained.get(topic);
+            if (payload != null) {
+                subscriber.processMessage(topic, payload.getBytes(StandardCharsets.UTF_8));
+            }
+            return CompletableFuture.completedFuture(true);
+        }).when(connectionMock).subscribe(anyString(), any());
+
+        doReturn("String").when(channelTypeMock).getItemType();
+        doReturn(ChannelKind.STATE).when(channelTypeMock).getKind();
+        doReturn(channelTypeMock).when(channelTypeRegistryMock).getChannelType(any());
+        ThingHandlerHelper.setConnection(thingHandler, connectionMock);
+        Channel restored = ChannelBuilder.create(new ChannelUID(thing.getUID(), "telemetry", "status"), "String")
+                .withType(new ChannelTypeUID(HomieBindingConstants.BINDING_ID, "string")).withLabel("Old status")
+                .build();
+        thingHandler.device.initialize("homie", deviceID, List.of(restored));
+        thingHandler.device.subscribe(connectionMock, schedulerMock, 500).get(5, TimeUnit.SECONDS);
+        thingHandler.delayedProcessing.forceProcessNow();
+
+        String propertiesTopic = deviceTopic + "/telemetry/$properties";
+        MqttMessageSubscriber subscriber = subscribers.get(propertiesTopic);
+        assertNotNull(subscriber, "Restored nodes must subscribe to changes in $properties");
+        assertEquals("status", thingHandler.getThing().getChannels().getFirst().getLabel());
+        if (!addedWhileOffline) {
+            subscriber.processMessage(propertiesTopic, "status,lastUpdate".getBytes(StandardCharsets.UTF_8));
+            thingHandler.delayedProcessing.forceProcessNow();
+        }
+
+        ChannelUID newChannelUID = new ChannelUID(thing.getUID(), "telemetry", "lastUpdate");
+        Channel newChannel = thingHandler.getThing().getChannel(newChannelUID);
+        assertNotNull(newChannel);
+        assertEquals(new ChannelTypeUID(HomieBindingConstants.BINDING_ID, "datetime"), newChannel.getChannelTypeUID());
+        assertEquals(2, thingHandler.getThing().getChannels().size());
+        verify(connectionMock).subscribe(eq(deviceTopic + "/telemetry/lastUpdate"), any());
+        verify(connectionMock, times(1)).subscribe(eq(propertiesTopic), any());
+        verify(connectionMock, times(1)).subscribe(eq(deviceTopic + "/telemetry/status/$name"), any());
+
+        thingHandler.device.stop().get(5, TimeUnit.SECONDS);
+        verify(connectionMock).unsubscribe(eq(propertiesTopic), any());
+        verify(connectionMock).unsubscribe(eq(deviceTopic + "/telemetry/status/$name"), any());
+        retained.put(propertiesTopic, "status");
+        thingHandler.device.subscribe(connectionMock, schedulerMock, 500).get(5, TimeUnit.SECONDS);
+        thingHandler.delayedProcessing.forceProcessNow();
+        assertEquals(1, thingHandler.getThing().getChannels().size());
+        verify(connectionMock, times(1)).subscribe(eq(deviceTopic + "/telemetry/lastUpdate/$name"), any());
+        verify(connectionMock, times(2)).subscribe(eq(propertiesTopic), any());
+        verify(connectionMock, times(2)).subscribe(eq(deviceTopic + "/telemetry/status/$name"), any());
+        thingHandler.device.stop().get(5, TimeUnit.SECONDS);
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = { "none", "device", "node" })
+    public void reinitializeUnsubscribesOldChannel(String delayedUnsubscribe) throws Exception {
+        thingHandler.device.initialize("homie", deviceID, List.of());
+        Node node = thingHandler.device.createNode("node", spy(new NodeAttributes()));
+        doReturn(future).when(node.attributes).unsubscribe();
+        Property property = node.createProperty("property", spy(new PropertyAttributes()));
+        doReturn(future).when(property.attributes).unsubscribe();
+        property.attributes.name = "Property";
+        property.attributes.datatype = DataTypeEnum.string_;
+        property.attributesReceived();
+        ChannelState channelState = property.getChannelState();
+        assertNotNull(channelState);
+        ChannelStateHelper.setConnection(channelState, connectionMock);
+        node.properties.put(property.propertyID, property);
+        thingHandler.device.nodes.put(node.nodeID, node);
+
+        CompletableFuture<@Nullable Void> unsubscribe = new CompletableFuture<>();
+        doReturn("device".equals(delayedUnsubscribe) ? unsubscribe : future).when(thingHandler.device.attributes)
+                .unsubscribe();
+        doReturn("node".equals(delayedUnsubscribe) ? unsubscribe : future).when(node.attributes).unsubscribe();
+        CompletableFuture<@Nullable Void> stopped = thingHandler.device.stop();
+        assertEquals("none".equals(delayedUnsubscribe), stopped.isDone());
+        // Handler initialization rebuilds the device tree while asynchronous shutdown may still be pending.
+        thingHandler.device.initialize("homie", deviceID, List.of());
+        node.properties.clear();
+        unsubscribe.complete(null);
+        stopped.get(5, TimeUnit.SECONDS);
+
+        verify(connectionMock).unsubscribe(eq(deviceTopic + "/node/property"), same(channelState));
+    }
+
+    @Test
+    public void startupReconcilesMetadataAfterAnEarlyBatchWasProcessed() throws Exception {
+        thingHandler.device.initialize("homie", deviceID, List.of());
+        CompletableFuture<@Nullable Void> subscribed = new CompletableFuture<>();
+        AtomicBoolean ready = new AtomicBoolean();
+        doAnswer(invocation -> ready.get()).when(thingHandler.device).isInitialized();
+        doReturn(subscribed).when(thingHandler.device).subscribe(any(), any(), anyInt());
+        doReturn("String").when(channelTypeMock).getItemType();
+        doReturn(ChannelKind.STATE).when(channelTypeMock).getKind();
+        doReturn(channelTypeMock).when(channelTypeRegistryMock).getChannelType(any());
+        Node node = thingHandler.device.createNode("node");
+        node.attributes.name = "Node";
+        Property property = spy(node.createProperty("new-property"));
+        property.attributes.name = "New property";
+        property.attributes.datatype = DataTypeEnum.string_;
+        property.attributesReceived();
+        doReturn(CompletableFuture.completedFuture(null)).when(property).startChannel(any(), any(), anyInt());
+        node.properties.put("new-property", property);
+        thingHandler.device.nodes.put("node", node);
+        CompletableFuture<@Nullable Void> start = thingHandler.start(connectionMock);
+        thingHandler.delayedProcessing.forceProcessNow();
+        assertTrue(thingHandler.getThing().getChannels().isEmpty());
+        ready.set(true);
+        subscribed.complete(null);
+        start.get(5, TimeUnit.SECONDS);
+        assertNotNull(thingHandler.getThing().getChannel(property.channelUID));
+    }
+
     public Object createSubscriberAnswer(InvocationOnMock invocation) {
         final AbstractMqttAttributeClass attributes = (AbstractMqttAttributeClass) invocation.getMock();
         final ScheduledExecutorService scheduler = (ScheduledExecutorService) invocation.getArguments()[0];
@@ -360,7 +504,6 @@ public class HomieThingHandlerTests {
         verify(thingHandler).nodeAddedOrChanged(any());
 
         verify(thingHandler.device).subscribe(any(), any(), anyInt());
-        verify(thingHandler.device).attributesReceived(any(), any(), anyInt());
 
         assertNotNull(thingHandler.device.nodes.get("node").properties.get("property"));
 
