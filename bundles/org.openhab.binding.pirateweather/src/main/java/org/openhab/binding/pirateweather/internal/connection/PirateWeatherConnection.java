@@ -99,20 +99,14 @@ public class PirateWeatherConnection {
     }
 
     /**
-     * Performs a minimal, uncached request to verify that the API is reachable and the configured API key is
-     * accepted. Only the current conditions block is requested to keep the response small.
-     *
-     * @throws PirateWeatherCommunicationException if the server cannot be reached or returns an unexpected error
-     * @throws PirateWeatherConfigurationException if the API key is missing or rejected
+     * Verifies the API key with a minimal, uncached request.
      */
     public void validateApiKey() throws PirateWeatherCommunicationException, PirateWeatherConfigurationException {
         String apikey = config.apikey;
         if (apikey.isBlank()) {
             throw new PirateWeatherConfigurationException("@text/offline.conf-error-missing-apikey");
         }
-        // Pirate Weather counts every request against the key's quota, so this costs one extra call per bridge
-        // initialization. 0,0 is used as a fixed open-ocean point: it is always valid, needs no configured location
-        // and, with all blocks but "currently" excluded, keeps the response minimal.
+        // Any valid location works for key validation; 0,0 avoids depending on a configured one.
         String url = String.format(Locale.ROOT, WEATHER_URL, apikey, 0.0, 0.0);
         Map<String, String> params = new HashMap<>();
         params.put(PARAM_EXCLUDE, "minutely,hourly,daily,alerts,flags");
