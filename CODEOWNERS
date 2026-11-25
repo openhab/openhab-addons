@@ -71,6 +71,7 @@
 /bundles/org.openhab.binding.bsblan/ @hypetsch
 /bundles/org.openhab.binding.bticinosmarther/ @MrRonfo
 /bundles/org.openhab.binding.buienradar/ @gedejong
+/bundles/org.openhab.binding.bydbatterybox/ @MikeTheTux
 /bundles/org.openhab.binding.caddx/ @jossuar
 /bundles/org.openhab.binding.caldav/ @AndreasVilippus
 /bundles/org.openhab.binding.candy/ @magx2
@@ -494,7 +495,6 @@
 /bundles/org.openhab.binding.yioremote/ @miloit
 /bundles/org.openhab.binding.zoneminder/ @mhilbush
 /bundles/org.openhab.binding.zwavejs/ @lsiepel
-/bundles/org.openhab.binding.zway/ @pathec
 /bundles/org.openhab.io.homekit/ @andylintner @ccutrer @yfre
 /bundles/org.openhab.io.hueemulation/ @digitaldan
 /bundles/org.openhab.io.mcp/ @digitaldan
