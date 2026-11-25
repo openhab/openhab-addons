@@ -24,7 +24,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * Builds the go2rtc YAML configuration.
  *
  * @author Andrew Fiddian-Green - Initial contribution
- * @author Andrew Fiddian-Green - Avoid Windows excluded UDP ports
  */
 @NonNullByDefault
 public final class Go2RtcConfig {

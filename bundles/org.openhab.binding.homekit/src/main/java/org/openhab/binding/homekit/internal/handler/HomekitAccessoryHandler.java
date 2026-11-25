@@ -139,9 +139,6 @@ import com.google.gson.JsonPrimitive;
  * allowing combined control of hue, saturation, brightness, and color temperature.
  *
  * @author Andrew Fiddian-Green - Initial contribution
- * @author Andrew Fiddian-Green - Camera talk-back channel
- * @author Andrew Fiddian-Green - Publish camera URL when the channel is linked
- * @author Andrew Fiddian-Green - Register each camera with the viewer servlet
  */
 @NonNullByDefault
 public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler
@@ -230,6 +227,7 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler
 
     private @Nullable Long cameraSetupIid = null;
     private @Nullable Long cameraSelectedIid = null;
+    private volatile @Nullable String registeredCameraUidKey;
     private boolean cameraSessionOpen = false;
     private byte[] cameraSessionId = new byte[16];
 
@@ -537,7 +535,7 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler
                         .withType(CHANNEL_TYPE_CAMERA_URL).build();
                 uniqueChannelsMap.put(CHANNEL_CAMERA_URL, cameraUrlChannel);
                 logChannelInformation(cameraUrlChannel);
-                cameraServlet.addProvider(thing.getUID().getId(), this);
+                registerCamera();
             }
         }
 
@@ -635,7 +633,7 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler
         // error page reports that the URL was not found. Only cameras have the camera URL channel; a bridged camera
         // gets it when its accessory is loaded, see createChannels().
         if (thing.getChannel(CHANNEL_CAMERA_URL) != null) {
-            cameraServlet.addProvider(thing.getUID().getId(), this);
+            registerCamera();
         }
         if (isBridgedAccessory) {
             Bridge bridge = getBridge();
@@ -1648,7 +1646,7 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler
                         GO2RTC_DEMAND_POLL_SECONDS, GO2RTC_DEMAND_POLL_SECONDS, TimeUnit.SECONDS);
                 go2rtcKeepalive = scheduler.scheduleWithFixedDelay(this::sendGo2rtcKeepalive, GO2RTC_KEEPALIVE_SECONDS,
                         GO2RTC_KEEPALIVE_SECONDS, TimeUnit.SECONDS);
-                cameraServlet.addProvider(thing.getUID().getId(), this);
+                registerCamera();
                 logger.debug("{} startGo2rtc() endPoint={}", thing.getUID(), go2rtcEndpoint);
             }
 
@@ -1687,7 +1685,11 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler
      * item is linked is discarded. The URL does not depend on go2rtc already being ready.
      */
     private void publishCameraUrl() {
-        String viewerUrl = cameraServlet.viewerUrl(thing.getUID().getId());
+        String cameraUidKey = cameraUidKey();
+        if (cameraUidKey == null) {
+            return;
+        }
+        String viewerUrl = cameraServlet.viewerUrl(cameraUidKey);
         if (viewerUrl == null) {
             logger.warn("{} openHAB network address or HTTP port unavailable, camera URL not published",
                     thing.getUID());
@@ -1695,6 +1697,43 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler
         }
         updateState(new ChannelUID(thing.getUID(), CHANNEL_CAMERA_URL), new StringType(viewerUrl));
         logger.debug("{} camera URL {}", thing.getUID(), viewerUrl);
+    }
+
+    /**
+     * Registers this camera with the camera servlet under its {@link #cameraUidKey()}. The key is remembered so that
+     * removal uses the same key even if the configuration changed in the meantime.
+     */
+    private void registerCamera() {
+        String cameraUidKey = cameraUidKey();
+        if (cameraUidKey == null) {
+            logger.debug("{} camera not registered, unique ID not configured", thing.getUID());
+            return;
+        }
+        registeredCameraUidKey = cameraUidKey;
+        cameraServlet.addProvider(cameraUidKey, this);
+    }
+
+    /**
+     * Returns the uid key that identifies this camera in its browser URL, or null if no unique ID is configured. The
+     * key is the unique ID with colons removed and lowercased, as discovery derives Thing IDs. A bridged accessory uses
+     * its bridge's unique ID with its accessory ID, because its Thing ID is only the accessory ID and repeats across
+     * bridges.
+     */
+    private @Nullable String cameraUidKey() {
+        String uniqueId;
+        if (getBridge() instanceof Bridge bridge && bridge.getHandler() instanceof HomekitBridgeHandler bridgeHandler) {
+            Long aid = getAccessoryId();
+            if (!(bridgeHandler.getThing().getConfiguration().get(CONFIG_UNIQUE_ID) instanceof String bridgeUniqueId)
+                    || aid == null) {
+                return null;
+            }
+            uniqueId = STRING_AID_FMT.formatted(bridgeUniqueId, aid);
+        } else if (getConfig().get(CONFIG_UNIQUE_ID) instanceof String configUniqueId && !configUniqueId.isBlank()) {
+            uniqueId = configUniqueId;
+        } else {
+            return null;
+        }
+        return uniqueId.replace(":", "").toLowerCase();
     }
 
     /**
@@ -1707,7 +1746,10 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler
         ScheduledFuture<?> poller;
         ScheduledFuture<?> keepalive;
         synchronized (this) {
-            cameraServlet.removeProvider(thing.getUID().getId(), this);
+            String cameraUidKey = registeredCameraUidKey;
+            if (cameraUidKey != null) {
+                cameraServlet.removeProvider(cameraUidKey, this);
+            }
             process = go2rtcProcess;
             pump = go2rtcPump;
             poller = go2rtcDemandPoller;
