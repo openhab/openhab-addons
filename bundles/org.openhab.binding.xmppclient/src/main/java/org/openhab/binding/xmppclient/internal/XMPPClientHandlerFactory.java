@@ -77,6 +77,7 @@ public class XMPPClientHandlerFactory extends BaseThingHandlerFactory {
     @Activate
     protected void activate(ComponentContext componentContext) {
         super.activate(componentContext);
+        SmackXmlParser.setXmlPullParserFactory(new Xpp3XmlPullParserFactory());
 
         // Explicitly initialize Smack modules because automatic initializer discovery
         // does not work across OSGi bundle classloader boundaries.
@@ -88,8 +89,6 @@ public class XMPPClientHandlerFactory extends BaseThingHandlerFactory {
 
         // Register HTTP File Upload providers from smack-experimental.
         new ExperimentalInitializer().initialize();
-
-        SmackXmlParser.setXmlPullParserFactory(new Xpp3XmlPullParserFactory());
 
         Roster.setRosterLoadedAtLoginDefault(false);
         var dnsResolver = JavaxResolver.getInstance();
