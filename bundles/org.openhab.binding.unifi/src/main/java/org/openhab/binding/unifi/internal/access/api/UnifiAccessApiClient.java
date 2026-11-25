@@ -115,7 +115,6 @@ public final class UnifiAccessApiClient implements Closeable {
         this.apiToken = (apiToken != null && !apiToken.isBlank()) ? apiToken : null;
         this.tokenRecovery = tokenRecovery;
         this.wsClient = new WebSocketClient(httpClient);
-        this.wsClient.unmanage(this.httpClient);
         try {
             wsClient.start();
         } catch (Exception e) {

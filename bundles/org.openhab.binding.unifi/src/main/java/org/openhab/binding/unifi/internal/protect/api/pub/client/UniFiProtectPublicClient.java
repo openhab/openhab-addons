@@ -105,8 +105,6 @@ public class UniFiProtectPublicClient implements Closeable {
         this.gson = gson;
         this.defaultHeaders = Map.of("X-API-KEY", token, "Accept", "application/json");
         this.wsClient = new WebSocketClient(httpClient);
-        // Prevent wsClient.stop() from stopping the shared HttpClient instance
-        this.wsClient.unmanage(this.httpClient);
         this.executorService = executorService;
         try {
             this.wsClient.start();
