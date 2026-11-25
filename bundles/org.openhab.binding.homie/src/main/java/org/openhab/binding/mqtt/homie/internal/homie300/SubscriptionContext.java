@@ -18,6 +18,8 @@ import java.util.function.Supplier;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Serializes subscription setup and invalidates pending setup before cleanup, without
@@ -27,6 +29,7 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 final class SubscriptionContext {
+    private final Logger logger = LoggerFactory.getLogger(SubscriptionContext.class);
     private CompletableFuture<@Nullable Void> tail;
     private @Nullable CompletableFuture<@Nullable Void> stopFuture;
 
@@ -35,7 +38,12 @@ final class SubscriptionContext {
     }
 
     SubscriptionContext(CompletableFuture<@Nullable Void> predecessor) {
-        tail = predecessor;
+        tail = predecessor.handle((v, error) -> {
+            if (error != null) {
+                logger.debug("Previous subscription cleanup failed; continuing with a new subscription", error);
+            }
+            return null;
+        });
     }
 
     CompletableFuture<@Nullable Void> run(Supplier<CompletableFuture<@Nullable Void>> action) {

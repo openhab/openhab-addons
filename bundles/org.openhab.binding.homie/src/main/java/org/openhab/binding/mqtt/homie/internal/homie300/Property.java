@@ -140,7 +140,10 @@ public class Property implements AttributeChanged {
         // Reserve the reset before publishing the context, so concurrent value starts wait for it.
         context.run(() -> {
             initialized = false;
-            channelOperations = CompletableFuture.completedFuture(null);
+            // A failed wire unsubscribe can leave the cached state marked subscribed even though
+            // the connection removed its consumer. Retry its local stop before reusing it.
+            final ChannelState cached = channelState;
+            channelOperations = cached == null ? CompletableFuture.completedFuture(null) : cached.stop();
             return CompletableFuture.completedFuture(null);
         });
         final SubscriptionContext previous;
@@ -149,6 +152,8 @@ public class Property implements AttributeChanged {
         } else if (subscription.compareAndSet(expected, context)) {
             previous = expected;
         } else {
+            // The concurrent owner may already be stopping. Do not revive it by retrying here;
+            // the device tolerates child supersession while still propagating device shutdown.
             return subscription.get();
         }
         previous.stop(this::unsubscribe).whenComplete((v, error) -> {

@@ -61,6 +61,7 @@ public class Node implements AbstractMqttAttributeClass.AttributeChanged {
     protected final ChannelGroupUID channelGroupUID;
     private final String topic;
     private boolean metadataReady = false;
+    private boolean metadataReconciled = false;
     private final AtomicReference<SubscriptionContext> subscription = new AtomicReference<>(new SubscriptionContext());
 
     /**
@@ -99,6 +100,7 @@ public class Node implements AbstractMqttAttributeClass.AttributeChanged {
         });
         return context.run(() -> {
             metadataReady = false;
+            metadataReconciled = false;
             return attributes.subscribeAndReceive(connection, scheduler, topic,
                     (name, value, broker, executor, complete) -> context.run(() -> {
                         attributeChanged(context, name, value, broker, executor, complete);
@@ -123,6 +125,7 @@ public class Node implements AbstractMqttAttributeClass.AttributeChanged {
         // Parent metadata is ready before child metadata. Continue processing schema and state updates
         // while the child subscriptions are pending.
         metadataReady = true;
+        metadataReconciled = true;
         callback.nodeAddedOrChanged(this);
         // ChildMap.apply only subscribes newly discovered children. Existing children also need
         // metadata subscriptions after restoration or a reconnect.
@@ -147,7 +150,12 @@ public class Node implements AbstractMqttAttributeClass.AttributeChanged {
      * @return Returns a future that completes as soon as all unsubscriptions have been performed.
      */
     public CompletableFuture<@Nullable Void> stop() {
-        return subscription.get().stop(this::unsubscribe);
+        CompletableFuture<@Nullable Void> stopped = subscription.get().stop(this::unsubscribe);
+        // Cached value channels can open new property contexts even if node metadata did not reconnect.
+        CompletableFuture<@Nullable Void> children = stopped.handle((v, error) -> null)
+                .thenCompose(v -> CompletableFuture
+                        .allOf(properties.stream().map(Property::stop).toArray(CompletableFuture[]::new)));
+        return CompletableFuture.allOf(stopped, children);
     }
 
     private CompletableFuture<@Nullable Void> unsubscribe() {
@@ -244,7 +252,7 @@ public class Node implements AbstractMqttAttributeClass.AttributeChanged {
             return;
         }
         // Special case: Not all fields were known before
-        if (!attributes.isComplete()) {
+        if (!metadataReconciled || !attributes.isComplete()) {
             attributesReceived(context, connection, scheduler, 500);
         } else if ("properties".equals(name)) {
             applyProperties(connection, scheduler, 500);

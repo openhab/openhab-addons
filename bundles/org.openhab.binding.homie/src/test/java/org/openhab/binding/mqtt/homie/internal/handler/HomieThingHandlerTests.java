@@ -31,6 +31,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -402,6 +403,34 @@ public class HomieThingHandlerTests {
         stopped.get(5, TimeUnit.SECONDS);
 
         verify(connectionMock).unsubscribe(eq(deviceTopic + "/node/property"), same(channelState));
+    }
+
+    @Test
+    public void startupReconcilesMetadataAfterAnEarlyBatchWasProcessed() throws Exception {
+        thingHandler.device.initialize("homie", deviceID, List.of());
+        CompletableFuture<@Nullable Void> subscribed = new CompletableFuture<>();
+        AtomicBoolean ready = new AtomicBoolean();
+        doAnswer(invocation -> ready.get()).when(thingHandler.device).isInitialized();
+        doReturn(subscribed).when(thingHandler.device).subscribe(any(), any(), anyInt());
+        doReturn("String").when(channelTypeMock).getItemType();
+        doReturn(ChannelKind.STATE).when(channelTypeMock).getKind();
+        doReturn(channelTypeMock).when(channelTypeRegistryMock).getChannelType(any());
+        Node node = thingHandler.device.createNode("node");
+        node.attributes.name = "Node";
+        Property property = spy(node.createProperty("new-property"));
+        property.attributes.name = "New property";
+        property.attributes.datatype = DataTypeEnum.string_;
+        property.attributesReceived();
+        doReturn(CompletableFuture.completedFuture(null)).when(property).startChannel(any(), any(), anyInt());
+        node.properties.put("new-property", property);
+        thingHandler.device.nodes.put("node", node);
+        CompletableFuture<@Nullable Void> start = thingHandler.start(connectionMock);
+        thingHandler.delayedProcessing.forceProcessNow();
+        assertTrue(thingHandler.getThing().getChannels().isEmpty());
+        ready.set(true);
+        subscribed.complete(null);
+        start.get(5, TimeUnit.SECONDS);
+        assertNotNull(thingHandler.getThing().getChannel(property.channelUID));
     }
 
     public Object createSubscriberAnswer(InvocationOnMock invocation) {

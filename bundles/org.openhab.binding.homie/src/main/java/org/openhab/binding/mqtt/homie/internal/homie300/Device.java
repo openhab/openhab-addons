@@ -15,7 +15,9 @@ package org.openhab.binding.homie.internal.homie300;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
@@ -72,6 +74,7 @@ public class Device implements AbstractMqttAttributeClass.AttributeChanged {
     public String deviceID = "";
     private volatile @Nullable SubscriptionContext initializedSubscription;
     private boolean metadataReady = false;
+    private boolean metadataReconciled = false;
     private final AtomicReference<DeviceSubscription> subscription;
 
     /**
@@ -133,6 +136,7 @@ public class Device implements AbstractMqttAttributeClass.AttributeChanged {
         });
         return context.run(() -> {
             metadataReady = false;
+            metadataReconciled = false;
             return attributes.subscribeAndReceive(connection, scheduler, topic,
                     (name, value, broker, executor, complete) -> context.run(() -> {
                         attributeChanged(current, name, value, broker, executor, complete);
@@ -160,6 +164,7 @@ public class Device implements AbstractMqttAttributeClass.AttributeChanged {
         // Parent metadata is ready before child metadata. Continue processing schema and state updates
         // while the child subscriptions are pending.
         metadataReady = true;
+        metadataReconciled = true;
         callback.readyStateChanged(attributes.state);
         // ChildMap.apply only subscribes newly discovered children. Existing children also need
         // metadata subscriptions after restoration or a reconnect.
@@ -193,9 +198,18 @@ public class Device implements AbstractMqttAttributeClass.AttributeChanged {
                 return c;
             }
 
+            handler.updateDescription();
             return CompletableFuture.allOf(current.nodes().stream().flatMap(node -> node.properties.stream())
-                    .map(p -> p.startChannel(connection, scheduler, timeout)).toArray(CompletableFuture[]::new));
-        });
+                    .map(p -> p.startChannel(connection, scheduler, timeout).exceptionally(error -> {
+                        // A child may be superseded by metadata refresh while the device remains active.
+                        if (current.context().isActive() && (error instanceof CancellationException
+                                || error instanceof CompletionException completion
+                                        && completion.getCause() instanceof CancellationException)) {
+                            return null;
+                        }
+                        throw new CompletionException(error);
+                    })).toArray(CompletableFuture[]::new));
+        }).thenCompose(v -> current.context().run(() -> CompletableFuture.completedFuture(null)));
     }
 
     /**
@@ -391,7 +405,7 @@ public class Device implements AbstractMqttAttributeClass.AttributeChanged {
             return;
         }
         // Special case: Not all fields were known before
-        if (!attributes.isComplete()) {
+        if (!metadataReconciled || !attributes.isComplete()) {
             attributesReceived(current, connection, scheduler, 500);
         } else {
             switch (name) {
