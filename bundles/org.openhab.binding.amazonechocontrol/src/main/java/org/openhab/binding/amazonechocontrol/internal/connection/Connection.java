@@ -141,10 +141,13 @@ public class Connection {
     private static final long EXPIRES_IN = 432000; // five days
     private static final double RENEW_AFTER_FRACTION_OF_LIFETIME = 0.8;
     private static final String SIGN_IN_URL = "https://" + AmazonEchoControlBindingConstants.SIGN_IN_HOST;
-    // Amazon answers /api/notifications with 400 ThrottlingException for the app agent the binding otherwise
-    // sends, and with 200 for a browser agent; a quiet window of hours does not clear the 400.
+    // Amazon answers /api/notifications with 400 ThrottlingException for the AmazonWebView app agent, and with 200
+    // for a browser agent; a quiet window of hours does not clear the 400.
     private static final String NOTIFICATIONS_USER_AGENT = "Mozilla/5.0 (iPhone; CPU iPhone OS 16_6 like Mac OS X) "
             + "AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.6 Mobile/15E148 Safari/604.1";
+    private static final String AUTH_USER_AGENT = "AmazonWebView/Amazon Alexa/"
+            + AmazonEchoControlBindingConstants.API_VERSION + "/iOS/" + AmazonEchoControlBindingConstants.DI_OS_VERSION
+            + "/iPhone";
     private static final SecureRandom SECURE_RANDOM = new SecureRandom();
 
     private final Logger logger = LoggerFactory.getLogger(Connection.class);
@@ -200,6 +203,10 @@ public class Connection {
         }
 
         ensureSequenceNodeDispatcherIsRunning();
+    }
+
+    public void setUserAgent(String userAgent) {
+        requestBuilder.setUserAgent(userAgent);
     }
 
     public HttpRequestBuilder getRequestBuilder() {
@@ -333,7 +340,8 @@ public class Connection {
 
             // Fail fast instead of retrying a rejected registration payload; a failed login is retried manually.
             org.openhab.binding.amazonechocontrol.internal.dto.response.AuthRegisterTO registerResponse = requestBuilder
-                    .post("https://api.amazon.com/auth/register").withContent(registerAppRequest)
+                    .post("https://api.amazon.com/auth/register").withHeader("User-Agent", AUTH_USER_AGENT)
+                    .withContent(registerAppRequest)
                     .withHeaders(Map.of("x-amzn-identity-auth-domain", "api.amazon.com")).retry(false)
                     .syncSend(org.openhab.binding.amazonechocontrol.internal.dto.response.AuthRegisterTO.class);
             AuthRegisterResponseTO registerAppResponse = registerResponse.response;
@@ -364,7 +372,7 @@ public class Connection {
 
             HttpRequestBuilder.HttpResponse response = requestBuilder
                     .put("https://api.amazonalexa.com/v1/devices/@self/capabilities")
-                    .withContent(CAPABILITY_REGISTRATION)
+                    .withHeader("User-Agent", AUTH_USER_AGENT).withContent(CAPABILITY_REGISTRATION)
                     .withHeaders(Map.of(HttpHeader.AUTHORIZATION.toString(), "Bearer " + tokens.bearer.accessToken))
                     .retry(false).syncSend();
             if (response.statusCode() != NO_CONTENT_204 && response.statusCode() != OK_200) {
@@ -401,8 +409,8 @@ public class Connection {
 
         String url = getRetailUrl() + "/ap/exchangetoken";
 
-        ExchangeTokenTO exchangeToken = requestBuilder.post(url).withContent(exchangePostData).withHeader("Cookie", "")
-                .syncSend(ExchangeTokenTO.class);
+        ExchangeTokenTO exchangeToken = requestBuilder.post(url).withHeader("User-Agent", AUTH_USER_AGENT)
+                .withContent(exchangePostData).withHeader("Cookie", "").syncSend(ExchangeTokenTO.class);
 
         CookieStore cookieStore = cookieManager.getCookieStore();
         exchangeToken.response.tokens.cookies
@@ -441,7 +449,8 @@ public class Connection {
                     + "&current_version=6.12.4";
 
             AuthTokenTO tokenResponse = requestBuilder.post("https://api.amazon.com/auth/token")
-                    .withContent(renewTokenPostData).syncSend(AuthTokenTO.class);
+                    .withHeader("User-Agent", AUTH_USER_AGENT).withContent(renewTokenPostData)
+                    .syncSend(AuthTokenTO.class);
 
             String accessToken = tokenResponse.accessToken;
             this.accessToken = accessToken;

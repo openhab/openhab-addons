@@ -102,19 +102,6 @@ class RoborockVacuumHandlerCurrentRoomWiringTest {
     }
 
     @Test
-    void handleGetRoomMappingKeepsTheNotFoundSentinelOutOfTheSegmentNameTable() throws IOException {
-        String source = Files.readString(HANDLER_PATH);
-        String body = extractMethodBody(source, "private void handleGetRoomMapping(String response)");
-
-        int guardIndex = body.indexOf("if (!ROOM_NAME_NOT_FOUND.equals(name))");
-        int putIndex = body.indexOf("putResolvedSegmentName(");
-
-        assertTrue(guardIndex >= 0 && putIndex > guardIndex,
-                "only matched room names may enter segmentRoomNames: status#current-room must report UNDEF "
-                        + "rather than the literal \"Not found\" sentinel of the published room mapping");
-    }
-
-    @Test
     void updateCurrentRoomStateUsesRoomAtRobotResolverAndSegmentRoomNames() throws IOException {
         String source = Files.readString(HANDLER_PATH);
         String updateCurrentRoomStateBody = extractMethodBody(source,

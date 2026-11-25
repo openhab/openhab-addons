@@ -1,0 +1,7 @@
+{"appliance_id":"22222222-2222-2222-2222-222222222222","type":103,"data":{
+ "measurement":[{"date":"2026-11-18 01:00:00","flowrate":0.0,"pressure":4.4,"temperature_guard":19.5},
+                {"date":"2026-11-18 00:00:00","flowrate":0.0,"pressure":4.3,"temperature_guard":19.4}],
+ "withdrawals":[{"date":"2026-11-17 23:00:00","waterconsumption":10.0,"hotwater_share":0,"water_cost":0,"energy_cost":0},
+                {"date":"2026-11-18 00:00:00","waterconsumption":2.5},
+                {"date":"2026-11-18 07:00:00","waterconsumption":1.5},
+                {"date":"2026-11-18 08:00:00"}]}}

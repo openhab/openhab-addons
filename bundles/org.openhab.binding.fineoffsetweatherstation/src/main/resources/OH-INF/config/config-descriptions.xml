@@ -13,7 +13,7 @@
 		</parameter>
 		<parameter name="port" type="integer" required="true">
 			<label>Port</label>
-			<description>The network port of the gateway</description>
+			<description>The TCP port of the gateway (not used by HTTP_ECOWITT, which always uses port 80)</description>
 			<default>45000</default>
 		</parameter>
 		<parameter name="protocol" type="text" required="false">
@@ -30,18 +30,35 @@
 			<limitToOptions>true</limitToOptions>
 			<default>DEFAULT</default>
 		</parameter>
-		<parameter name="pollingInterval" type="integer" required="true">
+		<parameter name="pollingInterval" type="integer" required="true" min="1">
 			<label>Polling Interval</label>
 			<description>Polling interval for refreshing the data in seconds</description>
 			<default>16</default>
 			<unitLabel>s</unitLabel>
 			<advanced>true</advanced>
 		</parameter>
-		<parameter name="discoverInterval" type="integer" required="true">
+		<parameter name="discoverInterval" type="integer" required="true" min="1">
 			<label>Discover Interval</label>
 			<description>Interval in seconds to fetch registered sensors, battery status and signal strength</description>
 			<unitLabel>s</unitLabel>
 			<default>900</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="timeout" type="integer" min="1" max="60">
+			<label>Timeout</label>
+			<description>Time in seconds to wait for the gateway to accept a connection or answer a request. Increase it if
+				the
+				gateway is connected via a slow Wi-Fi link.</description>
+			<unitLabel>s</unitLabel>
+			<default>10</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="failedPollsUntilOffline" type="integer" min="1">
+			<label>Failed Polls Until Offline</label>
+			<description>Number of consecutive failed polls after which the gateway is reported offline and its values are
+				set to
+				undefined. Until then, the last values are kept.</description>
+			<default>3</default>
 			<advanced>true</advanced>
 		</parameter>
 	</config-description>

@@ -46,7 +46,7 @@ public class DynamicChannelHelper {
     private static final String NUMBER_DIMENSIONLESS = NUMBER + ":Dimensionless";
     private static final String NUMBER_DENSITY = NUMBER + ":Density";
 
-    private record DynamicChannel<T> (String id, ChannelTypeUID channelTypeUID, String itemType, @Nullable String label,
+    private record DynamicChannel<T>(String id, ChannelTypeUID channelTypeUID, String itemType, @Nullable String label,
             @Nullable String description, Predicate<T> isSupported) {
         private DynamicChannel(String id, String typeId, String itemType, Predicate<T> isSupported) {
             this(id, new ChannelTypeUID(BINDING_ID, typeId), itemType, null, null, isSupported);

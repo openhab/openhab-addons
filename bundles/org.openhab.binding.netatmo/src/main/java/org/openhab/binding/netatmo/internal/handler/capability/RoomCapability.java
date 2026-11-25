@@ -48,7 +48,7 @@ public class RoomCapability extends Capability {
 
     protected Optional<EnergyCapability> getEnergyCapability() {
         if (energyCapability == null) {
-            handler.getHomeCapability(EnergyCapability.class).ifPresent(cap -> this.energyCapability = cap);
+            energyCapability = handler.getHomeCapability(EnergyCapability.class).orElse(null);
         }
         return Optional.ofNullable(energyCapability);
     }

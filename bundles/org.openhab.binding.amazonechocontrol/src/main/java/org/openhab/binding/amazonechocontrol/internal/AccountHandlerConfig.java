@@ -28,4 +28,5 @@ public class AccountHandlerConfig {
     public int activityRequestDelay = 10;
     public int activityRequestWindow = 120;
     public int activityPollingInterval = 0;
+    public String userAgent = "";
 }

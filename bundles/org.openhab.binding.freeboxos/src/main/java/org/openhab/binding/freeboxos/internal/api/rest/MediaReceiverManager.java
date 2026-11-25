@@ -14,8 +14,6 @@ package org.openhab.binding.freeboxos.internal.api.rest;
 
 import java.util.Map;
 
-import javax.ws.rs.core.UriBuilder;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
@@ -23,6 +21,8 @@ import org.openhab.binding.freeboxos.internal.api.Response;
 import org.openhab.binding.freeboxos.internal.api.rest.MediaReceiverManager.Receiver;
 
 import com.google.gson.annotations.SerializedName;
+
+import jakarta.ws.rs.core.UriBuilder;
 
 /**
  * The {@link MediaReceiverManager} is the Java class used to handle api requests related to air media receivers

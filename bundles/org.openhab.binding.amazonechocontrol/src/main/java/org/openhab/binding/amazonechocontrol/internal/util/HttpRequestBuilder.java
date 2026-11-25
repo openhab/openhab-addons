@@ -17,8 +17,6 @@ import static org.eclipse.jetty.http.HttpMethod.*;
 import static org.eclipse.jetty.http.HttpStatus.*;
 import static org.eclipse.jetty.http.MimeTypes.Type.APPLICATION_JSON_UTF_8;
 import static org.eclipse.jetty.http.MimeTypes.Type.FORM_ENCODED;
-import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.API_VERSION;
-import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.DI_OS_VERSION;
 import static org.openhab.binding.amazonechocontrol.internal.util.HttpRequestBuilder.FailMode.*;
 
 import java.net.CookieManager;
@@ -36,16 +34,14 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-import javax.ws.rs.core.MediaType;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.BufferingResponseListener;
+import org.eclipse.jetty.client.BytesRequestContent;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.api.Response;
-import org.eclipse.jetty.client.api.Result;
-import org.eclipse.jetty.client.util.BufferingResponseListener;
-import org.eclipse.jetty.client.util.BytesContentProvider;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.Response;
+import org.eclipse.jetty.client.Result;
 import org.eclipse.jetty.http.HttpFields;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
@@ -59,6 +55,8 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.reflect.TypeToken;
 
+import jakarta.ws.rs.core.MediaType;
+
 /**
  * The {@link HttpRequestBuilder} creates customized requests for Alexa API requests
  *
@@ -68,8 +66,8 @@ import com.google.gson.reflect.TypeToken;
  */
 @NonNullByDefault
 public class HttpRequestBuilder {
-    private static final String DEFAULT_USER_AGENT = "AmazonWebView/Amazon Alexa/" + API_VERSION + "/iOS/"
-            + DI_OS_VERSION + "/iPhone";
+    private static final String DEFAULT_USER_AGENT = "AppleWebKit PitanguiBridge/2.2.595606.0"
+            + "-[HARDWARE=iPhone14_7][SOFTWARE=17.4.1][DEVICE=iPhone]";
     private static final String AMZN_ERROR_TYPE_HEADER = "x-amzn-ErrorType";
     private static final String THROTTLING_EXCEPTION = "ThrottlingException";
     private static final String NO_REASON_GIVEN = "no reason given";
@@ -83,11 +81,16 @@ public class HttpRequestBuilder {
     private final Gson gson;
     private final Lock lock = new ReentrantLock();
     private final Semaphore semaphore = new Semaphore(2, true);
+    private volatile String userAgent = DEFAULT_USER_AGENT;
 
     public HttpRequestBuilder(HttpClient httpClient, CookieManager cookieManager, Gson gson) {
         this.httpClient = httpClient;
         this.cookieManager = cookieManager;
         this.gson = gson;
+    }
+
+    public void setUserAgent(String userAgent) {
+        this.userAgent = userAgent.isBlank() ? DEFAULT_USER_AGENT : userAgent.strip();
     }
 
     public Builder get(String uriString) {
@@ -118,14 +121,16 @@ public class HttpRequestBuilder {
     private void createRequest(URI uri, RequestParams params, HttpResponseListener responseListener) {
         Request request = httpClient.newRequest(uri).method(params.method());
         request.timeout(REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS);
-        request.header(ACCEPT_LANGUAGE, customHeader(params, ACCEPT_LANGUAGE).orElse("en-US"));
-        request.header("DNT", "1");
-        request.header("Upgrade-Insecure-Requests", "1");
-        request.agent(customHeader(params, USER_AGENT).orElse(DEFAULT_USER_AGENT));
+        request.headers(headers -> {
+            headers.put(ACCEPT_LANGUAGE, customHeader(params, ACCEPT_LANGUAGE).orElse("en-US"));
+            headers.put("DNT", "1");
+            headers.put("Upgrade-Insecure-Requests", "1");
+        });
+        request.agent(customHeader(params, USER_AGENT).orElse(userAgent));
         params.customHeaders().entrySet().stream()
                 .filter(header -> !header.getValue().isBlank() && !USER_AGENT.is(header.getKey())
                         && !ACCEPT_LANGUAGE.is(header.getKey()))
-                .forEach(header -> request.header(header.getKey(), header.getValue()));
+                .forEach(header -> request.headers(headers -> headers.put(header.getKey(), header.getValue())));
 
         // handle re-directs in response listener manually
         request.followRedirects(false);
@@ -134,21 +139,23 @@ public class HttpRequestBuilder {
 
         if (!params.customHeaders().containsKey(COOKIE.toString())) {
             for (HttpCookie cookie : cookieManager.getCookieStore().get(uri)) {
-                request.cookie(cookie);
+                request.cookie(org.eclipse.jetty.http.HttpCookie.from(cookie));
                 if (cookie.getName().equals("csrf")) {
-                    request.header("csrf", cookie.getValue());
+                    request.headers(headers -> headers.put("csrf", cookie.getValue()));
                 }
             }
         }
 
         if (params.requestContent() != null) {
             byte[] contentBytes = params.requestContent().getBytes(StandardCharsets.UTF_8);
-            request.header(CONTENT_TYPE, params.json() ? APPLICATION_JSON_UTF_8.asString() : FORM_ENCODED.asString());
-            request.header(CONTENT_LENGTH, Integer.toString(contentBytes.length));
+            request.headers(headers -> {
+                headers.put(CONTENT_TYPE, params.json() ? APPLICATION_JSON_UTF_8.asString() : FORM_ENCODED.asString());
+                headers.put(CONTENT_LENGTH, Integer.toString(contentBytes.length));
+            });
             if (POST.equals(params.method())) {
-                request.header(EXPECT, "100-continue");
+                request.headers(headers -> headers.put(EXPECT, "100-continue"));
             }
-            request.content(new BytesContentProvider(contentBytes));
+            request.body(new BytesRequestContent(contentBytes));
         }
 
         if (logger.isTraceEnabled()) {
@@ -378,7 +385,7 @@ public class HttpRequestBuilder {
         }
 
         @Override
-        public void onComplete(Result result) {
+        public void onComplete(@NonNullByDefault({}) Result result) {
             Response response = result.getResponse();
             URI requestUri = response.getRequest().getURI();
             int responseStatus = response.getStatus();

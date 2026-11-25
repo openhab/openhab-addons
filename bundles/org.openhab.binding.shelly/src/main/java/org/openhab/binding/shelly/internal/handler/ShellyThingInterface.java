@@ -46,6 +46,11 @@ public interface ShellyThingInterface {
     @Nullable
     List<StateOption> getStateOptions(ChannelTypeUID uid);
 
+    /**
+     * Replace the state options (value to label) offered by a channel and tell the framework about the change.
+     */
+    void updateStateOptions(String group, String channel, Map<String, String> options);
+
     double getChannelDouble(String group, String channel);
 
     boolean updateChannel(String group, String channel, State value);
@@ -69,6 +74,8 @@ public interface ShellyThingInterface {
     boolean isThingOnline();
 
     boolean requestUpdates(int requestCount, boolean refreshSettings);
+
+    void onDeviceWakeup();
 
     void triggerUpdateFromCoap();
 
@@ -126,7 +133,11 @@ public interface ShellyThingInterface {
 
     void fillDeviceStatus(ShellySettingsStatus status, boolean updated);
 
-    boolean checkRepresentation(String key);
+    /**
+     * Check whether the key identifies this Thing: its UID, Thing name, service name (realm), configured IP address
+     * or host, or Bluetooth address.
+     */
+    boolean isIdentifiedBy(String key);
 
     void incProtMessages();
 

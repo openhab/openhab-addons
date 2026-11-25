@@ -259,7 +259,6 @@ public class BaseHomeConnectDirectHandler extends BaseThingHandler implements We
             }
             initializeFinished();
         });
-
     }
 
     protected void initializeStarted() {
@@ -328,8 +327,7 @@ public class BaseHomeConnectDirectHandler extends BaseThingHandler implements We
                 sendBooleanCommandIfAllowed(PAUSE_PROGRAM_KEY);
             } else if (COMMAND_RESUME.equalsIgnoreCase(command.toFullString())) {
                 sendBooleanCommandIfAllowed(RESUME_PROGRAM_KEY);
-            } else if (COMMAND_STOP.equalsIgnoreCase(command.toFullString())
-                    && isStopProgramCommandSupported()) {
+            } else if (COMMAND_STOP.equalsIgnoreCase(command.toFullString()) && isStopProgramCommandSupported()) {
                 sendBooleanCommandIfAllowed(ABORT_PROGRAM_KEY);
             }
         } else if (CHANNEL_SELECTED_PROGRAM.equals(channelUID.getId()) && command instanceof StringType) {

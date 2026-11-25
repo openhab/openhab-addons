@@ -24,10 +24,10 @@ import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.BufferingResponseListener;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.Result;
-import org.eclipse.jetty.client.util.BufferingResponseListener;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.Result;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.avmfritz.internal.config.AVMFritzBoxConfiguration;
 import org.openhab.binding.avmfritz.internal.handler.AVMFritzBaseBridgeHandler;
@@ -346,7 +346,7 @@ public class FritzAhaWebInterface {
             if (authenticated && !disposed) {
                 httpClient.newRequest(getURL(path)).timeout(config.asyncTimeout, TimeUnit.MILLISECONDS)
                         .method(HttpMethod.POST).onResponseSuccess(postExchange).onResponseFailure(postExchange)
-                        .content(new StringContentProvider(addSID(args), StandardCharsets.UTF_8)).send(postExchange);
+                        .body(new StringRequestContent(addSID(args), StandardCharsets.UTF_8)).send(postExchange);
             }
         });
         return postExchange;

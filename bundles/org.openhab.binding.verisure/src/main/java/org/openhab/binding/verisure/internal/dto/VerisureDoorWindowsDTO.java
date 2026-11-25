@@ -29,16 +29,6 @@ import com.google.gson.annotations.SerializedName;
 @NonNullByDefault
 public class VerisureDoorWindowsDTO extends VerisureBaseThingDTO {
 
-    private @Nullable VerisureBatteryStatusDTO batteryStatus;
-
-    public @Nullable VerisureBatteryStatusDTO getBatteryStatus() {
-        return batteryStatus;
-    }
-
-    public void setBatteryStatus(@Nullable VerisureBatteryStatusDTO batteryStatus) {
-        this.batteryStatus = batteryStatus;
-    }
-
     @Override
     public ThingTypeUID getThingTypeUID() {
         return THING_TYPE_DOORWINDOW;
@@ -61,15 +51,6 @@ public class VerisureDoorWindowsDTO extends VerisureBaseThingDTO {
             return false;
         }
         if (getClass() != obj.getClass()) {
-            return false;
-        }
-        VerisureDoorWindowsDTO other = (VerisureDoorWindowsDTO) obj;
-        VerisureBatteryStatusDTO localBatteryStatusJSON = batteryStatus;
-        if (localBatteryStatusJSON == null) {
-            if (other.batteryStatus != null) {
-                return false;
-            }
-        } else if (!localBatteryStatusJSON.equals(other.batteryStatus)) {
             return false;
         }
         return true;

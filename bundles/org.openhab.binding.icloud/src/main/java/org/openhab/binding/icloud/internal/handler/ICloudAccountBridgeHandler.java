@@ -139,6 +139,11 @@ public class ICloudAccountBridgeHandler extends BaseBridgeHandler {
         logger.debug("iCloud bridge handler initialized.");
     }
 
+    // Package-private to allow replacing the service in unit tests.
+    ICloudService createICloudService(String appleId, String password) {
+        return new ICloudService(appleId, password, storage);
+    }
+
     private <@Nullable T> T callApiWithRetryAndExceptionHandling(Callable<T> wrapped) {
         int retryCount = 1;
         boolean success = false;
@@ -150,7 +155,7 @@ public class ICloudAccountBridgeHandler extends BaseBridgeHandler {
                 final String localPassword = config.password;
 
                 if (localAppleId != null && localPassword != null) {
-                    this.iCloudService = new ICloudService(localAppleId, localPassword, this.storage);
+                    this.iCloudService = createICloudService(localAppleId, localPassword);
                 } else {
                     updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Apple ID or password is not set!");
                     return null;
@@ -234,8 +239,9 @@ public class ICloudAccountBridgeHandler extends BaseBridgeHandler {
             // User has provided code in config.
             logger.debug("Code is given in thing configuration '{}'. Trying to validate code...",
                     getThing().getUID().getAsString());
-            storage.put(AUTH_CODE_KEY, lastTriedCode);
             success = localICloudService.validate2faCode(code);
+            // Remember the code only after Apple answered, so a failed validation request can be retried with it.
+            storage.put(AUTH_CODE_KEY, code);
             if (!success) {
                 authState = AuthState.INITIAL;
                 logger.warn("ICloud token invalid.");

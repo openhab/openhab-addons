@@ -74,7 +74,7 @@
 			</options>
 			<limitToOptions>true</limitToOptions>
 		</parameter>
-		<parameter name="liveDataPollingInterval" type="integer" required="false" min="1" max="60" unit="m"
+		<parameter name="liveDataPollingInterval" type="integer" required="false" min="1" max="1440" unit="m"
 			groupName="connection">
 			<label>Live Data Polling Interval</label>
 			<description>Interval in which live data is polled from SolarEdge (in minutes). Monitoring API V1 requires at

@@ -80,6 +80,6 @@ public class StreamUtils {
      * @param <A> The type of the first object
      * @param <B> The type of the second object
      */
-    public record Tuple<A, B> (A a, B b) {
+    public record Tuple<A, B>(A a, B b) {
     }
 }

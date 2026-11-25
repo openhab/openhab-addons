@@ -42,16 +42,12 @@ public class RetryPolicyFactory {
      */
     public static RetryStrategy fromThrowable(Throwable e) {
         ExponentialBackoff strategy = switch (e) {
-            case DataServiceRateLimitException rle ->
-                    new ExponentialBackoff()
-                            .withMinimum(rle.getRetryAfter());
+            case DataServiceRateLimitException rle -> new ExponentialBackoff().withMinimum(rle.getRetryAfter());
 
             case DataServiceException dse when dse.getHttpStatus() == HttpStatus.TOO_MANY_REQUESTS_429 ->
-                    new ExponentialBackoff()
-                            .withMinimum(Duration.ofMinutes(30));
+                new ExponentialBackoff().withMinimum(Duration.ofMinutes(30));
 
-            default -> new ExponentialBackoff()
-                        .withMinimum(Duration.ofMinutes(1));
+            default -> new ExponentialBackoff().withMinimum(Duration.ofMinutes(1));
         };
 
         return strategy.withJitter(0.2);

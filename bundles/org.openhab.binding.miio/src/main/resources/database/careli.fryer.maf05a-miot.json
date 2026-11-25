@@ -1,0 +1,579 @@
+{
+	"deviceMapping": {
+		"id": [
+			"careli.fryer.maf05a"
+		],
+		"propertyMethod": "get_properties",
+		"maxProperties": 1,
+		"channels": [
+			{
+				"property": "",
+				"friendlyName": "Actions",
+				"channel": "actions",
+				"type": "String",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "air-fryer-start-cook",
+							"label": "Start Cooking"
+						},
+						{
+							"value": "air-fryer-cancel-cooking",
+							"label": "Cancel Cooking"
+						},
+						{
+							"value": "air-fryer-pause",
+							"label": "Pause Cooking"
+						},
+						{
+							"value": "custom-resume-cook",
+							"label": "Resume Cooking"
+						}
+					]
+				},
+				"actions": [
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 2,
+						"aiid": 1,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "air-fryer-start-cook"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 2,
+						"aiid": 2,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "air-fryer-cancel-cooking"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 2,
+						"aiid": 3,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "air-fryer-pause"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 3,
+						"aiid": 2,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "custom-resume-cook"
+								}
+							]
+						}
+					}
+				],
+				"readmeComment": "Value mapping `[\"air-fryer-start-cook\"\u003d\"Start Cooking\",\"air-fryer-cancel-cooking\"\u003d\"Cancel Cooking\",\"air-fryer-pause\"\u003d\"Pause Cooking\",\"custom-resume-cook\"\u003d\"Resume Cooking\"]`"
+			},
+			{
+				"property": "",
+				"friendlyName": "Start Cooking With Settings",
+				"channel": "start_cook",
+				"type": "String",
+				"refresh": false,
+				"actions": [
+					{
+						"command": "action",
+						"parameterType": "JSON",
+						"siid": 3,
+						"aiid": 1
+					}
+				],
+				"readmeComment": "Starts cooking with a JSON list of 7 values: recipe id, recipe name, time (minutes), temperature (degrees Celsius), scheduled start time (minutes, 0 starts now), food quantity (0-4), preheat (1 off, 2 on). The recipe id is `M0` for manual cooking, `M1` to `M10` for the device presets or `C` plus the recipeID of a cloud recipe. The recipe name is sent as given, it is not encoded by the binding. Example manual cooking 15 minutes at 180 degrees: `[\"M0\",\"u0064u0065u006du006f\",15,180,0,0,1]`."
+			},
+			{
+				"property": "status",
+				"siid": 2,
+				"piid": 1,
+				"friendlyName": "Air Fryer - Status",
+				"channel": "status",
+				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "0",
+							"label": "Off"
+						},
+						{
+							"value": "1",
+							"label": "Standby"
+						},
+						{
+							"value": "2",
+							"label": "Paused"
+						},
+						{
+							"value": "3",
+							"label": "Scheduled"
+						},
+						{
+							"value": "4",
+							"label": "Cooking"
+						},
+						{
+							"value": "5",
+							"label": "Preheating"
+						},
+						{
+							"value": "6",
+							"label": "Cooking Completed"
+						},
+						{
+							"value": "7",
+							"label": "Preheat Completed"
+						},
+						{
+							"value": "8",
+							"label": "Preheat Paused"
+						},
+						{
+							"value": "9",
+							"label": "Paused (Basket Removed)"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [],
+				"tags": [
+					"Status"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Off\",\"1\"\u003d\"Standby\",\"2\"\u003d\"Paused\",\"3\"\u003d\"Scheduled\",\"4\"\u003d\"Cooking\",\"5\"\u003d\"Preheating\",\"6\"\u003d\"Cooking Completed\",\"7\"\u003d\"Preheat Completed\",\"8\"\u003d\"Preheat Paused\",\"9\"\u003d\"Paused (Basket Removed)\"]`"
+			},
+			{
+				"property": "fault",
+				"siid": 2,
+				"piid": 2,
+				"friendlyName": "Air Fryer - Device Fault",
+				"channel": "fault",
+				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "0",
+							"label": "No Faults"
+						},
+						{
+							"value": "1",
+							"label": "E1"
+						},
+						{
+							"value": "2",
+							"label": "E2"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "error",
+				"tags": [
+					"Status"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"No Faults\",\"1\"\u003d\"E1\",\"2\"\u003d\"E2\"]`"
+			},
+			{
+				"property": "target-time",
+				"siid": 2,
+				"piid": 3,
+				"friendlyName": "Air Fryer - Target Time",
+				"channel": "target_time",
+				"type": "Number:Time",
+				"unit": "minutes",
+				"stateDescription": {
+					"minimum": 1,
+					"maximum": 1440,
+					"step": 1,
+					"pattern": "%.0f %unit%"
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "time",
+				"tags": [
+					"Setpoint",
+					"Duration"
+				]
+			},
+			{
+				"property": "target-temperature",
+				"siid": 2,
+				"piid": 4,
+				"friendlyName": "Air Fryer - Target Temperature",
+				"channel": "target_temperature",
+				"type": "Number:Temperature",
+				"unit": "celsius",
+				"stateDescription": {
+					"minimum": 40,
+					"maximum": 200,
+					"step": 1,
+					"pattern": "%.0f %unit%"
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "temperature",
+				"tags": [
+					"Setpoint",
+					"Temperature"
+				]
+			},
+			{
+				"property": "left-time",
+				"siid": 2,
+				"piid": 5,
+				"friendlyName": "Air Fryer - Left Time",
+				"channel": "left_time",
+				"type": "Number:Time",
+				"unit": "minutes",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 1440,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "time",
+				"tags": [
+					"Status",
+					"Duration"
+				]
+			},
+			{
+				"property": "recipe-id",
+				"siid": 3,
+				"piid": 1,
+				"friendlyName": "Custom - Recipe Id",
+				"channel": "recipe_id",
+				"type": "String",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "STRING"
+					}
+				]
+			},
+			{
+				"property": "recipe-name",
+				"siid": 3,
+				"piid": 2,
+				"friendlyName": "Custom - Recipe Name",
+				"channel": "recipe_name",
+				"type": "String",
+				"stateDescription": {
+					"readOnly": true
+				},
+				"refresh": true,
+				"transformation": "decodeUnicode",
+				"actions": []
+			},
+			{
+				"property": "work-time",
+				"siid": 3,
+				"piid": 3,
+				"friendlyName": "Custom - Cooking Time",
+				"channel": "work_time",
+				"type": "Number:Time",
+				"unit": "minutes",
+				"stateDescription": {
+					"minimum": 1,
+					"maximum": 1440,
+					"step": 1,
+					"pattern": "%.0f %unit%"
+				},
+				"refresh": false,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "time",
+				"tags": [
+					"Setpoint",
+					"Duration"
+				]
+			},
+			{
+				"property": "work-temp",
+				"siid": 3,
+				"piid": 4,
+				"friendlyName": "Custom - Cooking Temperature",
+				"channel": "work_temp",
+				"type": "Number:Temperature",
+				"unit": "celsius",
+				"stateDescription": {
+					"minimum": 40,
+					"maximum": 200,
+					"step": 1,
+					"pattern": "%.0f %unit%"
+				},
+				"refresh": false,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "temperature",
+				"tags": [
+					"Setpoint",
+					"Temperature"
+				]
+			},
+			{
+				"property": "appoint-time",
+				"siid": 3,
+				"piid": 5,
+				"friendlyName": "Custom - Scheduled Start Time",
+				"channel": "appoint_time",
+				"type": "Number:Time",
+				"unit": "minutes",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 1440,
+					"step": 1,
+					"pattern": "%.0f %unit%"
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "time",
+				"tags": [
+					"Setpoint",
+					"Duration"
+				]
+			},
+			{
+				"property": "food-quantity",
+				"siid": 3,
+				"piid": 6,
+				"friendlyName": "Custom - Food Quantity",
+				"channel": "food_quantity",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "None"
+						},
+						{
+							"value": "1",
+							"label": "Single Layer"
+						},
+						{
+							"value": "2",
+							"label": "Double Layer"
+						},
+						{
+							"value": "3",
+							"label": "Half Pot"
+						},
+						{
+							"value": "4",
+							"label": "Full Pot"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"tags": [
+					"Control"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"None\",\"1\"\u003d\"Single Layer\",\"2\"\u003d\"Double Layer\",\"3\"\u003d\"Half Pot\",\"4\"\u003d\"Full Pot\"]`"
+			},
+			{
+				"property": "preheat-switch",
+				"siid": 3,
+				"piid": 7,
+				"friendlyName": "Custom - Preheat Switch",
+				"channel": "preheat_switch",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "1",
+							"label": "Off"
+						},
+						{
+							"value": "2",
+							"label": "On"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"tags": [
+					"Control"
+				],
+				"readmeComment": "Value mapping `[\"1\"\u003d\"Off\",\"2\"\u003d\"On\"]`"
+			},
+			{
+				"property": "appoint-time-left",
+				"siid": 3,
+				"piid": 8,
+				"friendlyName": "Custom - Scheduled Start Time Left",
+				"channel": "appoint_time_left",
+				"type": "Number:Time",
+				"unit": "minutes",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 1440,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "time",
+				"tags": [
+					"Status",
+					"Duration"
+				]
+			},
+			{
+				"property": "recipe-sync",
+				"siid": 3,
+				"piid": 9,
+				"friendlyName": "Custom - Recipe Sync",
+				"channel": "recipe_sync",
+				"type": "String",
+				"stateDescription": {
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "turn-pot",
+				"siid": 3,
+				"piid": 10,
+				"friendlyName": "Custom - Turn Food",
+				"channel": "turn_pot",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "No Action"
+						},
+						{
+							"value": "2",
+							"label": "Turn Food Now"
+						}
+					],
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"tags": [
+					"Status"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"No Action\",\"2\"\u003d\"Turn Food Now\"]`"
+			},
+			{
+				"property": "turn-pot-cfg",
+				"siid": 3,
+				"piid": 11,
+				"friendlyName": "Custom - Turn Food Reminder",
+				"channel": "turn_pot_cfg",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "Off"
+						},
+						{
+							"value": "1",
+							"label": "On"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"tags": [
+					"Control"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Off\",\"1\"\u003d\"On\"]`"
+			},
+			{
+				"property": "",
+				"friendlyName": "Recipes",
+				"channel": "recipes",
+				"type": "String",
+				"stateDescription": {
+					"readOnly": true
+				},
+				"refresh": true,
+				"refreshInterval": -1,
+				"customRefreshCommand": "/v2/recipes/query",
+				"customRefreshParameters": {
+					"vendor": "careli",
+					"deviceType": "fryer",
+					"model": "careli.fryer.maf05a"
+				},
+				"transformation": "getJsonElement-recipes[*].{recipeID,recipeName,recipeCommand.cookCommand.time,recipeCommand.cookCommand.temperature,recipeCommand.cookCommand.preHeat,recipeCommand.cookCommand.capacity}",
+				"actions": [],
+				"readmeComment": "List of the Mi Home cloud recipes as JSON, with for each recipe the recipeID, recipeName, time (minutes), temperature (degrees Celsius), preHeat and capacity. Requires the cloud server to be set. The list is read once, send a refresh command to read it again."
+			}
+		],
+		"experimental": true
+	}
+}

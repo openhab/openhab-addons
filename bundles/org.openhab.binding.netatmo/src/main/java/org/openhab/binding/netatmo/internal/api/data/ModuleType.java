@@ -69,7 +69,7 @@ import org.openhab.core.thing.ThingTypeUID;
 public enum ModuleType {
     UNKNOWN(FeatureArea.NONE, "", 1, "virtual", null, Set.of()),
 
-    ACCOUNT(FeatureArea.NONE, "", 1, "api_bridge", null, Set.of(),
+    ACCOUNT(FeatureArea.NONE, "", 2, "api_bridge", null, Set.of(),
             new ChannelGroup(ApiBridgeChannelHelper.class, GROUP_MONITORING)),
 
     HOME(FeatureArea.NONE, "NAHome", 1, "home", ACCOUNT,
@@ -195,7 +195,7 @@ public enum ModuleType {
     }
 
     public boolean isABridge() { // I am a bridge if any module references me as being so
-        return AS_SET.stream().anyMatch(mt -> this.equals(mt.getBridge()));
+        return AS_SET.stream().anyMatch(mt -> equals(mt.getBridge()));
     }
 
     public List<String> getExtensions() {
@@ -218,7 +218,7 @@ public enum ModuleType {
     }
 
     public ModuleType getBridge() {
-        return Objects.requireNonNullElse(this.bridgeType, UNKNOWN);
+        return Objects.requireNonNullElse(bridgeType, UNKNOWN);
     }
 
     public int getDepth() {

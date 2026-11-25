@@ -83,8 +83,8 @@
 		<description>Current Temperature Indoors</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -108,8 +108,8 @@
 		<description>Current Humidity Indoors</description>
 		<category>Humidity</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Humidity</tag>
+			<point>Measurement</point>
+			<property>Humidity</property>
 		</tags>
 		<state pattern="%.0f %%" readOnly="true"/>
 	</channel-type>
@@ -119,8 +119,8 @@
 		<description>Absolute Current Pressure</description>
 		<category>Pressure</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Pressure</tag>
+			<point>Measurement</point>
+			<property>Pressure</property>
 		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
@@ -130,8 +130,8 @@
 		<description>Relative Current Pressure</description>
 		<category>Pressure</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Pressure</tag>
+			<point>Measurement</point>
+			<property>Pressure</property>
 		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
@@ -141,8 +141,8 @@
 		<description>Solar Radiation</description>
 		<category>Sun</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Illuminance</tag>
+			<point>Measurement</point>
+			<property>Illuminance</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -152,8 +152,8 @@
 		<description>UV</description>
 		<category>Sun</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Ultraviolet</tag>
+			<point>Measurement</point>
+			<property>Ultraviolet</property>
 		</tags>
 		<state pattern="%.0f" readOnly="true"/>
 	</channel-type>
@@ -163,8 +163,8 @@
 		<description>UV Index</description>
 		<category>Sun</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Ultraviolet</tag>
+			<point>Measurement</point>
+			<property>Ultraviolet</property>
 		</tags>
 		<state pattern="%.0f" readOnly="true"/>
 	</channel-type>
@@ -174,8 +174,8 @@
 		<description>Average Wind Speed</description>
 		<category>Wind</category>
 		<tags>
-			<tag>Calculation</tag>
-			<tag>Wind</tag>
+			<point>Calculation</point>
+			<property>Wind</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -185,8 +185,8 @@
 		<description>Wind Speed</description>
 		<category>Wind</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Wind</tag>
+			<point>Measurement</point>
+			<property>Wind</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -196,8 +196,8 @@
 		<description>Wind Gust</description>
 		<category>Wind</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Wind</tag>
+			<point>Measurement</point>
+			<property>Wind</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -207,8 +207,8 @@
 		<description>Max wind gust for today</description>
 		<category>Wind</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Wind</tag>
+			<point>Measurement</point>
+			<property>Wind</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -218,8 +218,8 @@
 		<description>How much rain will fall in an Hour if the rate continues</description>
 		<category>Rain</category>
 		<tags>
-			<tag>Forecast</tag>
-			<tag>Rain</tag>
+			<point>Forecast</point>
+			<property>Rain</property>
 		</tags>
 		<state pattern="%.2f" readOnly="true"/>
 	</channel-type>
@@ -229,8 +229,8 @@
 		<description>Rain since Midnight</description>
 		<category>Rain</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Rain</tag>
+			<point>Measurement</point>
+			<property>Rain</property>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
@@ -240,8 +240,8 @@
 		<description>Weekly Rain</description>
 		<category>Rain</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Rain</tag>
+			<point>Measurement</point>
+			<property>Rain</property>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
@@ -251,8 +251,8 @@
 		<description>Rain since 12:00 on the 1st of this month</description>
 		<category>Rain</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Rain</tag>
+			<point>Measurement</point>
+			<property>Rain</property>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
@@ -262,8 +262,8 @@
 		<description>Total rain since 12:00 on 1st Jan</description>
 		<category>Rain</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Rain</tag>
+			<point>Measurement</point>
+			<property>Rain</property>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
@@ -272,8 +272,8 @@
 		<label>Total Rain</label>
 		<category>Rain</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Rain</tag>
+			<point>Measurement</point>
+			<property>Rain</property>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>

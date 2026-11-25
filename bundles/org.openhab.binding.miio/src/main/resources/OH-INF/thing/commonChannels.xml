@@ -19,32 +19,32 @@
 		<item-type>Color</item-type>
 		<label>Generic Color Channel</label>
 		<tags>
-			<tag>Control</tag>
-			<tag>Color</tag>
+			<point>Control</point>
+			<property>Color</property>
 		</tags>
 	</channel-type>
 	<channel-type id="contact">
 		<item-type>Contact</item-type>
 		<label>Generic Contact Channel</label>
 		<tags>
-			<tag>Status</tag>
-			<tag>OpenState</tag>
+			<point>Status</point>
+			<property>OpenState</property>
 		</tags>
 	</channel-type>
 	<channel-type id="datetime">
 		<item-type>DateTime</item-type>
 		<label>Generic DateTime Channel</label>
 		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
+			<point>Status</point>
+			<property>Timestamp</property>
 		</tags>
 	</channel-type>
 	<channel-type id="dimmer">
 		<item-type>Dimmer</item-type>
 		<label>Generic Dimmer Channel</label>
 		<tags>
-			<tag>Control</tag>
-			<tag>Brightness</tag>
+			<point>Control</point>
+			<property>Brightness</property>
 		</tags>
 	</channel-type>
 	<channel-type id="image">
@@ -55,31 +55,31 @@
 		<item-type>Location</item-type>
 		<label>Generic Location Channel</label>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>GeoLocation</tag>
+			<point>Measurement</point>
+			<property>GeoLocation</property>
 		</tags>
 	</channel-type>
 	<channel-type id="number">
 		<item-type>Number</item-type>
 		<label>Generic Number Channel</label>
 		<tags>
-			<tag>Control</tag>
+			<point>Control</point>
 		</tags>
 	</channel-type>
 	<channel-type id="player">
 		<item-type>Player</item-type>
 		<label>Generic Player Channel</label>
 		<tags>
-			<tag>Control</tag>
-			<tag>MediaControl</tag>
+			<point>Control</point>
+			<property>MediaControl</property>
 		</tags>
 	</channel-type>
 	<channel-type id="rollershutter">
 		<item-type>Rollershutter</item-type>
 		<label>Generic Rollershutter Channel</label>
 		<tags>
-			<tag>Control</tag>
-			<tag>OpenLevel</tag>
+			<point>Control</point>
+			<property>OpenLevel</property>
 		</tags>
 	</channel-type>
 	<channel-type id="string">
@@ -90,8 +90,8 @@
 		<item-type>Switch</item-type>
 		<label>Generic Switch Channel</label>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Power</tag>
+			<point>Switch</point>
+			<property>Power</property>
 		</tags>
 	</channel-type>
 
@@ -110,8 +110,8 @@
 		<item-type>Number</item-type>
 		<label>RSSI</label>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>RSSI</tag>
+			<point>Measurement</point>
+			<property>RSSI</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -134,8 +134,8 @@
 		<item-type>Switch</item-type>
 		<label>Power On/Off</label>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Power</tag>
+			<point>Switch</point>
+			<property>Power</property>
 		</tags>
 	</channel-type>
 

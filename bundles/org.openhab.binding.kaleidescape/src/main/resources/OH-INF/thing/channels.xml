@@ -387,8 +387,8 @@
 		<description>Control movie playback, e.g., Play/Pause/Next/Previous/Fast Forward/Rewind</description>
 		<category>Player</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>MediaControl</tag>
+			<point>Control</point>
+			<property>MediaControl</property>
 		</tags>
 	</channel-type>
 
@@ -404,8 +404,8 @@
 		<label>Play Mode</label>
 		<description>The current playback mode of the movie</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
+			<point>Status</point>
+			<property>Mode</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -415,8 +415,8 @@
 		<label>Play Speed</label>
 		<description>The speed of playback scanning</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Speed</tag>
+			<point>Status</point>
+			<property>Speed</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -433,8 +433,8 @@
 		<label>Title Length</label>
 		<description>The total running time of the currently playing movie</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Duration</tag>
+			<point>Measurement</point>
+			<property>Duration</property>
 		</tags>
 		<state readOnly="true" pattern="%1$tT"/>
 	</channel-type>
@@ -444,8 +444,8 @@
 		<label>Title Location</label>
 		<description>The running time elapsed of the currently playing movie</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Duration</tag>
+			<point>Status</point>
+			<property>Duration</property>
 		</tags>
 		<state readOnly="true" pattern="%1$tT"/>
 	</channel-type>
@@ -456,8 +456,8 @@
 		<description>The date/time when the currently playing movie will end</description>
 		<category>Time</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
+			<point>Status</point>
+			<property>Timestamp</property>
 		</tags>
 		<state readOnly="true" pattern="%1$tl:%1$tM %1$tp"/>
 	</channel-type>
@@ -467,8 +467,8 @@
 		<label>Title Progress</label>
 		<description>The percentage complete of the currently playing movie</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Progress</tag>
+			<point>Status</point>
+			<property>Progress</property>
 		</tags>
 		<state pattern="%.0f%%"/>
 	</channel-type>
@@ -485,8 +485,8 @@
 		<label>Chapter Length</label>
 		<description>The total running time of the current chapter</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Duration</tag>
+			<point>Measurement</point>
+			<property>Duration</property>
 		</tags>
 		<state readOnly="true" pattern="%1$tT"/>
 	</channel-type>
@@ -496,8 +496,8 @@
 		<label>Chapter Location</label>
 		<description>The running time elapsed of the current chapter</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Duration</tag>
+			<point>Measurement</point>
+			<property>Duration</property>
 		</tags>
 		<state readOnly="true" pattern="%1$tT"/>
 	</channel-type>
@@ -507,8 +507,8 @@
 		<label>Media Type</label>
 		<description>The type of media that is currently playing</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>MediaControl</tag>
+			<point>Status</point>
+			<property>MediaControl</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -518,8 +518,8 @@
 		<label>Movie Location</label>
 		<description>Identifies the location in the movie, i.e., Main content, Intermission, or End credits</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -550,8 +550,8 @@
 		<label>Video Mode - Composite</label>
 		<description>Identifies the video currently active on the Composite video output</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
+			<point>Status</point>
+			<property>Mode</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -561,8 +561,8 @@
 		<label>Video Mode - Component</label>
 		<description>Identifies the video currently active on the Component video output</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
+			<point>Status</point>
+			<property>Mode</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -572,8 +572,8 @@
 		<label>Video Mode - HDMI</label>
 		<description>Identifies the video currently active on the HDMI video output</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
+			<point>Status</point>
+			<property>Mode</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -590,8 +590,8 @@
 		<label>Video Color EOTF</label>
 		<description>Identifies the Electro-Optical Transfer Function standard of the current video output</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Color</tag>
+			<point>Status</point>
+			<property>Color</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -608,8 +608,8 @@
 		<label>Content Color EOTF</label>
 		<description>Identifies the Electro-Optical Transfer Function standard of the currently playing content</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Color</tag>
+			<point>Status</point>
+			<property>Color</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -708,8 +708,8 @@
 		<description>Control music playback, e.g., Play/Pause/Next/Previous/Fast Forward/Rewind</description>
 		<category>Player</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>MediaControl</tag>
+			<point>Control</point>
+			<property>MediaControl</property>
 		</tags>
 	</channel-type>
 
@@ -718,8 +718,8 @@
 		<label>Repeat</label>
 		<description>Controls repeat playback for music</description>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
+			<point>Switch</point>
+			<property>Mode</property>
 		</tags>
 	</channel-type>
 
@@ -728,8 +728,8 @@
 		<label>Random</label>
 		<description>Controls random playback for music</description>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
+			<point>Switch</point>
+			<property>Mode</property>
 		</tags>
 	</channel-type>
 
@@ -738,8 +738,8 @@
 		<label>Track</label>
 		<description>The name of the currently playing track</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -749,8 +749,8 @@
 		<label>Artist</label>
 		<description>The name of the currently playing artist</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -760,8 +760,8 @@
 		<label>Album</label>
 		<description>The name of the currently playing album</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -771,8 +771,8 @@
 		<label>Music Title</label>
 		<description>The raw output from the MUSIC_TITLE API response</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -782,8 +782,8 @@
 		<label>Play Mode</label>
 		<description>The current playback mode of the music</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
+			<point>Status</point>
+			<property>Mode</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -793,8 +793,8 @@
 		<label>Play Speed</label>
 		<description>The speed of playback scanning</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Speed</tag>
+			<point>Status</point>
+			<property>Speed</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -804,8 +804,8 @@
 		<label>Track Length</label>
 		<description>The total running time of the current playing track</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Duration</tag>
+			<point>Measurement</point>
+			<property>Duration</property>
 		</tags>
 		<state readOnly="true" pattern="%1$tT"/>
 	</channel-type>
@@ -815,8 +815,8 @@
 		<label>Track Position</label>
 		<description>The running time elapsed of the current playing track</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Duration</tag>
+			<point>Measurement</point>
+			<property>Duration</property>
 		</tags>
 		<state readOnly="true" pattern="%1$tT"/>
 	</channel-type>
@@ -826,8 +826,8 @@
 		<label>Track Progress</label>
 		<description>The percentage complete of the current playing track</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Progress</tag>
+			<point>Status</point>
+			<property>Progress</property>
 		</tags>
 		<state readOnly="true" pattern="%d %%"/>
 	</channel-type>
@@ -867,8 +867,8 @@
 		<label>Movie Title</label>
 		<description>The title of the selected Movie</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -878,8 +878,8 @@
 		<label>Album Title</label>
 		<description>The title of the selected Album</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -910,8 +910,8 @@
 		<label>Rating</label>
 		<description>The MPAA rating of the selected Movie</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -921,8 +921,8 @@
 		<label>Year</label>
 		<description>The release year of the selected item</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -932,8 +932,8 @@
 		<label>Running time</label>
 		<description>The total running time of the selected item</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Duration</tag>
+			<point>Status</point>
+			<property>Duration</property>
 		</tags>
 		<state readOnly="true" pattern="%1$tT"/>
 	</channel-type>
@@ -943,8 +943,8 @@
 		<label>Actors</label>
 		<description>A list of actors appearing in the selected Movie</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -954,8 +954,8 @@
 		<label>Artist</label>
 		<description>The artist of the selected Album</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -965,8 +965,8 @@
 		<label>Directors</label>
 		<description>A list of directors of the selected Movie</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -976,8 +976,8 @@
 		<label>Genres</label>
 		<description>A list of genres of the selected item</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -1008,8 +1008,8 @@
 		<label>Color Description</label>
 		<description>Indicates if the selected Movie is in color, black and white, etc.</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Color</tag>
+			<point>Status</point>
+			<property>Color</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>

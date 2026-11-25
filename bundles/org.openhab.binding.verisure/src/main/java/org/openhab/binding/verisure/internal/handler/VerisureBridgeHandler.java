@@ -116,6 +116,7 @@ public class VerisureBridgeHandler extends BaseBridgeHandler {
                 VerisureSession session = this.session;
                 updateStatus(ThingStatus.UNKNOWN);
                 if (session != null) {
+                    session.setClimateRefreshInterval(config.climateRefresh);
                     if (!session.initialize(authstring, pinCode, config.username, config.password)) {
                         updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                                 "Failed to login to Verisure, please check your account settings! Is MFA activated?");

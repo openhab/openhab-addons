@@ -28,10 +28,12 @@
 				"friendlyName": "Target Temperature",
 				"channel": "target_temperature",
 				"type": "Number:Temperature",
-				"unit": "CELSIUS",
+				"unit": "celsius",
 				"stateDescription": {
-					"pattern": "%.1f %unit%",
-					"readOnly": true
+					"minimum": 16,
+					"maximum": 32,
+					"step": 1,
+					"pattern": "%.0f %unit%"
 				},
 				"refresh": true,
 				"actions": [
@@ -48,9 +50,25 @@
 			},
 			{
 				"property": "brightness",
-				"friendlyName": "Brightness",
+				"friendlyName": "Display Brightness",
 				"channel": "brightness",
-				"type": "Dimmer",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "Bright"
+						},
+						{
+							"value": "1",
+							"label": "Dim"
+						},
+						{
+							"value": "2",
+							"label": "Off"
+						}
+					]
+				},
 				"refresh": true,
 				"actions": [
 					{
@@ -58,15 +76,42 @@
 						"parameterType": "NUMBER"
 					}
 				],
-				"category": "light",
+				"category": "screen",
 				"tags": [
 					"Control",
-					"Light"
-				]
+					"Brightness"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Bright\",\"1\"\u003d\"Dim\",\"2\"\u003d\"Off\"]`"
+			},
+			{
+				"property": "poweroff_time",
+				"friendlyName": "Power-Off Timer",
+				"channel": "poweroff_time",
+				"type": "Number:Time",
+				"unit": "seconds",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 28800,
+					"step": 3600,
+					"pattern": "%.0f %unit%"
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_poweroff_time",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "time",
+				"tags": [
+					"Setpoint",
+					"Duration"
+				],
+				"readmeComment": "Seconds until the heater turns off, 0 \u003d no timer; the Mi Home app sets whole hours (0 to 8 h)"
 			},
 			{
 				"property": "buzzer",
-				"friendlyName": "Buzzer Status",
+				"friendlyName": "Notification Sound",
 				"channel": "buzzer",
 				"type": "Switch",
 				"refresh": true,
@@ -75,6 +120,11 @@
 						"command": "set_buzzer",
 						"parameterType": "ONOFF"
 					}
+				],
+				"category": "soundvolume",
+				"tags": [
+					"Switch",
+					"Enabled"
 				]
 			},
 			{
@@ -82,9 +132,14 @@
 				"friendlyName": "Relative Humidity",
 				"channel": "relative_humidity",
 				"type": "Number:Dimensionless",
-				"unit": "PERCENT",
+				"unit": "percentage",
+				"stateDescription": {
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
 				"refresh": true,
 				"actions": [],
+				"category": "humidity",
 				"tags": [
 					"Measurement",
 					"Humidity"
@@ -101,12 +156,17 @@
 						"command": "set_child_lock",
 						"parameterType": "ONOFF"
 					}
+				],
+				"category": "lock",
+				"tags": [
+					"Switch",
+					"Enabled"
 				]
 			},
 			{
 				"property": "theqmostat",
-				"friendlyName": "HW Switch",
-				"channel": "HWSwitch",
+				"friendlyName": "Constant Temperature",
+				"channel": "hw_switch",
 				"type": "Switch",
 				"refresh": true,
 				"actions": [
@@ -114,14 +174,20 @@
 						"command": "set_theqmostat",
 						"parameterType": "ONOFF"
 					}
-				]
+				],
+				"category": "heating",
+				"tags": [
+					"Switch",
+					"Heating"
+				],
+				"readmeComment": "ON: keeps the target temperature. OFF: heats without the target temperature cut-out (keep heating in the Mi Home app)"
 			},
 			{
 				"property": "temperature",
 				"friendlyName": "Temperature",
 				"channel": "temperature",
 				"type": "Number:Temperature",
-				"unit": "CELSIUS",
+				"unit": "celsius",
 				"stateDescription": {
 					"pattern": "%.1f %unit%",
 					"readOnly": true
@@ -140,10 +206,18 @@
 				"channel": "usedhours",
 				"type": "Number:Time",
 				"unit": "hours",
+				"stateDescription": {
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
 				"refresh": true,
 				"transformation": "SecondsToHours",
 				"actions": [],
-				"category": "time"
+				"category": "time",
+				"tags": [
+					"Measurement",
+					"Duration"
+				]
 			}
 		],
 		"experimental": true

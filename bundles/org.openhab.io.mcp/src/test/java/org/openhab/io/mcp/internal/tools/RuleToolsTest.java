@@ -28,6 +28,8 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -67,9 +69,9 @@ class RuleToolsTest {
     @BeforeEach
     void setUp() {
         ruleTools = new RuleTools(Objects.requireNonNull(ruleRegistry), Objects.requireNonNull(ruleManager), jsonMapper,
-                false);
+                false, 100);
         ruleToolsWithScripting = new RuleTools(Objects.requireNonNull(ruleRegistry),
-                Objects.requireNonNull(ruleManager), jsonMapper, true);
+                Objects.requireNonNull(ruleManager), jsonMapper, true, 100);
     }
 
     private RuleTools tools() {
@@ -136,6 +138,59 @@ class RuleToolsTest {
     }
 
     @Test
+    void getRulesClampsNonPositiveLimitAndNegativeOffset() throws Exception {
+        stubThreeRules();
+
+        for (int requestedLimit : new int[] { 0, -5 }) {
+            Map<String, Object> parsed = getRules(tools(), Map.of("limit", requestedLimit, "offset", -3));
+            assertEquals(3, parsed.get("total"));
+            assertEquals(0, parsed.get("offset"));
+            assertEquals(1, parsed.get("limit"));
+            assertEquals(1, ((List<?>) Objects.requireNonNull(parsed.get("rules"))).size());
+        }
+    }
+
+    @Test
+    void getRulesCapsLimitAtMaxItemsPerPage() throws Exception {
+        stubThreeRules();
+        RuleTools smallPages = new RuleTools(Objects.requireNonNull(ruleRegistry), Objects.requireNonNull(ruleManager),
+                jsonMapper, false, 2);
+
+        Map<String, Object> aboveMax = getRules(smallPages, Map.of("limit", 500));
+        assertEquals(2, aboveMax.get("limit"));
+        assertEquals(2, ((List<?>) Objects.requireNonNull(aboveMax.get("rules"))).size());
+
+        assertEquals(2, getRules(smallPages, Map.of()).get("limit"));
+
+        Map<String, Object> pastEnd = getRules(smallPages, Map.of("offset", Integer.MAX_VALUE));
+        assertEquals(3, pastEnd.get("total"));
+        assertTrue(((List<?>) Objects.requireNonNull(pastEnd.get("rules"))).isEmpty());
+    }
+
+    @Test
+    void getRulesDefaultLimitIsFiftyWhenMaxIsHigher() throws Exception {
+        when(Objects.requireNonNull(ruleRegistry).getAll()).thenReturn(List.of());
+
+        assertEquals(50, getRules(tools(), Map.of()).get("limit"));
+    }
+
+    private void stubThreeRules() {
+        Rule rule1 = createMockRuleWithTrigger("r1", "Rule 1", Set.of(), "timer.GenericCronTrigger");
+        Rule rule2 = createMockRuleWithTrigger("r2", "Rule 2", Set.of(), "timer.GenericCronTrigger");
+        Rule rule3 = createMockRuleWithTrigger("r3", "Rule 3", Set.of(), "timer.GenericCronTrigger");
+        RuleManager manager = Objects.requireNonNull(ruleManager);
+        when(Objects.requireNonNull(ruleRegistry).getAll()).thenReturn(List.of(rule1, rule2, rule3));
+        when(manager.getStatus(anyString())).thenReturn(RuleStatus.IDLE);
+        when(manager.isEnabled(anyString())).thenReturn(true);
+    }
+
+    private Map<String, Object> getRules(RuleTools target, Map<String, Object> args) throws Exception {
+        CallToolResult result = target.handleGetRules(createRequest(new HashMap<>(args)));
+        assertSuccess(result);
+        return parseResult(result);
+    }
+
+    @Test
     void getRulesFilterByTag() throws Exception {
         Rule rule1 = createMockRuleWithTrigger("r1", "Rule 1", Set.of(), "timer.GenericCronTrigger");
         Rule rule2 = createMockRuleWithTrigger("r2", "Rule 2", Set.of("MCP"), "core.ItemStateChangeTrigger");
@@ -197,7 +252,7 @@ class RuleToolsTest {
         Map<String, Object> args = new HashMap<>();
         args.put("ruleUID", "r1");
         args.put("action", "enable");
-        CallToolResult result = tools().handleManageRule(createRequest(args));
+        CallToolResult result = tools().handleManageRule(createRequest(args), true);
         assertSuccess(result);
         verify(ruleManager).setEnabled("r1", true);
         Map<String, Object> parsed = parseResult(result);
@@ -214,7 +269,7 @@ class RuleToolsTest {
         Map<String, Object> args = new HashMap<>();
         args.put("ruleUID", "r1");
         args.put("action", "disable");
-        CallToolResult result = tools().handleManageRule(createRequest(args));
+        CallToolResult result = tools().handleManageRule(createRequest(args), true);
         assertSuccess(result);
         verify(ruleManager).setEnabled("r1", false);
     }
@@ -228,7 +283,7 @@ class RuleToolsTest {
         Map<String, Object> args = new HashMap<>();
         args.put("ruleUID", "r1");
         args.put("action", "trigger");
-        CallToolResult result = tools().handleManageRule(createRequest(args));
+        CallToolResult result = tools().handleManageRule(createRequest(args), true);
         assertSuccess(result);
         verify(ruleManager).runNow("r1");
     }
@@ -241,7 +296,7 @@ class RuleToolsTest {
         Map<String, Object> args = new HashMap<>();
         args.put("ruleUID", "r1");
         args.put("action", "remove");
-        CallToolResult result = tools().handleManageRule(createRequest(args));
+        CallToolResult result = tools().handleManageRule(createRequest(args), true);
         assertSuccess(result);
         verify(ruleRegistry).remove("r1");
         Map<String, Object> parsed = parseResult(result);
@@ -255,7 +310,7 @@ class RuleToolsTest {
         Map<String, Object> args = new HashMap<>();
         args.put("ruleUID", "missing");
         args.put("action", "enable");
-        CallToolResult result = tools().handleManageRule(createRequest(args));
+        CallToolResult result = tools().handleManageRule(createRequest(args), true);
         assertErrorContains(result, "not found");
     }
 
@@ -267,14 +322,35 @@ class RuleToolsTest {
         Map<String, Object> args = new HashMap<>();
         args.put("ruleUID", "r1");
         args.put("action", "explode");
-        CallToolResult result = tools().handleManageRule(createRequest(args));
+        CallToolResult result = tools().handleManageRule(createRequest(args), true);
         assertErrorContains(result, "Unknown action");
     }
 
     @Test
     void manageRuleMissingParams() {
-        CallToolResult result = tools().handleManageRule(createRequest(Map.of()));
+        CallToolResult result = tools().handleManageRule(createRequest(Map.of()), true);
         assertErrorContains(result, "required");
+    }
+
+    @Test
+    void manageRuleTriggerAllowedForNonAdmin() throws Exception {
+        Rule rule = createMockRule("r1", "Rule 1", "", Set.of());
+        when(ruleRegistry.get("r1")).thenReturn(rule);
+        when(ruleManager.getStatus("r1")).thenReturn(RuleStatus.RUNNING);
+
+        CallToolResult result = tools().handleManageRule(createRequest(Map.of("ruleUID", "r1", "action", "trigger")),
+                false);
+        assertSuccess(result);
+        verify(ruleManager).runNow("r1");
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = { "enable", "disable", "remove", "REMOVE" })
+    void manageRuleRefusesNonAdmin(String action) {
+        CallToolResult result = tools().handleManageRule(createRequest(Map.of("ruleUID", "r1", "action", action)),
+                false);
+        assertErrorContains(result, "administrator");
+        verifyNoInteractions(ruleRegistry, ruleManager);
     }
 
     // ========== handleCreateRule ==========

@@ -14,12 +14,12 @@ package org.openhab.binding.freeboxos.internal.api.rest;
 
 import java.util.List;
 
-import javax.ws.rs.core.UriBuilder;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
 import org.openhab.binding.freeboxos.internal.api.Response;
+
+import jakarta.ws.rs.core.UriBuilder;
 
 /**
  * The {@link ListableRest} is the Java class used to handle rest answers holding a list of known equipments

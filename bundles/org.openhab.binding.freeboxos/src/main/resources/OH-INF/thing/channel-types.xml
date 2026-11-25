@@ -32,8 +32,8 @@
 		<description>Received signal strength indicator</description>
 		<category>QualityOfService</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>RSSI</tag>
+			<point>Measurement</point>
+			<property>RSSI</property>
 		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
@@ -63,8 +63,8 @@
 		<description>Activates / stops the integrated DECT base</description>
 		<category>Switch</category>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Enabled</tag>
+			<point>Switch</point>
+			<property>Enabled</property>
 		</tags>
 	</channel-type>
 
@@ -73,8 +73,8 @@
 		<label>Alternating Ring</label>
 		<category>Switch</category>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
+			<point>Switch</point>
+			<property>Mode</property>
 		</tags>
 	</channel-type>
 
@@ -197,8 +197,8 @@
 		<label>Player Status</label>
 		<description>Status of the Freebox TV player</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>MediaControl</tag>
+			<point>Status</point>
+			<property>MediaControl</property>
 		</tags>
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
@@ -208,8 +208,8 @@
 		<label>Active Package</label>
 		<description>Name of the package currently active on the player</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>MediaControl</tag>
+			<point>Status</point>
+			<property>MediaControl</property>
 		</tags>
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
@@ -220,8 +220,8 @@
 		<description>Indicates whether the wifi network is enabled</description>
 		<category>Switch</category>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Enabled</tag>
+			<point>Switch</point>
+			<property>Enabled</property>
 		</tags>
 	</channel-type>
 
@@ -260,7 +260,7 @@
 		<description>Is the phone ringing</description>
 		<category>Alarm</category>
 		<tags>
-			<tag>Alarm</tag>
+			<point>Alarm</point>
 		</tags>
 	</channel-type>
 
@@ -283,8 +283,8 @@
 		<description>Call duration in seconds</description>
 		<category>time</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Duration</tag>
+			<point>Measurement</point>
+			<property>Duration</property>
 		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
@@ -294,8 +294,8 @@
 		<label>Timestamp</label>
 		<category>time</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
+			<point>Status</point>
+			<property>Timestamp</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -319,8 +319,8 @@
 		<item-type>Switch</item-type>
 		<label>VM Status</label>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
+			<point>Switch</point>
+			<property>Mode</property>
 		</tags>
 	</channel-type>
 
@@ -402,8 +402,8 @@
 		<description>Led indicator status</description>
 		<category>Switch</category>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Light</tag>
+			<point>Switch</point>
+			<property>Light</property>
 		</tags>
 	</channel-type>
 
@@ -452,7 +452,7 @@
 		<label>Server State</label>
 		<description>Current state of the VPN Server</description>
 		<tags>
-			<tag>Status</tag>
+			<point>Status</point>
 		</tags>
 		<state readOnly="true" pattern="%s">
 			<options>
@@ -471,8 +471,8 @@
 		<description>Activates / deactivates the keyfob</description>
 		<category>Switch</category>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
+			<point>Switch</point>
+			<property>Mode</property>
 		</tags>
 		<config-description>
 			<parameter name="slot" type="integer"/>
@@ -486,8 +486,8 @@
 		<description>Shutter command</description>
 		<category>Blinds</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>OpenLevel</tag>
+			<point>Control</point>
+			<property>OpenLevel</property>
 		</tags>
 		<config-description>
 			<parameter name="up" type="integer"/>
@@ -502,8 +502,8 @@
 		<label>Shutter Position</label>
 		<description>Read / Write position of the shutter</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>OpenLevel</tag>
+			<point>Control</point>
+			<property>OpenLevel</property>
 		</tags>
 		<state pattern="%d %unit%"/>
 		<config-description>
@@ -518,8 +518,8 @@
 		<label>Alarm Duration</label>
 		<category>oh:freeboxos:zone_temporisee</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>Duration</tag>
+			<point>Control</point>
+			<property>Duration</property>
 		</tags>
 		<state pattern="%d %unit%"/>
 	</channel-type>
@@ -529,8 +529,8 @@
 		<label>Alarm Volume</label>
 		<category>oh:freeboxos:sirene</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>SoundVolume</tag>
+			<point>Control</point>
+			<property>SoundVolume</property>
 		</tags>
 		<state min="0" max="100" step="1" pattern="%d %%"/>
 	</channel-type>
@@ -540,7 +540,7 @@
 		<label>PIN Code</label>
 		<category>oh:freeboxos:pin_code</category>
 		<tags>
-			<tag>Alarm</tag>
+			<point>Alarm</point>
 		</tags>
 		<state pattern="%s"/>
 	</channel-type>
@@ -564,8 +564,8 @@
 		<label>Power Available</label>
 		<category>Switch</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Power</tag>
+			<point>Status</point>
+			<property>Power</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -589,8 +589,8 @@
 		<label>Signal Level</label>
 		<category>QualityOfService</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>SignalStrength</tag>
+			<point>Measurement</point>
+			<property>SignalStrength</property>
 		</tags>
 		<state readOnly="true" pattern="%.2f dBm"/>
 	</channel-type>
@@ -600,8 +600,8 @@
 		<label>Détection</label>
 		<category>oh:freeboxos:mouvement</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Motion</tag>
+			<point>Status</point>
+			<property>Motion</property>
 		</tags>
 	</channel-type>
 
@@ -610,8 +610,8 @@
 		<label>Cover Tamper</label>
 		<category>oh:freeboxos:warning</category>
 		<tags>
-			<tag>Alarm</tag>
-			<tag>Tampered</tag>
+			<point>Alarm</point>
+			<property>Tampered</property>
 		</tags>
 	</channel-type>
 
@@ -633,7 +633,7 @@
 		<label>Alarm State</label>
 		<description>Current state of the alarm system</description>
 		<tags>
-			<tag>Alarm</tag>
+			<point>Alarm</point>
 		</tags>
 		<state readOnly="true" pattern="%s">
 			<options>

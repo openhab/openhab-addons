@@ -256,8 +256,8 @@
 		<label>Operation Mode</label>
 		<description>The current state of the Aqualink® controller</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
+			<point>Status</point>
+			<property>Mode</property>
 		</tags>
 		<state>
 			<options>
@@ -272,8 +272,8 @@
 		<label>Battery Voltage</label>
 		<description>The voltage of the Aqualink® controller's battery</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Voltage</tag>
+			<point>Measurement</point>
+			<property>Voltage</property>
 		</tags>
 		<state readOnly="true">
 		</state>
@@ -283,8 +283,8 @@
 		<label>Battery State</label>
 		<description>The current state of the Aqualink® controller's battery</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>LowBattery</tag>
+			<point>Status</point>
+			<property>LowBattery</property>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -347,8 +347,8 @@
 		<description>The current setpoint</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 	</channel-type>
 	<channel-type id="temp-temperature">
@@ -357,8 +357,8 @@
 		<description>The current temperature. Note: Only accurate when pool is running</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true">
 		</state>
@@ -369,8 +369,8 @@
 		<description>The current air temperature</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true">
 		</state>

@@ -1,0 +1,607 @@
+{
+	"deviceMapping": {
+		"id": [
+			"zhimi.airp.za3"
+		],
+		"propertyMethod": "get_properties",
+		"maxProperties": 1,
+		"channels": [
+			{
+				"property": "",
+				"friendlyName": "Actions",
+				"channel": "actions",
+				"type": "String",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "air-purifier-toggle",
+							"label": "Toggle Power"
+						},
+						{
+							"value": "filter-reset-filter-life",
+							"label": "Reset Filter Life"
+						},
+						{
+							"value": "custom-service-toggle-mode",
+							"label": "Toggle Mode"
+						}
+					]
+				},
+				"refresh": false,
+				"actions": [
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 2,
+						"aiid": 1,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "air-purifier-toggle"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 4,
+						"aiid": 1,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "filter-reset-filter-life"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 9,
+						"aiid": 1,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "custom-service-toggle-mode"
+								}
+							]
+						}
+					}
+				],
+				"category": "settings",
+				"readmeComment": "Value mapping `[\"air-purifier-toggle\"\u003d\"Toggle Power\",\"filter-reset-filter-life\"\u003d\"Reset Filter Life\",\"custom-service-toggle-mode\"\u003d\"Toggle Mode\"]`"
+			},
+			{
+				"property": "on",
+				"siid": 2,
+				"piid": 1,
+				"friendlyName": "Power",
+				"channel": "on",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch"
+				]
+			},
+			{
+				"property": "fault",
+				"siid": 2,
+				"piid": 2,
+				"friendlyName": "Fault",
+				"channel": "fault",
+				"type": "Number",
+				"stateDescription": {
+					"pattern": "%.0f",
+					"readOnly": true,
+					"options": [
+						{
+							"value": "0",
+							"label": "No Faults"
+						},
+						{
+							"value": "1",
+							"label": "Particle Sensor Error"
+						},
+						{
+							"value": "2",
+							"label": "Motor Error"
+						},
+						{
+							"value": "3",
+							"label": "Particle Sensor and Motor Error"
+						},
+						{
+							"value": "4",
+							"label": "Temperature/Humidity Sensor Error"
+						},
+						{
+							"value": "5",
+							"label": "Particle and Temperature/Humidity Sensor Error"
+						},
+						{
+							"value": "6",
+							"label": "Motor and Temperature/Humidity Sensor Error"
+						},
+						{
+							"value": "7",
+							"label": "Particle Sensor, Motor and Temperature/Humidity Sensor Error"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "error",
+				"tags": [
+					"Status"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"No Faults\",\"1\"\u003d\"Particle Sensor Error\",\"2\"\u003d\"Motor Error\",\"3\"\u003d\"Particle Sensor and Motor Error\",\"4\"\u003d\"Temperature/Humidity Sensor Error\",\"5\"\u003d\"Particle and Temperature/Humidity Sensor Error\",\"6\"\u003d\"Motor and Temperature/Humidity Sensor Error\",\"7\"\u003d\"Particle Sensor, Motor and Temperature/Humidity Sensor Error\"]`"
+			},
+			{
+				"property": "mode",
+				"siid": 2,
+				"piid": 4,
+				"friendlyName": "Mode",
+				"channel": "mode",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "Auto"
+						},
+						{
+							"value": "1",
+							"label": "Sleep"
+						},
+						{
+							"value": "2",
+							"label": "Manual"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "fan",
+				"tags": [
+					"Control",
+					"Mode"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Auto\",\"1\"\u003d\"Sleep\",\"2\"\u003d\"Manual\"]`"
+			},
+			{
+				"property": "relative-humidity",
+				"siid": 3,
+				"piid": 1,
+				"friendlyName": "Relative Humidity",
+				"channel": "relative_humidity",
+				"type": "Number:Dimensionless",
+				"unit": "percentage",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 100,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "humidity",
+				"tags": [
+					"Measurement",
+					"Humidity"
+				]
+			},
+			{
+				"property": "pm2.5-density",
+				"siid": 3,
+				"piid": 4,
+				"friendlyName": "PM2.5 Density",
+				"channel": "pm2_5_density",
+				"type": "Number:Density",
+				"unit": "μg/m3",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 1000,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "smoke",
+				"tags": [
+					"Measurement",
+					"ParticulateMatter"
+				]
+			},
+			{
+				"property": "temperature",
+				"siid": 3,
+				"piid": 7,
+				"friendlyName": "Temperature",
+				"channel": "temperature",
+				"type": "Number:Temperature",
+				"unit": "celsius",
+				"stateDescription": {
+					"minimum": -30,
+					"maximum": 100,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "temperature",
+				"tags": [
+					"Measurement",
+					"Temperature"
+				]
+			},
+			{
+				"property": "air-quality",
+				"siid": 3,
+				"piid": 8,
+				"friendlyName": "Air Quality",
+				"channel": "air_quality",
+				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "0",
+							"label": "Excellent"
+						},
+						{
+							"value": "1",
+							"label": "Good"
+						},
+						{
+							"value": "2",
+							"label": "Moderate"
+						},
+						{
+							"value": "3",
+							"label": "Poor"
+						},
+						{
+							"value": "4",
+							"label": "Unhealthy"
+						},
+						{
+							"value": "5",
+							"label": "Hazardous"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "smoke",
+				"tags": [
+					"Status"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Excellent\",\"1\"\u003d\"Good\",\"2\"\u003d\"Moderate\",\"3\"\u003d\"Poor\",\"4\"\u003d\"Unhealthy\",\"5\"\u003d\"Hazardous\"]`"
+			},
+			{
+				"property": "pm10-density",
+				"siid": 3,
+				"piid": 9,
+				"friendlyName": "PM10 Density",
+				"channel": "pm10_density",
+				"type": "Number:Density",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 1000,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"unit": "μg/m3",
+				"category": "smoke",
+				"tags": [
+					"Measurement",
+					"ParticulateMatter"
+				]
+			},
+			{
+				"property": "filter-life-level",
+				"siid": 4,
+				"piid": 1,
+				"friendlyName": "Filter Life Level",
+				"channel": "filter_life_level",
+				"type": "Number:Dimensionless",
+				"unit": "percentage",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 100,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "status",
+				"tags": [
+					"Measurement",
+					"Level"
+				]
+			},
+			{
+				"property": "filter-used-time",
+				"siid": 4,
+				"piid": 3,
+				"friendlyName": "Filter Used Time",
+				"channel": "filter_used_time",
+				"type": "Number:Time",
+				"unit": "hours",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 65535,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "time",
+				"tags": [
+					"Measurement",
+					"Duration"
+				]
+			},
+			{
+				"property": "filter-left-time",
+				"siid": 4,
+				"piid": 4,
+				"friendlyName": "Filter Remaining Time",
+				"channel": "filter_left_time",
+				"type": "Number:Time",
+				"unit": "days",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 1000,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "time",
+				"tags": [
+					"Measurement",
+					"Duration"
+				]
+			},
+			{
+				"property": "alarm",
+				"siid": 6,
+				"piid": 1,
+				"friendlyName": "Notification Sound",
+				"channel": "alarm",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "soundvolume",
+				"tags": [
+					"Switch",
+					"Enabled"
+				]
+			},
+			{
+				"property": "brightness",
+				"siid": 7,
+				"piid": 2,
+				"friendlyName": "Screen Brightness",
+				"channel": "brightness",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "2",
+							"label": "Bright"
+						},
+						{
+							"value": "1",
+							"label": "Dim"
+						},
+						{
+							"value": "0",
+							"label": "Off"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "screen",
+				"tags": [
+					"Control",
+					"Brightness"
+				],
+				"readmeComment": "Value mapping `[\"2\"\u003d\"Bright\",\"1\"\u003d\"Dim\",\"0\"\u003d\"Off\"]`"
+			},
+			{
+				"property": "fan-level",
+				"siid": 11,
+				"piid": 1,
+				"friendlyName": "Manual Mode Level",
+				"channel": "favorite_level",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "Level 1"
+						},
+						{
+							"value": "1",
+							"label": "Level 2"
+						},
+						{
+							"value": "2",
+							"label": "Level 3"
+						},
+						{
+							"value": "3",
+							"label": "Level 4"
+						},
+						{
+							"value": "4",
+							"label": "Level 5"
+						},
+						{
+							"value": "5",
+							"label": "Level 6"
+						},
+						{
+							"value": "6",
+							"label": "Level 7"
+						},
+						{
+							"value": "7",
+							"label": "Level 8"
+						},
+						{
+							"value": "8",
+							"label": "Level 9"
+						},
+						{
+							"value": "9",
+							"label": "Level 10"
+						},
+						{
+							"value": "10",
+							"label": "Level 11"
+						},
+						{
+							"value": "11",
+							"label": "Level 12"
+						},
+						{
+							"value": "12",
+							"label": "Level 13"
+						},
+						{
+							"value": "13",
+							"label": "Level 14"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "fan",
+				"tags": [
+					"Control",
+					"Level"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Level 1\",\"1\"\u003d\"Level 2\",\"2\"\u003d\"Level 3\",\"3\"\u003d\"Level 4\",\"4\"\u003d\"Level 5\",\"5\"\u003d\"Level 6\",\"6\"\u003d\"Level 7\",\"7\"\u003d\"Level 8\",\"8\"\u003d\"Level 9\",\"9\"\u003d\"Level 10\",\"10\"\u003d\"Level 11\",\"11\"\u003d\"Level 12\",\"12\"\u003d\"Level 13\",\"13\"\u003d\"Level 14\"]`"
+			},
+			{
+				"property": "moto-speed-rpm",
+				"siid": 9,
+				"piid": 1,
+				"friendlyName": "Motor Speed",
+				"channel": "motor_speed_rpm",
+				"type": "Number",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 2500,
+					"step": 1,
+					"pattern": "%.0f",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "fan",
+				"tags": [
+					"Measurement",
+					"Speed"
+				]
+			},
+			{
+				"property": "country-code",
+				"siid": 9,
+				"piid": 3,
+				"friendlyName": "Country Code",
+				"channel": "country_code",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "17230",
+							"label": "CN"
+						},
+						{
+							"value": "17749",
+							"label": "EU"
+						},
+						{
+							"value": "21576",
+							"label": "TH"
+						},
+						{
+							"value": "19024",
+							"label": "JP"
+						},
+						{
+							"value": "21843",
+							"label": "US"
+						},
+						{
+							"value": "19282",
+							"label": "KR"
+						},
+						{
+							"value": "21591",
+							"label": "TW"
+						},
+						{
+							"value": "18766",
+							"label": "IN"
+						}
+					],
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "settings",
+				"tags": [
+					"Status"
+				],
+				"readmeComment": "Value mapping `[\"17230\"\u003d\"CN\",\"17749\"\u003d\"EU\",\"21576\"\u003d\"TH\",\"19024\"\u003d\"JP\",\"21843\"\u003d\"US\",\"19282\"\u003d\"KR\",\"21591\"\u003d\"TW\",\"18766\"\u003d\"IN\"]`"
+			}
+		],
+		"experimental": true
+	}
+}

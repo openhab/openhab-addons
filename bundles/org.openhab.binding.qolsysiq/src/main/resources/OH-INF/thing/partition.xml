@@ -47,8 +47,8 @@
 			codes, append the 6-digit code to the command separated by a colon (e.g. DISARM:123456)</description>
 		<category>Alarm</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
+			<point>Status</point>
+			<property>Mode</property>
 		</tags>
 		<state>
 			<options>
@@ -75,7 +75,7 @@
 		<description>Reports on the current alarm state, or triggers an instant alarm.</description>
 		<category>Alarm</category>
 		<tags>
-			<tag>Alarm</tag>
+			<point>Alarm</point>
 		</tags>
 		<state>
 			<options>

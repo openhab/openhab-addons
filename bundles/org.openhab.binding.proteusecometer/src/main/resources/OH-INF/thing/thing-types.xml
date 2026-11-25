@@ -32,8 +32,8 @@
 		<label>Temperature</label>
 		<description>Temperature measured by the sensor</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -43,8 +43,8 @@
 		<label>Sensor Level</label>
 		<description>The distance between the sensor and the water surface</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Level</tag>
+			<point>Measurement</point>
+			<property>Level</property>
 		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
@@ -54,8 +54,8 @@
 		<label>Usable Level</label>
 		<description>The usable level in liters</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Water</tag>
+			<point>Measurement</point>
+			<property>Water</property>
 		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
@@ -65,8 +65,8 @@
 		<label>Usable Level in percent</label>
 		<description>The usable level in percent</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Water</tag>
+			<point>Measurement</point>
+			<property>Water</property>
 		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>

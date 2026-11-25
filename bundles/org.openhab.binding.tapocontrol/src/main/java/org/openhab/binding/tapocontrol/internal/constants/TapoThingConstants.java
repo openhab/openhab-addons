@@ -31,12 +31,16 @@ import org.openhab.core.thing.ThingTypeUID;
 @NonNullByDefault
 public class TapoThingConstants {
     public static final String DEVICE_VENDOR = "Tapo";
+    public static final String DEVICE_VENDOR_KASA = "Kasa";
 
     /*** LIST OF SUPPORTED DEVICE NAMES ***/
     public static final String DEVICE_BRIDGE = "bridge";
+    public static final String DEVICE_EP10 = "EP10";
+    public static final String DEVICE_EP40 = "EP40";
     public static final String DEVICE_H100 = "H100";
     public static final String DEVICE_HS200 = "HS200";
     public static final String DEVICE_HS220 = "HS220";
+    public static final String DEVICE_KP405 = "KP405";
     public static final String DEVICE_P100 = "P100";
     public static final String DEVICE_P105 = "P105";
     public static final String DEVICE_P110 = "P110";
@@ -70,12 +74,16 @@ public class TapoThingConstants {
     public static final String DEVICE_DESCRIPTION_TEMP_SENSOR = "Temperature-Sensor";
     public static final String DEVICE_DESCRIPTION_SMART_SWITCH = "Smart-Switch";
     public static final String DEVICE_DESCRIPTION_LIGHT_SWITCH = "Light-Switch";
+    public static final String DEVICE_DESCRIPTION_DIMMER_PLUG = "Dimmer-Plug";
 
     /*** LIST OF SUPPORTED THING UIDS ***/
     public static final ThingTypeUID BRIDGE_THING_TYPE = new ThingTypeUID(BINDING_ID, DEVICE_BRIDGE);
+    public static final ThingTypeUID EP10_THING_TYPE = new ThingTypeUID(BINDING_ID, DEVICE_EP10);
+    public static final ThingTypeUID EP40_THING_TYPE = new ThingTypeUID(BINDING_ID, DEVICE_EP40);
     public static final ThingTypeUID H100_THING_TYPE = new ThingTypeUID(BINDING_ID, DEVICE_H100);
     public static final ThingTypeUID HS200_THING_TYPE = new ThingTypeUID(BINDING_ID, DEVICE_HS200);
     public static final ThingTypeUID HS220_THING_TYPE = new ThingTypeUID(BINDING_ID, DEVICE_HS220);
+    public static final ThingTypeUID KP405_THING_TYPE = new ThingTypeUID(BINDING_ID, DEVICE_KP405);
     public static final ThingTypeUID P100_THING_TYPE = new ThingTypeUID(BINDING_ID, DEVICE_P100);
     public static final ThingTypeUID P105_THING_TYPE = new ThingTypeUID(BINDING_ID, DEVICE_P105);
     public static final ThingTypeUID P110_THING_TYPE = new ThingTypeUID(BINDING_ID, DEVICE_P110);
@@ -102,8 +110,8 @@ public class TapoThingConstants {
     public static final Set<ThingTypeUID> SUPPORTED_BRIDGE_UIDS = Set.of(BRIDGE_THING_TYPE);
     public static final Set<ThingTypeUID> SUPPORTED_HUB_UIDS = Set.of(H100_THING_TYPE);
     public static final Set<ThingTypeUID> SUPPORTED_SOCKET_UIDS = Set.of(P100_THING_TYPE, P105_THING_TYPE,
-            P110_THING_TYPE, P115_THING_TYPE);
-    public static final Set<ThingTypeUID> SUPPORTED_SOCKET_STRIP_UIDS = Set.of(P300_THING_TYPE);
+            P110_THING_TYPE, P115_THING_TYPE, EP10_THING_TYPE);
+    public static final Set<ThingTypeUID> SUPPORTED_SOCKET_STRIP_UIDS = Set.of(P300_THING_TYPE, EP40_THING_TYPE);
     public static final Set<ThingTypeUID> SUPPORTED_WHITE_BULB_UIDS = Set.of(L510_THING_TYPE, L610_THING_TYPE);
     public static final Set<ThingTypeUID> SUPPORTED_COLOR_BULB_UIDS = Set.of(L530_THING_TYPE, L630_THING_TYPE);
     public static final Set<ThingTypeUID> SUPPORTED_LIGHT_STRIP_UIDS = Set.of(L900_THING_TYPE, L920_THING_TYPE,
@@ -114,9 +122,12 @@ public class TapoThingConstants {
     public static final Set<ThingTypeUID> SUPPORTED_MOTION_SENSORS = Set.of();
     public static final Set<ThingTypeUID> SUPPORTED_WEATHER_SENSORS = Set.of(T310_THING_TYPE, T315_THING_TYPE);
     public static final Set<ThingTypeUID> SUPPORTED_SMART_SWITCHES = Set.of(S210_THING_TYPE, S220_THING_TYPE);
-    public static final Set<ThingTypeUID> SUPPORTED_LIGHT_SWITCH_UIDS = Set.of(HS200_THING_TYPE, HS220_THING_TYPE);
-    public static final Set<ThingTypeUID> SUPPORTED_DIMMER_SWITCH_UIDS = Set.of(HS220_THING_TYPE);
+    public static final Set<ThingTypeUID> SUPPORTED_LIGHT_SWITCH_UIDS = Set.of(HS200_THING_TYPE, HS220_THING_TYPE,
+            KP405_THING_TYPE);
+    public static final Set<ThingTypeUID> SUPPORTED_DIMMER_SWITCH_UIDS = Set.of(HS220_THING_TYPE, KP405_THING_TYPE);
     public static final Set<ThingTypeUID> SUPPORTED_CAMERA_UIDS = Set.of(CAMERA_THING_TYPE);
+    public static final Set<ThingTypeUID> KASA_DEVICE_UIDS = Set.of(HS200_THING_TYPE, HS220_THING_TYPE, EP10_THING_TYPE,
+            EP40_THING_TYPE, KP405_THING_TYPE);
 
     /*** SET OF ALL SUPPORTED THINGS ***/
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.unmodifiableSet(Stream

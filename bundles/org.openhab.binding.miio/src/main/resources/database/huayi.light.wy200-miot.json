@@ -14,7 +14,7 @@
 				"property": "on",
 				"siid": 2,
 				"piid": 1,
-				"friendlyName": "Light - Power",
+				"friendlyName": "Power",
 				"channel": "on",
 				"type": "Switch",
 				"refresh": true,
@@ -24,23 +24,69 @@
 						"parameterType": "ONOFFBOOL"
 					}
 				],
-				"category": "light",
-				"tags": [
-					"Switch"
-				]
+				"category": "switch"
 			},
 			{
 				"property": "brightness",
 				"siid": 2,
 				"piid": 2,
-				"friendlyName": "Light - Brightness",
+				"friendlyName": "Brightness",
 				"channel": "brightness",
 				"type": "Dimmer",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER",
+						"condition": {
+							"name": "BrightnessExisting"
+						}
+					},
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL",
+						"parameters": [
+							{
+								"did": "on",
+								"siid": 2,
+								"piid": 1,
+								"value": "$value$"
+							}
+						],
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "OFF|(.*,)?0(\\.0*)?",
+									"returnValue": false
+								},
+								{
+									"matchValue": "ON|[0-9.,]+",
+									"returnValue": true
+								}
+							]
+						}
+					}
+				],
+				"category": "light",
+				"tags": [
+					"Control",
+					"Brightness"
+				]
+			},
+			{
+				"property": "color-temperature",
+				"siid": 2,
+				"piid": 3,
+				"friendlyName": "Color Temperature",
+				"channel": "color_temperature",
+				"type": "Number:Temperature",
+				"unit": "kelvin",
 				"stateDescription": {
-					"minimum": 1,
-					"maximum": 100,
+					"minimum": 3000,
+					"maximum": 6400,
 					"step": 1,
-					"pattern": "%.0f %unit%"
+					"pattern": "%.0f K"
 				},
 				"refresh": true,
 				"actions": [
@@ -49,38 +95,7 @@
 						"parameterType": "NUMBER"
 					}
 				],
-				"category": "light",
-				"tags": [
-					"Setpoint",
-					"Light"
-				]
-			},
-			{
-				"property": "color-temperature",
-				"siid": 2,
-				"piid": 3,
-				"friendlyName": "Light - Color Temperature",
-				"channel": "color-temperature",
-				"type": "Number:Temperature",
-				"unit": "kelvin",
-				"stateDescription": {
-					"minimum": 3000,
-					"maximum": 6400,
-					"step": 1,
-					"pattern": "%.1f %unit%"
-				},
-				"refresh": true,
-				"actions": [
-					{
-						"command": "set_properties",
-						"parameterType": "STRING"
-					}
-				],
-				"category": "rgb",
-				"tags": [
-					"Setpoint",
-					"ColorTemperature"
-				]
+				"category": "colorlight"
 			}
 		],
 		"experimental": true

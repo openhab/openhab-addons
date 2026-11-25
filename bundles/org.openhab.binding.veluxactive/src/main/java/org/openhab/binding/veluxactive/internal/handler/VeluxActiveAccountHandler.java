@@ -144,7 +144,9 @@ public class VeluxActiveAccountHandler extends BaseBridgeHandler {
         previousConfiguration = configuration;
         if (configuration.refreshInterval() < VeluxActiveAccountConfiguration.MINIMUM_REFRESH_INTERVAL) {
             finish(session, configuration, ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.conf-error.account.refresh-interval", 0);
+                    "@text/offline.conf-error.account.refresh-interval [\""
+                            + VeluxActiveAccountConfiguration.MINIMUM_REFRESH_INTERVAL + "\"]",
+                    0);
             return;
         }
         if (!configuration.isComplete()) {

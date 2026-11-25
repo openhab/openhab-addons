@@ -37,15 +37,21 @@ import java.util.function.Supplier;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.openhab.binding.atagone.internal.AtagOneConfiguration.ConnectionType;
 import org.openhab.binding.atagone.internal.action.AtagOneActions;
 import org.openhab.binding.atagone.internal.api.AtagEpoch;
 import org.openhab.binding.atagone.internal.api.AtagOneApiClient;
 import org.openhab.binding.atagone.internal.api.AtagOneCommunicationException;
+import org.openhab.binding.atagone.internal.api.AtagOneConnection;
+import org.openhab.binding.atagone.internal.api.AtagOneHybridConnection;
+import org.openhab.binding.atagone.internal.api.AtagOneLoginException;
+import org.openhab.binding.atagone.internal.api.AtagOnePortalClient;
 import org.openhab.binding.atagone.internal.dto.ControlUpdateDTO;
 import org.openhab.binding.atagone.internal.dto.DeviceConfigDTO;
 import org.openhab.binding.atagone.internal.dto.DeviceConfigUpdateDTO;
 import org.openhab.binding.atagone.internal.dto.RetrieveReplyDTO;
 import org.openhab.binding.atagone.internal.dto.ScheduleDTO;
+import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -77,6 +83,9 @@ import org.slf4j.LoggerFactory;
 public class AtagOneHandler extends BaseThingHandler {
 
     private static final int PAIRING_RETRY_S = 5;
+    private static final long PORTAL_IDLE_TIMEOUT_MS = 30_000L;
+    private static final int LOCAL_DETAILS_RETRIES = 2;
+    private static final int LOCAL_DETAILS_PAIRING_RETRY_S = 60;
     private static final int POST_COMMAND_DELAY_S = 2;
     private static final SecureRandom CLIENT_ID_RANDOM = new SecureRandom();
 
@@ -84,12 +93,17 @@ public class AtagOneHandler extends BaseThingHandler {
     public static final long SECONDS_PER_DAY = 86400L;
     public static final long SECONDS_PER_15_MINUTES = 900L;
     private static final long SECONDS_PER_MINUTE = 60L;
+    private static final int MIN_REMOTE_REFRESH_S = 60;
 
     private final Logger logger = LoggerFactory.getLogger(AtagOneHandler.class);
     private final HttpClient httpClient;
+    private final HttpClientFactory httpClientFactory;
 
+    private @Nullable HttpClient portalHttpClient;
     private AtagOneConfiguration config = new AtagOneConfiguration();
-    private @Nullable AtagOneApiClient apiClient;
+    private volatile int pollIntervalSeconds = 30;
+    private volatile boolean localPairingHintLogged;
+    private @Nullable AtagOneConnection apiClient;
     private @Nullable ScheduledFuture<?> pollJob;
     private @Nullable ScheduledFuture<?> pairingJob;
     private @Nullable Future<?> connectJob;
@@ -114,10 +128,11 @@ public class AtagOneHandler extends BaseThingHandler {
 
     private final AtagOneStateDescriptionProvider stateDescriptionProvider;
 
-    public AtagOneHandler(Thing thing, HttpClient httpClient,
+    public AtagOneHandler(Thing thing, HttpClient httpClient, HttpClientFactory httpClientFactory,
             AtagOneStateDescriptionProvider stateDescriptionProvider) {
         super(thing);
         this.httpClient = httpClient;
+        this.httpClientFactory = httpClientFactory;
         this.stateDescriptionProvider = stateDescriptionProvider;
     }
 
@@ -129,6 +144,7 @@ public class AtagOneHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         long myGeneration = ++generation;
+        localPairingHintLogged = false;
         apiClient = null;
         lastConfiguration = null;
         lastChScheduleEntries = null;
@@ -136,14 +152,36 @@ public class AtagOneHandler extends BaseThingHandler {
         stateMap.clear();
         stopPollJob();
         cancelConnectAndPairingJobs();
+        stopPortalHttpClient();
 
         config = getConfigAs(AtagOneConfiguration.class);
-        if (config.hostname.isBlank()) {
-            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.conf-error.hostname-missing");
+        ConnectionType connectionType = config.resolveConnectionType();
+        if (config.hasIncompleteCredentials() || connectionType == null) {
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, missingSettingsMessage(config));
             return;
+        }
+        pollIntervalSeconds = connectionType == ConnectionType.REMOTE
+                ? Math.max(config.refreshInterval, MIN_REMOTE_REFRESH_S)
+                : config.refreshInterval;
+        if (pollIntervalSeconds != config.refreshInterval) {
+            logger.info("Refresh interval raised to {} s for the portal connection", pollIntervalSeconds);
         }
         updateStatus(ThingStatus.UNKNOWN);
         connectJob = scheduler.submit(() -> connect(myGeneration));
+    }
+
+    static String missingSettingsMessage(AtagOneConfiguration config) {
+        if (config.hasIncompleteCredentials()) {
+            return "@text/offline.conf-error.credentials-incomplete";
+        }
+        switch (config.connection) {
+            case AtagOneConfiguration.CONNECTION_LOCAL:
+                return "@text/offline.conf-error.hostname-missing";
+            case AtagOneConfiguration.CONNECTION_REMOTE:
+                return "@text/offline.conf-error.credentials-missing";
+            default:
+                return "@text/offline.conf-error.connection-missing";
+        }
     }
 
     @Override
@@ -152,6 +190,19 @@ public class AtagOneHandler extends BaseThingHandler {
         apiClient = null;
         stopPollJob();
         cancelConnectAndPairingJobs();
+        stopPortalHttpClient();
+    }
+
+    private void stopPortalHttpClient() {
+        HttpClient portal = portalHttpClient;
+        portalHttpClient = null;
+        if (portal != null) {
+            try {
+                portal.stop();
+            } catch (Exception e) {
+                logger.debug("Failed to stop portal HTTP client: {}", e.getMessage());
+            }
+        }
     }
 
     private void cancelConnectAndPairingJobs() {
@@ -181,7 +232,7 @@ public class AtagOneHandler extends BaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         long myGeneration = generation;
-        AtagOneApiClient client = apiClient;
+        AtagOneConnection client = apiClient;
         if (client == null) {
             return;
         }
@@ -201,7 +252,7 @@ public class AtagOneHandler extends BaseThingHandler {
         enqueueWrite(myGeneration, () -> executeChannelCommand(client, myGeneration, channelId, command));
     }
 
-    private void executeChannelCommand(AtagOneApiClient client, long myGeneration, String channelId, Command command) {
+    private void executeChannelCommand(AtagOneConnection client, long myGeneration, String channelId, Command command) {
         if (CHANNEL_CH_SCHEDULE_BASE_TEMPERATURE.equals(channelId)) {
             ScheduleDTO schedule = composeChScheduleUpdate(command);
             if (schedule == null) {
@@ -235,7 +286,7 @@ public class AtagOneHandler extends BaseThingHandler {
 
     private boolean enqueueControlUpdate(String label, BiConsumer<ControlUpdateDTO, DeviceConfigUpdateDTO> composer) {
         long myGeneration = generation;
-        AtagOneApiClient client = apiClient;
+        AtagOneConnection client = apiClient;
         if (client == null) {
             logger.warn("Cannot send {} — not connected", label);
             return false;
@@ -274,7 +325,7 @@ public class AtagOneHandler extends BaseThingHandler {
         return requiresPhysicalConfirmation;
     }
 
-    private void sendControlUpdate(AtagOneApiClient client, long myGeneration, String channelId,
+    private void sendControlUpdate(AtagOneConnection client, long myGeneration, String channelId,
             ControlUpdateDTO control, DeviceConfigUpdateDTO configUpdate) {
         boolean hasConfig = configUpdate.hasChanges();
         pausePollJob(myGeneration);
@@ -326,7 +377,7 @@ public class AtagOneHandler extends BaseThingHandler {
         return schedule;
     }
 
-    private void sendChScheduleUpdate(AtagOneApiClient client, long myGeneration, ScheduleDTO schedule) {
+    private void sendChScheduleUpdate(AtagOneConnection client, long myGeneration, ScheduleDTO schedule) {
         pausePollJob(myGeneration);
         try {
             client.updateChSchedule(schedule);
@@ -361,7 +412,7 @@ public class AtagOneHandler extends BaseThingHandler {
         return schedule;
     }
 
-    private void sendDhwScheduleUpdate(AtagOneApiClient client, long myGeneration, ScheduleDTO schedule) {
+    private void sendDhwScheduleUpdate(AtagOneConnection client, long myGeneration, ScheduleDTO schedule) {
         pausePollJob(myGeneration);
         try {
             client.updateDhwSchedule(schedule);
@@ -382,7 +433,7 @@ public class AtagOneHandler extends BaseThingHandler {
 
     private boolean enqueueSchedule(String label, boolean isChSchedule, Supplier<@Nullable ScheduleDTO> composer) {
         long myGeneration = generation;
-        AtagOneApiClient client = apiClient;
+        AtagOneConnection client = apiClient;
         if (client == null) {
             logger.warn("Cannot send {} — not connected", label);
             return false;
@@ -1082,6 +1133,10 @@ public class AtagOneHandler extends BaseThingHandler {
         if (generation != myGeneration) {
             return;
         }
+        if (config.resolveConnectionType() == ConnectionType.REMOTE) {
+            connectRemote(myGeneration);
+            return;
+        }
         String clientId = resolveClientId();
         boolean needsPairing = clientId.isEmpty();
         if (needsPairing) {
@@ -1097,6 +1152,97 @@ public class AtagOneHandler extends BaseThingHandler {
             doPair(client, clientId, myGeneration);
         } else {
             startPollJob(0, myGeneration);
+        }
+    }
+
+    private void connectRemote(long myGeneration) {
+        HttpClient portal = httpClientFactory
+                .createHttpClient("atagone-" + Integer.toHexString(thing.getUID().hashCode()));
+        // The portal drops connections that sat idle for about a minute; close ours sooner so a poll never reuses one.
+        portal.setIdleTimeout(PORTAL_IDLE_TIMEOUT_MS);
+        try {
+            if (!portal.isStarted()) {
+                portal.start();
+            }
+        } catch (Exception e) {
+            logger.debug("Failed to start portal HTTP client: {}", e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            return;
+        }
+        if (generation != myGeneration) {
+            try {
+                portal.stop();
+            } catch (Exception e) {
+                logger.debug("Failed to stop portal HTTP client: {}", e.getMessage());
+            }
+            return;
+        }
+        portalHttpClient = portal;
+        AtagOneConnection portalConnection = new AtagOnePortalClient(portal, config.email, config.password);
+        if (config.usesLocalDetails()) {
+            AtagOneHybridConnection hybrid = new AtagOneHybridConnection(portalConnection);
+            apiClient = hybrid;
+            scheduler.submit(() -> prepareLocalDetails(hybrid, myGeneration));
+        } else {
+            apiClient = portalConnection;
+        }
+        startPollJob(0, myGeneration);
+    }
+
+    // The local API only completes the portal's data, so a thermostat that is unreachable or not paired yet is
+    // never reported on the Thing.
+    private void prepareLocalDetails(AtagOneHybridConnection hybrid, long myGeneration) {
+        if (generation != myGeneration) {
+            return;
+        }
+        String clientId = resolveClientId();
+        boolean needsPairing = clientId.isEmpty();
+        if (needsPairing) {
+            clientId = generateClientId();
+        }
+        AtagOneApiClient local = new AtagOneApiClient(httpClient, config.hostname, config.port, clientId,
+                LOCAL_DETAILS_RETRIES);
+        if (needsPairing) {
+            pairLocalDetails(hybrid, local, clientId, myGeneration);
+        } else {
+            hybrid.setDetailsSource(local);
+        }
+    }
+
+    private void pairLocalDetails(AtagOneHybridConnection hybrid, AtagOneApiClient local, String clientId,
+            long myGeneration) {
+        if (generation != myGeneration) {
+            return;
+        }
+        try {
+            int accStatus = local.pair();
+            if (generation != myGeneration) {
+                return;
+            }
+            if (accStatus == 0 || accStatus == 2) {
+                persistClientId(clientId);
+                hybrid.setDetailsSource(local);
+                logger.info("Local connection paired, reading the report details locally");
+            } else if (accStatus == 1) {
+                if (localPairingHintLogged) {
+                    logger.debug("Still waiting for Accept on the thermostat");
+                } else {
+                    localPairingHintLogged = true;
+                    logger.info("Press Accept on the thermostat to read the report details locally");
+                }
+                pairingJob = scheduler.schedule(() -> pairLocalDetails(hybrid, local, clientId, myGeneration),
+                        PAIRING_RETRY_S, TimeUnit.SECONDS);
+            } else if (accStatus == 3) {
+                logger.info("The thermostat denied the local pairing, the report details stay unavailable");
+            } else {
+                logger.debug("Unexpected acc_status {} while pairing locally, will try again", accStatus);
+                pairingJob = scheduler.schedule(() -> pairLocalDetails(hybrid, local, clientId, myGeneration),
+                        LOCAL_DETAILS_PAIRING_RETRY_S, TimeUnit.SECONDS);
+            }
+        } catch (AtagOneCommunicationException e) {
+            logger.debug("Local pairing failed, will try again: {}", e.getMessage());
+            pairingJob = scheduler.schedule(() -> pairLocalDetails(hybrid, local, clientId, myGeneration),
+                    LOCAL_DETAILS_PAIRING_RETRY_S, TimeUnit.SECONDS);
         }
     }
 
@@ -1144,7 +1290,7 @@ public class AtagOneHandler extends BaseThingHandler {
         if (generation != myGeneration) {
             return;
         }
-        AtagOneApiClient client = apiClient;
+        AtagOneConnection client = apiClient;
         if (client == null) {
             return;
         }
@@ -1155,6 +1301,13 @@ public class AtagOneHandler extends BaseThingHandler {
             }
             updateChannels(r);
             goOnline();
+        } catch (AtagOneLoginException e) {
+            if (generation != myGeneration) {
+                return;
+            }
+            pausePollJob(myGeneration);
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/offline.conf-error.login-rejected [\"" + e.getMessage() + "\"]");
         } catch (AtagOneCommunicationException e) {
             if (generation != myGeneration) {
                 return;
@@ -1175,8 +1328,8 @@ public class AtagOneHandler extends BaseThingHandler {
             return;
         }
         stopPollJob();
-        pollJob = scheduler.scheduleWithFixedDelay(() -> poll(myGeneration), initialDelaySeconds,
-                config.refreshInterval, TimeUnit.SECONDS);
+        pollJob = scheduler.scheduleWithFixedDelay(() -> poll(myGeneration), initialDelaySeconds, pollIntervalSeconds,
+                TimeUnit.SECONDS);
     }
 
     private synchronized void pausePollJob(long myGeneration) {
@@ -1336,7 +1489,9 @@ public class AtagOneHandler extends BaseThingHandler {
         updateIfChanged(CHANNEL_LANGUAGE, new StringType(LANGUAGE_NAMES.getOrDefault(config.language, "unknown")));
     }
 
-    private void updateIfChanged(String channelId, State state) {
+    private void updateIfChanged(String channelId, State value) {
+        AtagOneConnection client = apiClient;
+        State state = client != null && client.unsupportedChannels().contains(channelId) ? UnDefType.UNDEF : value;
         State previous = stateMap.put(channelId, state);
         if (!state.equals(previous)) {
             updateState(channelId, state);

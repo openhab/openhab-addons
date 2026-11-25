@@ -38,19 +38,24 @@ import org.openhab.binding.miio.internal.basic.MiIoDatabaseWatchService;
 import org.openhab.binding.miio.internal.cloud.CloudConnector;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TranslationProvider;
+import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.type.ChannelTypeRegistry;
+import org.openhab.core.types.Command;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonParser;
 
 /**
- * Tests the commands sent for actions with the STRING and CUSTOMSTRING parameter types.
+ * Tests the commands sent for actions with the STRING, CUSTOMSTRING and JSON parameter types.
  *
  * @author Marcel Verpaalen - Initial contribution
+ * @author Marcel Verpaalen - Add JSON parameter type
  */
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -82,6 +87,10 @@ public class MiIoBasicHandlerCustomStringTest {
         }
 
         List<String> send(String actionsJson, String command) {
+            return send(actionsJson, new StringType(command));
+        }
+
+        List<String> send(String actionsJson, Command command) {
             String channelJson = """
                     {"property": "", "channel": "%s", "type": "String", "refresh": false, "actions": %s}
                     """.formatted(CHANNEL, actionsJson);
@@ -89,7 +98,7 @@ public class MiIoBasicHandlerCustomStringTest {
             assertNotNull(channel);
             actions.put(channelUID, channel);
             sentCommands.clear();
-            handleCommand(channelUID, new StringType(command));
+            handleCommand(channelUID, command);
             return new ArrayList<>(sentCommands);
         }
 
@@ -192,12 +201,67 @@ public class MiIoBasicHandlerCustomStringTest {
                 .send("[{\"command\": \"set_x\", \"parameterType\": \"CUSTOMSTRING\"" + condition + "]", "Auto"));
     }
 
+    private static final String JSON_ACTION = "[{\"command\": \"action\", \"parameterType\": \"JSON\", \"siid\": 3, \"aiid\": 1}]";
+
+    @Test
+    public void jsonListIsSentAsActionInput() {
+        assertEquals(
+                List.of("action{\"did\":\"test\",\"siid\":3,\"aiid\":1,\"in\":[\"C7795\",\"u0064\",11,180,0,0,2]}"),
+                handler.send(JSON_ACTION, "[\"C7795\", \"u0064\", 11, 180, 0, 0, 2]"));
+        assertEquals(List.of("action{\"did\":\"test\",\"siid\":3,\"aiid\":1,\"in\":[]}"),
+                handler.send(JSON_ACTION, "[]"));
+        assertEquals(List.of("action{\"did\":\"test\",\"siid\":3,\"aiid\":1,\"in\":[\"C7795\",11,180]}"),
+                handler.send(JSON_ACTION, "[\"C7795\", 11, 180]"));
+    }
+
+    @Test
+    public void jsonOtherThanListIsNotSent() {
+        assertEquals(List.of(), handler.send(JSON_ACTION, "C7795"));
+        assertEquals(List.of(), handler.send(JSON_ACTION, "{\"a\": 1}"));
+        assertEquals(List.of(), handler.send(JSON_ACTION, "[\"C7795\", 11"));
+        assertEquals(List.of(), handler.send(JSON_ACTION, "[\"C7795\",,180]"));
+        assertEquals(List.of(), handler.send(JSON_ACTION, "[C7795, 11]"));
+        assertEquals(List.of(), handler.send(JSON_ACTION, "[1,2] x"));
+        assertEquals(List.of(), handler.send(JSON_ACTION, ""));
+    }
+
+    @Test
+    public void jsonWithOtherThanNumbersAndTextIsNotSent() {
+        assertEquals(List.of(), handler.send(JSON_ACTION, "[NaN]"));
+        assertEquals(List.of(), handler.send(JSON_ACTION, "[1;2]"));
+        assertEquals(List.of(), handler.send(JSON_ACTION, "[true]"));
+        assertEquals(List.of(), handler.send(JSON_ACTION, "[null]"));
+        assertEquals(List.of(), handler.send(JSON_ACTION, "[[1]]"));
+        assertEquals(List.of(), handler.send(JSON_ACTION, "[{\"a\": 1}]"));
+    }
+
+    @Test
+    public void jsonIgnoresNonTextCommand() {
+        assertEquals(List.of(), handler.send(JSON_ACTION, new DecimalType(5)));
+        assertEquals(List.of(), handler.send(JSON_ACTION, new QuantityType<>(180, SIUnits.CELSIUS)));
+    }
+
+    @Test
+    public void jsonIsNotSentForLegacyCommand() {
+        assertEquals(List.of(), handler.send("[{\"command\": \"set_x\", \"parameterType\": \"JSON\"}]", "[1, 2]"));
+    }
+
     @Test
     public void databaseEnumerationsAreSentInLowerCase() throws IOException {
         assertEquals(List.of("set_mode[\"silent\"]"),
                 handler.sendToDatabaseChannel("zhimi.humidifier.v1.json", "mode", "Silent"));
         assertEquals(List.of("set_doorbell_push[\"on\"]"),
                 handler.sendToDatabaseChannel("lumi.gateway.json", "doorbellPush", "ON"));
+    }
+
+    @Test
+    public void databaseStartCookSendsActionInput() throws IOException {
+        assertEquals(List.of("action{\"did\":\"start_cook\",\"siid\":3,\"aiid\":1,\"in\":[\"M0\",15,180,0,0,1]}"),
+                handler.sendToDatabaseChannel("careli.fryer.maf02-miot.json", "start_cook", "[\"M0\",15,180,0,0,1]"));
+        assertEquals(List.of(
+                "action{\"did\":\"start_cook\",\"siid\":3,\"aiid\":1,\"in\":[\"M0\",\"u0064u0065u006du006f\",15,180,0,0,1]}"),
+                handler.sendToDatabaseChannel("careli.fryer.maf05a-miot.json", "start_cook",
+                        "[\"M0\",\"u0064u0065u006du006f\",15,180,0,0,1]"));
     }
 
     @Test

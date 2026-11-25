@@ -77,8 +77,8 @@
 		<label>EVCS Energy All</label>
 		<description>EVCS Energy index.</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
@@ -87,8 +87,8 @@
 		<label>EVCS Solar Energy</label>
 		<description>EVCS Solar Energy index.</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
@@ -161,8 +161,8 @@
 		<label>EVCS Max Charging Power</label>
 		<description>In total for all phases. This value might be changed when charging session is started.</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point>Measurement</point>
+			<property>Power</property>
 		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
@@ -170,8 +170,8 @@
 		<item-type>Number:Power</item-type>
 		<label>EVCS Max Charging Power per Phase</label>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point>Measurement</point>
+			<property>Power</property>
 		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
@@ -180,8 +180,8 @@
 		<label>EVCS Max Charging Current</label>
 		<description>EVCS max allowed charging current.</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Current</tag>
+			<point>Measurement</point>
+			<property>Current</property>
 		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
@@ -189,8 +189,8 @@
 		<item-type>Number:Power</item-type>
 		<label>EVCS Min Charging Power</label>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point>Measurement</point>
+			<property>Power</property>
 		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
@@ -198,8 +198,8 @@
 		<item-type>Number:Power</item-type>
 		<label>EVCS Min Charging Power per Phase</label>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point>Measurement</point>
+			<property>Power</property>
 		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
@@ -208,8 +208,8 @@
 		<label>EVCS Min Charging Current</label>
 		<description>EVCS min allowed charging current.</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Current</tag>
+			<point>Measurement</point>
+			<property>Current</property>
 		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
@@ -258,8 +258,8 @@
 		<label>Energy Session</label>
 		<description>Energy meter since start of current charging session, restarts at 0 Wh at each charging session.</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
@@ -268,8 +268,8 @@
 		<label>Grid Energy Session</label>
 		<description>Energy meter since start of current charging session, restarts at 0 Wh at each charging session.</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
@@ -278,8 +278,8 @@
 		<label>Solar Energy Session</label>
 		<description>Energy meter since start of current charging session, restarts at 0 Wh at each charging session.</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
@@ -287,8 +287,8 @@
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>Total Charging Current</label>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Current</tag>
+			<point>Measurement</point>
+			<property>Current</property>
 		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
@@ -296,8 +296,8 @@
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>Charging Current (L1)</label>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Current</tag>
+			<point>Measurement</point>
+			<property>Current</property>
 		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
@@ -305,8 +305,8 @@
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>Charging Current (L2)</label>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Current</tag>
+			<point>Measurement</point>
+			<property>Current</property>
 		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
@@ -314,8 +314,8 @@
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>Charging Current (L3)</label>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Current</tag>
+			<point>Measurement</point>
+			<property>Current</property>
 		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
@@ -323,8 +323,8 @@
 		<item-type>Number:Power</item-type>
 		<label>Charging Power Total</label>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point>Measurement</point>
+			<property>Power</property>
 		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
@@ -332,8 +332,8 @@
 		<item-type>Number:Power</item-type>
 		<label>Charging Power (L1)</label>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point>Measurement</point>
+			<property>Power</property>
 		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
@@ -341,8 +341,8 @@
 		<item-type>Number:Power</item-type>
 		<label>Charging Power (L2)</label>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point>Measurement</point>
+			<property>Power</property>
 		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
@@ -350,8 +350,8 @@
 		<item-type>Number:Power</item-type>
 		<label>Charging Power (L3)</label>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point>Measurement</point>
+			<property>Power</property>
 		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
@@ -359,8 +359,8 @@
 		<item-type>Number:Power</item-type>
 		<label>Assign Power Total</label>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point>Measurement</point>
+			<property>Power</property>
 		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
@@ -368,8 +368,8 @@
 		<item-type>Number:Power</item-type>
 		<label>Assigned Power (L1)</label>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point>Measurement</point>
+			<property>Power</property>
 		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
@@ -377,8 +377,8 @@
 		<item-type>Number:Power</item-type>
 		<label>Assigned Power (L2)</label>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point>Measurement</point>
+			<property>Power</property>
 		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
@@ -386,8 +386,8 @@
 		<item-type>Number:Power</item-type>
 		<label>Assigned Power (L3)</label>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point>Measurement</point>
+			<property>Power</property>
 		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>

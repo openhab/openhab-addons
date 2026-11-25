@@ -21,11 +21,11 @@ import static org.mockito.Mockito.when;
 
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.http.HttpMethod;
 import org.junit.jupiter.api.Test;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * The {@link AmazonEchoControlServletTest} contains tests for the login dialog handling of the

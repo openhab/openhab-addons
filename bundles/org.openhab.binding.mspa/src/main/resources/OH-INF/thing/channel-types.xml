@@ -8,8 +8,8 @@
 		<label>Bubble Level</label>
 		<description>Intensity of bubbles</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Mode</tag>
+			<point>Control</point>
+			<property>Mode</property>
 		</tags>
 		<state>
 			<options>
@@ -23,24 +23,24 @@
 		<item-type>Switch</item-type>
 		<label>Active</label>
 		<tags>
-			<tag>Control</tag>
-			<tag>Mode</tag>
+			<point>Control</point>
+			<property>Mode</property>
 		</tags>
 	</channel-type>
 	<channel-type id="lock">
 		<item-type>Switch</item-type>
 		<label>Lock</label>
 		<tags>
-			<tag>Control</tag>
-			<tag>LockState</tag>
+			<point>Control</point>
+			<property>LockState</property>
 		</tags>
 	</channel-type>
 	<channel-type id="temperature">
 		<item-type>Number:Temperature</item-type>
 		<label>Temperature</label>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -48,8 +48,8 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Target Temperature</label>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="false"/>
 	</channel-type>
@@ -58,7 +58,7 @@
 		<label>Fault</label>
 		<description>Fault code reported by the device</description>
 		<tags>
-			<tag>Alarm</tag>
+			<point>Alarm</point>
 		</tags>
 		<state readOnly="true">
 			<options>

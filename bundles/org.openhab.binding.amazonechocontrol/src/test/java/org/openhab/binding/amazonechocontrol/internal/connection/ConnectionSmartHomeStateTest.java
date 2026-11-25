@@ -25,6 +25,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.io.IOException;
 import java.net.URI;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
@@ -34,13 +35,13 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.BufferingResponseListener;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentProvider;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.api.Response;
-import org.eclipse.jetty.client.api.Result;
-import org.eclipse.jetty.client.util.BufferingResponseListener;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.Response;
+import org.eclipse.jetty.client.Result;
 import org.eclipse.jetty.http.HttpFields;
+import org.eclipse.jetty.io.Content;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -80,7 +81,14 @@ public class ConnectionSmartHomeStateTest {
             BufferingResponseListener listener = invocation.getArgument(0);
             Response response = okJsonResponse();
             listener.onHeaders(response);
-            listener.onContent(response, ByteBuffer.wrap(responseBody.getBytes(StandardCharsets.UTF_8)));
+            // Since Jetty 12 only the Content.Chunk overload buffers content; the ByteBuffer one merely
+            // records that the application wants accumulation to happen.
+            listener.onContent(response,
+                    Content.Chunk.from(ByteBuffer.wrap(responseBody.getBytes(StandardCharsets.UTF_8)), true), () -> {
+                    });
+            // Without this an unbuffered body is indistinguishable from a response carrying no device
+            // states, which would let those tests pass while nothing reaches the parser.
+            assertThat(listener.getContentAsString(), is(responseBody));
             listener.onComplete(resultOf(response));
             return null;
         }).when(request).send(any(Response.CompleteListener.class));
@@ -94,21 +102,21 @@ public class ConnectionSmartHomeStateTest {
     }
 
     @Test
-    public void testADeviceWithAnEmptyMergeListIsAskedForItsOwnState() throws ConnectionException {
+    public void testADeviceWithAnEmptyMergeListIsAskedForItsOwnState() throws Exception {
         connection.getSmartHomeDeviceStatesJson(Set.of(device(List.of())));
 
         assertThat(sentContent(), containsString(APPLIANCE_ID));
     }
 
     @Test
-    public void testADeviceWithoutAMergeListIsAskedForItsOwnState() throws ConnectionException {
+    public void testADeviceWithoutAMergeListIsAskedForItsOwnState() throws Exception {
         connection.getSmartHomeDeviceStatesJson(Set.of(device(null)));
 
         assertThat(sentContent(), containsString(APPLIANCE_ID));
     }
 
     @Test
-    public void testAMergedDeviceIsAskedForTheMergedIdsInstead() throws ConnectionException {
+    public void testAMergedDeviceIsAskedForTheMergedIdsInstead() throws Exception {
         connection.getSmartHomeDeviceStatesJson(Set.of(device(List.of(MERGED_ID))));
 
         String content = sentContent();
@@ -133,13 +141,10 @@ public class ConnectionSmartHomeStateTest {
         assertThat(connection.getSmartHomeDeviceStatesJson(Set.of(device(null))), is(anEmptyMap()));
     }
 
-    @SuppressWarnings("null")
-    private String sentContent() {
-        ArgumentCaptor<ContentProvider> content = ArgumentCaptor.forClass(ContentProvider.class);
-        verify(request).content(content.capture());
-        StringBuilder sent = new StringBuilder();
-        content.getValue().forEach(buffer -> sent.append(StandardCharsets.UTF_8.decode(buffer)));
-        return sent.toString();
+    private String sentContent() throws IOException {
+        ArgumentCaptor<Request.Content> content = ArgumentCaptor.captor();
+        verify(request).body(content.capture());
+        return Content.Source.asString(content.getValue(), StandardCharsets.UTF_8);
     }
 
     private static SmartHomeBaseDevice device(@Nullable List<String> mergedIds) {
@@ -151,8 +156,7 @@ public class ConnectionSmartHomeStateTest {
 
     @SuppressWarnings("null")
     private Response okJsonResponse() {
-        HttpFields headers = new HttpFields();
-        headers.add("Content-Type", "application/json");
+        HttpFields headers = HttpFields.build().add("Content-Type", "application/json");
         Response response = mock(Response.class);
         when(response.getRequest()).thenReturn(request);
         when(response.getStatus()).thenReturn(200);

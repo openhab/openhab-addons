@@ -55,7 +55,9 @@ import org.openhab.binding.lutron.internal.handler.VirtualKeypadHandler;
 import org.openhab.binding.lutron.internal.handler.WciHandler;
 import org.openhab.binding.lutron.internal.hw.HwConstants;
 import org.openhab.binding.lutron.internal.hw.HwDimmerHandler;
+import org.openhab.binding.lutron.internal.hw.HwKeypadHandler;
 import org.openhab.binding.lutron.internal.hw.HwSerialBridgeHandler;
+import org.openhab.binding.lutron.internal.hw.HwTelnetBridgeHandler;
 import org.openhab.binding.lutron.internal.radiora.RadioRAConstants;
 import org.openhab.binding.lutron.internal.radiora.handler.PhantomButtonHandler;
 import org.openhab.binding.lutron.internal.radiora.handler.RS232Handler;
@@ -100,17 +102,16 @@ public class LutronHandlerFactory extends BaseThingHandlerFactory {
 
     // Used by the HwDiscoveryService
     public static final Set<ThingTypeUID> HW_DISCOVERABLE_DEVICE_TYPES_UIDS = Collections
-            .unmodifiableSet(Set.of(HwConstants.THING_TYPE_HWDIMMER));
+            .unmodifiableSet(Set.of(HwConstants.THING_TYPE_HWDIMMER, HwConstants.THING_TYPE_HWKEYPAD));
 
     // Other types that can be initiated but not discovered
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
-            .unmodifiableSet(Stream
-                    .of(THING_TYPE_IPBRIDGE, THING_TYPE_LEAPBRIDGE, PrgConstants.THING_TYPE_PRGBRIDGE,
-                            PrgConstants.THING_TYPE_GRAFIKEYE, RadioRAConstants.THING_TYPE_RS232,
-                            RadioRAConstants.THING_TYPE_DIMMER, RadioRAConstants.THING_TYPE_SWITCH,
-                            RadioRAConstants.THING_TYPE_PHANTOM, HwConstants.THING_TYPE_HWSERIALBRIDGE,
-                            THING_TYPE_CCO_PULSED, THING_TYPE_CCO_MAINTAINED, THING_TYPE_SYSVAR)
-                    .collect(Collectors.toSet()));
+            .unmodifiableSet(Stream.of(THING_TYPE_IPBRIDGE, THING_TYPE_LEAPBRIDGE, PrgConstants.THING_TYPE_PRGBRIDGE,
+                    PrgConstants.THING_TYPE_GRAFIKEYE, RadioRAConstants.THING_TYPE_RS232,
+                    RadioRAConstants.THING_TYPE_DIMMER, RadioRAConstants.THING_TYPE_SWITCH,
+                    RadioRAConstants.THING_TYPE_PHANTOM, HwConstants.THING_TYPE_HWSERIALBRIDGE,
+                    HwConstants.THING_TYPE_HWTELNETBRIDGE, THING_TYPE_CCO_PULSED, THING_TYPE_CCO_MAINTAINED,
+                    THING_TYPE_SYSVAR).collect(Collectors.toSet()));
 
     private final Logger logger = LoggerFactory.getLogger(LutronHandlerFactory.class);
 
@@ -204,8 +205,12 @@ public class LutronHandlerFactory extends BaseThingHandlerFactory {
             return new PhantomButtonHandler(thing);
         } else if (thingTypeUID.equals(HwConstants.THING_TYPE_HWSERIALBRIDGE)) {
             return new HwSerialBridgeHandler((Bridge) thing, serialPortManager);
+        } else if (thingTypeUID.equals(HwConstants.THING_TYPE_HWTELNETBRIDGE)) {
+            return new HwTelnetBridgeHandler((Bridge) thing);
         } else if (thingTypeUID.equals(HwConstants.THING_TYPE_HWDIMMER)) {
             return new HwDimmerHandler(thing);
+        } else if (thingTypeUID.equals(HwConstants.THING_TYPE_HWKEYPAD)) {
+            return new HwKeypadHandler(thing);
         }
 
         return null;

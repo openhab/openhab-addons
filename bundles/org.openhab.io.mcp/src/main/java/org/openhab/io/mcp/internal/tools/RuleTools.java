@@ -66,6 +66,7 @@ public class RuleTools {
     private final RuleManager ruleManager;
     private final McpJsonMapper jsonMapper;
     private final boolean scriptingEnabled;
+    private final Paging paging;
 
     /**
      * Creates a new {@code RuleTools} instance.
@@ -75,13 +76,16 @@ public class RuleTools {
      * @param jsonMapper the JSON mapper used to serialize tool results
      * @param scriptingEnabled when true, allows {@code script}-typed actions and conditions; when false,
      *            those types are rejected with an error pointing at the {@code enableScripting} config flag
+     * @param maxItemsPerPage upper bound for the {@code limit} argument of the paginated list tool; values
+     *            below 1 are treated as 1
      */
     public RuleTools(RuleRegistry ruleRegistry, RuleManager ruleManager, McpJsonMapper jsonMapper,
-            boolean scriptingEnabled) {
+            boolean scriptingEnabled, int maxItemsPerPage) {
         this.ruleRegistry = ruleRegistry;
         this.ruleManager = ruleManager;
         this.jsonMapper = jsonMapper;
         this.scriptingEnabled = scriptingEnabled;
+        this.paging = Paging.of(maxItemsPerPage);
     }
 
     /**
@@ -91,8 +95,7 @@ public class RuleTools {
         Map<String, Object> properties = new HashMap<>();
         properties.put("tag", Map.of("type", "string", "description", "Filter rules by tag"));
         properties.put("enabled", Map.of("type", "boolean", "description", "Filter by enabled/disabled state"));
-        properties.put("limit", Map.of("type", "integer", "description", "Maximum results to return (default: 50)"));
-        properties.put("offset", Map.of("type", "integer", "description", "Number of results to skip (default: 0)"));
+        paging.addSchemaProperties(properties);
 
         return McpSchema.Tool.builder().name("get_rules").description(
                 "List automation rules with their status, triggers, and tags. Use tag='MCP' to see rules created by this agent.")
@@ -107,8 +110,6 @@ public class RuleTools {
         Map<String, Object> args = request.arguments();
         String tagFilter = getStringArg(args, "tag");
         Boolean enabledFilter = getNullableBooleanArg(args, "enabled");
-        int limit = getIntArg(args, "limit", 50);
-        int offset = getIntArg(args, "offset", 0);
 
         List<Map<String, Object>> rules = new ArrayList<>();
         for (Rule rule : ruleRegistry.getAll()) {
@@ -123,14 +124,9 @@ public class RuleTools {
             rules.add(buildRuleSummary(rule, status));
         }
 
-        int total = rules.size();
-        List<Map<String, Object>> page = rules.subList(Math.min(offset, total), Math.min(offset + limit, total));
-
         Map<String, Object> response = new HashMap<>();
+        List<Map<String, Object>> page = paging.page(rules, args, response);
         response.put("rules", page);
-        response.put("total", total);
-        response.put("offset", offset);
-        response.put("limit", limit);
         return textResult(jsonMapper, response);
     }
 
@@ -152,15 +148,18 @@ public class RuleTools {
     }
 
     /**
-     * Handles a {@code manage_rule} call.
+     * Handles a {@code manage_rule} call. Like REST, non-admins may only trigger a rule.
      */
-    public CallToolResult handleManageRule(McpSchema.CallToolRequest request) {
+    public CallToolResult handleManageRule(McpSchema.CallToolRequest request, boolean admin) {
         Map<String, Object> args = request.arguments();
         String ruleUID = getStringArg(args, "ruleUID");
         String action = getStringArg(args, "action");
 
         if (ruleUID == null || action == null) {
             return errorResult("Both 'ruleUID' and 'action' are required.");
+        }
+        if (!admin && !"trigger".equalsIgnoreCase(action)) {
+            return adminRequiredResult("'manage_rule' action '" + action + "'");
         }
 
         Rule rule = ruleRegistry.get(ruleUID);
