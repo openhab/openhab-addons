@@ -17,6 +17,7 @@ import java.util.Set;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.jivesoftware.smack.SmackConfiguration;
+import org.jivesoftware.smack.experimental.ExperimentalInitializer;
 import org.jivesoftware.smack.java7.XmppHostnameVerifier;
 import org.jivesoftware.smack.provider.ProviderManager;
 import org.jivesoftware.smack.roster.Roster;
@@ -77,9 +78,16 @@ public class XMPPClientHandlerFactory extends BaseThingHandlerFactory {
     protected void activate(ComponentContext componentContext) {
         super.activate(componentContext);
 
-        // Initialize Javax SASL mechanisms explicitly because Smack's automatic
-        // initializer discovery cannot cross OSGi bundle classloader boundaries.
+        // Explicitly initialize Smack modules because automatic initializer discovery
+        // does not work across OSGi bundle classloader boundaries.
+
+        // FIXME: Properly handle Smack initialization in an OSGi environment.
+
+        // Register additional SASL mechanisms provided by Java.
         new SASLJavaXSmackInitializer().initialize();
+
+        // Register HTTP File Upload providers from smack-experimental.
+        new ExperimentalInitializer().initialize();
 
         SmackXmlParser.setXmlPullParserFactory(new Xpp3XmlPullParserFactory());
 

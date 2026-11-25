@@ -201,6 +201,12 @@ public class XMPPClient implements IncomingChatMessageListener, ConnectionListen
             return;
         }
 
+        ChatManager chatManager = this.chatManager;
+        if (chatManager == null) {
+            eventListener.onErrorEvent("XMPP chatManager is null");
+            return;
+        }
+
         File file = new File(filename);
         if (!file.isFile() || !file.canRead()) {
             logger.warn("XMPP image file does not exist or is not readable: {}", filename);
@@ -233,9 +239,15 @@ public class XMPPClient implements IncomingChatMessageListener, ConnectionListen
 
             URL url = uploadManager.uploadFile(file);
 
-            // Simple fallback: just send the URL as a message.
-            // If you want true out-of-band metadata, build an OOB extension stanza instead.
-            sendMessage(to, url.toString());
+            EntityBareJid jid = JidCreate.entityBareFrom(to);
+
+            Message message = connection.getStanzaFactory().buildMessageStanza() //
+                    .to(jid).ofType(Message.Type.chat) //
+                    .setBody(url.toString()) //
+                    .addExtension(new OobExtension(url.toString(), file.getName())) //
+                    .build();
+
+            chatManager.chatWith(jid).send(message);
         } catch (XMPPException.XMPPErrorException e) {
             logger.warn("XMPP HTTP upload rejected by server: {}", e.getMessage(), e);
         } catch (SmackException.NoResponseException e) {
