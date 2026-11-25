@@ -166,8 +166,8 @@ public class BridgeHandler extends BaseBridgeHandler {
     }
 
     /**
-     * Stops the stream. Closes the socket and waits for the reader thread, so no callback runs
-     * once this returns.
+     * Stops the stream. Closes the socket and waits a bounded time for the reader thread. The session is cleared first,
+     * so a callback that is still running after that wait publishes nothing.
      */
     private void releaseStream() {
         session = null;
@@ -186,7 +186,7 @@ public class BridgeHandler extends BaseBridgeHandler {
     public void addDeviceSeenListener(DeviceSeenListener listener) {
         deviceSeenListeners.add(listener);
         for (String deviceId : getSeenDeviceIds()) {
-            scheduler.execute(() -> listener.deviceSeen(deviceId));
+            scheduler.execute(() -> notifyIfRegistered(listener, deviceId));
         }
     }
 
@@ -232,9 +232,19 @@ public class BridgeHandler extends BaseBridgeHandler {
         for (DeviceSeenListener listener : deviceSeenListeners) {
             scheduler.execute(() -> {
                 if (current.isCurrent()) {
-                    listener.deviceSeen(deviceId);
+                    notifyIfRegistered(listener, deviceId);
                 }
             });
+        }
+    }
+
+    /**
+     * A call queued before the listener was removed is dropped: removal ends background discovery, and the framework
+     * would still put the result into the inbox.
+     */
+    private void notifyIfRegistered(DeviceSeenListener listener, String deviceId) {
+        if (deviceSeenListeners.contains(listener)) {
+            listener.deviceSeen(deviceId);
         }
     }
 

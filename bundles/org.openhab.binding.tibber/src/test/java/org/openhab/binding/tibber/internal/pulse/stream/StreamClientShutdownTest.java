@@ -83,9 +83,17 @@ class StreamClientShutdownTest extends StreamTestSupport {
         CountDownLatch release = new CountDownLatch(1);
         RecordingListener listener = new RecordingListener(message -> {
             inCallback.countDown();
-            try {
-                release.await(WAIT_MILLIS, TimeUnit.MILLISECONDS);
-            } catch (InterruptedException e) {
+            boolean interrupted = false;
+            // Stays busy through the interrupt of stop(), so that its join runs into the timeout.
+            long deadline = System.nanoTime() + TimeUnit.MILLISECONDS.toNanos(WAIT_MILLIS);
+            while (release.getCount() > 0 && System.nanoTime() < deadline) {
+                try {
+                    release.await(deadline - System.nanoTime(), TimeUnit.NANOSECONDS);
+                } catch (InterruptedException e) {
+                    interrupted = true;
+                }
+            }
+            if (interrupted) {
                 Thread.currentThread().interrupt();
             }
             return true;
@@ -96,8 +104,12 @@ class StreamClientShutdownTest extends StreamTestSupport {
         client.start();
         assertTrue(inCallback.await(WAIT_MILLIS, TimeUnit.MILLISECONDS));
 
-        client.stop(); // the join times out: the callback is still running
-        release.countDown();
+        client.stop();
+        try {
+            assertTrue(isAlive(name), "the join must time out while the callback is still running");
+        } finally {
+            release.countDown();
+        }
 
         assertTrue(awaitThreadEnd(name, WAIT_MILLIS));
         assertInstanceOf(Active.class, listener.next(WAIT_MILLIS));

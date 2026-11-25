@@ -23,10 +23,13 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -67,7 +70,7 @@ class MeterDiscoveryServiceTest {
     private final AtomicInteger opened = new AtomicInteger();
     private final List<StreamListener> listeners = new CopyOnWriteArrayList<>();
     private final BlockingQueue<DiscoveryResult> results = new LinkedBlockingQueue<>();
-    private @Nullable BridgeHandler handler;
+    private @Nullable SchedulerExposingBridgeHandler handler;
     private @Nullable MeterDiscoveryService service;
     private @Nullable Bridge bridge;
 
@@ -77,7 +80,7 @@ class MeterDiscoveryServiceTest {
                 .withConfiguration(
                         new Configuration(java.util.Map.of("hostname", "bridge.example", "password", PASSWORD)))
                 .build();
-        BridgeHandler h = new BridgeHandler(b, (host, password, name, listener) -> {
+        SchedulerExposingBridgeHandler h = new SchedulerExposingBridgeHandler(b, (host, password, name, listener) -> {
             opened.incrementAndGet();
             listeners.add(listener);
             return new StreamConnection() {
@@ -168,6 +171,38 @@ class MeterDiscoveryServiceTest {
         return b;
     }
 
+    /** Exposes the scheduler that runs the discovery callbacks, so that a test can hold them back. */
+    private static final class SchedulerExposingBridgeHandler extends BridgeHandler {
+
+        SchedulerExposingBridgeHandler(Bridge bridge, StreamConnectionFactory factory) {
+            super(bridge, factory);
+        }
+
+        ScheduledExecutorService scheduler() {
+            return scheduler;
+        }
+    }
+
+    /**
+     * Queues far more waiting tasks than the scheduler runs at once (the pool of core has 5 threads unless configured).
+     * The pool takes tasks in submission order, so a task queued after these does not run before the latch is released.
+     */
+    private CountDownLatch holdBackScheduler() {
+        SchedulerExposingBridgeHandler h = handler;
+        assertNotNull(h);
+        CountDownLatch release = new CountDownLatch(1);
+        for (int i = 0; i < 100; i++) {
+            h.scheduler().execute(() -> {
+                try {
+                    release.await(WAIT_MILLIS, TimeUnit.MILLISECONDS);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+            });
+        }
+        return release;
+    }
+
     @Test
     void whenManyReadingsArriveBeforeAcceptanceThenOnlyOneResultIsCreated() throws Exception {
         service().initialize();
@@ -216,6 +251,26 @@ class MeterDiscoveryServiceTest {
         stream().onMessage(message(DEVICE_A, 1));
 
         assertNull(results.poll(300, TimeUnit.MILLISECONDS));
+    }
+
+    @Test
+    void whenBackgroundDiscoveryIsDisabledWhileACallbackIsQueuedThenTheDeviceIsNotOfferedUntilAScan() throws Exception {
+        service().initialize();
+        CountDownLatch release = holdBackScheduler();
+        try {
+            stream().onMessage(message(DEVICE_A, 1));
+            service().modified(Map.of(DiscoveryService.CONFIG_PROPERTY_BACKGROUND_DISCOVERY, false));
+        } finally {
+            release.countDown();
+        }
+
+        assertNull(results.poll(300, TimeUnit.MILLISECONDS),
+                "a callback queued before the stop must not reach the inbox");
+
+        service().startScan(null);
+        DiscoveryResult result = results.poll(WAIT_MILLIS, TimeUnit.MILLISECONDS);
+        assertNotNull(result, "an explicit scan still offers the device");
+        assertEquals(DEVICE_A, result.getProperties().get("deviceId"));
     }
 
     @Test

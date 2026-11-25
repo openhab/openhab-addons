@@ -102,10 +102,14 @@ final class HandlerHarness {
         meter.setHandler(meterHandler);
     }
 
-    /** Initializes the bridge, then the meter, in the order the framework uses. */
+    /**
+     * Initializes the meter, then the bridge. The bridge starts its stream at once, so in the other order the fake
+     * bridge
+     * could send its only reading before the meter knows its device id. The meter follows the bridge status either way.
+     */
     void initialize() {
-        bridgeHandler.initialize();
         meterHandler.initialize();
+        bridgeHandler.initialize();
     }
 
     void dispose() {
