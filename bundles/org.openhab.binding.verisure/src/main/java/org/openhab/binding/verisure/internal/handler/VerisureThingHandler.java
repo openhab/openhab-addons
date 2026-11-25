@@ -20,7 +20,7 @@ import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Consumer;
+import java.util.concurrent.atomic.AtomicReference;
 
 import javax.measure.Unit;
 
@@ -325,18 +325,49 @@ public abstract class VerisureThingHandler<@NonNull T extends VerisureThingDTO> 
 
     private static final int ALERT_LIMIT_REFRESH_DELAY_SECONDS = 10;
 
-    protected final Object alertLimitLock = new Object();
+    private static final long ALERT_LIMIT_HOLD_NANOS = TimeUnit.SECONDS.toNanos(60);
+
+    private final Object alertLimitLock = new Object();
+
+    private final AtomicReference<@Nullable ChangedAlertLimits> changedAlertLimits = new AtomicReference<>();
+
+    private record ChangedAlertLimits(List<Threshold> thresholds, long time) {
+    }
 
     /**
-     * Changes one alert limit of a device. The caller must hold {@link #alertLimitLock} while it reads the current
-     * limits and calls this method, so that a preceding change is included.
+     * Returns the limits of the last successful change until a poll confirms them, as a poll that was started
+     * before the change still returns the old limits.
      *
-     * @param currentThresholds the current limits of the device
-     * @param updateThresholds stores the limits after a successful change
+     * @param polledThresholds the limits of the last poll
      */
-    protected void changeAlertLimit(List<Threshold> currentThresholds, Consumer<List<Threshold>> updateThresholds,
-            @Nullable String deviceLabel, BigDecimal installationId, String sensorType, boolean isMin,
-            Command command) {
+    protected List<Threshold> getAlertLimits(List<Threshold> polledThresholds) {
+        ChangedAlertLimits changed = changedAlertLimits.get();
+        if (changed == null) {
+            return polledThresholds;
+        }
+        if (changed.thresholds().equals(polledThresholds)
+                || System.nanoTime() - changed.time() > ALERT_LIMIT_HOLD_NANOS) {
+            changedAlertLimits.compareAndSet(changed, null);
+            return polledThresholds;
+        }
+        return changed.thresholds();
+    }
+
+    /**
+     * Changes one alert limit of a device.
+     *
+     * @param polledThresholds the limits of the last poll
+     */
+    protected void changeAlertLimit(List<Threshold> polledThresholds, @Nullable String deviceLabel,
+            BigDecimal installationId, String sensorType, boolean isMin, Command command) {
+        synchronized (alertLimitLock) {
+            sendAlertLimitChange(getAlertLimits(polledThresholds), deviceLabel, installationId, sensorType, isMin,
+                    command);
+        }
+    }
+
+    private void sendAlertLimitChange(List<Threshold> currentThresholds, @Nullable String deviceLabel,
+            BigDecimal installationId, String sensorType, boolean isMin, Command command) {
         VerisureSession session = getSession();
         if (session == null) {
             return;
@@ -383,7 +414,7 @@ public abstract class VerisureThingHandler<@NonNull T extends VerisureThingDTO> 
                 installationId);
         if (httpResultCode == HttpStatus.OK_200) {
             logger.debug("Alert limits successfully changed!");
-            updateThresholds.accept(changedThresholds);
+            changedAlertLimits.set(new ChangedAlertLimits(List.copyOf(changedThresholds), System.nanoTime()));
             scheduleImmediateRefresh(ALERT_LIMIT_REFRESH_DELAY_SECONDS);
         } else {
             logger.warn("Failed to change alert limits, HTTP result code: {}", httpResultCode);
@@ -432,8 +463,8 @@ public abstract class VerisureThingHandler<@NonNull T extends VerisureThingDTO> 
         return value == Math.rint(value) ? (Number) Long.valueOf((long) value) : (Number) Double.valueOf(value);
     }
 
-    protected State getAlertLimit(List<Threshold> thresholds, String sensorType, boolean isMin) {
-        Threshold threshold = findThreshold(thresholds, sensorType);
+    protected State getAlertLimit(List<Threshold> polledThresholds, String sensorType, boolean isMin) {
+        Threshold threshold = findThreshold(getAlertLimits(polledThresholds), sensorType);
         Double value = threshold == null ? null : isMin ? threshold.getMin() : threshold.getMax();
         if (value == null) {
             return UnDefType.UNDEF;
@@ -442,8 +473,8 @@ public abstract class VerisureThingHandler<@NonNull T extends VerisureThingDTO> 
                 : new QuantityType<>(value, Units.PERCENT);
     }
 
-    protected State getAlertLimitEnabled(List<Threshold> thresholds, String sensorType, boolean isMin) {
-        Threshold threshold = findThreshold(thresholds, sensorType);
+    protected State getAlertLimitEnabled(List<Threshold> polledThresholds, String sensorType, boolean isMin) {
+        Threshold threshold = findThreshold(getAlertLimits(polledThresholds), sensorType);
         if (threshold == null) {
             return UnDefType.UNDEF;
         }
