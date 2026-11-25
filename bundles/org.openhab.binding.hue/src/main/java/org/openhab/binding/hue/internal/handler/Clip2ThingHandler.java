@@ -1621,7 +1621,10 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 updateChannelList();
                 updateChannelItemLinksFromLegacy();
                 updateEquipmentTag();
-                serviceContributorsCache.values().stream().filter(r -> Objects.nonNull(r.getZigbeeStatus())).findFirst()
+                serviceContributorsCache.values().stream()
+                        .filter(r -> r.getType() == ResourceType.ZIGBEE_CONNECTIVITY
+                                || r.getType() == ResourceType.ZGP_CONNECTIVITY)
+                        .filter(r -> Objects.nonNull(r.getZigbeeStatus())).findFirst()
                         .ifPresent(this::updateConnectivityState);
                 if (!hasConnectivityIssue) {
                     updateStatus(ThingStatus.ONLINE);
@@ -1637,7 +1640,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 Thread.currentThread().interrupt();
             } catch (RuntimeException e) {
                 logger.warn("{} -> updateDependencies() {}", resourceId, e.getMessage(), e);
-                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.communication-error");
             }
         }
     }
