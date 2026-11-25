@@ -14,7 +14,7 @@
 
   <name>openHAB Add-ons :: Bundles :: Ecovacs Binding</name>
   <properties>
-    <smack.version>4.5.0-rc1</smack.version>
+    <smack.version>4.5.0</smack.version>
   </properties>
 
   <dependencyManagement>
@@ -32,7 +32,7 @@
       <dependency>
         <groupId>org.minidns</groupId>
         <artifactId>minidns-core</artifactId>
-        <version>1.1.1</version>
+        <version>1.1.3</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
