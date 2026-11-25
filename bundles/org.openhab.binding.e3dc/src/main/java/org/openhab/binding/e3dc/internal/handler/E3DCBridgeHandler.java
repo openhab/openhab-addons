@@ -271,6 +271,11 @@ public class E3DCBridgeHandler extends BaseBridgeHandler {
             newClient.connect();
         } catch (RscpException e) {
             newClient.close();
+            pendingClient = null;
+            if (!isActive() || generation != connectionGeneration.get()) {
+                // a dispose closed the socket of this attempt, which is no error of the device
+                return;
+            }
             if (Thread.currentThread().isInterrupted()) {
                 return;
             }

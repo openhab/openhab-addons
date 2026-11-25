@@ -85,13 +85,9 @@ public class RscpClient implements AutoCloseable {
         close();
         logger.debug("Connecting to {}:{} with a timeout of {} ms", host, port, timeoutMillis);
         try {
-            Socket newSocket = new Socket();
-            newSocket.connect(new InetSocketAddress(host, port), timeoutMillis);
-            newSocket.setSoTimeout(timeoutMillis);
-            newSocket.setTcpNoDelay(true);
-            this.socket = newSocket;
-            this.input = newSocket.getInputStream();
-            this.output = newSocket.getOutputStream();
+            Socket opened = openSocket();
+            this.input = opened.getInputStream();
+            this.output = opened.getOutputStream();
             this.cipher = new RscpCipher(key);
         } catch (IOException e) {
             restoreInterrupt(e);
@@ -129,6 +125,32 @@ public class RscpClient implements AutoCloseable {
                     + accessLevel + ". Check the user name and password of the E3/DC account and the RSCP password.");
         }
         logger.debug("Authentication succeeded, the device answered with access level {}", accessLevel);
+    }
+
+    /**
+     * Opens the TCP connection and returns the connected socket. The socket is published in the socket field
+     * before the blocking connect, so a close on another thread closes it and aborts a pending attempt; an
+     * attempt that fails closes its socket before the exception leaves.
+     */
+    private Socket openSocket() throws IOException {
+        Socket attempt = createSocket();
+        // close() from another thread has to reach the socket while the connect is still blocking
+        this.socket = attempt;
+        try {
+            attempt.connect(new InetSocketAddress(host, port), timeoutMillis);
+            attempt.setSoTimeout(timeoutMillis);
+            attempt.setTcpNoDelay(true);
+            return attempt;
+        } catch (IOException e) {
+            // a concurrent close() may already have taken the socket out of the field, so it is closed here as well
+            closeQuietly(attempt);
+            throw e;
+        }
+    }
+
+    /** Creates the socket of a connection attempt; package-private so a test can hand in a socket double. */
+    Socket createSocket() throws IOException {
+        return new Socket();
     }
 
     private static int accessLevelOf(RscpValue response) {
@@ -340,12 +362,16 @@ public class RscpClient implements AutoCloseable {
         output = null;
         cipher = null;
         if (current != null) {
-            try {
-                current.close();
-            } catch (IOException e) {
-                // nothing is left to do for a socket that fails to close, the connection is dropped anyway
-                logger.debug("Closing the connection to {}:{} failed: {}", host, port, e.getMessage());
-            }
+            closeQuietly(current);
+        }
+    }
+
+    private void closeQuietly(Socket toClose) {
+        try {
+            toClose.close();
+        } catch (IOException e) {
+            // nothing is left to do for a socket that fails to close, the connection is dropped anyway
+            logger.debug("Closing the connection to {}:{} failed: {}", host, port, e.getMessage());
         }
     }
 }

@@ -311,17 +311,30 @@ public abstract class E3DCThingHandler extends BaseThingHandler implements E3DCD
      * energy counters follow the scaling the device needs: reported in Wh, divided by a thousand is published in kWh.
      */
     static @Nullable State withUnit(@Nullable State state, @Nullable String acceptedItemType, E3DCChannelSpec spec) {
-        if (!(state instanceof DecimalType decimal) || acceptedItemType == null) {
-            return state;
-        }
-        Unit<?> unit = unitOf(acceptedItemType, spec);
-        return unit != null ? new QuantityType<>(decimal.toBigDecimal(), unit) : state;
+        return withDeviceUnit(state, unitOf(acceptedItemType, spec));
     }
 
-    private static @Nullable Unit<?> unitOf(String acceptedItemType, E3DCChannelSpec spec) {
+    /** The state stated in the given device unit; a channel without a dimension keeps a plain number. */
+    private static @Nullable State withDeviceUnit(@Nullable State state, @Nullable Unit<?> unit) {
+        if (!(state instanceof DecimalType decimal) || unit == null) {
+            return state;
+        }
+        return new QuantityType<>(decimal.toBigDecimal(), unit);
+    }
+
+    private static @Nullable Unit<?> unitOf(@Nullable String acceptedItemType, E3DCChannelSpec spec) {
+        return "Number:Energy".equals(acceptedItemType) && spec.divisor() == 1000 ? Units.KILOWATT_HOUR
+                : deviceUnitOf(acceptedItemType);
+    }
+
+    /** The unit the device states a value of the given item type in, or {@code null} when it carries no dimension. */
+    private static @Nullable Unit<?> deviceUnitOf(@Nullable String acceptedItemType) {
+        if (acceptedItemType == null) {
+            return null;
+        }
         return switch (acceptedItemType) {
             case "Number:Power" -> Units.WATT;
-            case "Number:Energy" -> spec.divisor() == 1000 ? Units.KILOWATT_HOUR : Units.WATT_HOUR;
+            case "Number:Energy" -> Units.WATT_HOUR;
             case "Number:ElectricPotential" -> Units.VOLT;
             case "Number:ElectricCurrent" -> Units.AMPERE;
             case "Number:ElectricCharge" -> Units.AMPERE_HOUR;
@@ -553,7 +566,10 @@ public abstract class E3DCThingHandler extends BaseThingHandler implements E3DCD
         commandQueue.submit(() -> {
             // the channel state is only updated once the device acknowledged the write
             if (commandHandler.execute(bridge, spec, value, deviceIndex)) {
-                State state = publishesWrittenState(channelUID) ? stateFor(value, spec) : null;
+                Channel channel = getThing().getChannel(channelUID);
+                State state = publishesWrittenState(channelUID)
+                        ? stateFor(value, channel != null ? channel.getAcceptedItemType() : null, spec)
+                        : null;
                 if (state != null) {
                     updateState(channelUID, state);
                 }
@@ -562,10 +578,11 @@ public abstract class E3DCThingHandler extends BaseThingHandler implements E3DCD
     }
 
     /**
-     * The item state mirroring the written value. A switch is sent as a number on this interface, so its channel
-     * needs a state the item accepts: a {@code DecimalType} on a Switch item is ignored by the framework.
+     * The item state mirroring the written value, stated in the unit of its channel as the poll publishes it. A
+     * switch is sent as a number on this interface, so its channel needs a state the item accepts: a
+     * {@code DecimalType} on a Switch item is ignored by the framework.
      */
-    private @Nullable State stateFor(RscpValue value, E3DCCommandSpec spec) {
+    private @Nullable State stateFor(RscpValue value, @Nullable String acceptedItemType, E3DCCommandSpec spec) {
         Object raw = value.getValue();
         if (raw instanceof Boolean flag) {
             return flag ? OnOffType.ON : OnOffType.OFF;
@@ -573,7 +590,9 @@ public abstract class E3DCThingHandler extends BaseThingHandler implements E3DCD
         if (spec.switchValue() && raw instanceof Number number) {
             return number.intValue() != 0 ? OnOffType.ON : OnOffType.OFF;
         }
-        return raw instanceof Number number ? decimalState(number.doubleValue()) : null;
+        return raw instanceof Number number
+                ? withDeviceUnit(decimalState(number.doubleValue()), deviceUnitOf(acceptedItemType))
+                : null;
     }
 
     /**

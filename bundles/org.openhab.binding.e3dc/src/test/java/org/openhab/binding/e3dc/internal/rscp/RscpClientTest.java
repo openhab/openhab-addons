@@ -18,10 +18,14 @@ import static org.openhab.binding.e3dc.internal.rscp.FakeRscpDevice.*;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InterruptedIOException;
 import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketAddress;
+import java.net.SocketException;
+import java.net.SocketTimeoutException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
@@ -366,6 +370,55 @@ class RscpClientTest {
         }
     }
 
+    @Test
+    void aFailedConnectionAttemptClosesItsSocket() {
+        FakeSocket socket = new FakeSocket(false);
+        RscpClient client = new RscpClient("127.0.0.1", 1, USER, PASSWORD, RSCP_PASSWORD, 1000) {
+            @Override
+            Socket createSocket() {
+                return socket;
+            }
+        };
+        try {
+            assertThrows(RscpException.class, client::connect);
+            assertTrue(socket.isClosed(), "a failed connection attempt must close its socket");
+        } finally {
+            client.close();
+        }
+    }
+
+    @Test
+    void closingTheClientAbortsAPendingConnectionAttempt() throws Exception {
+        FakeSocket socket = new FakeSocket(true);
+        RscpClient client = new RscpClient("127.0.0.1", 1, USER, PASSWORD, RSCP_PASSWORD, 60_000) {
+            @Override
+            Socket createSocket() {
+                return socket;
+            }
+        };
+        AtomicReference<@Nullable Exception> failure = new AtomicReference<>();
+        Thread connector = new Thread(() -> {
+            try {
+                client.connect();
+            } catch (Exception e) {
+                failure.set(e);
+            }
+        }, "connect-attempt");
+        connector.setDaemon(true);
+        try {
+            connector.start();
+            assertTrue(socket.awaitConnectStarted(), "the connection attempt must have started");
+            client.close();
+            connector.join(10_000);
+            assertFalse(connector.isAlive(), "close() must abort a pending connect instead of leaving it blocked");
+            assertTrue(failure.get() instanceof RscpException,
+                    "the aborted attempt must fail with an RscpException: " + failure.get());
+            assertTrue(socket.isClosed(), "the socket of the aborted attempt must be closed");
+        } finally {
+            client.close();
+        }
+    }
+
     // ------------------------------------------------------------------ helpers
 
     private static byte[] okResponse() {
@@ -382,5 +435,53 @@ class RscpClientTest {
         byte[] child = item(RscpTag.EMS_MAX_CHARGE_POWER, RscpType.INT32.getCode(),
                 ByteBuffer.allocate(4).order(ByteOrder.LITTLE_ENDIAN).putInt(9000).array());
         return frame(item(RscpTag.EMS_GET_POWER_SETTINGS, RscpType.CONTAINER.getCode(), child));
+    }
+
+    /**
+     * A socket double that either fails the connect at once or blocks in it until the client closes the socket,
+     * which is what a real socket's connect does when another thread closes the socket during the connect.
+     */
+    private static class FakeSocket extends Socket {
+
+        private final boolean blockConnect;
+        private final CountDownLatch connectStarted = new CountDownLatch(1);
+        private final CountDownLatch closedWhileConnecting = new CountDownLatch(1);
+        private volatile boolean closed;
+
+        FakeSocket(boolean blockConnect) {
+            this.blockConnect = blockConnect;
+        }
+
+        @Override
+        public void connect(@Nullable SocketAddress endpoint, int timeout) throws IOException {
+            connectStarted.countDown();
+            if (!blockConnect) {
+                throw new SocketTimeoutException("the fake device does not answer");
+            }
+            try {
+                if (!closedWhileConnecting.await(5, TimeUnit.SECONDS)) {
+                    throw new SocketTimeoutException("the client did not close the socket during the connect");
+                }
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                throw new InterruptedIOException("interrupted while connecting");
+            }
+            throw new SocketException("Socket closed");
+        }
+
+        @Override
+        public void close() {
+            closed = true;
+            closedWhileConnecting.countDown();
+        }
+
+        @Override
+        public boolean isClosed() {
+            return closed;
+        }
+
+        boolean awaitConnectStarted() throws InterruptedException {
+            return connectStarted.await(10, TimeUnit.SECONDS);
+        }
     }
 }
