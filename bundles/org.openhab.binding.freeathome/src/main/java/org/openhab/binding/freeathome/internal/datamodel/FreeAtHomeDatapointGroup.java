@@ -47,6 +47,7 @@ public class FreeAtHomeDatapointGroup {
 
     private DatapointGroupDirection datapointGroupDirection;
     private int pairingId;
+    private boolean eventOutput;
 
     private String functionString = "";
     private @Nullable FreeAtHomeDatapoint inputDatapoint;
@@ -112,6 +113,10 @@ public class FreeAtHomeDatapointGroup {
         return resultingDirection != DatapointDirection.UNKNOWN;
     }
 
+    void addEventOutputToGroup(int pairingId, String channelId, JsonObject channel) {
+        eventOutput = addDatapointToGroup(DatapointDirection.OUTPUT, pairingId, channelId, channel);
+    }
+
     boolean addMaskedOutputToGroup(int neededPairingId, int mask, String channelId, JsonObject jsonObjectOfChannel) {
         boolean found = addDatapointToGroup(DatapointDirection.OUTPUT, neededPairingId, channelId, jsonObjectOfChannel);
         if (found) {
@@ -158,6 +163,13 @@ public class FreeAtHomeDatapointGroup {
 
     public @Nullable FreeAtHomeDatapoint getOutputDatapoint() {
         return outputDatapoint;
+    }
+
+    public @Nullable FreeAtHomeDatapoint getRefreshDatapoint() {
+        if (datapointGroupDirection == DatapointGroupDirection.INPUT) {
+            return inputDatapoint;
+        }
+        return eventOutput ? null : outputDatapoint;
     }
 
     public DatapointGroupDirection getDirection() {

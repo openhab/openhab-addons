@@ -248,30 +248,14 @@ public class FreeAtHomeDeviceHandler extends BaseThingHandler implements FreeAtH
 
     private void handleRefreshCommand(FreeAtHomeBridgeHandler freeAtHomeBridge, FreeAtHomeDatapointGroup dpg,
             ChannelUID channelUID) {
-        String valueStr = "0";
-        String channelID = "ch000";
-        String datapointID = "0";
-
-        // Check whether it is a INPUT only datapoint group
-
-        if (dpg.getDirection() == FreeAtHomeDatapointGroup.DatapointGroupDirection.INPUT) {
-            FreeAtHomeDatapoint datapoint = dpg.getInputDatapoint();
-
-            if (datapoint != null) {
-                channelID = datapoint.channelId;
-                datapointID = datapoint.getDatapointId();
-            }
-        } else {
-            FreeAtHomeDatapoint datapoint = dpg.getOutputDatapoint();
-
-            if (datapoint != null) {
-                channelID = datapoint.channelId;
-                datapointID = datapoint.getDatapointId();
-            }
+        FreeAtHomeDatapoint datapoint = dpg.getRefreshDatapoint();
+        if (datapoint == null) {
+            return;
         }
 
         try {
-            valueStr = freeAtHomeBridge.getDatapoint(device.getDeviceId(), channelID, datapointID);
+            String valueStr = freeAtHomeBridge.getDatapoint(device.getDeviceId(), datapoint.channelId,
+                    datapoint.getDatapointId());
 
             ValueStateConverter vsc = dpg.getValueStateConverter();
 
