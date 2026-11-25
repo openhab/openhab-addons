@@ -72,7 +72,7 @@ public final class OobExtension implements ExtensionElement {
     }
 
     @Override
-    public CharSequence toXML(XmlEnvironment xmlEnvironment) {
+    public CharSequence toXML(@Nullable XmlEnvironment xmlEnvironment) {
         XmlStringBuilder xml = new XmlStringBuilder(this);
         xml.rightAngleBracket();
         xml.element("url", url);
@@ -88,8 +88,13 @@ public final class OobExtension implements ExtensionElement {
     public static final class Provider extends ExtensionElementProvider<OobExtension> {
 
         @Override
-        public OobExtension parse(XmlPullParser parser, int initialDepth, XmlEnvironment xmlEnvironment,
-                JxmppContext jxmppContext) throws IOException, XmlPullParserException {
+        public OobExtension parse(@Nullable XmlPullParser parser, int initialDepth,
+                @Nullable XmlEnvironment xmlEnvironment, @Nullable JxmppContext jxmppContext)
+                throws IOException, XmlPullParserException {
+            if (parser == null) {
+                throw new IOException("XML parser must not be null");
+            }
+
             String url = null;
             @Nullable
             String desc = null;
