@@ -385,7 +385,11 @@ public class ShellyManagerPage {
         if (!value.isEmpty()) {
             switch (attribute) {
                 case PROPERTY_FIRMWARE_VERSION:
-                    value = substringBeforeLast(value, "-");
+                    // the handler stores "<version>/<build date>", only the version is shown
+                    int pos = value.indexOf('/');
+                    if (pos >= 0) {
+                        value = value.substring(0, pos);
+                    }
                     break;
                 case PROPERTY_UPDATE_AVAILABLE:
                     value = value.replace(OnOffType.ON.toString(), "yes");
