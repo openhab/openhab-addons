@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.groheondus.internal.discovery;
 
-import static org.openhab.binding.groheondus.internal.GroheOndusBindingConstants.PROPERTY_APPLIANCE_NAME;
 import static org.openhab.binding.groheondus.internal.GroheOndusBindingConstants.THING_TYPE_SENSE;
 import static org.openhab.binding.groheondus.internal.GroheOndusBindingConstants.THING_TYPE_SENSEGUARD;
 
@@ -90,11 +89,10 @@ public class GroheOndusDiscoveryService extends AbstractDiscoveryService {
                 return;
             }
 
-            Map<String, Object> properties = new HashMap<>();
+            Map<String, Object> properties = new HashMap<>(appliance.properties());
             properties.put(PROPERTY_LOCATION_ID, appliance.ref().locationId());
             properties.put(PROPERTY_ROOM_ID, appliance.ref().roomId());
             properties.put(PROPERTY_APPLIANCE_ID, applianceId);
-            properties.put(PROPERTY_APPLIANCE_NAME, appliance.name());
 
             DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
                     .withBridge(bridgeUID).withLabel(appliance.name()).withRepresentationProperty(PROPERTY_APPLIANCE_ID)

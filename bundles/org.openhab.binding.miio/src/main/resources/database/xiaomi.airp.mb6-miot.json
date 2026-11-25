@@ -171,7 +171,7 @@
 						},
 						{
 							"value": "5",
-							"label": "Favorite"
+							"label": "Manual"
 						},
 						{
 							"value": "6",
@@ -191,7 +191,7 @@
 					"Control",
 					"Mode"
 				],
-				"readmeComment": "Value mapping `[\"0\"\u003d\"Auto\",\"3\"\u003d\"Sleep\",\"5\"\u003d\"Favorite\",\"6\"\u003d\"Level\"]`"
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Auto\",\"3\"\u003d\"Sleep\",\"5\"\u003d\"Manual\",\"6\"\u003d\"Level\"]`"
 			},
 			{
 				"property": "fan-level",
@@ -323,7 +323,7 @@
 						},
 						{
 							"value": "4",
-							"label": "Heavy Pollution"
+							"label": "Unhealthy"
 						},
 						{
 							"value": "5",
@@ -337,7 +337,7 @@
 				"tags": [
 					"Status"
 				],
-				"readmeComment": "Value mapping `[\"0\"\u003d\"Excellent\",\"1\"\u003d\"Good\",\"2\"\u003d\"Moderate\",\"3\"\u003d\"Poor\",\"4\"\u003d\"Heavy Pollution\",\"5\"\u003d\"Hazardous\"]`"
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Excellent\",\"1\"\u003d\"Good\",\"2\"\u003d\"Moderate\",\"3\"\u003d\"Poor\",\"4\"\u003d\"Unhealthy\",\"5\"\u003d\"Hazardous\"]`"
 			},
 			{
 				"property": "pm2.5-density",
@@ -598,7 +598,7 @@
 				"property": "fan-level1",
 				"siid": 9,
 				"piid": 1,
-				"friendlyName": "Favorite Mode Level",
+				"friendlyName": "Manual Mode Level",
 				"channel": "favorite_level",
 				"type": "Number",
 				"stateDescription": {
