@@ -19,6 +19,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import org.assertj.core.api.Assertions;
 import org.assertj.core.groups.Tuple;
@@ -122,8 +123,8 @@ class EcowittDataParserTest {
 
     @Test
     void testRegisteredSensors() {
-        Map<SensorGatewayBinding, SensorDevice> sensors = parser.parseSensors(List.of(resource("sensors_page1.json")),
-                false);
+        Map<SensorGatewayBinding, SensorDevice> sensors = Objects
+                .requireNonNull(parser.parseSensors(List.of(resource("sensors_page1.json")), false));
         // the disabled WH34 slot (id FFFFFFFE, idst 0) must be skipped
         Assertions.assertThat(sensors.values())
                 .extracting(device -> device.getSensorGatewayBinding().getSensor().name(), SensorDevice::getId,
@@ -136,13 +137,14 @@ class EcowittDataParserTest {
     void testVoltageSensorBatteryReportedAsLevel() {
         // unlike the binary protocol, where the WH51 battery field is a raw voltage (val * 0.1 V), the Ecowitt HTTP
         // API reports it already as a 0-5 level (5 = full). It must therefore not be misread as 0.5 V and flagged low.
-        Map<SensorGatewayBinding, SensorDevice> sensors = parser.parseSensors(List.of("[{\"img\":\"wh51\","
-                + "\"type\":\"14\",\"name\":\"Soil moisture CH1\",\"id\":\"FBF08\",\"batt\":\"5\",\"rssi\":\"-85\","
-                + "\"signal\":\"4\",\"idst\":\"1\"}]",
+        Map<SensorGatewayBinding, SensorDevice> sensors = Objects.requireNonNull(parser.parseSensors(List.of(
+                "[{\"img\":\"wh51\","
+                        + "\"type\":\"14\",\"name\":\"Soil moisture CH1\",\"id\":\"FBF08\",\"batt\":\"5\",\"rssi\":\"-85\","
+                        + "\"signal\":\"4\",\"idst\":\"1\"}]",
                 "[{\"img\":\"wh85\","
                         + "\"type\":\"49\",\"name\":\"Wind & Rain\",\"id\":\"2C75\",\"batt\":\"5\",\"rssi\":\"-85\","
                         + "\"signal\":\"4\",\"idst\":\"1\"}]"),
-                false);
+                false));
         Assertions.assertThat(sensors.values())
                 .extracting(device -> device.getSensorGatewayBinding().getSensor().name(),
                         device -> device.getBatteryStatus().isLow(), device -> device.getBatteryStatus().getLevel())
@@ -181,8 +183,55 @@ class EcowittDataParserTest {
                 .singleElement().satisfies(value -> Assertions.assertThat(value.getSensor()).isNull());
     }
 
-    private static Map<String, String> stateByChannel(List<MeasuredValue> values) {
-        return values.stream()
+    @Test
+    void unparseableLiveDataIsReportedAsNull() {
+        // an empty list would count as a successful poll and age out every channel
+        Assertions.assertThat(parser.parseLiveData("<html>busy</html>")).isNull();
+        Assertions.assertThat(parser.parseLiveData("[]")).isNull();
+    }
+
+    @Test
+    void malformedLiveDataEntriesAreSkipped() {
+        String json = "{\"common_list\":[\"oops\",{\"id\":\"0x02\",\"val\":null},{\"id\":\"0x02\",\"val\":\"21.0\","
+                + "\"unit\":null}]}";
+        List<MeasuredValue> data = parser.parseLiveData(json);
+        Assertions.assertThat(data).extracting(MeasuredValue::getChannelId).containsExactly("temperature-outdoor");
+    }
+
+    @Test
+    void unparseableSensorPageIsReportedAsNull() {
+        // its sensors would otherwise look unpaired
+        Assertions.assertThat(parser.parseSensors(List.of(resource("sensors_page1.json"), "busy"), false)).isNull();
+        // an entry that cannot be read may be one of the paired sensors, too
+        Assertions.assertThat(parser.parseSensors(List.of("[\"oops\", 1]"), false)).isNull();
+        Assertions.assertThat(parser.parseSensors(List.of("[null]"), false)).isNull();
+        Assertions.assertThat(parser.parseSensors(
+                List.of("[{\"type\":\"14\",\"id\":\"FBF08\",\"signal\":\"4\",\"idst\":\"1\"},{\"id\":\"FBF09\"}]"),
+                false)).isNull();
+        Assertions
+                .assertThat(parser.parseSensors(
+                        List.of("[{\"type\":\"14\",\"id\":\"not-hex\",\"signal\":\"4\",\"idst\":\"1\"}]"), false))
+                .isNull();
+        // a sensor type the binding does not know is no reason to distrust the page
+        Assertions.assertThat(parser.parseSensors(List.of(
+                "[{\"type\":\"14\",\"id\":\"FBF08\",\"signal\":\"4\",\"idst\":\"1\"},{\"type\":\"250\",\"id\":\"1\"}]"),
+                false)).containsOnlyKeys(SensorGatewayBinding.WH51_CH1);
+    }
+
+    @Test
+    void outdoorUnitIsNotGuessedWithoutSystemInfo() {
+        // index 0 is a WH24 or a WH65, depending on the gateway's settings
+        String page = "[{\"type\":\"0\",\"id\":\"C2\",\"batt\":\"0\",\"signal\":\"4\",\"idst\":\"1\"}]";
+        Assertions.assertThat(parser.parseSensors(List.of(page), null)).isNull();
+        Assertions.assertThat(parser.parseSensors(List.of(page), true)).containsOnlyKeys(SensorGatewayBinding.WH24);
+        // without an outdoor unit the setting does not matter
+        Assertions.assertThat(parser.parseSensors(
+                List.of("[{\"type\":\"14\",\"id\":\"FBF08\",\"batt\":\"5\",\"signal\":\"4\",\"idst\":\"1\"}]"), null))
+                .containsOnlyKeys(SensorGatewayBinding.WH51_CH1);
+    }
+
+    private static Map<String, String> stateByChannel(@Nullable List<MeasuredValue> values) {
+        return Objects.requireNonNull(values).stream()
                 .collect(java.util.stream.Collectors.toMap(MeasuredValue::getChannelId, v -> v.getState().toString()));
     }
 

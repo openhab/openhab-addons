@@ -95,13 +95,15 @@ This binding support discovery of Fine Offset gateway devices by sending a broad
 
 ### `gateway` Thing Configuration
 
-| Name             | Type    | Description                                                                                  | Default | Required | Advanced |
-|------------------|---------|----------------------------------------------------------------------------------------------|---------|----------|----------|
-| ip               | text    | The Hostname or IP address of the device                                                     | N/A     | yes      | no       |
-| port             | integer | The network port of the gateway                                                              | 45000   | yes      | no       |
-| protocol         | text    | The protocol to use, see [Protocol](#protocol): `DEFAULT`, `ELV` or `HTTP_ECOWITT`           | DEFAULT | no       | no       |
-| pollingInterval  | integer | Polling period for refreshing the data in seconds                                            | 16      | yes      | yes      |
-| discoverInterval | integer | Interval in seconds to fetch registered sensors, battery status and signal strength          | 900     | yes      | yes      |
+| Name                    | Type    | Description                                                                                   | Default | Required | Advanced |
+|-------------------------|---------|-----------------------------------------------------------------------------------------------|---------|----------|----------|
+| ip                      | text    | The Hostname or IP address of the device                                                      | N/A     | yes      | no       |
+| port                    | integer | The TCP port of the gateway (not used by `HTTP_ECOWITT`, which always uses port 80)           | 45000   | yes      | no       |
+| protocol                | text    | The protocol to use, see [Protocol](#protocol): `DEFAULT`, `ELV` or `HTTP_ECOWITT`            | DEFAULT | no       | no       |
+| pollingInterval         | integer | Polling period for refreshing the data in seconds                                             | 16      | yes      | yes      |
+| discoverInterval        | integer | Interval in seconds to fetch registered sensors, battery status and signal strength           | 900     | yes      | yes      |
+| timeout                 | integer | Seconds to wait for a connection or an answer; increase it for slow Wi-Fi links               | 10      | no       | yes      |
+| failedPollsUntilOffline | integer | Consecutive failed polls before the gateway goes OFFLINE; until then the last values are kept | 3       | no       | yes      |
 
 #### Protocol
 
@@ -112,8 +114,10 @@ This binding support discovery of Fine Offset gateway devices by sending a broad
 | `HTTP_ECOWITT` | The Ecowitt HTTP API (port 80). It reports more data (e.g. the _feels like_ temperature, a piezo _raining_ indicator and solar radiation in W/m²) and is preferred automatically during discovery when the gateway answers `get_version` with `"platform": "ecowitt"`. |
 
 Discovery probes the HTTP API first and falls back to the TCP protocols.
+
 Values reported by the HTTP API in the unit configured on the gateway (e.g. °F, inHg, mph) are normalized to the binding's units, so the channels are identical regardless of the transport or the gateway's display settings.
 A few channels are only available via the HTTP API and therefore only appear on gateways using the `HTTP_ECOWITT` protocol: `temperature-feels-like`, `vapor-pressure-deficit`, `irradiation-solar`, `piezo-rain-state`, `rain-24-hours` and `piezo-rain-24-hours`.
+
 As far as WS85 sensor type and similar models, like WS80 and WH90, the `batteryLevel` channel is only available via the HTTP API.
 
 ### `sensor` Thing Configuration
@@ -193,6 +197,10 @@ Valid sensors:
 ## Channels
 
 ### `gateway` Channels
+
+The channels are created dynamically for the values the gateway reports.
+A channel is removed again when its value has been missing from 60 consecutive polls (e.g. because its sensor was unpaired); the same applies to the measurement channels of a `sensor` Thing, except while the gateway receives no signal from the sensor.
+A failed poll does not count towards this.
 
 | Channel                               | Type                 | Read/Write | Description                                    |
 |---------------------------------------|----------------------|------------|------------------------------------------------|
@@ -337,6 +345,10 @@ Especially the channels `temperature-dew-point` or `temperature-wind-chill` are 
 | batteryLevel   | Number                   | R          | The sensors battery level   |
 | batteryVoltage | Number:ElectricPotential | R          | The sensors battery voltage |
 | lowBattery     | Switch                   | R          | The sensors battery status  |
+
+Only the battery channels the sensor reports a value for are present; which ones depends on the sensor type and on the protocol (e.g. the TCP protocol reports a voltage for a WH51, the HTTP API a level).
+A sensor the gateway receives no signal from is OFFLINE (COMMUNICATION_ERROR), and a sensor no longer paired with the gateway is OFFLINE (GONE).
+Until the gateway has reported the sensor, its status is UNKNOWN.
 
 ## Deprecated channels
 

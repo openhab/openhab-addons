@@ -59,10 +59,10 @@ public class FineOffsetGatewayQueryService extends TcpGatewayQueryService {
     }
 
     @Override
-    public Map<SensorGatewayBinding, SensorDevice> getRegisteredSensors() {
+    public @Nullable Map<SensorGatewayBinding, SensorDevice> getRegisteredSensors() {
         var data = executeCommand(Command.CMD_READ_SENSOR_ID_NEW);
         if (null == data) {
-            return Map.of();
+            return null;
         }
         return fineOffsetDataParser.getRegisteredSensors(data, () -> {
             @Nullable
@@ -115,6 +115,6 @@ public class FineOffsetGatewayQueryService extends TcpGatewayQueryService {
     }
 
     protected byte @Nullable [] executeCommand(Command command) {
-        return executeCommand(command.name(), command.getPayload(), command::isResponseValid);
+        return executeCommand(command.name(), command.getPayload(), command.getSizeBytes(), command::isResponseValid);
     }
 }
