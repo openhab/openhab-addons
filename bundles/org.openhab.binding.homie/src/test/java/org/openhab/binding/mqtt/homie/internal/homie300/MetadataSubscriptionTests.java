@@ -40,6 +40,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.stubbing.Answer;
 import org.openhab.binding.homie.internal.handler.HomieThingHandler;
 import org.openhab.binding.homie.internal.handler.ThingChannelConstants;
+import org.openhab.binding.homie.internal.homie300.DeviceAttributes.ReadyState;
 import org.openhab.binding.mqtt.generic.ChannelState;
 import org.openhab.binding.mqtt.generic.mapping.AbstractMqttAttributeClass;
 import org.openhab.core.io.transport.mqtt.MqttBrokerConnection;
@@ -813,5 +814,64 @@ class MetadataSubscriptionTests {
         assertEquals(Set.of(current), listeners);
         node.stop().get(5, TimeUnit.SECONDS);
         assertTrue(listeners.isEmpty());
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = { "active", "recovering", "stopped" })
+    void queuedDeviceStateEventsKeepTheirOwnValues(String phase) throws Exception {
+        deviceAttributes.nodes = new String[0];
+        AtomicReference<AbstractMqttAttributeClass.AttributeChanged> listener = new AtomicReference<>();
+        doAnswer(invocation -> {
+            listener.set(invocation.getArgument(3));
+            return "recovering".equals(phase)
+                    ? CompletableFuture.failedFuture(new TimeoutException("Device metadata unavailable"))
+                    : CompletableFuture.completedFuture(null);
+        }).when(deviceAttributes).subscribeAndReceive(any(), any(), anyString(), any(), anyInt());
+        List<ReadyState> delivered = new ArrayList<>();
+        doAnswer(invocation -> {
+            delivered.add(invocation.getArgument(0));
+            return null;
+        }).when(callback).readyStateChanged(any());
+        CompletableFuture<@Nullable Void> subscription = device.subscribe(connection, scheduler, 500);
+        if ("recovering".equals(phase)) {
+            assertThrows(ExecutionException.class, () -> subscription.get(5, TimeUnit.SECONDS));
+        } else {
+            subscription.get(5, TimeUnit.SECONDS);
+        }
+        delivered.clear();
+        CountDownLatch entered = new CountDownLatch(1);
+        CountDownLatch release = new CountDownLatch(1);
+        HomieThingHandler handler = mock(HomieThingHandler.class);
+        doAnswer(invocation -> {
+            entered.countDown();
+            assertTrue(release.await(5, TimeUnit.SECONDS), "Device setup was not released");
+            return null;
+        }).when(handler).updateDescription();
+        CompletableFuture<@Nullable Void> setup = CompletableFuture
+                .supplyAsync(() -> device.startChannels(connection, scheduler, 0, handler))
+                .thenCompose(future -> future);
+        try {
+            assertTrue(entered.await(5, TimeUnit.SECONDS), "Device setup did not start");
+            List<ReadyState> sent = List.of(ReadyState.init, ReadyState.disconnected, ReadyState.ready);
+            for (ReadyState state : sent) {
+                deviceAttributes.state = state;
+                listener.get().attributeChanged("state", state, connection, scheduler, true);
+            }
+            CompletableFuture<@Nullable Void> stopped = "stopped".equals(phase) ? device.stop()
+                    : CompletableFuture.completedFuture(null);
+            release.countDown();
+            if ("stopped".equals(phase)) {
+                assertThrows(ExecutionException.class, () -> setup.get(5, TimeUnit.SECONDS));
+                stopped.get(5, TimeUnit.SECONDS);
+                assertTrue(delivered.isEmpty(), "Stopped device callbacks must remain invalidated");
+            } else {
+                setup.get(5, TimeUnit.SECONDS);
+                assertEquals(sent, delivered, "Each queued callback must deliver its captured state");
+                assertEquals(ReadyState.ready, deviceAttributes.state);
+                device.stop().get(5, TimeUnit.SECONDS);
+            }
+        } finally {
+            release.countDown();
+        }
     }
 }

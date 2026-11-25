@@ -27,6 +27,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.homie.internal.HomieBindingConstants;
 import org.openhab.binding.homie.internal.handler.HomieThingHandler;
+import org.openhab.binding.homie.internal.homie300.DeviceAttributes.ReadyState;
 import org.openhab.binding.mqtt.generic.mapping.AbstractMqttAttributeClass;
 import org.openhab.binding.mqtt.generic.tools.ChildMap;
 import org.openhab.core.io.transport.mqtt.MqttBrokerConnection;
@@ -159,13 +160,18 @@ public class Device implements AbstractMqttAttributeClass.AttributeChanged {
 
     private CompletableFuture<@Nullable Void> attributesReceived(DeviceSubscription current,
             MqttBrokerConnection connection, ScheduledExecutorService scheduler, int timeout) {
+        return attributesReceived(current, connection, scheduler, timeout, attributes.state);
+    }
+
+    private CompletableFuture<@Nullable Void> attributesReceived(DeviceSubscription current,
+            MqttBrokerConnection connection, ScheduledExecutorService scheduler, int timeout, ReadyState state) {
         SubscriptionContext context = current.context();
         ChildMap<Node> nodes = current.nodes();
         // Parent metadata is ready before child metadata. Continue processing schema and state updates
         // while the child subscriptions are pending.
         metadataReady = true;
         metadataReconciled = true;
-        callback.readyStateChanged(attributes.state);
+        callback.readyStateChanged(state);
         // ChildMap.apply only subscribes newly discovered children. Existing children also need
         // metadata subscriptions after restoration or a reconnect.
         List<Node> existing = nodes.stream().toList();
@@ -404,13 +410,15 @@ public class Device implements AbstractMqttAttributeClass.AttributeChanged {
         if (!metadataReady || !allMandatoryFieldsReceived) {
             return;
         }
+        // The mapper may already have applied later messages while this callback waited in the queue.
+        ReadyState state = "state".equals(name) ? (ReadyState) value : attributes.state;
         // Special case: Not all fields were known before
         if (!metadataReconciled || !attributes.isComplete()) {
-            attributesReceived(current, connection, scheduler, 500);
+            attributesReceived(current, connection, scheduler, 500, state);
         } else {
             switch (name) {
                 case "state": {
-                    callback.readyStateChanged(attributes.state);
+                    callback.readyStateChanged(state);
                     return;
                 }
                 case "nodes": {
