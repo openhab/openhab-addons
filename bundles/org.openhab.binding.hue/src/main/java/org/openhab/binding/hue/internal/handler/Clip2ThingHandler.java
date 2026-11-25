@@ -1621,6 +1621,8 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 updateChannelList();
                 updateChannelItemLinksFromLegacy();
                 updateEquipmentTag();
+                serviceContributorsCache.values().stream().filter(r -> Objects.nonNull(r.getZigbeeStatus())).findFirst()
+                        .ifPresent(this::updateConnectivityState);
                 if (!hasConnectivityIssue) {
                     updateStatus(ThingStatus.ONLINE);
                 }
@@ -1633,6 +1635,9 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.api2.conf-error.assets-not-loaded");
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
+            } catch (RuntimeException e) {
+                logger.warn("{} -> updateDependencies() {}", resourceId, e.getMessage(), e);
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
             }
         }
     }
@@ -1674,10 +1679,11 @@ public class Clip2ThingHandler extends BaseThingHandler {
         ColorTemperature colorTemperature = resource.getColorTemperature();
         if (colorTemperature != null) {
             MirekSchema mirekSchema = colorTemperature.getMirekSchema();
-            if (mirekSchema != null) {
-                stateDescriptionProvider.setMinMaxKelvin(channelUID, 1000000 / mirekSchema.getMirekMaximum(),
-                        1000000 / mirekSchema.getMirekMinimum());
+            if (mirekSchema == null || mirekSchema.invalid()) {
+                mirekSchema = MirekSchema.DEFAULT_SCHEMA;
             }
+            stateDescriptionProvider.setMinMaxKelvin(channelUID, 1000000 / mirekSchema.getMirekMaximum(),
+                    1000000 / mirekSchema.getMirekMinimum());
         }
     }
 
