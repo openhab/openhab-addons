@@ -16,15 +16,27 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import java.io.File;
+import java.lang.reflect.Field;
 import java.net.URISyntaxException;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.Test;
+import org.openhab.binding.knx.internal.client.NoOpClient;
 import org.openhab.core.OpenHAB;
+import org.openhab.core.config.core.Configuration;
 import org.openhab.core.net.NetworkAddressService;
 import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.ThingStatusInfo;
+import org.openhab.core.thing.ThingUID;
+import org.openhab.core.thing.binding.ThingHandlerCallback;
 
 import io.calimero.secure.KnxSecureException;
 
@@ -96,5 +108,87 @@ class KNXBridgeBaseThingHandlerTest {
             // properties are not persistent, but change may interference with other tests -> restore
             System.setProperties(pBackup);
         }
+    }
+
+    @Test
+    @SuppressWarnings("null")
+    void testInitializeWithoutLocalIpv4RetriesUntilAnAddressAppears() throws Exception {
+        Bridge bridge = routerBridge();
+        NetworkAddressService nas = mock(NetworkAddressService.class);
+        when(nas.getPrimaryIpv4HostAddress()).thenReturn(null);
+        ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
+        IPBridgeThingHandler handler = new IPBridgeThingHandler(bridge, nas);
+        handler.setCallback(callback);
+
+        try {
+            handler.initializeLater(0);
+
+            verify(callback).statusUpdated(bridge, new ThingStatusInfo(ThingStatus.OFFLINE,
+                    ThingStatusDetail.COMMUNICATION_ERROR, "@text/error.knx-no-local-ipv4"));
+            ScheduledFuture<?> retry = (ScheduledFuture<?>) initJob(handler);
+            assertNotNull(retry);
+            assertFalse(retry.isDone());
+            long delay = retry.getDelay(TimeUnit.SECONDS);
+            assertTrue(delay > 0 && delay <= IPBridgeThingHandler.NO_LOCAL_IP_RETRY_SECONDS);
+
+            // what the retry runs once the address is there
+            retry.cancel(false);
+            when(nas.getPrimaryIpv4HostAddress()).thenReturn("127.0.0.1");
+            handler.initializeLater(0);
+
+            verify(nas, times(2)).getPrimaryIpv4HostAddress();
+            verify(callback).statusUpdated(bridge,
+                    new ThingStatusInfo(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, null));
+        } finally {
+            handler.dispose();
+        }
+    }
+
+    @Test
+    void testDisposeDuringAddressLookupSchedulesNoRetry() throws Exception {
+        IPBridgeThingHandler handler = disposedDuringAddressLookup(null);
+
+        assertNull(initJob(handler));
+    }
+
+    @Test
+    void testDisposeDuringAddressLookupStartsNoClient() throws Exception {
+        IPBridgeThingHandler handler = disposedDuringAddressLookup("127.0.0.1");
+
+        assertInstanceOf(NoOpClient.class, handler.getClient());
+        assertNull(initJob(handler));
+    }
+
+    // the bridge is removed while initializeLater() is still waiting for the local address
+    @SuppressWarnings("null")
+    private static IPBridgeThingHandler disposedDuringAddressLookup(@Nullable String address) {
+        NetworkAddressService nas = mock(NetworkAddressService.class);
+        IPBridgeThingHandler handler = new IPBridgeThingHandler(routerBridge(), nas);
+        handler.setCallback(mock(ThingHandlerCallback.class));
+        when(nas.getPrimaryIpv4HostAddress()).thenAnswer(invocation -> {
+            handler.dispose();
+            return address;
+        });
+
+        handler.initializeLater(0);
+
+        verify(nas).getPrimaryIpv4HostAddress();
+        return handler;
+    }
+
+    @SuppressWarnings("null")
+    private static Bridge routerBridge() {
+        Bridge bridge = mock(Bridge.class);
+        when(bridge.getUID()).thenReturn(new ThingUID("knx:ip:test"));
+        // loopback only, so the test never reaches the LAN; autoReconnectPeriod 0 must not stop the retry
+        when(bridge.getConfiguration()).thenReturn(
+                new Configuration(Map.of("type", "ROUTER", "ipAddress", "224.0.23.12", "autoReconnectPeriod", 0)));
+        return bridge;
+    }
+
+    private static @Nullable Object initJob(IPBridgeThingHandler handler) throws ReflectiveOperationException {
+        Field field = IPBridgeThingHandler.class.getDeclaredField("initJob");
+        field.setAccessible(true);
+        return field.get(handler);
     }
 }

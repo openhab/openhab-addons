@@ -10,6 +10,7 @@
 /bundles/org.openhab.automation.jsscripting/ @jpg0 @florian-h05
 /bundles/org.openhab.automation.jsscriptingnashorn/ @wborn
 /bundles/org.openhab.automation.jythonscripting/ @HolgerHees
+/bundles/org.openhab.automation.optimalwindow/ @tl-photography
 /bundles/org.openhab.automation.pidcontroller/ @fwolter
 /bundles/org.openhab.automation.pwm/ @fwolter
 /bundles/org.openhab.automation.pythonscripting/ @HolgerHees
@@ -290,6 +291,7 @@
 /bundles/org.openhab.binding.mynice/ @clinique
 /bundles/org.openhab.binding.mystrom/ @pail23
 /bundles/org.openhab.binding.myuplink/ @alexf2015
+/bundles/org.openhab.binding.myvaillant/ @Owlbertz
 /bundles/org.openhab.binding.nanoleaf/ @stefan-hoehn
 /bundles/org.openhab.binding.neato/ @jjlauterbach
 /bundles/org.openhab.binding.neeo/ @morph166955
