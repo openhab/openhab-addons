@@ -53,10 +53,10 @@ import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSe
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor.ShellyExtVoltage;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor.ShellyExtVoltage.ShellyShortVoltage;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyThermnostat;
-import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusLight;
-import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2RGBCCTStatus;
-import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2RGBWStatus;
-import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatusLora;
+import org.openhab.binding.shelly.internal.api2.dto.ShellyLightJsonDTO.Shelly2DeviceStatusLight;
+import org.openhab.binding.shelly.internal.api2.dto.ShellyLightJsonDTO.Shelly2RGBCCTStatus;
+import org.openhab.binding.shelly.internal.api2.dto.ShellyLightJsonDTO.Shelly2RGBWStatus;
+import org.openhab.binding.shelly.internal.api2.dto.ShellyLoraJsonDTO.Shelly2DeviceStatusLora;
 import org.openhab.binding.shelly.internal.handler.LightModelAccessor.LightModels;
 import org.openhab.binding.shelly.internal.handler.ShellyLightModel.Mode;
 import org.openhab.binding.shelly.internal.handler.component.ShellyComponentBattery;
@@ -120,8 +120,9 @@ public class ShellyComponents {
         }
         updateWakeupPeriod(thingHandler);
 
-        Integer rssi = getInteger(status.wifiSta.rssi);
-        thingHandler.updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_RSSI, mapSignalStrength(rssi));
+        Integer rssi = status.wifiSta.rssi;
+        thingHandler.updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_RSSI,
+                rssi != null ? mapSignalStrength(rssi) : UnDefType.UNDEF);
         if (status.tmp != null && getBool(status.tmp.isValid) && !thingHandler.getProfile().isSensor
                 && status.tmp.tC != SHELLY_API_INVTEMP) {
             thingHandler.updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_ITEMP,

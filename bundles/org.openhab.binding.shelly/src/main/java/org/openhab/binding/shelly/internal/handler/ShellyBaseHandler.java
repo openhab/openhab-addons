@@ -53,9 +53,9 @@ import org.openhab.binding.shelly.internal.api1.Shelly1CoapJSonDTO;
 import org.openhab.binding.shelly.internal.api1.Shelly1CoapServer;
 import org.openhab.binding.shelly.internal.api1.Shelly1HttpApi;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO;
-import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2APClientList.Shelly2APClient;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiRpc;
 import org.openhab.binding.shelly.internal.api2.ShellyBluApi;
+import org.openhab.binding.shelly.internal.api2.dto.Shelly2ConfigJsonDTO.Shelly2APClientList.Shelly2APClient;
 import org.openhab.binding.shelly.internal.config.ShellyApiConfiguration;
 import org.openhab.binding.shelly.internal.config.ShellyBindingRuntimeConfig;
 import org.openhab.binding.shelly.internal.config.ShellyThingConfiguration;
@@ -859,8 +859,9 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
     }
 
     private void checkRangeExtender(ShellyDeviceProfile prf) {
-        if (getBool(prf.settings.rangeExtender) && apiConfig.getEnableRangeExtender()
-                && prf.status.rangeExtender != null && prf.status.rangeExtender.apClients != null) {
+        var apClientList = prf.status.rangeExtender;
+        List<Shelly2APClient> apClients = apClientList != null ? apClientList.apClients : null;
+        if (getBool(prf.settings.rangeExtender) && apiConfig.getEnableRangeExtender() && apClients != null) {
             InetAddress inetAddr = apiConfig.getDeviceIpAddress();
             if (inetAddr == null) {
                 if (logger.isDebugEnabled()) {
@@ -868,9 +869,14 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
                 }
             } else {
                 String ipAddr = inetAddr.getHostAddress();
-                for (Shelly2APClient client : profile.status.rangeExtender.apClients) {
-                    String secondaryIp = ipAddr + ":" + client.mport.toString();
-                    String name = SERVICE_NAME_SHELLYPLUSRANGE_PREFIX + "-" + client.mac.replaceAll(":", "");
+                for (Shelly2APClient client : apClients) {
+                    Integer mport = client.mport;
+                    String mac = client.mac;
+                    if (mport == null || mac == null) {
+                        continue;
+                    }
+                    String secondaryIp = ipAddr + ":" + mport;
+                    String name = SERVICE_NAME_SHELLYPLUSRANGE_PREFIX + "-" + mac.replaceAll(":", "");
                     DiscoveryResult result = ShellyBasicDiscoveryService.createResult(true, name, secondaryIp,
                             bindingConfig, httpClient, messages, thingTable);
                     if (result != null) {

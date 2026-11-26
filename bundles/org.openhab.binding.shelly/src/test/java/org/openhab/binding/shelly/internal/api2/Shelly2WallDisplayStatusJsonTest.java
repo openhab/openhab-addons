@@ -23,9 +23,10 @@ import java.util.List;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.shelly.internal.api.ShellyApiException;
-import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult;
-import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2DeviceStatusPower;
-import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusSys;
+import org.openhab.binding.shelly.internal.api2.dto.Shelly2StatusJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult;
+import org.openhab.binding.shelly.internal.api2.dto.Shelly2StatusJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2DeviceStatusPower;
+import org.openhab.binding.shelly.internal.api2.dto.Shelly2StatusJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2DeviceStatusPower.Shelly2DeviceStatusBattery;
+import org.openhab.binding.shelly.internal.api2.dto.Shelly2StatusJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusSys;
 import org.openhab.binding.shelly.internal.api2.dto.ShellyMediaJsonDTO.Shelly2DeviceStatusMedia;
 import org.openhab.binding.shelly.internal.api2.dto.ShellyMediaJsonDTO.Shelly2DeviceStatusMedia.Shelly2DeviceStatusMediaPlayback;
 import org.openhab.binding.shelly.internal.api2.dto.ShellyMediaJsonDTO.Shelly2DeviceStatusMedia.Shelly2DeviceStatusMediaPlayback.Shelly2DeviceStatusMediaMeta;
@@ -79,8 +80,9 @@ public class Shelly2WallDisplayStatusJsonTest {
 
         Shelly2DeviceStatusPower power1 = status.devicepower1;
         assertNotNull(power1);
-        assertNotNull(power1.battery);
-        assertThat(power1.battery.percent, is(equalTo(99.0)));
+        Shelly2DeviceStatusBattery battery = power1.battery;
+        assertNotNull(battery);
+        assertThat(battery.percent, is(equalTo(99.0)));
 
         Shelly2DeviceStatusMedia media = status.media;
         assertNotNull(media);

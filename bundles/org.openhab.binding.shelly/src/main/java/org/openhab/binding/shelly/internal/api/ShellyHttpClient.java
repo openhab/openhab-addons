@@ -224,11 +224,15 @@ public class ShellyHttpClient {
                     // keep the HTTP status and auth header handling below instead of failing on the body
                     logger.debug("{}: Unable to parse error response: {}", thingName, e.getMessage());
                 }
-                if (message != null && message.error != null) {
-                    builder.httpCode(message.error.code);
-                    builder.response(message.error.message);
-                    if (getInteger(message.error.code) == HttpStatus.UNAUTHORIZED_401) {
-                        builder.authChallenge(getString(message.error.message).replaceAll("\\\"", "\""));
+                var error = message != null ? message.error : null;
+                if (error != null) {
+                    Integer code = error.code;
+                    if (code != null) {
+                        builder.httpCode(code);
+                    }
+                    builder.response(error.message);
+                    if (getInteger(error.code) == HttpStatus.UNAUTHORIZED_401) {
+                        builder.authChallenge(getString(error.message).replaceAll("\\\"", "\""));
                     }
                 }
             }
