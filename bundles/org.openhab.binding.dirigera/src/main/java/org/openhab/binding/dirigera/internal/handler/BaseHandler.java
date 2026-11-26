@@ -18,11 +18,11 @@ import static org.openhab.binding.dirigera.internal.interfaces.Model.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -606,7 +606,7 @@ public class BaseHandler extends BaseThingHandler implements BaseDevice, DebugHa
     }
 
     private Map<String, State> initializeCache(Map<String, String> mapping) {
-        final Map<String, State> stateMap = new HashMap<>();
+        final Map<String, State> stateMap = new ConcurrentHashMap<>();
         mapping.forEach((key, value) -> {
             stateMap.put(key, UnDefType.UNDEF);
         });
