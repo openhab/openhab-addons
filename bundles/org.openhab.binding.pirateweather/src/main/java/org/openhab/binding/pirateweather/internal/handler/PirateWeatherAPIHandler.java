@@ -58,7 +58,7 @@ public class PirateWeatherAPIHandler extends BaseBridgeHandler {
     private static final long INITIAL_DELAY_IN_SECONDS = 15;
 
     private @Nullable ScheduledFuture<?> refreshJob;
-    private @Nullable PirateWeatherConnection connection;
+    private volatile @Nullable PirateWeatherConnection connection;
     private @Nullable PirateWeatherAPIConfiguration config;
 
     private final HttpClient httpClient;
@@ -102,25 +102,28 @@ public class PirateWeatherAPIHandler extends BaseBridgeHandler {
         }
 
         updateStatus(ThingStatus.UNKNOWN);
-        connection = new PirateWeatherConnection(config, httpClient);
+        PirateWeatherConnection connection = new PirateWeatherConnection(config, httpClient);
+        this.connection = connection;
 
-        ScheduledFuture<?> localRefreshJob = refreshJob;
-        if (localRefreshJob == null || localRefreshJob.isCancelled()) {
-            logger.debug("Start refresh job at interval {} min.", refreshInterval);
-            refreshJob = scheduler.scheduleWithFixedDelay(this::updateThings, INITIAL_DELAY_IN_SECONDS,
-                    TimeUnit.MINUTES.toSeconds(refreshInterval), TimeUnit.SECONDS);
-        }
+        cancelRefreshJob();
+        logger.debug("Start refresh job at interval {} min.", refreshInterval);
+        refreshJob = scheduler.scheduleWithFixedDelay(() -> refresh(connection), 0,
+                TimeUnit.MINUTES.toSeconds(refreshInterval), TimeUnit.SECONDS);
     }
 
     @Override
     public void dispose() {
         logger.debug("Dispose Pirate Weather API handler '{}'.", getThing().getUID());
+        connection = null;
+        cancelRefreshJob();
+    }
+
+    private void cancelRefreshJob() {
         ScheduledFuture<?> localRefreshJob = refreshJob;
-        if (localRefreshJob != null && !localRefreshJob.isCancelled()) {
+        if (localRefreshJob != null) {
             logger.debug("Stop refresh job.");
-            if (localRefreshJob.cancel(true)) {
-                refreshJob = null;
-            }
+            localRefreshJob.cancel(true);
+            refreshJob = null;
         }
     }
 
@@ -140,6 +143,35 @@ public class PirateWeatherAPIHandler extends BaseBridgeHandler {
                 pirateChildHandler.updateData();
             }
         }, INITIAL_DELAY_IN_SECONDS, TimeUnit.SECONDS);
+    }
+
+    private void refresh(PirateWeatherConnection connection) {
+        if (ThingStatus.ONLINE.equals(getThing().getStatus())) {
+            updateThings();
+        } else if (!ThingStatusDetail.CONFIGURATION_ERROR.equals(getThing().getStatusInfo().getStatusDetail())) {
+            validateConnection(connection);
+        }
+    }
+
+    private void validateConnection(PirateWeatherConnection connection) {
+        try {
+            connection.validateApiKey();
+            if (isActive(connection)) {
+                updateStatus(ThingStatus.ONLINE);
+            }
+        } catch (PirateWeatherConfigurationException e) {
+            if (isActive(connection)) {
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+            }
+        } catch (PirateWeatherCommunicationException e) {
+            if (isActive(connection)) {
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            }
+        }
+    }
+
+    private boolean isActive(PirateWeatherConnection connection) {
+        return connection.equals(this.connection);
     }
 
     private void updateThings() {
@@ -170,13 +202,19 @@ public class PirateWeatherAPIHandler extends BaseBridgeHandler {
 
         try {
             var data = connection.getWeatherData(location);
-            updateStatus(ThingStatus.ONLINE);
+            if (isActive(connection)) {
+                updateStatus(ThingStatus.ONLINE);
+            }
             return data;
         } catch (PirateWeatherConfigurationException e) {
-            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+            if (isActive(connection)) {
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+            }
             throw e;
         } catch (PirateWeatherCommunicationException e) {
-            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            if (isActive(connection)) {
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            }
             throw e;
         }
     }
