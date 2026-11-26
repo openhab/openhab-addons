@@ -16,23 +16,19 @@
 					"options": [
 						{
 							"value": "air-fryer-start-cook",
-							"label": "Air Fryer Start Cook"
+							"label": "Start Cooking"
 						},
 						{
 							"value": "air-fryer-cancel-cooking",
-							"label": "Air Fryer Cancel Cooking"
+							"label": "Cancel Cooking"
 						},
 						{
 							"value": "air-fryer-pause",
-							"label": "Air Fryer Pause"
-						},
-						{
-							"value": "custom-start-cook",
-							"label": "Custom Start Cook"
+							"label": "Pause Cooking"
 						},
 						{
 							"value": "custom-resume-cook",
-							"label": "Custom Resume Cook"
+							"label": "Resume Cooking"
 						}
 					]
 				},
@@ -81,29 +77,6 @@
 					},
 					{
 						"command": "action",
-						"parameterType": "NONE",
-						"parameters": [
-							1,
-							2,
-							3,
-							4,
-							5,
-							6,
-							7.0
-						],
-						"siid": 3,
-						"aiid": 1,
-						"condition": {
-							"name": "matchValue",
-							"parameters": [
-								{
-									"matchValue": "custom-start-cook"
-								}
-							]
-						}
-					},
-					{
-						"command": "action",
 						"parameterType": "EMPTY",
 						"siid": 3,
 						"aiid": 2,
@@ -117,7 +90,23 @@
 						}
 					}
 				],
-				"readmeComment": "Value mapping `[\"air-fryer-start-cook\"\u003d\"Air Fryer Start Cook\",\"air-fryer-cancel-cooking\"\u003d\"Air Fryer Cancel Cooking\",\"air-fryer-pause\"\u003d\"Air Fryer Pause\",\"custom-start-cook\"\u003d\"Custom Start Cook\",\"custom-resume-cook\"\u003d\"Custom Resume Cook\"]`"
+				"readmeComment": "Value mapping `[\"air-fryer-start-cook\"\u003d\"Start Cooking\",\"air-fryer-cancel-cooking\"\u003d\"Cancel Cooking\",\"air-fryer-pause\"\u003d\"Pause Cooking\",\"custom-resume-cook\"\u003d\"Resume Cooking\"]`"
+			},
+			{
+				"property": "",
+				"friendlyName": "Start Cooking With Settings",
+				"channel": "start_cook",
+				"type": "String",
+				"refresh": false,
+				"actions": [
+					{
+						"command": "action",
+						"parameterType": "JSON",
+						"siid": 3,
+						"aiid": 1
+					}
+				],
+				"readmeComment": "Starts cooking with a JSON list of 7 values: recipe id, recipe name, time (minutes), temperature (degrees Celsius), scheduled start time (minutes, 0 starts now), food quantity (0-4), preheat (1 off, 2 on). The recipe id is `M0` for manual cooking, `M1` to `M7` for the device presets or `C` plus the recipeID of a cloud recipe. The recipe name is sent as given, it is not encoded by the binding; the Mi Home app writes each letter, digit and space as its 2-digit hex code. Example manual cooking 15 minutes at 180 degrees: `[\"M0\",\"4d616e75616c\",15,180,0,0,1]`."
 			},
 			{
 				"property": "status",
@@ -131,7 +120,7 @@
 					"options": [
 						{
 							"value": "0",
-							"label": "Shutdown"
+							"label": "Off"
 						},
 						{
 							"value": "1",
@@ -139,11 +128,11 @@
 						},
 						{
 							"value": "2",
-							"label": "Pause"
+							"label": "Paused"
 						},
 						{
 							"value": "3",
-							"label": "Appointment"
+							"label": "Scheduled"
 						},
 						{
 							"value": "4",
@@ -151,23 +140,23 @@
 						},
 						{
 							"value": "5",
-							"label": "Preheat "
+							"label": "Preheating"
 						},
 						{
 							"value": "6",
-							"label": "Cooked"
+							"label": "Cooking Completed"
 						},
 						{
 							"value": "7",
-							"label": "Preheat Finish"
+							"label": "Preheat Completed"
 						},
 						{
 							"value": "8",
-							"label": "Preheat Pause"
+							"label": "Preheat Paused"
 						},
 						{
 							"value": "9",
-							"label": "Pause2"
+							"label": "Paused (Basket Removed)"
 						}
 					]
 				},
@@ -176,7 +165,7 @@
 				"tags": [
 					"Status"
 				],
-				"readmeComment": "Value mapping `[\"0\"\u003d\"Shutdown\",\"1\"\u003d\"Standby\",\"2\"\u003d\"Pause\",\"3\"\u003d\"Appointment\",\"4\"\u003d\"Cooking\",\"5\"\u003d\"Preheat \",\"6\"\u003d\"Cooked\",\"7\"\u003d\"Preheat Finish\",\"8\"\u003d\"Preheat Pause\",\"9\"\u003d\"Pause2\"]`"
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Off\",\"1\"\u003d\"Standby\",\"2\"\u003d\"Paused\",\"3\"\u003d\"Scheduled\",\"4\"\u003d\"Cooking\",\"5\"\u003d\"Preheating\",\"6\"\u003d\"Cooking Completed\",\"7\"\u003d\"Preheat Completed\",\"8\"\u003d\"Preheat Paused\",\"9\"\u003d\"Paused (Basket Removed)\"]`"
 			},
 			{
 				"property": "fault",
@@ -228,12 +217,13 @@
 				"actions": [
 					{
 						"command": "set_properties",
-						"parameterType": "STRING"
+						"parameterType": "NUMBER"
 					}
 				],
 				"category": "time",
 				"tags": [
-					"Setpoint"
+					"Setpoint",
+					"Duration"
 				]
 			},
 			{
@@ -280,7 +270,11 @@
 				},
 				"refresh": true,
 				"actions": [],
-				"category": "time"
+				"category": "time",
+				"tags": [
+					"Status",
+					"Duration"
+				]
 			},
 			{
 				"property": "recipe-id",
@@ -304,19 +298,18 @@
 				"friendlyName": "Custom - Recipe Name",
 				"channel": "recipe_name",
 				"type": "String",
+				"stateDescription": {
+					"readOnly": true
+				},
 				"refresh": true,
-				"actions": [
-					{
-						"command": "set_properties",
-						"parameterType": "STRING"
-					}
-				]
+				"actions": [],
+				"readmeComment": "The name as stored by the device: the Mi Home app writes each letter, digit and space as its 2-digit hex code."
 			},
 			{
 				"property": "work-time",
 				"siid": 3,
 				"piid": 3,
-				"friendlyName": "Custom - Work Time",
+				"friendlyName": "Custom - Cooking Time",
 				"channel": "work_time",
 				"type": "Number:Time",
 				"unit": "minutes",
@@ -330,16 +323,20 @@
 				"actions": [
 					{
 						"command": "set_properties",
-						"parameterType": "STRING"
+						"parameterType": "NUMBER"
 					}
 				],
-				"category": "time"
+				"category": "time",
+				"tags": [
+					"Setpoint",
+					"Duration"
+				]
 			},
 			{
 				"property": "work-temp",
 				"siid": 3,
 				"piid": 4,
-				"friendlyName": "Custom - Work Temp",
+				"friendlyName": "Custom - Cooking Temperature",
 				"channel": "work_temp",
 				"type": "Number:Temperature",
 				"unit": "celsius",
@@ -366,7 +363,7 @@
 				"property": "appoint-time",
 				"siid": 3,
 				"piid": 5,
-				"friendlyName": "Custom - Appoint Time",
+				"friendlyName": "Custom - Scheduled Start Time",
 				"channel": "appoint_time",
 				"type": "Number:Time",
 				"unit": "minutes",
@@ -380,8 +377,13 @@
 				"actions": [
 					{
 						"command": "set_properties",
-						"parameterType": "STRING"
+						"parameterType": "NUMBER"
 					}
+				],
+				"category": "time",
+				"tags": [
+					"Setpoint",
+					"Duration"
 				]
 			},
 			{
@@ -395,23 +397,23 @@
 					"options": [
 						{
 							"value": "0",
-							"label": "Null"
+							"label": "None"
 						},
 						{
 							"value": "1",
-							"label": "Single"
+							"label": "Single Layer"
 						},
 						{
 							"value": "2",
-							"label": "Double"
+							"label": "Double Layer"
 						},
 						{
 							"value": "3",
-							"label": "Half"
+							"label": "Half Pot"
 						},
 						{
 							"value": "4",
-							"label": "Full"
+							"label": "Full Pot"
 						}
 					]
 				},
@@ -422,7 +424,10 @@
 						"parameterType": "NUMBER"
 					}
 				],
-				"readmeComment": "Value mapping `[\"0\"\u003d\"Null\",\"1\"\u003d\"Single\",\"2\"\u003d\"Double\",\"3\"\u003d\"Half\",\"4\"\u003d\"Full\"]`"
+				"tags": [
+					"Control"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"None\",\"1\"\u003d\"Single Layer\",\"2\"\u003d\"Double Layer\",\"3\"\u003d\"Half Pot\",\"4\"\u003d\"Full Pot\"]`"
 			},
 			{
 				"property": "preheat-switch",
@@ -435,7 +440,7 @@
 					"options": [
 						{
 							"value": "0",
-							"label": "Null"
+							"label": "Not Set"
 						},
 						{
 							"value": "1",
@@ -454,13 +459,16 @@
 						"parameterType": "NUMBER"
 					}
 				],
-				"readmeComment": "Value mapping `[\"0\"\u003d\"Null\",\"1\"\u003d\"Off\",\"2\"\u003d\"On\"]`"
+				"tags": [
+					"Control"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Not Set\",\"1\"\u003d\"Off\",\"2\"\u003d\"On\"]`"
 			},
 			{
 				"property": "appoint-time-left",
 				"siid": 3,
 				"piid": 8,
-				"friendlyName": "Custom - Appoint Time Left",
+				"friendlyName": "Custom - Scheduled Start Time Left",
 				"channel": "appoint_time_left",
 				"type": "Number:Time",
 				"unit": "minutes",
@@ -472,7 +480,12 @@
 					"readOnly": true
 				},
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"category": "time",
+				"tags": [
+					"Status",
+					"Duration"
+				]
 			},
 			{
 				"property": "recipe-sync",
@@ -481,34 +494,32 @@
 				"friendlyName": "Custom - Recipe Sync",
 				"channel": "recipe_sync",
 				"type": "String",
+				"stateDescription": {
+					"readOnly": true
+				},
 				"refresh": true,
-				"actions": [
-					{
-						"command": "set_properties",
-						"parameterType": "STRING"
-					}
-				]
+				"actions": []
 			},
 			{
 				"property": "turn-pot",
 				"siid": 3,
 				"piid": 10,
-				"friendlyName": "Custom - Turn Pot",
+				"friendlyName": "Custom - Turn Food Reminder",
 				"channel": "turn_pot",
 				"type": "Number",
 				"stateDescription": {
 					"options": [
 						{
-							"value": "1",
-							"label": "Switch Off"
+							"value": "0",
+							"label": "Reminder On"
 						},
 						{
-							"value": "0",
-							"label": "Not Turn Pot"
+							"value": "1",
+							"label": "Reminder Off"
 						},
 						{
 							"value": "2",
-							"label": "Turn Pot"
+							"label": "Turn Food Now"
 						}
 					]
 				},
@@ -519,7 +530,30 @@
 						"parameterType": "NUMBER"
 					}
 				],
-				"readmeComment": "Value mapping `[\"1\"\u003d\"Switch Off\",\"0\"\u003d\"Not Turn Pot\",\"2\"\u003d\"Turn Pot\"]`"
+				"tags": [
+					"Control"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Reminder On\",\"1\"\u003d\"Reminder Off\",\"2\"\u003d\"Turn Food Now\"]`"
+			},
+			{
+				"property": "",
+				"friendlyName": "Recipes",
+				"channel": "recipes",
+				"type": "String",
+				"stateDescription": {
+					"readOnly": true
+				},
+				"refresh": true,
+				"refreshInterval": -1,
+				"customRefreshCommand": "/v2/recipes/query",
+				"customRefreshParameters": {
+					"vendor": "careli",
+					"deviceType": "fryer",
+					"model": "careli.fryer.maf01"
+				},
+				"transformation": "getJsonElement-recipes[*].{recipeID,recipeName,recipeCommand.cookCommand.time,recipeCommand.cookCommand.temperature,recipeCommand.cookCommand.preHeat,recipeCommand.cookCommand.capacity}",
+				"actions": [],
+				"readmeComment": "List of the Mi Home cloud recipes as JSON, with for each recipe the recipeID, recipeName, time (minutes), temperature (degrees Celsius), preHeat and capacity. Requires the cloud server to be set. The list is read once, send a refresh command to read it again."
 			}
 		],
 		"experimental": true
