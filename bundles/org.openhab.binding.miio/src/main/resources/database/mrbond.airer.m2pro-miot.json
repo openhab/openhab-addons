@@ -1,0 +1,230 @@
+{
+	"deviceMapping": {
+		"id": [
+			"mrbond.airer.m2pro"
+		],
+		"propertyMethod": "get_properties",
+		"maxProperties": 1,
+		"channels": [
+			{
+				"property": "fault",
+				"siid": 2,
+				"piid": 1,
+				"friendlyName": "Fault",
+				"channel": "fault",
+				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "0",
+							"label": "No faults"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "error",
+				"tags": [
+					"Status"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"No faults\"]`"
+			},
+			{
+				"property": "motor-control",
+				"siid": 2,
+				"piid": 2,
+				"friendlyName": "Motor",
+				"channel": "motor_control",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "Pause"
+						},
+						{
+							"value": "1",
+							"label": "Raise"
+						},
+						{
+							"value": "2",
+							"label": "Lower"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "movecontrol",
+				"tags": [
+					"Control"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Pause\",\"1\"\u003d\"Raise\",\"2\"\u003d\"Lower\"]`"
+			},
+			{
+				"property": "current-position",
+				"siid": 2,
+				"piid": 3,
+				"friendlyName": "Airer Location",
+				"channel": "location",
+				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "0",
+							"label": "Normal"
+						},
+						{
+							"value": "1",
+							"label": "Highest"
+						},
+						{
+							"value": "2",
+							"label": "Lowest"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "status",
+				"tags": [
+					"Status",
+					"Position"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Normal\",\"1\"\u003d\"Highest\",\"2\"\u003d\"Lowest\"]`"
+			},
+			{
+				"property": "uv",
+				"siid": 2,
+				"piid": 4,
+				"friendlyName": "Disinfection",
+				"channel": "uv",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFNUMBER"
+					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch"
+				],
+				"readmeComment": "Only available when the airer is at its highest position."
+			},
+			{
+				"property": "uv-left-time",
+				"siid": 2,
+				"piid": 5,
+				"friendlyName": "Disinfection Remaining",
+				"channel": "uv_left_time",
+				"type": "Number:Time",
+				"unit": "minutes",
+				"stateDescription": {
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "time",
+				"tags": [
+					"Measurement",
+					"Duration"
+				]
+			},
+			{
+				"property": "drying-level",
+				"siid": 2,
+				"piid": 6,
+				"friendlyName": "Drying Level",
+				"channel": "drying_level",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "Off"
+						},
+						{
+							"value": "1",
+							"label": "30 minutes"
+						},
+						{
+							"value": "2",
+							"label": "60 minutes"
+						},
+						{
+							"value": "3",
+							"label": "90 minutes"
+						},
+						{
+							"value": "4",
+							"label": "120 minutes"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "heating",
+				"tags": [
+					"Control",
+					"Mode"
+				],
+				"readmeComment": "Only available when the airer is at its highest position."
+			},
+			{
+				"property": "drying-left-time",
+				"siid": 2,
+				"piid": 7,
+				"friendlyName": "Drying Remaining",
+				"channel": "drying_left_time",
+				"type": "Number:Time",
+				"unit": "minutes",
+				"stateDescription": {
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "time",
+				"tags": [
+					"Measurement",
+					"Duration"
+				]
+			},
+			{
+				"property": "on",
+				"siid": 3,
+				"piid": 1,
+				"friendlyName": "Lamp",
+				"channel": "light",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFNUMBER"
+					}
+				],
+				"category": "light",
+				"tags": [
+					"Switch",
+					"Light"
+				]
+			}
+		],
+		"experimental": true
+	}
+}
