@@ -33,8 +33,7 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.types.State;
 
 /**
- * {@link ChannelHelperCapability} give the capability to dispatch incoming data
- * across the channel helpers.
+ * {@link ChannelHelperCapability} give the capability to dispatch incoming data across the channel helpers.
  * This capability is common to all things
  *
  * @author Gaël L'hopital - Initial contribution
@@ -76,8 +75,8 @@ public class ChannelHelperCapability extends Capability {
             }
         });
 
-        // The channel should get triggered at last (after super and sub methods), because this
-        // allows rules to accessthe new updated data from the other channels.
+        // The channel should get triggered at last (after super and sub methods), because this allows rules to access
+        // the new updated data from the other channels.
         // Event is common ancestor to HomeEvent and WebhookEvent
         if (newData instanceof Event event) {
             EventType eventType = event.getEventType();
