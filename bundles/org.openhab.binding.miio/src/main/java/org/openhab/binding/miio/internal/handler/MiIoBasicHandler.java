@@ -569,7 +569,8 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
     /**
      * Parses the command text as the complete input list of a MIoT action, e.g. {@code ["C7795", 11, 180]}.
      *
-     * @return the list, or null when the action is no MIoT action or the text is no JSON list of numbers and texts
+     * @return the list, or null when the action is no MIoT action or the text is no JSON list of numbers, texts and
+     *         booleans
      */
     private @Nullable JsonElement parseActionInput(MiIoDeviceAction action, String text) {
         if (!action.isMiOtAction()) {
@@ -579,8 +580,8 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
         try (JsonReader reader = new JsonReader(new StringReader(text))) {
             reader.setStrictness(Strictness.STRICT);
             JsonElement input = JsonParser.parseReader(reader);
-            if (input.isJsonArray() && reader.peek() == JsonToken.END_DOCUMENT && input.getAsJsonArray().asList()
-                    .stream().allMatch(e -> e.isJsonPrimitive() && !e.getAsJsonPrimitive().isBoolean())) {
+            if (input.isJsonArray() && reader.peek() == JsonToken.END_DOCUMENT
+                    && input.getAsJsonArray().asList().stream().allMatch(JsonElement::isJsonPrimitive)) {
                 return input;
             }
         } catch (JsonParseException | IOException e) {

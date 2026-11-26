@@ -298,21 +298,21 @@ For each action:
 
 ### Parameter Types
 
-| `parameterType`   | Command   | Value                                                                                                                           |
-|-------------------|-----------|---------------------------------------------------------------------------------------------------------------------------------|
-| `ONOFF`           | ON, OFF   | `"on"`, `"off"`                                                                                                                 |
-| `ONOFFBOOL`       | ON, OFF   | `true`, `false`                                                                                                                 |
-| `ONOFFBOOLSTRING` | ON, OFF   | `"true"`, `"false"`                                                                                                             |
-| `ONOFFNUMBER`     | ON, OFF   | `1`, `0`                                                                                                                        |
-| `ONOFFPARA`       | ON, OFF   | No value: `*` in `command` is replaced by `on`/`off`, parameter list empty.                                                     |
-| `NUMBER`          | number    | The number.                                                                                                                     |
-| `STRING`          | text      | The text as typed.                                                                                                              |
-| `COLOR`           | HSB color | RGB integer (`0xRRGGBB`). A number is passed as brightness, ON/OFF as 100/0.                                                    |
-| `EMPTY`           | any       | Command ignored; the `parameters` (or the condition `returnValue`) are sent, for legacy as one nested element `command[[...]]`. |
-| `NONE`            | any       | Value only available for the `condition`, not placed in the `parameters`.                                                       |
-| `UNKNOWN`         | any       | No value for ON/OFF and text. Used by generated placeholder actions that never send.                                            |
-| `CUSTOMSTRING`    | text      | Replaces only the `$value$` token inside its entry (`"color,$value$"` gives `"color,red"`). Otherwise like `STRING`.            |
-| `JSON`            | text      | MIoT actions only: the text as JSON list is the complete `in` list (`["C7795",11,180]`). Other text is not sent.                |
+| `parameterType`   | Command   | Value                                                                                                                                                |
+|-------------------|-----------|------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `ONOFF`           | ON, OFF   | `"on"`, `"off"`                                                                                                                                      |
+| `ONOFFBOOL`       | ON, OFF   | `true`, `false`                                                                                                                                      |
+| `ONOFFBOOLSTRING` | ON, OFF   | `"true"`, `"false"`                                                                                                                                  |
+| `ONOFFNUMBER`     | ON, OFF   | `1`, `0`                                                                                                                                             |
+| `ONOFFPARA`       | ON, OFF   | No value: `*` in `command` is replaced by `on`/`off`, parameter list empty.                                                                          |
+| `NUMBER`          | number    | The number.                                                                                                                                          |
+| `STRING`          | text      | The text as typed.                                                                                                                                   |
+| `COLOR`           | HSB color | RGB integer (`0xRRGGBB`). A number is passed as brightness, ON/OFF as 100/0.                                                                         |
+| `EMPTY`           | any       | Command ignored; the `parameters` (or the condition `returnValue`) are sent, for legacy as one nested element `command[[...]]`.                      |
+| `NONE`            | any       | Value only available for the `condition`, not placed in the `parameters`.                                                                            |
+| `UNKNOWN`         | any       | No value for ON/OFF and text. Used by generated placeholder actions that never send.                                                                 |
+| `CUSTOMSTRING`    | text      | Replaces only the `$value$` token inside its entry (`"color,$value$"` gives `"color,red"`). Otherwise like `STRING`.                                 |
+| `JSON`            | text      | MIoT actions only: the text as JSON list of numbers, texts and booleans is the complete `in` list (`["C7795",11,180,true]`). Other text is not sent. |
 
 - A number or percent command always results in the number, except for `COLOR` and `EMPTY`; ON/OFF are only converted by `ONOFF...` and `COLOR`.
   So a `Switch` or `String` channel with `NUMBER` sends nothing unless a `matchValue` `returnValue` supplies the value.
