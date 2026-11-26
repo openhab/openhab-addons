@@ -23,7 +23,7 @@
 						},
 						{
 							"value": "air-fryer-pause",
-							"label": "Pause"
+							"label": "Pause Cooking"
 						},
 						{
 							"value": "air-fryer-resume-cook",
@@ -90,7 +90,23 @@
 						}
 					}
 				],
-				"readmeComment": "Value mapping `[\"air-fryer-start-cook\"\u003d\"Start Cooking\",\"air-fryer-cancel-cooking\"\u003d\"Cancel Cooking\",\"air-fryer-pause\"\u003d\"Pause\",\"air-fryer-resume-cook\"\u003d\"Resume Cooking\"]`"
+				"readmeComment": "Value mapping `[\"air-fryer-start-cook\"\u003d\"Start Cooking\",\"air-fryer-cancel-cooking\"\u003d\"Cancel Cooking\",\"air-fryer-pause\"\u003d\"Pause Cooking\",\"air-fryer-resume-cook\"\u003d\"Resume Cooking\"]`"
+			},
+			{
+				"property": "",
+				"friendlyName": "Start Cooking With Settings",
+				"channel": "start_cook",
+				"type": "String",
+				"refresh": false,
+				"actions": [
+					{
+						"command": "action",
+						"parameterType": "JSON",
+						"siid": 2,
+						"aiid": 5
+					}
+				],
+				"readmeComment": "Starts cooking with a JSON list of 9 values: time (minutes), temperature (degrees Celsius), keep warm after cooking (true or false), recipe id, recipe name, food quantity (1 single layer, 2 double layer, 3 half, 4 full), texture (0 none, 1 crispy roast, 3 degrease), scheduled start time (minutes, 0 starts now), cooking weight (grams). The recipe id is `M0` for manual cooking, `M1` to `M12` for the device presets or `C` plus the recipeID of a cloud recipe. The Mi Home app always sends `u0064u0065u006du006f` as recipe name. Example manual cooking 15 minutes at 180 degrees: `[15,180,false,\"M0\",\"u0064u0065u006du006f\",1,0,0,500]`."
 			},
 			{
 				"property": "status",
@@ -124,7 +140,7 @@
 						},
 						{
 							"value": "5",
-							"label": "Preheat"
+							"label": "Preheating"
 						},
 						{
 							"value": "6",
@@ -140,7 +156,7 @@
 						},
 						{
 							"value": "9",
-							"label": "Paused To Turn Over Food"
+							"label": "Paused (Basket Removed)"
 						},
 						{
 							"value": "10",
@@ -169,7 +185,7 @@
 				"tags": [
 					"Status"
 				],
-				"readmeComment": "Value mapping `[\"0\"\u003d\"Off\",\"1\"\u003d\"Idle\",\"2\"\u003d\"Paused\",\"3\"\u003d\"Scheduled\",\"4\"\u003d\"Cooking\",\"5\"\u003d\"Preheat\",\"6\"\u003d\"Cooking Completed\",\"7\"\u003d\"Preheat Completed\",\"8\"\u003d\"Preheat Paused\",\"9\"\u003d\"Paused To Turn Over Food\",\"10\"\u003d\"Keep Warm\",\"11\"\u003d\"Keep Warm Paused\",\"12\"\u003d\"Keep Warm Completed\",\"13\"\u003d\"Crispy Roast\",\"14\"\u003d\"Degrease\"]`"
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Off\",\"1\"\u003d\"Idle\",\"2\"\u003d\"Paused\",\"3\"\u003d\"Scheduled\",\"4\"\u003d\"Cooking\",\"5\"\u003d\"Preheating\",\"6\"\u003d\"Cooking Completed\",\"7\"\u003d\"Preheat Completed\",\"8\"\u003d\"Preheat Paused\",\"9\"\u003d\"Paused (Basket Removed)\",\"10\"\u003d\"Keep Warm\",\"11\"\u003d\"Keep Warm Paused\",\"12\"\u003d\"Keep Warm Completed\",\"13\"\u003d\"Crispy Roast\",\"14\"\u003d\"Degrease\"]`"
 			},
 			{
 				"property": "fault",
@@ -225,7 +241,7 @@
 				"actions": [
 					{
 						"command": "set_properties",
-						"parameterType": "STRING"
+						"parameterType": "NUMBER"
 					}
 				],
 				"category": "time",
@@ -288,8 +304,24 @@
 				"property": "auto-keep-warm",
 				"siid": 2,
 				"piid": 6,
-				"friendlyName": "Air Fryer - Auto Keep Warm",
+				"friendlyName": "Air Fryer - Keep Warm Available",
 				"channel": "auto_keep_warm",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [],
+				"tags": [
+					"Status"
+				],
+				"stateDescription": {
+					"readOnly": true
+				}
+			},
+			{
+				"property": "current-keep-warm",
+				"siid": 2,
+				"piid": 7,
+				"friendlyName": "Air Fryer - Keep Warm After Cooking",
+				"channel": "current_keep_warm",
 				"type": "Switch",
 				"refresh": true,
 				"actions": [
@@ -301,24 +333,6 @@
 				"tags": [
 					"Switch",
 					"Enabled"
-				]
-			},
-			{
-				"property": "current-keep-warm",
-				"siid": 2,
-				"piid": 7,
-				"friendlyName": "Air Fryer - Keep Warm",
-				"channel": "current_keep_warm",
-				"type": "Switch",
-				"refresh": true,
-				"actions": [
-					{
-						"command": "set_properties",
-						"parameterType": "ONOFFBOOL"
-					}
-				],
-				"tags": [
-					"Switch"
 				]
 			},
 			{
@@ -382,17 +396,13 @@
 							"value": "0",
 							"label": "Manual"
 						}
-					]
+					],
+					"readOnly": true
 				},
 				"refresh": true,
-				"actions": [
-					{
-						"command": "set_properties",
-						"parameterType": "NUMBER"
-					}
-				],
+				"actions": [],
 				"tags": [
-					"Control",
+					"Status",
 					"Mode"
 				],
 				"readmeComment": "Value mapping `[\"1\"\u003d\"French Fries\",\"2\"\u003d\"Chicken Wing\",\"3\"\u003d\"Steak\",\"4\"\u003d\"Lamb Chops\",\"5\"\u003d\"Fish\",\"6\"\u003d\"Shrimp\",\"7\"\u003d\"Vegetables\",\"8\"\u003d\"Cake\",\"9\"\u003d\"Pizza\",\"10\"\u003d\"Defrost\",\"11\"\u003d\"Dried Fruit\",\"12\"\u003d\"Yogurt\",\"0\"\u003d\"Manual\"]`"
@@ -405,16 +415,13 @@
 				"channel": "preheat",
 				"type": "Switch",
 				"refresh": true,
-				"actions": [
-					{
-						"command": "set_properties",
-						"parameterType": "ONOFFBOOL"
-					}
-				],
+				"actions": [],
 				"tags": [
-					"Switch",
-					"Enabled"
-				]
+					"Status"
+				],
+				"stateDescription": {
+					"readOnly": true
+				}
 			},
 			{
 				"property": "recipe-id",
@@ -439,12 +446,24 @@
 				"channel": "recipe_name",
 				"type": "String",
 				"refresh": true,
-				"actions": [
-					{
-						"command": "set_properties",
-						"parameterType": "STRING"
-					}
-				]
+				"actions": [],
+				"stateDescription": {
+					"readOnly": true
+				},
+				"transformation": "decodeUnicode"
+			},
+			{
+				"property": "recipe-sync",
+				"siid": 2,
+				"piid": 12,
+				"friendlyName": "Air Fryer - Recipe Sync",
+				"channel": "recipe_sync",
+				"type": "String",
+				"stateDescription": {
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": []
 			},
 			{
 				"property": "target-cooking-measure",
@@ -461,7 +480,7 @@
 						},
 						{
 							"value": "1",
-							"label": "One Layer"
+							"label": "Single Layer"
 						},
 						{
 							"value": "2",
@@ -487,13 +506,13 @@
 				"tags": [
 					"Control"
 				],
-				"readmeComment": "Value mapping `[\"0\"\u003d\"None\",\"1\"\u003d\"One Layer\",\"2\"\u003d\"Double Layer\",\"3\"\u003d\"Half Pot\",\"4\"\u003d\"Full Pot\"]`"
+				"readmeComment": "Value mapping `[\"0\"\u003d\"None\",\"1\"\u003d\"Single Layer\",\"2\"\u003d\"Double Layer\",\"3\"\u003d\"Half Pot\",\"4\"\u003d\"Full Pot\"]`"
 			},
 			{
 				"property": "turn-pot",
 				"siid": 2,
 				"piid": 14,
-				"friendlyName": "Air Fryer - Turn Over Food",
+				"friendlyName": "Air Fryer - Turn Food",
 				"channel": "turn_pot",
 				"type": "Number",
 				"stateDescription": {
@@ -501,11 +520,11 @@
 					"options": [
 						{
 							"value": "1",
-							"label": "No Need To Turn Over"
+							"label": "No Action"
 						},
 						{
 							"value": "2",
-							"label": "Turn Over Food"
+							"label": "Turn Food Now"
 						}
 					]
 				},
@@ -514,13 +533,13 @@
 				"tags": [
 					"Status"
 				],
-				"readmeComment": "Value mapping `[\"1\"\u003d\"No Need To Turn Over\",\"2\"\u003d\"Turn Over Food\"]`"
+				"readmeComment": "Value mapping `[\"1\"\u003d\"No Action\",\"2\"\u003d\"Turn Food Now\"]`"
 			},
 			{
 				"property": "turn-pot-config",
 				"siid": 2,
 				"piid": 15,
-				"friendlyName": "Air Fryer - Turn Over Reminder",
+				"friendlyName": "Air Fryer - Turn Food Reminder",
 				"channel": "turn_pot_config",
 				"type": "Switch",
 				"refresh": true,
@@ -579,7 +598,7 @@
 				"property": "reservation-left-time",
 				"siid": 2,
 				"piid": 17,
-				"friendlyName": "Air Fryer - Scheduled Start Left Time",
+				"friendlyName": "Air Fryer - Scheduled Start Time Left",
 				"channel": "reservation_left_time",
 				"type": "Number:Time",
 				"unit": "minutes",
@@ -587,18 +606,14 @@
 					"minimum": 0,
 					"maximum": 2880,
 					"step": 1,
-					"pattern": "%.0f %unit%"
+					"pattern": "%.0f %unit%",
+					"readOnly": true
 				},
 				"refresh": true,
-				"actions": [
-					{
-						"command": "set_properties",
-						"parameterType": "STRING"
-					}
-				],
+				"actions": [],
 				"category": "time",
 				"tags": [
-					"Setpoint",
+					"Status",
 					"Duration"
 				]
 			},
@@ -613,18 +628,38 @@
 					"minimum": 100,
 					"maximum": 1800,
 					"step": 1,
-					"pattern": "%.0f"
+					"pattern": "%.0f g"
 				},
 				"refresh": true,
 				"actions": [
 					{
 						"command": "set_properties",
-						"parameterType": "STRING"
+						"parameterType": "NUMBER"
 					}
 				],
 				"tags": [
 					"Setpoint"
 				]
+			},
+			{
+				"property": "",
+				"friendlyName": "Recipes",
+				"channel": "recipes",
+				"type": "String",
+				"stateDescription": {
+					"readOnly": true
+				},
+				"refresh": true,
+				"refreshInterval": -1,
+				"customRefreshCommand": "/v2/recipes/query",
+				"customRefreshParameters": {
+					"vendor": "careli",
+					"deviceType": "fryer",
+					"model": "careli.fryer.maf10a"
+				},
+				"transformation": "getJsonElement-recipes[*].{recipeID,recipeName,recipeCommand.cookCommand.time,recipeCommand.cookCommand.temperature,recipeCommand.cookCommand.preHeat,recipeCommand.cookCommand.capacity}",
+				"actions": [],
+				"readmeComment": "List of the Mi Home cloud recipes as JSON, with for each recipe the recipeID, recipeName, time (minutes), temperature (degrees Celsius), preHeat and capacity. Requires the cloud server to be set. The list is read once, send a refresh command to read it again."
 			}
 		],
 		"experimental": true
