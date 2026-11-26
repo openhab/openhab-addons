@@ -297,7 +297,11 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
                     }
                     // the value is inside a parameter, e.g. [{"piid": 1, "value": "$value$"}]
                     boolean valueInParameters = false;
-                    if (value != null && value.isJsonPrimitive() && hasNestedValueToken(parameters)) {
+                    if (paramType == CommandParameterType.EMPTY && !action.isMiOtAction() && parameters.size() > 1
+                            && parameters.equals(value)) {
+                        // several parameters are the command parameters, send them as written
+                        valueInParameters = true;
+                    } else if (value != null && value.isJsonPrimitive() && hasNestedValueToken(parameters)) {
                         JsonElement replaced = replaceValueToken(parameters.deepCopy(), value.getAsJsonPrimitive());
                         if (action.isMiOtAction()) {
                             // for an action the parameters are the input list
