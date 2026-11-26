@@ -190,20 +190,20 @@ public abstract class WebhookServlet extends NetatmoServlet {
         });
     }
 
-    public void registerDataListener(CommonInterface handler) {
+    public synchronized void registerDataListener(CommonInterface handler) {
         String id = handler.getId();
         logger.debug("Registering webhook listener for '{}' ({})", handler.getThing().getLabel(), id);
         dataListeners.put(id, handler);
         handler.setPushMode(hooked);
     }
 
-    public void unregisterDataListener(String id) {
+    public synchronized void unregisterDataListener(String id) {
         if (dataListeners.remove(id) instanceof CommonInterface listener) {
             listener.setPushMode(false);
         }
     }
 
-    private void setHooked(boolean hookSet) {
+    private synchronized void setHooked(boolean hookSet) {
         if (hooked != hookSet) {
             hooked = hookSet;
             accountHandler.hookState(hooked);
@@ -211,7 +211,7 @@ public abstract class WebhookServlet extends NetatmoServlet {
         }
     }
 
-    public boolean hookInstalled() {
+    public synchronized boolean hookInstalled() {
         return hooked;
     }
 }

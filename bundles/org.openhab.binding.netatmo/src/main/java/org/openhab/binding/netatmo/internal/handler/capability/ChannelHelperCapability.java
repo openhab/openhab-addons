@@ -23,9 +23,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.data.EventSubType;
 import org.openhab.binding.netatmo.internal.api.data.EventType;
+import org.openhab.binding.netatmo.internal.api.dto.Event;
 import org.openhab.binding.netatmo.internal.api.dto.NAError;
 import org.openhab.binding.netatmo.internal.api.dto.NAThing;
-import org.openhab.binding.netatmo.internal.api.dto.WebhookEvent;
 import org.openhab.binding.netatmo.internal.handler.CommonInterface;
 import org.openhab.binding.netatmo.internal.handler.channelhelper.ChannelHelper;
 import org.openhab.core.config.core.Configuration;
@@ -33,7 +33,8 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.types.State;
 
 /**
- * {@link ChannelHelperCapability} give the capability to dispatch incoming data across the channel helpers.
+ * {@link ChannelHelperCapability} give the capability to dispatch incoming data
+ * across the channel helpers.
  * This capability is common to all things
  *
  * @author Gaël L'hopital - Initial contribution
@@ -75,9 +76,10 @@ public class ChannelHelperCapability extends Capability {
             }
         });
 
-        // The channel should get triggered at last (after super and sub methods), because this allows rules to access
-        // the new updated data from the other channels.
-        if (newData instanceof WebhookEvent event) {
+        // The channel should get triggered at last (after super and sub methods), because this
+        // allows rules to accessthe new updated data from the other channels.
+        // Event is common ancestor to HomeEvent and WebhookEvent
+        if (newData instanceof Event event) {
             EventType eventType = event.getEventType();
             ZonedDateTime localLast = lastEventTime;
             ZonedDateTime eventTime = event.getTime();
@@ -90,7 +92,6 @@ public class ChannelHelperCapability extends Capability {
                 handler.triggerChannel(GROUP_SECURITY_EVENT, CHANNEL_HOME_EVENT, Objects
                         .requireNonNull(event.getSubTypeDescription().map(EventSubType::name).orElse(eventTypeName)));
             }
-
         }
 
         super.afterNewData(newData);
