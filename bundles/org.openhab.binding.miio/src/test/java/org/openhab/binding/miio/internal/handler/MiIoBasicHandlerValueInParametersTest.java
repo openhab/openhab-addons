@@ -309,6 +309,40 @@ public class MiIoBasicHandlerValueInParametersTest {
     }
 
     @Test
+    public void legacyEmptyWithUpToOneParameterIsUnchanged() {
+        handler.loadChannel("\"type\": \"Switch\"", "[{\"command\": \"set_x\", \"parameterType\": \"EMPTY\"}]");
+        assertEquals(List.of("set_x[[]]"), handler.send(OnOffType.ON));
+
+        handler.loadChannel("\"type\": \"Switch\"",
+                "[{\"command\": \"set_x\", \"parameterType\": \"EMPTY\", \"parameters\": [\"a\"]}]");
+        assertEquals(List.of("set_x[[\"a\"]]"), handler.send(OnOffType.ON));
+    }
+
+    @Test
+    public void emptyWithSeveralParametersSendsThemAsWritten() {
+        handler.loadChannel("\"type\": \"Switch\"",
+                "[{\"command\": \"set_x\", \"parameterType\": \"EMPTY\", \"parameters\": [\"a\", 2]}]");
+        assertEquals(List.of("set_x[\"a\",2]"), handler.send(OnOffType.ON));
+
+        handler.loadChannel("\"type\": \"Switch\", \"siid\": 2, \"piid\": 1", """
+                [{"command": "set_properties", "parameterType": "EMPTY", "parameters": [
+                {"did": "a", "siid": 2, "piid": 1, "value": 1}, {"did": "b", "siid": 2, "piid": 2, "value": 0}]}]
+                """);
+        assertEquals(List.of(
+                "set_properties[{\"did\":\"a\",\"siid\":2,\"piid\":1,\"value\":1},{\"did\":\"b\",\"siid\":2,\"piid\":2,\"value\":0}]"),
+                handler.send(OnOffType.ON));
+    }
+
+    @Test
+    public void emptyWithReturnValueIsUnchanged() {
+        handler.loadChannel("\"type\": \"String\"", """
+                [{"command": "set_x", "parameterType": "EMPTY", "parameters": ["a", "b"],
+                "condition": {"name": "matchValue", "parameters": [{"matchValue": "go", "returnValue": 7}]}}]
+                """);
+        assertEquals(List.of("set_x[7,\"b\"]"), handler.send(new StringType("go")));
+    }
+
+    @Test
     public void valueIsInsertedInsideParameterOfLegacyCommand() {
         handler.loadChannel("\"type\": \"Number\"",
                 "[{\"command\": \"set_x\", \"parameterType\": \"NUMBER\", \"parameters\": [\"a\", {\"key\": \"$value$\", \"text\": \"v$value$\"}]}]");
