@@ -337,7 +337,7 @@
 			<point>Control</point>
 			<property>Speed</property>
 		</tags>
-		<state min="-1" max="105" step="1" readOnly="false">
+		<state min="-1" max="108" step="1" readOnly="false">
 			<options>
 				<option value="38">Silent</option>
 				<option value="60">Standard</option>
