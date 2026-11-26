@@ -273,7 +273,7 @@ This will change the communication method and the Mi IO binding can communicate 
 
 # Mi IO Devices
 
-Currently the miio binding supports more than 680 different models.
+Currently the miio binding supports more than 700 different models.
 
 | Device                             | ThingType        | Device Model           | Supported    | Remark     |
 |------------------------------------|------------------|------------------------|--------------|------------|
@@ -405,6 +405,15 @@ Currently the miio binding supports more than 680 different models.
 | HUIZUO Heating Lamp                | miio:basic       | [huayi.light.wyheat](#huayi-light-wyheat) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | HUIZUO ZIWEI Ceiling Lamp          | miio:basic       | [huayi.light.zw131](#huayi-light-zw131) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | MiJia Rice Cooker                  | miio:unsupported | hunmi.cooker.normal3   | No           |            |
+| Hooeasy smart clothes dryer-Simplicity2 | miio:basic       | [hyd.airer.h51a](#hyd-airer-h51a) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Hooeasy smart clothes dryer-UV2    | miio:basic       | [hyd.airer.h51c](#hyd-airer-h51c) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Hooeasy smart clothes dryer        | miio:basic       | [hyd.airer.hx1](#hyd-airer-hx1) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Hooeasy smart clothes dryer        | miio:basic       | [hyd.airer.hx2](#hyd-airer-hx2) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Hooeasy smart clothes dryer        | miio:basic       | [hyd.airer.hx3](#hyd-airer-hx3) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| MI Home smart clothes dryer        | miio:basic       | [hyd.airer.znlyj1](#hyd-airer-znlyj1) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Mijia Smart Clothes Drying Rack    | miio:basic       | [hyd.airer.znlyj2](#hyd-airer-znlyj2) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Mijia Smart Clothes Drying Rack    | miio:basic       | [hyd.airer.znlyj3](#hyd-airer-znlyj3) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Mijia Smart Clothes Drying Rack    | miio:basic       | [hyd.airer.znlyj4](#hyd-airer-znlyj4) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Jinxing Smart Air Conditioner      | miio:unsupported | idelan.aircondition.v1 | No           |            |
 | Mi Robot Vacuum-Mop Pro            | miio:basic       | [ijai.vacuum.v1](#ijai-vacuum-v1) | Experimental | Use the `clean_rooms` channel with comma separated room ids to clean specific rooms. Resetting the map deletes the saved map with its rooms and zones, so it is not offered as an action; send `action{"did":"actions","siid":10,"aiid":10,"in":[]}` on the `actions#commands` channel to do it.<br />Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Mi Robot Vacuum-Mop 2              | miio:basic       | [ijai.vacuum.v2](#ijai-vacuum-v2) | Yes          | Use the `clean_rooms` channel with comma separated room ids to clean specific rooms. The Mi Robot Vacuum-Mop 2 Pro (ijai.vacuum.v3) can stop the map upload to the Xiaomi cloud with the command `set_properties[{"did":"map_uploads","siid":10,"piid":23,"value":1}]` on the `actions#commands` channel (value 0 enables it again). Stopping the map upload deactivates the map functions and clears the map data, so it is not offered as a channel. Resetting the map deletes the saved map with its rooms and zones, so it is not offered as an action either; send `action{"did":"actions","siid":10,"aiid":10,"in":[]}` on the `actions#commands` channel to do it. |
@@ -458,10 +467,26 @@ Currently the miio binding supports more than 680 different models.
 | Mijia Smart Pet Water Dispenser    | miio:basic       | [mmgg.pet_waterer.s3](#mmgg-pet_waterer-s3) | Experimental | Smart mode runs the pump 10 minutes on and 10 minutes off from 08:00 to 21:59, otherwise 10 minutes on and 50 minutes off.<br />Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | XIAOWAN Smart Pet Water Dispenser  | miio:basic       | [mmgg.pet_waterer.s4](#mmgg-pet_waterer-s4) | Experimental | Smart mode runs the pump 10 minutes on and 10 minutes off from 08:00 to 21:59, otherwise 10 minutes on and 50 minutes off.<br />Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Xiaomi Smart Pet Fountain          | miio:basic       | [mmgg.pet_waterer.wi11](#mmgg-pet_waterer-wi11) | Yes          | Smart mode runs the pump 10 minutes on and 10 minutes off from 08:00 to 21:59, otherwise 10 minutes on and 50 minutes off. |
+| MrBond smart clothes dryer         | miio:basic       | [mrbond.airer.c1x](#mrbond-airer-c1x) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | MR.BOND                            | miio:basic       | [mrbond.airer.m0](#mrbond-airer-m0) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | MR.BOND                            | miio:basic       | [mrbond.airer.m1pro](#mrbond-airer-m1pro) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | MR.BOND                            | miio:basic       | [mrbond.airer.m1s](#mrbond-airer-m1s) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | MR.BOND                            | miio:basic       | [mrbond.airer.m1super](#mrbond-airer-m1super) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| MrBond smart clothes dryer         | miio:basic       | [mrbond.airer.m1t](#mrbond-airer-m1t) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| MrBond smart clothes dryer         | miio:basic       | [mrbond.airer.m1tpro](#mrbond-airer-m1tpro) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| MR.BOND                            | miio:basic       | [mrbond.airer.m2](#mrbond-airer-m2) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| MR.BOND                            | miio:basic       | [mrbond.airer.m2pro](#mrbond-airer-m2pro) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| MrBond smart clothes dryer-Simple2 | miio:basic       | [mrbond.airer.m31a](#mrbond-airer-m31a) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| MrBond smart clothes dryer-Simple2 | miio:basic       | [mrbond.airer.m31a2](#mrbond-airer-m31a2) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| MrBond smart clothes dryer-UV2     | miio:basic       | [mrbond.airer.m31c](#mrbond-airer-m31c) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| MrBond smart clothes dryer-UV2     | miio:basic       | [mrbond.airer.m31c2](#mrbond-airer-m31c2) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| MrBond smart clothes dryer-Simple3 | miio:basic       | [mrbond.airer.m33a](#mrbond-airer-m33a) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| MrBond smart clothes dryer-UV3     | miio:basic       | [mrbond.airer.m33c](#mrbond-airer-m33c) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| MrBond smart clothes dryer-LA      | miio:basic       | [mrbond.airer.m50f](#mrbond-airer-m50f) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| MrBond smart clothes dryer-Air Drying | miio:basic       | [mrbond.airer.m53c](#mrbond-airer-m53c) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| MrBond smart clothes dryer-LDAH    | miio:basic       | [mrbond.airer.m53cpr](#mrbond-airer-m53cpr) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| MrBond smart clothes dryer-Drying  | miio:basic       | [mrbond.airer.m53pro](#mrbond-airer-m53pro) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| MrBond smart clothes air dryer Pro | miio:basic       | [mrbond.airer.m65](#mrbond-airer-m65) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | NWT/Widetech Intelligent Dehumidifier 16L | miio:basic       | [nwt.derh.16l](#nwt-derh-16l) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | NWT/Widetech Internet Air Clean Dehumidifier 24L | miio:basic       | [nwt.derh.24wu1](#nwt-derh-24wu1) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | NWT/Widetech Internet Dehumidifier 12L | miio:basic       | [nwt.derh.312en](#nwt-derh-312en) | Experimental | The thing may need to communicate via the cloud, as reported for nwt.derh.330ef.<br />Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
@@ -4702,6 +4727,125 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | brightness                 | Dimmer               | Brightness                               |            |
 | color_temperature          | Number:Temperature   | Color Temperature                        |            |
 
+### Hooeasy smart clothes dryer-Simplicity2 (<a name="hyd-airer-h51a">hyd.airer.h51a</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| fault                      | Number               | Fault                                    | Value mapping `["0"="No faults","1"="Obstruction","2"="Overweight","3"="Overheated motor","4"="Disinfection is prepared","5"="The fan cannot be turned on"]` |
+| motor_control              | Number               | Motor                                    | Value mapping `["0"="Pause","1"="Raise","2"="Lower"]` |
+| status                     | Number               | Status                                   | Value mapping `["0"="Stopped at top","1"="Raising","2"="Lowering","3"="Paused","4"="Stopped at bottom"]` |
+| current_position           | Number:Dimensionless | Current Position                         |            |
+| alarm                      | Switch               | Notification Sound                       |            |
+| target_position            | Number:Dimensionless | Custom Target Position                   | Custom stop position of the rack (Mi Home setting "Set custom target-position"). |
+| light                      | Switch               | Light                                    |            |
+| brightness                 | Dimmer               | Brightness                               |            |
+
+### Hooeasy smart clothes dryer-UV2 (<a name="hyd-airer-h51c">hyd.airer.h51c</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| fault                      | Number               | Fault                                    | Value mapping `["0"="No faults","1"="Obstruction","2"="Overweight","3"="Overheated motor","4"="Disinfection is prepared","5"="The fan cannot be turned on","6"="UV error"]` |
+| motor_control              | Number               | Motor                                    | Value mapping `["0"="Pause","1"="Raise","2"="Lower"]` |
+| status                     | Number               | Status                                   | Value mapping `["0"="Stopped at top","1"="Raising","2"="Lowering","3"="Paused","4"="Stopped at bottom"]` |
+| uv                         | Switch               | Disinfection                             |            |
+| uv_left_time               | Number:Time          | Disinfection Remaining                   |            |
+| current_position           | Number:Dimensionless | Current Position                         |            |
+| alarm                      | Switch               | Notification Sound                       |            |
+| target_position            | Number:Dimensionless | Custom Target Position                   | Custom stop position of the rack (Mi Home setting "Set custom target-position"). |
+| light                      | Switch               | Light                                    |            |
+| brightness                 | Dimmer               | Brightness                               |            |
+
+### Hooeasy smart clothes dryer (<a name="hyd-airer-hx1">hyd.airer.hx1</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| fault                      | Number               | Fault                                    | Value mapping `["0"="No faults","1"="Obstruction","2"="Overweight","3"="Overheated motor","4"="Disinfection is prepared","5"="Fan error","6"="UV error"]` |
+| motor_control              | Number               | Motor                                    | Value mapping `["0"="Pause","1"="Raise","2"="Lower"]` |
+| status                     | Number               | Status                                   | Value mapping `["0"="Stopped at top","1"="Raising","2"="Lowering","3"="Paused","4"="Stopped at bottom"]` |
+| uv                         | Switch               | Disinfection                             |            |
+| uv_left_time               | Number:Time          | Disinfection Remaining                   |            |
+| current_position           | Number:Dimensionless | Current Position                         |            |
+| alarm                      | Switch               | Notification Sound                       |            |
+| target_position            | Number:Dimensionless | Custom Target Position                   | Custom stop position of the rack (Mi Home setting "Set custom target-position"). |
+| light                      | Switch               | Light                                    |            |
+
+### Hooeasy smart clothes dryer (<a name="hyd-airer-hx2">hyd.airer.hx2</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| fault                      | Number               | Fault                                    | Value mapping `["0"="No faults","1"="Obstruction","2"="Overweight","3"="Overheated motor","4"="Disinfection is prepared","5"="Fan error","6"="UV error"]` |
+| motor_control              | Number               | Motor                                    | Value mapping `["0"="Pause","1"="Raise","2"="Lower"]` |
+| status                     | Number               | Status                                   | Value mapping `["0"="Stopped at top","1"="Raising","2"="Lowering","3"="Paused","4"="Stopped at bottom"]` |
+| dryer                      | Number               | Drying Mode                              | Value mapping `["0"="Off","1"="Air Drying"]` |
+| drying_level               | Number               | Drying Level                             | Value mapping `["0"="Off","1"="30 minutes","2"="60 minutes","3"="90 minutes","4"="120 minutes"]` |
+| drying_left_time           | Number:Time          | Drying Remaining                         |            |
+| air_drying                 | Number               | Air Drying                               | Write only, the running drying is shown by the dryer and drying_level channels. |
+| uv                         | Switch               | Disinfection                             |            |
+| uv_left_time               | Number:Time          | Disinfection Remaining                   |            |
+| current_position           | Number:Dimensionless | Current Position                         |            |
+| alarm                      | Switch               | Notification Sound                       |            |
+| target_position            | Number:Dimensionless | Custom Target Position                   | Custom stop position of the rack (Mi Home setting "Set custom target-position"). |
+| light                      | Switch               | Light                                    |            |
+
+### Hooeasy smart clothes dryer (<a name="hyd-airer-hx3">hyd.airer.hx3</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| fault                      | Number               | Fault                                    | Value mapping `["0"="No faults","1"="Obstruction","2"="Overweight","3"="Overheated motor","4"="Disinfection is prepared","5"="Fan error","6"="UV error"]` |
+| motor_control              | Number               | Motor                                    | Value mapping `["0"="Pause","1"="Raise","2"="Lower"]` |
+| status                     | Number               | Status                                   | Value mapping `["0"="Stopped at top","1"="Raising","2"="Lowering","3"="Paused","4"="Stopped at bottom"]` |
+| dryer                      | Number               | Drying Mode                              | Value mapping `["0"="Off","1"="Air Drying","2"="Hot Air Drying"]` |
+| drying_level               | Number               | Drying Level                             | Value mapping `["0"="Off","1"="30 minutes","2"="60 minutes","3"="90 minutes","4"="120 minutes"]` |
+| drying_left_time           | Number:Time          | Drying Remaining                         |            |
+| air_drying                 | Number               | Air Drying                               | Write only, the running drying is shown by the dryer and drying_level channels. |
+| hot_air_drying             | Number               | Hot Air Drying                           | Write only, the running drying is shown by the dryer and drying_level channels. |
+| uv                         | Switch               | Disinfection                             |            |
+| uv_left_time               | Number:Time          | Disinfection Remaining                   |            |
+| current_position           | Number:Dimensionless | Current Position                         |            |
+| alarm                      | Switch               | Notification Sound                       |            |
+| target_position            | Number:Dimensionless | Custom Target Position                   | Custom stop position of the rack (Mi Home setting "Set custom target-position"). |
+| light                      | Switch               | Light                                    |            |
+
+### MI Home smart clothes dryer (<a name="hyd-airer-znlyj1">hyd.airer.znlyj1</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| fault                      | Number               | Fault                                    | Value mapping `["0"="No faults","1"="Obstruction","2"="Overweight","3"="Overheated motor"]` |
+| motor_control              | Number               | Motor                                    | Value mapping `["0"="Pause","1"="Raise","2"="Lower"]` |
+| location                   | Number               | Airer Location                           | Value mapping `["0"="Normal","1"="Highest","2"="Lowest"]` |
+| status                     | Number               | Status                                   | Value mapping `["0"="Stopped","1"="Raising","2"="Lowering","3"="Paused"]` |
+| light                      | Switch               | Light                                    |            |
+
+### Mijia Smart Clothes Drying Rack (<a name="hyd-airer-znlyj2">hyd.airer.znlyj2</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| fault                      | Number               | Fault                                    | Value mapping `["0"="No faults","1"="Obstruction","2"="Overweight","3"="Overheated motor"]` |
+| motor_control              | Number               | Motor                                    | Value mapping `["0"="Pause","1"="Raise","2"="Lower"]` |
+| location                   | Number               | Airer Location                           | Value mapping `["0"="Normal","1"="Highest","2"="Lowest"]` |
+| status                     | Number               | Status                                   | Value mapping `["0"="Stopped","1"="Raising","2"="Lowering","3"="Paused"]` |
+| light                      | Switch               | Light                                    |            |
+
+### Mijia Smart Clothes Drying Rack (<a name="hyd-airer-znlyj3">hyd.airer.znlyj3</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| fault                      | Number               | Fault                                    | Value mapping `["0"="No faults","1"="Obstruction","2"="Overweight","3"="Overheated motor"]` |
+| motor_control              | Number               | Motor                                    | Value mapping `["0"="Pause","1"="Raise","2"="Lower"]` |
+| location                   | Number               | Airer Location                           | Value mapping `["0"="Normal","1"="Highest","2"="Lowest"]` |
+| status                     | Number               | Status                                   | Value mapping `["0"="Stopped","1"="Raising","2"="Lowering","3"="Paused"]` |
+| light                      | Switch               | Light                                    |            |
+
+### Mijia Smart Clothes Drying Rack (<a name="hyd-airer-znlyj4">hyd.airer.znlyj4</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| fault                      | Number               | Fault                                    | Value mapping `["0"="No faults","1"="Obstruction","2"="Overweight","3"="Overheated motor"]` |
+| motor_control              | Number               | Motor                                    | Value mapping `["0"="Pause","1"="Raise","2"="Lower"]` |
+| location                   | Number               | Airer Location                           | Value mapping `["0"="Normal","1"="Highest","2"="Lowest"]` |
+| status                     | Number               | Status                                   | Value mapping `["0"="Stopped","1"="Raising","2"="Lowering","3"="Paused"]` |
+| light                      | Switch               | Light                                    |            |
+
 ### Mi Robot Vacuum-Mop Pro (<a name="ijai-vacuum-v1">ijai.vacuum.v1</a>) Channels
 
 | Channel                    | Type                 | Description                              | Comment    |
@@ -5645,12 +5789,26 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | lid_up_flag                | Switch               | Lid Lifted                               |            |
 | reset                      | String               | Reset                                    | Resets the remaining days after replacing the filter or cotton filter, or after cleaning |
 
+### MrBond smart clothes dryer (<a name="mrbond-airer-c1x">mrbond.airer.c1x</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| fault                      | Number               | Fault                                    | Value mapping `["0"="No faults","1"="Obstruction","2"="Overweight","3"="Overheated motor","4"="Disinfection is prepared","5"="The fan cannot be turned on"]` |
+| motor_control              | Number               | Motor                                    | Value mapping `["0"="Pause","1"="Raise","2"="Lower"]` |
+| status                     | Number               | Status                                   | Value mapping `["0"="Stopped at top","1"="Raising","2"="Lowering","3"="Paused","4"="Stopped at bottom"]` |
+| uv                         | Switch               | Disinfection                             | Only available when the airer is at its highest position. |
+| uv_left_time               | Number:Time          | Disinfection Remaining                   |            |
+| current_position           | Number:Dimensionless | Current Position                         |            |
+| alarm                      | Switch               | Notification Sound                       |            |
+| target_position            | Number:Dimensionless | Custom Target Position                   | Custom stop position of the rack (Mi Home setting "Set custom target-position"). |
+| light                      | Switch               | Light                                    |            |
+
 ### MR.BOND (<a name="mrbond-airer-m0">mrbond.airer.m0</a>) Channels
 
 | Channel                    | Type                 | Description                              | Comment    |
 |----------------------------|----------------------|------------------------------------------|------------|
-| led                        | Switch               | LED                                      |            |
-| motor                      | Number               | Motor                                    | Value mapping `["0"="Stop","1"="Rise","2"="Down"]` |
+| led                        | Switch               | Lamp                                     |            |
+| motor                      | Number               | Motor                                    | Value mapping `["0"="Pause","1"="Rise","2"="Down"]` |
 | airer_location             | Number               | Airer Location                           | Value mapping `["0"="Normal","1"="Highest","2"="Lowest"]` |
 
 ### MR.BOND (<a name="mrbond-airer-m1pro">mrbond.airer.m1pro</a>) Channels
@@ -5659,17 +5817,17 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 |----------------------------|----------------------|------------------------------------------|------------|
 | dry                        | Switch               | Dry                                      | Only available when the airer is at its highest position. ON starts the shortest drying cycle (30 minutes), use the drymode channel to select the drying time. The channel is ON for any running drying cycle. |
 | drymode                    | Number               | Dry Mode                                 | Only available when the airer is at its highest position. Write only, the current drying state is shown by the dry channel. Value mapping `["0"="Off","1"="30 minutes","2"="60 minutes","3"="90 minutes","4"="120 minutes"]`. Mode 4 is sent with `set_dryswitch`, like the Mi Home app does. |
-| led                        | Switch               | LED                                      |            |
-| motor                      | Number               | Motor                                    | Value mapping `["0"="Stop","1"="Rise","2"="Down"]` |
-| drytime                    | Number:Time          | Dry Time                                 |            |
+| led                        | Switch               | Lamp                                     |            |
+| motor                      | Number               | Motor                                    | Value mapping `["0"="Pause","1"="Rise","2"="Down"]` |
+| drytime                    | Number:Time          | Dry Remaining                            |            |
 | airer_location             | Number               | Airer Location                           | Value mapping `["0"="Normal","1"="Highest","2"="Lowest"]` |
 
 ### MR.BOND (<a name="mrbond-airer-m1s">mrbond.airer.m1s</a>) Channels
 
 | Channel                    | Type                 | Description                              | Comment    |
 |----------------------------|----------------------|------------------------------------------|------------|
-| led                        | Switch               | LED                                      |            |
-| motor                      | Number               | Motor                                    | Value mapping `["0"="Stop","1"="Rise","2"="Down"]` |
+| led                        | Switch               | Lamp                                     |            |
+| motor                      | Number               | Motor                                    | Value mapping `["0"="Pause","1"="Rise","2"="Down"]` |
 | airer_location             | Number               | Airer Location                           | Value mapping `["0"="Normal","1"="Highest","2"="Lowest"]` |
 
 ### MR.BOND (<a name="mrbond-airer-m1super">mrbond.airer.m1super</a>) Channels
@@ -5678,12 +5836,233 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 |----------------------------|----------------------|------------------------------------------|------------|
 | dry                        | Switch               | Dry                                      | Only available when the airer is at its highest position. ON starts the shortest drying cycle (30 minutes), use the drymode channel to select the drying time. The channel is ON for any running drying cycle. |
 | drymode                    | Number               | Dry Mode                                 | Only available when the airer is at its highest position. Write only, the current drying state is shown by the dry channel. Value mapping `["0"="Off","1"="30 minutes","2"="60 minutes","3"="90 minutes","4"="120 minutes"]`. Mode 4 is sent with `set_dryswitch`, like the Mi Home app does. |
-| led                        | Switch               | LED                                      |            |
-| motor                      | Number               | Motor                                    | Value mapping `["0"="Stop","1"="Rise","2"="Down"]` |
-| drytime                    | Number:Time          | Dry Time                                 |            |
+| led                        | Switch               | Lamp                                     |            |
+| motor                      | Number               | Motor                                    | Value mapping `["0"="Pause","1"="Rise","2"="Down"]` |
+| drytime                    | Number:Time          | Dry Remaining                            |            |
 | airer_location             | Number               | Airer Location                           | Value mapping `["0"="Normal","1"="Highest","2"="Lowest"]` |
 | disinfect                  | Switch               | Disinfect                                | Only available when the airer is at its highest position. |
-| distime                    | Number:Time          | Disinfect Time                           |            |
+| distime                    | Number:Time          | Disinfect Remaining                      |            |
+
+### MrBond smart clothes dryer (<a name="mrbond-airer-m1t">mrbond.airer.m1t</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| fault                      | Number               | Fault                                    | Value mapping `["0"="No faults","1"="Obstruction","2"="Overweight","3"="Overheated motor","4"="Disinfection is prepared","5"="The fan cannot be turned on"]` |
+| motor_control              | Number               | Motor                                    | Value mapping `["0"="Pause","1"="Raise","2"="Lower"]` |
+| status                     | Number               | Status                                   | Value mapping `["0"="Stopped at top","1"="Raising","2"="Lowering","3"="Paused","4"="Stopped at bottom"]` |
+| current_position           | Number:Dimensionless | Current Position                         |            |
+| alarm                      | Switch               | Notification Sound                       |            |
+| target_position            | Number:Dimensionless | Custom Target Position                   | Custom stop position of the rack (Mi Home setting "Set custom target-position"). |
+| light                      | Switch               | Light                                    |            |
+
+### MrBond smart clothes dryer (<a name="mrbond-airer-m1tpro">mrbond.airer.m1tpro</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| fault                      | Number               | Fault                                    | Value mapping `["0"="No faults","1"="Obstruction","2"="Overweight","3"="Overheated motor","4"="Disinfection is prepared","5"="The fan cannot be turned on"]` |
+| motor_control              | Number               | Motor                                    | Value mapping `["0"="Pause","1"="Raise","2"="Lower"]` |
+| status                     | Number               | Status                                   | Value mapping `["0"="Stopped at top","1"="Raising","2"="Lowering","3"="Paused","4"="Stopped at bottom"]` |
+| drying_level               | Number               | Drying Level                             | Only available when the airer is at its highest position. |
+| drying_left_time           | Number:Time          | Drying Remaining                         |            |
+| current_position           | Number:Dimensionless | Current Position                         |            |
+| alarm                      | Switch               | Notification Sound                       |            |
+| target_position            | Number:Dimensionless | Custom Target Position                   | Custom stop position of the rack (Mi Home setting "Set custom target-position"). |
+| light                      | Switch               | Light                                    |            |
+
+### MR.BOND (<a name="mrbond-airer-m2">mrbond.airer.m2</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| fault                      | Number               | Fault                                    | Value mapping `["0"="No faults"]` |
+| motor_control              | Number               | Motor                                    | Value mapping `["0"="Pause","1"="Raise","2"="Lower"]` |
+| location                   | Number               | Airer Location                           | Value mapping `["0"="Normal","1"="Highest","2"="Lowest"]` |
+| uv                         | Switch               | Disinfection                             | Only available when the airer is at its highest position. |
+| uv_left_time               | Number:Time          | Disinfection Remaining                   |            |
+| light                      | Switch               | Lamp                                     |            |
+
+### MR.BOND (<a name="mrbond-airer-m2pro">mrbond.airer.m2pro</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| fault                      | Number               | Fault                                    | Value mapping `["0"="No faults"]` |
+| motor_control              | Number               | Motor                                    | Value mapping `["0"="Pause","1"="Raise","2"="Lower"]` |
+| location                   | Number               | Airer Location                           | Value mapping `["0"="Normal","1"="Highest","2"="Lowest"]` |
+| uv                         | Switch               | Disinfection                             | Only available when the airer is at its highest position. |
+| uv_left_time               | Number:Time          | Disinfection Remaining                   |            |
+| drying_level               | Number               | Drying Level                             | Only available when the airer is at its highest position. |
+| drying_left_time           | Number:Time          | Drying Remaining                         |            |
+| light                      | Switch               | Lamp                                     |            |
+
+### MrBond smart clothes dryer-Simple2 (<a name="mrbond-airer-m31a">mrbond.airer.m31a</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| fault                      | Number               | Fault                                    | Value mapping `["0"="No faults","1"="Obstruction","2"="Overweight","3"="Overheated motor","4"="Disinfection is prepared","5"="The fan cannot be turned on"]` |
+| motor_control              | Number               | Motor                                    | Value mapping `["0"="Pause","1"="Raise","2"="Lower"]` |
+| status                     | Number               | Status                                   | Value mapping `["0"="Stopped at top","1"="Raising","2"="Lowering","3"="Paused","4"="Stopped at bottom"]` |
+| current_position           | Number:Dimensionless | Current Position                         |            |
+| alarm                      | Switch               | Notification Sound                       |            |
+| target_position            | Number:Dimensionless | Custom Target Position                   | Custom stop position of the rack (Mi Home setting "Set custom target-position"). |
+| light                      | Switch               | Light                                    |            |
+| brightness                 | Dimmer               | Brightness                               |            |
+| color_temperature          | Dimmer               | Color Temperature                        |            |
+
+### MrBond smart clothes dryer-Simple2 (<a name="mrbond-airer-m31a2">mrbond.airer.m31a2</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| fault                      | Number               | Fault                                    | Value mapping `["0"="No faults","1"="Obstruction","2"="Overweight","3"="Overheated motor","4"="Disinfection is prepared","5"="The fan cannot be turned on"]` |
+| motor_control              | Number               | Motor                                    | Value mapping `["0"="Pause","1"="Raise","2"="Lower"]` |
+| status                     | Number               | Status                                   | Value mapping `["0"="Stopped at top","1"="Raising","2"="Lowering","3"="Paused","4"="Stopped at bottom"]` |
+| current_position           | Number:Dimensionless | Current Position                         |            |
+| alarm                      | Switch               | Notification Sound                       |            |
+| target_position            | Number:Dimensionless | Custom Target Position                   | Custom stop position of the rack (Mi Home setting "Set custom target-position"). |
+| light                      | Switch               | Light                                    |            |
+| brightness                 | Dimmer               | Brightness                               |            |
+
+### MrBond smart clothes dryer-UV2 (<a name="mrbond-airer-m31c">mrbond.airer.m31c</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| fault                      | Number               | Fault                                    | Value mapping `["0"="No faults","1"="Obstruction","2"="Overweight","3"="Overheated motor","4"="Disinfection is prepared","5"="The fan cannot be turned on"]` |
+| motor_control              | Number               | Motor                                    | Value mapping `["0"="Pause","1"="Raise","2"="Lower"]` |
+| status                     | Number               | Status                                   | Value mapping `["0"="Stopped at top","1"="Raising","2"="Lowering","3"="Paused","4"="Stopped at bottom"]` |
+| uv                         | Switch               | Disinfection                             |            |
+| uv_left_time               | Number:Time          | Disinfection Remaining                   |            |
+| current_position           | Number:Dimensionless | Current Position                         |            |
+| alarm                      | Switch               | Notification Sound                       |            |
+| target_position            | Number:Dimensionless | Custom Target Position                   | Custom stop position of the rack (Mi Home setting "Set custom target-position"). |
+| light                      | Switch               | Light                                    |            |
+| brightness                 | Dimmer               | Brightness                               |            |
+| color_temperature          | Dimmer               | Color Temperature                        |            |
+
+### MrBond smart clothes dryer-UV2 (<a name="mrbond-airer-m31c2">mrbond.airer.m31c2</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| fault                      | Number               | Fault                                    | Value mapping `["0"="No faults","1"="Obstruction","2"="Overweight","3"="Overheated motor","4"="Disinfection is prepared","5"="The fan cannot be turned on","6"="UV error"]` |
+| motor_control              | Number               | Motor                                    | Value mapping `["0"="Pause","1"="Raise","2"="Lower"]` |
+| status                     | Number               | Status                                   | Value mapping `["0"="Stopped at top","1"="Raising","2"="Lowering","3"="Paused","4"="Stopped at bottom"]` |
+| uv                         | Switch               | Disinfection                             |            |
+| uv_left_time               | Number:Time          | Disinfection Remaining                   |            |
+| current_position           | Number:Dimensionless | Current Position                         |            |
+| alarm                      | Switch               | Notification Sound                       |            |
+| target_position            | Number:Dimensionless | Custom Target Position                   | Custom stop position of the rack (Mi Home setting "Set custom target-position"). |
+| light                      | Switch               | Light                                    |            |
+| brightness                 | Dimmer               | Brightness                               |            |
+
+### MrBond smart clothes dryer-Simple3 (<a name="mrbond-airer-m33a">mrbond.airer.m33a</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| fault                      | Number               | Fault                                    | Value mapping `["0"="No faults","1"="Obstruction","2"="Overweight","3"="Overheated motor","4"="Disinfection is prepared","5"="Fan error","6"="UV error"]` |
+| motor_control              | Number               | Motor                                    | Value mapping `["0"="Pause","1"="Raise","2"="Lower"]` |
+| status                     | Number               | Status                                   | Value mapping `["0"="Stopped at top","1"="Raising","2"="Lowering","3"="Paused","4"="Stopped at bottom"]` |
+| current_position           | Number:Dimensionless | Current Position                         |            |
+| alarm                      | Switch               | Notification Sound                       |            |
+| target_position            | Number:Dimensionless | Custom Target Position                   | Custom stop position of the rack (Mi Home setting "Set custom target-position"). |
+| light                      | Switch               | Light                                    |            |
+| brightness                 | Dimmer               | Brightness                               |            |
+| color_temperature          | Dimmer               | Color Temperature                        |            |
+| night_light                | Switch               | Night Light                              | Automatic sensing light, active between the start and end time. |
+| night_light_start_hour     | Number               | Night Light Start Hour                   |            |
+| night_light_start_minute   | Number               | Night Light Start Minute                 |            |
+| night_light_end_hour       | Number               | Night Light End Hour                     |            |
+| night_light_end_minute     | Number               | Night Light End Minute                   |            |
+
+### MrBond smart clothes dryer-UV3 (<a name="mrbond-airer-m33c">mrbond.airer.m33c</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| fault                      | Number               | Fault                                    | Value mapping `["0"="No faults","1"="Obstruction","2"="Overweight","3"="Overheated motor","4"="Disinfection is prepared","5"="Fan error","6"="UV error"]` |
+| motor_control              | Number               | Motor                                    | Value mapping `["0"="Pause","1"="Raise","2"="Lower"]` |
+| status                     | Number               | Status                                   | Value mapping `["0"="Stopped at top","1"="Raising","2"="Lowering","3"="Paused","4"="Stopped at bottom"]` |
+| uv                         | Switch               | Disinfection                             |            |
+| uv_left_time               | Number:Time          | Disinfection Remaining                   |            |
+| current_position           | Number:Dimensionless | Current Position                         |            |
+| alarm                      | Switch               | Notification Sound                       |            |
+| target_position            | Number:Dimensionless | Custom Target Position                   | Custom stop position of the rack (Mi Home setting "Set custom target-position"). |
+| light                      | Switch               | Light                                    |            |
+| brightness                 | Dimmer               | Brightness                               |            |
+| color_temperature          | Dimmer               | Color Temperature                        |            |
+| night_light                | Switch               | Night Light                              | Automatic sensing light, active between the start and end time. |
+| night_light_start_hour     | Number               | Night Light Start Hour                   |            |
+| night_light_start_minute   | Number               | Night Light Start Minute                 |            |
+| night_light_end_hour       | Number               | Night Light End Hour                     |            |
+| night_light_end_minute     | Number               | Night Light End Minute                   |            |
+
+### MrBond smart clothes dryer-LA (<a name="mrbond-airer-m50f">mrbond.airer.m50f</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| fault                      | Number               | Fault                                    | Value mapping `["0"="No faults","1"="Obstruction","2"="Overweight","3"="Overheated motor"]` |
+| motor_control              | Number               | Motor                                    | Value mapping `["0"="Pause","1"="Raise","2"="Lower"]` |
+| status                     | Number               | Status                                   | Value mapping `["0"="Stopped at top","1"="Raising","2"="Lowering","3"="Paused","4"="Stopped at bottom"]` |
+| dryer                      | Number               | Drying Mode                              | Value mapping `["0"="Off","1"="Air Drying"]` |
+| drying_level               | Number               | Drying Level                             | Value mapping `["0"="Off","1"="30 minutes","2"="60 minutes","3"="90 minutes","4"="120 minutes"]` |
+| drying_left_time           | Number:Time          | Drying Remaining                         |            |
+| air_drying                 | Number               | Air Drying                               | Write only, the running drying is shown by the dryer and drying_level channels. |
+| light                      | Switch               | Light                                    |            |
+
+### MrBond smart clothes dryer-Air Drying (<a name="mrbond-airer-m53c">mrbond.airer.m53c</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| fault                      | Number               | Fault                                    | Value mapping `["0"="No faults","1"="Obstruction","2"="Overweight","3"="Overheated motor","4"="Disinfection is prepared","5"="The fan cannot be turned on"]` |
+| motor_control              | Number               | Motor                                    | Value mapping `["0"="Pause","1"="Raise","2"="Lower"]` |
+| status                     | Number               | Status                                   | Value mapping `["0"="Stopped at top","1"="Raising","2"="Lowering","3"="Paused","4"="Stopped at bottom"]` |
+| dryer                      | Number               | Drying Mode                              | Value mapping `["0"="Off","1"="Air Drying"]` |
+| drying_level               | Number               | Drying Level                             | Value mapping `["0"="Off","1"="30 minutes","2"="60 minutes","3"="90 minutes","4"="120 minutes"]` |
+| drying_left_time           | Number:Time          | Drying Remaining                         |            |
+| air_drying                 | Number               | Air Drying                               | Only available when the airer is at its highest position. Write only, the running drying is shown by the dryer and drying_level channels. |
+| light                      | Switch               | Light                                    |            |
+
+### MrBond smart clothes dryer-LDAH (<a name="mrbond-airer-m53cpr">mrbond.airer.m53cpr</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| fault                      | Number               | Fault                                    | Value mapping `["0"="No faults","1"="Obstruction","2"="Overweight","3"="Overheated motor"]` |
+| motor_control              | Number               | Motor                                    | Value mapping `["0"="Pause","1"="Raise","2"="Lower"]` |
+| status                     | Number               | Status                                   | Value mapping `["0"="Stopped at top","1"="Raising","2"="Lowering","3"="Paused","4"="Stopped at bottom"]` |
+| dryer                      | Number               | Drying Mode                              | Value mapping `["0"="Off","1"="Air Drying","2"="Hot Air Drying"]` |
+| drying_level               | Number               | Drying Level                             | Value mapping `["0"="Off","1"="30 minutes","2"="60 minutes","3"="90 minutes","4"="120 minutes"]` |
+| drying_left_time           | Number:Time          | Drying Remaining                         |            |
+| air_drying                 | Number               | Air Drying                               | Write only, the running drying is shown by the dryer and drying_level channels. |
+| hot_air_drying             | Number               | Hot Air Drying                           | Only available when the airer is at its highest position. Write only, the running drying is shown by the dryer and drying_level channels. |
+| uv                         | Switch               | Disinfection                             | Only available when the airer is at its highest position. |
+| uv_left_time               | Number:Time          | Disinfection Remaining                   |            |
+| light                      | Switch               | Light                                    |            |
+
+### MrBond smart clothes dryer-Drying (<a name="mrbond-airer-m53pro">mrbond.airer.m53pro</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| fault                      | Number               | Fault                                    | Value mapping `["0"="No faults","1"="Obstruction","2"="Overweight","3"="Overheated motor","4"="Disinfection is prepared","5"="The fan cannot be turned on"]` |
+| motor_control              | Number               | Motor                                    | Value mapping `["0"="Pause","1"="Raise","2"="Lower"]` |
+| status                     | Number               | Status                                   | Value mapping `["0"="Stopped at top","1"="Raising","2"="Lowering","3"="Paused","4"="Stopped at bottom"]` |
+| dryer                      | Number               | Drying Mode                              | Value mapping `["0"="Off","1"="Air Drying","2"="Hot Air Drying"]` |
+| drying_level               | Number               | Drying Level                             | Value mapping `["0"="Off","1"="30 minutes","2"="60 minutes","3"="90 minutes","4"="120 minutes"]` |
+| drying_left_time           | Number:Time          | Drying Remaining                         |            |
+| air_drying                 | Number               | Air Drying                               | Only available when the airer is at its highest position. Write only, the running drying is shown by the dryer and drying_level channels. |
+| hot_air_drying             | Number               | Hot Air Drying                           | Only available when the airer is at its highest position. Write only, the running drying is shown by the dryer and drying_level channels. |
+| light                      | Switch               | Light                                    |            |
+
+### MrBond smart clothes air dryer Pro (<a name="mrbond-airer-m65">mrbond.airer.m65</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| fault                      | Number               | Fault                                    | Value mapping `["0"="No faults","1"="Obstruction","2"="Overweight","3"="Overheated motor","4"="Disinfection is prepared"]` |
+| motor_control              | Number               | Motor                                    | Value mapping `["0"="Pause","1"="Raise","2"="Lower"]` |
+| status                     | Number               | Status                                   | Value mapping `["0"="Stopped at top","1"="Raising","2"="Lowering","3"="Paused","4"="Stopped at bottom"]` |
+| dryer                      | Number               | Drying Mode                              | Value mapping `["0"="Off","1"="Air Drying","2"="Hot Air Drying","3"="Fast Hot Air Drying"]` |
+| drying_level               | Number               | Drying Level                             | Value mapping `["0"="Off","1"="Level 1","2"="Level 2","3"="Level 3"]` |
+| drying_left_time           | Number:Time          | Air Drying Remaining                     |            |
+| hot_drying_left_time       | Number:Time          | Hot Air Drying Remaining                 |            |
+| fast_drying_left_time      | Number:Time          | Fast Hot Air Drying Remaining            |            |
+| air_drying                 | Number               | Air Drying                               | Write only, the running drying is shown by the dryer and drying_level channels. |
+| hot_air_drying             | Number               | Hot Air Drying                           | Only available when the airer is at its highest position. Write only, the running drying is shown by the dryer and drying_level channels. |
+| fast_hot_air_drying        | Number               | Fast Hot Air Drying                      | Only available when the airer is at its highest position. Write only, the running drying is shown by the dryer and drying_level channels. |
+| light                      | Switch               | Light                                    |            |
 
 ### NWT/Widetech Intelligent Dehumidifier 16L (<a name="nwt-derh-16l">nwt.derh.16l</a>) Channels
 
@@ -20317,6 +20696,152 @@ Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number:Temperature color_temperature "Color Temperature" (G_light) {channel="miio:basic:light:color_temperature"}
 ```
 
+### Hooeasy smart clothes dryer-Simplicity2 (hyd.airer.h51a) item file lines
+
+note: Autogenerated example. Replace the id (airer) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_airer "Hooeasy smart clothes dryer-Simplicity2" <status>
+Number fault "Fault" (G_airer) {channel="miio:basic:airer:fault"}
+Number motor_control "Motor" (G_airer) {channel="miio:basic:airer:motor_control"}
+Number status "Status" (G_airer) {channel="miio:basic:airer:status"}
+Number:Dimensionless current_position "Current Position" (G_airer) {channel="miio:basic:airer:current_position"}
+Switch alarm "Notification Sound" (G_airer) {channel="miio:basic:airer:alarm"}
+Number:Dimensionless target_position "Custom Target Position" (G_airer) {channel="miio:basic:airer:target_position"}
+Switch light "Light" (G_airer) {channel="miio:basic:airer:light"}
+Dimmer brightness "Brightness" (G_airer) {channel="miio:basic:airer:brightness"}
+```
+
+### Hooeasy smart clothes dryer-UV2 (hyd.airer.h51c) item file lines
+
+note: Autogenerated example. Replace the id (airer) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_airer "Hooeasy smart clothes dryer-UV2" <status>
+Number fault "Fault" (G_airer) {channel="miio:basic:airer:fault"}
+Number motor_control "Motor" (G_airer) {channel="miio:basic:airer:motor_control"}
+Number status "Status" (G_airer) {channel="miio:basic:airer:status"}
+Switch uv "Disinfection" (G_airer) {channel="miio:basic:airer:uv"}
+Number:Time uv_left_time "Disinfection Remaining" (G_airer) {channel="miio:basic:airer:uv_left_time"}
+Number:Dimensionless current_position "Current Position" (G_airer) {channel="miio:basic:airer:current_position"}
+Switch alarm "Notification Sound" (G_airer) {channel="miio:basic:airer:alarm"}
+Number:Dimensionless target_position "Custom Target Position" (G_airer) {channel="miio:basic:airer:target_position"}
+Switch light "Light" (G_airer) {channel="miio:basic:airer:light"}
+Dimmer brightness "Brightness" (G_airer) {channel="miio:basic:airer:brightness"}
+```
+
+### Hooeasy smart clothes dryer (hyd.airer.hx1) item file lines
+
+note: Autogenerated example. Replace the id (airer) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_airer "Hooeasy smart clothes dryer" <status>
+Number fault "Fault" (G_airer) {channel="miio:basic:airer:fault"}
+Number motor_control "Motor" (G_airer) {channel="miio:basic:airer:motor_control"}
+Number status "Status" (G_airer) {channel="miio:basic:airer:status"}
+Switch uv "Disinfection" (G_airer) {channel="miio:basic:airer:uv"}
+Number:Time uv_left_time "Disinfection Remaining" (G_airer) {channel="miio:basic:airer:uv_left_time"}
+Number:Dimensionless current_position "Current Position" (G_airer) {channel="miio:basic:airer:current_position"}
+Switch alarm "Notification Sound" (G_airer) {channel="miio:basic:airer:alarm"}
+Number:Dimensionless target_position "Custom Target Position" (G_airer) {channel="miio:basic:airer:target_position"}
+Switch light "Light" (G_airer) {channel="miio:basic:airer:light"}
+```
+
+### Hooeasy smart clothes dryer (hyd.airer.hx2) item file lines
+
+note: Autogenerated example. Replace the id (airer) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_airer "Hooeasy smart clothes dryer" <status>
+Number fault "Fault" (G_airer) {channel="miio:basic:airer:fault"}
+Number motor_control "Motor" (G_airer) {channel="miio:basic:airer:motor_control"}
+Number status "Status" (G_airer) {channel="miio:basic:airer:status"}
+Number dryer "Drying Mode" (G_airer) {channel="miio:basic:airer:dryer"}
+Number drying_level "Drying Level" (G_airer) {channel="miio:basic:airer:drying_level"}
+Number:Time drying_left_time "Drying Remaining" (G_airer) {channel="miio:basic:airer:drying_left_time"}
+Number air_drying "Air Drying" (G_airer) {channel="miio:basic:airer:air_drying"}
+Switch uv "Disinfection" (G_airer) {channel="miio:basic:airer:uv"}
+Number:Time uv_left_time "Disinfection Remaining" (G_airer) {channel="miio:basic:airer:uv_left_time"}
+Number:Dimensionless current_position "Current Position" (G_airer) {channel="miio:basic:airer:current_position"}
+Switch alarm "Notification Sound" (G_airer) {channel="miio:basic:airer:alarm"}
+Number:Dimensionless target_position "Custom Target Position" (G_airer) {channel="miio:basic:airer:target_position"}
+Switch light "Light" (G_airer) {channel="miio:basic:airer:light"}
+```
+
+### Hooeasy smart clothes dryer (hyd.airer.hx3) item file lines
+
+note: Autogenerated example. Replace the id (airer) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_airer "Hooeasy smart clothes dryer" <status>
+Number fault "Fault" (G_airer) {channel="miio:basic:airer:fault"}
+Number motor_control "Motor" (G_airer) {channel="miio:basic:airer:motor_control"}
+Number status "Status" (G_airer) {channel="miio:basic:airer:status"}
+Number dryer "Drying Mode" (G_airer) {channel="miio:basic:airer:dryer"}
+Number drying_level "Drying Level" (G_airer) {channel="miio:basic:airer:drying_level"}
+Number:Time drying_left_time "Drying Remaining" (G_airer) {channel="miio:basic:airer:drying_left_time"}
+Number air_drying "Air Drying" (G_airer) {channel="miio:basic:airer:air_drying"}
+Number hot_air_drying "Hot Air Drying" (G_airer) {channel="miio:basic:airer:hot_air_drying"}
+Switch uv "Disinfection" (G_airer) {channel="miio:basic:airer:uv"}
+Number:Time uv_left_time "Disinfection Remaining" (G_airer) {channel="miio:basic:airer:uv_left_time"}
+Number:Dimensionless current_position "Current Position" (G_airer) {channel="miio:basic:airer:current_position"}
+Switch alarm "Notification Sound" (G_airer) {channel="miio:basic:airer:alarm"}
+Number:Dimensionless target_position "Custom Target Position" (G_airer) {channel="miio:basic:airer:target_position"}
+Switch light "Light" (G_airer) {channel="miio:basic:airer:light"}
+```
+
+### MI Home smart clothes dryer (hyd.airer.znlyj1) item file lines
+
+note: Autogenerated example. Replace the id (airer) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_airer "MI Home smart clothes dryer" <status>
+Number fault "Fault" (G_airer) {channel="miio:basic:airer:fault"}
+Number motor_control "Motor" (G_airer) {channel="miio:basic:airer:motor_control"}
+Number location "Airer Location" (G_airer) {channel="miio:basic:airer:location"}
+Number status "Status" (G_airer) {channel="miio:basic:airer:status"}
+Switch light "Light" (G_airer) {channel="miio:basic:airer:light"}
+```
+
+### Mijia Smart Clothes Drying Rack (hyd.airer.znlyj2) item file lines
+
+note: Autogenerated example. Replace the id (airer) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_airer "Mijia Smart Clothes Drying Rack" <status>
+Number fault "Fault" (G_airer) {channel="miio:basic:airer:fault"}
+Number motor_control "Motor" (G_airer) {channel="miio:basic:airer:motor_control"}
+Number location "Airer Location" (G_airer) {channel="miio:basic:airer:location"}
+Number status "Status" (G_airer) {channel="miio:basic:airer:status"}
+Switch light "Light" (G_airer) {channel="miio:basic:airer:light"}
+```
+
+### Mijia Smart Clothes Drying Rack (hyd.airer.znlyj3) item file lines
+
+note: Autogenerated example. Replace the id (airer) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_airer "Mijia Smart Clothes Drying Rack" <status>
+Number fault "Fault" (G_airer) {channel="miio:basic:airer:fault"}
+Number motor_control "Motor" (G_airer) {channel="miio:basic:airer:motor_control"}
+Number location "Airer Location" (G_airer) {channel="miio:basic:airer:location"}
+Number status "Status" (G_airer) {channel="miio:basic:airer:status"}
+Switch light "Light" (G_airer) {channel="miio:basic:airer:light"}
+```
+
+### Mijia Smart Clothes Drying Rack (hyd.airer.znlyj4) item file lines
+
+note: Autogenerated example. Replace the id (airer) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_airer "Mijia Smart Clothes Drying Rack" <status>
+Number fault "Fault" (G_airer) {channel="miio:basic:airer:fault"}
+Number motor_control "Motor" (G_airer) {channel="miio:basic:airer:motor_control"}
+Number location "Airer Location" (G_airer) {channel="miio:basic:airer:location"}
+Number status "Status" (G_airer) {channel="miio:basic:airer:status"}
+Switch light "Light" (G_airer) {channel="miio:basic:airer:light"}
+```
+
 ### Mi Robot Vacuum-Mop Pro (ijai.vacuum.v1) item file lines
 
 note: Autogenerated example. Replace the id (vacuum) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
@@ -21401,13 +21926,30 @@ Switch lid_up_flag "Lid Lifted" (G_pet_waterer) {channel="miio:basic:pet_waterer
 String reset "Reset" (G_pet_waterer) {channel="miio:basic:pet_waterer:reset"}
 ```
 
+### MrBond smart clothes dryer (mrbond.airer.c1x) item file lines
+
+note: Autogenerated example. Replace the id (airer) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_airer "MrBond smart clothes dryer" <status>
+Number fault "Fault" (G_airer) {channel="miio:basic:airer:fault"}
+Number motor_control "Motor" (G_airer) {channel="miio:basic:airer:motor_control"}
+Number status "Status" (G_airer) {channel="miio:basic:airer:status"}
+Switch uv "Disinfection" (G_airer) {channel="miio:basic:airer:uv"}
+Number:Time uv_left_time "Disinfection Remaining" (G_airer) {channel="miio:basic:airer:uv_left_time"}
+Number:Dimensionless current_position "Current Position" (G_airer) {channel="miio:basic:airer:current_position"}
+Switch alarm "Notification Sound" (G_airer) {channel="miio:basic:airer:alarm"}
+Number:Dimensionless target_position "Custom Target Position" (G_airer) {channel="miio:basic:airer:target_position"}
+Switch light "Light" (G_airer) {channel="miio:basic:airer:light"}
+```
+
 ### MR.BOND (mrbond.airer.m0) item file lines
 
 note: Autogenerated example. Replace the id (airer) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
 
 ```java
 Group G_airer "MR.BOND" <status>
-Switch led "LED" (G_airer) {channel="miio:basic:airer:led"}
+Switch led "Lamp" (G_airer) {channel="miio:basic:airer:led"}
 Number motor "Motor" (G_airer) {channel="miio:basic:airer:motor"}
 Number airer_location "Airer Location" (G_airer) {channel="miio:basic:airer:airer_location"}
 ```
@@ -21420,9 +21962,9 @@ note: Autogenerated example. Replace the id (airer) in the channel with your own
 Group G_airer "MR.BOND" <status>
 Switch dry "Dry" (G_airer) {channel="miio:basic:airer:dry"}
 Number drymode "Dry Mode" (G_airer) {channel="miio:basic:airer:drymode"}
-Switch led "LED" (G_airer) {channel="miio:basic:airer:led"}
+Switch led "Lamp" (G_airer) {channel="miio:basic:airer:led"}
 Number motor "Motor" (G_airer) {channel="miio:basic:airer:motor"}
-Number:Time drytime "Dry Time" (G_airer) {channel="miio:basic:airer:drytime"}
+Number:Time drytime "Dry Remaining" (G_airer) {channel="miio:basic:airer:drytime"}
 Number airer_location "Airer Location" (G_airer) {channel="miio:basic:airer:airer_location"}
 ```
 
@@ -21432,7 +21974,7 @@ note: Autogenerated example. Replace the id (airer) in the channel with your own
 
 ```java
 Group G_airer "MR.BOND" <status>
-Switch led "LED" (G_airer) {channel="miio:basic:airer:led"}
+Switch led "Lamp" (G_airer) {channel="miio:basic:airer:led"}
 Number motor "Motor" (G_airer) {channel="miio:basic:airer:motor"}
 Number airer_location "Airer Location" (G_airer) {channel="miio:basic:airer:airer_location"}
 ```
@@ -21445,12 +21987,278 @@ note: Autogenerated example. Replace the id (airer) in the channel with your own
 Group G_airer "MR.BOND" <status>
 Switch dry "Dry" (G_airer) {channel="miio:basic:airer:dry"}
 Number drymode "Dry Mode" (G_airer) {channel="miio:basic:airer:drymode"}
-Switch led "LED" (G_airer) {channel="miio:basic:airer:led"}
+Switch led "Lamp" (G_airer) {channel="miio:basic:airer:led"}
 Number motor "Motor" (G_airer) {channel="miio:basic:airer:motor"}
-Number:Time drytime "Dry Time" (G_airer) {channel="miio:basic:airer:drytime"}
+Number:Time drytime "Dry Remaining" (G_airer) {channel="miio:basic:airer:drytime"}
 Number airer_location "Airer Location" (G_airer) {channel="miio:basic:airer:airer_location"}
 Switch disinfect "Disinfect" (G_airer) {channel="miio:basic:airer:disinfect"}
-Number:Time distime "Disinfect Time" (G_airer) {channel="miio:basic:airer:distime"}
+Number:Time distime "Disinfect Remaining" (G_airer) {channel="miio:basic:airer:distime"}
+```
+
+### MrBond smart clothes dryer (mrbond.airer.m1t) item file lines
+
+note: Autogenerated example. Replace the id (airer) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_airer "MrBond smart clothes dryer" <status>
+Number fault "Fault" (G_airer) {channel="miio:basic:airer:fault"}
+Number motor_control "Motor" (G_airer) {channel="miio:basic:airer:motor_control"}
+Number status "Status" (G_airer) {channel="miio:basic:airer:status"}
+Number:Dimensionless current_position "Current Position" (G_airer) {channel="miio:basic:airer:current_position"}
+Switch alarm "Notification Sound" (G_airer) {channel="miio:basic:airer:alarm"}
+Number:Dimensionless target_position "Custom Target Position" (G_airer) {channel="miio:basic:airer:target_position"}
+Switch light "Light" (G_airer) {channel="miio:basic:airer:light"}
+```
+
+### MrBond smart clothes dryer (mrbond.airer.m1tpro) item file lines
+
+note: Autogenerated example. Replace the id (airer) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_airer "MrBond smart clothes dryer" <status>
+Number fault "Fault" (G_airer) {channel="miio:basic:airer:fault"}
+Number motor_control "Motor" (G_airer) {channel="miio:basic:airer:motor_control"}
+Number status "Status" (G_airer) {channel="miio:basic:airer:status"}
+Number drying_level "Drying Level" (G_airer) {channel="miio:basic:airer:drying_level"}
+Number:Time drying_left_time "Drying Remaining" (G_airer) {channel="miio:basic:airer:drying_left_time"}
+Number:Dimensionless current_position "Current Position" (G_airer) {channel="miio:basic:airer:current_position"}
+Switch alarm "Notification Sound" (G_airer) {channel="miio:basic:airer:alarm"}
+Number:Dimensionless target_position "Custom Target Position" (G_airer) {channel="miio:basic:airer:target_position"}
+Switch light "Light" (G_airer) {channel="miio:basic:airer:light"}
+```
+
+### MR.BOND (mrbond.airer.m2) item file lines
+
+note: Autogenerated example. Replace the id (airer) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_airer "MR.BOND" <status>
+Number fault "Fault" (G_airer) {channel="miio:basic:airer:fault"}
+Number motor_control "Motor" (G_airer) {channel="miio:basic:airer:motor_control"}
+Number location "Airer Location" (G_airer) {channel="miio:basic:airer:location"}
+Switch uv "Disinfection" (G_airer) {channel="miio:basic:airer:uv"}
+Number:Time uv_left_time "Disinfection Remaining" (G_airer) {channel="miio:basic:airer:uv_left_time"}
+Switch light "Lamp" (G_airer) {channel="miio:basic:airer:light"}
+```
+
+### MR.BOND (mrbond.airer.m2pro) item file lines
+
+note: Autogenerated example. Replace the id (airer) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_airer "MR.BOND" <status>
+Number fault "Fault" (G_airer) {channel="miio:basic:airer:fault"}
+Number motor_control "Motor" (G_airer) {channel="miio:basic:airer:motor_control"}
+Number location "Airer Location" (G_airer) {channel="miio:basic:airer:location"}
+Switch uv "Disinfection" (G_airer) {channel="miio:basic:airer:uv"}
+Number:Time uv_left_time "Disinfection Remaining" (G_airer) {channel="miio:basic:airer:uv_left_time"}
+Number drying_level "Drying Level" (G_airer) {channel="miio:basic:airer:drying_level"}
+Number:Time drying_left_time "Drying Remaining" (G_airer) {channel="miio:basic:airer:drying_left_time"}
+Switch light "Lamp" (G_airer) {channel="miio:basic:airer:light"}
+```
+
+### MrBond smart clothes dryer-Simple2 (mrbond.airer.m31a) item file lines
+
+note: Autogenerated example. Replace the id (airer) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_airer "MrBond smart clothes dryer-Simple2" <status>
+Number fault "Fault" (G_airer) {channel="miio:basic:airer:fault"}
+Number motor_control "Motor" (G_airer) {channel="miio:basic:airer:motor_control"}
+Number status "Status" (G_airer) {channel="miio:basic:airer:status"}
+Number:Dimensionless current_position "Current Position" (G_airer) {channel="miio:basic:airer:current_position"}
+Switch alarm "Notification Sound" (G_airer) {channel="miio:basic:airer:alarm"}
+Number:Dimensionless target_position "Custom Target Position" (G_airer) {channel="miio:basic:airer:target_position"}
+Switch light "Light" (G_airer) {channel="miio:basic:airer:light"}
+Dimmer brightness "Brightness" (G_airer) {channel="miio:basic:airer:brightness"}
+Dimmer color_temperature "Color Temperature" (G_airer) {channel="miio:basic:airer:color_temperature"}
+```
+
+### MrBond smart clothes dryer-Simple2 (mrbond.airer.m31a2) item file lines
+
+note: Autogenerated example. Replace the id (airer) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_airer "MrBond smart clothes dryer-Simple2" <status>
+Number fault "Fault" (G_airer) {channel="miio:basic:airer:fault"}
+Number motor_control "Motor" (G_airer) {channel="miio:basic:airer:motor_control"}
+Number status "Status" (G_airer) {channel="miio:basic:airer:status"}
+Number:Dimensionless current_position "Current Position" (G_airer) {channel="miio:basic:airer:current_position"}
+Switch alarm "Notification Sound" (G_airer) {channel="miio:basic:airer:alarm"}
+Number:Dimensionless target_position "Custom Target Position" (G_airer) {channel="miio:basic:airer:target_position"}
+Switch light "Light" (G_airer) {channel="miio:basic:airer:light"}
+Dimmer brightness "Brightness" (G_airer) {channel="miio:basic:airer:brightness"}
+```
+
+### MrBond smart clothes dryer-UV2 (mrbond.airer.m31c) item file lines
+
+note: Autogenerated example. Replace the id (airer) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_airer "MrBond smart clothes dryer-UV2" <status>
+Number fault "Fault" (G_airer) {channel="miio:basic:airer:fault"}
+Number motor_control "Motor" (G_airer) {channel="miio:basic:airer:motor_control"}
+Number status "Status" (G_airer) {channel="miio:basic:airer:status"}
+Switch uv "Disinfection" (G_airer) {channel="miio:basic:airer:uv"}
+Number:Time uv_left_time "Disinfection Remaining" (G_airer) {channel="miio:basic:airer:uv_left_time"}
+Number:Dimensionless current_position "Current Position" (G_airer) {channel="miio:basic:airer:current_position"}
+Switch alarm "Notification Sound" (G_airer) {channel="miio:basic:airer:alarm"}
+Number:Dimensionless target_position "Custom Target Position" (G_airer) {channel="miio:basic:airer:target_position"}
+Switch light "Light" (G_airer) {channel="miio:basic:airer:light"}
+Dimmer brightness "Brightness" (G_airer) {channel="miio:basic:airer:brightness"}
+Dimmer color_temperature "Color Temperature" (G_airer) {channel="miio:basic:airer:color_temperature"}
+```
+
+### MrBond smart clothes dryer-UV2 (mrbond.airer.m31c2) item file lines
+
+note: Autogenerated example. Replace the id (airer) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_airer "MrBond smart clothes dryer-UV2" <status>
+Number fault "Fault" (G_airer) {channel="miio:basic:airer:fault"}
+Number motor_control "Motor" (G_airer) {channel="miio:basic:airer:motor_control"}
+Number status "Status" (G_airer) {channel="miio:basic:airer:status"}
+Switch uv "Disinfection" (G_airer) {channel="miio:basic:airer:uv"}
+Number:Time uv_left_time "Disinfection Remaining" (G_airer) {channel="miio:basic:airer:uv_left_time"}
+Number:Dimensionless current_position "Current Position" (G_airer) {channel="miio:basic:airer:current_position"}
+Switch alarm "Notification Sound" (G_airer) {channel="miio:basic:airer:alarm"}
+Number:Dimensionless target_position "Custom Target Position" (G_airer) {channel="miio:basic:airer:target_position"}
+Switch light "Light" (G_airer) {channel="miio:basic:airer:light"}
+Dimmer brightness "Brightness" (G_airer) {channel="miio:basic:airer:brightness"}
+```
+
+### MrBond smart clothes dryer-Simple3 (mrbond.airer.m33a) item file lines
+
+note: Autogenerated example. Replace the id (airer) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_airer "MrBond smart clothes dryer-Simple3" <status>
+Number fault "Fault" (G_airer) {channel="miio:basic:airer:fault"}
+Number motor_control "Motor" (G_airer) {channel="miio:basic:airer:motor_control"}
+Number status "Status" (G_airer) {channel="miio:basic:airer:status"}
+Number:Dimensionless current_position "Current Position" (G_airer) {channel="miio:basic:airer:current_position"}
+Switch alarm "Notification Sound" (G_airer) {channel="miio:basic:airer:alarm"}
+Number:Dimensionless target_position "Custom Target Position" (G_airer) {channel="miio:basic:airer:target_position"}
+Switch light "Light" (G_airer) {channel="miio:basic:airer:light"}
+Dimmer brightness "Brightness" (G_airer) {channel="miio:basic:airer:brightness"}
+Dimmer color_temperature "Color Temperature" (G_airer) {channel="miio:basic:airer:color_temperature"}
+Switch night_light "Night Light" (G_airer) {channel="miio:basic:airer:night_light"}
+Number night_light_start_hour "Night Light Start Hour" (G_airer) {channel="miio:basic:airer:night_light_start_hour"}
+Number night_light_start_minute "Night Light Start Minute" (G_airer) {channel="miio:basic:airer:night_light_start_minute"}
+Number night_light_end_hour "Night Light End Hour" (G_airer) {channel="miio:basic:airer:night_light_end_hour"}
+Number night_light_end_minute "Night Light End Minute" (G_airer) {channel="miio:basic:airer:night_light_end_minute"}
+```
+
+### MrBond smart clothes dryer-UV3 (mrbond.airer.m33c) item file lines
+
+note: Autogenerated example. Replace the id (airer) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_airer "MrBond smart clothes dryer-UV3" <status>
+Number fault "Fault" (G_airer) {channel="miio:basic:airer:fault"}
+Number motor_control "Motor" (G_airer) {channel="miio:basic:airer:motor_control"}
+Number status "Status" (G_airer) {channel="miio:basic:airer:status"}
+Switch uv "Disinfection" (G_airer) {channel="miio:basic:airer:uv"}
+Number:Time uv_left_time "Disinfection Remaining" (G_airer) {channel="miio:basic:airer:uv_left_time"}
+Number:Dimensionless current_position "Current Position" (G_airer) {channel="miio:basic:airer:current_position"}
+Switch alarm "Notification Sound" (G_airer) {channel="miio:basic:airer:alarm"}
+Number:Dimensionless target_position "Custom Target Position" (G_airer) {channel="miio:basic:airer:target_position"}
+Switch light "Light" (G_airer) {channel="miio:basic:airer:light"}
+Dimmer brightness "Brightness" (G_airer) {channel="miio:basic:airer:brightness"}
+Dimmer color_temperature "Color Temperature" (G_airer) {channel="miio:basic:airer:color_temperature"}
+Switch night_light "Night Light" (G_airer) {channel="miio:basic:airer:night_light"}
+Number night_light_start_hour "Night Light Start Hour" (G_airer) {channel="miio:basic:airer:night_light_start_hour"}
+Number night_light_start_minute "Night Light Start Minute" (G_airer) {channel="miio:basic:airer:night_light_start_minute"}
+Number night_light_end_hour "Night Light End Hour" (G_airer) {channel="miio:basic:airer:night_light_end_hour"}
+Number night_light_end_minute "Night Light End Minute" (G_airer) {channel="miio:basic:airer:night_light_end_minute"}
+```
+
+### MrBond smart clothes dryer-LA (mrbond.airer.m50f) item file lines
+
+note: Autogenerated example. Replace the id (airer) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_airer "MrBond smart clothes dryer-LA" <status>
+Number fault "Fault" (G_airer) {channel="miio:basic:airer:fault"}
+Number motor_control "Motor" (G_airer) {channel="miio:basic:airer:motor_control"}
+Number status "Status" (G_airer) {channel="miio:basic:airer:status"}
+Number dryer "Drying Mode" (G_airer) {channel="miio:basic:airer:dryer"}
+Number drying_level "Drying Level" (G_airer) {channel="miio:basic:airer:drying_level"}
+Number:Time drying_left_time "Drying Remaining" (G_airer) {channel="miio:basic:airer:drying_left_time"}
+Number air_drying "Air Drying" (G_airer) {channel="miio:basic:airer:air_drying"}
+Switch light "Light" (G_airer) {channel="miio:basic:airer:light"}
+```
+
+### MrBond smart clothes dryer-Air Drying (mrbond.airer.m53c) item file lines
+
+note: Autogenerated example. Replace the id (airer) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_airer "MrBond smart clothes dryer-Air Drying" <status>
+Number fault "Fault" (G_airer) {channel="miio:basic:airer:fault"}
+Number motor_control "Motor" (G_airer) {channel="miio:basic:airer:motor_control"}
+Number status "Status" (G_airer) {channel="miio:basic:airer:status"}
+Number dryer "Drying Mode" (G_airer) {channel="miio:basic:airer:dryer"}
+Number drying_level "Drying Level" (G_airer) {channel="miio:basic:airer:drying_level"}
+Number:Time drying_left_time "Drying Remaining" (G_airer) {channel="miio:basic:airer:drying_left_time"}
+Number air_drying "Air Drying" (G_airer) {channel="miio:basic:airer:air_drying"}
+Switch light "Light" (G_airer) {channel="miio:basic:airer:light"}
+```
+
+### MrBond smart clothes dryer-LDAH (mrbond.airer.m53cpr) item file lines
+
+note: Autogenerated example. Replace the id (airer) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_airer "MrBond smart clothes dryer-LDAH" <status>
+Number fault "Fault" (G_airer) {channel="miio:basic:airer:fault"}
+Number motor_control "Motor" (G_airer) {channel="miio:basic:airer:motor_control"}
+Number status "Status" (G_airer) {channel="miio:basic:airer:status"}
+Number dryer "Drying Mode" (G_airer) {channel="miio:basic:airer:dryer"}
+Number drying_level "Drying Level" (G_airer) {channel="miio:basic:airer:drying_level"}
+Number:Time drying_left_time "Drying Remaining" (G_airer) {channel="miio:basic:airer:drying_left_time"}
+Number air_drying "Air Drying" (G_airer) {channel="miio:basic:airer:air_drying"}
+Number hot_air_drying "Hot Air Drying" (G_airer) {channel="miio:basic:airer:hot_air_drying"}
+Switch uv "Disinfection" (G_airer) {channel="miio:basic:airer:uv"}
+Number:Time uv_left_time "Disinfection Remaining" (G_airer) {channel="miio:basic:airer:uv_left_time"}
+Switch light "Light" (G_airer) {channel="miio:basic:airer:light"}
+```
+
+### MrBond smart clothes dryer-Drying (mrbond.airer.m53pro) item file lines
+
+note: Autogenerated example. Replace the id (airer) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_airer "MrBond smart clothes dryer-Drying" <status>
+Number fault "Fault" (G_airer) {channel="miio:basic:airer:fault"}
+Number motor_control "Motor" (G_airer) {channel="miio:basic:airer:motor_control"}
+Number status "Status" (G_airer) {channel="miio:basic:airer:status"}
+Number dryer "Drying Mode" (G_airer) {channel="miio:basic:airer:dryer"}
+Number drying_level "Drying Level" (G_airer) {channel="miio:basic:airer:drying_level"}
+Number:Time drying_left_time "Drying Remaining" (G_airer) {channel="miio:basic:airer:drying_left_time"}
+Number air_drying "Air Drying" (G_airer) {channel="miio:basic:airer:air_drying"}
+Number hot_air_drying "Hot Air Drying" (G_airer) {channel="miio:basic:airer:hot_air_drying"}
+Switch light "Light" (G_airer) {channel="miio:basic:airer:light"}
+```
+
+### MrBond smart clothes air dryer Pro (mrbond.airer.m65) item file lines
+
+note: Autogenerated example. Replace the id (airer) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_airer "MrBond smart clothes air dryer Pro" <status>
+Number fault "Fault" (G_airer) {channel="miio:basic:airer:fault"}
+Number motor_control "Motor" (G_airer) {channel="miio:basic:airer:motor_control"}
+Number status "Status" (G_airer) {channel="miio:basic:airer:status"}
+Number dryer "Drying Mode" (G_airer) {channel="miio:basic:airer:dryer"}
+Number drying_level "Drying Level" (G_airer) {channel="miio:basic:airer:drying_level"}
+Number:Time drying_left_time "Air Drying Remaining" (G_airer) {channel="miio:basic:airer:drying_left_time"}
+Number:Time hot_drying_left_time "Hot Air Drying Remaining" (G_airer) {channel="miio:basic:airer:hot_drying_left_time"}
+Number:Time fast_drying_left_time "Fast Hot Air Drying Remaining" (G_airer) {channel="miio:basic:airer:fast_drying_left_time"}
+Number air_drying "Air Drying" (G_airer) {channel="miio:basic:airer:air_drying"}
+Number hot_air_drying "Hot Air Drying" (G_airer) {channel="miio:basic:airer:hot_air_drying"}
+Number fast_hot_air_drying "Fast Hot Air Drying" (G_airer) {channel="miio:basic:airer:fast_hot_air_drying"}
+Switch light "Light" (G_airer) {channel="miio:basic:airer:light"}
 ```
 
 ### NWT/Widetech Intelligent Dehumidifier 16L (nwt.derh.16l) item file lines
