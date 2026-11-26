@@ -1,0 +1,543 @@
+{
+	"deviceMapping": {
+		"id": [
+			"mrbond.airer.m65"
+		],
+		"propertyMethod": "get_properties",
+		"maxProperties": 1,
+		"channels": [
+			{
+				"property": "fault",
+				"siid": 2,
+				"piid": 1,
+				"friendlyName": "Fault",
+				"channel": "fault",
+				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "0",
+							"label": "No faults"
+						},
+						{
+							"value": "1",
+							"label": "Obstruction"
+						},
+						{
+							"value": "2",
+							"label": "Overweight"
+						},
+						{
+							"value": "3",
+							"label": "Overheated motor"
+						},
+						{
+							"value": "4",
+							"label": "Disinfection is prepared"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "error",
+				"tags": [
+					"Status"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"No faults\",\"1\"\u003d\"Obstruction\",\"2\"\u003d\"Overweight\",\"3\"\u003d\"Overheated motor\",\"4\"\u003d\"Disinfection is prepared\"]`"
+			},
+			{
+				"property": "motor-control",
+				"siid": 2,
+				"piid": 2,
+				"friendlyName": "Motor",
+				"channel": "motor_control",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "Pause"
+						},
+						{
+							"value": "1",
+							"label": "Raise"
+						},
+						{
+							"value": "2",
+							"label": "Lower"
+						}
+					]
+				},
+				"refresh": false,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "movecontrol",
+				"tags": [
+					"Control"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Pause\",\"1\"\u003d\"Raise\",\"2\"\u003d\"Lower\"]`"
+			},
+			{
+				"property": "status",
+				"siid": 2,
+				"piid": 4,
+				"friendlyName": "Status",
+				"channel": "status",
+				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "0",
+							"label": "Stopped at top"
+						},
+						{
+							"value": "1",
+							"label": "Raising"
+						},
+						{
+							"value": "2",
+							"label": "Lowering"
+						},
+						{
+							"value": "3",
+							"label": "Paused"
+						},
+						{
+							"value": "4",
+							"label": "Stopped at bottom"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "status",
+				"tags": [
+					"Status"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Stopped at top\",\"1\"\u003d\"Raising\",\"2\"\u003d\"Lowering\",\"3\"\u003d\"Paused\",\"4\"\u003d\"Stopped at bottom\"]`"
+			},
+			{
+				"property": "dryer",
+				"siid": 2,
+				"piid": 5,
+				"friendlyName": "Drying Mode",
+				"channel": "dryer",
+				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "0",
+							"label": "Off"
+						},
+						{
+							"value": "1",
+							"label": "Air Drying"
+						},
+						{
+							"value": "2",
+							"label": "Hot Air Drying"
+						},
+						{
+							"value": "3",
+							"label": "Fast Hot Air Drying"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "heating",
+				"tags": [
+					"Status",
+					"Mode"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Off\",\"1\"\u003d\"Air Drying\",\"2\"\u003d\"Hot Air Drying\",\"3\"\u003d\"Fast Hot Air Drying\"]`"
+			},
+			{
+				"property": "drying-level",
+				"siid": 2,
+				"piid": 10,
+				"friendlyName": "Drying Level",
+				"channel": "drying_level",
+				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "0",
+							"label": "Off"
+						},
+						{
+							"value": "1",
+							"label": "Level 1"
+						},
+						{
+							"value": "2",
+							"label": "Level 2"
+						},
+						{
+							"value": "3",
+							"label": "Level 3"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "heating",
+				"tags": [
+					"Status",
+					"Mode"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Off\",\"1\"\u003d\"Level 1\",\"2\"\u003d\"Level 2\",\"3\"\u003d\"Level 3\"]`"
+			},
+			{
+				"property": "drying-left-time",
+				"siid": 2,
+				"piid": 7,
+				"friendlyName": "Air Drying Remaining",
+				"channel": "drying_left_time",
+				"type": "Number:Time",
+				"unit": "minutes",
+				"stateDescription": {
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "time",
+				"tags": [
+					"Measurement",
+					"Duration"
+				]
+			},
+			{
+				"property": "hot-drying-left-time",
+				"siid": 2,
+				"piid": 8,
+				"friendlyName": "Hot Air Drying Remaining",
+				"channel": "hot_drying_left_time",
+				"type": "Number:Time",
+				"unit": "minutes",
+				"stateDescription": {
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "time",
+				"tags": [
+					"Measurement",
+					"Duration"
+				]
+			},
+			{
+				"property": "fast-drying-left-time",
+				"siid": 2,
+				"piid": 9,
+				"friendlyName": "Fast Hot Air Drying Remaining",
+				"channel": "fast_drying_left_time",
+				"type": "Number:Time",
+				"unit": "minutes",
+				"stateDescription": {
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "time",
+				"tags": [
+					"Measurement",
+					"Duration"
+				]
+			},
+			{
+				"property": "",
+				"friendlyName": "Air Drying",
+				"channel": "air_drying",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "Off"
+						},
+						{
+							"value": "1",
+							"label": "60 minutes"
+						},
+						{
+							"value": "2",
+							"label": "120 minutes"
+						},
+						{
+							"value": "3",
+							"label": "180 minutes"
+						}
+					]
+				},
+				"refresh": false,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER",
+						"parameters": [
+							{
+								"did": "dryer",
+								"siid": 2,
+								"piid": 5,
+								"value": 1
+							},
+							{
+								"did": "drying_level",
+								"siid": 2,
+								"piid": 10,
+								"value": "$value$"
+							}
+						],
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "[1-3]"
+								}
+							]
+						}
+					},
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER",
+						"parameters": [
+							{
+								"did": "dryer",
+								"siid": 2,
+								"piid": 5,
+								"value": "$value$"
+							},
+							{
+								"did": "drying_level",
+								"siid": 2,
+								"piid": 10,
+								"value": "$value$"
+							}
+						],
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "0"
+								}
+							]
+						}
+					}
+				],
+				"category": "heating",
+				"tags": [
+					"Control",
+					"Mode"
+				],
+				"readmeComment": "Write only, the running drying is shown by the dryer and drying_level channels."
+			},
+			{
+				"property": "",
+				"friendlyName": "Hot Air Drying",
+				"channel": "hot_air_drying",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "Off"
+						},
+						{
+							"value": "1",
+							"label": "60 minutes"
+						},
+						{
+							"value": "2",
+							"label": "120 minutes"
+						},
+						{
+							"value": "3",
+							"label": "180 minutes"
+						}
+					]
+				},
+				"refresh": false,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER",
+						"parameters": [
+							{
+								"did": "dryer",
+								"siid": 2,
+								"piid": 5,
+								"value": 2
+							},
+							{
+								"did": "drying_level",
+								"siid": 2,
+								"piid": 10,
+								"value": "$value$"
+							}
+						],
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "[1-3]"
+								}
+							]
+						}
+					},
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER",
+						"parameters": [
+							{
+								"did": "dryer",
+								"siid": 2,
+								"piid": 5,
+								"value": "$value$"
+							},
+							{
+								"did": "drying_level",
+								"siid": 2,
+								"piid": 10,
+								"value": "$value$"
+							}
+						],
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "0"
+								}
+							]
+						}
+					}
+				],
+				"category": "heating",
+				"tags": [
+					"Control",
+					"Mode"
+				],
+				"readmeComment": "Only available when the airer is at its highest position. Write only, the running drying is shown by the dryer and drying_level channels."
+			},
+			{
+				"property": "",
+				"friendlyName": "Fast Hot Air Drying",
+				"channel": "fast_hot_air_drying",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "Off"
+						},
+						{
+							"value": "1",
+							"label": "50 minutes"
+						},
+						{
+							"value": "2",
+							"label": "100 minutes"
+						},
+						{
+							"value": "3",
+							"label": "150 minutes"
+						}
+					]
+				},
+				"refresh": false,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER",
+						"parameters": [
+							{
+								"did": "dryer",
+								"siid": 2,
+								"piid": 5,
+								"value": 3
+							},
+							{
+								"did": "drying_level",
+								"siid": 2,
+								"piid": 10,
+								"value": "$value$"
+							}
+						],
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "[1-3]"
+								}
+							]
+						}
+					},
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER",
+						"parameters": [
+							{
+								"did": "dryer",
+								"siid": 2,
+								"piid": 5,
+								"value": "$value$"
+							},
+							{
+								"did": "drying_level",
+								"siid": 2,
+								"piid": 10,
+								"value": "$value$"
+							}
+						],
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "0"
+								}
+							]
+						}
+					}
+				],
+				"category": "heating",
+				"tags": [
+					"Control",
+					"Mode"
+				],
+				"readmeComment": "Only available when the airer is at its highest position. Write only, the running drying is shown by the dryer and drying_level channels."
+			},
+			{
+				"property": "on",
+				"siid": 3,
+				"piid": 1,
+				"friendlyName": "Light",
+				"channel": "light",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "light",
+				"tags": [
+					"Switch",
+					"Light"
+				]
+			}
+		],
+		"experimental": true
+	}
+}
