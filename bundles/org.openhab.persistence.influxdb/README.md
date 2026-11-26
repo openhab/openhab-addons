@@ -28,6 +28,17 @@ Some example entries for an item with the name "speedtest" without any further c
     1558332852716000000 speedtest 80423789.0
 ```
 
+### Upgrading: states stored with a timestamp for Dimmer and Color items
+
+Earlier versions wrote a state stored with a timestamp (`persist` with a time in rules, `PUT /rest/persistence/items/{itemname}`, time series from bindings) as it was passed in.
+For a Dimmer item, `ON` was therefore written as the integer `1`, and for a Color item, `ON`, `OFF` or a percentage was written as a scalar instead of an HSB string.
+The states are now converted to the state type of the item, so a Dimmer receives `100` (a float) and a Color item receives an HSB string.
+
+InfluxDB keeps one type per field.
+If a measurement already holds integer points written by the old behavior, new points of the other type can be rejected, for InfluxDB 1 within the affected shard only (see the InfluxDB documentation on field type conflicts).
+In that case, either delete the old integer points of the item and store them again, or write the item to a new measurement name (see [Measurement Name by Item Metadata](#measurement-name-by-item-metadata)).
+Items that only ever stored their current state with the normal persistence strategies are not affected, because the items already hold the converted state.
+
 ## Prerequisites
 
 First of all, you have to set up and run an InfluxDB 1.X, 2.X or 3.X server.
