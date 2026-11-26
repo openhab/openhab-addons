@@ -99,8 +99,8 @@
 
 	<channel-type id="pack-usable-remaining-capacity">
 		<item-type unitHint="Ah">Number:ElectricCharge</item-type>
-		<label>Usable Capacity Left</label>
-		<description>Usable capacity left in the battery</description>
+		<label>Remaining Capacity</label>
+		<description>Capacity stored in the battery, including its reserve</description>
 		<tags>
 			<tag>Measurement</tag>
 		</tags>
@@ -131,8 +131,8 @@
 
 	<channel-type id="pack-usable-remaining-energy">
 		<item-type unitHint="kWh">Number:Energy</item-type>
-		<label>Usable Remaining Energy</label>
-		<description>Usable energy left in the battery</description>
+		<label>Remaining Energy</label>
+		<description>Energy stored in the battery, calculated from the stored capacity</description>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Energy</tag>

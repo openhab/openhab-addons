@@ -18,6 +18,7 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.measure.Unit;
 
@@ -128,8 +129,13 @@ public abstract class E3DCThingHandler extends BaseThingHandler implements E3DCD
     public void onData(RscpValue response) {
         onPowerSettings(response);
         updateLists(response);
+        Set<String> computed = channelsComputedByHandler();
         for (Map.Entry<String, Map<String, E3DCChannelSpec>> group : getRegistry().groups().entrySet()) {
             for (Map.Entry<String, E3DCChannelSpec> channel : group.getValue().entrySet()) {
+                if (computed.contains(channel.getKey())) {
+                    // the handler publishes the value itself, from more than one data point of the answer
+                    continue;
+                }
                 RscpValue value = findValue(response, channel.getValue(), getDeviceIndex());
                 if (value != null) {
                     updateChannel(group.getKey(), channel.getKey(), channel.getValue(), value);
@@ -139,6 +145,11 @@ public abstract class E3DCThingHandler extends BaseThingHandler implements E3DCD
         if (getThing().getStatus() != ThingStatus.ONLINE) {
             updateStatus(ThingStatus.ONLINE);
         }
+    }
+
+    /** The channels this handler publishes itself instead of from one data point of the poll answer. */
+    protected Set<String> channelsComputedByHandler() {
+        return Set.of();
     }
 
     /** The value of one channel in a poll response, or {@code null} when this answer does not carry it. */
@@ -500,7 +511,7 @@ public abstract class E3DCThingHandler extends BaseThingHandler implements E3DCD
         }
     }
 
-    private @Nullable Double readValue(RscpValue response, String groupId, String channelId) {
+    protected @Nullable Double readValue(RscpValue response, String groupId, String channelId) {
         E3DCChannelSpec spec = getRegistry().spec(groupId, channelId);
         if (spec == null) {
             return null;

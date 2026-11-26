@@ -596,25 +596,29 @@ The power values are live.
 
 ### Channel Group `pack` (battery)
 
-| Channel | Type | Description |
-|---------|------|-------------|
-| voltage | Number:ElectricPotential | Voltage of the battery |
-| current | Number:ElectricCurrent | Current of the battery, negative while discharging |
-| charge-cycles | Number | Number of charge cycles of the battery |
-| soh | Number:Dimensionless | State of health of the battery |
-| status-code | Number | Status code of the battery |
-| error-code | Number | Error code of the battery |
-| training-mode | Number | Training mode of the battery |
-| design-capacity | Number:ElectricCharge | Design capacity of the battery |
-| usable-capacity | Number:ElectricCharge | Usable capacity of the battery |
-| usable-remaining-capacity | Number:ElectricCharge | Usable capacity left in the battery |
-| design-energy | Number:Energy | Design capacity in kWh, calculated as design capacity (Ah) × battery voltage (V) |
-| usable-energy | Number:Energy | Usable capacity in kWh, calculated as usable capacity (Ah) × battery voltage (V) |
-| usable-remaining-energy | Number:Energy | Usable energy left in kWh, calculated as usable remaining capacity (Ah) × battery voltage (V) |
+| Channel                   | Type                     | Description                                              |
+|---------------------------|--------------------------|----------------------------------------------------------|
+| voltage                   | Number:ElectricPotential | Voltage of the battery                                   |
+| current                   | Number:ElectricCurrent   | Current of the battery, negative while discharging       |
+| charge-cycles             | Number                   | Number of charge cycles of the battery                   |
+| soh                       | Number:Dimensionless     | State of health of the battery                           |
+| status-code               | Number                   | Status code of the battery                               |
+| error-code                | Number                   | Error code of the battery                                |
+| training-mode             | Number                   | Training mode of the battery                             |
+| design-capacity           | Number:ElectricCharge    | Design capacity in Ah                                    |
+| usable-capacity           | Number:ElectricCharge    | Usable capacity in Ah                                    |
+| usable-remaining-capacity | Number:ElectricCharge    | Stored capacity in Ah, including the reserve             |
+| design-energy             | Number:Energy            | Design energy in kWh, design capacity (Ah) × voltage (V) |
+| usable-energy             | Number:Energy            | Usable energy in kWh, usable capacity (Ah) × voltage (V) |
+| usable-remaining-energy   | Number:Energy            | Stored energy in kWh, stored capacity (Ah) × voltage (V) |
 
 The three energy channels are not reported by the device.
 The binding multiplies the capacity in `Ah` by the battery `voltage` of the same poll.
 The voltage is the present terminal voltage and moves with the state of charge and the load, so the kWh values vary by a few percent over a day.
+The device reports its usable remaining capacity relative to the bottom of its usable window, so that value is negative while the battery is inside its reserve.
+The binding publishes the capacity that is actually stored instead: the sum of the capacities the cell modules report and, when they do not all answer, the reported value plus the reserve (`design-capacity` minus `usable-capacity`).
+The stored capacity is never negative.
+The capacity channels create items with the unit `Ah`, the energy channels with `kWh`.
 Use `design-energy` and `usable-energy` as rough guides and the ratio `usable-remaining-energy / usable-energy` (or the SOC) for trends.
 
 ### Channel Group `module` (battery module)
