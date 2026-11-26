@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="tibber"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="pulse-bridge">
+		<label>Tibber Pulse Bridge</label>
+		<description>The Tibber bridge on the local network. It streams the readings of the connected Pulse devices.</description>
+		<semantic-equipment-tag>NetworkAppliance</semantic-equipment-tag>
+
+		<representation-property>hostLabel</representation-property>
+
+		<config-description>
+			<parameter name="hostname" type="text" required="true">
+				<context>network-address</context>
+				<label>Hostname</label>
+				<description>Host name or IP address of the bridge, without scheme, port, or path.</description>
+			</parameter>
+			<parameter name="password" type="text" required="true">
+				<context>password</context>
+				<label>Password</label>
+				<description>Password of the bridge web interface, printed as a code on the bridge label.</description>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+	<thing-type id="pulse-meter">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="pulse-bridge"/>
+		</supported-bridge-type-refs>
+
+		<label>Tibber Pulse Meter</label>
+		<description>The electricity meter read by one Tibber Pulse, identified by the device id of the Pulse.</description>
+		<semantic-equipment-tag>ElectricMeter</semantic-equipment-tag>
+
+		<channels>
+			<channel id="power" typeId="power">
+				<label>Power</label>
+				<description>Net active power, positive when drawn from the grid and negative when fed into it.</description>
+			</channel>
+			<channel id="energy-import" typeId="energy-detailed">
+				<label>Energy Import</label>
+				<description>Total energy drawn from the grid. Keeps its last value when the meter goes stale.</description>
+			</channel>
+			<channel id="energy-export" typeId="energy-detailed">
+				<label>Energy Export</label>
+				<description>Total energy fed into the grid. Keeps its last value when the meter goes stale.</description>
+			</channel>
+			<channel id="power-l1" typeId="pulse-phase-power">
+				<label>Power L1</label>
+				<description>Active power on phase L1.</description>
+			</channel>
+			<channel id="power-l2" typeId="pulse-phase-power">
+				<label>Power L2</label>
+				<description>Active power on phase L2.</description>
+			</channel>
+			<channel id="power-l3" typeId="pulse-phase-power">
+				<label>Power L3</label>
+				<description>Active power on phase L3.</description>
+			</channel>
+			<channel id="voltage-l1" typeId="pulse-phase-voltage">
+				<label>Voltage L1</label>
+				<description>Voltage on phase L1.</description>
+			</channel>
+			<channel id="voltage-l2" typeId="pulse-phase-voltage">
+				<label>Voltage L2</label>
+				<description>Voltage on phase L2.</description>
+			</channel>
+			<channel id="voltage-l3" typeId="pulse-phase-voltage">
+				<label>Voltage L3</label>
+				<description>Voltage on phase L3.</description>
+			</channel>
+			<channel id="current-l1" typeId="pulse-phase-current">
+				<label>Current L1</label>
+				<description>Current on phase L1.</description>
+			</channel>
+			<channel id="current-l2" typeId="pulse-phase-current">
+				<label>Current L2</label>
+				<description>Current on phase L2.</description>
+			</channel>
+			<channel id="current-l3" typeId="pulse-phase-current">
+				<label>Current L3</label>
+				<description>Current on phase L3.</description>
+			</channel>
+			<channel id="frequency" typeId="pulse-frequency"/>
+		</channels>
+
+		<representation-property>deviceId</representation-property>
+
+		<config-description>
+			<parameter name="deviceId" type="text" required="true">
+				<label>Device ID</label>
+				<description>Device id of the Pulse, 16 hexadecimal digits. Meters found on the stream of the bridge are offered in
+					the inbox with their id.</description>
+			</parameter>
+			<parameter name="staleTimeout" type="integer" unit="s" min="10">
+				<label>Stale Timeout</label>
+				<description>Seconds without a valid reading after which the meter goes offline and its live values become
+					undefined.</description>
+				<default>60</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-type id="pulse-phase-power" advanced="true">
+		<item-type>Number:Power</item-type>
+		<label>Phase Power</label>
+		<description>Active power on one phase.</description>
+		<tags>
+			<point>Measurement</point>
+			<property>Power</property>
+		</tags>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+
+	<channel-type id="pulse-phase-voltage" advanced="true">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Phase Voltage</label>
+		<description>Voltage on one phase.</description>
+		<tags>
+			<point>Measurement</point>
+			<property>Voltage</property>
+		</tags>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="pulse-phase-current" advanced="true">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>Phase Current</label>
+		<description>Current on one phase.</description>
+		<tags>
+			<point>Measurement</point>
+			<property>Current</property>
+		</tags>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+
+	<channel-type id="pulse-frequency" advanced="true">
+		<item-type>Number:Frequency</item-type>
+		<label>Frequency</label>
+		<description>Grid frequency.</description>
+		<tags>
+			<point>Measurement</point>
+			<property>Frequency</property>
+		</tags>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+</thing:thing-descriptions>
