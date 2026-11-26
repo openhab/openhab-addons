@@ -22,17 +22,20 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.time.Duration;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.homekit.internal.camera.helper.DownloadVerifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * Locates or downloads the ffmpeg binary used to trans-code the camera's AAC-ELD audio for go2rtc. The homebridge
- * static build is downloaded into the binding's cache directory if it is not already present. A ffmpeg on the PATH
- * is never used, because it may lack the codecs (for example libfdk_aac) that the binding requires.
+ * static build is downloaded into a version specific directory of the binding's cache if it is not already present,
+ * and is only installed if it matches its pinned SHA-256 digest. A ffmpeg on the PATH is never used, because it may
+ * lack the codecs (for example libfdk_aac) that the binding requires.
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */
@@ -43,6 +46,15 @@ public final class FfmpegInstaller {
     private static final String NAME = "ffmpeg";
     private static final String RELEASE_URL = "https://github.com/homebridge/ffmpeg-for-homebridge/releases/download/v"
             + VERSION + "/";
+
+    /** SHA-256 digests of the release assets for {@link #VERSION}; update them whenever the version changes. */
+    private static final Map<String, String> SHA256 = Map.of( //
+            "ffmpeg-alpine-x86_64.tar.gz", "b29b9d64111410a322e5e5558d1c4f968864ca44630329dc6cd31295997999a3", //
+            "ffmpeg-alpine-aarch64.tar.gz", "3ed1724533921b6b54d1fd35802af62abd29e8672e0afb94bb2f8c18158323a3", //
+            "ffmpeg-freebsd-x86_64.tar.gz", "a448d60920e1a44c07438aac9740f8859c516993cf909337e07602ce627f4034", //
+            "ffmpeg-darwin-x86_64.tar.gz", "4db85734b819b70a171a62da08de3ac6d0c97bc2a20d68736f22deb2925463ab", //
+            "ffmpeg-darwin-arm64.tar.gz", "746cbc64795a85ef372a9043ab338eac40b8d28c3ddf1acb846bf6fac4f15ff7", //
+            "ffmpeg.exe", "d1dff2cb03eeb721c125266b07fbb323ee6d2fd23eae46a6cc3144efd4a79659");
 
     private static final Logger LOGGER = LoggerFactory.getLogger(FfmpegInstaller.class);
     private static final HttpClient HTTP_CLIENT = HttpClient.newBuilder().followRedirects(HttpClient.Redirect.NORMAL)
@@ -64,7 +76,7 @@ public final class FfmpegInstaller {
         String os = Objects.requireNonNull(System.getProperty("os.name", ""));
         String arch = Objects.requireNonNull(System.getProperty("os.arch", ""));
         String asset = assetName(os, arch);
-        Path destDir = baseDir.resolve(NAME);
+        Path destDir = baseDir.resolve(NAME).resolve(VERSION);
         Path destBinary = destDir.resolve(NAME + (isWindows(os) ? ".exe" : ""));
         synchronized (FfmpegInstaller.class) {
             if (!Files.exists(destBinary)) {
@@ -121,6 +133,11 @@ public final class FfmpegInstaller {
             if (response.statusCode() != 200) {
                 throw new IOException("Unexpected HTTP status " + response.statusCode() + " for " + url);
             }
+            String expected = SHA256.get(asset);
+            if (expected == null) {
+                throw new IOException("No SHA-256 digest pinned for " + asset);
+            }
+            DownloadVerifier.verify(tmp, expected, asset);
             if (asset.endsWith(".tar.gz")) {
                 extractFromTarGz(tmp, destBinary, url);
             } else {

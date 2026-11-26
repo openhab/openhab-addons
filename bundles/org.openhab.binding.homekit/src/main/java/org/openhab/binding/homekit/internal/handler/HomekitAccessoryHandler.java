@@ -219,6 +219,7 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler
     private final ExecutorService go2rtcExecutor = ThreadPoolManager.getPool(BINDING_ID + "-go2rtc");
 
     private boolean go2rtcStarting = false;
+    private int go2rtcLifecycle = 0;
     private @Nullable Go2RtcProcess go2rtcProcess = null;
     private @Nullable Go2RtcDataPump go2rtcPump = null;
     private @Nullable Go2RtcEndpoint go2rtcEndpoint = null;
@@ -557,6 +558,9 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler
                     eventedCharacteristics.size(), newProperties != null ? newProperties.size() : oldProperties.size(),
                     newLabel != null ? newLabel : oldLabel, newEquipmentTag != null ? newEquipmentTag.getName()
                             : oldEquipmentTag != null ? oldEquipmentTag : "n/a");
+            if (uniqueChannelsMap.containsKey(CHANNEL_CAMERA_URL)) {
+                publishCameraUrl();
+            }
         }
     }
 
@@ -628,6 +632,7 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler
 
     @Override
     public void initialize() {
+        disposing.set(false);
         super.initialize();
         // Register before go2rtc is ready. Otherwise a camera whose bridge is still starting is a 404, and the Main UI
         // error page reports that the URL was not found. Only cameras have the camera URL channel; a bridged camera
@@ -656,6 +661,9 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler
     @Override
     public void dispose() {
         disposing.set(true);
+        synchronized (this) {
+            go2rtcLifecycle++;
+        }
         lightModel = null;
         lightModelLinks.clear();
         lightModelClientHSBTypeChannel = null;
@@ -1564,21 +1572,35 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler
     }
 
     /**
+     * Returns the camera's IP address; a bridged accessory has none of its own, so it uses the bridge's.
+     */
+    private @Nullable String remoteIpAddress() {
+        Configuration config = isBridgedAccessory && getBridge() instanceof Bridge bridge ? bridge.getConfiguration()
+                : getConfig();
+        return config.get(CONFIG_IP_ADDRESS) instanceof String ip ? ip : null;
+    }
+
+    /**
      * Starts the go2rtc browser bridge once, if the camera declares a usable audio codec. The start runs on the
      * go2rtc executor because the go2rtc binary may need to be downloaded first. A failed start clears the flag,
      * so the next call retries it.
      */
     private synchronized void startGo2rtcIfAvailable() {
-        if (!isCameraStreamAvailable() || go2rtcStarting
-                || !(getConfig().get(CONFIG_IP_ADDRESS) instanceof String remoteIpAddress)) {
+        if (!isCameraStreamAvailable() || go2rtcStarting) {
+            return;
+        }
+        String remoteIpAddress = remoteIpAddress();
+        if (remoteIpAddress == null) {
+            logger.debug("{} startGo2rtcIfAvailable() no remote IP address available", thing.getUID());
             return;
         }
         List<AudioCodec> audioCodecs = this.audioCodecs;
         List<VideoCodec> videoCodecs = this.videoCodecs;
         go2rtcStarting = true;
+        int lifecycle = go2rtcLifecycle;
         logger.debug("{} startGo2rtcIfAvailable() audioCodecs={}, videoCodecs={}, remoteIpAddress={}", thing.getUID(),
                 audioCodecs, videoCodecs, remoteIpAddress);
-        go2rtcExecutor.execute(() -> startGo2rtc(audioCodecs, videoCodecs, remoteIpAddress));
+        go2rtcExecutor.execute(() -> startGo2rtc(audioCodecs, videoCodecs, remoteIpAddress, lifecycle));
     }
 
     /**
@@ -1596,8 +1618,10 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler
      * @param audioCodecs the list of audio codecs supported by the camera
      * @param videoCodecs the list of video codecs supported by the camera
      * @param remoteIpAddress the IP address of the remote client (browser)
+     * @param lifecycle the lifecycle in which the start was requested; a start from an earlier one is abandoned
      */
-    private void startGo2rtc(List<AudioCodec> audioCodecs, List<VideoCodec> videoCodecs, String remoteIpAddress) {
+    private void startGo2rtc(List<AudioCodec> audioCodecs, List<VideoCodec> videoCodecs, String remoteIpAddress,
+            int lifecycle) {
         logger.debug("{} startGo2rtc() called", thing.getUID());
 
         Go2RtcDataPump pump = null;
@@ -1617,7 +1641,7 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler
             pump = new Go2RtcDataPump(audioCodecs, videoCodecs, ffmpegBinary);
             logger.debug("{} startGo2rtc() pump={}", thing.getUID(), pump);
             synchronized (this) {
-                if (disposing.get()) {
+                if (disposing.get() || lifecycle != go2rtcLifecycle) {
                     return;
                 }
                 go2rtcPump = pump;
@@ -1637,7 +1661,7 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler
             pump.connect(address.rtspPort(), listenStreamId, talkStreamId);
 
             synchronized (this) {
-                if (disposing.get()) {
+                if (disposing.get() || lifecycle != go2rtcLifecycle) {
                     return;
                 }
                 go2rtcProcess = process;
@@ -1662,14 +1686,16 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler
         } finally {
             if (!succeeded) {
                 synchronized (this) {
-                    go2rtcStarting = false;
+                    if (lifecycle == go2rtcLifecycle) {
+                        go2rtcStarting = false;
+                    }
                 }
                 if (process != null) {
                     process.stop();
                 }
                 if (pump != null) {
                     synchronized (this) {
-                        if (Objects.equals(go2rtcPump, pump)) {
+                        if (Objects.equals(go2rtcPump, pump)) { // only if still ours
                             go2rtcPump = null;
                         }
                     }
@@ -1831,7 +1857,9 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler
             if (process == null || pump == null || endpoint == null) {
                 return;
             }
-
+            if (restartIfExited(process)) {
+                return;
+            }
             boolean wanted;
             try {
                 wanted = process.hasConsumers(Go2RtcConfig.API_HOST, endpoint.apiPort(), endpoint.stream(),
@@ -1881,6 +1909,25 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler
         }
     }
 
+    /**
+     * If the go2rtc process has exited, closes its pump and camera session and starts a replacement. Clearing the
+     * state lets {@link #startGo2rtcIfAvailable()} start again, which a started process otherwise prevents.
+     *
+     * @return true if the process had exited
+     */
+    private boolean restartIfExited(Go2RtcProcess process) {
+        synchronized (this) {
+            if (process.isRunning() || disposing.get() || !Objects.equals(go2rtcProcess, process)) {
+                return false;
+            }
+        }
+        logger.debug("{} go2rtc process exited, restarting", thing.getUID());
+        stopGo2rtc();
+        registerCamera();
+        startGo2rtcIfAvailable();
+        return true;
+    }
+
     @Override
     public boolean openBrowserStream() throws InterruptedException {
         Instant deadline = Instant.now().plusSeconds(BROWSER_OPEN_TIMEOUT_SECONDS);
@@ -1894,6 +1941,9 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler
                 if (process != null && endpoint != null) {
                     go2rtcDemand.hold(Instant.now().plusSeconds(BROWSER_DEMAND_HOLD_SECONDS));
                 }
+            }
+            if (process != null && restartIfExited(process)) {
+                continue;
             }
             if (process != null && endpoint != null) {
                 requestGo2rtcDemandCheck();

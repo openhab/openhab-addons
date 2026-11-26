@@ -98,7 +98,7 @@ public class Go2RtcCameraServlet extends HttpServlet {
 
     private static final String WEBRTC_SUFFIX = "/webrtc";
     private static final String TALK_SUFFIX = "/talk";
-    private static final Pattern THING_ID = Pattern.compile("[A-Za-z0-9._-]+");
+    private static final Pattern CAMERA_UID_KEY = Pattern.compile("[A-Za-z0-9._-]+");
 
     protected static final String UI_OR_DEFAULT_CONTEXT = "(|(osgi.http.whiteboard.context.name=default)"
             + "(osgi.http.whiteboard.context.name=org.openhab.ui.context))";
@@ -269,7 +269,7 @@ public class Go2RtcCameraServlet extends HttpServlet {
      * its not-found page.
      */
     private void registerAlias(String cameraUidKey) {
-        if (!THING_ID.matcher(cameraUidKey).matches()) {
+        if (!CAMERA_UID_KEY.matcher(cameraUidKey).matches()) {
             return;
         }
         if (aliases.containsKey(cameraUidKey)) {
