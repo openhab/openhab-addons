@@ -588,6 +588,8 @@ public enum MiIoDevices {
     XIAOMI_FRYER_MAF14("xiaomi.fryer.maf14", "Xiaomi Smart Air Fryer 4.5L", THING_TYPE_BASIC),
     XIAOMI_FRYER_MAF15("xiaomi.fryer.maf15", "Xiaomi Smart Air Fryer 4.5L", THING_TYPE_BASIC),
     XIAOMI_FRYER_MAF65("xiaomi.fryer.maf65", "Xiaomi Smart Air Fryer 6.5L", THING_TYPE_BASIC),
+    XIAOMI_FRYER_ST701O("xiaomi.fryer.st701o", "Mijia Smart Steam Air Fryer 7L", THING_TYPE_BASIC),
+    XIAOMI_FRYER_ST701T("xiaomi.fryer.st701t", "Mijia Smart Steam Air Fryer 7L", THING_TYPE_BASIC),
     XIAOMI_DERH_13L("xiaomi.derh.13l", "Mijia Smart Dehumidifier 13L", THING_TYPE_BASIC),
     XIAOMI_DERH_LITE("xiaomi.derh.lite", "Xiaomi Smart Dehumidifier Lite", THING_TYPE_BASIC),
     XIAOMI_HEATER_NB1("xiaomi.heater.nb1", "Xiaomi Smart Graphene Heater", THING_TYPE_BASIC),

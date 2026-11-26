@@ -1,0 +1,840 @@
+{
+	"deviceMapping": {
+		"id": [
+			"xiaomi.fryer.st701o",
+			"xiaomi.fryer.st701t"
+		],
+		"propertyMethod": "get_properties",
+		"maxProperties": 1,
+		"channels": [
+			{
+				"property": "",
+				"friendlyName": "Actions",
+				"channel": "actions",
+				"type": "String",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "air-fryer-start-cook",
+							"label": "Start Cooking"
+						},
+						{
+							"value": "air-fryer-cancel-cooking",
+							"label": "Cancel Cooking"
+						},
+						{
+							"value": "air-fryer-pause",
+							"label": "Pause Cooking"
+						},
+						{
+							"value": "air-fryer-resume-cook",
+							"label": "Resume Cooking"
+						},
+						{
+							"value": "custom-enter-water-clean",
+							"label": "Start Waterline Cleaning"
+						},
+						{
+							"value": "custom-close-water-clean",
+							"label": "Skip Waterline Cleaning"
+						}
+					]
+				},
+				"refresh": false,
+				"actions": [
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 2,
+						"aiid": 1,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "air-fryer-start-cook"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 2,
+						"aiid": 2,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "air-fryer-cancel-cooking"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 2,
+						"aiid": 3,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "air-fryer-pause"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 2,
+						"aiid": 5,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "air-fryer-resume-cook"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 9,
+						"aiid": 2,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "custom-enter-water-clean"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 9,
+						"aiid": 1,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "custom-close-water-clean"
+								}
+							]
+						}
+					}
+				],
+				"readmeComment": "Value mapping `[\"air-fryer-start-cook\"\u003d\"Start Cooking\",\"air-fryer-cancel-cooking\"\u003d\"Cancel Cooking\",\"air-fryer-pause\"\u003d\"Pause Cooking\",\"air-fryer-resume-cook\"\u003d\"Resume Cooking\",\"custom-enter-water-clean\"\u003d\"Start Waterline Cleaning\",\"custom-close-water-clean\"\u003d\"Skip Waterline Cleaning\"]`"
+			},
+			{
+				"property": "",
+				"friendlyName": "Start Cooking With Settings",
+				"channel": "start_cook",
+				"type": "String",
+				"refresh": false,
+				"actions": [
+					{
+						"command": "action",
+						"parameterType": "JSON",
+						"siid": 2,
+						"aiid": 4
+					}
+				],
+				"readmeComment": "Starts cooking with a JSON list of 8 values: time (minutes), temperature (degrees Celsius), recipe id, keep warm after cooking (true or false), scheduled start time (minutes, 0 starts now), cooking weight (grams), food quantity (1 single layer, 2 double layer), texture (0 none, 1 air fry, 2 steam and air fry, 3 steam). The recipe id is `M` plus the mode number (for example `M1` air fry custom, `M8` steam custom) or `C` plus the recipeID of a cloud recipe. The Mi Home app shows that cooking cannot be started from the app, so the device may refuse a remote start. Example air frying 15 minutes at 180 degrees: `[15,180,\"M1\",false,0,500,1,1]`."
+			},
+			{
+				"property": "on",
+				"siid": 2,
+				"piid": 26,
+				"friendlyName": "Power",
+				"channel": "power",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch",
+					"Power"
+				]
+			},
+			{
+				"property": "status",
+				"siid": 2,
+				"piid": 2,
+				"friendlyName": "Air Fryer - Status",
+				"channel": "status",
+				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "0",
+							"label": "Off"
+						},
+						{
+							"value": "1",
+							"label": "Idle"
+						},
+						{
+							"value": "2",
+							"label": "Paused"
+						},
+						{
+							"value": "3",
+							"label": "Scheduled"
+						},
+						{
+							"value": "4",
+							"label": "Cooking"
+						},
+						{
+							"value": "5",
+							"label": "Cooking Completed"
+						},
+						{
+							"value": "6",
+							"label": "Paused (Basket Removed)"
+						},
+						{
+							"value": "7",
+							"label": "Keep Warm"
+						},
+						{
+							"value": "8",
+							"label": "Keep Warm Completed"
+						},
+						{
+							"value": "12",
+							"label": "Paused (Water Shortage)"
+						},
+						{
+							"value": "13",
+							"label": "Canceled (Water Shortage)"
+						},
+						{
+							"value": "14",
+							"label": "Cleaning Paused (Water Shortage)"
+						},
+						{
+							"value": "15",
+							"label": "Connected Standby"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [],
+				"tags": [
+					"Status"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Off\",\"1\"\u003d\"Idle\",\"2\"\u003d\"Paused\",\"3\"\u003d\"Scheduled\",\"4\"\u003d\"Cooking\",\"5\"\u003d\"Cooking Completed\",\"6\"\u003d\"Paused (Basket Removed)\",\"7\"\u003d\"Keep Warm\",\"8\"\u003d\"Keep Warm Completed\",\"12\"\u003d\"Paused (Water Shortage)\",\"13\"\u003d\"Canceled (Water Shortage)\",\"14\"\u003d\"Cleaning Paused (Water Shortage)\",\"15\"\u003d\"Connected Standby\"]`"
+			},
+			{
+				"property": "fault",
+				"siid": 2,
+				"piid": 3,
+				"friendlyName": "Air Fryer - Device Fault",
+				"channel": "fault",
+				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "0",
+							"label": "No Faults"
+						},
+						{
+							"value": "1",
+							"label": "Temperature Sensor Failure"
+						},
+						{
+							"value": "2",
+							"label": "Temperature Sensor Short Circuit"
+						},
+						{
+							"value": "3",
+							"label": "Temperature Sensor Disconnected"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "error",
+				"tags": [
+					"Status"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"No Faults\",\"1\"\u003d\"Temperature Sensor Failure\",\"2\"\u003d\"Temperature Sensor Short Circuit\",\"3\"\u003d\"Temperature Sensor Disconnected\"]`"
+			},
+			{
+				"property": "target-time",
+				"siid": 2,
+				"piid": 5,
+				"friendlyName": "Air Fryer - Target Time",
+				"channel": "target_time",
+				"type": "Number:Time",
+				"unit": "minutes",
+				"stateDescription": {
+					"minimum": 1,
+					"maximum": 1440,
+					"step": 1,
+					"pattern": "%.0f %unit%"
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "time",
+				"tags": [
+					"Setpoint",
+					"Duration"
+				]
+			},
+			{
+				"property": "target-temperature",
+				"siid": 2,
+				"piid": 7,
+				"friendlyName": "Air Fryer - Target Temperature",
+				"channel": "target_temperature",
+				"type": "Number:Temperature",
+				"unit": "celsius",
+				"stateDescription": {
+					"minimum": 30,
+					"maximum": 230,
+					"step": 5,
+					"pattern": "%.0f %unit%"
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "temperature",
+				"tags": [
+					"Setpoint",
+					"Temperature"
+				]
+			},
+			{
+				"property": "mode",
+				"siid": 2,
+				"piid": 4,
+				"friendlyName": "Air Fryer - Mode",
+				"channel": "mode",
+				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "1",
+							"label": "Air Fry Custom"
+						},
+						{
+							"value": "2",
+							"label": "Frozen Fries"
+						},
+						{
+							"value": "3",
+							"label": "Fresh Potatoes"
+						},
+						{
+							"value": "4",
+							"label": "Chicken Drumstick"
+						},
+						{
+							"value": "5",
+							"label": "Steak"
+						},
+						{
+							"value": "6",
+							"label": "Fish"
+						},
+						{
+							"value": "7",
+							"label": "Vegetables"
+						},
+						{
+							"value": "8",
+							"label": "Steam Custom"
+						},
+						{
+							"value": "9",
+							"label": "Steam Root Vegetables"
+						},
+						{
+							"value": "10",
+							"label": "Steam Broccoli"
+						},
+						{
+							"value": "11",
+							"label": "Steam Corn"
+						},
+						{
+							"value": "12",
+							"label": "Steam Salmon"
+						},
+						{
+							"value": "13",
+							"label": "Steam Rice"
+						},
+						{
+							"value": "14",
+							"label": "Steam Egg"
+						},
+						{
+							"value": "15",
+							"label": "Steam & Air Fry Chicken Drumstick"
+						},
+						{
+							"value": "16",
+							"label": "Steam & Air Fry Fish"
+						},
+						{
+							"value": "17",
+							"label": "Steam & Air Fry Vegetables"
+						},
+						{
+							"value": "18",
+							"label": "Steam & Air Fry Fresh Potatoes"
+						},
+						{
+							"value": "19",
+							"label": "Steam & Air Fry Dumplings"
+						},
+						{
+							"value": "20",
+							"label": "Steam & Air Fry Bread"
+						},
+						{
+							"value": "21",
+							"label": "Bake Custom"
+						},
+						{
+							"value": "22",
+							"label": "Bake Cake"
+						},
+						{
+							"value": "23",
+							"label": "Bake Pizza"
+						},
+						{
+							"value": "24",
+							"label": "Bake Bread"
+						},
+						{
+							"value": "25",
+							"label": "Sous Vide Custom"
+						},
+						{
+							"value": "26",
+							"label": "Sous Vide Steak"
+						},
+						{
+							"value": "27",
+							"label": "Sous Vide Chicken Cutlet"
+						},
+						{
+							"value": "28",
+							"label": "Sous Vide Salmon"
+						},
+						{
+							"value": "29",
+							"label": "Sous Vide Egg"
+						},
+						{
+							"value": "30",
+							"label": "Max Crisp"
+						},
+						{
+							"value": "31",
+							"label": "Dehydrate"
+						},
+						{
+							"value": "32",
+							"label": "Ferment"
+						},
+						{
+							"value": "33",
+							"label": "Defrost"
+						},
+						{
+							"value": "34",
+							"label": "Reheat"
+						},
+						{
+							"value": "35",
+							"label": "Dry"
+						},
+						{
+							"value": "36",
+							"label": "Waterline Cleaning"
+						},
+						{
+							"value": "37",
+							"label": "Deodorize"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [],
+				"tags": [
+					"Status",
+					"Mode"
+				],
+				"readmeComment": "Value mapping `[\"1\"\u003d\"Air Fry Custom\",\"2\"\u003d\"Frozen Fries\",\"3\"\u003d\"Fresh Potatoes\",\"4\"\u003d\"Chicken Drumstick\",\"5\"\u003d\"Steak\",\"6\"\u003d\"Fish\",\"7\"\u003d\"Vegetables\",\"8\"\u003d\"Steam Custom\",\"9\"\u003d\"Steam Root Vegetables\",\"10\"\u003d\"Steam Broccoli\",\"11\"\u003d\"Steam Corn\",\"12\"\u003d\"Steam Salmon\",\"13\"\u003d\"Steam Rice\",\"14\"\u003d\"Steam Egg\",\"15\"\u003d\"Steam & Air Fry Chicken Drumstick\",\"16\"\u003d\"Steam & Air Fry Fish\",\"17\"\u003d\"Steam & Air Fry Vegetables\",\"18\"\u003d\"Steam & Air Fry Fresh Potatoes\",\"19\"\u003d\"Steam & Air Fry Dumplings\",\"20\"\u003d\"Steam & Air Fry Bread\",\"21\"\u003d\"Bake Custom\",\"22\"\u003d\"Bake Cake\",\"23\"\u003d\"Bake Pizza\",\"24\"\u003d\"Bake Bread\",\"25\"\u003d\"Sous Vide Custom\",\"26\"\u003d\"Sous Vide Steak\",\"27\"\u003d\"Sous Vide Chicken Cutlet\",\"28\"\u003d\"Sous Vide Salmon\",\"29\"\u003d\"Sous Vide Egg\",\"30\"\u003d\"Max Crisp\",\"31\"\u003d\"Dehydrate\",\"32\"\u003d\"Ferment\",\"33\"\u003d\"Defrost\",\"34\"\u003d\"Reheat\",\"35\"\u003d\"Dry\",\"36\"\u003d\"Waterline Cleaning\",\"37\"\u003d\"Deodorize\"]`"
+			},
+			{
+				"property": "left-time",
+				"siid": 2,
+				"piid": 6,
+				"friendlyName": "Air Fryer - Left Time",
+				"channel": "left_time",
+				"type": "Number:Time",
+				"unit": "minutes",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 1440,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "time",
+				"tags": [
+					"Status",
+					"Duration"
+				]
+			},
+			{
+				"property": "target-cooking-measure",
+				"siid": 2,
+				"piid": 24,
+				"friendlyName": "Air Fryer - Food Quantity",
+				"channel": "target_cooking_measure",
+				"type": "Number",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"tags": [
+					"Control"
+				],
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "None"
+						},
+						{
+							"value": "1",
+							"label": "Single Layer"
+						},
+						{
+							"value": "2",
+							"label": "Double Layer"
+						}
+					]
+				},
+				"readmeComment": "Value mapping `[\"0\"\u003d\"None\",\"1\"\u003d\"Single Layer\",\"2\"\u003d\"Double Layer\"]`"
+			},
+			{
+				"property": "texture",
+				"siid": 2,
+				"piid": 25,
+				"friendlyName": "Air Fryer - Texture",
+				"channel": "texture",
+				"type": "Number",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"tags": [
+					"Control",
+					"Mode"
+				],
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "None"
+						},
+						{
+							"value": "1",
+							"label": "Air Fry"
+						},
+						{
+							"value": "2",
+							"label": "Steam & Air Fry"
+						},
+						{
+							"value": "3",
+							"label": "Steam"
+						}
+					]
+				},
+				"readmeComment": "Value mapping `[\"0\"\u003d\"None\",\"1\"\u003d\"Air Fry\",\"2\"\u003d\"Steam & Air Fry\",\"3\"\u003d\"Steam\"]`"
+			},
+			{
+				"property": "recipe-id",
+				"siid": 2,
+				"piid": 12,
+				"friendlyName": "Air Fryer - Recipe Id",
+				"channel": "recipe_id",
+				"type": "String",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "STRING"
+					}
+				]
+			},
+			{
+				"property": "turn-pot",
+				"siid": 2,
+				"piid": 15,
+				"friendlyName": "Air Fryer - Turn Food",
+				"channel": "turn_pot",
+				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "1",
+							"label": "No Action"
+						},
+						{
+							"value": "2",
+							"label": "Turn Food Now"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [],
+				"tags": [
+					"Status"
+				],
+				"readmeComment": "Value mapping `[\"1\"\u003d\"No Action\",\"2\"\u003d\"Turn Food Now\"]`"
+			},
+			{
+				"property": "turn-pot-config",
+				"siid": 2,
+				"piid": 16,
+				"friendlyName": "Air Fryer - Turn Food Reminder",
+				"channel": "turn_pot_config",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"tags": [
+					"Switch",
+					"Enabled"
+				]
+			},
+			{
+				"property": "current-keep-warm",
+				"siid": 2,
+				"piid": 18,
+				"friendlyName": "Air Fryer - Keep Warm After Cooking",
+				"channel": "current_keep_warm",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"tags": [
+					"Switch",
+					"Enabled"
+				]
+			},
+			{
+				"property": "auto-keep-warm",
+				"siid": 2,
+				"piid": 19,
+				"friendlyName": "Air Fryer - Keep Warm Available",
+				"channel": "auto_keep_warm",
+				"type": "Switch",
+				"stateDescription": {
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"tags": [
+					"Status"
+				]
+			},
+			{
+				"property": "reservation-left-time",
+				"siid": 2,
+				"piid": 20,
+				"friendlyName": "Air Fryer - Scheduled Start Time Left",
+				"channel": "reservation_left_time",
+				"type": "Number:Time",
+				"unit": "minutes",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 2880,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "time",
+				"tags": [
+					"Status",
+					"Duration"
+				]
+			},
+			{
+				"property": "cooking-weight",
+				"siid": 2,
+				"piid": 21,
+				"friendlyName": "Air Fryer - Cooking Weight",
+				"channel": "cooking_weight",
+				"type": "Number",
+				"stateDescription": {
+					"minimum": 100,
+					"maximum": 1800,
+					"step": 1,
+					"pattern": "%.0f g"
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"tags": [
+					"Setpoint"
+				]
+			},
+			{
+				"property": "water-clean",
+				"siid": 9,
+				"piid": 1,
+				"friendlyName": "Waterline Cleaning",
+				"channel": "water_clean",
+				"type": "Switch",
+				"stateDescription": {
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"tags": [
+					"Status"
+				]
+			},
+			{
+				"property": "water-clean-timeout",
+				"siid": 9,
+				"piid": 5,
+				"friendlyName": "Waterline Cleaning Due",
+				"channel": "water_clean_timeout",
+				"type": "Switch",
+				"stateDescription": {
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"tags": [
+					"Status"
+				]
+			},
+			{
+				"property": "clean-stage",
+				"siid": 9,
+				"piid": 6,
+				"friendlyName": "Waterline Cleaning Stage",
+				"channel": "clean_stage",
+				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "0",
+							"label": "None"
+						},
+						{
+							"value": "1",
+							"label": "Stage 1"
+						},
+						{
+							"value": "2",
+							"label": "Stage 2"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [],
+				"tags": [
+					"Status"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"None\",\"1\"\u003d\"Stage 1\",\"2\"\u003d\"Stage 2\"]`"
+			},
+			{
+				"property": "continue-clean",
+				"siid": 9,
+				"piid": 7,
+				"friendlyName": "Waterline Cleaning Not Completed",
+				"channel": "continue_clean",
+				"type": "Switch",
+				"stateDescription": {
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"tags": [
+					"Status"
+				]
+			},
+			{
+				"property": "",
+				"friendlyName": "Recipes",
+				"channel": "recipes",
+				"type": "String",
+				"stateDescription": {
+					"readOnly": true
+				},
+				"refresh": true,
+				"refreshInterval": -1,
+				"customRefreshCommand": "/v2/recipes/query",
+				"customRefreshParameters": {
+					"vendor": "xiaomi",
+					"deviceType": "fryer",
+					"model": "xiaomi.fryer.st701o"
+				},
+				"transformation": "getJsonElement-recipes[*].{recipeID,recipeName,recipeCommand.cookCommand.time,recipeCommand.cookCommand.temperature,recipeCommand.cookCommand.preHeat,recipeCommand.cookCommand.capacity}",
+				"actions": [],
+				"readmeComment": "List of the Mi Home cloud recipes as JSON, with for each recipe the recipeID, recipeName, time (minutes), temperature (degrees Celsius), preHeat and capacity. Requires the cloud server to be set. The list is read once, send a refresh command to read it again."
+			}
+		],
+		"experimental": true
+	}
+}
