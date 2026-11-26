@@ -499,6 +499,7 @@ public class AtvHandler extends BaseThingHandler {
                     }
                 });
             } catch (InterruptedException e) {
+                request.abort(e);
                 Thread.currentThread().interrupt();
             } catch (ExecutionException | TimeoutException | RuntimeException e) {
                 logger.debug("Cannot stream {}: {}", source, e.getMessage());
