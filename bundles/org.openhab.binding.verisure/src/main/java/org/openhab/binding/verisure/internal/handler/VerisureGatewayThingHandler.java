@@ -52,7 +52,19 @@ public class VerisureGatewayThingHandler extends VerisureThingHandler<VerisureGa
     @Override
     public synchronized void update(VerisureGatewayDTO thing) {
         updateGatewayState(thing);
+        updateFirmwareProperties(thing);
         updateStatus(ThingStatus.ONLINE);
+    }
+
+    private void updateFirmwareProperties(VerisureGatewayDTO gatewayJSON) {
+        String firmwareVersion = gatewayJSON.getFirmwareVersion();
+        if (firmwareVersion != null) {
+            updateProperty(Thing.PROPERTY_FIRMWARE_VERSION, firmwareVersion);
+        }
+        String latestFirmwareVersion = gatewayJSON.getLatestFirmwareVersion();
+        if (latestFirmwareVersion != null) {
+            updateProperty(PROPERTY_LATEST_FIRMWARE_VERSION, latestFirmwareVersion);
+        }
     }
 
     private void updateGatewayState(VerisureGatewayDTO gatewayJSON) {

@@ -58,6 +58,7 @@ import org.openhab.binding.verisure.internal.dto.VerisureDoorWindowsDTO;
 import org.openhab.binding.verisure.internal.dto.VerisureEventLogDTO;
 import org.openhab.binding.verisure.internal.dto.VerisureGatewayDTO;
 import org.openhab.binding.verisure.internal.dto.VerisureGatewayDTO.CommunicationState;
+import org.openhab.binding.verisure.internal.dto.VerisureInstallationInfoDTO;
 import org.openhab.binding.verisure.internal.dto.VerisureInstallationsDTO;
 import org.openhab.binding.verisure.internal.dto.VerisureInstallationsDTO.Owainstallation;
 import org.openhab.binding.verisure.internal.dto.VerisureMiceDetectionDTO;
@@ -178,6 +179,29 @@ public class VerisureSession {
     }
 
     @SuppressWarnings({ "unchecked" })
+    /**
+     * Sends a GraphQL operation and returns the answer, for operations where the caller needs more than the outcome.
+     *
+     * @return the response, or null if the request failed
+     */
+    public @Nullable JsonObject postGraphQL(String data, BigDecimal installationId) {
+        try {
+            if (setSessionCookieAuthLogin() != HttpStatus.OK_200) {
+                return null;
+            }
+            configureInstallationInstance(installationId);
+            JsonElement root = postJSONVerisureAPI(START_GRAPHQL, data, JsonElement.class);
+            if (root instanceof JsonArray array && !array.isEmpty()) {
+                root = array.get(0);
+            }
+            return root instanceof JsonObject object ? object : null;
+        } catch (ExecutionException | InterruptedException | TimeoutException | JsonSyntaxException
+                | PostToAPIException e) {
+            logger.debug("Failed to send a POST to the API {}", e.getMessage());
+            return null;
+        }
+    }
+
     public <T extends VerisureThingDTO> @Nullable T getVerisureThing(String deviceId, Class<T> thingType) {
         VerisureThingDTO thing = verisureThings.get(deviceId);
         if (thingType.isInstance(thing)) {
@@ -808,7 +832,8 @@ public class VerisureSession {
             VerisureInstallation installation = verisureInstallations.getValue();
             try {
                 configureInstallationInstance(installation.getInstallationId());
-                updateAlarmStatus(installation);
+                VerisureInstallationInfoDTO installationInfo = getInstallationInfo(installation);
+                updateAlarmStatus(installation, installationInfo);
                 Map<String, Battery> batteryStatus = getBatteryStatus(installation);
                 updateSmartLockStatus(installation, batteryStatus);
                 updateMiceDetectionStatus(installation);
@@ -819,7 +844,7 @@ public class VerisureSession {
                 updateSmartPlugStatus(installation);
                 updateBroadbandConnectionStatus(installation);
                 updateEventLogStatus(installation);
-                updateGatewayStatus(installation);
+                updateGatewayStatus(installation, installationInfo);
             } catch (ExecutionException | InterruptedException | TimeoutException | PostToAPIException e) {
                 logger.debug("Failed to update status {}", e.getMessage());
                 return false;
@@ -836,7 +861,8 @@ public class VerisureSession {
         return gson.toJson(Collections.singletonList(operationJSON));
     }
 
-    private synchronized void updateAlarmStatus(VerisureInstallation installation) throws PostToAPIException {
+    private synchronized void updateAlarmStatus(VerisureInstallation installation,
+            @Nullable VerisureInstallationInfoDTO installationInfo) throws PostToAPIException {
         BigDecimal installationId = installation.getInstallationId();
         String url = START_GRAPHQL;
         String operation = "ArmState";
@@ -853,6 +879,9 @@ public class VerisureSession {
             VerisureSystemHealthDTO systemHealth = getSystemHealth(installation);
             if (systemHealth != null) {
                 thing.setSystemHealth(systemHealth.getUrgency(), systemHealth.getAlertTypes());
+            }
+            if (installationInfo != null) {
+                thing.setVacationMode(installationInfo.getVacationMode());
             }
             // Set unique deviceID
             String deviceId = "alarm" + installationId;
@@ -964,6 +993,24 @@ public class VerisureSession {
         }
     }
 
+    private @Nullable VerisureInstallationInfoDTO getInstallationInfo(VerisureInstallation installation) {
+        String operation = "InstallationInfo";
+        VariablesDTO variables = new VariablesDTO();
+        variables.setGiid(installation.getInstallationId().toString());
+        String query = "query " + operation
+                + "($giid: String!) {\n installation(giid: $giid) {\n vacationMode {\n active\n fromDate\n toDate\n __typename\n }\n firmware {\n status {\n latestFirmware\n gateways {\n deviceLabel\n reportedRunningFirmware\n __typename\n }\n __typename\n }\n __typename\n }\n __typename\n }\n}\n";
+        logger.debug("Querying API for vacation mode and firmware status");
+
+        try {
+            return postJSONVerisureAPI(START_GRAPHQL, createOperationJSON(operation, variables, query),
+                    VerisureInstallationInfoDTO.class);
+        } catch (ExecutionException | InterruptedException | TimeoutException | JsonSyntaxException
+                | PostToAPIException e) {
+            logger.debug("Failed to query for vacation mode and firmware status: {}", e.getMessage());
+            return null;
+        }
+    }
+
     private @Nullable VerisureSystemHealthDTO getSystemHealth(VerisureInstallation installation) {
         String operation = "SystemHealth";
         String query = "query " + operation
@@ -1056,7 +1103,7 @@ public class VerisureSession {
         variables.setGiid(installationId.toString());
         String operation = "Climate";
         String query = "query " + operation
-                + "($giid: String!) {\n installation(giid: $giid) {\n climates {\n device {\n deviceLabel\n area\n gui {\n label\n __typename\n }\n __typename\n }\n humidityEnabled\n humidityTimestamp\n humidityValue\n temperatureTimestamp\n temperatureValue\n __typename\n }\n __typename\n}\n}\n";
+                + "($giid: String!) {\n installation(giid: $giid) {\n climates {\n device {\n deviceLabel\n area\n gui {\n label\n __typename\n }\n __typename\n }\n humidityEnabled\n humidityTimestamp\n humidityValue\n temperatureTimestamp\n temperatureValue\n thresholds {\n sensorType\n min\n max\n minActive\n maxActive\n __typename\n }\n __typename\n }\n __typename\n}\n}\n";
 
         String queryQLClimates = createOperationJSON(operation, variables, query);
         logger.debug("Querying API for climate status");
@@ -1080,6 +1127,7 @@ public class VerisureSession {
                                 VerisureMiceDetectionDTO miceDetectorThing = (VerisureMiceDetectionDTO) mouseThing;
                                 miceDetectorThing.setTemperatureValue(climate.getTemperatureValue());
                                 miceDetectorThing.setTemperatureTime(climate.getTemperatureTimestamp());
+                                miceDetectorThing.setThresholds(climate.getThresholds());
                                 notifyListeners(miceDetectorThing);
                                 logger.debug("Found climate thing for a Verisure Mouse Detector");
                             }
@@ -1288,7 +1336,8 @@ public class VerisureSession {
         }
     }
 
-    private synchronized void updateGatewayStatus(VerisureInstallation installation) {
+    private synchronized void updateGatewayStatus(VerisureInstallation installation,
+            @Nullable VerisureInstallationInfoDTO installationInfo) {
         BigDecimal installationId = installation.getInstallationId();
         String url = START_GRAPHQL;
         String operation = "communicationState";
@@ -1310,6 +1359,12 @@ public class VerisureSession {
                 if (!communicationStateList.isEmpty()) {
                     String deviceId = communicationStateList.get(0).getDevice().getDeviceLabel();
                     if (deviceId != null) {
+                        if (installationInfo != null) {
+                            thing.setFirmware(
+                                    installationInfo
+                                            .getRunningFirmware(VerisureThingConfiguration.normalizeDeviceId(deviceId)),
+                                    installationInfo.getLatestFirmware());
+                        }
                         notifyListenersIfChanged(thing, installation, deviceId);
                     }
                 }

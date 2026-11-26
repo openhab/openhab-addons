@@ -20,6 +20,7 @@ import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.verisure.internal.dto.VerisureInstallationInfoDTO.VacationMode;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
@@ -33,6 +34,15 @@ public class VerisureAlarmsDTO extends VerisureBaseThingDTO {
 
     private @Nullable String systemHealth;
     private @Nullable String systemHealthAlerts;
+    private @Nullable VacationMode vacationMode;
+
+    public @Nullable VacationMode getVacationMode() {
+        return vacationMode;
+    }
+
+    public void setVacationMode(@Nullable VacationMode vacationMode) {
+        this.vacationMode = vacationMode;
+    }
 
     public @Nullable String getSystemHealth() {
         return systemHealth;
@@ -73,7 +83,8 @@ public class VerisureAlarmsDTO extends VerisureBaseThingDTO {
         }
         VerisureAlarmsDTO other = (VerisureAlarmsDTO) obj;
         return Objects.equals(systemHealth, other.systemHealth)
-                && Objects.equals(systemHealthAlerts, other.systemHealthAlerts);
+                && Objects.equals(systemHealthAlerts, other.systemHealthAlerts)
+                && Objects.equals(vacationMode, other.vacationMode);
     }
 
     public static class ArmState {
