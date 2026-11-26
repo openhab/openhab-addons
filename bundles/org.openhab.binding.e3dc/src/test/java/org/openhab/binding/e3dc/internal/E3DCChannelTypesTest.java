@@ -57,7 +57,7 @@ class E3DCChannelTypesTest {
 
     private static final Pattern CHANNEL_TYPE = Pattern
             .compile("<channel-type id=\"([^\"]+)\"[^>]*>(.*?)</channel-type>", Pattern.DOTALL);
-    private static final Pattern ITEM_TYPE = Pattern.compile("<item-type>([^<]+)</item-type>");
+    private static final Pattern ITEM_TYPE = Pattern.compile("<item-type[^>]*>([^<]+)</item-type>");
 
     /** A channel type definition as it is declared in the XML. */
     private record ChannelType(String id, String itemType, String body) {

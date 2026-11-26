@@ -70,7 +70,7 @@
 	</channel-type>
 
 	<channel-type id="module-remaining-capacity">
-		<item-type>Number:ElectricCharge</item-type>
+		<item-type unitHint="Ah">Number:ElectricCharge</item-type>
 		<label>Remaining Capacity</label>
 		<description>Remaining Capacity of the battery cell module</description>
 		<tags>
@@ -80,7 +80,7 @@
 	</channel-type>
 
 	<channel-type id="module-full-charge-capacity">
-		<item-type>Number:ElectricCharge</item-type>
+		<item-type unitHint="Ah">Number:ElectricCharge</item-type>
 		<label>Full Charge Capacity</label>
 		<description>Full Charge Capacity of the battery cell module</description>
 		<tags>
@@ -90,7 +90,7 @@
 	</channel-type>
 
 	<channel-type id="module-design-capacity">
-		<item-type>Number:ElectricCharge</item-type>
+		<item-type unitHint="Ah">Number:ElectricCharge</item-type>
 		<label>Design Capacity</label>
 		<description>Design Capacity of the battery cell module</description>
 		<tags>
@@ -172,7 +172,7 @@
 	</channel-type>
 
 	<channel-type id="module-remaining-energy">
-		<item-type>Number:Energy</item-type>
+		<item-type unitHint="kWh">Number:Energy</item-type>
 		<label>Remaining Energy</label>
 		<description>Remaining energy of the battery module</description>
 		<tags>
@@ -183,7 +183,7 @@
 	</channel-type>
 
 	<channel-type id="module-full-charge-energy">
-		<item-type>Number:Energy</item-type>
+		<item-type unitHint="kWh">Number:Energy</item-type>
 		<label>Full Charge Energy</label>
 		<description>Energy of the battery module at full charge</description>
 		<tags>
@@ -194,7 +194,7 @@
 	</channel-type>
 
 	<channel-type id="module-design-energy">
-		<item-type>Number:Energy</item-type>
+		<item-type unitHint="kWh">Number:Energy</item-type>
 		<label>Design Energy</label>
 		<description>Design energy of the battery module</description>
 		<tags>

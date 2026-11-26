@@ -78,7 +78,7 @@
 	</channel-type>
 
 	<channel-type id="pack-design-capacity">
-		<item-type>Number:ElectricCharge</item-type>
+		<item-type unitHint="Ah">Number:ElectricCharge</item-type>
 		<label>Design Capacity</label>
 		<description>Design capacity of the battery</description>
 		<tags>
@@ -88,7 +88,7 @@
 	</channel-type>
 
 	<channel-type id="pack-usable-capacity">
-		<item-type>Number:ElectricCharge</item-type>
+		<item-type unitHint="Ah">Number:ElectricCharge</item-type>
 		<label>Usable Capacity</label>
 		<description>Usable capacity of the battery</description>
 		<tags>
@@ -98,7 +98,7 @@
 	</channel-type>
 
 	<channel-type id="pack-usable-remaining-capacity">
-		<item-type>Number:ElectricCharge</item-type>
+		<item-type unitHint="Ah">Number:ElectricCharge</item-type>
 		<label>Usable Capacity Left</label>
 		<description>Usable capacity left in the battery</description>
 		<tags>
@@ -108,7 +108,7 @@
 	</channel-type>
 
 	<channel-type id="pack-design-energy">
-		<item-type>Number:Energy</item-type>
+		<item-type unitHint="kWh">Number:Energy</item-type>
 		<label>Design Energy</label>
 		<description>Design energy of the battery</description>
 		<tags>
@@ -119,7 +119,7 @@
 	</channel-type>
 
 	<channel-type id="pack-usable-energy">
-		<item-type>Number:Energy</item-type>
+		<item-type unitHint="kWh">Number:Energy</item-type>
 		<label>Usable Energy</label>
 		<description>Usable energy of the battery</description>
 		<tags>
@@ -130,7 +130,7 @@
 	</channel-type>
 
 	<channel-type id="pack-usable-remaining-energy">
-		<item-type>Number:Energy</item-type>
+		<item-type unitHint="kWh">Number:Energy</item-type>
 		<label>Usable Remaining Energy</label>
 		<description>Usable energy left in the battery</description>
 		<tags>
