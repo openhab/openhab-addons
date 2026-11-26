@@ -9,17 +9,17 @@
 		"channels": [
 			{
 				"property": "led",
-				"friendlyName": "LED",
+				"friendlyName": "Lamp",
 				"channel": "led",
 				"type": "Switch",
 				"refresh": true,
-				"ChannelGroup": "actions",
 				"actions": [
 					{
 						"command": "set_led",
 						"parameterType": "ONOFFNUMBER"
 					}
 				],
+				"category": "light",
 				"tags": [
 					"Switch",
 					"Light"
@@ -34,7 +34,7 @@
 					"options": [
 						{
 							"value": "0",
-							"label": "Stop"
+							"label": "Pause"
 						},
 						{
 							"value": "1",
@@ -47,17 +47,17 @@
 					]
 				},
 				"refresh": true,
-				"ChannelGroup": "actions",
 				"actions": [
 					{
 						"command": "set_motor",
 						"parameterType": "NUMBER"
 					}
 				],
+				"category": "movecontrol",
 				"tags": [
 					"Control"
 				],
-				"readmeComment": "Value mapping `[\"0\"=\"Stop\",\"1\"=\"Rise\",\"2\"=\"Down\"]`"
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Pause\",\"1\"\u003d\"Rise\",\"2\"\u003d\"Down\"]`"
 			},
 			{
 				"property": "airer_location",
@@ -82,12 +82,12 @@
 					"readOnly": true
 				},
 				"refresh": true,
-				"ChannelGroup": "Status",
+				"category": "status",
 				"tags": [
 					"Status",
 					"Position"
 				],
-				"readmeComment": "Value mapping `[\"0\"=\"Normal\",\"1\"=\"Highest\",\"2\"=\"Lowest\"]`"
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Normal\",\"1\"\u003d\"Highest\",\"2\"\u003d\"Lowest\"]`"
 			}
 		],
 		"experimental": true
