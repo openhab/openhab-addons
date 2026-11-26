@@ -124,9 +124,3 @@ curl -H "Authorization: Bearer abc123" http://localhost:8080/httphook/frame/stat
 ```
 
 An e-ink display can call this URL when it wakes up, fetch all the values it needs in one request, and go back to sleep after updating the screen.
-
-## Migrating from RESTify Preview Builds
-
-1. Recreate each `restify:endpoint` as an `httphook:endpoint` Thing with a `httphook:response` channel. Transfer the HTTP method to the channel and move any Basic or Bearer credentials from the RESTify JSON to the Thing configuration.
-1. Convert the RESTify `response` JSON into an openHAB transformation and set the channel's `transformationPattern`. For example, replace a RESTify value of `$item.InsideTemperature.state` with `items.InsideTemperature.state` in a JavaScript transformation like the one above.
-1. Update clients from `/restify/<path>` to `/httphook/<thing-id>/<channel-id>`. For example, a RESTify endpoint at `/restify/frame-status` can move to `/httphook/frame/status`.
