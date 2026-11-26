@@ -226,6 +226,8 @@ public class Go2RtcDataPump implements AutoCloseable {
     private volatile @Nullable SessionState session = null;
     private volatile @Nullable RtspConnection publisher = null;
     private volatile @Nullable String publishUrl = null;
+    private volatile @Nullable String publishStream = null;
+    private volatile int publishPort = 0;
     private volatile @Nullable RtspConnection talkReader = null;
     private volatile boolean closed;
     private final Object talkMonitor = new Object();
@@ -317,13 +319,62 @@ public class Go2RtcDataPump implements AutoCloseable {
         }
         publishUrl = url;
         publisher = connection;
+        publishPort = rtspPort;
+        publishStream = listenStream;
         startThread("talk-rtp", () -> relayTalk(rtspPort, talkStream));
+    }
+
+    /**
+     * Returns whether the publisher connection to go2rtc is established.
+     */
+    public boolean isPublisherConnected() {
+        return publisher != null;
+    }
+
+    /**
+     * Publishes the camera media to go2rtc again after the publisher connection failed, for example because go2rtc
+     * closed it while its process is still running. Does nothing if the publisher is connected or the pump was never
+     * connected or is closed.
+     *
+     * @throws IOException if go2rtc refuses the publish
+     */
+    public synchronized void reconnectPublisher() throws IOException {
+        String stream = publishStream;
+        if (closed || publisher != null || stream == null) {
+            return;
+        }
+        RtspConnection connection = new RtspConnection(RTSP_HOST, publishPort);
+        String url = url(publishPort, stream);
+        try {
+            publish(connection, url);
+        } catch (IOException | RuntimeException e) {
+            connection.close();
+            throw e;
+        }
+        publishUrl = url;
+        publisher = connection;
+        LOGGER.debug("go2rtc publisher reconnected");
+    }
+
+    /**
+     * Discards a failed publisher connection, unless it has already been replaced.
+     */
+    private synchronized void dropPublisher(RtspConnection failed) {
+        if (publisher == failed) {
+            publisher = null;
+        }
+        failed.close();
     }
 
     private void publishPacket(SessionState current, int channel, byte[] data, int length) throws IOException {
         RtspConnection connection = publisher;
         if (Objects.equals(session, current) && connection != null) {
-            connection.sendFrame(channel, data, length);
+            try {
+                connection.sendFrame(channel, data, length);
+            } catch (IOException e) {
+                dropPublisher(connection);
+                throw e;
+            }
         }
     }
 
@@ -418,7 +469,12 @@ public class Go2RtcDataPump implements AutoCloseable {
         RtspConnection connection = publisher;
         String url = publishUrl;
         if (connection != null && url != null) {
-            connection.request("OPTIONS", url, "", null);
+            try {
+                connection.request("OPTIONS", url, "", null);
+            } catch (IOException e) {
+                dropPublisher(connection);
+                throw e;
+            }
         }
     }
 

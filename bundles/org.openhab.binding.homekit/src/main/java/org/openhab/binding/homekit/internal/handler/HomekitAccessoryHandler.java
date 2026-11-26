@@ -1525,18 +1525,41 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler
 
         synchronized (this) {
             cameraSessionId = sessionId;
-            cameraSessionOpen = true;
         }
 
-        Go2RtcDataPump.Session session = pump.startSession(audioParams, videoParams, talkParams, videoControlParams,
-                remoteAddress.split(":")[0], talkPort);
-        logger.debug("{} openCameraSession() {}", thing.getUID(), session);
+        try {
+            Go2RtcDataPump.Session session = pump.startSession(audioParams, videoParams, talkParams, videoControlParams,
+                    remoteAddress.split(":")[0], talkPort);
+            logger.debug("{} openCameraSession() {}", thing.getUID(), session);
 
-        SrtpStreamConfiguration config = new SrtpStreamConfiguration(sessionId, SessionCommand.START,
-                selectedVideoParams(pump.videoCodec()), selectedAudioParams(pump.audioCodec()));
-        logger.debug("{} openCameraSession() {}", thing.getUID(), config);
+            SrtpStreamConfiguration config = new SrtpStreamConfiguration(sessionId, SessionCommand.START,
+                    selectedVideoParams(pump.videoCodec()), selectedAudioParams(pump.audioCodec()));
+            logger.debug("{} openCameraSession() {}", thing.getUID(), config);
 
-        writeTlvCharacteristic(aid, selectedIid, config.encode());
+            writeTlvCharacteristic(aid, selectedIid, config.encode());
+        } catch (Exception e) {
+            rollBackCameraSession(pump, sessionId, aid, selectedIid);
+            throw e;
+        }
+        synchronized (this) {
+            cameraSessionOpen = true;
+        }
+    }
+
+    /**
+     * Undoes a partly opened camera session: stops the pump relay and, as far as possible, tells the camera to end the
+     * session that SetupEndpoints created. The session is not yet marked open, so {@link #closeCameraSession} does not
+     * apply.
+     */
+    private void rollBackCameraSession(Go2RtcDataPump pump, byte[] sessionId, long aid, long selectedIid) {
+        pump.stopSession();
+        try {
+            writeTlvCharacteristic(aid, selectedIid,
+                    new SrtpStreamConfiguration(sessionId, SessionCommand.END, selectedAudioParams(pump.audioCodec()))
+                            .encode());
+        } catch (Exception e) {
+            logger.debug("{} failed to roll back camera session: {}", thing.getUID(), e.getMessage());
+        }
     }
 
     /**
@@ -1819,6 +1842,28 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler
         } catch (IOException e) {
             logger.debug("{} go2rtc publisher keepalive failed: {}", thing.getUID(), e.getMessage());
         }
+        recoverPublisher(pump);
+    }
+
+    /**
+     * Reconnects the go2rtc publisher if it was lost while the go2rtc process is still running. The pump discards a
+     * failed connection, so go2rtc has no producer until this succeeds. Does nothing if the pump has since been
+     * replaced.
+     */
+    private void recoverPublisher(Go2RtcDataPump pump) {
+        if (pump.isPublisherConnected()) {
+            return;
+        }
+        synchronized (this) {
+            if (disposing.get() || !Objects.equals(go2rtcPump, pump)) {
+                return;
+            }
+        }
+        try {
+            pump.reconnectPublisher();
+        } catch (IOException | IllegalStateException e) {
+            logger.debug("{} go2rtc publisher reconnect failed: {}", thing.getUID(), e.getMessage());
+        }
     }
 
     /**
@@ -1945,6 +1990,13 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler
             if (process != null && restartIfExited(process)) {
                 continue;
             }
+            Go2RtcDataPump pump;
+            synchronized (this) {
+                pump = go2rtcPump;
+            }
+            if (pump != null) {
+                recoverPublisher(pump);
+            }
             if (process != null && endpoint != null) {
                 requestGo2rtcDemandCheck();
                 try {
@@ -2043,7 +2095,29 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler
         characteristics.add(entry);
         JsonObject body = new JsonObject();
         body.add("characteristics", characteristics);
-        writeCharacteristics(GSON.toJson(body));
+        checkWriteResponse(writeCharacteristics(GSON.toJson(body)));
+    }
+
+    /**
+     * Checks the response to a characteristic write. The transport treats a 207 Multi-Status response as successful,
+     * but it reports a status for each characteristic in its body, where any non-zero value is a failed write.
+     *
+     * @throws IOException if any characteristic status is non-zero
+     */
+    private static void checkWriteResponse(@Nullable String response) throws IOException {
+        if (response == null || response.isBlank()) {
+            return;
+        }
+        JsonElement root = JsonParser.parseString(response);
+        if (!root.isJsonObject() || !(root.getAsJsonObject().get("characteristics") instanceof JsonArray entries)) {
+            return;
+        }
+        for (JsonElement entry : entries) {
+            if (entry.isJsonObject() && entry.getAsJsonObject().get("status") instanceof JsonPrimitive status
+                    && status.isNumber() && status.getAsInt() != 0) {
+                throw new IOException("Characteristic write failed with HAP status " + status.getAsInt());
+            }
+        }
     }
 
     /**
