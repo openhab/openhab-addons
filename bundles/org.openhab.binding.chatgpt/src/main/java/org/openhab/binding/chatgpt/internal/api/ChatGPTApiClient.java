@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.chatgpt.internal.api;
 
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -54,10 +53,14 @@ import org.openhab.core.voice.text.interpreter.llm.LLMToolParam;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
+import tools.jackson.databind.node.ObjectNode;
 
 /**
  * The {@link ChatGPTApiClient} handles JSON mapping and HTTP REST request logic for OpenAI Chat Completions API.
@@ -80,9 +83,9 @@ public class ChatGPTApiClient {
         this.httpClient = httpClient;
         this.apiKey = apiKey;
         this.baseUrl = baseUrl;
-        this.objectMapper = new ObjectMapper();
-        this.objectMapper.setDefaultPropertyInclusion(
-                com.fasterxml.jackson.annotation.JsonInclude.Value.construct(Include.NON_NULL, Include.ALWAYS));
+        this.objectMapper = JsonMapper.builder().configureForJackson2()
+                .changeDefaultPropertyInclusion(incl -> JsonInclude.Value.construct(Include.NON_NULL, Include.ALWAYS))
+                .build();
     }
 
     /**
@@ -317,7 +320,7 @@ public class ChatGPTApiClient {
         String queryJson;
         try {
             queryJson = objectMapper.writeValueAsString(chatRequestBody);
-        } catch (JsonProcessingException e) {
+        } catch (JacksonException e) {
             throw new ChatGPTApiException("Failed to serialize request body: " + e.getMessage(), e);
         }
 
@@ -341,7 +344,7 @@ public class ChatGPTApiClient {
                 String prettyRequest = objectMapper.writerWithDefaultPrettyPrinter()
                         .writeValueAsString(objectMapper.readTree(queryJson));
                 logger.trace("Request payload to {} (POST):\n{}", baseUrl + PATH_CHAT_COMPLETIONS, prettyRequest);
-            } catch (IOException e) {
+            } catch (JacksonException e) {
                 logger.trace("Request payload to {} (POST): {}", baseUrl + PATH_CHAT_COMPLETIONS, queryJson);
             }
         }
@@ -366,7 +369,7 @@ public class ChatGPTApiClient {
                                 .writeValueAsString(objectMapper.readTree(body));
                         logger.trace("Response payload from {} (POST):\n{}", baseUrl + PATH_CHAT_COMPLETIONS,
                                 prettyResponse);
-                    } catch (IOException e) {
+                    } catch (JacksonException e) {
                         logger.trace("Response payload from {} (POST):\n{}", baseUrl + PATH_CHAT_COMPLETIONS, body);
                     }
                 }
@@ -382,7 +385,7 @@ public class ChatGPTApiClient {
                                 .writeValueAsString(objectMapper.readTree(errorBody));
                         logger.trace("Error response payload from {} (POST):\n{}", baseUrl + PATH_CHAT_COMPLETIONS,
                                 prettyError);
-                    } catch (IOException e) {
+                    } catch (JacksonException e) {
                         logger.trace("Error response payload from {} (POST):\n{}", baseUrl + PATH_CHAT_COMPLETIONS,
                                 errorBody);
                     }
@@ -396,10 +399,10 @@ public class ChatGPTApiClient {
                         modelsNotSupportingReasoningEffort.add(model);
                         try {
                             JsonNode jsonNode = objectMapper.readTree(queryJson);
-                            ((com.fasterxml.jackson.databind.node.ObjectNode) jsonNode).remove("reasoning_effort");
+                            ((ObjectNode) jsonNode).remove("reasoning_effort");
                             String retryJson = objectMapper.writeValueAsString(jsonNode);
                             return executeCompletionRequest(retryJson, model, timeoutSeconds, null);
-                        } catch (IOException e) {
+                        } catch (JacksonException e) {
                             logger.debug("Failed to remove reasoning_effort from payload for retry: {}",
                                     e.getMessage());
                         }
@@ -416,7 +419,7 @@ public class ChatGPTApiClient {
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new ChatGPTApiException("API request interrupted: " + e.getMessage(), e);
-        } catch (TimeoutException | ExecutionException | IOException e) {
+        } catch (TimeoutException | ExecutionException | JacksonException e) {
             throw new ChatGPTApiException("API request failed: " + e.getMessage(), e);
         }
     }
@@ -451,8 +454,8 @@ public class ChatGPTApiClient {
                 if (data != null) {
                     data.forEach(model -> {
                         JsonNode id = model.get("id");
-                        if (id != null) {
-                            modelList.add(id.asText());
+                        if (id != null && id.isString()) {
+                            modelList.add(id.asString());
                         }
                     });
                 }
@@ -464,7 +467,7 @@ public class ChatGPTApiClient {
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new ChatGPTApiException("Fetching models interrupted: " + e.getMessage(), e);
-        } catch (TimeoutException | ExecutionException | IOException e) {
+        } catch (TimeoutException | ExecutionException | JacksonException e) {
             throw new ChatGPTApiException("Fetching models failed: " + e.getMessage(), e);
         }
     }

@@ -18,8 +18,8 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ArrayNode;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.node.ArrayNode;
 
 /**
  * The {@link Utils} class defines common methods to handle generic washer devices
@@ -35,9 +35,9 @@ public class Utils {
         courseNode.properties().forEach(e -> {
             CourseDefinition cd = new CourseDefinition();
             JsonNode thisCourseNode = e.getValue();
-            cd.setCourseName(thisCourseNode.path("_comment").textValue());
+            cd.setCourseName(thisCourseNode.path("_comment").stringValue(null));
             if (CourseType.SMART_COURSE.equals(type)) {
-                cd.setBaseCourseName(thisCourseNode.path("Course").textValue());
+                cd.setBaseCourseName(thisCourseNode.path("Course").stringValue(null));
             }
             cd.setCourseType(type);
             if (thisCourseNode.path("function").isArray()) {
@@ -47,11 +47,11 @@ public class Utils {
                 for (JsonNode fNode : functions) {
                     // map all course functions here
                     CourseFunction f = new CourseFunction();
-                    f.setValue(fNode.path("value").textValue());
+                    f.setValue(fNode.path("value").stringValue(null));
                     // numeric defaults (e.g. reserveTimeHour) are already part of the command templates
                     JsonNode defaultNode = fNode.path("default");
-                    if (defaultNode.isTextual()) {
-                        f.setDefaultValue(defaultNode.textValue());
+                    if (defaultNode.isString()) {
+                        f.setDefaultValue(defaultNode.stringValue(null));
                     }
                     JsonNode selectableNode = fNode.path("selectable");
                     // only Courses (not SmartCourses or DownloadedCourses) can have selectable functions
@@ -62,7 +62,7 @@ public class Utils {
                         // map values acceptable for this function
                         for (JsonNode v : selectableNode) {
                             if (v.isValueNode()) {
-                                selectableValues.add(v.textValue());
+                                selectableValues.add(v.stringValue(null));
                             }
                         }
                         f.setSelectableValues(selectableValues);

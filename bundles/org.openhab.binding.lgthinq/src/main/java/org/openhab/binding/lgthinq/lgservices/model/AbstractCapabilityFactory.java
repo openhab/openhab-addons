@@ -25,10 +25,11 @@ import org.openhab.binding.lgthinq.lgservices.errors.LGThinqException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
+import tools.jackson.databind.node.ArrayNode;
 
 /**
  * The {@link AbstractCapability}
@@ -37,12 +38,12 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
  */
 @NonNullByDefault
 public abstract class AbstractCapabilityFactory<T extends CapabilityDefinition> {
-    protected final ObjectMapper mapper = new ObjectMapper();
+    protected final ObjectMapper mapper = JsonMapper.builder().configureForJackson2().build();
     private final Logger logger = LoggerFactory.getLogger(AbstractCapabilityFactory.class);
 
     public T create(JsonNode rootNode) throws LGThinqException {
         T cap = getCapabilityInstance();
-        cap.setModelName(rootNode.path("Info").path("modelName").textValue());
+        cap.setModelName(rootNode.path("Info").path("modelName").stringValue(null));
         cap.setDeviceType(ModelUtils.getDeviceType(rootNode));
         cap.setDeviceVersion(ModelUtils.discoveryAPIVersion(rootNode));
         cap.setRawData(Objects.requireNonNull(mapper.convertValue(rootNode, new TypeReference<Map<String, Object>>() {
@@ -51,16 +52,16 @@ public abstract class AbstractCapabilityFactory<T extends CapabilityDefinition> 
             case V1_0:
                 // V1 has Monitoring node describing the protocol data format
                 JsonNode type = rootNode.path(getMonitoringNodeName()).path("type");
-                if (!type.isMissingNode() && type.isTextual()) {
-                    cap.setMonitoringDataFormat(MonitoringResultFormat.getFormatOf(type.textValue()));
+                if (!type.isMissingNode() && type.isString()) {
+                    cap.setMonitoringDataFormat(MonitoringResultFormat.getFormatOf(type.stringValue(null)));
                 }
                 break;
             case V2_0:
                 // V2 doesn't have node describing the protocol because it's they unified Value (features) and
                 // Monitoring nodes in the MonitoringValue node
                 JsonNode v2type = rootNode.path(getMonitoringNodeName()).path("type");
-                if (!v2type.isMissingNode() && v2type.isTextual()) {
-                    cap.setMonitoringDataFormat(MonitoringResultFormat.getFormatOf(v2type.textValue()));
+                if (!v2type.isMissingNode() && v2type.isString()) {
+                    cap.setMonitoringDataFormat(MonitoringResultFormat.getFormatOf(v2type.stringValue(null)));
                 } else {
                     cap.setMonitoringDataFormat(MonitoringResultFormat.JSON_FORMAT);
                 }
@@ -133,7 +134,7 @@ public abstract class AbstractCapabilityFactory<T extends CapabilityDefinition> 
      */
     protected Map<String, CommandDefinition> getCommandsDefinitionV1(JsonNode rootNode) {
         boolean isBinaryCommands = MonitoringResultFormat.BINARY_FORMAT.getFormat()
-                .equals(rootNode.path("ControlWifi").path("type").textValue());
+                .equals(rootNode.path("ControlWifi").path("type").stringValue(null));
         JsonNode commandNode = rootNode.path("ControlWifi").path("action");
         if (commandNode.isMissingNode()) {
             logger.warn("No commands found in the devices's definition. This is most likely a bug.");
@@ -149,11 +150,11 @@ public abstract class AbstractCapabilityFactory<T extends CapabilityDefinition> 
                 // command not supported
                 continue;
             }
-            cd.setCommand(cmdField.textValue());
-            // cd.setCmdOpt(thisCommandNode.path("cmdOpt").textValue());
-            cd.setCmdOptValue(thisCommandNode.path("value").textValue());
+            cd.setCommand(cmdField.stringValue(null));
+            // cd.setCmdOpt(thisCommandNode.path("cmdOpt").stringValue(null));
+            cd.setCmdOptValue(thisCommandNode.path("value").stringValue(null));
             cd.setBinary(isBinaryCommands);
-            String strData = Objects.requireNonNullElse(thisCommandNode.path("data").textValue(), "");
+            String strData = Objects.requireNonNullElse(thisCommandNode.path("data").stringValue(null), "");
             cd.setDataTemplate(strData);
             cd.setRawCommand(thisCommandNode.toPrettyString());
             int reservedIndex = 0;

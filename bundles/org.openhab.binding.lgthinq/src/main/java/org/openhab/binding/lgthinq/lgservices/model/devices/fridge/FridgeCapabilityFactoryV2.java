@@ -24,7 +24,7 @@ import org.openhab.binding.lgthinq.lgservices.model.CommandDefinition;
 import org.openhab.binding.lgthinq.lgservices.model.FeatureDefinition;
 import org.openhab.binding.lgthinq.lgservices.model.LGAPIVerion;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import tools.jackson.databind.JsonNode;
 
 /**
  * The {@link FridgeCapabilityFactoryV2}
@@ -60,8 +60,8 @@ public class FridgeCapabilityFactoryV2 extends AbstractFridgeCapabilityFactory {
         featNode.properties().forEach(f -> {
             // for each node like ' "1": {"index" : 1, "label" : "7", "_comment" : ""} '
             if (!"IGNORE".equals(f.getKey())) {
-                String translatedValue = constantsMap.get(f.getValue().path("label").asText());
-                translatedValue = translatedValue == null ? f.getValue().path("label").asText() : translatedValue;
+                String translatedValue = constantsMap.get(f.getValue().path("label").asString(""));
+                translatedValue = translatedValue == null ? f.getValue().path("label").asString("") : translatedValue;
                 capMap.put(f.getKey(), translatedValue);
             }
         });

@@ -14,6 +14,10 @@
 
   <name>openHAB Add-ons :: Bundles :: Voice :: Polly Text-to-Speech</name>
 
+  <properties>
+    <bnd.importpackage>com.amazonaws.metrics.internal.cloudwatch;resolution:=optional,com.amazonaws.services.s3.internal;resolution:=optional,com.amazonaws.services.securitytoken.internal;resolution:=optional,com.sun.org.apache.xpath.internal;resolution:=optional,kotlin;resolution:=optional,software.amazon.ion;resolution:=optional,software.amazon.ion.system;resolution:=optional</bnd.importpackage>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>org.openhab.osgiify</groupId>
@@ -25,6 +29,31 @@
       <groupId>org.openhab.osgiify</groupId>
       <artifactId>com.amazonaws.aws-java-sdk-polly</artifactId>
       <version>1.12.626</version>
+      <scope>compile</scope>
+    </dependency>
+    <!-- AWS SDK 1.x requires Jackson 2, embed a private copy -->
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-annotations</artifactId>
+      <version>${jackson.annotations.version}</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-core</artifactId>
+      <version>${jackson2.version}</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+      <version>${jackson2.version}</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.dataformat</groupId>
+      <artifactId>jackson-dataformat-cbor</artifactId>
+      <version>${jackson2.version}</version>
       <scope>compile</scope>
     </dependency>
   </dependencies>

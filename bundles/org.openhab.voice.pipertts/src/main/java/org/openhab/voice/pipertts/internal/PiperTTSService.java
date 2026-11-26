@@ -71,10 +71,11 @@ import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import io.github.jvoiceproject.piperjni.PiperJNI;
 import io.github.jvoiceproject.piperjni.PiperVoice;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 
 /**
  * The {@link PiperTTSService} class is a service implementation to use Piper for Text-to-Speech.
@@ -96,6 +97,7 @@ public class PiperTTSService extends AbstractCachedTTSService {
     private static final Path JAR_FILE = PIPER_FOLDER.resolve("piper-jni-" + PIPER_VERSION + ".jar");
     private static final String JAR_URL = "https://openhab.jfrog.io/artifactory/libs-online-deps/io/github/jvoice-project/piper-jni/"
             + PIPER_VERSION + "/piper-jni-" + PIPER_VERSION + ".jar";
+    private static final ObjectMapper OBJECT_MAPPER = JsonMapper.builder().configureForJackson2().build();
 
     private final Logger logger = LoggerFactory.getLogger(PiperTTSService.class);
     private final Object modelLock = new Object();
@@ -309,7 +311,7 @@ public class PiperTTSService extends AbstractCachedTTSService {
                 return cachedVoices;
             }
             String voiceData = Files.readString(configFile);
-            PiperVoiceConfig voiceConfig = new ObjectMapper().readValue(voiceData, PiperVoiceConfig.class);
+            PiperVoiceConfig voiceConfig = OBJECT_MAPPER.readValue(voiceData, PiperVoiceConfig.class);
 
             String voiceName = voiceConfig.dataset;
             String voiceUID = voiceName.replace(" ", "_");
@@ -340,8 +342,8 @@ public class PiperTTSService extends AbstractCachedTTSService {
             }
             return List.of(new PiperTTSVoice(voiceUID, capitalize(voiceName), quality, languageFamily, languageRegion,
                     modelPath, configFile, Optional.empty()));
-        } catch (IOException e) {
-            logger.warn("IOException reading voice info: {}", e.getMessage());
+        } catch (IOException | JacksonException e) {
+            logger.warn("Exception reading voice info: {}", e.getMessage());
             return List.of();
         }
     }

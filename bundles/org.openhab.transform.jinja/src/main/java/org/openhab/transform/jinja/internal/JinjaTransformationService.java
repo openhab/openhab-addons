@@ -12,7 +12,6 @@
  */
 package org.openhab.transform.jinja.internal;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -27,10 +26,13 @@ import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hubspot.jinjava.Jinjava;
 import com.hubspot.jinjava.interpret.FatalTemplateErrorsException;
+
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 
 /**
  * <p>
@@ -42,6 +44,8 @@ import com.hubspot.jinjava.interpret.FatalTemplateErrorsException;
 @NonNullByDefault
 @Component(property = { "openhab.transform=JINJA" })
 public class JinjaTransformationService implements TransformationService {
+
+    private static final ObjectMapper OBJECT_MAPPER = JsonMapper.builder().configureForJackson2().build();
 
     private final Logger logger = LoggerFactory.getLogger(JinjaTransformationService.class);
 
@@ -64,9 +68,9 @@ public class JinjaTransformationService implements TransformationService {
         bindings.put("value", value);
 
         try {
-            JsonNode tree = new ObjectMapper().readTree(value);
+            JsonNode tree = OBJECT_MAPPER.readTree(value);
             bindings.put("value_json", toObject(tree));
-        } catch (IOException e) {
+        } catch (JacksonException e) {
             // ok, then value_json is null...
         }
 
@@ -100,7 +104,7 @@ public class JinjaTransformationService implements TransformationService {
                 return result;
             }
             case STRING:
-                return node.asText();
+                return node.asString();
             case BOOLEAN:
                 return node.asBoolean();
             case NULL:

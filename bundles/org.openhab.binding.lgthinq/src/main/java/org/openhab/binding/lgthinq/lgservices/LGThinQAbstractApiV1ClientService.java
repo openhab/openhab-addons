@@ -37,13 +37,12 @@ import org.openhab.binding.lgthinq.lgservices.model.ResultCodes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-
 import jakarta.ws.rs.core.UriBuilder;
+import tools.jackson.core.JacksonException;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.node.JsonNodeFactory;
+import tools.jackson.databind.node.ObjectNode;
 
 /**
  * The {@link LGThinQAbstractApiV1ClientService} - Specialized abstract class that implements methods and services to
@@ -175,7 +174,7 @@ public abstract class LGThinQAbstractApiV1ClientService<C extends CapabilityDefi
                     throw new LGThinqApiException(String
                             .format("Status error executing endpoint. resultCode must be 0000, but was:%s", code));
                 }
-            } catch (JsonProcessingException e) {
+            } catch (JacksonException e) {
                 throw new IllegalStateException("Unknown error occurred deserializing json stream", e);
             }
         }
@@ -189,10 +188,10 @@ public abstract class LGThinQAbstractApiV1ClientService<C extends CapabilityDefi
      * @param cmdDef command definition with template of the payload and data (binary or not)
      * @param snapData snapshot data with features to be set in the device
      * @return return the command structure.
-     * @throws JsonProcessingException unmarshall error.
+     * @throws JacksonException unmarshall error.
      */
     protected Map<String, Object> prepareCommandV1(CommandDefinition cmdDef, Map<String, Object> snapData)
-            throws JsonProcessingException {
+            throws JacksonException {
         // expected map ordered here
         String dataStr = cmdDef.getDataTemplate();
         // Keep the order
@@ -205,7 +204,7 @@ public abstract class LGThinQAbstractApiV1ClientService<C extends CapabilityDefi
     }
 
     protected LinkedHashMap<String, Object> completeCommandDataNodeV1(CommandDefinition cmdDef, String dataStr)
-            throws JsonProcessingException {
+            throws JacksonException {
         LinkedHashMap<String, Object> data = objectMapper.readValue(cmdDef.getRawCommand(), new TypeReference<>() {
         });
         logger.debug("Prepare command v1: {}", dataStr);

@@ -34,9 +34,11 @@ import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
+
+import tools.jackson.core.JacksonException;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 
 /**
  * An abstract class representing a Default Snapshot Builder for creating different types of snapshots.
@@ -46,7 +48,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  */
 @NonNullByDefault
 public abstract class DefaultSnapshotBuilder<S extends AbstractSnapshotDefinition> implements SnapshotBuilder<S> {
-    protected static final ObjectMapper MAPPER = new ObjectMapper();
+    protected static final ObjectMapper MAPPER = JsonMapper.builder().configureForJackson2().build();
     private static final Map<String, Map<String, Map<String, Object>>> MODEL_CACHED_BITKEY_DEF = new HashMap<>();
     protected final Class<S> snapClass;
     private final Logger logger = LoggerFactory.getLogger(DefaultSnapshotBuilder.class);
@@ -147,17 +149,18 @@ public abstract class DefaultSnapshotBuilder<S extends AbstractSnapshotDefinitio
     @Override
     public S createFromJson(String snapshotDataJson, DeviceTypes deviceType, CapabilityDefinition capDef)
             throws LGThinqUnmarshallException, LGThinqApiException {
+        Map<String, Object> snapshotMap;
         try {
-            Map<String, Object> snapshotMap = MAPPER.readValue(snapshotDataJson, new TypeReference<>() {
+            snapshotMap = MAPPER.readValue(snapshotDataJson, new TypeReference<>() {
             });
-            Map<String, Object> deviceSetting = new HashMap<>();
-            deviceSetting.put("deviceType", deviceType.deviceTypeId());
-            deviceSetting.put("snapshot", snapshotMap);
-            return createFromJson(deviceSetting, capDef);
-        } catch (JsonProcessingException e) {
+        } catch (JacksonException e) {
             logger.debug("Unexpected Error unmarshalling json to map with payload[{}]", snapshotDataJson, e);
             throw new LGThinqUnmarshallException("Unexpected Error unmarshalling json to map", e);
         }
+        Map<String, Object> deviceSetting = new HashMap<>();
+        deviceSetting.put("deviceType", deviceType.deviceTypeId());
+        deviceSetting.put("snapshot", snapshotMap);
+        return createFromJson(deviceSetting, capDef);
     }
 
     @Override

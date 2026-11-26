@@ -39,7 +39,7 @@ import org.openhab.binding.lgthinq.lgservices.model.MonitoringResultFormat;
 import org.openhab.binding.lgthinq.lgservices.model.devices.dishwasher.DishWasherCapability;
 import org.openhab.binding.lgthinq.lgservices.model.devices.dishwasher.DishWasherSnapshot;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import tools.jackson.databind.node.ObjectNode;
 
 /**
  * Validates that Base64-encoded monitoring data is decoded according to the device's monitoring format.

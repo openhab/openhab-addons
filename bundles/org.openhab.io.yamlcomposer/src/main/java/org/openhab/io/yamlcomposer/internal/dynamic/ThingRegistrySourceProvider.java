@@ -38,8 +38,9 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 
 /**
  * Provides Thing Registry entities to dynamic sources and notifies listeners of discrete Thing changes,
@@ -52,7 +53,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class ThingRegistrySourceProvider
         implements DynamicSourceProvider<Thing>, ThingRegistryChangeListener, EventSubscriber {
     private static final String SOURCE_NAME = "THINGS";
-    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+    private static final ObjectMapper OBJECT_MAPPER = JsonMapper.builder().configureForJackson2().build();
 
     private final ThingRegistry thingRegistry;
     private volatile Consumer<EntityChange> onChangeListener = change -> {

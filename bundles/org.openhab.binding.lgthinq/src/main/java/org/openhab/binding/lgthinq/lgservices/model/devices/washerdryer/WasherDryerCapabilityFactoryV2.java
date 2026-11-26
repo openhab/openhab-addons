@@ -33,8 +33,8 @@ import org.openhab.binding.lgthinq.lgservices.model.devices.commons.washers.Wash
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ValueNode;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.node.ValueNode;
 
 /**
  * The {@link WasherDryerCapabilityFactoryV2}
@@ -76,7 +76,7 @@ public class WasherDryerCapabilityFactoryV2 extends AbstractWasherDryerCapabilit
         }
         JsonNode labelNode = featureNode.path("label");
         if (!labelNode.isMissingNode() && !labelNode.isNull()) {
-            fd.setLabel(labelNode.asText());
+            fd.setLabel(labelNode.asString(""));
         } else {
             fd.setLabel(featureName);
         }
@@ -93,7 +93,7 @@ public class WasherDryerCapabilityFactoryV2 extends AbstractWasherDryerCapabilit
                 // "label": "@WM_STATE_POWER_OFF_W"
                 // },
                 // to "POWEROFF" -> "@WM_STATE_POWER_OFF_W"
-                valuesMapping.put(e.getKey(), e.getValue().path("label").asText());
+                valuesMapping.put(e.getKey(), e.getValue().path("label").asString(""));
             });
             fd.setValuesMapping(valuesMapping);
         }
@@ -109,7 +109,7 @@ public class WasherDryerCapabilityFactoryV2 extends AbstractWasherDryerCapabilit
     @Override
     protected String getCourseNodeName(JsonNode rootNode) {
         String courseType = getConfigCourseType(rootNode);
-        return rootNode.path(getMonitorValueNodeName()).path(courseType).path("ref").textValue();
+        return rootNode.path(getMonitorValueNodeName()).path(courseType).path("ref").stringValue(null);
     }
 
     @Override
@@ -127,7 +127,7 @@ public class WasherDryerCapabilityFactoryV2 extends AbstractWasherDryerCapabilit
      * OBS:In the V2, the default course points to the default course <b>name</b>
      */
     protected String getDefaultCourse(JsonNode rootNode) {
-        return rootNode.path(getConfigNodeName()).path("defaultCourse").textValue();
+        return rootNode.path(getConfigNodeName()).path("defaultCourse").stringValue(null);
     }
 
     @Override
@@ -142,15 +142,15 @@ public class WasherDryerCapabilityFactoryV2 extends AbstractWasherDryerCapabilit
 
     @Override
     protected String getConfigCourseType(JsonNode rootNode) {
-        return rootNode.path(getConfigNodeName()).path("courseType").textValue();
+        return rootNode.path(getConfigNodeName()).path("courseType").stringValue(null);
     }
 
     protected String getConfigSmartCourseType(JsonNode rootNode) {
-        return rootNode.path(getConfigNodeName()).path("smartCourseType").textValue();
+        return rootNode.path(getConfigNodeName()).path("smartCourseType").stringValue(null);
     }
 
     protected String getConfigDownloadCourseType(JsonNode rootNode) {
-        return rootNode.path(getConfigNodeName()).path("downloadedCourseType").textValue();
+        return rootNode.path(getConfigNodeName()).path("downloadedCourseType").stringValue(null);
     }
 
     @Override
@@ -216,7 +216,7 @@ public class WasherDryerCapabilityFactoryV2 extends AbstractWasherDryerCapabilit
             }
             CommandDefinition cd = new CommandDefinition();
             JsonNode thisCommandNode = e.getValue();
-            cd.setCommand(thisCommandNode.path("command").textValue());
+            cd.setCommand(thisCommandNode.path("command").stringValue(null));
             JsonNode dataValues = thisCommandNode.path("data").path("washerDryer");
             if (!dataValues.isMissingNode()) {
                 Map<String, Object> data = new HashMap<>();
@@ -225,8 +225,8 @@ public class WasherDryerCapabilityFactoryV2 extends AbstractWasherDryerCapabilit
                     if (!escapeDataValues.contains(f.getKey())) {
                         if (f.getValue().isValueNode()) {
                             ValueNode vn = (ValueNode) f.getValue();
-                            if (f.getValue().isTextual()) {
-                                data.put(f.getKey(), vn.asText());
+                            if (f.getValue().isString()) {
+                                data.put(f.getKey(), vn.asString(""));
                             } else if (f.getValue().isNumber()) {
                                 data.put(f.getKey(), vn.asInt());
                             }

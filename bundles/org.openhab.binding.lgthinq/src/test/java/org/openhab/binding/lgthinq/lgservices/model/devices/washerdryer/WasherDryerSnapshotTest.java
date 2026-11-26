@@ -19,8 +19,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 
 /**
  * Tests the mapping of washer/dryer operation states and times.
@@ -29,10 +30,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  */
 @NonNullByDefault
 class WasherDryerSnapshotTest {
-    private final ObjectMapper mapper = new ObjectMapper();
+    private final ObjectMapper mapper = JsonMapper.builder().configureForJackson2().build();
 
     @Test
-    void v2StatesAreMappedIndependentlyRegardlessOfFieldOrder() throws JsonProcessingException {
+    void v2StatesAreMappedIndependentlyRegardlessOfFieldOrder() throws JacksonException {
         assertStates("""
                 {
                   "state": "RUNNING",
@@ -50,7 +51,7 @@ class WasherDryerSnapshotTest {
     }
 
     @Test
-    void v1StatesAreMappedIndependently() throws JsonProcessingException {
+    void v1StatesAreMappedIndependently() throws JacksonException {
         WasherDryerSnapshot snapshot = mapper.readValue("""
                 {
                   "State": "RUNNING",
@@ -65,7 +66,7 @@ class WasherDryerSnapshotTest {
     }
 
     @Test
-    void missingProcessStateIsNotReplacedWithPreviousState() throws JsonProcessingException {
+    void missingProcessStateIsNotReplacedWithPreviousState() throws JacksonException {
         WasherDryerSnapshot snapshot = mapper.readValue("""
                 {
                   "state": "RUNNING",
@@ -88,7 +89,7 @@ class WasherDryerSnapshotTest {
             "0, 59, 00:59", //
             "0, 0, 00:00", //
             "2, 130, 04:10" })
-    void remainingAndReserveTimesAreNormalized(int hour, int minute, String expected) throws JsonProcessingException {
+    void remainingAndReserveTimesAreNormalized(int hour, int minute, String expected) throws JacksonException {
         WasherDryerSnapshot v2 = mapper.readValue(String.format("""
                 {
                   "remainTimeHour": %d,
@@ -110,7 +111,7 @@ class WasherDryerSnapshotTest {
     }
 
     @Test
-    void missingHourFieldUsesTotalMinutes() throws JsonProcessingException {
+    void missingHourFieldUsesTotalMinutes() throws JacksonException {
         WasherDryerSnapshot snapshot = mapper.readValue("""
                 {
                   "remainTimeMinute": 65
@@ -120,7 +121,7 @@ class WasherDryerSnapshotTest {
         assertEquals("01:05", snapshot.getRemainingTime());
     }
 
-    private void assertStates(String json) throws JsonProcessingException {
+    private void assertStates(String json) throws JacksonException {
         WasherDryerSnapshot snapshot = mapper.readValue(json, WasherDryerSnapshot.class);
         assertEquals("RUNNING", snapshot.getState());
         assertEquals("DETECTING", snapshot.getPreviousState());

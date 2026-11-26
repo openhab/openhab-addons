@@ -26,7 +26,7 @@ import org.openhab.binding.lgthinq.lgservices.model.LGAPIVerion;
 import org.openhab.binding.lgthinq.lgservices.model.MonitoringResultFormat;
 import org.openhab.binding.lgthinq.lgservices.model.devices.commons.washers.WasherFeatureDefinition;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import tools.jackson.databind.JsonNode;
 
 /**
  * The {@link WasherDryerCapabilityFactoryV1}
@@ -51,7 +51,7 @@ public class WasherDryerCapabilityFactoryV1 extends AbstractWasherDryerCapabilit
             JsonNode arrNode = monitoringValueNode.path(optionNode).path("option");
             if (arrNode.isArray()) {
                 for (JsonNode v : arrNode) {
-                    if (v.asText().equals(featName)) {
+                    if (v.asString("").equals(featName)) {
                         return true;
                     }
                 }
@@ -102,7 +102,7 @@ public class WasherDryerCapabilityFactoryV1 extends AbstractWasherDryerCapabilit
 
     @Override
     protected MonitoringResultFormat getMonitorDataFormat(JsonNode rootNode) {
-        String type = rootNode.path("Monitoring").path("type").textValue();
+        String type = rootNode.path("Monitoring").path("type").stringValue(null);
         return MonitoringResultFormat.getFormatOf(Objects.requireNonNullElse(type, ""));
     }
 
@@ -178,7 +178,7 @@ public class WasherDryerCapabilityFactoryV1 extends AbstractWasherDryerCapabilit
      * OBS:In the V1, the default course points to the ID of the course list that is the default.
      */
     protected String getDefaultCourse(JsonNode rootNode) {
-        return rootNode.path("Config").path("defaultCourseId").textValue();
+        return rootNode.path("Config").path("defaultCourseId").stringValue(null);
     }
 
     @Override
@@ -206,7 +206,7 @@ public class WasherDryerCapabilityFactoryV1 extends AbstractWasherDryerCapabilit
                 .path("option");
         if (refOptions.isArray()) {
             for (JsonNode node : refOptions) {
-                return node.asText();
+                return node.asString("");
             }
         }
         return "";

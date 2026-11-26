@@ -26,7 +26,7 @@ import org.openhab.binding.lgthinq.lgservices.model.devices.commons.washers.Cour
 import org.openhab.binding.lgthinq.lgservices.model.devices.commons.washers.CourseType;
 import org.openhab.binding.lgthinq.lgservices.model.devices.commons.washers.Utils;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import tools.jackson.databind.JsonNode;
 
 /**
  * The {@link AbstractDishWasherCapabilityFactory}
@@ -65,7 +65,7 @@ public abstract class AbstractDishWasherCapabilityFactory extends AbstractCapabi
             node.properties().forEach(e -> {
                 CourseDefinition df = courseMap.get(e.getKey());
                 if (df != null) {
-                    convertedAllCourses.put(e.getValue().asText(), df);
+                    convertedAllCourses.put(e.getValue().asString(""), df);
                 }
             });
         };

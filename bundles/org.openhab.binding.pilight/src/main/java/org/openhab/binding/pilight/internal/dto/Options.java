@@ -15,7 +15,8 @@ package org.openhab.binding.pilight.internal.dto;
 import org.openhab.binding.pilight.internal.serializers.BooleanToIntegerSerializer;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
+import tools.jackson.databind.annotation.JsonSerialize;
 
 /**
  * Options that can be set as a pilight client.

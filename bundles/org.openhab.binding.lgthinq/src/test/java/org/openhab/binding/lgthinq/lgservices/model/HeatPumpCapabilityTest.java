@@ -24,8 +24,9 @@ import org.openhab.binding.lgthinq.handler.JsonUtils;
 import org.openhab.binding.lgthinq.lgservices.errors.LGThinqException;
 import org.openhab.binding.lgthinq.lgservices.model.devices.ac.ACCapability;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 
 /**
  * The {@link HeatPumpCapabilityTest} verifies that an AWHP (Heat Pump) capability descriptor, which the binding treats
@@ -35,7 +36,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  */
 @NonNullByDefault
 class HeatPumpCapabilityTest {
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper = JsonMapper.builder().configureForJackson2().build();
 
     @Test
     void createHeatPumpCapability() throws IOException, LGThinqException {

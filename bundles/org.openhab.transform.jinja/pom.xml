@@ -14,6 +14,11 @@
 
   <name>openHAB Add-ons :: Bundles :: Transformation Service :: Jinja</name>
 
+  <properties>
+    <bnd.importpackage>android.os;resolution:=optional,com.googlecode.ipv6;resolution:=optional,javax.annotation;resolution:=optional,org.jspecify.annotations;resolution:=optional</bnd.importpackage>
+    <dep.noembedding>re2j,commons-lang3,commons-net</dep.noembedding>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>org.openhab.osgiify</groupId>
@@ -33,6 +38,7 @@
       <version>${guava.version}</version>
       <scope>test</scope>
     </dependency>
+    <!-- jinjava 2.x requires Jackson 2, embed a private copy -->
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-annotations</artifactId>
@@ -42,19 +48,31 @@
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
-      <version>${jackson.version}</version>
+      <version>${jackson2.version}</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-core</artifactId>
-      <version>${jackson.version}</version>
+      <version>${jackson2.version}</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>com.fasterxml.jackson.dataformat</groupId>
       <artifactId>jackson-dataformat-yaml</artifactId>
-      <version>${jackson.version}</version>
+      <version>${jackson2.version}</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.datatype</groupId>
+      <artifactId>jackson-datatype-jdk8</artifactId>
+      <version>${jackson2.version}</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.yaml</groupId>
+      <artifactId>snakeyaml</artifactId>
+      <version>${jackson2.snakeyaml.version}</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
@@ -73,12 +91,6 @@
       <groupId>commons-net</groupId>
       <artifactId>commons-net</artifactId>
       <version>${commons.net.version}</version>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.fasterxml.jackson.datatype</groupId>
-      <artifactId>jackson-datatype-jdk8</artifactId>
-      <version>${jackson.version}</version>
       <scope>compile</scope>
     </dependency>
   </dependencies>

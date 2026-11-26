@@ -46,8 +46,9 @@ import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 
 /**
  * The {@link LGThinQAirConditionerHandler} Handle Air Conditioner and HeatPump Things
@@ -59,7 +60,7 @@ public class LGThinQAirConditionerHandler extends LGThinQAbstractDeviceHandler<A
 
     private final DeviceChannelGroup dashboard;
     private final DeviceChannelGroup extendedInfo;
-    private final ObjectMapper mapper = new ObjectMapper();
+    private final ObjectMapper mapper = JsonMapper.builder().configureForJackson2().build();
     private final Logger logger = LoggerFactory.getLogger(LGThinQAirConditionerHandler.class);
     private final LGThinQACApiClientService lgThinqACApiClientService;
     private double minTempConstraint = 16, maxTempConstraint = 30;

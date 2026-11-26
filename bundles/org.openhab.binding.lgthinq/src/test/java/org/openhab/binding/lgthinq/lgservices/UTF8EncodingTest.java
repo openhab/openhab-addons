@@ -36,7 +36,7 @@ import org.openhab.binding.lgthinq.lgservices.model.DevicePowerState;
 import org.openhab.binding.lgthinq.lgservices.model.devices.ac.ACCanonicalSnapshot;
 import org.openhab.binding.lgthinq.lgservices.model.devices.ac.ACCapability;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import tools.jackson.databind.node.ObjectNode;
 
 /**
  * Test class to validate UTF-8 encoding fixes using the actual service class.

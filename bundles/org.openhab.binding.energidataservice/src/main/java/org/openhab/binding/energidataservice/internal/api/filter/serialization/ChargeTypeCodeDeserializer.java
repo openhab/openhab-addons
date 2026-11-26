@@ -12,16 +12,13 @@
  */
 package org.openhab.binding.energidataservice.internal.api.filter.serialization;
 
-import java.io.IOException;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.energidataservice.internal.api.ChargeTypeCode;
 
-import com.fasterxml.jackson.core.JacksonException;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
+import tools.jackson.core.JsonParser;
+import tools.jackson.databind.DeserializationContext;
+import tools.jackson.databind.deser.std.StdDeserializer;
 
 /**
  * The {@link ChargeTypeCodeDeserializer} converts a charge type code string
@@ -31,22 +28,15 @@ import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
  */
 @NonNullByDefault
 public class ChargeTypeCodeDeserializer extends StdDeserializer<ChargeTypeCode> {
-    private static final long serialVersionUID = 1L;
-
     public ChargeTypeCodeDeserializer() {
-        this(null);
-    }
-
-    public ChargeTypeCodeDeserializer(@Nullable Class<?> vc) {
-        super(vc);
+        super(ChargeTypeCode.class);
     }
 
     @Override
-    public ChargeTypeCode deserialize(@Nullable JsonParser p, @Nullable DeserializationContext ctxt)
-            throws IOException, JacksonException {
+    public ChargeTypeCode deserialize(@Nullable JsonParser p, @Nullable DeserializationContext ctxt) {
         if (p == null) {
             throw new IllegalArgumentException("JsonParser is null");
         }
-        return ChargeTypeCode.of(p.getText());
+        return ChargeTypeCode.of(p.getString());
     }
 }

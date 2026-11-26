@@ -35,8 +35,9 @@ import org.osgi.service.component.annotations.Activate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 
 /**
  * Processes Python Configuration Parameters.
@@ -293,7 +294,7 @@ public class PythonScriptEngineConfiguration {
      * This is used to display the configuration in the console.
      */
     public Map<String, String> getConfigurations() {
-        ObjectMapper objectMapper = new ObjectMapper();
+        ObjectMapper objectMapper = JsonMapper.builder().configureForJackson2().build();
         Map<String, Object> objectMap = objectMapper.convertValue(configuration,
                 new TypeReference<Map<String, Object>>() {
                 });

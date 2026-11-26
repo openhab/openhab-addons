@@ -19,9 +19,10 @@ import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 
 /**
  * The {@link ModelUtils}
@@ -30,7 +31,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  */
 @NonNullByDefault
 public class ModelUtils {
-    public static final ObjectMapper MAPPER = new ObjectMapper();
+    public static final ObjectMapper MAPPER = JsonMapper.builder().configureForJackson2().build();
 
     public static DeviceTypes getDeviceType(Map<String, Object> rootMap) {
         Map<String, String> infoMap = MAPPER.convertValue(rootMap.get("Info"), new TypeReference<>() {

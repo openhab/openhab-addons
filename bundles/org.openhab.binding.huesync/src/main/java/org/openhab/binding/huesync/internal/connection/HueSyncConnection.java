@@ -40,9 +40,10 @@ import org.osgi.framework.ServiceRegistration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.DeserializationFeature;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 
 /**
  * 
@@ -51,8 +52,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  */
 @NonNullByDefault
 public class HueSyncConnection {
-    public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper()
-            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+    public static final ObjectMapper OBJECT_MAPPER = JsonMapper.builder().configureForJackson2()
+            .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES).build();
     /**
      * Request format: The Sync Box API can be accessed locally via HTTPS on root
      * level (port 443, /api/v1), resource level /api/v1/<resource>
@@ -202,7 +203,7 @@ public class HueSyncConnection {
             throw new HueSyncConnectionException(message, e);
         } catch (HttpResponseException e) {
             handleResponseStatus(e.getResponse().getStatus(), e);
-        } catch (JsonProcessingException | InterruptedException | TimeoutException e) {
+        } catch (JacksonException | InterruptedException | TimeoutException e) {
             this.logger.trace("{}: {}", e.getMessage(), message);
 
             throw new HueSyncConnectionException(message, e);
@@ -229,7 +230,7 @@ public class HueSyncConnection {
         throw new HueSyncConnectionException(message, e);
     }
 
-    private @Nullable <T> T deserialize(String json, @Nullable Class<T> type) throws JsonProcessingException {
+    private @Nullable <T> T deserialize(String json, @Nullable Class<T> type) {
         return type == null ? null : OBJECT_MAPPER.readValue(json, type);
     }
 

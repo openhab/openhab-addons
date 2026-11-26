@@ -24,7 +24,7 @@ import org.openhab.binding.lgthinq.lgservices.model.LGAPIVerion;
 import org.openhab.binding.lgthinq.lgservices.model.MonitoringResultFormat;
 import org.openhab.binding.lgthinq.lgservices.model.devices.commons.washers.WasherFeatureDefinition;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import tools.jackson.databind.JsonNode;
 
 /**
  * The {@link DishWasherCapabilityFactoryV2}
@@ -98,8 +98,8 @@ public class DishWasherCapabilityFactoryV2 extends AbstractDishWasherCapabilityF
         // Monitoring nodes in the MonitoringValue node. However, some V2 devices like DishWasher
         // still use Binary format for monitoring data.
         JsonNode v2type = rootNode.path(getMonitoringNodeName()).path("type");
-        if (!v2type.isMissingNode() && v2type.isTextual()) {
-            return MonitoringResultFormat.getFormatOf(v2type.textValue());
+        if (!v2type.isMissingNode() && v2type.isString()) {
+            return MonitoringResultFormat.getFormatOf(v2type.stringValue(null));
         }
         return MonitoringResultFormat.JSON_FORMAT;
     }

@@ -43,9 +43,10 @@ import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.thing.link.ItemChannelLinkRegistry;
 import org.openhab.core.types.UnDefType;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 
 /**
  * Tests for the remote start payload and the state publication of the {@link LGThinQWasherDryerHandler}.
@@ -56,7 +57,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @NonNullByDefault
 class LGThinQWasherDryerHandlerTest {
 
-    private final ObjectMapper mapper = new ObjectMapper();
+    private final ObjectMapper mapper = JsonMapper.builder().configureForJackson2().build();
     private @NonNullByDefault({}) WasherDryerCapability cap;
     private @NonNullByDefault({}) Map<String, Object> cmdTemplate;
     private final ThingUID thingUID = new ThingUID(THING_TYPE_WASHING_MACHINE, "test");
@@ -64,14 +65,14 @@ class LGThinQWasherDryerHandlerTest {
     private LGThinQWasherDryerHandler handler = createHandler();
 
     @BeforeEach
-    void setUp() throws JsonProcessingException, LGThinqException {
+    void setUp() throws JacksonException, LGThinqException {
         cap = CapabilityFactory.getInstance().create(mapper.readTree(JsonUtils.loadJson("thinq-washer-v2-cap.json")),
                 WasherDryerCapability.class);
         CommandDefinition cmd = Objects.requireNonNull(cap.getCommandsDefinition().get(cap.getCommandRemoteStart()));
         cmdTemplate = cmd.getData();
     }
 
-    private WasherDryerSnapshot snapshot(String course) throws JsonProcessingException {
+    private WasherDryerSnapshot snapshot(String course) throws JacksonException {
         Map<String, Object> raw = mapper.readValue("""
                 {"courseFL24inchBaseTitan": "%s", "smartCourseFL24inchBaseTitan": "NOT_SELECTED",
                  "temp": "TEMP_60", "spin": "SPIN_1400", "rinse": "RINSE_NORMAL", "steam": "STEAM_ON",
@@ -86,7 +87,7 @@ class LGThinQWasherDryerHandlerTest {
     }
 
     @Test
-    void unknownSmartCourseUsesTypeOfSelectedCourse() throws JsonProcessingException {
+    void unknownSmartCourseUsesTypeOfSelectedCourse() throws JacksonException {
         WasherDryerSnapshot shot = snapshot("COTTON");
         shot.setSmartCourse("");
 
@@ -98,7 +99,7 @@ class LGThinQWasherDryerHandlerTest {
     }
 
     @Test
-    void selectedOptionsOverrideSnapshot() throws JsonProcessingException {
+    void selectedOptionsOverrideSnapshot() throws JacksonException {
         Map<String, Object> data = LGThinQWasherDryerHandler.buildRemoteStartData(cap, cmdTemplate, snapshot("COTTON"),
                 "COTTON", Map.of("steam", "STEAM_OFF", "preWash", "PREWASH_ON"), false);
 
@@ -107,7 +108,7 @@ class LGThinQWasherDryerHandlerTest {
     }
 
     @Test
-    void keepsMachineSettingsForCurrentCourse() throws JsonProcessingException {
+    void keepsMachineSettingsForCurrentCourse() throws JacksonException {
         Map<String, Object> data = LGThinQWasherDryerHandler.buildRemoteStartData(cap, cmdTemplate, snapshot("COTTON"),
                 "COTTON", Map.of(), false);
 
@@ -121,7 +122,7 @@ class LGThinQWasherDryerHandlerTest {
     }
 
     @Test
-    void usesCourseDefaultsForOtherCourse() throws JsonProcessingException {
+    void usesCourseDefaultsForOtherCourse() throws JacksonException {
         Map<String, Object> data = LGThinQWasherDryerHandler.buildRemoteStartData(cap, cmdTemplate, snapshot("COTTON"),
                 "EASYCARE", Map.of(), false);
 
@@ -134,7 +135,7 @@ class LGThinQWasherDryerHandlerTest {
     }
 
     @Test
-    void selectedFeaturesOverrideSnapshot() throws JsonProcessingException {
+    void selectedFeaturesOverrideSnapshot() throws JacksonException {
         Map<String, Object> data = LGThinQWasherDryerHandler.buildRemoteStartData(cap, cmdTemplate, snapshot("COTTON"),
                 "COTTON", Map.of("temp", "TEMP_30", "spin", "SPIN_800"), false);
 
@@ -144,7 +145,7 @@ class LGThinQWasherDryerHandlerTest {
     }
 
     @Test
-    void standbyUsesSettingsRememberedBeforeStandby() throws JsonProcessingException {
+    void standbyUsesSettingsRememberedBeforeStandby() throws JacksonException {
         WasherDryerSnapshot remembered = snapshot("COTTON");
         WasherDryerSnapshot rsShot = LGThinQWasherDryerHandler.selectRemoteStartShot(cap, snapshot("NOT_SELECTED"),
                 remembered);
@@ -157,7 +158,7 @@ class LGThinQWasherDryerHandlerTest {
     }
 
     @Test
-    void currentSnapshotPreferredWhenCourseSelected() throws JsonProcessingException {
+    void currentSnapshotPreferredWhenCourseSelected() throws JacksonException {
         WasherDryerSnapshot current = snapshot("EASYCARE");
 
         assertSame(current, LGThinQWasherDryerHandler.selectRemoteStartShot(cap, current, snapshot("COTTON")));
@@ -165,7 +166,7 @@ class LGThinQWasherDryerHandlerTest {
     }
 
     @Test
-    void initialStateRequestsCourseFromCommand() throws JsonProcessingException {
+    void initialStateRequestsCourseFromCommand() throws JacksonException {
         Map<String, Object> waiting = LGThinQWasherDryerHandler.buildRemoteStartData(cap, cmdTemplate,
                 snapshot("COTTON"), "COTTON", Map.of(), true);
         WasherDryerSnapshot pausedShot = snapshot("COTTON");
@@ -187,7 +188,7 @@ class LGThinQWasherDryerHandlerTest {
     }
 
     @Test
-    void missingSnapshotValuesUseCourseDefaultsThenTemplate() throws JsonProcessingException {
+    void missingSnapshotValuesUseCourseDefaultsThenTemplate() throws JacksonException {
         Map<String, Object> data = LGThinQWasherDryerHandler.buildRemoteStartData(cap, cmdTemplate, snapshot("COTTON"),
                 "COTTON", Map.of(), false);
 

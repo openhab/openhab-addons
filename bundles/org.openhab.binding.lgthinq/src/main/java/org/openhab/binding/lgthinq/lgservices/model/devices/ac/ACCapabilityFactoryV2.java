@@ -21,7 +21,7 @@ import org.openhab.binding.lgthinq.lgservices.errors.LGThinqException;
 import org.openhab.binding.lgthinq.lgservices.model.CommandDefinition;
 import org.openhab.binding.lgthinq.lgservices.model.LGAPIVerion;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import tools.jackson.databind.JsonNode;
 
 /**
  * The {@link ACCapabilityFactoryV2}
@@ -42,10 +42,10 @@ public class ACCapabilityFactoryV2 extends AbstractACCapabilityFactory {
         JsonNode controlDeviceNode = rootNode.path("ControlDevice");
         if (controlDeviceNode.isArray()) {
             controlDeviceNode.forEach(c -> {
-                String ctrlKey = c.path("ctrlKey").asText();
+                String ctrlKey = c.path("ctrlKey").asString("");
                 // commands variations are described separated by pipe "|"
-                String[] commands = c.path("command").asText().split("\\|");
-                String dataValues = c.path("dataValue").asText();
+                String[] commands = c.path("command").asString("").split("\\|");
+                String dataValues = c.path("dataValue").asString("");
                 for (String cmd : commands) {
                     CommandDefinition cd = new CommandDefinition();
                     cd.setCommand(cmd);
@@ -132,7 +132,7 @@ public class ACCapabilityFactoryV2 extends AbstractACCapabilityFactory {
     protected Map<String, String> extractFeatureOptions(JsonNode optionsNode) {
         Map<String, String> options = new HashMap<>();
         optionsNode.properties().forEach(o -> {
-            options.put(o.getKey(), o.getValue().path("label").asText());
+            options.put(o.getKey(), o.getValue().path("label").asString(""));
         });
         return options;
     }

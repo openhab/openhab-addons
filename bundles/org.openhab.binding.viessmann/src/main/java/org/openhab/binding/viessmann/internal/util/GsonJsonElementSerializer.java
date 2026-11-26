@@ -12,18 +12,17 @@
  */
 package org.openhab.binding.viessmann.internal.util;
 
-import java.io.IOException;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.JsonSerializer;
-import com.fasterxml.jackson.databind.SerializerProvider;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
+
+import tools.jackson.core.JsonGenerator;
+import tools.jackson.databind.SerializationContext;
+import tools.jackson.databind.ValueSerializer;
 
 /**
  * The {@link GsonJsonElementSerializer} provides Jackson serializer
@@ -33,15 +32,15 @@ import com.google.gson.JsonPrimitive;
  * @author Ronny Grun - Initial contribution
  */
 @NonNullByDefault
-public class GsonJsonElementSerializer extends JsonSerializer<JsonElement> {
+public class GsonJsonElementSerializer extends ValueSerializer<JsonElement> {
 
     @Override
     @NonNullByDefault({})
-    public void serialize(JsonElement value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
+    public void serialize(JsonElement value, JsonGenerator gen, SerializationContext serializers) {
         write(value, gen);
     }
 
-    private static void write(JsonElement el, JsonGenerator gen) throws IOException {
+    private static void write(JsonElement el, JsonGenerator gen) {
         if (el instanceof JsonNull || el.isJsonNull()) {
             gen.writeNull();
             return;
@@ -74,7 +73,7 @@ public class GsonJsonElementSerializer extends JsonSerializer<JsonElement> {
             JsonObject obj = el.getAsJsonObject();
             gen.writeStartObject();
             for (var entry : obj.entrySet()) {
-                gen.writeFieldName(entry.getKey());
+                gen.writeName(entry.getKey());
                 write(entry.getValue(), gen);
             }
             gen.writeEndObject();

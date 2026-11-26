@@ -29,7 +29,7 @@ import org.openhab.binding.lgthinq.lgservices.model.devices.commons.washers.Cour
 import org.openhab.binding.lgthinq.lgservices.model.devices.commons.washers.CourseType;
 import org.openhab.binding.lgthinq.lgservices.model.devices.commons.washers.Utils;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import tools.jackson.databind.JsonNode;
 
 /**
  * The {@link AbstractWasherDryerCapabilityFactory}
@@ -125,7 +125,7 @@ public abstract class AbstractWasherDryerCapabilityFactory extends AbstractCapab
                         getRinseFeatureNodeName(), new WasherDryerCapability.RinseFeatureFunction(),
                         getSpinFeatureNodeName(), new WasherDryerCapability.SpinFeatureFunction()));
         wdCap.setMonitoringDataFormat(getMonitorDataFormat(rootNode));
-        wdCap.setDefaultCourseId(rootNode.path("Config").path(getDefaultCourseIdNodeName()).asText());
+        wdCap.setDefaultCourseId(rootNode.path("Config").path(getDefaultCourseIdNodeName()).asString(""));
         wdCap.setNotSelectedCourseKey(getNotSelectedCourseKey());
         return wdCap;
     }

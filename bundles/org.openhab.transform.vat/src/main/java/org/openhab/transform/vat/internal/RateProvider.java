@@ -28,9 +28,11 @@ import org.openhab.transform.vat.internal.model.VATPeriod;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.dataformat.yaml.YAMLFactory;
+import tools.jackson.dataformat.yaml.YAMLMapper;
+import tools.jackson.dataformat.yaml.YAMLSchema;
 
 /**
  * The {@link RateProvider} class provides VAT rates for different
@@ -80,12 +82,12 @@ public class RateProvider {
                 throw new IllegalStateException("VAT resource not found");
             }
 
-            ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
-            mapper.registerModule(new JavaTimeModule());
+            ObjectMapper mapper = YAMLMapper.builder(YAMLFactory.builder().yamlSchema(YAMLSchema.CORE).build())
+                    .configureForJackson2().build();
 
             return mapper.readValue(inputStream,
                     mapper.getTypeFactory().constructCollectionType(List.class, VATCountry.class));
-        } catch (IOException e) {
+        } catch (IOException | JacksonException e) {
             throw new IllegalStateException("VAT resource could not be read and parsed", e);
         }
     }

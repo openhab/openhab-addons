@@ -32,8 +32,9 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.type.ChannelKind;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 
 /**
  * @author Catalin Sanda - Initial contribution
@@ -43,7 +44,7 @@ public class SolarmanChannelManager {
     private final ObjectMapper objectMapper;
 
     public SolarmanChannelManager() {
-        objectMapper = new ObjectMapper();
+        objectMapper = JsonMapper.builder().configureForJackson2().build();
     }
 
     public Map<ParameterItem, Channel> generateItemChannelMap(Thing thing, InverterDefinition inverterDefinition) {

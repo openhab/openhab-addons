@@ -56,8 +56,11 @@ import org.vosk.LogLevel;
 import org.vosk.Model;
 import org.vosk.Recognizer;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.jna.NativeLibrary;
+
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 
 /**
  * The {@link VoskSTTService} class is a service implementation to use Vosk-API for Speech-to-Text.
@@ -71,6 +74,7 @@ import com.sun.jna.NativeLibrary;
 public class VoskSTTService implements STTService {
     private static final String VOSK_FOLDER = Path.of(OpenHAB.getUserDataFolder(), "vosk").toString();
     private static final String MODEL_PATH = Path.of(VOSK_FOLDER, "model").toString();
+    private static final ObjectMapper OBJECT_MAPPER = JsonMapper.builder().configureForJackson2().build();
     static {
         Logger logger = LoggerFactory.getLogger(VoskSTTService.class);
         File directory = new File(VOSK_FOLDER);
@@ -254,9 +258,8 @@ public class VoskSTTService implements STTService {
                         lastInputTime = System.currentTimeMillis();
                         var result = recognizer.getResult();
                         logger.debug("Result: {}", result);
-                        ObjectMapper mapper = new ObjectMapper();
-                        var json = mapper.readTree(result);
-                        transcriptBuilder.append(json.get("text").asText()).append(" ");
+                        var json = OBJECT_MAPPER.readTree(result);
+                        transcriptBuilder.append(json.get("text").asString()).append(" ");
                         if (config.singleUtteranceMode) {
                             break;
                         }
@@ -274,7 +277,7 @@ public class VoskSTTService implements STTService {
                         sttListener.sttEventReceived(new SpeechRecognitionErrorEvent(config.noResultsMessage));
                     }
                 }
-            } catch (IOException e) {
+            } catch (IOException | JacksonException e) {
                 logger.warn("Error running speech to text: {}", e.getMessage());
                 sttListener.sttEventReceived(new SpeechRecognitionErrorEvent(config.errorMessage));
             } catch (UnsatisfiedLinkError e) {

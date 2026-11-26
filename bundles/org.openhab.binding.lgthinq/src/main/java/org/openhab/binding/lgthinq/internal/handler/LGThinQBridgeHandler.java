@@ -51,6 +51,8 @@ import org.openhab.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import tools.jackson.core.JacksonException;
+
 /**
  * The {@link LGThinQBridgeHandler} - connect to the LG Account and get information about the user and registered
  * devices of that user.
@@ -259,7 +261,7 @@ public class LGThinQBridgeHandler extends ConfigStatusBridgeHandler implements L
                             "Token authentication process has been already done. Skip first authentication process.");
                     try {
                         tokenManager.getValidRegisteredToken(bridgeName);
-                    } catch (IOException e) {
+                    } catch (IOException | JacksonException e) {
                         logger.debug("I/O error reading LGThinq TokenFile. Updating Bridge Status to OFFLINE.", e);
                         updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.toke-file-corrupted");
                         return;
@@ -275,7 +277,7 @@ public class LGThinQBridgeHandler extends ConfigStatusBridgeHandler implements L
                                 lgthinqConfig.getAlternativeServer());
                         tokenManager.getValidRegisteredToken(bridgeName);
                         logger.debug("Successful getting token from LG API");
-                    } catch (IOException e) {
+                    } catch (IOException | JacksonException e) {
                         logger.debug(
                                 "I/O error accessing json token configuration file. Updating Bridge Status to OFFLINE.",
                                 e);

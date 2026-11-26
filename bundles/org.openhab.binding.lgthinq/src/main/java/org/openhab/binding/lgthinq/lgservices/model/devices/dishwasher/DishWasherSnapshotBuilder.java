@@ -28,7 +28,7 @@ import org.openhab.binding.lgthinq.lgservices.model.DeviceTypes;
 import org.openhab.binding.lgthinq.lgservices.model.LGAPIVerion;
 import org.openhab.binding.lgthinq.lgservices.model.MonitoringBinaryProtocol;
 
-import com.fasterxml.jackson.core.type.TypeReference;
+import tools.jackson.core.type.TypeReference;
 
 /**
  * The {@link DishWasherSnapshotBuilder}

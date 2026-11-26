@@ -26,7 +26,7 @@ import org.openhab.binding.lgthinq.lgservices.errors.LGThinqException;
 import org.openhab.binding.lgthinq.lgservices.model.CapabilityFactory;
 import org.openhab.binding.lgthinq.lgservices.model.DevicePowerState;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 
 /**
  * Tests the decoding of binary dishwasher monitoring data.
@@ -44,7 +44,8 @@ class DishWasherSnapshotBuilderTest {
         assertNotNull(classLoader);
         try (InputStream inputStream = classLoader.getResourceAsStream("thinq-dishwasher.json")) {
             assertNotNull(inputStream, "thinq-dishwasher.json not found in resources");
-            capability = CapabilityFactory.getInstance().create(new ObjectMapper().readTree(inputStream),
+            capability = CapabilityFactory.getInstance().create(
+                    JsonMapper.builder().configureForJackson2().build().readTree(inputStream),
                     DishWasherCapability.class);
         }
     }

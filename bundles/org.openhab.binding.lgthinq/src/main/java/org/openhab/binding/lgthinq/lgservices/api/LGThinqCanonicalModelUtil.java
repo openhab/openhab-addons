@@ -12,15 +12,16 @@
  */
 package org.openhab.binding.lgthinq.lgservices.api;
 
-import java.io.IOException;
 import java.util.Map;
 import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.lgthinq.lgservices.api.model.GatewayResult;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 
 /**
  * The {@link LGThinqCanonicalModelUtil} class - Utilities to help communication with LG API
@@ -29,16 +30,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  */
 @NonNullByDefault
 public class LGThinqCanonicalModelUtil {
-    public static ObjectMapper mapper = new ObjectMapper();
+    public static ObjectMapper mapper = JsonMapper.builder().configureForJackson2().build();
 
     /**
      * Get structured result from the LG Authentication Gateway
      *
      * @param rawJson RAW Json to process
      * @return Structured Object returned from the API
-     * @throws IOException If some error happen procession token from file.
+     * @throws JacksonException If the JSON can not be parsed.
      */
-    public static GatewayResult getGatewayResult(String rawJson) throws IOException {
+    public static GatewayResult getGatewayResult(String rawJson) throws JacksonException {
         Map<String, Object> map = mapper.readValue(rawJson, new TypeReference<>() {
         });
         @SuppressWarnings("unchecked")
