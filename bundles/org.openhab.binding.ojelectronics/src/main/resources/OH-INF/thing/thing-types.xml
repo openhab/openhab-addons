@@ -20,16 +20,31 @@
 				<label>API Key</label>
 				<description>API-Key from your local distributor</description>
 			</parameter>
+			<parameter name="cloudVendor" type="text" required="true">
+				<label>Cloud Vendor</label>
+				<description>Select the cloud used by your device, or "Custom" to configure API-URL and Customer ID
+					manually below.
+					The API Key is always required.</description>
+				<default>OJELECTRONICS</default>
+				<options>
+					<option value="OJELECTRONICS">OJ Electronics</option>
+					<option value="SWATT">SWATT</option>
+					<option value="SCHLUETER">Schlüter</option>
+					<option value="MICROTEMP">Microtemp</option>
+					<option value="CUSTOM">Custom</option>
+				</options>
+			</parameter>
 			<parameter name="apiUrl" type="text" required="true">
 				<label>API-URL</label>
-				<description>URL to cloud API-service and Socket-Notification.</description>
+				<description>URL to cloud API-service and Socket-Notification. Only used when Cloud Vendor is set to
+					"Custom".</description>
 				<context>url</context>
 				<advanced>true</advanced>
 				<default>https://OWD5-OJ001-App.ojelectronics.com</default>
 			</parameter>
 			<parameter name="customerId" type="integer" required="true">
 				<label>Customer ID</label>
-				<description>Customer ID</description>
+				<description>Customer ID. Only used when Cloud Vendor is set to "Custom".</description>
 				<advanced>true</advanced>
 				<default>1</default>
 			</parameter>
