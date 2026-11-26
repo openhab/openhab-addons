@@ -337,7 +337,7 @@
 			<point>Control</point>
 			<property>Speed</property>
 		</tags>
-		<state min="-1" max="105" step="1" readOnly="false">
+		<state min="-1" max="108" step="1" readOnly="false">
 			<options>
 				<option value="38">Silent</option>
 				<option value="60">Standard</option>
@@ -350,6 +350,8 @@
 				<option value="103">Turbov2</option>
 				<option value="104">Maxv2</option>
 				<option value="105">Mob</option>
+				<option value="106">Auto</option>
+				<option value="108">Max+</option>
 				<option value="-1">Custom</option>
 			</options>
 		</state>
