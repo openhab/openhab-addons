@@ -27,7 +27,6 @@ import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -951,9 +950,8 @@ public class ShellyChannelDefinitions {
             if (lights == null || lights.size() < profile.numMeters) {
                 return Set.of();
             }
-            return IntStream.range(0, profile.numMeters).filter(i -> !profile.supportsMeterReset(i))
-                    .mapToObj(i -> profile.getMeterGroup(i) + "#" + CHANNEL_EMETER_RESETTOTAL)
-                    .collect(Collectors.toSet());
+            return Set.copyOf(IntStream.range(0, profile.numMeters).filter(i -> !profile.supportsMeterReset(i))
+                    .mapToObj(i -> profile.getMeterGroup(i) + "#" + CHANNEL_EMETER_RESETTOTAL).toList());
         }
         if (profile.numMeters > 0 || profile.isEMeter || profile.isRoller || profile.isRGBW2) {
             return Set.of();

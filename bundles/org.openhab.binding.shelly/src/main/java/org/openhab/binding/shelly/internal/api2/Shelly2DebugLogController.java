@@ -59,11 +59,14 @@ public class Shelly2DebugLogController implements Shelly2DebugLogListener {
 
     public void setEnabled(boolean enable) throws ShellyApiException {
         try {
+            Shelly2SysConfigDebugWebSocket websocket = new Shelly2SysConfigDebugWebSocket();
+            websocket.enable = enable;
+            Shelly2SysConfigDebug debug = new Shelly2SysConfigDebug();
+            debug.websocket = websocket;
+            Shelly2SysConfig sysConfig = new Shelly2SysConfig();
+            sysConfig.debug = debug;
             Shelly2SysSetConfigParams params = new Shelly2SysSetConfigParams();
-            params.config = new Shelly2SysConfig();
-            params.config.debug = new Shelly2SysConfigDebug();
-            params.config.debug.websocket = new Shelly2SysConfigDebugWebSocket();
-            params.config.debug.websocket.enable = enable;
+            params.config = sysConfig;
             // not under this lock: apiRequest() may lock the api (reconnect), which close()/resume() callers hold
             // while taking this lock
             api.apiRequest(SHELLYRPC_METHOD_SYS_SETCONFIG, params, Shelly2WsConfigResult.class);

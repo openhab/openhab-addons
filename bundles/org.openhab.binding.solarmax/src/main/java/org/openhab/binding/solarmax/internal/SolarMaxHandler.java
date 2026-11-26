@@ -41,16 +41,62 @@ import org.slf4j.LoggerFactory;
  * sent to one of the channels.
  *
  * @author Jamie Townsend - Initial contribution
+ * @author Christian Schreiner - Offline threshold and scoping of polls to their configuration
  */
 @NonNullByDefault
 public class SolarMaxHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(SolarMaxHandler.class);
 
-    private SolarMaxConfiguration config = getConfigAs(SolarMaxConfiguration.class);
-
     @Nullable
     private ScheduledFuture<?> pollingJob;
+
+    @Nullable
+    private PollingSession pollingSession;
+
+    // serializes a poll still running from a previous session with the polls of the new one (the device handles only
+    // one connection at a time); not the handler's own monitor, which BaseThingHandler.updateStatus() also uses, so
+    // initialize() doesn't have to wait for socket I/O
+    private final Object pollLock = new Object();
+
+    /**
+     * The configuration and failure counter of one initialize/dispose cycle. A poll already reading from the socket
+     * isn't stopped by cancelling the job, so it only applies its outcome while its own session is still active.
+     */
+    private final class PollingSession implements Runnable {
+        private final SolarMaxConfiguration config;
+        private final SolarMaxFailureCounter failureCounter;
+        private boolean active = true; // guarded by this
+
+        PollingSession(SolarMaxConfiguration config) {
+            this.config = config;
+            this.failureCounter = new SolarMaxFailureCounter(config.offlineAfterFailures);
+        }
+
+        @Override
+        public void run() {
+            synchronized (pollLock) {
+                updateValuesFromDevice(this);
+            }
+        }
+
+        /**
+         * The action runs while holding the session lock, so {@link #deactivate()} waits for it and nothing from this
+         * session is published after {@link SolarMaxHandler#dispose()} returns.
+         */
+        synchronized void ifActive(Runnable action) {
+            if (active) {
+                action.run();
+            } else {
+                logger.debug("Discarding the outcome of a poll of {} from a previous configuration",
+                        getThing().getUID());
+            }
+        }
+
+        synchronized void deactivate() {
+            active = false;
+        }
+    }
 
     public SolarMaxHandler(final Thing thing) {
         super(thing);
@@ -63,57 +109,81 @@ public class SolarMaxHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        config = getConfigAs(SolarMaxConfiguration.class);
+        SolarMaxConfiguration config = getConfigAs(SolarMaxConfiguration.class);
 
-        configurePolling(); // Setup the scheduler
-    }
-
-    /**
-     * This is called to start the refresh job and also to reset that refresh job when a config change is done.
-     */
-    private void configurePolling() {
-        logger.debug("Polling data from {} at {}:{} (Device Address {}) every {} seconds ", getThing().getUID(),
-                this.config.host, this.config.portNumber, this.config.deviceAddress, this.config.refreshInterval);
-        if (this.config.refreshInterval > 0) {
-            if (pollingJob == null || pollingJob.isCancelled()) {
-                pollingJob = scheduler.scheduleWithFixedDelay(pollingRunnable, 0, this.config.refreshInterval,
-                        TimeUnit.SECONDS);
-            }
+        if (config.refreshInterval <= 0) {
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "The refresh interval must be greater than 0");
+            return;
         }
+        // stays UNKNOWN until the first successful poll, OFFLINE only after offlineAfterFailures failed polls in a row
+        updateStatus(ThingStatus.UNKNOWN);
+
+        logger.debug("Polling data from {} at {}:{} (Device Address {}) every {} seconds ", getThing().getUID(),
+                config.host, config.portNumber, config.deviceAddress, config.refreshInterval);
+        PollingSession session = new PollingSession(config);
+        pollingSession = session;
+        pollingJob = scheduler.scheduleWithFixedDelay(session, 0, config.refreshInterval, TimeUnit.SECONDS);
     }
 
     @Override
     public void dispose() {
-        if (pollingJob != null && !pollingJob.isCancelled()) {
-            pollingJob.cancel(true);
+        ScheduledFuture<?> job = pollingJob;
+        if (job != null) {
+            job.cancel(true);
         }
         pollingJob = null;
+        PollingSession session = pollingSession;
+        if (session != null) {
+            session.deactivate();
+        }
+        pollingSession = null;
     }
 
-    /**
-     * Polling event used to get data from the SolarMax device
-     */
-    private Runnable pollingRunnable = () -> {
-        updateValuesFromDevice();
-    };
-
-    private synchronized void updateValuesFromDevice() {
-        logger.debug("Updating data from {} at {}:{} (Device Address {}) ", getThing().getUID(), this.config.host,
-                this.config.portNumber, this.config.deviceAddress);
+    private void updateValuesFromDevice(PollingSession session) {
+        SolarMaxConfiguration config = session.config;
+        logger.debug("Updating data from {} at {}:{} (Device Address {}) ", getThing().getUID(), config.host,
+                config.portNumber, config.deviceAddress);
         // get the data from the SolarMax device
         try {
             SolarMaxData solarMaxData = SolarMaxConnector.getAllValuesFromSolarMax(config.host, config.portNumber,
-                    this.config.deviceAddress);
+                    config.deviceAddress, config.getConnectionSettings());
 
             if (solarMaxData.wasCommunicationSuccessful()) {
-                updateStatus(ThingStatus.ONLINE);
-                updateProperties(solarMaxData);
-                updateChannels(solarMaxData);
+                session.ifActive(() -> {
+                    session.failureCounter.recordSuccess();
+                    updateStatus(ThingStatus.ONLINE);
+                    updateProperties(solarMaxData);
+                    updateChannels(solarMaxData);
+                });
                 return;
             }
+            session.ifActive(() -> handlePollFailure(session, "The device did not return any values"));
         } catch (SolarMaxException e) {
+            session.ifActive(
+                    () -> handlePollFailure(session, "Communication error with the device: " + e.getMessage()));
+        } catch (RuntimeException e) {
+            // an exception escaping from a job scheduled with scheduleWithFixedDelay would silently stop all further
+            // polling, so catch everything here
+            logger.warn("Unexpected error while updating {}: {}", getThing().getUID(), e.getMessage(), e);
+            session.ifActive(() -> handlePollFailure(session, "Unexpected error: " + e.getMessage()));
+        }
+    }
+
+    /**
+     * A single failed poll (e.g. one connection the device didn't accept) doesn't take the thing OFFLINE, the channels
+     * just keep their last values. Only after offlineAfterFailures failed polls in a row the thing goes OFFLINE, e.g.
+     * at night when the inverter is switched off.
+     */
+    private void handlePollFailure(PollingSession session, String reason) {
+        SolarMaxFailureCounter failureCounter = session.failureCounter;
+        if (failureCounter.recordFailure()) {
+            // the description deliberately doesn't contain the running count: an unchanged status info doesn't create
+            // a new status event, so a thing that stays OFFLINE (all night) doesn't flood the event log
             updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Communication error with the device: " + e.getMessage());
+                    reason + " (failed " + failureCounter.getThreshold() + " times in a row)");
+        } else {
+            logger.debug("Polling {} failed ({} of {} failures in a row before going OFFLINE): {}", getThing().getUID(),
+                    failureCounter.getFailuresInARow(), failureCounter.getThreshold(), reason);
         }
     }
 
@@ -129,19 +199,22 @@ public class SolarMaxHandler extends BaseThingHandler {
             if (channelId.equals(SolarMaxChannel.CHANNEL_LAST_UPDATED.getChannelId())) {
                 // CHANNEL_LAST_UPDATED shows when the device was last read and does not come from the device, so handle
                 // it specially
-                State state = solarMaxData.getDataDateTime();
-                logger.debug("Update channel state: {} - {}", channelId, state);
-                updateState(channel.getUID(), state);
+                if (channel != null) {
+                    State state = solarMaxData.getDataDateTime();
+                    logger.debug("Update channel state: {} - {}", channelId, state);
+                    updateState(channel.getUID(), state);
+                }
             } else {
                 // must be somthing to collect from the device, so...
                 if (solarMaxData.has(SolarMaxCommandKey.valueOf(channelId))) {
                     if (channel == null) {
-                        logger.error("No channel found with id: {}", channelId);
+                        logger.debug("No channel found with id: {}", channelId);
+                        continue;
                     }
-                    State state = convertValueToState(solarMaxData.get(SolarMaxCommandKey.valueOf(channelId)),
-                            solarMaxChannel.getUnit());
+                    Number value = solarMaxData.get(SolarMaxCommandKey.valueOf(channelId));
+                    State state = (value == null) ? null : convertValueToState(value, solarMaxChannel.getUnit());
 
-                    if (channel != null && state != null) {
+                    if (state != null) {
                         logger.debug("Update channel state: {} - {}", channelId, state);
                         updateState(channel.getUID(), state);
                     } else {
@@ -154,7 +227,8 @@ public class SolarMaxHandler extends BaseThingHandler {
 
     private @Nullable State convertValueToState(Number value, @Nullable Unit<?> unit) {
         if (unit == null) {
-            return new DecimalType(value.floatValue());
+            // keeps integer values (e.g. operating state codes) integral, so they match the state options
+            return new DecimalType(value);
         }
         return new QuantityType<>(value, unit);
     }

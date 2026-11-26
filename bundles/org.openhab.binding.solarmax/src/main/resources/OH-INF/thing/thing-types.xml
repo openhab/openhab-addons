@@ -29,7 +29,38 @@
 			<channel id="acPhase2Voltage" typeId="acPhase2Voltage"/>
 			<channel id="acPhase3Voltage" typeId="acPhase3Voltage"/>
 			<channel id="heatSinkTemperature" typeId="heatSinkTemperature"/>
+			<channel id="operatingState" typeId="operatingState"/>
+			<channel id="alarmCode" typeId="alarmCode"/>
+			<channel id="dcInput1Voltage" typeId="dcVoltage">
+				<label>DC Input 1 Voltage</label>
+				<description>DC voltage of input (MPP tracker) 1</description>
+			</channel>
+			<channel id="dcInput2Voltage" typeId="dcVoltage">
+				<label>DC Input 2 Voltage</label>
+				<description>DC voltage of input (MPP tracker) 2</description>
+			</channel>
+			<channel id="dcInput1Current" typeId="dcCurrent">
+				<label>DC Input 1 Current</label>
+				<description>DC current of input (MPP tracker) 1</description>
+			</channel>
+			<channel id="dcInput2Current" typeId="dcCurrent">
+				<label>DC Input 2 Current</label>
+				<description>DC current of input (MPP tracker) 2</description>
+			</channel>
+			<channel id="dcInput1Power" typeId="dcPower">
+				<label>DC Input 1 Power</label>
+				<description>DC power of input (MPP tracker) 1</description>
+			</channel>
+			<channel id="dcInput2Power" typeId="dcPower">
+				<label>DC Input 2 Power</label>
+				<description>DC power of input (MPP tracker) 2</description>
+			</channel>
+			<channel id="dcPower" typeId="dcPower"/>
 		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 
 		<config-description>
 			<parameter name="host" type="text" required="true">
@@ -50,6 +81,36 @@
 				<label>Refresh Interval</label>
 				<description>Refresh Interval in seconds (defaults to 15)</description>
 				<default>15</default>
+			</parameter>
+			<parameter name="timeout" type="integer" min="100" max="10000" unit="ms" required="false">
+				<label>Timeout</label>
+				<description>Timeout in milliseconds for connecting and for waiting for a response (defaults to 3000, as
+					recommended
+					by the MaxComm protocol description)</description>
+				<default>3000</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="retries" type="integer" min="0" max="5" required="false">
+				<label>Retries</label>
+				<description>How often a failed request (connection error, no or invalid response) is repeated within one
+					refresh. A
+					retry is skipped if it would not fit into the refresh interval. (defaults to 1)</description>
+				<default>1</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="retryDelay" type="integer" min="0" max="5000" unit="ms" required="false">
+				<label>Retry Delay</label>
+				<description>Pause in milliseconds before a failed request is repeated (defaults to 500)</description>
+				<default>500</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="offlineAfterFailures" type="integer" min="1" max="100" required="false">
+				<label>Offline After Failures</label>
+				<description>Number of failed refreshes in a row after which the thing goes OFFLINE. Until then the
+					channels keep
+					their last values. (defaults to 3)</description>
+				<default>3</default>
+				<advanced>true</advanced>
 			</parameter>
 		</config-description>
 
@@ -254,6 +315,125 @@
 			<property>Temperature</property>
 		</tags>
 		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="operatingState">
+		<item-type>Number</item-type>
+		<label>Operating State</label>
+		<description>Operating state code of the device (SYS), e.g. 20008 = mains operation</description>
+		<tags>
+			<point>Status</point>
+		</tags>
+		<state readOnly="true">
+			<options>
+				<option value="20001">Running</option>
+				<option value="20002">Irradiance too low</option>
+				<option value="20003">Startup</option>
+				<option value="20004">MPP operation</option>
+				<option value="20005">Fan running</option>
+				<option value="20006">Maximum power</option>
+				<option value="20007">Temperature limitation</option>
+				<option value="20008">Mains operation</option>
+				<option value="20009">DC current limitation</option>
+				<option value="20010">AC current limitation</option>
+				<option value="20011">Test mode</option>
+				<option value="20012">Remote controlled</option>
+				<option value="20013">Restart delay</option>
+				<option value="20014">External limitation</option>
+				<option value="20015">Frequency limitation</option>
+				<option value="20016">Restart limitation</option>
+				<option value="20017">Booting</option>
+				<option value="20018">Insufficient boot power</option>
+				<option value="20019">Insufficient power</option>
+				<option value="20021">Uninitialized</option>
+				<option value="20022">Disabled</option>
+				<option value="20023">Idle</option>
+				<option value="20024">Power unit not ready</option>
+				<option value="20050">Programming firmware</option>
+				<option value="20105">DC insulation fault</option>
+				<option value="20106">DC insulation fault</option>
+				<option value="20109">DC voltage too high</option>
+				<option value="20114">Residual current too high</option>
+				<option value="20115">No mains</option>
+				<option value="20116">Mains frequency too high</option>
+				<option value="20117">Mains frequency too low</option>
+				<option value="20118">Mains error</option>
+				<option value="20119">Mains voltage 10 min average too high</option>
+				<option value="20122">Mains voltage too high</option>
+				<option value="20123">Mains voltage too low</option>
+				<option value="20126">Error external input 1</option>
+				<option value="20127">Error external input 2</option>
+				<option value="20129">Incorrect phase rotation</option>
+				<option value="20131">Main switch off</option>
+				<option value="20145">Mains frequency change rate too high</option>
+				<option value="20150">Residual current step too high</option>
+				<option value="20151">Residual current step too high</option>
+				<option value="20154">Shutdown 1</option>
+				<option value="20155">Shutdown 2</option>
+				<option value="20157">DC insulation fault</option>
+				<option value="20164">Residual current too high</option>
+				<option value="20165">No mains</option>
+				<option value="20166">Mains frequency too high</option>
+				<option value="20167">Mains frequency too low</option>
+				<option value="20168">Mains error</option>
+				<option value="20169">Mains voltage 10 min average too high</option>
+				<option value="20172">Mains voltage too high</option>
+				<option value="20173">Mains voltage too low</option>
+				<option value="20176">DC polarity error</option>
+				<option value="20180">DC voltage too low</option>
+				<option value="20181">Blocked externally</option>
+				<option value="20189">L and N interchanged</option>
+				<option value="20190">Below-average yield</option>
+				<option value="20191">Limitation error</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="alarmCode">
+		<item-type>Number</item-type>
+		<label>Alarm Code</label>
+		<description>Alarm code of the device (SAL), a bit mask where 0 means no alarm</description>
+		<tags>
+			<point>Alarm</point>
+		</tags>
+		<state readOnly="true">
+			<options>
+				<option value="0">No alarm</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="dcVoltage">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>DC Voltage</label>
+		<description>DC voltage in V</description>
+		<tags>
+			<point>Measurement</point>
+			<property>Voltage</property>
+		</tags>
+		<state readOnly="true" pattern="%.1f %unit%"></state>
+	</channel-type>
+
+	<channel-type id="dcCurrent">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>DC Current</label>
+		<description>DC current in A</description>
+		<tags>
+			<point>Measurement</point>
+			<property>Current</property>
+		</tags>
+		<state readOnly="true" pattern="%.2f %unit%"></state>
+	</channel-type>
+
+	<channel-type id="dcPower">
+		<item-type>Number:Power</item-type>
+		<label>DC Power</label>
+		<description>Total DC power of all inputs in W</description>
+		<tags>
+			<point>Measurement</point>
+			<property>Power</property>
+		</tags>
+		<state readOnly="true" pattern="%.1f %unit%"></state>
 	</channel-type>
 
 </thing:thing-descriptions>

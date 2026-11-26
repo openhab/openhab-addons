@@ -1,0 +1,447 @@
+{
+	"deviceMapping": {
+		"id": [
+			"hyd.airer.hx2"
+		],
+		"propertyMethod": "get_properties",
+		"maxProperties": 1,
+		"channels": [
+			{
+				"property": "fault",
+				"siid": 2,
+				"piid": 1,
+				"friendlyName": "Fault",
+				"channel": "fault",
+				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "0",
+							"label": "No faults"
+						},
+						{
+							"value": "1",
+							"label": "Obstruction"
+						},
+						{
+							"value": "2",
+							"label": "Overweight"
+						},
+						{
+							"value": "3",
+							"label": "Overheated motor"
+						},
+						{
+							"value": "4",
+							"label": "Disinfection is prepared"
+						},
+						{
+							"value": "5",
+							"label": "Fan error"
+						},
+						{
+							"value": "6",
+							"label": "UV error"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "error",
+				"tags": [
+					"Status"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"No faults\",\"1\"\u003d\"Obstruction\",\"2\"\u003d\"Overweight\",\"3\"\u003d\"Overheated motor\",\"4\"\u003d\"Disinfection is prepared\",\"5\"\u003d\"Fan error\",\"6\"\u003d\"UV error\"]`"
+			},
+			{
+				"property": "motor-control",
+				"siid": 2,
+				"piid": 2,
+				"friendlyName": "Motor",
+				"channel": "motor_control",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "Pause"
+						},
+						{
+							"value": "1",
+							"label": "Raise"
+						},
+						{
+							"value": "2",
+							"label": "Lower"
+						}
+					]
+				},
+				"refresh": false,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "movecontrol",
+				"tags": [
+					"Control"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Pause\",\"1\"\u003d\"Raise\",\"2\"\u003d\"Lower\"]`"
+			},
+			{
+				"property": "status",
+				"siid": 2,
+				"piid": 4,
+				"friendlyName": "Status",
+				"channel": "status",
+				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "0",
+							"label": "Stopped at top"
+						},
+						{
+							"value": "1",
+							"label": "Raising"
+						},
+						{
+							"value": "2",
+							"label": "Lowering"
+						},
+						{
+							"value": "3",
+							"label": "Paused"
+						},
+						{
+							"value": "4",
+							"label": "Stopped at bottom"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "status",
+				"tags": [
+					"Status"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Stopped at top\",\"1\"\u003d\"Raising\",\"2\"\u003d\"Lowering\",\"3\"\u003d\"Paused\",\"4\"\u003d\"Stopped at bottom\"]`"
+			},
+			{
+				"property": "dryer",
+				"siid": 2,
+				"piid": 5,
+				"friendlyName": "Drying Mode",
+				"channel": "dryer",
+				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "0",
+							"label": "Off"
+						},
+						{
+							"value": "1",
+							"label": "Air Drying"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "heating",
+				"tags": [
+					"Status",
+					"Mode"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Off\",\"1\"\u003d\"Air Drying\"]`"
+			},
+			{
+				"property": "drying-level",
+				"siid": 2,
+				"piid": 6,
+				"friendlyName": "Drying Level",
+				"channel": "drying_level",
+				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "0",
+							"label": "Off"
+						},
+						{
+							"value": "1",
+							"label": "30 minutes"
+						},
+						{
+							"value": "2",
+							"label": "60 minutes"
+						},
+						{
+							"value": "3",
+							"label": "90 minutes"
+						},
+						{
+							"value": "4",
+							"label": "120 minutes"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "heating",
+				"tags": [
+					"Status",
+					"Mode"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Off\",\"1\"\u003d\"30 minutes\",\"2\"\u003d\"60 minutes\",\"3\"\u003d\"90 minutes\",\"4\"\u003d\"120 minutes\"]`"
+			},
+			{
+				"property": "drying-left-time",
+				"siid": 2,
+				"piid": 7,
+				"friendlyName": "Drying Remaining",
+				"channel": "drying_left_time",
+				"type": "Number:Time",
+				"unit": "minutes",
+				"stateDescription": {
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "time",
+				"tags": [
+					"Measurement",
+					"Duration"
+				]
+			},
+			{
+				"property": "",
+				"friendlyName": "Air Drying",
+				"channel": "air_drying",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "Off"
+						},
+						{
+							"value": "1",
+							"label": "30 minutes"
+						},
+						{
+							"value": "2",
+							"label": "60 minutes"
+						},
+						{
+							"value": "3",
+							"label": "90 minutes"
+						},
+						{
+							"value": "4",
+							"label": "120 minutes"
+						}
+					]
+				},
+				"refresh": false,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER",
+						"parameters": [
+							{
+								"did": "dryer",
+								"siid": 2,
+								"piid": 5,
+								"value": 1
+							},
+							{
+								"did": "drying_level",
+								"siid": 2,
+								"piid": 6,
+								"value": "$value$"
+							}
+						],
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "[1-4]"
+								}
+							]
+						}
+					},
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER",
+						"parameters": [
+							{
+								"did": "dryer",
+								"siid": 2,
+								"piid": 5,
+								"value": "$value$"
+							},
+							{
+								"did": "drying_level",
+								"siid": 2,
+								"piid": 6,
+								"value": "$value$"
+							}
+						],
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "0"
+								}
+							]
+						}
+					}
+				],
+				"category": "heating",
+				"tags": [
+					"Control",
+					"Mode"
+				],
+				"readmeComment": "Write only, the running drying is shown by the dryer and drying_level channels."
+			},
+			{
+				"property": "uv",
+				"siid": 2,
+				"piid": 8,
+				"friendlyName": "Disinfection",
+				"channel": "uv",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch"
+				]
+			},
+			{
+				"property": "uv-left-time",
+				"siid": 2,
+				"piid": 9,
+				"friendlyName": "Disinfection Remaining",
+				"channel": "uv_left_time",
+				"type": "Number:Time",
+				"unit": "minutes",
+				"stateDescription": {
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "time",
+				"tags": [
+					"Measurement",
+					"Duration"
+				]
+			},
+			{
+				"property": "current-position",
+				"siid": 2,
+				"piid": 10,
+				"friendlyName": "Current Position",
+				"channel": "current_position",
+				"type": "Number:Dimensionless",
+				"unit": "percentage",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 100,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "blinds",
+				"tags": [
+					"Status",
+					"OpenLevel"
+				]
+			},
+			{
+				"property": "alarm",
+				"siid": 2,
+				"piid": 12,
+				"friendlyName": "Notification Sound",
+				"channel": "alarm",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFNUMBER"
+					}
+				],
+				"category": "soundvolume",
+				"tags": [
+					"Switch",
+					"Enabled"
+				]
+			},
+			{
+				"property": "target-position",
+				"siid": 2,
+				"piid": 13,
+				"friendlyName": "Custom Target Position",
+				"channel": "target_position",
+				"type": "Number:Dimensionless",
+				"unit": "percentage",
+				"stateDescription": {
+					"minimum": 10,
+					"maximum": 100,
+					"step": 1,
+					"pattern": "%.0f %unit%"
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "blinds",
+				"tags": [
+					"Setpoint",
+					"OpenLevel"
+				],
+				"readmeComment": "Custom stop position of the rack (Mi Home setting \"Set custom target-position\")."
+			},
+			{
+				"property": "on",
+				"siid": 3,
+				"piid": 1,
+				"friendlyName": "Light",
+				"channel": "light",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "light",
+				"tags": [
+					"Switch",
+					"Light"
+				]
+			}
+		],
+		"experimental": true
+	}
+}

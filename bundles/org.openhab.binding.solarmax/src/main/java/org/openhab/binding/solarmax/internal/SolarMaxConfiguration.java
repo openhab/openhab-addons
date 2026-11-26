@@ -13,6 +13,7 @@
 package org.openhab.binding.solarmax.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.solarmax.internal.connector.SolarMaxConnectionSettings;
 
 /**
  * The {@link SolarMaxConfiguration} class contains fields mapping thing configuration parameters.
@@ -26,4 +27,14 @@ public class SolarMaxConfiguration {
     public int deviceAddress = 1; // default value is 1
 
     public int refreshInterval = 15; // default value is 15
+
+    public int timeout = SolarMaxConnectionSettings.DEFAULT_TIMEOUT; // ms, MaxComm protocol description: 3000
+    public int retries = SolarMaxConnectionSettings.DEFAULT_RETRIES;
+    public int retryDelay = SolarMaxConnectionSettings.DEFAULT_RETRY_DELAY; // ms
+    public int offlineAfterFailures = 3; // failed polls in a row before the thing goes OFFLINE
+
+    public SolarMaxConnectionSettings getConnectionSettings() {
+        // a poll must not take longer than the refresh interval, so retries only happen within that time budget
+        return new SolarMaxConnectionSettings(timeout, retries, retryDelay, refreshInterval * 1000L);
+    }
 }

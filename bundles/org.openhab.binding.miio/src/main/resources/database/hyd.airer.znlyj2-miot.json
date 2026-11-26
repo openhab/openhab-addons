@@ -1,0 +1,176 @@
+{
+	"deviceMapping": {
+		"id": [
+			"hyd.airer.znlyj1",
+			"hyd.airer.znlyj2",
+			"hyd.airer.znlyj3",
+			"hyd.airer.znlyj4"
+		],
+		"propertyMethod": "get_properties",
+		"maxProperties": 1,
+		"channels": [
+			{
+				"property": "fault",
+				"siid": 2,
+				"piid": 1,
+				"friendlyName": "Fault",
+				"channel": "fault",
+				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "0",
+							"label": "No faults"
+						},
+						{
+							"value": "1",
+							"label": "Obstruction"
+						},
+						{
+							"value": "2",
+							"label": "Overweight"
+						},
+						{
+							"value": "3",
+							"label": "Overheated motor"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "error",
+				"tags": [
+					"Status"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"No faults\",\"1\"\u003d\"Obstruction\",\"2\"\u003d\"Overweight\",\"3\"\u003d\"Overheated motor\"]`"
+			},
+			{
+				"property": "motor-control",
+				"siid": 2,
+				"piid": 2,
+				"friendlyName": "Motor",
+				"channel": "motor_control",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "Pause"
+						},
+						{
+							"value": "1",
+							"label": "Raise"
+						},
+						{
+							"value": "2",
+							"label": "Lower"
+						}
+					]
+				},
+				"refresh": false,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "movecontrol",
+				"tags": [
+					"Control"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Pause\",\"1\"\u003d\"Raise\",\"2\"\u003d\"Lower\"]`"
+			},
+			{
+				"property": "current-position",
+				"siid": 2,
+				"piid": 3,
+				"friendlyName": "Airer Location",
+				"channel": "location",
+				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "0",
+							"label": "Normal"
+						},
+						{
+							"value": "1",
+							"label": "Highest"
+						},
+						{
+							"value": "2",
+							"label": "Lowest"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "status",
+				"tags": [
+					"Status",
+					"Position"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Normal\",\"1\"\u003d\"Highest\",\"2\"\u003d\"Lowest\"]`"
+			},
+			{
+				"property": "status",
+				"siid": 2,
+				"piid": 4,
+				"friendlyName": "Status",
+				"channel": "status",
+				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "0",
+							"label": "Stopped"
+						},
+						{
+							"value": "1",
+							"label": "Raising"
+						},
+						{
+							"value": "2",
+							"label": "Lowering"
+						},
+						{
+							"value": "3",
+							"label": "Paused"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "status",
+				"tags": [
+					"Status"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Stopped\",\"1\"\u003d\"Raising\",\"2\"\u003d\"Lowering\",\"3\"\u003d\"Paused\"]`"
+			},
+			{
+				"property": "on",
+				"siid": 3,
+				"piid": 1,
+				"friendlyName": "Light",
+				"channel": "light",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "light",
+				"tags": [
+					"Switch",
+					"Light"
+				]
+			}
+		],
+		"experimental": true
+	}
+}

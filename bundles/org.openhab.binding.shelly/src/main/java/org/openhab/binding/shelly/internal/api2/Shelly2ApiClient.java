@@ -68,41 +68,42 @@ import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSe
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor.ShellySensorHum;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor.ShellySensorLux;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2AuthChallenge;
-import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2CBStatus;
-import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceConfig.Shelly2ConfigFlood;
-import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceConfig.Shelly2DevConfigInput;
-import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceConfig.Shelly2DevConfigSwitch;
-import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceConfig.Shelly2DeviceConfigSta;
-import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceConfig.Shelly2GetConfigLight;
-import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceConfig.Shelly2GetConfigResult;
-import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceConfig.ShellyDeviceConfigCB;
-import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceSettings;
-import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusLight;
-import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult;
-import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2DaliStatus;
-import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2DeviceStatusEm;
-import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2DeviceStatusEmData;
-import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2DeviceStatusFlood;
-import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2DeviceStatusHumidity;
-import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2DeviceStatusIlluminance;
-import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2DeviceStatusPower;
-import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2DeviceStatusSmoke;
-import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2DeviceStatusTempId;
-import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2DeviceStatusVoltage;
-import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2RGBCCTStatus;
-import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2RGBWStatus;
-import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2InputStatus;
-import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatusLora;
-import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatusTemp;
-import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2Energy;
-import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2RelayStatus;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2RpcBaseMessage;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2RpcRequest.Shelly2RpcRequestParams;
-import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2StatusEm1;
+import org.openhab.binding.shelly.internal.api2.dto.Shelly2ConfigJsonDTO.Shelly2ConfigParms;
+import org.openhab.binding.shelly.internal.api2.dto.Shelly2ConfigJsonDTO.Shelly2DeviceConfig.Shelly2ConfigFlood;
+import org.openhab.binding.shelly.internal.api2.dto.Shelly2ConfigJsonDTO.Shelly2DeviceConfig.Shelly2DevConfigInput;
+import org.openhab.binding.shelly.internal.api2.dto.Shelly2ConfigJsonDTO.Shelly2DeviceConfig.Shelly2DevConfigSwitch;
+import org.openhab.binding.shelly.internal.api2.dto.Shelly2ConfigJsonDTO.Shelly2DeviceConfig.Shelly2DeviceConfigSta;
+import org.openhab.binding.shelly.internal.api2.dto.Shelly2ConfigJsonDTO.Shelly2DeviceConfig.Shelly2GetConfigResult;
+import org.openhab.binding.shelly.internal.api2.dto.Shelly2ConfigJsonDTO.Shelly2DeviceConfig.ShellyDeviceConfigCB;
+import org.openhab.binding.shelly.internal.api2.dto.Shelly2ConfigJsonDTO.Shelly2DeviceSettings;
+import org.openhab.binding.shelly.internal.api2.dto.Shelly2StatusJsonDTO.Shelly2CBStatus;
+import org.openhab.binding.shelly.internal.api2.dto.Shelly2StatusJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult;
+import org.openhab.binding.shelly.internal.api2.dto.Shelly2StatusJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2DeviceStatusFlood;
+import org.openhab.binding.shelly.internal.api2.dto.Shelly2StatusJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2DeviceStatusHumidity;
+import org.openhab.binding.shelly.internal.api2.dto.Shelly2StatusJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2DeviceStatusIlluminance;
+import org.openhab.binding.shelly.internal.api2.dto.Shelly2StatusJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2DeviceStatusPower;
+import org.openhab.binding.shelly.internal.api2.dto.Shelly2StatusJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2DeviceStatusSmoke;
+import org.openhab.binding.shelly.internal.api2.dto.Shelly2StatusJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2DeviceStatusTempId;
+import org.openhab.binding.shelly.internal.api2.dto.Shelly2StatusJsonDTO.Shelly2DeviceStatus.Shelly2InputStatus;
+import org.openhab.binding.shelly.internal.api2.dto.Shelly2StatusJsonDTO.Shelly2DeviceStatusTemp;
+import org.openhab.binding.shelly.internal.api2.dto.Shelly2StatusJsonDTO.Shelly2RelayStatus;
 import org.openhab.binding.shelly.internal.api2.dto.ShellyCoverJsonDTO.Shelly2CoverStatus;
 import org.openhab.binding.shelly.internal.api2.dto.ShellyCoverJsonDTO.Shelly2DevConfigCover;
 import org.openhab.binding.shelly.internal.api2.dto.ShellyCoverJsonDTO.Shelly2DevConfigCover.Shelly2DeviceConfigCoverObstructionDetection;
 import org.openhab.binding.shelly.internal.api2.dto.ShellyCoverJsonDTO.Shelly2DevConfigCover.Shelly2DeviceConfigCoverSafetySwitch;
+import org.openhab.binding.shelly.internal.api2.dto.ShellyLightJsonDTO.Shelly2DaliStatus;
+import org.openhab.binding.shelly.internal.api2.dto.ShellyLightJsonDTO.Shelly2DeviceStatusLight;
+import org.openhab.binding.shelly.internal.api2.dto.ShellyLightJsonDTO.Shelly2GetConfigLight;
+import org.openhab.binding.shelly.internal.api2.dto.ShellyLightJsonDTO.Shelly2RGBCCTStatus;
+import org.openhab.binding.shelly.internal.api2.dto.ShellyLightJsonDTO.Shelly2RGBWStatus;
+import org.openhab.binding.shelly.internal.api2.dto.ShellyLoraJsonDTO.Shelly2DeviceStatusLora;
+import org.openhab.binding.shelly.internal.api2.dto.ShellyMeterJsonDTO.Shelly2DeviceStatusEm;
+import org.openhab.binding.shelly.internal.api2.dto.ShellyMeterJsonDTO.Shelly2DeviceStatusEmData;
+import org.openhab.binding.shelly.internal.api2.dto.ShellyMeterJsonDTO.Shelly2DeviceStatusVoltage;
+import org.openhab.binding.shelly.internal.api2.dto.ShellyMeterJsonDTO.Shelly2Energy;
+import org.openhab.binding.shelly.internal.api2.dto.ShellyMeterJsonDTO.Shelly2StatusEm1;
 import org.openhab.binding.shelly.internal.api2.dto.ShellyPresenceJsonDTO.Shelly2DevConfigPresence;
 import org.openhab.binding.shelly.internal.api2.dto.ShellyPresenceJsonDTO.Shelly2StatusPresence;
 import org.openhab.binding.shelly.internal.config.ShellyApiConfiguration;
@@ -264,21 +265,30 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
         Shelly2GetConfigResult dc = apiRequest(SHELLYRPC_METHOD_GETCONFIG, null, Shelly2GetConfigResult.class);
         profile.settingsJson = gson.toJson(dc);
         profile.thingName = thingName;
-        profile.settings.name = profile.status.name = dc.sys.device.name;
+        var sys = dc.sys;
+        var sysDevice = sys != null ? sys.device : null;
+        var location = sys != null ? sys.location : null;
+        profile.settings.name = profile.status.name = sysDevice != null ? sysDevice.name : null;
         profile.name = getString(profile.settings.name);
-        profile.settings.timezone = getString(dc.sys.location.tz);
-        profile.settings.discoverable = getBool(dc.sys.device.discoverable);
-        if (dc.wifi != null && dc.wifi.ap != null && dc.wifi.ap.rangeExtender != null) {
-            profile.settings.wifiAp.rangeExtender = getBool(dc.wifi.ap.rangeExtender.enable);
+        profile.settings.timezone = location != null ? getString(location.tz) : "";
+        profile.settings.discoverable = sysDevice != null && getBool(sysDevice.discoverable);
+        var wifi = dc.wifi;
+        var wifiAp = wifi != null ? wifi.ap : null;
+        var rangeExtender = wifiAp != null ? wifiAp.rangeExtender : null;
+        if (rangeExtender != null) {
+            profile.settings.wifiAp.rangeExtender = getBool(rangeExtender.enable);
         }
-        if (dc.cloud != null) {
-            profile.settings.cloud.enabled = getBool(dc.cloud.enable);
+        var cloud = dc.cloud;
+        if (cloud != null) {
+            profile.settings.cloud.enabled = getBool(cloud.enable);
         }
-        if (dc.mqtt != null) {
-            profile.settings.mqtt.enable = getBool(dc.mqtt.enable);
+        var mqtt = dc.mqtt;
+        if (mqtt != null) {
+            profile.settings.mqtt.enable = getBool(mqtt.enable);
         }
-        if (dc.sys.sntp != null) {
-            profile.settings.sntp.server = dc.sys.sntp.server;
+        var sntp = sys != null ? sys.sntp : null;
+        if (sntp != null) {
+            profile.settings.sntp.server = sntp.server;
         }
 
         profile.isRoller = dc.cover0 != null;
@@ -324,19 +334,23 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
             profile.status.update.hasUpdate = false;
         }
 
-        if (dc.eth != null) {
-            profile.settings.ethernet = getBool(dc.eth.enable);
+        var eth = dc.eth;
+        if (eth != null) {
+            profile.settings.ethernet = getBool(eth.enable);
         }
-        if (dc.ble != null) {
-            profile.settings.bluetooth = getBool(dc.ble.enable);
+        var ble = dc.ble;
+        if (ble != null) {
+            profile.settings.bluetooth = getBool(ble.enable);
         }
 
         profile.settings.wifiSta = new ShellySettingsWiFiNetwork();
         profile.settings.wifiSta1 = new ShellySettingsWiFiNetwork();
-        fillWiFiSta(dc.wifi.sta, profile.settings.wifiSta);
-        fillWiFiSta(dc.wifi.sta1, profile.settings.wifiSta1);
-        if (dc.wifi.ap != null && dc.wifi.ap.rangeExtender != null) {
-            profile.settings.rangeExtender = getBool(dc.wifi.ap.rangeExtender.enable);
+        if (wifi != null) {
+            fillWiFiSta(wifi.sta, profile.settings.wifiSta);
+            fillWiFiSta(wifi.sta1, profile.settings.wifiSta1);
+        }
+        if (rangeExtender != null) {
+            profile.settings.rangeExtender = getBool(rangeExtender.enable);
         }
 
         if (profile.hasRelays) {
@@ -453,8 +467,10 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
         if (profile.hasBattery) {
             profile.settings.sleepMode = new ShellySensorSleepMode();
             profile.settings.sleepMode.unit = "m";
-            profile.settings.sleepMode.period = dc.sys.sleep != null ? dc.sys.sleep.wakeupPeriod / 60 : 720;
-            profile.wakeupPeriodAssumed = dc.sys.sleep == null;
+            var sleep = sys != null ? sys.sleep : null;
+            Integer wakeupPeriod = sleep != null ? sleep.wakeupPeriod : null;
+            profile.settings.sleepMode.period = wakeupPeriod != null ? wakeupPeriod / 60 : 720;
+            profile.wakeupPeriodAssumed = wakeupPeriod == null;
         }
 
         if (profile.isFlood) {
@@ -466,18 +482,20 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
             }
         }
 
-        if (dc.led != null) {
-            profile.settings.ledStatusDisable = !getBool(dc.led.sysLedEnable);
-            profile.settings.ledPowerDisable = "off".equals(getString(dc.led.powerLed));
+        var led = dc.led;
+        if (led != null) {
+            profile.settings.ledStatusDisable = !getBool(led.sysLedEnable);
+            profile.settings.ledPowerDisable = "off".equals(getString(led.powerLed));
         }
 
         // lora100 is present only while the add-on is installed; re-evaluated on every config refresh.
         // rx_enable is optional and defaults to enabled
-        if (dc.lora100 != null) {
+        var lora100 = dc.lora100;
+        if (lora100 != null) {
             profile.settings.loraDetected = true;
-            profile.settings.loraRxEnabled = !Boolean.FALSE.equals(dc.lora100.rxEnabled);
+            profile.settings.loraRxEnabled = !Boolean.FALSE.equals(lora100.rxEnabled);
             profile.settings.loraComponentIds = new Integer[1];
-            Integer loraId = dc.lora100.id;
+            Integer loraId = lora100.id;
             profile.settings.loraComponentIds[0] = loraId != null ? loraId : 100;
         } else {
             profile.settings.loraDetected = false;
@@ -619,8 +637,8 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
         rsettings.id = cs.id;
         rsettings.isValid = cs.id != null;
         rsettings.name = cs.name;
-        rsettings.autoOn = getBool(cs.autoOn) ? cs.autoOnDelay : 0;
-        rsettings.autoOff = getBool(cs.autoOff) ? cs.autoOffDelay : 0;
+        rsettings.autoOn = getBool(cs.autoOn) ? getDouble(cs.autoOnDelay) : 0;
+        rsettings.autoOff = getBool(cs.autoOff) ? getDouble(cs.autoOffDelay) : 0;
         rsettings.hasTimer = false;
         rsettings.btnType = mapValue(MAP_INMODE_BTNTYPE, getString(cs.mode).toLowerCase(Locale.ROOT));
         relays.add(rsettings);
@@ -738,10 +756,12 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
         ShellyDeviceProfile profile = getProfile();
 
         ShellySettingsRelay rstatus;
-        if (rs.id == null) { // firmware 1.6.1 returns id = null!
-            rs.id = id >= 10 ? id - 10 : id; // ids start at 10
+        Integer relayId = rs.id;
+        if (relayId == null) { // firmware 1.6.1 returns id = null!
+            relayId = id >= 10 ? id - 10 : id; // ids start at 10
+            rs.id = relayId;
         }
-        int rIdx = getRelayIdx(profile, rs.id);
+        int rIdx = getRelayIdx(profile, relayId);
         if (profile.hasRelays) {
             if (rIdx == -1) {
                 throw new IllegalArgumentException("Update for invalid relay index");
@@ -749,7 +769,7 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
             rstatus = status.relays.get(rIdx);
         } else {
             rstatus = new ShellySettingsRelay();
-            rIdx = rs.id;
+            rIdx = relayId;
         }
 
         rstatus.isValid = true;
@@ -817,10 +837,12 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
         ShellyDeviceProfile profile = getProfile();
 
         ShellySettingsRelay rstatus;
-        if (bs.id == null) { // invalid for fw 1.6.1
-            bs.id = id;
+        Integer breakerId = bs.id;
+        if (breakerId == null) { // invalid for fw 1.6.1
+            breakerId = id;
+            bs.id = breakerId;
         }
-        int rIdx = getRelayIdx(profile, bs.id);
+        int rIdx = getRelayIdx(profile, breakerId);
         if (profile.hasRelays) {
             if (rIdx == -1) {
                 throw new IllegalArgumentException("Update for invalid relay index");
@@ -828,7 +850,7 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
             rstatus = status.relays.get(rIdx);
         } else {
             rstatus = new ShellySettingsRelay();
-            rIdx = bs.id;
+            rIdx = breakerId;
         }
 
         rstatus.isValid = true;
@@ -1143,8 +1165,11 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
     }
 
     private void fillRollerFavorites(ShellyDeviceProfile profile, Shelly2GetConfigResult dc) {
-        if (dc.sys.uiData.cover != null && !dc.sys.uiData.cover.isEmpty()) {
-            String[] favorites = dc.sys.uiData.cover.split(",");
+        var sys = dc.sys;
+        var uiData = sys != null ? sys.uiData : null;
+        String cover = uiData != null ? uiData.cover : null;
+        if (cover != null && !cover.isEmpty()) {
+            String[] favorites = cover.split(",");
             profile.settings.favorites = new ArrayList<>();
             for (int i = 0; i < favorites.length; i++) {
                 ShellyFavPos fav = new ShellyFavPos();
@@ -1695,15 +1720,16 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
                 }
             }
         }
-        if (ds.input100 != null) {
-            if (hasReadError(ds.input100.errors)) {
+        Shelly2InputStatus input100 = ds.input100;
+        if (input100 != null) {
+            if (hasReadError(input100.errors)) {
                 logger.debug("{}: Addon input:100 sensor read error, skipping update", thingName);
                 status.extDigitalInput = null;
                 status.extAnalogInput = null;
-            } else if (ds.input100.state != null) {
-                status.extDigitalInput = new ShellyExtDigitalInput(getBool(ds.input100.state));
-            } else if (ds.input100.percent != null) {
-                status.extAnalogInput = new ShellyExtAnalogInput(getDouble(ds.input100.percent));
+            } else if (input100.state != null) {
+                status.extDigitalInput = new ShellyExtDigitalInput(getBool(input100.state));
+            } else if (input100.percent != null) {
+                status.extAnalogInput = new ShellyExtAnalogInput(getDouble(input100.percent));
             }
         }
     }
@@ -1815,12 +1841,13 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
         // Flood.SetConfig expects {"id":n,"config":{"alarm_mode":"...","report_holdoff":n}}
         Shelly2RpcRequestParams params = new Shelly2RpcRequestParams();
         params.id = id;
-        params.withConfig();
-        params.config.alarmMode = (alarmMode != null && !alarmMode.isEmpty()) ? alarmMode : null;
-        params.config.reportHoldoff = reportHoldoff;
+        var config = new Shelly2ConfigParms();
+        params.config = config;
+        config.alarmMode = (alarmMode != null && !alarmMode.isEmpty()) ? alarmMode : null;
+        config.reportHoldoff = reportHoldoff;
         apiRequest(SHELLYRPC_METHOD_FLOOD_SETCONFIG, params, String.class);
-        if (params.config.alarmMode != null) {
-            profile.floodAlarmMode = getString(params.config.alarmMode);
+        if (config.alarmMode != null) {
+            profile.floodAlarmMode = getString(config.alarmMode);
         }
         profile.reportHoldoff = reportHoldoff;
     }
@@ -1833,12 +1860,15 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
             sdata.bat = new ShellySensorBat();
         }
 
-        if (value.battery != null) {
-            sdata.bat.voltage = getDouble(value.battery.volt);
-            sdata.bat.value = getDouble(value.battery.percent);
+        var battery = value.battery;
+        if (battery != null) {
+            sdata.bat.voltage = getDouble(battery.volt);
+            sdata.bat.value = getDouble(battery.percent);
         }
-        if (value.external != null && value.external.present != null) {
-            sdata.charger = value.external.present;
+        var external = value.external;
+        Boolean charger = external != null ? external.present : null;
+        if (charger != null) {
+            sdata.charger = charger;
         }
     }
 
@@ -1905,26 +1935,28 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
         if (is == null) {
             return false;
         }
-        if (is.id == null) {
-            is.id = id;
+        Integer inputIdx = is.id;
+        if (inputIdx == null) {
+            inputIdx = id;
+            is.id = inputIdx;
         }
         ShellyDeviceProfile profile = getProfile();
 
         List<@Nullable ShellyInputState> inputs = status.inputs;
-        if (inputs == null || is.id == null || is.id >= profile.numInputs || is.id >= inputs.size()) {
-            logger.debug("{}: Invalid input id: {}", thingName, is.id);
+        if (inputs == null || inputIdx >= profile.numInputs || inputIdx >= inputs.size()) {
+            logger.debug("{}: Invalid input id: {}", thingName, inputIdx);
             return false;
         }
 
-        String group = profile.getInputGroup(is.id);
-        ShellyInputState input = inputs.get(is.id);
+        String group = profile.getInputGroup(inputIdx);
+        ShellyInputState input = inputs.get(inputIdx);
         if (input == null) {
-            input = new ShellyInputState(is.id);
-            inputs.set(is.id, input);
+            input = new ShellyInputState(inputIdx);
+            inputs.set(inputIdx, input);
         }
         boolean updated = false;
         input.input = getBool(is.state) ? 1 : 0; // old format Integer, new one Boolean
-        if (input.event == null && profile.inButtonMode(is.id)) {
+        if (input.event == null && profile.inButtonMode(inputIdx)) {
             input.event = "";
             input.eventCount = 0;
         }
@@ -1932,7 +1964,8 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
             status.extAnalogInput = new ShellyExtAnalogInput(getDouble(is.percent));
         }
         if (updateChannels) {
-            updated |= updateChannel(group, CHANNEL_INPUT + profile.getInputSuffix(is.id), getOnOff(getBool(is.state)));
+            updated |= updateChannel(group, CHANNEL_INPUT + profile.getInputSuffix(inputIdx),
+                    getOnOff(getBool(is.state)));
         }
         return updated;
     }

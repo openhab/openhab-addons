@@ -15,9 +15,7 @@ package org.openhab.binding.netatmo.internal.handler;
 import static java.util.Comparator.*;
 import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
@@ -39,9 +37,9 @@ import java.util.function.BiFunction;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.BytesRequestContent;
 import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.InputStreamRequestContent;
 import org.eclipse.jetty.client.Request;
 import org.eclipse.jetty.http.HttpField;
 import org.eclipse.jetty.http.HttpHeader;
@@ -451,8 +449,7 @@ public class ApiBridgeHandler extends BaseBridgeHandler implements NetatmoHandle
             return;
         }
 
-        InputStream stream = new ByteArrayInputStream(payload.getBytes(StandardCharsets.UTF_8));
-        request.body(new InputStreamRequestContent(contentType, stream));
+        request.body(new BytesRequestContent(contentType, payload.getBytes(StandardCharsets.UTF_8)));
         request.headers(h -> h.add(HttpHeader.ACCEPT, MediaType.APPLICATION_JSON));
         logger.trace(" -with payload: {} ", payload);
     }

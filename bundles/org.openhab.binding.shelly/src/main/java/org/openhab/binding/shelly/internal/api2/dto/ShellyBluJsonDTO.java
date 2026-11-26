@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.shelly.internal.api2;
+package org.openhab.binding.shelly.internal.api2.dto;
 
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.BINDING_ID;
 

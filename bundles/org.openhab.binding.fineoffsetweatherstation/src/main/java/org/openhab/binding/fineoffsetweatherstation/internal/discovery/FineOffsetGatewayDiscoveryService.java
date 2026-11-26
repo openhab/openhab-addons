@@ -21,11 +21,14 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.SocketException;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -41,6 +44,7 @@ import org.openhab.binding.fineoffsetweatherstation.internal.domain.response.Mea
 import org.openhab.binding.fineoffsetweatherstation.internal.domain.response.SensorDevice;
 import org.openhab.binding.fineoffsetweatherstation.internal.service.EcowittHttpGatewayQueryService;
 import org.openhab.binding.fineoffsetweatherstation.internal.service.GatewayQueryService;
+import org.openhab.core.common.ThreadPoolManager;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
@@ -60,13 +64,17 @@ import org.slf4j.LoggerFactory;
 
 /**
  * @author Andreas Berger - Initial contribution
+ * @author Christopher Smith - Validate broadcast responses, cache protocol probes
  */
 @NonNullByDefault
 @Component(service = { DiscoveryService.class, FineOffsetGatewayDiscoveryService.class }, immediate = true)
 public class FineOffsetGatewayDiscoveryService extends AbstractDiscoveryService {
     private static final int DISCOVERY_PORT = 46000;
-    private static final int HTTP_PORT = 80;
+    private static final int PROBE_TIMEOUT_SECONDS = 5;
+    private static final long FAILED_PROBE_RETRY_NANOS = TimeUnit.HOURS.toNanos(1);
     private static final int BUFFER_LENGTH = 255;
+    /** offset of the name length in a broadcast response; the name itself follows */
+    private static final int NAME_LENGTH_OFFSET = 17;
 
     private final Logger logger = LoggerFactory.getLogger(FineOffsetGatewayDiscoveryService.class);
 
@@ -78,6 +86,26 @@ public class FineOffsetGatewayDiscoveryService extends AbstractDiscoveryService 
     private @Nullable DatagramSocket clientSocket;
     private @Nullable Thread socketReceiveThread;
     private @Nullable ScheduledFuture<?> discoveryJob;
+
+    private volatile boolean deactivated;
+    /**
+     * The protocol found for a gateway, by its MAC, IP and port. Gateways answer every broadcast (and each scan sends
+     * two), so without this every response would probe the gateway again over HTTP and TCP.
+     */
+    private final Map<String, Protocol> probedProtocols = new ConcurrentHashMap<>();
+    /**
+     * When a probe found no protocol, by the same key. Probing again right away would compete with a handler that is
+     * already polling the gateway (some accept a single TCP client only), so a failed probe is only repeated after
+     * {@link #FAILED_PROBE_RETRY_NANOS}.
+     */
+    private final Map<String, Long> failedProbes = new ConcurrentHashMap<>();
+    private final Set<String> probesInProgress = ConcurrentHashMap.newKeySet();
+    /**
+     * The protocol probes block on network requests; they run on the binding's own pool rather than on the discovery
+     * scheduler shared by all bindings.
+     */
+    private final ExecutorService probeExecutor = ThreadPoolManager
+            .getPool(FineOffsetWeatherStationBindingConstants.BINDING_ID + "-discovery");
 
     @Activate
     public FineOffsetGatewayDiscoveryService(@Reference TranslationProvider translationProvider,
@@ -107,7 +135,9 @@ public class FineOffsetGatewayDiscoveryService extends AbstractDiscoveryService 
 
     @Override
     public void deactivate() {
-        stopReceiverThreat();
+        // probes still queued or running must not report gateways through a deactivated service
+        deactivated = true;
+        stopReceiverThread();
         final DatagramSocket clientSocket = this.clientSocket;
         if (clientSocket != null) {
             clientSocket.close();
@@ -171,22 +201,43 @@ public class FineOffsetGatewayDiscoveryService extends AbstractDiscoveryService 
     }
 
     private void discovered(String ip, int port, byte[] macAddr, String name) {
+        if (deactivated) {
+            return;
+        }
         String id = String.valueOf(Utils.toUInt64(macAddr, 0));
 
         Map<String, Object> properties = new HashMap<>();
         properties.put(Thing.PROPERTY_MAC_ADDRESS, Utils.toHexString(macAddr, macAddr.length, ":"));
         properties.put(FineOffsetGatewayConfiguration.IP, ip);
         properties.put(FineOffsetGatewayConfiguration.PORT, port);
-        FineOffsetGatewayConfiguration config = new FineOffsetGatewayConfiguration();
-        config.ip = ip;
-        config.port = port;
-        Protocol protocol = determineProtocol(config);
+        String probeKey = properties.get(Thing.PROPERTY_MAC_ADDRESS) + "|" + ip + "|" + port;
+        Protocol protocol = probedProtocols.get(probeKey);
+        Long failedAt = failedProbes.get(probeKey);
+        boolean recentlyFailed = failedAt != null && System.nanoTime() - failedAt < FAILED_PROBE_RETRY_NANOS;
+        if (protocol == null && !recentlyFailed) {
+            if (!probesInProgress.add(probeKey)) {
+                // a probe triggered by an earlier response is still running and will report the gateway
+                return;
+            }
+            try {
+                FineOffsetGatewayConfiguration config = new FineOffsetGatewayConfiguration();
+                config.ip = ip;
+                config.port = port;
+                // a probe only needs to tell whether the protocol answers at all
+                config.timeout = PROBE_TIMEOUT_SECONDS;
+                protocol = determineProtocol(config);
+                if (protocol != null) {
+                    probedProtocols.put(probeKey, protocol);
+                    failedProbes.remove(probeKey);
+                } else {
+                    failedProbes.put(probeKey, System.nanoTime());
+                }
+            } finally {
+                probesInProgress.remove(probeKey);
+            }
+        }
         if (protocol != null) {
             properties.put(FineOffsetGatewayConfiguration.PROTOCOL, protocol.name());
-            if (protocol == Protocol.HTTP_ECOWITT) {
-                // the Ecowitt HTTP API is served on port 80, not the UDP/TCP port reported by the broadcast
-                properties.put(FineOffsetGatewayConfiguration.PORT, HTTP_PORT);
-            }
         }
 
         ThingUID uid = new ThingUID(THING_TYPE_GATEWAY, id);
@@ -194,6 +245,10 @@ public class FineOffsetGatewayDiscoveryService extends AbstractDiscoveryService 
                 .withRepresentationProperty(Thing.PROPERTY_MAC_ADDRESS)
                 .withLabel(translationProvider.getText(bundle, "thing.gateway.label", name, localeProvider.getLocale()))
                 .build();
+        if (deactivated) {
+            // the probes above can take a while
+            return;
+        }
         thingDiscovered(result);
         logger.debug("Thing discovered '{}'", result);
     }
@@ -257,6 +312,10 @@ public class FineOffsetGatewayDiscoveryService extends AbstractDiscoveryService 
     }
 
     private void sendBroadcastPacket(String broadcastAddress, byte[] requestMessage) {
+        if (deactivated) {
+            // a broadcast scheduled before deactivation must not open a new socket
+            return;
+        }
         final @Nullable DatagramSocket socket = getSocket();
         if (socket != null) {
             InetSocketAddress addr = new InetSocketAddress(broadcastAddress, DISCOVERY_PORT);
@@ -281,7 +340,7 @@ public class FineOffsetGatewayDiscoveryService extends AbstractDiscoveryService 
                 return;
             }
         }
-        stopReceiverThreat();
+        stopReceiverThread();
         Thread socketReceiveThread = new ReceiverThread();
         socketReceiveThread.start();
         this.socketReceiveThread = socketReceiveThread;
@@ -290,7 +349,7 @@ public class FineOffsetGatewayDiscoveryService extends AbstractDiscoveryService 
     /**
      * Stops the {@link ReceiverThread} thread
      */
-    private synchronized void stopReceiverThreat() {
+    private synchronized void stopReceiverThread() {
         final Thread socketReceiveThread = this.socketReceiveThread;
         if (socketReceiveThread != null) {
             socketReceiveThread.interrupt();
@@ -339,19 +398,21 @@ public class FineOffsetGatewayDiscoveryService extends AbstractDiscoveryService 
                                 Utils.toHexString(messageBuf, messageBuf.length, ""));
                     }
 
-                    if (Command.CMD_BROADCAST.isHeaderValid(messageBuf)) {
+                    if (Command.CMD_BROADCAST.isHeaderValid(messageBuf) && messageBuf.length > NAME_LENGTH_OFFSET) {
                         String ip = InetAddress.getByAddress(Arrays.copyOfRange(messageBuf, 11, 15)).getHostAddress();
                         var macAddr = Arrays.copyOfRange(messageBuf, 5, 5 + 6);
                         var port = toUInt16(messageBuf, 15);
-                        var len = Utils.toUInt8(messageBuf[17]);
-                        String name = new String(messageBuf, 18, len);
-                        scheduler.schedule(() -> {
+                        // the name must not be read beyond the message (the checksum is its last byte)
+                        var len = Math.min(Utils.toUInt8(messageBuf[NAME_LENGTH_OFFSET]),
+                                messageBuf.length - NAME_LENGTH_OFFSET - 1);
+                        String name = new String(messageBuf, NAME_LENGTH_OFFSET + 1, len, StandardCharsets.UTF_8);
+                        probeExecutor.execute(() -> {
                             try {
                                 discovered(ip, port, macAddr, name);
-                            } catch (Exception e) {
+                            } catch (RuntimeException e) {
                                 logger.debug("Error submitting discovered device at {}", ip, e);
                             }
-                        }, 0, TimeUnit.SECONDS);
+                        });
                     }
                 }
             } catch (SocketException e) {

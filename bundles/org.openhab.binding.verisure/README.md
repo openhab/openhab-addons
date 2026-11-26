@@ -101,7 +101,22 @@ The following channels are supported:
 | installationName    | String    | This channel reports the installation name.                                                                         |
 | installationId      | Number    | This channel reports the installation ID.                                                                           |
 | alarmStatus         | String    | This channel is used to arm/disarm the alarm. Available alarm status are "DISARMED", "ARMED_HOME" and "ARMED_AWAY". |
+| armCheck            | Switch    | Send ON to check if the alarm is ready to be armed. The channel goes back to OFF when the check is done.            |
+| armCheckResult      | String    | This channel reports the result of the latest arm check, see below.                                                 |
+| vacationMode        | Switch    | This channel reports if vacation mode is active.                                                                    |
+| vacationModeStart   | DateTime  | This channel reports the start of the vacation mode period.                                                         |
+| vacationModeEnd     | DateTime  | This channel reports the end of the vacation mode period.                                                           |
 | alarmTriggerChannel | trigger   | This is a trigger channel that receives events.                                                                     |
+
+The arm check asks the alarm system if it is ready to be armed, in the same way as My Pages does before arming.
+It does not arm the alarm.
+`armCheckResult` is one of:
+
+- `OK` - nothing prevents arming.
+- A comma separated list of `<location>: <reason>` for the devices that prevent arming, for example `Entré: DOOR_WINDOW_OPEN`. Reasons seen are `DOOR_WINDOW_OPEN`, `TAMPER`, `BATTERY`, `SUPERVISION`, `MAGINT`, `AC_POWER_MISSING` and `UNKNOWN`.
+- `FAILED` - the check could not be done.
+- `TIMEOUT` - no result within two minutes.
+- `THROTTLED` - Verisure rejected the check because too many have been requested.
 
 ### Verisure Yaleman SmartLock
 
@@ -162,18 +177,31 @@ The following channels are supported:
 
 The following channels are supported:
 
-| Channel Type ID             | Item Type          | Description                                                                  |
-|-----------------------------|--------------------|------------------------------------------------------------------------------|
-| temperature                 | Number:Temperature | This channel reports the current temperature.                                |
-| humidity                    | Number             | This channel reports the current humidity in percentage.                     |
-| humidityEnabled             | Switch             | This channel reports if the Climate is device capable of reporting humidity. |
-| timestamp                   | DateTime           | This channel reports the last time this sensor was updated.                  |
-| location                    | String             | This channel reports the location of the device.                             |
-| installationName            | String             | This channel reports the installation name.                                  |
-| installationId              | Number             | This channel reports the installation ID.                                    |
-| lowBattery                  | Switch             | This channel reports if the battery level is low.                            |
-| batteryLevel                | Number             | This channel reports the estimated battery level in percent.                 |
-| smokeDetectorTriggerChannel | trigger            | This is a trigger channel that receives events.                              |
+| Channel Type ID             | Item Type            | Description                                                                  |
+|-----------------------------|----------------------|------------------------------------------------------------------------------|
+| temperature                 | Number:Temperature   | This channel reports the current temperature.                                |
+| humidity                    | Number               | This channel reports the current humidity in percentage.                     |
+| humidityEnabled             | Switch               | This channel reports if the Climate is device capable of reporting humidity. |
+| timestamp                   | DateTime             | This channel reports the last time this sensor was updated.                  |
+| location                    | String               | This channel reports the location of the device.                             |
+| installationName            | String               | This channel reports the installation name.                                  |
+| installationId              | Number               | This channel reports the installation ID.                                    |
+| lowBattery                  | Switch               | This channel reports if the battery level is low.                            |
+| batteryLevel                | Number               | This channel reports the estimated battery level in percent.                 |
+| temperatureAlertMin         | Number:Temperature   | This channel sets the limit for the low temperature alert.                   |
+| temperatureAlertMinEnabled  | Switch               | This channel enables the low temperature alert.                              |
+| temperatureAlertMax         | Number:Temperature   | This channel sets the limit for the high temperature alert.                  |
+| temperatureAlertMaxEnabled  | Switch               | This channel enables the high temperature alert.                             |
+| humidityAlertMin            | Number:Dimensionless | This channel sets the limit for the low humidity alert.                      |
+| humidityAlertMinEnabled     | Switch               | This channel enables the low humidity alert.                                 |
+| humidityAlertMax            | Number:Dimensionless | This channel sets the limit for the high humidity alert.                     |
+| humidityAlertMaxEnabled     | Switch               | This channel enables the high humidity alert.                                |
+| smokeDetectorTriggerChannel | trigger              | This is a trigger channel that receives events.                              |
+
+The alert limit channels are advanced channels and are also available on the water detector, siren, night control and mice detection.
+They control the alerts Verisure sends when a value is outside the limits.
+Sending a value to a limit channel also enables that alert, the enabled channels switch an alert on and off without changing its limit.
+The channels are undefined for devices that do not support alert limits.
 
 ### Verisure Water Detector
 
@@ -193,6 +221,10 @@ The following channels are supported:
 | location                    | String             | This channel reports the location of the device.            |
 | installationName            | String             | This channel reports the installation name.                 |
 | installationId              | Number             | This channel reports the installation ID.                   |
+| temperatureAlertMin         | Number:Temperature | This channel sets the limit for the low temperature alert.  |
+| temperatureAlertMinEnabled  | Switch             | This channel enables the low temperature alert.             |
+| temperatureAlertMax         | Number:Temperature | This channel sets the limit for the high temperature alert. |
+| temperatureAlertMaxEnabled  | Switch             | This channel enables the high temperature alert.            |
 | waterDetectorTriggerChannel | trigger            | This is a trigger channel that receives events.             |
 
 ### Verisure Siren
@@ -206,16 +238,20 @@ The following channels are supported:
 
 The following channels are supported:
 
-| Channel Type ID     | Item Type          | Description                                                 |
-|---------------------|--------------------|-------------------------------------------------------------|
-| temperature         | Number:Temperature | This channel reports the current temperature.               |
-| timestamp           | DateTime           | This channel reports the last time this sensor was updated. |
-| location            | String             | This channel reports the location.                          |
-| installationName    | String             | This channel reports the installation name.                 |
-| installationId      | Number             | This channel reports the installation ID.                   |
-| lowBattery          | Switch             | This channel reports if the battery level is low.           |
-| batteryLevel        | Number             | This channel reports the estimated battery level in percent. |
-| sirenTriggerChannel | trigger            | This is a trigger channel that receives events.             |
+| Channel Type ID            | Item Type          | Description                                                  |
+|----------------------------|--------------------|--------------------------------------------------------------|
+| temperature                | Number:Temperature | This channel reports the current temperature.                |
+| timestamp                  | DateTime           | This channel reports the last time this sensor was updated.  |
+| location                   | String             | This channel reports the location.                           |
+| installationName           | String             | This channel reports the installation name.                  |
+| installationId             | Number             | This channel reports the installation ID.                    |
+| lowBattery                 | Switch             | This channel reports if the battery level is low.            |
+| batteryLevel               | Number             | This channel reports the estimated battery level in percent. |
+| temperatureAlertMin        | Number:Temperature | This channel sets the limit for the low temperature alert.   |
+| temperatureAlertMinEnabled | Switch             | This channel enables the low temperature alert.              |
+| temperatureAlertMax        | Number:Temperature | This channel sets the limit for the high temperature alert.  |
+| temperatureAlertMaxEnabled | Switch             | This channel enables the high temperature alert.             |
+| sirenTriggerChannel        | trigger            | This is a trigger channel that receives events.              |
 
 ### Verisure Night Control
 
@@ -228,16 +264,20 @@ The following channels are supported:
 
 The following channels are supported:
 
-| Channel Type ID            | Item Type          | Description                                                 |
-|----------------------------|--------------------|-------------------------------------------------------------|
-| temperature                | Number:Temperature | This channel reports the current temperature.               |
-| timestamp                  | DateTime           | This channel reports the last time this sensor was updated. |
-| location                   | String             | This channel reports the location.                          |
-| installationName           | String             | This channel reports the installation name.                 |
-| installationId             | Number             | This channel reports the installation ID.                   |
-| lowBattery                 | Switch             | This channel reports if the battery level is low.           |
+| Channel Type ID            | Item Type          | Description                                                  |
+|----------------------------|--------------------|--------------------------------------------------------------|
+| temperature                | Number:Temperature | This channel reports the current temperature.                |
+| timestamp                  | DateTime           | This channel reports the last time this sensor was updated.  |
+| location                   | String             | This channel reports the location.                           |
+| installationName           | String             | This channel reports the installation name.                  |
+| installationId             | Number             | This channel reports the installation ID.                    |
+| lowBattery                 | Switch             | This channel reports if the battery level is low.            |
 | batteryLevel               | Number             | This channel reports the estimated battery level in percent. |
-| nightControlTriggerChannel | trigger            | This is a trigger channel that receives events.             |
+| temperatureAlertMin        | Number:Temperature | This channel sets the limit for the low temperature alert.   |
+| temperatureAlertMinEnabled | Switch             | This channel enables the low temperature alert.              |
+| temperatureAlertMax        | Number:Temperature | This channel sets the limit for the high temperature alert.  |
+| temperatureAlertMaxEnabled | Switch             | This channel enables the high temperature alert.             |
+| nightControlTriggerChannel | trigger            | This is a trigger channel that receives events.              |
 
 ### Verisure DoorWindow Sensor
 
@@ -320,6 +360,10 @@ The following channels are supported:
 | timestamp                   | DateTime           | This channel reports time for the last mouse detection.                             |
 | temperature                 | Number:Temperature | This channel reports the current  temperature.                                      |
 | temperatureTimestamp        | DateTime           | This channel reports the time for the last temperature reading.                     |
+| temperatureAlertMin         | Number:Temperature | This channel sets the limit for the low temperature alert.                          |
+| temperatureAlertMinEnabled  | Switch             | This channel enables the low temperature alert.                                     |
+| temperatureAlertMax         | Number:Temperature | This channel sets the limit for the high temperature alert.                         |
+| temperatureAlertMaxEnabled  | Switch             | This channel enables the high temperature alert.                                    |
 | location                    | String             | This channel reports the location of the device.                                    |
 | installationName            | String             | This channel reports the installation name.                                         |
 | installationId              | Number             | This channel reports the installation ID.                                           |
@@ -370,6 +414,8 @@ The following channels are supported:
 | testTimeGPRSOverUDP | DateTime  | This channel reports last communication test time for GPRS over UDP. |
 | statusETHOverUDP    | String    | This channel reports communication status for ETH over UDP.          |
 | testTimeETHOverUDP  | DateTime  | This channel reports last communication test time for ETH over UDP.  |
+
+The gateway thing has the properties `firmwareVersion` (the firmware the gateway runs) and `latestFirmwareVersion` (the latest firmware available from Verisure).
 
 ## Trigger Events
 

@@ -20,17 +20,8 @@ import java.util.Map;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.data.ModuleType;
-import org.openhab.binding.netatmo.internal.api.dto.Device;
-import org.openhab.binding.netatmo.internal.api.dto.Event;
-import org.openhab.binding.netatmo.internal.api.dto.HomeData;
-import org.openhab.binding.netatmo.internal.api.dto.HomeEvent;
-import org.openhab.binding.netatmo.internal.api.dto.HomeStatusModule;
 import org.openhab.binding.netatmo.internal.api.dto.NAError;
-import org.openhab.binding.netatmo.internal.api.dto.NAHomeStatus.HomeStatus;
-import org.openhab.binding.netatmo.internal.api.dto.NAMain;
 import org.openhab.binding.netatmo.internal.api.dto.NAObject;
-import org.openhab.binding.netatmo.internal.api.dto.NAThing;
-import org.openhab.binding.netatmo.internal.api.dto.WebhookEvent;
 import org.openhab.binding.netatmo.internal.handler.CommonInterface;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingUID;
@@ -59,42 +50,12 @@ public class Capability {
         this.moduleType = ModuleType.from(getThing().getThingTypeUID());
     }
 
-    public final @Nullable String setNewData(NAObject newData) {
+    public final @Nullable String setNewData(Object newData) {
         beforeNewData();
         if (newData instanceof NAError error) {
             updateErrors(error);
         } else {
-            if (newData instanceof HomeData homeData) {
-                updateHomeData(homeData);
-            }
-            if (newData instanceof HomeStatus homeStatus) {
-                updateHomeStatus(homeStatus);
-            }
-            if (newData instanceof HomeStatusModule homeStatusModule) {
-                updateHomeStatusModule(homeStatusModule);
-            }
-
-            if (newData instanceof HomeEvent homeEvent) {
-                updateHomeEvent(homeEvent);
-            } else if (newData instanceof WebhookEvent webhookEvent) {
-                if (webhookEvent.getEventType().validFor(moduleType)) {
-                    updateWebhookEvent(webhookEvent);
-                } else {
-                    // dropped
-                }
-            } else if (newData instanceof Event event) {
-                updateEvent(event);
-            }
-
-            if (newData instanceof NAThing naThing) {
-                updateNAThing(naThing);
-            }
-            if (newData instanceof NAMain naMain) {
-                updateNAMain(naMain);
-            }
-            if (newData instanceof Device device) {
-                updateNADevice(device);
-            }
+            internalSetNewData(newData);
         }
         afterNewData(newData);
         return statusReason;
@@ -105,43 +66,15 @@ public class Capability {
         statusReason = null;
     }
 
-    protected void afterNewData(@Nullable NAObject newData) {
+    protected void internalSetNewData(Object newData) {
+        // do nothing by default, can be overridden by subclasses
+    }
+
+    protected void afterNewData(Object newData) {
         if (!properties.equals(getThing().getProperties())) {
             getThing().setProperties(properties);
         }
         firstLaunch = false;
-    }
-
-    protected void updateNAThing(NAThing newData) {
-        // do nothing by default, can be overridden by subclasses
-    }
-
-    protected void updateNAMain(NAMain newData) {
-        // do nothing by default, can be overridden by subclasses
-    }
-
-    protected void updateHomeEvent(HomeEvent newData) {
-        // do nothing by default, can be overridden by subclasses
-    }
-
-    protected void updateHomeStatus(HomeStatus newData) {
-        // do nothing by default, can be overridden by subclasses
-    }
-
-    protected void updateHomeData(HomeData newData) {
-        // do nothing by default, can be overridden by subclasses
-    }
-
-    protected void updateEvent(Event newData) {
-        // do nothing by default, can be overridden by subclasses
-    }
-
-    protected void updateWebhookEvent(WebhookEvent newData) {
-        // do nothing by default, can be overridden by subclasses
-    }
-
-    protected void updateNADevice(Device newData) {
-        // do nothing by default, can be overridden by subclasses
     }
 
     protected void updateErrors(NAError error) {
@@ -160,10 +93,6 @@ public class Capability {
     }
 
     public void dispose() {
-        // do nothing by default, can be overridden by subclasses
-    }
-
-    public void updateHomeStatusModule(HomeStatusModule newData) {
         // do nothing by default, can be overridden by subclasses
     }
 

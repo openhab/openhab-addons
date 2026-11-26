@@ -81,6 +81,8 @@ If a free@home system device has multiple smart-home channels (e.g. 4x DIN/rail 
 The free@home system supports sensors and actuators.
 The connection of sensors and actuators are done on the free@home system dashboard.
 If a Thing channel is a free@home device sensor channel, this channel is read only.
+Physical door and floor call sensors report live calls only.
+The binding skips refreshes for these outputs because the System Access Point can retain the last start command.
 
 ### Bridge Configuration
 

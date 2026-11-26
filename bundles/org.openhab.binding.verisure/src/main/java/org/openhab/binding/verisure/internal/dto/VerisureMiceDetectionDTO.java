@@ -19,6 +19,7 @@ import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.verisure.internal.dto.VerisureClimatesDTO.Threshold;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
@@ -33,6 +34,7 @@ public class VerisureMiceDetectionDTO extends VerisureBaseThingDTO {
     public static final int UNDEFINED = -1;
     private double temperatureValue = UNDEFINED;
     private @Nullable String temperatureTimestamp;
+    private List<Threshold> thresholds = List.of();
 
     public double getTemperatureValue() {
         return temperatureValue;
@@ -48,6 +50,14 @@ public class VerisureMiceDetectionDTO extends VerisureBaseThingDTO {
 
     public void setTemperatureTime(@Nullable String temperatureTimestamp) {
         this.temperatureTimestamp = temperatureTimestamp;
+    }
+
+    public List<Threshold> getThresholds() {
+        return thresholds;
+    }
+
+    public void setThresholds(List<Threshold> thresholds) {
+        this.thresholds = thresholds;
     }
 
     @Override
@@ -94,13 +104,13 @@ public class VerisureMiceDetectionDTO extends VerisureBaseThingDTO {
         if (Double.doubleToLongBits(temperatureValue) != Double.doubleToLongBits(other.temperatureValue)) {
             return false;
         }
-        return true;
+        return thresholds.equals(other.thresholds);
     }
 
     @Override
     public String toString() {
         return "VerisureMiceDetectionDTO [temperatureValue=" + temperatureValue + ", temperatureTimestamp="
-                + temperatureTimestamp + "]";
+                + temperatureTimestamp + ", thresholds=" + thresholds + "]";
     }
 
     public static class Mouse {

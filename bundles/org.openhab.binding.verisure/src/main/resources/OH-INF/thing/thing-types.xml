@@ -66,11 +66,22 @@
 			<channel id="alarmTriggerChannel" typeId="triggerChannel"/>
 			<channel id="systemHealth" typeId="systemHealth"/>
 			<channel id="systemHealthAlerts" typeId="systemHealthAlerts"/>
+			<channel id="armCheck" typeId="armCheck"/>
+			<channel id="armCheckResult" typeId="armCheckResult"/>
+			<channel id="vacationMode" typeId="vacationMode"/>
+			<channel id="vacationModeStart" typeId="timestamp">
+				<label>Vacation Mode Start</label>
+				<description>Start of the vacation mode period.</description>
+			</channel>
+			<channel id="vacationModeEnd" typeId="timestamp">
+				<label>Vacation Mode End</label>
+				<description>End of the vacation mode period.</description>
+			</channel>
 		</channels>
 
 		<properties>
 			<property name="vendor">Verisure</property>
-			<property name="thingTypeVersion">1</property>
+			<property name="thingTypeVersion">2</property>
 		</properties>
 
 		<representation-property>deviceId</representation-property>
@@ -176,11 +187,43 @@
 			<channel id="smokeDetectorTriggerChannel" typeId="triggerChannel"/>
 			<channel id="lowBattery" typeId="system.low-battery"/>
 			<channel id="batteryLevel" typeId="system.battery-level"/>
+			<channel id="temperatureAlertMin" typeId="temperatureAlertLimit">
+				<label>Low Temperature Alert Limit</label>
+				<description>Verisure sends an alert when the temperature falls below this limit.</description>
+			</channel>
+			<channel id="temperatureAlertMinEnabled" typeId="alertLimitEnabled">
+				<label>Low Temperature Alert</label>
+				<description>Enables the alert for low temperature.</description>
+			</channel>
+			<channel id="temperatureAlertMax" typeId="temperatureAlertLimit">
+				<label>High Temperature Alert Limit</label>
+				<description>Verisure sends an alert when the temperature rises above this limit.</description>
+			</channel>
+			<channel id="temperatureAlertMaxEnabled" typeId="alertLimitEnabled">
+				<label>High Temperature Alert</label>
+				<description>Enables the alert for high temperature.</description>
+			</channel>
+			<channel id="humidityAlertMin" typeId="humidityAlertLimit">
+				<label>Low Humidity Alert Limit</label>
+				<description>Verisure sends an alert when the humidity falls below this limit.</description>
+			</channel>
+			<channel id="humidityAlertMinEnabled" typeId="alertLimitEnabled">
+				<label>Low Humidity Alert</label>
+				<description>Enables the alert for low humidity.</description>
+			</channel>
+			<channel id="humidityAlertMax" typeId="humidityAlertLimit">
+				<label>High Humidity Alert Limit</label>
+				<description>Verisure sends an alert when the humidity rises above this limit.</description>
+			</channel>
+			<channel id="humidityAlertMaxEnabled" typeId="alertLimitEnabled">
+				<label>High Humidity Alert</label>
+				<description>Enables the alert for high humidity.</description>
+			</channel>
 		</channels>
 
 		<properties>
 			<property name="vendor">Verisure</property>
-			<property name="thingTypeVersion">1</property>
+			<property name="thingTypeVersion">2</property>
 		</properties>
 
 		<representation-property>deviceId</representation-property>
@@ -210,11 +253,27 @@
 			<channel id="installationId" typeId="installationId"/>
 			<channel id="waterDetectorTriggerChannel" typeId="triggerChannel"/>
 			<channel id="batteryLevel" typeId="system.battery-level"/>
+			<channel id="temperatureAlertMin" typeId="temperatureAlertLimit">
+				<label>Low Temperature Alert Limit</label>
+				<description>Verisure sends an alert when the temperature falls below this limit.</description>
+			</channel>
+			<channel id="temperatureAlertMinEnabled" typeId="alertLimitEnabled">
+				<label>Low Temperature Alert</label>
+				<description>Enables the alert for low temperature.</description>
+			</channel>
+			<channel id="temperatureAlertMax" typeId="temperatureAlertLimit">
+				<label>High Temperature Alert Limit</label>
+				<description>Verisure sends an alert when the temperature rises above this limit.</description>
+			</channel>
+			<channel id="temperatureAlertMaxEnabled" typeId="alertLimitEnabled">
+				<label>High Temperature Alert</label>
+				<description>Enables the alert for high temperature.</description>
+			</channel>
 		</channels>
 
 		<properties>
 			<property name="vendor">Verisure</property>
-			<property name="thingTypeVersion">1</property>
+			<property name="thingTypeVersion">2</property>
 		</properties>
 
 		<representation-property>deviceId</representation-property>
@@ -245,11 +304,27 @@
 			<channel id="sirenTriggerChannel" typeId="triggerChannel"/>
 			<channel id="lowBattery" typeId="system.low-battery"/>
 			<channel id="batteryLevel" typeId="system.battery-level"/>
+			<channel id="temperatureAlertMin" typeId="temperatureAlertLimit">
+				<label>Low Temperature Alert Limit</label>
+				<description>Verisure sends an alert when the temperature falls below this limit.</description>
+			</channel>
+			<channel id="temperatureAlertMinEnabled" typeId="alertLimitEnabled">
+				<label>Low Temperature Alert</label>
+				<description>Enables the alert for low temperature.</description>
+			</channel>
+			<channel id="temperatureAlertMax" typeId="temperatureAlertLimit">
+				<label>High Temperature Alert Limit</label>
+				<description>Verisure sends an alert when the temperature rises above this limit.</description>
+			</channel>
+			<channel id="temperatureAlertMaxEnabled" typeId="alertLimitEnabled">
+				<label>High Temperature Alert</label>
+				<description>Enables the alert for high temperature.</description>
+			</channel>
 		</channels>
 
 		<properties>
 			<property name="vendor">Verisure</property>
-			<property name="thingTypeVersion">1</property>
+			<property name="thingTypeVersion">2</property>
 		</properties>
 
 		<representation-property>deviceId</representation-property>
@@ -280,11 +355,27 @@
 			<channel id="nightControlTriggerChannel" typeId="triggerChannel"/>
 			<channel id="lowBattery" typeId="system.low-battery"/>
 			<channel id="batteryLevel" typeId="system.battery-level"/>
+			<channel id="temperatureAlertMin" typeId="temperatureAlertLimit">
+				<label>Low Temperature Alert Limit</label>
+				<description>Verisure sends an alert when the temperature falls below this limit.</description>
+			</channel>
+			<channel id="temperatureAlertMinEnabled" typeId="alertLimitEnabled">
+				<label>Low Temperature Alert</label>
+				<description>Enables the alert for low temperature.</description>
+			</channel>
+			<channel id="temperatureAlertMax" typeId="temperatureAlertLimit">
+				<label>High Temperature Alert Limit</label>
+				<description>Verisure sends an alert when the temperature rises above this limit.</description>
+			</channel>
+			<channel id="temperatureAlertMaxEnabled" typeId="alertLimitEnabled">
+				<label>High Temperature Alert</label>
+				<description>Enables the alert for high temperature.</description>
+			</channel>
 		</channels>
 
 		<properties>
 			<property name="vendor">Verisure</property>
-			<property name="thingTypeVersion">1</property>
+			<property name="thingTypeVersion">2</property>
 		</properties>
 
 		<representation-property>deviceId</representation-property>
@@ -411,6 +502,22 @@
 			<channel id="timestamp" typeId="timestamp"/>
 			<channel id="temperature" typeId="temperature"/>
 			<channel id="temperatureTimestamp" typeId="timestamp"/>
+			<channel id="temperatureAlertMin" typeId="temperatureAlertLimit">
+				<label>Low Temperature Alert Limit</label>
+				<description>Verisure sends an alert when the temperature falls below this limit.</description>
+			</channel>
+			<channel id="temperatureAlertMinEnabled" typeId="alertLimitEnabled">
+				<label>Low Temperature Alert</label>
+				<description>Enables the alert for low temperature.</description>
+			</channel>
+			<channel id="temperatureAlertMax" typeId="temperatureAlertLimit">
+				<label>High Temperature Alert Limit</label>
+				<description>Verisure sends an alert when the temperature rises above this limit.</description>
+			</channel>
+			<channel id="temperatureAlertMaxEnabled" typeId="alertLimitEnabled">
+				<label>High Temperature Alert</label>
+				<description>Enables the alert for high temperature.</description>
+			</channel>
 			<channel id="location" typeId="location"/>
 			<channel id="installationName" typeId="installationName"/>
 			<channel id="installationId" typeId="installationId"/>
@@ -419,6 +526,7 @@
 
 		<properties>
 			<property name="vendor">Verisure</property>
+			<property name="thingTypeVersion">1</property>
 		</properties>
 
 		<representation-property>deviceId</representation-property>
@@ -718,6 +826,58 @@
 			<property>OpenState</property>
 		</tags>
 		<state readOnly="true" pattern="%s"/>
+	</channel-type>
+
+	<channel-type id="armCheck">
+		<item-type>Switch</item-type>
+		<label>Arm Check</label>
+		<description>Send ON to check if the alarm is ready to be armed. The channel goes back to OFF when the result is
+			available.</description>
+	</channel-type>
+
+	<channel-type id="armCheckResult">
+		<item-type>String</item-type>
+		<label>Arm Check Result</label>
+		<description>Result of the latest arm check: OK, a comma separated list of devices that prevent arming, FAILED,
+			TIMEOUT or THROTTLED.</description>
+		<state readOnly="true" pattern="%s"/>
+	</channel-type>
+
+	<channel-type id="vacationMode">
+		<item-type>Switch</item-type>
+		<label>Vacation Mode</label>
+		<description>Reports if vacation mode is active for the installation.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="temperatureAlertLimit" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature Alert Limit</label>
+		<description>Temperature limit for alerts. Setting a value also enables the alert.</description>
+		<category>Temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<state pattern="%.1f °C"/>
+	</channel-type>
+
+	<channel-type id="humidityAlertLimit" advanced="true">
+		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<label>Humidity Alert Limit</label>
+		<description>Humidity limit for alerts. Setting a value also enables the alert.</description>
+		<category>Humidity</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Humidity</tag>
+		</tags>
+		<state min="0" max="100" pattern="%d %%"/>
+	</channel-type>
+
+	<channel-type id="alertLimitEnabled" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Alert Enabled</label>
+		<description>Enables or disables the alert.</description>
 	</channel-type>
 
 	<channel-type id="temperature">

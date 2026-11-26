@@ -16,7 +16,6 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.mqtt.generic.mapping.AbstractMqttAttributeClass;
 import org.openhab.binding.mqtt.generic.mapping.MQTTvalueTransform;
 import org.openhab.binding.mqtt.generic.mapping.TopicPrefix;
 
@@ -27,7 +26,7 @@ import org.openhab.binding.mqtt.generic.mapping.TopicPrefix;
  */
 @NonNullByDefault
 @TopicPrefix
-public class PropertyAttributes extends AbstractMqttAttributeClass {
+public class PropertyAttributes extends HomieAttributes {
     // Lower-case enum value names required. Those are identifiers for the MQTT/homie protocol.
     public enum DataTypeEnum {
         unknown,

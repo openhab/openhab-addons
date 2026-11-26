@@ -14,6 +14,8 @@ package org.openhab.binding.verisure.internal.dto;
 
 import static org.openhab.binding.verisure.internal.VerisureBindingConstants.THING_TYPE_GATEWAY;
 
+import java.util.Objects;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.thing.ThingTypeUID;
@@ -27,6 +29,22 @@ import org.openhab.core.thing.ThingTypeUID;
 @NonNullByDefault
 public class VerisureGatewayDTO extends VerisureBaseThingDTO {
 
+    private @Nullable String firmwareVersion;
+    private @Nullable String latestFirmwareVersion;
+
+    public @Nullable String getFirmwareVersion() {
+        return firmwareVersion;
+    }
+
+    public @Nullable String getLatestFirmwareVersion() {
+        return latestFirmwareVersion;
+    }
+
+    public void setFirmware(@Nullable String firmwareVersion, @Nullable String latestFirmwareVersion) {
+        this.firmwareVersion = firmwareVersion;
+        this.latestFirmwareVersion = latestFirmwareVersion;
+    }
+
     @Override
     public ThingTypeUID getThingTypeUID() {
         return THING_TYPE_GATEWAY;
@@ -37,7 +55,6 @@ public class VerisureGatewayDTO extends VerisureBaseThingDTO {
         return super.hashCode();
     }
 
-    @SuppressWarnings("PMD.SimplifyBooleanReturns")
     @Override
     public boolean equals(@Nullable Object obj) {
         if (this == obj) {
@@ -52,7 +69,9 @@ public class VerisureGatewayDTO extends VerisureBaseThingDTO {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        return true;
+        VerisureGatewayDTO other = (VerisureGatewayDTO) obj;
+        return Objects.equals(firmwareVersion, other.firmwareVersion)
+                && Objects.equals(latestFirmwareVersion, other.latestFirmwareVersion);
     }
 
     public static class CommunicationState {
