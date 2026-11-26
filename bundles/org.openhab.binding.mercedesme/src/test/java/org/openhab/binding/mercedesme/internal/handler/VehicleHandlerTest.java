@@ -1072,6 +1072,12 @@ class VehicleHandlerTest {
     }
 
     @Test
+    public void testChargeFlapAndCouplerFromListsGlcEq() {
+        // GLC EQ.raw (MB.OS) reports only the lists: flap open (0), cable plugged (0), inlet locked (0)
+        assertChargeFlapAndCoupler("GLC EQ.raw", "0", "0", "0");
+    }
+
+    @Test
     public void testChargeFlapAndCouplerFromSingleAttributes() {
         // vsu-eqa-2.raw reports the single attributes: flap closed (1), not plugged (2), unlocked (1)
         assertChargeFlapAndCoupler("vsu-eqa-2.raw", "1", "2", "1");
