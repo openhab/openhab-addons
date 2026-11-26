@@ -86,13 +86,12 @@ public class BridgeHandler extends BaseBridgeHandler {
         void deviceSeen(String deviceId);
     }
 
-    /** Bound on the device ids remembered for discovery, so that the set cannot grow without limit. */
+    /** Bound on the device ids remembered per stream for discovery, so that the set cannot grow without limit. */
     static final int MAX_SEEN_DEVICES = 32;
 
     private final Logger logger = LoggerFactory.getLogger(BridgeHandler.class);
 
     private final StreamConnectionFactory connectionFactory;
-    private final Set<String> seenDevices = ConcurrentHashMap.newKeySet();
     private final Set<DeviceSeenListener> deviceSeenListeners = new CopyOnWriteArraySet<>();
 
     // Written by initialize and dispose, which the framework never runs concurrently.
@@ -174,7 +173,8 @@ public class BridgeHandler extends BaseBridgeHandler {
     /**
      * Stops the stream. Closes the socket and waits a bounded time for the reader thread. The session is cleared first,
      * so a callback that is still running after that wait publishes nothing. The monitor is held only for clearing it,
-     * not while waiting for the reader thread, which may itself wait for the monitor to publish a status.
+     * not while waiting for the reader thread, which may itself wait for the monitor to publish a status. The device
+     * ids seen on the stream belong to its session and go with it.
      */
     private void releaseStream() {
         synchronized (this) {
@@ -185,7 +185,6 @@ public class BridgeHandler extends BaseBridgeHandler {
         if (old != null) {
             old.stop();
         }
-        seenDevices.clear();
     }
 
     /**
@@ -199,7 +198,7 @@ public class BridgeHandler extends BaseBridgeHandler {
         if (current == null) {
             return;
         }
-        for (String deviceId : getSeenDeviceIds()) {
+        for (String deviceId : unclaimed(current)) {
             notifyLater(listener, deviceId, current);
         }
     }
@@ -209,11 +208,17 @@ public class BridgeHandler extends BaseBridgeHandler {
     }
 
     /**
-     * @return the device ids that sent valid readings and have no running meter thing, in a stable order
+     * @return the device ids that sent valid readings on the current stream and have no running meter thing, in a
+     *         stable order
      */
     public Collection<String> getSeenDeviceIds() {
+        Session current = session;
+        return current == null ? List.of() : unclaimed(current);
+    }
+
+    private Collection<String> unclaimed(Session seenOn) {
         Set<String> unclaimed = new TreeSet<>();
-        for (String deviceId : seenDevices) {
+        for (String deviceId : seenOn.seenDevices) {
             if (findMeters(deviceId).isEmpty()) {
                 unclaimed.add(deviceId);
             }
@@ -238,7 +243,12 @@ public class BridgeHandler extends BaseBridgeHandler {
         return found;
     }
 
+    /**
+     * A reader of a released stream can still get here after the bounded wait in {@link #releaseStream()}; it only adds
+     * to the set of its own session, which is no longer read.
+     */
     private void noteUnknownDevice(String deviceId, Session current) {
+        Set<String> seenDevices = current.seenDevices;
         if (seenDevices.size() >= MAX_SEEN_DEVICES || !seenDevices.add(deviceId)) {
             return;
         }
@@ -268,6 +278,9 @@ public class BridgeHandler extends BaseBridgeHandler {
 
     /** Maps what the stream client reports to the bridge status; runs on the reader thread. */
     private final class Session implements StreamListener {
+
+        /** The device ids without a meter thing that sent valid readings on this stream. */
+        final Set<String> seenDevices = ConcurrentHashMap.newKeySet();
 
         /** False once the handler was disposed or started a newer stream. */
         boolean isCurrent() {
