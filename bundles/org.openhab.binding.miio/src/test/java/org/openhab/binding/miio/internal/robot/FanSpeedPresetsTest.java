@@ -31,6 +31,7 @@ public class FanSpeedPresetsTest {
     @Test
     public void modelSelectionTest() {
         assertEquals(FanSpeedPresets.E2, FanSpeedPresets.forModel("roborock.vacuum.e2"));
+        assertEquals(FanSpeedPresets.E2, FanSpeedPresets.forModel("ROBOROCK.vacuum.E2"));
         assertEquals(FanSpeedPresets.DEFAULT, FanSpeedPresets.forModel("roborock.vacuum.s5"));
         assertEquals(FanSpeedPresets.DEFAULT, FanSpeedPresets.forModel("rockrobo.vacuum.v1"));
     }

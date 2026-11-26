@@ -356,6 +356,7 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
         }
 
         if (statusInfo.getFanPower() != null) {
+            updateFanPresets();
             updateState(CHANNEL_FAN_POWER, new DecimalType(statusInfo.getFanPower()));
             updateState(CHANNEL_FAN_CONTROL, new DecimalType(fanPresets.getValue(statusInfo.getFanPower())));
         }
@@ -698,12 +699,22 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
         this.mapDrawOptions = RRMapDrawOptions
                 .getOptionsFromFile(BINDING_USERDATA_PATH + File.separator + "mapConfig.json", logger);
         updateState(RobotCababilities.SEGMENT_CLEAN.getChannel(), new StringType("-"));
-        fanPresets = FanSpeedPresets.forModel(configuration.model);
-        if (fanPresets != FanSpeedPresets.DEFAULT) {
-            stateDescriptionProvider.setStateOptions(new ChannelUID(getThing().getUID(), CHANNEL_FAN_CONTROL),
-                    fanPresets.getOptions());
-        }
+        fanPresets = FanSpeedPresets.DEFAULT;
+        updateFanPresets();
         cloudConnector.getHomeLists();
+    }
+
+    /**
+     * Select the fan presets for the configured model. The model can be set after initialization, when it was
+     * learned from the device, so this is also called when the status is updated.
+     */
+    private void updateFanPresets() {
+        FanSpeedPresets presets = FanSpeedPresets.forModel(getConfigAs(MiIoBindingConfiguration.class).model);
+        if (presets != fanPresets) {
+            fanPresets = presets;
+            stateDescriptionProvider.setStateOptions(new ChannelUID(getThing().getUID(), CHANNEL_FAN_CONTROL),
+                    presets.getOptions());
+        }
     }
 
     @Override

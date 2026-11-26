@@ -47,7 +47,7 @@ public enum FanSpeedPresets {
     }
 
     public static FanSpeedPresets forModel(String model) {
-        return MODEL_E2.equals(model) ? E2 : DEFAULT;
+        return MODEL_E2.equalsIgnoreCase(model) ? E2 : DEFAULT;
     }
 
     /**
