@@ -120,8 +120,9 @@ public class ShellyComponents {
         }
         updateWakeupPeriod(thingHandler);
 
-        Integer rssi = getInteger(status.wifiSta.rssi);
-        thingHandler.updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_RSSI, mapSignalStrength(rssi));
+        Integer rssi = status.wifiSta.rssi;
+        thingHandler.updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_RSSI,
+                rssi != null ? mapSignalStrength(rssi) : UnDefType.UNDEF);
         if (status.tmp != null && getBool(status.tmp.isValid) && !thingHandler.getProfile().isSensor
                 && status.tmp.tC != SHELLY_API_INVTEMP) {
             thingHandler.updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_ITEMP,

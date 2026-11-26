@@ -915,7 +915,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
         status.wifiSta.ssid = wifi != null ? getString(wifi.ssid) : "";
         status.wifiSta.enabled = !status.wifiSta.ssid.isEmpty();
         status.wifiSta.ip = wifi != null ? getString(wifi.staIP) : "";
-        status.wifiSta.rssi = wifi != null ? getInteger(wifi.rssi) : 0;
+        status.wifiSta.rssi = wifi != null ? wifi.rssi : null;
         status.discoverable = getBool(profile.settings.discoverable);
 
         Shelly2DeviceStatusSysAvlUpdate avlUpdate = sys != null ? sys.availableUpdates : null;
