@@ -35,9 +35,18 @@
 		<semantic-equipment-tag>ElectricMeter</semantic-equipment-tag>
 
 		<channels>
-			<channel id="power" typeId="pulse-power"/>
-			<channel id="energy-import" typeId="pulse-energy-import"/>
-			<channel id="energy-export" typeId="pulse-energy-export"/>
+			<channel id="power" typeId="power">
+				<label>Power</label>
+				<description>Net active power, positive when drawn from the grid and negative when fed into it.</description>
+			</channel>
+			<channel id="energy-import" typeId="energy-detailed">
+				<label>Energy Import</label>
+				<description>Total energy drawn from the grid. Keeps its last value when the meter goes stale.</description>
+			</channel>
+			<channel id="energy-export" typeId="energy-detailed">
+				<label>Energy Export</label>
+				<description>Total energy fed into the grid. Keeps its last value when the meter goes stale.</description>
+			</channel>
 			<channel id="power-l1" typeId="pulse-phase-power">
 				<label>Power L1</label>
 				<description>Active power on phase L1.</description>
@@ -75,7 +84,6 @@
 				<description>Current on phase L3.</description>
 			</channel>
 			<channel id="frequency" typeId="pulse-frequency"/>
-			<channel id="last-update" typeId="pulse-last-update"/>
 		</channels>
 
 		<representation-property>deviceId</representation-property>
@@ -95,39 +103,6 @@
 			</parameter>
 		</config-description>
 	</thing-type>
-
-	<channel-type id="pulse-power">
-		<item-type>Number:Power</item-type>
-		<label>Power</label>
-		<description>Net active power, positive when drawn from the grid and negative when fed into it.</description>
-		<tags>
-			<point>Measurement</point>
-			<property>Power</property>
-		</tags>
-		<state readOnly="true" pattern="%.0f %unit%"/>
-	</channel-type>
-
-	<channel-type id="pulse-energy-import">
-		<item-type>Number:Energy</item-type>
-		<label>Energy Import</label>
-		<description>Total energy drawn from the grid. Keeps its last value when the meter goes stale.</description>
-		<tags>
-			<point>Measurement</point>
-			<property>Energy</property>
-		</tags>
-		<state readOnly="true" pattern="%.3f %unit%"/>
-	</channel-type>
-
-	<channel-type id="pulse-energy-export">
-		<item-type>Number:Energy</item-type>
-		<label>Energy Export</label>
-		<description>Total energy fed into the grid. Keeps its last value when the meter goes stale.</description>
-		<tags>
-			<point>Measurement</point>
-			<property>Energy</property>
-		</tags>
-		<state readOnly="true" pattern="%.3f %unit%"/>
-	</channel-type>
 
 	<channel-type id="pulse-phase-power" advanced="true">
 		<item-type>Number:Power</item-type>
@@ -171,16 +146,5 @@
 			<property>Frequency</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
-	</channel-type>
-
-	<channel-type id="pulse-last-update">
-		<item-type>DateTime</item-type>
-		<label>Last Update</label>
-		<description>Time of the latest valid reading received for this meter.</description>
-		<tags>
-			<point>Status</point>
-			<property>Timestamp</property>
-		</tags>
-		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS"/>
 	</channel-type>
 </thing:thing-descriptions>

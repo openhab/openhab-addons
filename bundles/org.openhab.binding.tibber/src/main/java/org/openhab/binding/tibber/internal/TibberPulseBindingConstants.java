@@ -46,7 +46,6 @@ public class TibberPulseBindingConstants {
     public static final String CHANNEL_CURRENT_L2 = "current-l2";
     public static final String CHANNEL_CURRENT_L3 = "current-l3";
     public static final String CHANNEL_FREQUENCY = "frequency";
-    public static final String CHANNEL_LAST_UPDATE = "last-update";
 
     /** The energy counters keep their last value when the meter goes stale or the connection is lost. */
     public static final Set<String> COUNTER_CHANNELS = Set.of(CHANNEL_ENERGY_IMPORT, CHANNEL_ENERGY_EXPORT);

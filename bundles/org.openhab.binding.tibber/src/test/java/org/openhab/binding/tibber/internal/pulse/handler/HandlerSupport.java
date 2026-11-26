@@ -18,14 +18,10 @@ import static org.openhab.binding.tibber.internal.TibberPulseBindingConstants.*;
 
 import java.io.ByteArrayOutputStream;
 import java.nio.charset.StandardCharsets;
-import java.time.Clock;
-import java.time.Instant;
-import java.time.ZoneOffset;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.atomic.AtomicReference;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -118,29 +114,6 @@ final class HandlerSupport {
 
     /** A wall clock that tests move by hand. */
     @NonNullByDefault({})
-    static final class TestClock extends Clock {
-        private final AtomicReference<Instant> now = new AtomicReference<>(Instant.parse("2026-01-01T12:00:00Z"));
-
-        void advanceSeconds(long seconds) {
-            now.updateAndGet(i -> i.plusSeconds(seconds));
-        }
-
-        @Override
-        public ZoneOffset getZone() {
-            return ZoneOffset.UTC;
-        }
-
-        @Override
-        public Clock withZone(java.time.ZoneId zone) {
-            return this;
-        }
-
-        @Override
-        public Instant instant() {
-            return now.get();
-        }
-    }
-
     /** What one handler published, in order. */
     static final class Recorder {
         record Update(String channel, State state) {

@@ -252,7 +252,7 @@ class BridgeMDNSDiscoveryParticipantTest {
 
         assertEquals(THING_TYPE_PULSE_BRIDGE, result.getThingTypeUID());
         assertEquals(BRIDGE_UID, result.getThingUID());
-        assertEquals("Tibber Pulse Bridge (bridge01234567)", result.getLabel());
+        assertEquals("Tibber Pulse Bridge", result.getLabel());
         assertEquals(Map.of("hostname", "192.0.2.20", "hostLabel", "bridge01234567"), result.getProperties());
         assertEquals("hostLabel", result.getRepresentationProperty());
         assertFalse(result.getProperties().containsKey("password"));
@@ -351,7 +351,7 @@ class BridgeMDNSDiscoveryParticipantTest {
 
         assertNotEquals(first.getThingUID(), second.getThingUID());
         assertEquals(new ThingUID("tibber:pulse-bridge:bridge89abcdef"), second.getThingUID());
-        assertEquals("Tibber Pulse Bridge (bridge89abcdef)", second.getLabel());
+        assertEquals("Tibber Pulse Bridge", second.getLabel());
     }
 
     @Test

@@ -27,9 +27,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 import org.openhab.binding.tibber.internal.pulse.handler.HandlerSupport.Recorder;
-import org.openhab.binding.tibber.internal.pulse.handler.HandlerSupport.TestClock;
 import org.openhab.binding.tibber.internal.pulse.sml.SmlReading;
-import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
@@ -58,7 +56,6 @@ class MeterHandlerTest {
 
     private final Bridge bridge = bridge("b1", "bridge.example", PASSWORD);
     private final AtomicLong nanos = new AtomicLong(1_000 * SECOND);
-    private final TestClock wall = new TestClock();
     private @Nullable MeterHandler handler;
     private @Nullable Recorder recorder;
 
@@ -78,7 +75,7 @@ class MeterHandlerTest {
         Thing thing = meter(bridge, "m1", deviceId, staleTimeout);
         setStatus(bridge, bridgeStatus);
         Recorder rec = new Recorder(thing, bridge);
-        MeterHandler h = new MeterHandler(thing, nanos::get, wall);
+        MeterHandler h = new MeterHandler(thing, nanos::get);
         h.setCallback(rec.callback);
         thing.setHandler(h);
         recorder = rec;
@@ -105,7 +102,6 @@ class MeterHandlerTest {
 
     private void advance(long seconds) {
         nanos.addAndGet(seconds * SECOND);
-        wall.advanceSeconds(seconds);
     }
 
     private void refresh(MeterHandler h, String channel) {
@@ -131,22 +127,20 @@ class MeterHandlerTest {
     }
 
     @Test
-    void whenTheMeterIsInitializedForTheFirstTimeThenCountersAndLastUpdateAreNotWritten() {
+    void whenTheMeterIsInitializedForTheFirstTimeThenCountersAreNotWritten() {
         // A state that persistence restored on startup must survive the initialization.
         start(DEVICE_A, null);
 
         assertEquals(0, rec().count(CHANNEL_ENERGY_IMPORT));
         assertEquals(0, rec().count(CHANNEL_ENERGY_EXPORT));
-        assertEquals(0, rec().count(CHANNEL_LAST_UPDATE));
         assertEquals(UnDefType.UNDEF, rec().lastState(CHANNEL_POWER));
     }
 
     @Test
-    void whenTheFirstInitializationFindsTheBridgeOfflineThenCountersAndLastUpdateAreNotWritten() {
+    void whenTheFirstInitializationFindsTheBridgeOfflineThenCountersAreNotWritten() {
         start(DEVICE_A, null, ThingStatus.OFFLINE);
 
         assertEquals(0, rec().count(CHANNEL_ENERGY_IMPORT));
-        assertEquals(0, rec().count(CHANNEL_LAST_UPDATE));
     }
 
     @Test
@@ -180,7 +174,7 @@ class MeterHandlerTest {
     void whenTheMeterHasNoBridgeThenItIsOfflineWithConfigurationError() {
         Thing thing = meter(bridge, "m1", DEVICE_A, null);
         Recorder rec = new Recorder(thing, null);
-        MeterHandler h = new MeterHandler(thing, nanos::get, wall);
+        MeterHandler h = new MeterHandler(thing, nanos::get);
         h.setCallback(rec.callback);
         handler = h;
         recorder = rec;
@@ -292,7 +286,7 @@ class MeterHandlerTest {
     // thing-lifecycle: Connection loss clears live values, Bridge offline
 
     @Test
-    void whenTheBridgeGoesOfflineThenLiveValuesAreUndefinedAndCountersAndLastUpdateKeepTheirValues() {
+    void whenTheBridgeGoesOfflineThenLiveValuesAreUndefinedAndCountersKeepTheirValues() {
         MeterHandler h = start(DEVICE_A, null);
         h.onReading(DEVICE_A, reading(CHANNEL_POWER, watts("1200"), CHANNEL_ENERGY_IMPORT, kilowattHours("10"),
                 CHANNEL_ENERGY_EXPORT, kilowattHours("2"), CHANNEL_FREQUENCY, hertz("49.9")));
@@ -305,11 +299,8 @@ class MeterHandlerTest {
         assertEquals(UnDefType.UNDEF, rec().lastState(CHANNEL_FREQUENCY));
         assertNull(rec().lastState(CHANNEL_ENERGY_IMPORT));
         assertNull(rec().lastState(CHANNEL_ENERGY_EXPORT));
-        assertNull(rec().lastState(CHANNEL_LAST_UPDATE));
         h.handleCommand(new ChannelUID(h.getThing().getUID(), CHANNEL_ENERGY_IMPORT), RefreshType.REFRESH);
         assertEquals(kilowattHours("10"), rec().lastState(CHANNEL_ENERGY_IMPORT));
-        h.handleCommand(new ChannelUID(h.getThing().getUID(), CHANNEL_LAST_UPDATE), RefreshType.REFRESH);
-        assertTrue(rec().lastState(CHANNEL_LAST_UPDATE) instanceof DateTimeType);
     }
 
     @Test
@@ -345,7 +336,6 @@ class MeterHandlerTest {
         MeterHandler h = start(DEVICE_A, null);
         h.onReading(DEVICE_A, reading(CHANNEL_POWER, watts("1200"), CHANNEL_ENERGY_IMPORT, kilowattHours("10"),
                 CHANNEL_ENERGY_EXPORT, kilowattHours("2")));
-        Object lastUpdate = rec().lastState(CHANNEL_LAST_UPDATE);
         rec().clear();
 
         advance(59);
@@ -359,8 +349,6 @@ class MeterHandlerTest {
         assertEquals(UnDefType.UNDEF, rec().lastState(CHANNEL_POWER));
         assertNull(rec().lastState(CHANNEL_ENERGY_IMPORT));
         assertNull(rec().lastState(CHANNEL_ENERGY_EXPORT));
-        assertNull(rec().lastState(CHANNEL_LAST_UPDATE));
-        assertNotNull(lastUpdate);
     }
 
     @Test
@@ -482,7 +470,6 @@ class MeterHandlerTest {
         assertEquals(UnDefType.UNDEF, rec().lastState(CHANNEL_POWER));
         assertEquals(UnDefType.UNDEF, rec().lastState(CHANNEL_ENERGY_IMPORT));
         assertEquals(UnDefType.UNDEF, rec().lastState(CHANNEL_ENERGY_EXPORT));
-        assertEquals(UnDefType.UNDEF, rec().lastState(CHANNEL_LAST_UPDATE));
         assertFalse(h.matches(DEVICE_A));
         assertTrue(h.matches(DEVICE_B));
         assertEquals(DEVICE_B, h.getThing().getProperties().get(PROPERTY_DEVICE_ID));
@@ -498,15 +485,13 @@ class MeterHandlerTest {
         rec().clear();
         refresh(h, CHANNEL_ENERGY_IMPORT);
         refresh(h, CHANNEL_ENERGY_EXPORT);
-        refresh(h, CHANNEL_LAST_UPDATE);
 
         assertEquals(UnDefType.UNDEF, rec().lastState(CHANNEL_ENERGY_IMPORT));
         assertEquals(UnDefType.UNDEF, rec().lastState(CHANNEL_ENERGY_EXPORT));
-        assertEquals(UnDefType.UNDEF, rec().lastState(CHANNEL_LAST_UPDATE));
     }
 
     @Test
-    void whenOnlyTheStaleTimeoutIsChangedThenCountersAndLastUpdateKeepTheirValuesAndLiveValuesAreUndefined() {
+    void whenOnlyTheStaleTimeoutIsChangedThenCountersKeepTheirValuesAndLiveValuesAreUndefined() {
         MeterHandler h = start(DEVICE_A, 60);
         h.onReading(DEVICE_A, reading(CHANNEL_POWER, watts("1200"), CHANNEL_ENERGY_IMPORT, kilowattHours("10"),
                 CHANNEL_ENERGY_EXPORT, kilowattHours("2")));
@@ -518,11 +503,10 @@ class MeterHandlerTest {
         assertEquals(UnDefType.UNDEF, rec().lastState(CHANNEL_POWER));
         assertEquals(0, rec().count(CHANNEL_ENERGY_IMPORT));
         assertEquals(0, rec().count(CHANNEL_ENERGY_EXPORT));
-        assertEquals(0, rec().count(CHANNEL_LAST_UPDATE));
     }
 
     @Test
-    void whenTheHandlerIsRestartedWithTheSameDeviceIdThenCountersAndLastUpdateAreNotWritten() {
+    void whenTheHandlerIsRestartedWithTheSameDeviceIdThenCountersAreNotWritten() {
         MeterHandler h = start(DEVICE_A, null);
         h.onReading(DEVICE_A, reading(CHANNEL_POWER, watts("1200"), CHANNEL_ENERGY_IMPORT, kilowattHours("10")));
         rec().clear();
@@ -531,7 +515,6 @@ class MeterHandlerTest {
         h.initialize();
 
         assertEquals(0, rec().count(CHANNEL_ENERGY_IMPORT));
-        assertEquals(0, rec().count(CHANNEL_LAST_UPDATE));
         assertEquals(UnDefType.UNDEF, rec().lastState(CHANNEL_POWER));
     }
 
@@ -545,12 +528,10 @@ class MeterHandlerTest {
 
         refresh(h, CHANNEL_ENERGY_IMPORT);
         refresh(h, CHANNEL_ENERGY_EXPORT);
-        refresh(h, CHANNEL_LAST_UPDATE);
         refresh(h, CHANNEL_POWER);
 
         assertEquals(kilowattHours("10"), rec().lastState(CHANNEL_ENERGY_IMPORT));
         assertEquals(kilowattHours("2"), rec().lastState(CHANNEL_ENERGY_EXPORT));
-        assertTrue(rec().lastState(CHANNEL_LAST_UPDATE) instanceof DateTimeType);
         assertEquals(UnDefType.UNDEF, rec().lastState(CHANNEL_POWER));
     }
 
@@ -653,17 +634,6 @@ class MeterHandlerTest {
     }
 
     @Test
-    void whenTwoReadingsArriveThenLastUpdateShowsTheTimeOfTheSecondOne() {
-        MeterHandler h = start(DEVICE_A, null);
-        h.onReading(DEVICE_A, reading(CHANNEL_POWER, watts("1")));
-        advance(2);
-
-        h.onReading(DEVICE_A, reading(CHANNEL_POWER, watts("2")));
-
-        assertEquals(new DateTimeType(wall.instant()), rec().lastState(CHANNEL_LAST_UPDATE));
-    }
-
-    @Test
     void whenTheMeterIdIsUnchangedThenThePropertyIsNotWrittenAgain() {
         MeterHandler h = start(DEVICE_A, null);
         h.onReading(DEVICE_A, new SmlReading(values(CHANNEL_POWER, watts("1")), SYNTHETIC_METER_ID));
@@ -755,9 +725,9 @@ class MeterHandlerTest {
     private static final List<String> VALUE_CHANNELS = List.of(CHANNEL_POWER, CHANNEL_ENERGY_IMPORT,
             CHANNEL_ENERGY_EXPORT, CHANNEL_POWER_L1, CHANNEL_POWER_L2, CHANNEL_POWER_L3, CHANNEL_VOLTAGE_L1,
             CHANNEL_VOLTAGE_L2, CHANNEL_VOLTAGE_L3, CHANNEL_CURRENT_L1, CHANNEL_CURRENT_L2, CHANNEL_CURRENT_L3,
-            CHANNEL_FREQUENCY, CHANNEL_LAST_UPDATE);
+            CHANNEL_FREQUENCY);
 
-    /** An ONLINE meter for device A with a value on the live channels, the counters, and last-update. */
+    /** An ONLINE meter for device A with a value on the live channels and the counters. */
     private MeterHandler startOnlineMeterWithValues() {
         MeterHandler h = start(DEVICE_A, null);
         h.onReading(DEVICE_A, reading(CHANNEL_POWER, watts("1200"), CHANNEL_ENERGY_IMPORT, kilowattHours("1000")));
@@ -814,7 +784,6 @@ class MeterHandlerTest {
         assertEquals(watts("300"), rec().lastState(CHANNEL_POWER));
         assertEquals(UnDefType.UNDEF, rec().lastState(CHANNEL_ENERGY_IMPORT));
         assertEquals(UnDefType.UNDEF, rec().lastState(CHANNEL_ENERGY_EXPORT));
-        assertTrue(rec().lastState(CHANNEL_LAST_UPDATE) instanceof DateTimeType);
         assertNull(h.getThing().getProperties().get(PROPERTY_METER_ID));
         rec().clear();
         refresh(h, CHANNEL_ENERGY_IMPORT);
@@ -832,7 +801,6 @@ class MeterHandlerTest {
                         amperes("1.7"), CHANNEL_CURRENT_L2, amperes("1.7"), CHANNEL_CURRENT_L3, amperes("1.7"),
                         CHANNEL_FREQUENCY, hertz("50")), null));
         assertEquals(watts("400"), rec().lastState(CHANNEL_POWER_L3));
-        assertTrue(rec().lastState(CHANNEL_LAST_UPDATE) instanceof DateTimeType);
 
         h.handleConfigurationUpdate(Map.of("deviceId", DEVICE_B));
 
@@ -861,7 +829,7 @@ class MeterHandlerTest {
         Recorder firstRecorder = rec();
         Thing twinThing = meter(bridge, "m2", DEVICE_A, null);
         Recorder twinRecorder = new Recorder(twinThing, bridge);
-        MeterHandler twin = new MeterHandler(twinThing, nanos::get, wall);
+        MeterHandler twin = new MeterHandler(twinThing, nanos::get);
         twin.setCallback(twinRecorder.callback);
         twinThing.setHandler(twin);
         twin.initialize();

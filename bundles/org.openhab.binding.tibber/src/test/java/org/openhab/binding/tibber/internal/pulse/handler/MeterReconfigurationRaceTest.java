@@ -34,7 +34,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 import org.openhab.binding.tibber.internal.pulse.handler.BridgeHandler.StreamConnection;
 import org.openhab.binding.tibber.internal.pulse.handler.HandlerSupport.Recorder;
-import org.openhab.binding.tibber.internal.pulse.handler.HandlerSupport.TestClock;
 import org.openhab.binding.tibber.internal.pulse.sml.SmlFrameBuilder;
 import org.openhab.binding.tibber.internal.pulse.sml.SmlReading;
 import org.openhab.binding.tibber.internal.pulse.stream.StreamListener;
@@ -66,7 +65,6 @@ class MeterReconfigurationRaceTest {
 
     private final Bridge bridge = bridge("b1", "bridge.example", PASSWORD);
     private final AtomicLong nanos = new AtomicLong(1_000 * SECOND);
-    private final TestClock wall = new TestClock();
     private final List<MeterHandler> started = new ArrayList<>();
     private final List<BridgeHandler> bridges = new ArrayList<>();
 
@@ -78,8 +76,8 @@ class MeterReconfigurationRaceTest {
 
     /** Writes the configuration the way the framework does it: dispose, new configuration, initialize. */
     private static class Reconfigurable extends MeterHandler {
-        Reconfigurable(Thing thing, java.util.function.LongSupplier nanos, java.time.Clock wall) {
-            super(thing, nanos, wall);
+        Reconfigurable(Thing thing, java.util.function.LongSupplier nanos) {
+            super(thing, nanos);
         }
 
         void reconfigure(Map<String, Object> changes) {
@@ -107,7 +105,7 @@ class MeterReconfigurationRaceTest {
         Thing thing = meter(bridge, id, deviceId, null);
         setStatus(bridge, ThingStatus.ONLINE);
         Recorder recorder = new Recorder(thing, bridge);
-        Reconfigurable handler = new Reconfigurable(thing, nanos::get, wall);
+        Reconfigurable handler = new Reconfigurable(thing, nanos::get);
         handler.setCallback(recorder.callback);
         thing.setHandler(handler);
         ((BridgeImpl) bridge).addThing(thing);
@@ -236,8 +234,8 @@ class MeterReconfigurationRaceTest {
 
     /** A meter whose pre-filter is out of date: it still claims every device, as if it had been found before. */
     private static final class StalePreFilter extends Reconfigurable {
-        StalePreFilter(Thing thing, java.util.function.LongSupplier nanos, java.time.Clock wall) {
-            super(thing, nanos, wall);
+        StalePreFilter(Thing thing, java.util.function.LongSupplier nanos) {
+            super(thing, nanos);
         }
 
         @Override
@@ -274,7 +272,7 @@ class MeterReconfigurationRaceTest {
         StreamListener listener = startBridge();
         Thing staleThing = meter(bridge, "m1", DEVICE_B, null);
         Recorder staleRecorder = new Recorder(staleThing, bridge);
-        StalePreFilter stale = new StalePreFilter(staleThing, nanos::get, wall);
+        StalePreFilter stale = new StalePreFilter(staleThing, nanos::get);
         stale.setCallback(staleRecorder.callback);
         staleThing.setHandler(stale);
         ((BridgeImpl) bridge).addThing(staleThing);
@@ -302,7 +300,7 @@ class MeterReconfigurationRaceTest {
         StreamListener listener = startBridge();
         Thing removedThing = meter(bridge, "m1", DEVICE_A, null);
         Recorder removedRecorder = new Recorder(removedThing, bridge);
-        StalePreFilter removed = new StalePreFilter(removedThing, nanos::get, wall);
+        StalePreFilter removed = new StalePreFilter(removedThing, nanos::get);
         removed.setCallback(removedRecorder.callback);
         removedThing.setHandler(removed);
         ((BridgeImpl) bridge).addThing(removedThing);
@@ -359,7 +357,7 @@ class MeterReconfigurationRaceTest {
             return null;
         }).when(callback).statusUpdated(any(), any());
         when(callback.getBridge(bridge.getUID())).thenReturn(bridge);
-        Reconfigurable handler = new Reconfigurable(thing, nanos::get, wall);
+        Reconfigurable handler = new Reconfigurable(thing, nanos::get);
         handler.setCallback(callback);
         thing.setHandler(handler);
         started.add(handler);

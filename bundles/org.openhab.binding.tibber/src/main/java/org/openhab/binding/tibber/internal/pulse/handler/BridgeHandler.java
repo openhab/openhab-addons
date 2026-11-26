@@ -181,12 +181,17 @@ public class BridgeHandler extends BaseBridgeHandler {
 
     /**
      * Registers a listener for device ids seen on the stream and tells it at once about those seen before.
-     * Registrations belong to the discovery service, not to a stream, so they survive a restart of the stream.
+     * Registrations belong to the discovery service, not to a stream, so they survive a restart of the stream. The
+     * devices seen before belong to the current stream, so their replay is dropped once a newer stream has started.
      */
     public void addDeviceSeenListener(DeviceSeenListener listener) {
         deviceSeenListeners.add(listener);
+        Session current = session;
+        if (current == null) {
+            return;
+        }
         for (String deviceId : getSeenDeviceIds()) {
-            scheduler.execute(() -> notifyIfRegistered(listener, deviceId));
+            notifyLater(listener, deviceId, current);
         }
     }
 
@@ -228,14 +233,18 @@ public class BridgeHandler extends BaseBridgeHandler {
         if (seenDevices.size() >= MAX_SEEN_DEVICES || !seenDevices.add(deviceId)) {
             return;
         }
-        // The inbox is notified from the scheduler: it can take a while and must not slow down the stream.
         for (DeviceSeenListener listener : deviceSeenListeners) {
-            scheduler.execute(() -> {
-                if (current.isCurrent()) {
-                    notifyIfRegistered(listener, deviceId);
-                }
-            });
+            notifyLater(listener, deviceId, current);
         }
+    }
+
+    /** The inbox is notified from the scheduler: it can take a while and must not slow down the stream. */
+    private void notifyLater(DeviceSeenListener listener, String deviceId, Session seenOn) {
+        scheduler.execute(() -> {
+            if (seenOn.isCurrent()) {
+                notifyIfRegistered(listener, deviceId);
+            }
+        });
     }
 
     /**

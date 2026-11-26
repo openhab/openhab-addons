@@ -14,8 +14,6 @@ package org.openhab.binding.tibber.internal.pulse.handler;
 
 import static org.openhab.binding.tibber.internal.TibberPulseBindingConstants.*;
 
-import java.time.Clock;
-import java.time.Instant;
 import java.util.List;
 import java.util.OptionalLong;
 import java.util.concurrent.ScheduledFuture;
@@ -26,7 +24,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.tibber.internal.pulse.config.MeterConfiguration;
 import org.openhab.binding.tibber.internal.pulse.sml.SmlReading;
-import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
@@ -37,7 +34,6 @@ import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
-import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 
 /**
@@ -76,11 +72,9 @@ public class MeterHandler extends BaseThingHandler {
 
     private static final long MIN_TIMER_DELAY_NANOS = TimeUnit.MILLISECONDS.toNanos(1);
     /** The channels that keep their value on connection loss and when stale; only a new device id clears them. */
-    private static final List<String> KEPT_CHANNELS = List.of(CHANNEL_ENERGY_IMPORT, CHANNEL_ENERGY_EXPORT,
-            CHANNEL_LAST_UPDATE);
+    private static final List<String> KEPT_CHANNELS = List.of(CHANNEL_ENERGY_IMPORT, CHANNEL_ENERGY_EXPORT);
 
     private final LongSupplier nanoClock;
-    private final Clock wallClock;
 
     private final Object lock = new Object();
     // Guarded by lock, except deviceId, which the reader thread reads without it.
@@ -101,13 +95,12 @@ public class MeterHandler extends BaseThingHandler {
     private volatile @Nullable String deviceId;
 
     public MeterHandler(Thing thing) {
-        this(thing, System::nanoTime, Clock.systemUTC());
+        this(thing, System::nanoTime);
     }
 
-    MeterHandler(Thing thing, LongSupplier nanoClock, Clock wallClock) {
+    MeterHandler(Thing thing, LongSupplier nanoClock) {
         super(thing);
         this.nanoClock = nanoClock;
-        this.wallClock = wallClock;
     }
 
     /**
@@ -215,12 +208,10 @@ public class MeterHandler extends BaseThingHandler {
                 return;
             }
             long now = nanoClock.getAsLong();
-            Instant receivedAt = Instant.now(wallClock);
-            state.apply(reading.values(), receivedAt, now);
+            state.apply(reading.values(), now);
             for (var entry : reading.values().entrySet()) {
                 updateState(entry.getKey(), entry.getValue());
             }
-            updateState(CHANNEL_LAST_UPDATE, new DateTimeType(receivedAt));
             if (phase != Phase.ONLINE) {
                 phase = Phase.ONLINE;
                 updateStatus(ThingStatus.ONLINE);
@@ -261,7 +252,7 @@ public class MeterHandler extends BaseThingHandler {
 
     /**
      * Makes the cache and the channels consistent with the device id that is applied now. The live channels are no
-     * longer attested after a (re-)initialization and become UNDEF. The energy counters and {@code last-update} are
+     * longer attested after a (re-)initialization and become UNDEF. The energy counters are
      * cleared only when the device id changed, because the values of the previous meter must not be shown for another
      * one. On the first initialization nothing is known and nothing is written to them, so that a state restored by
      * persistence is not overwritten.
@@ -331,15 +322,8 @@ public class MeterHandler extends BaseThingHandler {
     }
 
     private void publishCached(String channel) {
-        State cached;
-        if (CHANNEL_LAST_UPDATE.equals(channel)) {
-            Instant lastUpdate = state.lastUpdate();
-            cached = lastUpdate != null ? new DateTimeType(lastUpdate) : UnDefType.UNDEF;
-        } else {
-            QuantityType<?> value = state.value(channel);
-            cached = value != null ? value : UnDefType.UNDEF;
-        }
-        updateState(channel, cached);
+        QuantityType<?> value = state.value(channel);
+        updateState(channel, value != null ? value : UnDefType.UNDEF);
     }
 
     /**

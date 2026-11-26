@@ -14,7 +14,6 @@ package org.openhab.binding.tibber.internal.pulse.handler;
 
 import static org.openhab.binding.tibber.internal.TibberPulseBindingConstants.*;
 
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -50,7 +49,6 @@ final class MeterState {
 
     private final Map<String, QuantityType<?>> values = new HashMap<>();
     private final Map<String, Long> updatedNanos = new HashMap<>();
-    private @Nullable Instant lastUpdate;
     private boolean clockRunning;
     private long clockStartNanos;
     private boolean meterExpired;
@@ -58,12 +56,11 @@ final class MeterState {
     /**
      * Records the values of a valid reading and restarts the meter-level clock.
      */
-    void apply(Map<String, QuantityType<?>> reading, Instant receivedAt, long nowNanos) {
+    void apply(Map<String, QuantityType<?>> reading, long nowNanos) {
         for (Map.Entry<String, QuantityType<?>> entry : reading.entrySet()) {
             values.put(entry.getKey(), entry.getValue());
             updatedNanos.put(entry.getKey(), nowNanos);
         }
-        lastUpdate = receivedAt;
         restartClock(nowNanos);
     }
 
@@ -89,13 +86,8 @@ final class MeterState {
         return values.get(channel);
     }
 
-    @Nullable
-    Instant lastUpdate() {
-        return lastUpdate;
-    }
-
     /**
-     * Removes the live values; the energy counters and the last update time stay.
+     * Removes the live values; the energy counters stay.
      *
      * @return the channels that held a value
      */

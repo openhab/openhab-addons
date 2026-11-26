@@ -635,11 +635,13 @@ See the [preparation guide](https://github.com/marq24/ha-tibber-pulse-local/blob
 #### Bridge Discovery
 
 The bridge appears in the Inbox by itself while its web interface is enabled.
-The entry is named "Tibber Pulse Bridge (`bridge01234567`)" and contains the IP address of the bridge.
+The entry is named "Tibber Pulse Bridge" and contains the IP address of the bridge.
+Its Thing UID contains the host label of the bridge, for example `tibber:pulse-bridge:bridge01234567`.
 
 #### Meter Discovery
 
-When the `pulse-bridge` Thing is online, the meters that it receives appear in the Inbox as "Tibber Pulse `<deviceId>`".
+When the `pulse-bridge` Thing is online, the meters that it receives appear in the Inbox as "Tibber Pulse Meter".
+The device id of the Pulse is part of the Thing UID of the entry.
 Approve the entry to create the `pulse-meter` Thing.
 A manual scan offers the meters again, for example after you removed a `pulse-meter` Thing.
 
@@ -684,9 +686,9 @@ A quantity that your meter does not report stays `UNDEF`.
 | `current-l2`    | Number:ElectricCurrent   | A    | Current on phase L2.                                                               | yes      |
 | `current-l3`    | Number:ElectricCurrent   | A    | Current on phase L3.                                                               | yes      |
 | `frequency`     | Number:Frequency         | Hz   | Grid frequency.                                                                    | yes      |
-| `last-update`   | DateTime                 | -    | Time of the latest reading received for this meter.                                | no       |
 
-The energy counters and `last-update` keep their last value when the connection is lost, all other Channels become `UNDEF`.
+The energy counters keep their last value when the connection is lost, all other Channels become `UNDEF`.
+To record when the meter was last updated, link a DateTime Item to the `power` Channel with the `timestamp-update` profile, as in the example below.
 
 ### Pulse Thing Statuses
 
@@ -748,7 +750,7 @@ Number:Power             Grid_Power_L1      "Power L1 [%.0f %unit%]"        {cha
 Number:ElectricPotential Grid_Voltage_L1    "Voltage L1 [%.1f %unit%]"      {channel="tibber:pulse-meter:home:main:voltage-l1"}
 Number:ElectricCurrent   Grid_Current_L1    "Current L1 [%.2f %unit%]"      {channel="tibber:pulse-meter:home:main:current-l1"}
 Number:Frequency         Grid_Frequency     "Frequency [%.1f %unit%]"       {channel="tibber:pulse-meter:home:main:frequency"}
-DateTime                 Grid_Last_Update   "Last update [%1$tF %1$tT]"     {channel="tibber:pulse-meter:home:main:last-update"}
+DateTime                 Grid_Last_Update   "Last update [%1$tF %1$tT]"     {channel="tibber:pulse-meter:home:main:power" [profile="system:timestamp-update"]}
 ```
 
 ### Acknowledgements

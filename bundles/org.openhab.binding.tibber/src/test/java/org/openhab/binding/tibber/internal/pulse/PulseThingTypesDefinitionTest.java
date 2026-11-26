@@ -65,13 +65,13 @@ class PulseThingTypesDefinitionTest {
         ITEM_TYPES.put("current-l2", "Number:ElectricCurrent");
         ITEM_TYPES.put("current-l3", "Number:ElectricCurrent");
         ITEM_TYPES.put("frequency", "Number:Frequency");
-        ITEM_TYPES.put("last-update", "DateTime");
     }
 
     private static final Set<String> ADVANCED = Set.of("power-l1", "power-l2", "power-l3", "voltage-l1", "voltage-l2",
             "voltage-l3", "current-l1", "current-l2", "current-l3", "frequency");
 
     private @Nullable Document document;
+    private @Nullable Document cloudChannelTypes;
     private String text = "";
 
     @BeforeEach
@@ -84,6 +84,13 @@ class PulseThingTypesDefinitionTest {
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
             document = factory.newDocumentBuilder().parse(new java.io.ByteArrayInputStream(bytes));
+        }
+        try (InputStream in = PulseThingTypesDefinitionTest.class
+                .getResourceAsStream("/OH-INF/thing/channel-types.xml")) {
+            assertNotNull(in);
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+            cloudChannelTypes = factory.newDocumentBuilder().parse(in);
         }
     }
 
@@ -123,6 +130,23 @@ class PulseThingTypesDefinitionTest {
             }
         }
         throw new AssertionError("no <" + tag + "> with id " + id);
+    }
+
+    /**
+     * The channel type of a meter channel, from the Pulse file or from the channel types shared with the cloud part.
+     */
+    private Element channelTypeOf(Element channel) {
+        String typeId = channel.getAttribute("typeId");
+        Document shared = cloudChannelTypes;
+        assertNotNull(shared);
+        for (Document source : List.of(doc(), shared)) {
+            for (Element element : children(source.getDocumentElement(), "channel-type")) {
+                if (typeId.equals(element.getAttribute("id"))) {
+                    return element;
+                }
+            }
+        }
+        throw new AssertionError("no channel type " + typeId + " for channel " + channel.getAttribute("id"));
     }
 
     private static Element parameter(Element thingType, String name) {
@@ -232,16 +256,12 @@ class PulseThingTypesDefinitionTest {
         Element channels = child(meter, "channels");
         assertNotNull(channels);
 
-        Map<String, String> typeOfChannel = new LinkedHashMap<>();
+        Map<String, String> itemTypeOfChannel = new LinkedHashMap<>();
         for (Element channel : children(channels, "channel")) {
-            typeOfChannel.put(channel.getAttribute("id"), channel.getAttribute("typeId"));
+            itemTypeOfChannel.put(channel.getAttribute("id"), textOf(channelTypeOf(channel), "item-type"));
         }
 
-        assertEquals(ITEM_TYPES.keySet(), typeOfChannel.keySet());
-        for (Map.Entry<String, String> entry : ITEM_TYPES.entrySet()) {
-            Element channelType = byId("channel-type", String.valueOf(typeOfChannel.get(entry.getKey())));
-            assertEquals(entry.getValue(), textOf(channelType, "item-type"), entry.getKey());
-        }
+        assertEquals(ITEM_TYPES, itemTypeOfChannel);
     }
 
     @Test
@@ -251,7 +271,7 @@ class PulseThingTypesDefinitionTest {
         assertNotNull(channels);
 
         for (Element channel : children(channels, "channel")) {
-            Element channelType = byId("channel-type", channel.getAttribute("typeId"));
+            Element channelType = channelTypeOf(channel);
             Element state = child(channelType, "state");
             assertNotNull(state, channel.getAttribute("id"));
             assertEquals("true", state.getAttribute("readOnly"), channel.getAttribute("id"));
@@ -262,34 +282,9 @@ class PulseThingTypesDefinitionTest {
     }
 
     @Test
-    void whenTheChannelTypesAreReadThenValueChannelsAreTaggedAsMeasurementWithTheirProperty() {
-        Map<String, String> property = Map.of("power", "Power", "energy-import", "Energy", "energy-export", "Energy",
-                "phase-power", "Power", "phase-voltage", "Voltage", "phase-current", "Current", "frequency",
-                "Frequency");
-
-        for (Map.Entry<String, String> entry : property.entrySet()) {
-            Set<String> tags = tagsOf(byId("channel-type", "pulse-" + entry.getKey()));
-            assertEquals(Set.of("Measurement", entry.getValue()), tags, entry.getKey());
-        }
-        assertEquals(Set.of("Status", "Timestamp"), tagsOf(byId("channel-type", "pulse-last-update")));
-    }
-
-    private static Set<String> tagsOf(Element channelType) {
-        Element tags = child(channelType, "tags");
-        assertNotNull(tags);
-        Set<String> result = new HashSet<>();
-        // "point" and "property" since core 5.3, "tag" before (still accepted, deprecated)
-        for (String name : List.of("point", "property", "tag")) {
-            children(tags, name).forEach(tag -> result.add(tag.getTextContent().trim()));
-        }
-        return result;
-    }
-
-    @Test
-    void whenTheChannelIdsAreComparedWithTheConstantsThenCountersLiveValuesAndLastUpdateCoverAllOfThem() {
+    void whenTheChannelIdsAreComparedWithTheConstantsThenCountersAndLiveValuesCoverAllOfThem() {
         Set<String> all = new HashSet<>(LIVE_CHANNELS);
         all.addAll(COUNTER_CHANNELS);
-        all.add(CHANNEL_LAST_UPDATE);
 
         assertEquals(ITEM_TYPES.keySet(), all);
         assertTrue(LIVE_CHANNELS.stream().noneMatch(COUNTER_CHANNELS::contains));

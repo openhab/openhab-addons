@@ -40,7 +40,6 @@ import org.openhab.binding.tibber.internal.pulse.sml.SmlFrameBuilder;
 import org.openhab.binding.tibber.internal.pulse.stream.StreamFailure;
 import org.openhab.binding.tibber.internal.pulse.stream.StreamFailure.Kind;
 import org.openhab.binding.tibber.internal.pulse.stream.StreamListener;
-import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -424,20 +423,19 @@ class BridgeHandlerTest {
     }
 
     @Test
-    void whenAReadingArrivesForAnotherDeviceThenNoChannelAndNoLastUpdateOfTheMeterChanges() {
+    void whenAReadingArrivesForAnotherDeviceThenNoChannelOfTheMeterChanges() {
         Running r = new Running("b1", "bridge.example", PASSWORD);
         r.listener().onStreamActive();
         MeterHandler a = r.addMeter("a", DEVICE_A);
         r.listener().onMessage(message(DEVICE_A, validFrame(100)));
         Recorder rec = recorderOf(a);
-        Object lastUpdate = rec.lastState(CHANNEL_LAST_UPDATE);
+        assertNotNull(rec.lastState(CHANNEL_POWER));
         rec.clear();
 
         r.listener().onMessage(message(DEVICE_B, validFrame(5000)));
 
         assertTrue(rec.updates.isEmpty());
         assertEquals(ThingStatus.ONLINE, a.getThing().getStatus());
-        assertTrue(lastUpdate instanceof DateTimeType);
     }
 
     @Test

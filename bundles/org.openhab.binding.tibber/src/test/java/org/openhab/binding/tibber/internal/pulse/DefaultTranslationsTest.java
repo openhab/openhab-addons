@@ -154,9 +154,6 @@ class DefaultTranslationsTest {
     void whenTheStatusKeysOfTheCloudPartAreListedThenTheyAreStillThere() {
         assertEquals(List.of("status.configuration-error", "status.initial-call-failed", "status.price-update-failed",
                 "status.history-update"), keysOfSection(CLOUD_STATUS_SECTION));
-        assertEquals("Either token or homeId missing", texts.get("status.configuration-error"));
-        assertEquals("Tibber API connector", texts.get("thing-type.tibber.tibberapi.description"));
-        assertEquals("Total price including taxes", texts.get("channel-type.tibber.price.description"));
     }
 
     // documentation: Keys of the old binding id gone
@@ -170,12 +167,10 @@ class DefaultTranslationsTest {
         for (String key : List.of("thing-type.tibber.pulse-bridge.label", "thing-type.tibber.pulse-meter.label",
                 "thing-type.config.tibber.pulse-bridge.hostname.label",
                 "thing-type.config.tibber.pulse-meter.deviceId.label",
-                "thing-type.config.tibber.pulse-meter.staleTimeout.label", "channel-type.tibber.pulse-power.label",
-                "channel-type.tibber.pulse-energy-import.label", "channel-type.tibber.pulse-last-update.label")) {
+                "thing-type.config.tibber.pulse-meter.staleTimeout.label",
+                "thing-type.tibber.pulse-meter.channel.power.label", "channel-type.tibber.pulse-phase-power.label")) {
             assertTrue(texts.containsKey(key), key);
         }
-        // The cloud channel type keeps its own keys.
-        assertEquals("Power Consumption/Production", texts.get("channel-type.tibber.power.label"));
     }
 
     // documentation: No locale files

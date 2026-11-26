@@ -38,7 +38,7 @@ import org.slf4j.LoggerFactory;
  * Offers the Tibber bridge in the inbox from the multicast DNS announcement of its web server. The bridge advertises
  * one {@code _http._tcp} service named {@code Tibber Bridge Web Server} with a host name of the form
  * {@code Bridge01234567.local.}. The service type is shared by many unrelated devices, so the instance name decides,
- * and the host label is the identity of the bridge (see ADR 001).
+ * and the host label is the identity of the bridge.
  *
  * The participant is stateless and only reads the {@link ServiceInfo} it is given: no thing registry, no name
  * resolution, no connection to the bridge. The framework calls it on its own threads for every HTTP service of the
@@ -98,8 +98,7 @@ public class BridgeMDNSDiscoveryParticipant implements MDNSDiscoveryParticipant 
         return DiscoveryResultBuilder.create(new ThingUID(THING_TYPE_PULSE_BRIDGE, hostLabel))
                 .withThingType(THING_TYPE_PULSE_BRIDGE)
                 .withProperties(Map.of(CONFIG_HOSTNAME, hostname(service, bridge), PROPERTY_HOST_LABEL, hostLabel))
-                .withRepresentationProperty(PROPERTY_HOST_LABEL).withLabel("Tibber Pulse Bridge (" + hostLabel + ")")
-                .build();
+                .withRepresentationProperty(PROPERTY_HOST_LABEL).withLabel("Tibber Pulse Bridge").build();
     }
 
     /**
@@ -116,12 +115,12 @@ public class BridgeMDNSDiscoveryParticipant implements MDNSDiscoveryParticipant 
         @Nullable
         String server = service.getServer();
         if (name == null || server == null || !INSTANCE_NAME.matcher(name).matches()) {
-            logger.debug("Ignored a service that is not a Tibber bridge");
+            logger.trace("Ignored a service that is not a Tibber bridge");
             return null;
         }
         Matcher matcher = HOST_NAME.matcher(server);
         if (!matcher.matches()) {
-            logger.debug("Ignored a bridge service without a usable host name");
+            logger.trace("Ignored a bridge service without a usable host name");
             return null;
         }
         return new Bridge(matcher.group(1).toLowerCase(Locale.ROOT), withoutTrailingDot(server));

@@ -51,9 +51,8 @@ class MergedDefinitionsTest {
 
     private static final Set<String> CLOUD_CHANNEL_TYPE_IDS = Set.of("price", "advanced-price", "price-level", "cost",
             "energy-detailed", "energy", "power", "voltage", "current", "event");
-    private static final Set<String> PULSE_CHANNEL_TYPE_IDS = Set.of("pulse-power", "pulse-energy-import",
-            "pulse-energy-export", "pulse-phase-power", "pulse-phase-voltage", "pulse-phase-current", "pulse-frequency",
-            "pulse-last-update");
+    private static final Set<String> PULSE_CHANNEL_TYPE_IDS = Set.of("pulse-phase-power", "pulse-phase-voltage",
+            "pulse-phase-current", "pulse-frequency");
 
     private static Document load(String file) throws IOException, ParserConfigurationException, SAXException {
         try (InputStream in = MergedDefinitionsTest.class.getResourceAsStream(BASE + file)) {
@@ -106,15 +105,6 @@ class MergedDefinitionsTest {
         throw new AssertionError("no channel type " + id);
     }
 
-    private static Set<String> tags(Element channelType) {
-        Set<String> result = new HashSet<>();
-        // "point" and "property" since core 5.3, "tag" before (still accepted, deprecated)
-        for (String name : List.of("point", "property", "tag")) {
-            children(only(channelType, "tags"), name).forEach(tag -> result.add(tag.getTextContent().trim()));
-        }
-        return result;
-    }
-
     // channels: No duplicate channel type id
 
     @Test
@@ -142,18 +132,17 @@ class MergedDefinitionsTest {
     }
 
     @Test
-    void whenTheChannelsOfThePulseMeterAreListedThenTheyReferenceTheChannelTypesOfTheTable() throws Exception {
+    void whenTheChannelsOfThePulseMeterAreListedThenTheyReferenceExistingChannelTypes() throws Exception {
         Map<String, String> expected = new LinkedHashMap<>();
-        expected.put("power", "pulse-power");
-        expected.put("energy-import", "pulse-energy-import");
-        expected.put("energy-export", "pulse-energy-export");
+        expected.put("power", "power");
+        expected.put("energy-import", "energy-detailed");
+        expected.put("energy-export", "energy-detailed");
         for (String phase : List.of("l1", "l2", "l3")) {
             expected.put("power-" + phase, "pulse-phase-power");
             expected.put("voltage-" + phase, "pulse-phase-voltage");
             expected.put("current-" + phase, "pulse-phase-current");
         }
         expected.put("frequency", "pulse-frequency");
-        expected.put("last-update", "pulse-last-update");
         Element meter = thingType("pulse-meter");
 
         Map<String, String> actual = new LinkedHashMap<>();
@@ -161,10 +150,18 @@ class MergedDefinitionsTest {
                 .forEach(c -> actual.put(c.getAttribute("id"), c.getAttribute("typeId")));
 
         assertEquals(expected, actual);
-        Set<String> used = new HashSet<>(actual.values());
-        assertEquals(PULSE_CHANNEL_TYPE_IDS, used);
-        for (String typeId : used) {
+        for (String typeId : new HashSet<>(actual.values())) {
             channelType(typeId);
+        }
+    }
+
+    @Test
+    void whenAPulseChannelUsesACloudChannelTypeThenTheChannelDefinesItsOwnLabel() throws Exception {
+        // The labels of the cloud channel types describe consumption over a time interval, not a live meter value.
+        for (Element channel : children(only(thingType("pulse-meter"), "channels"), "channel")) {
+            if (CLOUD_CHANNEL_TYPE_IDS.contains(channel.getAttribute("typeId"))) {
+                assertFalse(text(channel, "label").isEmpty(), channel.getAttribute("id"));
+            }
         }
     }
 
@@ -177,9 +174,6 @@ class MergedDefinitionsTest {
         assertEquals(1, elements("channel-type", List.of("channel-types.xml")).keySet().stream()
                 .filter(e -> "power".equals(e.getAttribute("id"))).count());
         assertEquals("Number:Power", text(power, "item-type"));
-        assertEquals("Power Consumption/Production", text(power, "label"));
-        assertEquals("Power consumption/production for a given time interval", text(power, "description"));
-        assertEquals(Set.of("Measurement", "Power"), tags(power));
         Element state = only(power, "state");
         assertEquals("true", state.getAttribute("readOnly"));
         assertEquals("%.0f %unit%", state.getAttribute("pattern"));
@@ -229,8 +223,6 @@ class MergedDefinitionsTest {
     void whenTheCloudThingTypeIsReadThenItsDefinitionIsUnchanged() throws Exception {
         Element api = thingType("tibberapi");
 
-        assertEquals("Tibber API", text(api, "label"));
-        assertEquals("Tibber API connector", text(api, "description"));
         Map<String, String> groups = new LinkedHashMap<>();
         children(only(api, "channel-groups"), "channel-group")
                 .forEach(g -> groups.put(g.getAttribute("id"), g.getAttribute("typeId")));

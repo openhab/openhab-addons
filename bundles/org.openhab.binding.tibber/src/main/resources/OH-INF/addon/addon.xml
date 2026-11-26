@@ -6,9 +6,7 @@
 	<type>binding</type>
 	<name>Tibber Binding</name>
 	<description>This binding retrieves price and consumption data from the Tibber API using queries and live
-		subscriptions. It also reads the live data of a Tibber Pulse from the Tibber bridge on the local network,
-		without the
-		Tibber cloud.</description>
+		subscriptions. It also reads the live data of a Tibber Pulse from the Tibber bridge on the local network.</description>
 	<connection>hybrid</connection>
 
 </addon:addon>

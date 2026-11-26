@@ -168,7 +168,9 @@ class SmlAdversarialInputTest {
                 .decode(new SmlFrameBuilder().signed(POWER, UNIT_W, 0, 1, 8).octets(METER_ID, tooLong).build(), 0);
 
         assertEquals(1, accepted.size());
-        assertEquals(128, accepted.get(0).meterId().length());
+        String meterId = accepted.get(0).meterId();
+        assertNotNull(meterId);
+        assertEquals(128, meterId.length());
         assertEquals(1, ignored.size());
         assertNull(ignored.get(0).meterId());
     }

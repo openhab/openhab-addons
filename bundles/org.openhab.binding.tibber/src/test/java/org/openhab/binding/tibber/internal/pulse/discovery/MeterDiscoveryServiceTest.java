@@ -163,6 +163,7 @@ class MeterDiscoveryServiceTest {
         assertEquals(DEVICE_A, result.getProperties().get("deviceId"));
         assertEquals("deviceId", result.getRepresentationProperty());
         assertEquals(THING_TYPE_PULSE_METER, result.getThingTypeUID());
+        assertEquals("Tibber Pulse Meter", result.getLabel());
     }
 
     private Bridge bridge() {
@@ -270,6 +271,30 @@ class MeterDiscoveryServiceTest {
         service().startScan(null);
         DiscoveryResult result = results.poll(WAIT_MILLIS, TimeUnit.MILLISECONDS);
         assertNotNull(result, "an explicit scan still offers the device");
+        assertEquals(DEVICE_A, result.getProperties().get("deviceId"));
+    }
+
+    @Test
+    void whenTheBridgeRestartsWhileAReplayIsQueuedThenTheDeviceOfTheOldStreamIsNotOffered() throws Exception {
+        SchedulerExposingBridgeHandler h = handler;
+        assertNotNull(h);
+        stream().onMessage(message(DEVICE_A, 1));
+        CountDownLatch release = holdBackScheduler();
+        try {
+            service().initialize();
+            h.dispose();
+            h.initialize();
+            stream().onStreamActive();
+        } finally {
+            release.countDown();
+        }
+
+        assertNull(results.poll(300, TimeUnit.MILLISECONDS),
+                "a replay queued for the old stream must not reach the inbox");
+
+        stream().onMessage(message(DEVICE_A, 2));
+        DiscoveryResult result = results.poll(WAIT_MILLIS, TimeUnit.MILLISECONDS);
+        assertNotNull(result, "the new stream still offers the device");
         assertEquals(DEVICE_A, result.getProperties().get("deviceId"));
     }
 

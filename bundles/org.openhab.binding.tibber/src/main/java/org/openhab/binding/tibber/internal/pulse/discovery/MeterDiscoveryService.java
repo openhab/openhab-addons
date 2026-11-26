@@ -65,7 +65,7 @@ public class MeterDiscoveryService extends AbstractThingHandlerDiscoveryService<
         DiscoveryResult result = DiscoveryResultBuilder
                 .create(new ThingUID(THING_TYPE_PULSE_METER, bridgeUid, deviceId)).withBridge(bridgeUid)
                 .withProperty(CONFIG_DEVICE_ID, deviceId).withRepresentationProperty(CONFIG_DEVICE_ID)
-                .withLabel("Tibber Pulse " + deviceId).build();
+                .withLabel("Tibber Pulse Meter").build();
         thingDiscovered(result);
     }
 }

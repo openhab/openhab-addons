@@ -347,7 +347,7 @@ class HandlerRobustnessTest {
         } else {
             assertEquals(ThingStatus.UNKNOWN, thing.getStatus());
             for (String channel : List.of(CHANNEL_POWER, CHANNEL_ENERGY_IMPORT, CHANNEL_ENERGY_EXPORT,
-                    CHANNEL_LAST_UPDATE, CHANNEL_FREQUENCY)) {
+                    CHANNEL_FREQUENCY)) {
                 assertEquals(UnDefType.UNDEF, recorder.lastState(channel), channel);
             }
             assertTrue(
