@@ -213,6 +213,7 @@ public enum MiIoDevices {
     MRBOND_AIRER_M1PRO("mrbond.airer.m1pro", "MR.BOND", THING_TYPE_BASIC),
     MRBOND_AIRER_M1S("mrbond.airer.m1s", "MR.BOND", THING_TYPE_BASIC),
     MRBOND_AIRER_M1SUPER("mrbond.airer.m1super", "MR.BOND", THING_TYPE_BASIC),
+    MRBOND_AIRER_M2("mrbond.airer.m2", "MR.BOND", THING_TYPE_BASIC),
     NWT_DERH_16L("nwt.derh.16l", "NWT/Widetech Intelligent Dehumidifier 16L", THING_TYPE_BASIC),
     NWT_DERH_24WU1("nwt.derh.24wu1", "NWT/Widetech Internet Air Clean Dehumidifier 24L", THING_TYPE_BASIC),
     NWT_DERH_312EN("nwt.derh.312en", "NWT/Widetech Internet Dehumidifier 12L", THING_TYPE_BASIC),
