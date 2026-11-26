@@ -34,6 +34,7 @@ public class FanSpeedPresetsTest {
         assertEquals(FanSpeedPresets.E2, FanSpeedPresets.forModel("ROBOROCK.vacuum.E2"));
         assertEquals(FanSpeedPresets.DEFAULT, FanSpeedPresets.forModel("roborock.vacuum.s5"));
         assertEquals(FanSpeedPresets.DEFAULT, FanSpeedPresets.forModel("rockrobo.vacuum.v1"));
+        assertEquals(FanSpeedPresets.S7_MAXV, FanSpeedPresets.forModel("roborock.vacuum.a27"));
     }
 
     @Test
@@ -54,12 +55,24 @@ public class FanSpeedPresetsTest {
     @Test
     public void defaultDecodingUnchangedTest() {
         FanSpeedPresets def = FanSpeedPresets.DEFAULT;
-        for (int value : new int[] { 38, 60, 75, 77, 90, 100, 101, 102, 103, 104, 105, 106, 108 }) {
+        for (int value : new int[] { 38, 60, 75, 77, 90, 100, 101, 102, 103, 104, 105 }) {
             assertEquals(value, def.getValue(value));
         }
         assertEquals("Silent", def.getLabel(38));
         assertEquals(FanSpeedPresets.CUSTOM_VALUE, def.getValue(50));
         assertEquals(FanSpeedPresets.CUSTOM_VALUE, def.getValue(0));
+        // Max+ only exists for the S7 MaxV
+        assertEquals(FanSpeedPresets.CUSTOM_VALUE, def.getValue(108));
+        assertEquals(FanSpeedPresets.CUSTOM_VALUE, def.getValue(106));
+    }
+
+    @Test
+    public void s7MaxVExtendsDefaultTest() {
+        FanSpeedPresets s7 = FanSpeedPresets.S7_MAXV;
+        assertEquals(108, s7.getValue(108));
+        assertEquals("Max+", s7.getLabel(108));
+        assertEquals("Silent", s7.getLabel(38));
+        assertEquals("Balanced", s7.getLabel(102));
     }
 
     @Test

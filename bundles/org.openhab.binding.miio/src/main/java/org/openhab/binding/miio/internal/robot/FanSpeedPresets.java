@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.types.StateOption;
 
 /**
@@ -27,11 +28,11 @@ import org.openhab.core.types.StateOption;
 @NonNullByDefault
 public enum FanSpeedPresets {
 
-    DEFAULT(new Preset(38, "Silent"), new Preset(60, "Standard"), new Preset(75, "Turbo"), new Preset(77, "Power"),
-            new Preset(90, "Full"), new Preset(100, "Max"), new Preset(101, "Quiet"), new Preset(102, "Balanced"),
-            new Preset(103, "Turbo"), new Preset(104, "Max"), new Preset(105, "Mob"), new Preset(106, "Auto"),
-            new Preset(108, "Max+")),
-    E2(new Preset(41, "Gentle"), new Preset(50, "Silent"), new Preset(68, "Standard"), new Preset(79, "Strong"),
+    DEFAULT(null, new Preset(38, "Silent"), new Preset(60, "Standard"), new Preset(75, "Turbo"),
+            new Preset(77, "Power"), new Preset(90, "Full"), new Preset(100, "Max"), new Preset(101, "Quiet"),
+            new Preset(102, "Balanced"), new Preset(103, "Turbo"), new Preset(104, "Max"), new Preset(105, "Mob")),
+    S7_MAXV(DEFAULT, new Preset(108, "Max+")),
+    E2(null, new Preset(41, "Gentle"), new Preset(50, "Silent"), new Preset(68, "Standard"), new Preset(79, "Strong"),
             new Preset(100, "Max"));
 
     /** Value reported for a fan power that is not one of the presets. */
@@ -39,15 +40,23 @@ public enum FanSpeedPresets {
     public static final String CUSTOM_LABEL = "Custom";
 
     private static final String MODEL_E2 = "roborock.vacuum.e2";
+    private static final String MODEL_S7_MAXV = "roborock.vacuum.a27";
 
     private final List<Preset> presets;
 
-    FanSpeedPresets(Preset... presets) {
-        this.presets = List.of(presets);
+    /**
+     * @param base preset set to extend, or null for a set of its own
+     */
+    FanSpeedPresets(@Nullable FanSpeedPresets base, Preset... presets) {
+        this.presets = Stream.concat(base == null ? Stream.empty() : base.presets.stream(), Stream.of(presets))
+                .toList();
     }
 
     public static FanSpeedPresets forModel(String model) {
-        return MODEL_E2.equalsIgnoreCase(model) ? E2 : DEFAULT;
+        if (MODEL_E2.equalsIgnoreCase(model)) {
+            return E2;
+        }
+        return MODEL_S7_MAXV.equalsIgnoreCase(model) ? S7_MAXV : DEFAULT;
     }
 
     /**
