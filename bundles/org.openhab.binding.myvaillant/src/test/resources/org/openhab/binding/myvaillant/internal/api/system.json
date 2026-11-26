@@ -1,0 +1,117 @@
+{
+  "state": {
+    "system": {
+      "outdoorTemperature": 4.5,
+      "outdoorTemperatureAverage24h": 5.25,
+      "systemWaterPressure": 1.8,
+      "energyManagerState": "HEATING",
+      "systemOff": false,
+      "systemFlowTemperature": 38.5,
+      "cylinderTemperatureSensorTopCH": 41.0
+    },
+    "zones": [
+      {
+        "index": 0,
+        "desiredRoomTemperatureSetpointHeating": 21.5,
+        "desiredRoomTemperatureSetpoint": 21.5,
+        "currentRoomTemperature": 19.75,
+        "currentRoomHumidity": 55.0,
+        "currentSpecialFunction": "QUICK_VETO",
+        "heatingState": "HEATING_UP",
+        "quickVetoStartDateTime": "2026-11-20T08:00:00Z",
+        "quickVetoEndDateTime": "2026-11-20T11:00:00Z"
+      },
+      {
+        "index": 1,
+        "currentSpecialFunction": "NONE",
+        "quickVetoStartDateTime": "1970-01-01T00:00:00Z",
+        "quickVetoEndDateTime": "1970-01-01T00:00:00Z"
+      }
+    ],
+    "circuits": [
+      {
+        "index": 0,
+        "circuitState": "HEATING",
+        "currentCircuitFlowTemperature": 37.5,
+        "heatingCircuitFlowSetpoint": 38.0,
+        "calculatedEnergyManagerState": "HEATING_ACTIVE"
+      }
+    ],
+    "dhw": [
+      {
+        "index": 255,
+        "currentSpecialFunction": "REGULAR",
+        "currentDhwTemperature": 48.5
+      }
+    ]
+  },
+  "properties": {
+    "system": {
+      "controllerType": "VRC720",
+      "systemScheme": 8,
+      "backupHeaterType": "ELECTRIC"
+    },
+    "zones": [
+      { "index": 0, "isActive": true, "zoneBinding": "CENTRAL_CONTROL", "isCoolingAllowed": false, "associatedCircuitIndex": 0 },
+      { "index": 1, "isActive": false, "zoneBinding": "CENTRAL_CONTROL", "associatedCircuitIndex": 1 }
+    ],
+    "circuits": [{ "index": 0, "mixerCircuitTypeExternal": "HEATING", "heatingCircuitType": "MIXER_CIRCUIT_EXTERNAL", "isCoolingAllowed": false }],
+    "dhw": [{ "index": 255, "minSetpoint": 35.0, "maxSetpoint": 70.0 }]
+  },
+  "configuration": {
+    "system": {
+      "continuousHeatingStartSetpoint": -26.0,
+      "manualCoolingStartDate": "2015-01-01T00:00:00Z",
+      "manualCoolingEndDate": "2015-01-01T00:00:00Z"
+    },
+    "zones": [
+      {
+        "index": 0,
+        "general": {
+          "name": "Zuhause",
+          "holidayStartDateTime": "2026-12-24T10:00:00Z",
+          "holidayEndDateTime": "2027-01-02T10:00:00Z",
+          "holidaySetpoint": 15.0
+        },
+        "heating": {
+          "operationModeHeating": "MANUAL",
+          "setBackTemperature": 18.0,
+          "manualModeSetpointHeating": 21.0,
+          "timeProgramHeating": {
+            "metaInfo": { "minSlotsPerDay": 0, "maxSlotsPerDay": 12, "setpointRequiredPerSlot": true },
+            "monday": [{ "startTime": 360, "endTime": 1320, "setpoint": 21.0 }],
+            "tuesday": [],
+            "wednesday": [],
+            "thursday": [],
+            "friday": [],
+            "saturday": [],
+            "sunday": []
+          }
+        },
+        "cooling": {}
+      },
+      {
+        "index": 1,
+        "general": { "name": "Inactive" },
+        "heating": { "operationModeHeating": "OFF", "setBackTemperature": 15.0 }
+      }
+    ],
+    "circuits": [
+      {
+        "index": 0,
+        "heatingCurve": 1.0,
+        "heatingFlowTemperatureMinimumSetpoint": 25.0,
+        "heatingFlowTemperatureMaximumSetpoint": 55.0,
+        "heatDemandLimitedByOutsideTemperature": 20.0,
+        "roomTemperatureControlMode": "NON"
+      }
+    ],
+    "dhw": [
+      {
+        "index": 255,
+        "operationModeDhw": "TIME_CONTROLLED",
+        "tappingSetpoint": 50.0
+      }
+    ]
+  }
+}
