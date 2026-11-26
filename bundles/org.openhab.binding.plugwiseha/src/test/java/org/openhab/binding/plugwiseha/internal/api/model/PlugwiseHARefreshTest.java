@@ -21,9 +21,9 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.Request;
 import org.eclipse.jetty.http.HttpFields;
 import org.eclipse.jetty.http.HttpHeader;
 import org.junit.jupiter.api.BeforeEach;
@@ -119,7 +119,7 @@ class PlugwiseHARefreshTest {
 
     private ContentResponse response(ZonedDateTime date) {
         ContentResponse response = mock(ContentResponse.class);
-        HttpFields headers = new HttpFields();
+        HttpFields.Mutable headers = HttpFields.build();
         headers.put(HttpHeader.DATE, date.format(DateTimeFormatter.RFC_1123_DATE_TIME));
         when(response.getStatus()).thenReturn(200);
         when(response.getHeaders()).thenReturn(headers);
