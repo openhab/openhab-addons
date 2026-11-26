@@ -171,7 +171,7 @@ public class PirateWeatherAPIHandler extends BaseBridgeHandler {
     }
 
     private boolean isActive(PirateWeatherConnection connection) {
-        return connection == this.connection;
+        return connection.equals(this.connection);
     }
 
     private void updateThings() {
