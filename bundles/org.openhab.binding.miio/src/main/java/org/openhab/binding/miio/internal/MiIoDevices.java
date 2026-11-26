@@ -581,6 +581,8 @@ public enum MiIoDevices {
     XIAOMI_FAN_P90("xiaomi.fan.p90", "Mijia Smart Air Circulation Fan Pro", THING_TYPE_BASIC),
     XIAOMI_FEEDER_IV2001("xiaomi.feeder.iv2001", "Xiaomi Smart Pet Food Feeder 2", THING_TYPE_BASIC),
     XIAOMI_FEEDER_PI2001("xiaomi.feeder.pi2001", "Mijia Smart Pet Food Feeder 2", THING_TYPE_BASIC),
+    XIAOMI_FRYER_JL12("xiaomi.fryer.jl12", "Xiaomi Smart Double Stack Air Fryer 12L", THING_TYPE_BASIC),
+    XIAOMI_FRYER_JL12W("xiaomi.fryer.jl12w", "Xiaomi Smart Double Stack Air Fryer 12L", THING_TYPE_BASIC),
     XIAOMI_FRYER_MAF07D("xiaomi.fryer.maf07d", "Xiaomi Smart Air Fryer 5.5L", THING_TYPE_BASIC),
     XIAOMI_FRYER_MAF14("xiaomi.fryer.maf14", "Xiaomi Smart Air Fryer 4.5L", THING_TYPE_BASIC),
     XIAOMI_FRYER_MAF15("xiaomi.fryer.maf15", "Xiaomi Smart Air Fryer 4.5L", THING_TYPE_BASIC),
