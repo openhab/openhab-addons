@@ -6,6 +6,7 @@
 	<type>binding</type>
 	<name>HTTP Hook</name>
 	<description>Expose configurable HTTP endpoints backed by transformations.</description>
+	<connection>local</connection>
 	<config-description-ref uri="binding:httphook"/>
 
 </addon:addon>
