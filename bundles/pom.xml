@@ -23,6 +23,7 @@
     <module>org.openhab.automation.jsscripting</module>
     <module>org.openhab.automation.jsscriptingnashorn</module>
     <module>org.openhab.automation.jythonscripting</module>
+    <module>org.openhab.automation.optimalwindow</module>
     <module>org.openhab.automation.pidcontroller</module>
     <module>org.openhab.automation.pwm</module>
     <module>org.openhab.automation.pythonscripting</module>
