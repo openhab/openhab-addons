@@ -360,7 +360,7 @@ public class Go2RtcDataPump implements AutoCloseable {
      * Discards a failed publisher connection, unless it has already been replaced.
      */
     private synchronized void dropPublisher(RtspConnection failed) {
-        if (publisher == failed) {
+        if (Objects.equals(publisher, failed)) {
             publisher = null;
         }
         failed.close();
