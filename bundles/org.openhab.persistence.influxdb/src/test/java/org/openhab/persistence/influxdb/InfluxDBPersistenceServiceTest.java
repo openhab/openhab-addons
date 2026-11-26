@@ -29,6 +29,7 @@ import static org.openhab.persistence.influxdb.internal.InfluxDBConfiguration.VE
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.BeforeEach;
@@ -241,18 +242,25 @@ public class InfluxDBPersistenceServiceTest {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
-    public void timestampedStateIsConvertedToTheItemStateType() throws UnexpectedConditionException {
+    public void timestampedStateIsConvertedToTheItemStateType()
+            throws UnexpectedConditionException, InterruptedException {
         InfluxDBPersistenceService instance = getService(VALID_V2_CONFIGURATION);
         instance.setItemFactory(new CoreItemFactory(mock(UnitProvider.class)));
         when(influxDBRepositoryMock.isConnected()).thenReturn(true);
+        List<InfluxPoint> points = new CopyOnWriteArrayList<>();
+        when(influxDBRepositoryMock.write(any())).thenAnswer(invocation -> {
+            points.addAll(invocation.<List<InfluxPoint>> getArgument(0));
+            return WriteResult.SUCCESS;
+        });
 
         instance.store(new DimmerItem("dimmer"), ZonedDateTime.now(), OnOffType.ON);
         instance.store(new ColorItem("color"), ZonedDateTime.now(), PercentType.HUNDRED);
 
-        ArgumentCaptor<List<InfluxPoint>> captor = ArgumentCaptor.forClass(List.class);
-        verify(influxDBRepositoryMock, timeout(10000).atLeastOnce()).write(captor.capture());
-        List<InfluxPoint> points = captor.getAllValues().stream().flatMap(List::stream).toList();
+        // each conversion is asynchronous, so the two points may be written in separate batches
+        long deadline = System.currentTimeMillis() + 10000;
+        while (points.size() < 2 && System.currentTimeMillis() < deadline) {
+            Thread.sleep(50);
+        }
         assertThat(points.size(), is(2));
         InfluxPoint dimmer = points.stream().filter(p -> "dimmer".equals(p.getTags().get("item"))).findFirst().get();
         InfluxPoint color = points.stream().filter(p -> "color".equals(p.getTags().get("item"))).findFirst().get();
