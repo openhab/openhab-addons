@@ -29,7 +29,7 @@ import org.openhab.core.library.types.QuantityType;
  * stale. It is pure and clock-free: every method that depends on time takes the current monotonic time in
  * nanoseconds, which makes the stale scenarios testable without a scheduler.
  *
- * Not thread-safe; the {@link MeterHandler} guards it with its lock.
+ * Not thread-safe; the {@link MeterHandler} guards it with its monitor.
  *
  * Two levels of staleness exist. A live channel that was not updated for the stale timeout expires on its own. The
  * meter as a whole expires when no valid reading arrived for the stale timeout, counted from the last reading or, if

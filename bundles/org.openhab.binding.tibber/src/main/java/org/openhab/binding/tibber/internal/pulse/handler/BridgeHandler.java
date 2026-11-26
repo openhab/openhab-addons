@@ -53,6 +53,12 @@ import org.slf4j.LoggerFactory;
  * and decode and apply each message without a hand-off, which keeps the readings in order and the latency low. The
  * handler is a single-use consumer of clients: every {@link #initialize()} creates a new client, and
  * {@link #dispose()} stops it and waits for its thread, so a restarted handler never has two readers of its own.
+ *
+ * A status update from the reader thread checks that its stream is still the current one and publishes while holding
+ * the monitor of this handler, which {@link BaseBridgeHandler} also holds whenever it calls the framework, and
+ * {@link #dispose()} clears the current stream under the same monitor. A stream that was released can therefore no
+ * longer publish a status, and no lock of its own is added.
+ *
  * The binding does not prevent two {@code bridge} things for the same bridge; the bridge serves one stream client at a
  * time, so they would take the stream from each other.
  *
@@ -167,10 +173,13 @@ public class BridgeHandler extends BaseBridgeHandler {
 
     /**
      * Stops the stream. Closes the socket and waits a bounded time for the reader thread. The session is cleared first,
-     * so a callback that is still running after that wait publishes nothing.
+     * so a callback that is still running after that wait publishes nothing. The monitor is held only for clearing it,
+     * not while waiting for the reader thread, which may itself wait for the monitor to publish a status.
      */
     private void releaseStream() {
-        session = null;
+        synchronized (this) {
+            session = null;
+        }
         StreamConnection old = connection;
         connection = null;
         if (old != null) {
@@ -267,10 +276,11 @@ public class BridgeHandler extends BaseBridgeHandler {
 
         @Override
         public void onStreamActive() {
-            if (!isCurrent()) {
-                return;
+            synchronized (BridgeHandler.this) {
+                if (isCurrent()) {
+                    updateStatus(ThingStatus.ONLINE);
+                }
             }
-            updateStatus(ThingStatus.ONLINE);
         }
 
         @Override
@@ -320,9 +330,6 @@ public class BridgeHandler extends BaseBridgeHandler {
 
         @Override
         public void onStreamLost(StreamFailure failure) {
-            if (!isCurrent()) {
-                return;
-            }
             ThingStatusDetail detail = failure.isFinal() ? ThingStatusDetail.CONFIGURATION_ERROR
                     : ThingStatusDetail.COMMUNICATION_ERROR;
             String description = switch (failure.getKind()) {
@@ -334,7 +341,11 @@ public class BridgeHandler extends BaseBridgeHandler {
                 case SILENT -> TEXT_SILENT;
                 case PROTOCOL -> TEXT_INVALID_DATA;
             };
-            updateStatus(detail, description);
+            synchronized (BridgeHandler.this) {
+                if (isCurrent()) {
+                    updateStatus(detail, description);
+                }
+            }
         }
     }
 }

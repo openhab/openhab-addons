@@ -42,11 +42,12 @@ import org.openhab.core.types.UnDefType;
  * does any I/O.
  *
  * Threading: the reader thread (readings), the shared scheduler (stale timer), and framework threads (bridge status,
- * REFRESH, initialization) all reach the state, so every access to it and every channel or status update that depends
- * on it happens under {@code lock}. Holding a lock while calling the framework is a deliberate exception to the
- * general rule, for this class only: {@code updateState} and {@code updateStatus} never call back into this handler,
- * the lock belongs to this one meter, and without it a stale expiry could overwrite a fresher reading. The bridge
- * handler holds no lock when it calls a meter, so there is no lock order to violate.
+ * REFRESH, initialization) all reach the state. Every access to it, and every channel or status update that depends on
+ * it, runs while holding the monitor of this handler, so one decision and its publication cannot interleave with
+ * another: a stale expiry cannot overwrite a fresher reading. {@link BaseThingHandler} holds the same monitor whenever
+ * it calls the framework for this handler ({@code updateState}, {@code updateStatus}, {@code setCallback}), so
+ * publishing under it adds no lock and no lock order of its own. The bridge handler holds no lock when it calls a
+ * meter.
  *
  * Status: the meter is ONLINE only after a valid reading for its device id. The default reaction of the framework to
  * a bridge that turns ONLINE would be to set the meter ONLINE as well, which is why {@link #bridgeStatusChanged} is
@@ -76,8 +77,7 @@ public class MeterHandler extends BaseThingHandler {
 
     private final LongSupplier nanoClock;
 
-    private final Object lock = new Object();
-    // Guarded by lock, except deviceId, which the reader thread reads without it.
+    // Guarded by this, except deviceId, which the reader thread reads without it.
     private MeterState state = new MeterState();
     private Phase phase = Phase.CONFIG_ERROR;
     private long staleNanos = TimeUnit.SECONDS.toNanos(MeterConfiguration.DEFAULT_STALE_TIMEOUT);
@@ -89,7 +89,7 @@ public class MeterHandler extends BaseThingHandler {
     /**
      * The device id whose values the cache and the channels hold. It survives {@link #dispose()}: the framework
      * disposes and initializes the same handler instance on a configuration change, and a restart must not show or
-     * keep the values of a different meter. Null until a valid configuration was applied. Guarded by lock.
+     * keep the values of a different meter. Null until a valid configuration was applied. Guarded by this.
      */
     private @Nullable String appliedDeviceId;
     private volatile @Nullable String deviceId;
@@ -118,7 +118,7 @@ public class MeterHandler extends BaseThingHandler {
     public void initialize() {
         MeterConfiguration config = getConfigAs(MeterConfiguration.class);
         String error = config.validate();
-        synchronized (lock) {
+        synchronized (this) {
             disposed = false;
             cancelTimer();
             publishedMeterId = null;
@@ -143,13 +143,13 @@ public class MeterHandler extends BaseThingHandler {
             }
             applyBridgeStatus(bridge.getStatus());
         }
-        // Outside the lock: a property update goes through the thing registry.
+        // The property is not ordered with the channel and status updates, so it is published outside the block.
         updateProperty(PROPERTY_DEVICE_ID, config.normalizedDeviceId());
     }
 
     @Override
     public void dispose() {
-        synchronized (lock) {
+        synchronized (this) {
             disposed = true;
             deviceId = null;
             cancelTimer();
@@ -160,7 +160,7 @@ public class MeterHandler extends BaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
-            synchronized (lock) {
+            synchronized (this) {
                 if (disposed) {
                     return;
                 }
@@ -178,7 +178,7 @@ public class MeterHandler extends BaseThingHandler {
      */
     @Override
     public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
-        synchronized (lock) {
+        synchronized (this) {
             if (disposed || phase == Phase.CONFIG_ERROR) {
                 return;
             }
@@ -203,7 +203,7 @@ public class MeterHandler extends BaseThingHandler {
      */
     void onReading(String device, SmlReading reading) {
         String meterId = reading.meterId();
-        synchronized (lock) {
+        synchronized (this) {
             if (disposed || phase == Phase.CONFIG_ERROR || !device.equals(deviceId)) {
                 return;
             }
@@ -232,7 +232,7 @@ public class MeterHandler extends BaseThingHandler {
      * Runs the stale check at once. The timer calls the same code.
      */
     void checkStale() {
-        synchronized (lock) {
+        synchronized (this) {
             if (disposed || phase == Phase.CONFIG_ERROR || phase == Phase.BRIDGE_DOWN) {
                 return;
             }
@@ -243,12 +243,12 @@ public class MeterHandler extends BaseThingHandler {
 
     /** For tests: whether the stale timer is scheduled. */
     boolean isStaleTimerArmed() {
-        synchronized (lock) {
+        synchronized (this) {
             return staleTimer != null;
         }
     }
 
-    // The methods below are called with the lock held.
+    // The methods below are called with the monitor of this handler held.
 
     /**
      * Makes the cache and the channels consistent with the device id that is applied now. The live channels are no
@@ -344,7 +344,7 @@ public class MeterHandler extends BaseThingHandler {
     }
 
     private void onTimer(int expected) {
-        synchronized (lock) {
+        synchronized (this) {
             if (expected != generation) {
                 return;
             }

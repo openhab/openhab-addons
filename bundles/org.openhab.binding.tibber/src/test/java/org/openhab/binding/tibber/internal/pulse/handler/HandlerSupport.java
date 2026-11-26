@@ -124,9 +124,15 @@ final class HandlerSupport {
         final List<Update> updates = new CopyOnWriteArrayList<>();
         /** Runs on the calling thread before a channel update is recorded; a test uses it to hold the caller. */
         volatile @Nullable Runnable beforeStateUpdate;
+        /** Runs on the calling thread before a status update is recorded; a test uses it to hold the caller. */
+        volatile @Nullable Runnable beforeStatusUpdate;
 
         Recorder(Thing thing, @Nullable Bridge bridge) {
             doAnswer(invocation -> {
+                Runnable hook = beforeStatusUpdate;
+                if (hook != null) {
+                    hook.run();
+                }
                 ThingStatusInfo info = invocation.getArgument(1);
                 statuses.add(info);
                 thing.setStatusInfo(info);

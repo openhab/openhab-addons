@@ -23,8 +23,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.locks.LockSupport;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -522,6 +525,52 @@ class BridgeHandlerTest {
         assertTrue(rec.statuses.isEmpty());
         assertTrue(r.recorder.statuses.isEmpty());
         assertEquals(ThingStatus.ONLINE, a.getThing().getStatus());
+    }
+
+    @Test
+    void whenTheBridgeIsDisposedWhileTheReaderPublishesAStatusThenTheStreamIsReleasedOnlyAfterwards() throws Exception {
+        Running r = new Running("b1", "bridge.example", PASSWORD);
+        StreamListener released = r.listener();
+        CountDownLatch publishing = new CountDownLatch(1);
+        CountDownLatch release = new CountDownLatch(1);
+        AtomicBoolean armed = new AtomicBoolean(true);
+        r.recorder.beforeStatusUpdate = () -> {
+            if (armed.compareAndSet(true, false)) {
+                publishing.countDown();
+                try {
+                    release.await(WAIT_MILLIS, TimeUnit.MILLISECONDS);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+            }
+        };
+        Thread reader = new Thread(released::onStreamActive, "test-reader");
+        Thread disposer = new Thread(r.handler::dispose, "test-dispose");
+        reader.setDaemon(true);
+        disposer.setDaemon(true);
+        try {
+            reader.start();
+            assertTrue(publishing.await(WAIT_MILLIS, TimeUnit.MILLISECONDS), "the reader did not publish");
+            disposer.start();
+            long deadline = System.nanoTime() + TimeUnit.MILLISECONDS.toNanos(WAIT_MILLIS);
+            while (disposer.getState() != Thread.State.BLOCKED && disposer.isAlive() && System.nanoTime() < deadline) {
+                LockSupport.parkNanos(TimeUnit.MILLISECONDS.toNanos(1));
+            }
+            assertEquals(Thread.State.BLOCKED, disposer.getState(), "dispose must wait for the running publication");
+        } finally {
+            release.countDown();
+            reader.join(WAIT_MILLIS);
+            disposer.join(WAIT_MILLIS);
+            reader.interrupt();
+            disposer.interrupt();
+        }
+        assertFalse(disposer.isAlive());
+        r.recorder.clear();
+
+        released.onStreamActive();
+        released.onStreamLost(new StreamFailure(Kind.UNREACHABLE));
+
+        assertTrue(r.recorder.statuses.isEmpty(), () -> "a released stream published " + r.recorder.statuses);
     }
 
     @Test
