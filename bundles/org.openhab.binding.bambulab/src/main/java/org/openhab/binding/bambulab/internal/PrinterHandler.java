@@ -284,16 +284,20 @@ public class PrinterHandler extends BaseBridgeHandler
         logger.debug("Will reconnect in {} seconds...", configNotNull.reconnectTime);
         try {
             reconnectSchedule.set(//
-                    scheduler.schedule(() -> {
-                        logger.debug("Reconnecting...");
-                        reconnectSchedule.set(null);
-                        dispose();
-                        initialize();
-                    }, configNotNull.reconnectTime, SECONDS));
+                    scheduler.schedule(this::reconnectNow, configNotNull.reconnectTime, SECONDS));
         } catch (RejectedExecutionException ex) {
             logger.debug("Task was rejected", ex);
             updateStatus(COMMUNICATION_ERROR, ex.getLocalizedMessage());
         }
+    }
+
+    void reconnectNow() {
+        logger.debug("Reconnecting...");
+        reconnectSchedule.set(null);
+        // not dispose(): the AMS things stay ONLINE through a reconnect, so childHandlerInitialized() is not
+        // called again and a cleared list would never be filled - their channels would stop updating
+        disconnect();
+        initialize();
     }
 
     private PrinterClient buildLocalClient(URI uri, PrinterConfiguration config) throws InitializationException {
@@ -313,10 +317,17 @@ public class PrinterHandler extends BaseBridgeHandler
 
     @Override
     public void dispose() {
+        disconnect();
+        amses.clear();
+    }
+
+    /**
+     * Everything {@link #dispose()} does except forgetting the AMS handlers, which a reconnect must keep.
+     */
+    private void disconnect() {
         try {
             latestPrinterState.set(null);
             printerWatcher.close();
-            amses.clear();
             closeConfig();
             closeReconnectSchedule();
             closeCamera();
