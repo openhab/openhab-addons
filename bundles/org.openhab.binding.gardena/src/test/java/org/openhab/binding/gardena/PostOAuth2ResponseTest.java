@@ -33,36 +33,47 @@ public class PostOAuth2ResponseTest {
         return token;
     }
 
+    private boolean needsNewToken(PostOAuth2Response token) {
+        return token.needsNewToken(token.isAccessTokenExpired());
+    }
+
+    @Test
+    public void expiredAccessTokenSnapshotWithoutRefreshTokenAlwaysUsesClientCredentials() {
+        PostOAuth2Response token = tokenExpiringIn(3600);
+        // Simulate an expired access-token decision passed to the renewal selector.
+        assertTrue(token.needsNewToken(true));
+    }
+
     @Test
     public void missingRefreshTokenUsesClientCredentialsWhenAccessTokenExpired() {
-        assertTrue(tokenExpiringIn(0).needsNewToken());
+        assertTrue(needsNewToken(tokenExpiringIn(0)));
     }
 
     @Test
     public void blankRefreshTokenUsesClientCredentialsWhenAccessTokenExpired() {
         PostOAuth2Response token = tokenExpiringIn(0);
         token.refreshToken = "";
-        assertTrue(token.needsNewToken());
+        assertTrue(needsNewToken(token));
         token.refreshToken = "  ";
-        assertTrue(token.needsNewToken());
+        assertTrue(needsNewToken(token));
     }
 
     @Test
     public void existingRefreshTokenIsUsedWhenAccessTokenExpired() {
         PostOAuth2Response token = tokenExpiringIn(0);
         token.refreshToken = "valid-refresh-token";
-        assertFalse(token.needsNewToken());
+        assertFalse(needsNewToken(token));
     }
 
     @Test
     public void validAccessTokenIsRetainedWithoutRefreshToken() {
-        assertFalse(tokenExpiringIn(3600).needsNewToken());
+        assertFalse(needsNewToken(tokenExpiringIn(3600)));
     }
 
     @Test
     public void validAccessTokenIsRetainedWithRefreshToken() {
         PostOAuth2Response token = tokenExpiringIn(3600);
         token.refreshToken = "valid-refresh-token";
-        assertFalse(token.needsNewToken());
+        assertFalse(needsNewToken(token));
     }
 }

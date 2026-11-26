@@ -267,7 +267,8 @@ public class GardenaSmartImpl implements GardenaSmart, GardenaSmartWebSocketList
         fields.add("client_id", config.getApiKey());
 
         PostOAuth2Response token = this.token;
-        if (token == null || token.needsNewToken()) {
+        boolean accessTokenExpired = token != null && token.isAccessTokenExpired();
+        if (token == null || token.needsNewToken(accessTokenExpired)) {
             // new token
             logger.debug("Gardena API login using apiSecret, reason: {}",
                     token == null ? "no token available"
@@ -277,7 +278,7 @@ public class GardenaSmartImpl implements GardenaSmart, GardenaSmartWebSocketList
             token = executeRequest(HttpMethod.POST, URL_API_TOKEN, fields, PostOAuth2Response.class);
             token.postProcess();
             this.token = token;
-        } else if (token.isAccessTokenExpired()) {
+        } else if (accessTokenExpired) {
             // refresh token
             logger.debug("Gardena API login using refreshToken, reason: access token expired");
             fields.add("grant_type", "refresh_token");

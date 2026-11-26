@@ -64,8 +64,8 @@ public class PostOAuth2Response {
     }
 
     // OAuth client_credentials responses may not include a refresh_token.
-    public boolean needsNewToken() {
-        return isRefreshTokenExpired() || (isAccessTokenExpired() && (refreshToken == null || refreshToken.isBlank()));
+    public boolean needsNewToken(boolean accessTokenExpired) {
+        return isRefreshTokenExpired() || (accessTokenExpired && (refreshToken == null || refreshToken.isBlank()));
     }
 
     @Override
