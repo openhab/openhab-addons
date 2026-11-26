@@ -108,27 +108,20 @@ public abstract class ChannelHelper {
 
     protected @Nullable State internalGetWebhookEvent(String channelId, @Nullable String groupId, WebhookEvent event) {
         if (GROUP_LAST_EVENT.equals(groupId) || GROUP_SUB_EVENT.equals(groupId)) {
-            switch (channelId) {
-                case CHANNEL_EVENT_TYPE:
-                    return toStringType(event.getEventType());
-                case CHANNEL_EVENT_SUBTYPE:
-                    return event.getSubTypeDescription().map(ChannelTypeUtils::toStringType).orElse(UnDefType.NULL);
-                case CHANNEL_EVENT_MESSAGE:
-                    return toStringType(event.getName());
-                case CHANNEL_EVENT_TIME:
-                    return toDateTimeType(event.getTime());
-                case CHANNEL_EVENT_SNAPSHOT:
-                    return pictureIfUrlPresent(event.getSnapshotUrl(), true);
-                case CHANNEL_EVENT_SNAPSHOT_URL:
-                    return pictureIfUrlPresent(event.getSnapshotUrl(), false);
-                case CHANNEL_EVENT_VIGNETTE:
-                    return pictureIfUrlPresent(event.getVignetteUrl(), true);
-                case CHANNEL_EVENT_VIGNETTE_URL:
-                    return pictureIfUrlPresent(event.getVignetteUrl(), false);
-                case CHANNEL_EVENT_PERSON_ID:
-                    return event.getPersons().isEmpty() ? UnDefType.NULL
-                            : toStringType(event.getPersons().values().iterator().next().getId());
-            }
+            return switch (channelId) {
+                case CHANNEL_EVENT_MESSAGE -> toStringType(event.getName());
+                case CHANNEL_EVENT_PERSON_ID -> event.getPersons().isEmpty() ? UnDefType.NULL
+                        : toStringType(event.getPersons().values().iterator().next().getId());
+                case CHANNEL_EVENT_TIME -> toDateTimeType(event.getTime());
+                case CHANNEL_EVENT_TYPE -> toStringType(event.getEventType());
+                case CHANNEL_EVENT_SNAPSHOT -> pictureIfUrlPresent(event.getSnapshotUrl(), true);
+                case CHANNEL_EVENT_SNAPSHOT_URL -> pictureIfUrlPresent(event.getSnapshotUrl(), false);
+                case CHANNEL_EVENT_SUBTYPE ->
+                    event.getSubTypeDescription().map(ChannelTypeUtils::toStringType).orElse(UnDefType.NULL);
+                case CHANNEL_EVENT_VIGNETTE -> pictureIfUrlPresent(event.getVignetteUrl(), true);
+                case CHANNEL_EVENT_VIGNETTE_URL -> pictureIfUrlPresent(event.getVignetteUrl(), false);
+                default -> null;
+            };
         }
         return null;
     }

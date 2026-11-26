@@ -86,7 +86,7 @@ public class CameraChannelHelper extends ChannelHelper {
             case CHANNEL_LIVEPICTURE -> {
                 State result = toRawType(getLivePictureURL(isLocal, isMonitoring));
                 if (UnDefType.NULL.equals(result) && isLocal) {
-                    // If local read is unsuccessfull, try the VPN version
+                    // If local read is unsuccessful, try the VPN version
                     result = toRawType(getLivePictureURL(false, isMonitoring));
                 }
                 yield result;
