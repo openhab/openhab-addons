@@ -30,7 +30,7 @@ import org.openhab.binding.netatmo.internal.api.dto.Webhook;
 import org.openhab.binding.netatmo.internal.api.dto.WebhookEvent;
 import org.openhab.binding.netatmo.internal.deserialization.NADeserializer;
 import org.openhab.binding.netatmo.internal.handler.ApiBridgeHandler;
-import org.openhab.binding.netatmo.internal.handler.capability.Capability;
+import org.openhab.binding.netatmo.internal.handler.CommonInterface;
 import org.ops4j.pax.web.service.http.HttpService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,7 +49,7 @@ import jakarta.ws.rs.core.MediaType;
 public abstract class WebhookServlet extends NetatmoServlet {
     private static final long serialVersionUID = -354583910860541214L;
 
-    private final Map<String, Capability> dataListeners = new ConcurrentHashMap<>();
+    private final Map<String, CommonInterface> dataListeners = new ConcurrentHashMap<>();
     private final Logger logger = LoggerFactory.getLogger(WebhookServlet.class);
     private final WebhookApi api;
     private final NADeserializer deserializer;
@@ -182,16 +182,18 @@ public abstract class WebhookServlet extends NetatmoServlet {
 
     private void notifyListeners(WebhookEvent event) {
         event.getNAObjectList().forEach(id -> {
-            if (dataListeners.get(id) instanceof Capability module) {
+            if (dataListeners.get(id) instanceof CommonInterface handler
+                    && event.getEventType().validFor(handler.getModuleType())) {
                 logger.trace("Dispatching webhook event to {}", id);
-                module.setNewData(event);
+                handler.setNewData(event.ignoringForThingUpdate());
             }
         });
     }
 
-    public void registerDataListener(String id, Capability listener) {
-        logger.debug("Registering webhook listener '{}' with capability {}'", id, listener.getClass().getSimpleName());
-        dataListeners.put(id, listener);
+    public void registerDataListener(CommonInterface handler) {
+        String id = handler.getId();
+        logger.debug("Registering webhook listener for '{}' ({})", handler.getThing().getLabel(), id);
+        dataListeners.put(id, handler);
     }
 
     public void unregisterDataListener(String id) {

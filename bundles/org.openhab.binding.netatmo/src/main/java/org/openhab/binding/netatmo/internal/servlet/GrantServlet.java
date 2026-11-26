@@ -113,7 +113,7 @@ public class GrantServlet extends NetatmoServlet {
 
         if (queryString != null) {
             final MultiMap<@Nullable String> params = new MultiMap<>();
-            UrlEncoded.decodeTo(queryString, params, StandardCharsets.UTF_8.name());
+            UrlEncoded.decodeTo(queryString, params, StandardCharsets.UTF_8);
             final String reqCode = params.getString(CODE);
             final String reqState = params.getString(STATE);
             final String reqError = params.getString(PARAM_ERROR);
