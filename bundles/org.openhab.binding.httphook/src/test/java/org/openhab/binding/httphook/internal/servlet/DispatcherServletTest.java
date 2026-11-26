@@ -23,15 +23,15 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Locale;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.openhab.core.i18n.TranslationProvider;
 import org.osgi.framework.Bundle;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * @author Martin Grzeslowski - Initial contribution
@@ -72,18 +72,21 @@ class DispatcherServletTest {
     }
 
     @Test
-    void doGetUsesLocalizedExceptionMessage() throws Exception {
+    void doGetReturnsLocalizedBadRequestMessageWithoutInternalDetails() throws Exception {
         // Given
         var writer = new StringWriter();
         var sut = new DispatcherServlet(i18nProvider, authorizationService);
         when(request.getRequestURI()).thenReturn("/invalid");
+        when(request.getLocale()).thenReturn(Locale.US);
         when(response.getWriter()).thenReturn(new PrintWriter(writer));
+        when(i18nProvider.getText(nullable(Bundle.class), eq("servlet.error.bad-request"),
+                eq("servlet.error.bad-request"), eq(Locale.US), any(Object[].class))).thenReturn("Invalid request");
 
         // When
         sut.doGet(request, response);
 
         // Then
         verify(response).setStatus(HttpServletResponse.SC_BAD_REQUEST);
-        assertThat(writer.toString()).isEqualTo("{\"code\":400,\"error\":\"Request URI must start with /httphook\"}");
+        assertThat(writer.toString()).isEqualTo("{\"code\":400,\"error\":\"Invalid request\"}");
     }
 }

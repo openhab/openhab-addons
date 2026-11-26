@@ -19,6 +19,7 @@ import static org.mockito.Mockito.*;
 import static org.openhab.binding.httphook.internal.servlet.DispatcherServlet.Method.GET;
 import static org.openhab.binding.httphook.internal.servlet.DispatcherServlet.Method.POST;
 
+import java.io.ByteArrayInputStream;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
@@ -27,9 +28,9 @@ import java.util.Base64;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.ee10.servlet.ServletContextHandler;
+import org.eclipse.jetty.ee10.servlet.ServletHolder;
 import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.servlet.ServletContextHandler;
-import org.eclipse.jetty.servlet.ServletHolder;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
@@ -43,6 +44,8 @@ import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.thing.binding.generic.ChannelTransformation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * @author Martin Grzeslowski - Initial contribution
@@ -133,6 +136,42 @@ class DispatcherServletIntTest {
     }
 
     @Test
+    void acceptsBodyAtByteLimitAndPreservesItsEncoding() throws Exception {
+        var transformation = transformation("ok");
+        servlet.register("/status/body-at-limit", POST, new Endpoint(null, transformation, "text/plain"));
+        var body = "é".repeat(32 * 1024);
+        var request = HttpRequest.newBuilder(server.getURI().resolve("/httphook/status/body-at-limit"))
+                .header("Content-Type", "text/plain; charset=UTF-8").POST(HttpRequest.BodyPublishers.ofString(body))
+                .build();
+
+        var response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+        assertThat(response.statusCode()).isEqualTo(200);
+        var context = ArgumentCaptor.forClass(String.class);
+        verify(transformation).apply(context.capture());
+        assertThat(new ObjectMapper().readTree(context.getValue()).get("body").asText()).isEqualTo(body);
+    }
+
+    @Test
+    void rejectsOversizedBodiesWithAndWithoutContentLength() throws Exception {
+        var transformation = mock(ChannelTransformation.class);
+        servlet.register("/status/oversized-body", POST, new Endpoint(null, transformation, "text/plain"));
+        var body = ("é".repeat(32 * 1024) + "x").getBytes(StandardCharsets.UTF_8);
+        var publishers = new HttpRequest.BodyPublisher[] { HttpRequest.BodyPublishers.ofByteArray(body),
+                HttpRequest.BodyPublishers.ofInputStream(() -> new ByteArrayInputStream(body)) };
+
+        for (var publisher : publishers) {
+            var request = HttpRequest.newBuilder(server.getURI().resolve("/httphook/status/oversized-body"))
+                    .header("Content-Type", "text/plain; charset=UTF-8").POST(publisher).build();
+            var response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+            assertThat(response.statusCode()).isEqualTo(413);
+            assertThat(response.body()).contains("\"code\":413", "servlet.error.body-too-large");
+        }
+        verifyNoInteractions(transformation);
+    }
+
+    @Test
     @DisplayName("returns 500 when transformation returns no output")
     void returnsServerErrorWhenTransformationReturnsNoOutput() throws Exception {
         var transformation = mock(ChannelTransformation.class);
@@ -143,6 +182,18 @@ class DispatcherServletIntTest {
 
         assertThat(response.statusCode()).isEqualTo(500);
         assertThat(response.body()).contains("\"code\":500").contains("servlet.error.transformation.failed");
+    }
+
+    @Test
+    void returnsGenericServerErrorWhenTransformationThrows() throws Exception {
+        var transformation = mock(ChannelTransformation.class);
+        when(transformation.apply(anyString())).thenThrow(new UnsupportedOperationException("Internal details"));
+        servlet.register("/status/failed", GET, new Endpoint(null, transformation, "application/json"));
+
+        var response = sendGet("/httphook/status/failed");
+
+        assertThat(response.statusCode()).isEqualTo(500);
+        assertThat(response.body()).isEqualTo("{\"code\":500,\"error\":\"servlet.error.internal\"}");
     }
 
     @Test

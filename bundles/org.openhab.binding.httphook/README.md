@@ -17,22 +17,22 @@ Create endpoint things manually.
 
 ## Binding Configuration
 
-| Name | Type | Default | Description |
-|------|------|---------|-------------|
-| `enforceAuthentication` | boolean | `false` | If `true`, every endpoint must define authorization or use a matching binding default. |
-| `defaultBasic` | text | empty | Default Basic credentials in `username:password` format, used when endpoint authorization is not configured and the request has a `Basic` authorization prefix. |
-| `defaultBearer` | text | empty | Default Bearer token, used when endpoint authorization is not configured and the request has a `Bearer` authorization prefix. |
+| Name                    | Type    | Default | Description                                                                                                                                                     |
+| ----------------------- | ------- | ------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `enforceAuthentication` | boolean | `false` | If `true`, every endpoint must define authorization or use a matching binding default.                                                                          |
+| `defaultBasic`          | text    | empty   | Default Basic credentials in `username:password` format, used when endpoint authorization is not configured and the request has a `Basic` authorization prefix. |
+| `defaultBearer`         | text    | empty   | Default Bearer token, used when endpoint authorization is not configured and the request has a `Bearer` authorization prefix.                                   |
 
 ## Thing Configuration
 
 Thing type: `httphook:endpoint`.
 
-| Name | Type | Required | Advanced | Description |
-|------|------|----------|----------|-------------|
-| `authorizationType` | enum (`NONE`,`BASIC`,`BEARER`) | no | yes | Endpoint-specific authorization type. Defaults to `NONE`. |
-| `username` | text | no | yes | Basic authorization username. Required when `authorizationType` is `BASIC`. |
-| `password` | text | no | yes | Basic authorization password. Required when `authorizationType` is `BASIC`. |
-| `token` | text | no | yes | Bearer authorization token. Required when `authorizationType` is `BEARER`. |
+| Name                | Type                           | Required | Advanced | Description                                                                 |
+| ------------------- | ------------------------------ | -------- | -------- | --------------------------------------------------------------------------- |
+| `authorizationType` | enum (`NONE`,`BASIC`,`BEARER`) | no       | yes      | Endpoint-specific authorization type. Defaults to `NONE`.                   |
+| `username`          | text                           | no       | yes      | Basic authorization username. Required when `authorizationType` is `BASIC`. |
+| `password`          | text                           | no       | yes      | Basic authorization password. Required when `authorizationType` is `BASIC`. |
+| `token`             | text                           | no       | yes      | Bearer authorization token. Required when `authorizationType` is `BEARER`.  |
 
 ## Channel Configuration
 
@@ -41,11 +41,11 @@ Channel type: `httphook:response`.
 Each response channel creates one HTTP endpoint. Its URL is derived from the Thing id and channel id, so a channel
 `status` on Thing `httphook:endpoint:frame` is available at `/httphook/frame/status`.
 
-| Name | Type | Required | Advanced | Description |
-|------|------|----------|----------|-------------|
-| `method` | enum (`GET`,`POST`,`PUT`,`DELETE`) | yes | no | HTTP method accepted by this response channel. |
-| `transformationPattern` | text list | yes | no | Standard openHAB transformation pattern that generates the response body. |
-| `contentType` | text | no | yes | MIME content type returned by this response channel. Defaults to `application/json`. |
+| Name                    | Type                               | Required | Advanced | Description                                                                          |
+| ----------------------- | ---------------------------------- | -------- | -------- | ------------------------------------------------------------------------------------ |
+| `method`                | enum (`GET`,`POST`,`PUT`,`DELETE`) | yes      | no       | HTTP method accepted by this response channel.                                       |
+| `transformationPattern` | text list                          | yes      | no       | Standard openHAB transformation pattern that generates the response body.            |
+| `contentType`           | text                               | no       | yes      | MIME content type returned by this response channel. Defaults to `application/json`. |
 
 `transformationPattern` uses the same syntax as other openHAB channel transformations, for example `JS:status.js` or `JSONPATH:$.value`.
 Multiple transformations can be chained by listing each transformation on a separate line, or by separating them with `∩`.
@@ -78,6 +78,8 @@ Endpoints are available under:
 `http://<openhab-host>:8080/httphook/<thing-id>/<channel-id>`
 
 If authorization is configured, the request must provide the matching `Authorization` header.
+Request bodies are limited to 64 KiB (65,536 bytes).
+Requests over the limit receive HTTP 413 before the transformation runs.
 
 Error responses are JSON:
 
@@ -120,3 +122,11 @@ JSON.stringify({
 ```bash
 curl -H "Authorization: Bearer abc123" http://localhost:8080/httphook/frame/status
 ```
+
+An e-ink display can call this URL when it wakes up, fetch all the values it needs in one request, and go back to sleep after updating the screen.
+
+## Migrating from RESTify Preview Builds
+
+1. Recreate each `restify:endpoint` as an `httphook:endpoint` Thing with a `httphook:response` channel. Transfer the HTTP method to the channel and move any Basic or Bearer credentials from the RESTify JSON to the Thing configuration.
+1. Convert the RESTify `response` JSON into an openHAB transformation and set the channel's `transformationPattern`. For example, replace a RESTify value of `$item.InsideTemperature.state` with `items.InsideTemperature.state` in a JavaScript transformation like the one above.
+1. Update clients from `/restify/<path>` to `/httphook/<thing-id>/<channel-id>`. For example, a RESTify endpoint at `/restify/frame-status` can move to `/httphook/frame/status`.
