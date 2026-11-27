@@ -1170,6 +1170,12 @@ openhab> log:tail org.openhab.io.homekit.internal
 
 ## Troubleshooting
 
+### Recovery after network changes
+
+The integration automatically retries an unsuccessful bridge start after 30 seconds, including after a network interruption.
+A start attempt that does not finish within 30 seconds is stopped before retrying.
+The existing pairing is retained during recovery.
+
 ### openHAB is not listed in the Home app
 
 If you don't see openHAB in the Home app, probably multicast DNS (mDNS) traffic is not routed correctly from openHAB to the Home app device, or openHAB is already in a paired state.
