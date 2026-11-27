@@ -121,6 +121,7 @@ The module index counts the cell modules inside one battery: a system with sever
 The bridge is `ONLINE` while the connection to the device exists.
 A child thing is `UNINITIALIZED` with the detail `BRIDGE_UNINITIALIZED` while its bridge does not exist yet and `OFFLINE` with the detail `BRIDGE_OFFLINE` while the bridge is not connected.
 Once the bridge is online a child thing is `UNKNOWN` and becomes `ONLINE` with its first data.
+A child thing whose configured index the device does not answer for never becomes `ONLINE`; it goes `OFFLINE` with the detail `CONFIGURATION_ERROR`.
 A thing that starts asks the bridge for a refresh, so its channels show the current values without waiting for the next poll.
 
 ## Thing Properties
@@ -415,7 +416,7 @@ Trace logging shows the whole answer with the RSCP type of every value with ever
 ### Channel Group `history`
 
 The history group reports the energy counters and the two shares of a whole period.
-The device answers the history containers only when the request states the period, which the binding derives from the current date in the time zone of the openHAB installation (see ADR 001).
+The device answers the history containers only when the request states the period, which the binding derives from the current date in the time zone of the openHAB installation.
 
 > **Persistence:** The binding publishes the earlier periods as time series entries with a date in the past, see [History Fetch](#history-fetch).
 > Only a persistence service with a real time series database, for example InfluxDB or a SQL database (JDBC), can store them.
