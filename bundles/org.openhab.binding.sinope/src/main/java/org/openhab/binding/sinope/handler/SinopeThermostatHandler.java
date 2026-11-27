@@ -256,12 +256,14 @@ public class SinopeThermostatHandler extends BaseThingHandler {
 
     private synchronized void updateDeviceId() {
         String sDeviceId = (String) getConfig().get(SinopeBindingConstants.CONFIG_PROPERTY_DEVICE_ID);
-        this.deviceId = SinopeConfig.convert(sDeviceId);
-        if (this.deviceId.length == 0) {
+        byte @Nullable [] converted = sDeviceId != null ? SinopeConfig.convert(sDeviceId) : null;
+        if (converted == null || converted.length == 0) {
+            this.deviceId = new byte[0];
             logger.debug("Invalid Device id, cannot convert id: {}", sDeviceId);
             updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Invalid Device id");
             return;
         }
+        this.deviceId = converted;
         updateProperty(SinopeBindingConstants.CONFIG_PROPERTY_DEVICE_ID, ByteUtil.toString(this.deviceId).trim());
 
         Bridge bridge = getBridge();

@@ -15,20 +15,24 @@ package org.openhab.binding.sinope.handler;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -78,6 +82,7 @@ public class SinopeGatewayHandler extends ConfigStatusBridgeHandler {
     private final Logger logger = LoggerFactory.getLogger(SinopeGatewayHandler.class);
     private final Object schedulerLock = new Object();
     private final Object socketOwnershipLock = new Object();
+    private final Object connectLock = new Object();
     private final Object ioLock = new Object();
     private final AtomicLong lifecycleGeneration = new AtomicLong();
     private final AtomicLong searchGeneration = new AtomicLong();
@@ -238,14 +243,43 @@ public class SinopeGatewayHandler extends ConfigStatusBridgeHandler {
         }
     }
 
+    private @Nullable Socket openRegisteredSocket(String hostname, int port, AtomicReference<@Nullable Socket> slot,
+            BooleanSupplier stillValid) throws IOException {
+        Socket socket = new Socket();
+        Socket previous;
+        synchronized (socketOwnershipLock) {
+            if (!stillValid.getAsBoolean()) {
+                closeQuietly(socket);
+                return null;
+            }
+            previous = slot.getAndSet(socket);
+        }
+        closeQuietly(previous);
+        try {
+            socket.connect(new InetSocketAddress(hostname, port), TIMEOUT);
+            socket.setSoTimeout(TIMEOUT);
+            return socket;
+        } catch (IOException e) {
+            slot.compareAndSet(socket, null);
+            closeQuietly(socket);
+            throw e;
+        }
+    }
+
     private void startPairing(long generation, String hostname, int port, byte[] gatewayId) {
         stopPoll();
-        closeQuietly(connectingSocket.getAndSet(null));
-        closeClientSocket();
-        if (!isActiveGeneration(generation)) {
-            return;
+        Socket oldConnecting;
+        Socket oldClient;
+        synchronized (socketOwnershipLock) {
+            if (!isActiveGeneration(generation)) {
+                return;
+            }
+            pairing = true;
+            oldConnecting = connectingSocket.getAndSet(null);
+            oldClient = clientSocketRef.getAndSet(null);
         }
-        pairing = true;
+        closeQuietly(oldConnecting);
+        closeQuietly(oldClient);
         schedulePairingAttempt(generation, hostname, port, gatewayId, 0);
     }
 
@@ -267,16 +301,11 @@ public class SinopeGatewayHandler extends ConfigStatusBridgeHandler {
         }
         Socket socket = null;
         try {
-            socket = new Socket(hostname, port);
-            socket.setSoTimeout(TIMEOUT);
-            Socket previousSocket;
-            synchronized (socketOwnershipLock) {
-                if (!pairing || !isActiveGeneration(generation)) {
-                    return;
-                }
-                previousSocket = pairingSocket.getAndSet(socket);
+            socket = openRegisteredSocket(hostname, port, pairingSocket,
+                    () -> pairing && isActiveGeneration(generation));
+            if (socket == null) {
+                return;
             }
-            closeQuietly(previousSocket);
 
             // Gateway requires an initial ping before requesting an authentication key
             sendAndReceive(socket, new SinopePingRequest());
@@ -285,24 +314,24 @@ public class SinopeGatewayHandler extends ConfigStatusBridgeHandler {
             SinopeAuthenticationKeyAnswer answer = (SinopeAuthenticationKeyAnswer) sendAndReceive(socket,
                     new SinopeAuthenticationKeyRequest(gatewayId));
 
-            if (!pairing || !isActiveGeneration(generation)) {
-                return;
-            }
-
             byte[] apiKeyBytes = answer.getApiKey();
             if (answer.getStatus() != 0xFF && apiKeyBytes.length == EXPECTED_API_KEY_LENGTH
                     && !isAllZero(apiKeyBytes)) {
                 String formattedApiKey = ByteUtil.toString(apiKeyBytes).trim();
-                pairedApiKey = formattedApiKey;
-                pairing = false;
-                pairingSocket.compareAndSet(socket, null);
-                closeQuietly(socket);
-                socket = null;
-
-                if (!isActiveGeneration(generation)) {
-                    return;
+                Socket socketToClose;
+                synchronized (socketOwnershipLock) {
+                    if (!pairing || !isActiveGeneration(generation)) {
+                        return;
+                    }
+                    pairedApiKey = formattedApiKey;
+                    pairing = false;
+                    pairingSocket.compareAndSet(socket, null);
+                    socketToClose = socket;
+                    socket = null;
                 }
-                updateBridgeApiKey(formattedApiKey);
+                closeQuietly(socketToClose);
+
+                updateBridgeApiKey(generation, hostname, port, gatewayId, formattedApiKey);
                 logger.info("Successfully paired with Sinopé Gateway and obtained API key.");
                 connectAndStartPolling(generation);
                 return;
@@ -335,9 +364,28 @@ public class SinopeGatewayHandler extends ConfigStatusBridgeHandler {
         }
     }
 
-    private void updateBridgeApiKey(String apiKey) {
+    private void updateBridgeApiKey(long generation, String hostname, int port, byte[] gatewayId, String apiKey) {
+        if (!isActiveGeneration(generation)) {
+            return;
+        }
+        SinopeConfig currentConfig = getConfigAs(SinopeConfig.class);
+        byte[] currentGatewayId = currentConfig.gatewayId != null ? SinopeConfig.convert(currentConfig.gatewayId)
+                : null;
+        if (!Objects.equals(hostname, currentConfig.hostname) || !Objects.equals(port, currentConfig.port)
+                || currentGatewayId == null || !Arrays.equals(gatewayId, currentGatewayId)) {
+            logger.debug("Skipping API key persistence because gateway configuration changed");
+            return;
+        }
+        String existingKey = currentConfig.apiKey;
+        if (existingKey != null && !existingKey.isBlank()) {
+            return;
+        }
+
         Configuration config = editConfiguration();
         config.put(SinopeBindingConstants.CONFIG_PROPERTY_API_KEY, apiKey);
+        if (!isActiveGeneration(generation)) {
+            return;
+        }
         try {
             updateConfiguration(config);
             logger.debug("Updated configuration parameter '{}'", SinopeBindingConstants.CONFIG_PROPERTY_API_KEY);
@@ -427,62 +475,59 @@ public class SinopeGatewayHandler extends ConfigStatusBridgeHandler {
     }
 
     private boolean connectToBridge(long generation) throws UnknownHostException, IOException {
-        if (searching || pairing || !isActiveGeneration(generation)) {
-            return false;
-        }
-
-        Socket existing = clientSocketRef.get();
-        if (existing != null && existing.isConnected() && !existing.isClosed()) {
-            return true;
-        }
-
-        SinopeConfig config = getConfigAs(SinopeConfig.class);
-        String hostname = config.hostname;
-        Integer port = config.port;
-        byte[] gatewayId = config.gatewayId != null ? SinopeConfig.convert(config.gatewayId) : null;
-        String effectiveApiKey = getEffectiveApiKey(config);
-        byte[] apiKey = effectiveApiKey != null ? SinopeConfig.convert(effectiveApiKey) : null;
-        if (hostname == null || port == null || gatewayId == null || apiKey == null) {
-            return false;
-        }
-
-        // Perform blocking connect and login outside lifecycle/IO locks so dispose() can cancel promptly
-        Socket newSocket = new Socket(hostname, port);
-        try {
-            newSocket.setSoTimeout(TIMEOUT);
-            Socket previousConnecting;
-            synchronized (socketOwnershipLock) {
-                if (!isActiveGeneration(generation) || searching || pairing) {
-                    return false;
-                }
-                previousConnecting = connectingSocket.getAndSet(newSocket);
-            }
-            closeQuietly(previousConnecting);
-
-            SinopeApiLoginRequest loginRequest = new SinopeApiLoginRequest(gatewayId, apiKey);
-            SinopeApiLoginAnswer loginAnswer = (SinopeApiLoginAnswer) sendAndReceive(newSocket, loginRequest);
-            if (loginAnswer.getStatus() != 0) {
+        synchronized (connectLock) {
+            if (searching || pairing || !isActiveGeneration(generation)) {
                 return false;
             }
 
-            Socket replaced;
-            synchronized (socketOwnershipLock) {
-                if (!isActiveGeneration(generation) || searching || pairing) {
+            Socket existing = clientSocketRef.get();
+            if (existing != null && existing.isConnected() && !existing.isClosed()) {
+                return true;
+            }
+
+            SinopeConfig config = getConfigAs(SinopeConfig.class);
+            String hostname = config.hostname;
+            Integer port = config.port;
+            byte[] gatewayId = config.gatewayId != null ? SinopeConfig.convert(config.gatewayId) : null;
+            String effectiveApiKey = getEffectiveApiKey(config);
+            byte[] apiKey = effectiveApiKey != null ? SinopeConfig.convert(effectiveApiKey) : null;
+            if (hostname == null || port == null || gatewayId == null || apiKey == null) {
+                return false;
+            }
+
+            // Connect and login while holding connectLock (serializing concurrent reconnects) but never
+            // holding socketOwnershipLock/schedulerLock so dispose() and startSearch() can cancel promptly.
+            Socket newSocket = openRegisteredSocket(hostname, port, connectingSocket,
+                    () -> !searching && !pairing && isActiveGeneration(generation));
+            if (newSocket == null) {
+                return false;
+            }
+            try {
+                SinopeApiLoginRequest loginRequest = new SinopeApiLoginRequest(gatewayId, apiKey);
+                SinopeApiLoginAnswer loginAnswer = (SinopeApiLoginAnswer) sendAndReceive(newSocket, loginRequest);
+                if (loginAnswer.getStatus() != 0) {
                     return false;
                 }
-                connectingSocket.compareAndSet(newSocket, null);
-                replaced = clientSocketRef.getAndSet(newSocket);
-                newSocket = null;
-            }
-            closeQuietly(replaced);
-            if (isActiveGeneration(generation)) {
-                updateStatus(ThingStatus.ONLINE);
-            }
-            return true;
-        } finally {
-            if (newSocket != null) {
-                connectingSocket.compareAndSet(newSocket, null);
-                closeQuietly(newSocket);
+
+                Socket replaced;
+                synchronized (socketOwnershipLock) {
+                    if (!isActiveGeneration(generation) || searching || pairing) {
+                        return false;
+                    }
+                    connectingSocket.compareAndSet(newSocket, null);
+                    replaced = clientSocketRef.getAndSet(newSocket);
+                    newSocket = null;
+                }
+                closeQuietly(replaced);
+                if (isActiveGeneration(generation)) {
+                    updateStatus(ThingStatus.ONLINE);
+                }
+                return true;
+            } finally {
+                if (newSocket != null) {
+                    connectingSocket.compareAndSet(newSocket, null);
+                    closeQuietly(newSocket);
+                }
             }
         }
     }
@@ -597,11 +642,6 @@ public class SinopeGatewayHandler extends ConfigStatusBridgeHandler {
     }
 
     public void startSearch(final Consumer<byte[]> deviceDiscoveredCallback) throws UnknownHostException, IOException {
-        long lifecycleGen = lifecycleGeneration.get();
-        if (!isActiveGeneration(lifecycleGen) || pairing) {
-            logger.debug("Cannot start device discovery while gateway is pairing or disposed");
-            return;
-        }
         SinopeConfig config = getConfigAs(SinopeConfig.class);
         String effectiveApiKey = getEffectiveApiKey(config);
         if (config.hostname == null || config.port == null || config.gatewayId == null || effectiveApiKey == null
@@ -610,12 +650,28 @@ public class SinopeGatewayHandler extends ConfigStatusBridgeHandler {
             return;
         }
 
+        long lifecycleGen;
+        long scanGen;
+        Socket oldSearch;
+        Socket oldConnecting;
+        Socket oldClient;
+        synchronized (socketOwnershipLock) {
+            lifecycleGen = lifecycleGeneration.get();
+            if (!isActiveGeneration(lifecycleGen) || pairing) {
+                logger.debug("Cannot start device discovery while gateway is pairing or disposed");
+                return;
+            }
+            scanGen = searchGeneration.incrementAndGet();
+            this.searching = true;
+            oldSearch = searchSocket.getAndSet(null);
+            oldConnecting = connectingSocket.getAndSet(null);
+            oldClient = clientSocketRef.getAndSet(null);
+        }
+
         stopPoll();
-        long scanGen = searchGeneration.incrementAndGet();
-        this.searching = true;
-        closeQuietly(searchSocket.getAndSet(null));
-        closeQuietly(connectingSocket.getAndSet(null));
-        closeClientSocket();
+        closeQuietly(oldSearch);
+        closeQuietly(oldConnecting);
+        closeQuietly(oldClient);
 
         synchronized (schedulerLock) {
             if (!isCurrentSearch(lifecycleGen, scanGen)) {
@@ -645,16 +701,10 @@ public class SinopeGatewayHandler extends ConfigStatusBridgeHandler {
 
         Socket socket = null;
         try {
-            socket = new Socket(hostname, port);
-            socket.setSoTimeout(TIMEOUT);
-            Socket previousSearchSocket;
-            synchronized (socketOwnershipLock) {
-                if (!isCurrentSearch(lifecycleGen, scanGen)) {
-                    return;
-                }
-                previousSearchSocket = searchSocket.getAndSet(socket);
+            socket = openRegisteredSocket(hostname, port, searchSocket, () -> isCurrentSearch(lifecycleGen, scanGen));
+            if (socket == null) {
+                return;
             }
-            closeQuietly(previousSearchSocket);
 
             sendAndReceive(socket, new SinopePingRequest());
 
@@ -695,25 +745,36 @@ public class SinopeGatewayHandler extends ConfigStatusBridgeHandler {
     }
 
     private void finishSearch(long lifecycleGen, long scanGen) {
-        if (searchGeneration.get() == scanGen) {
-            searching = false;
-            if (isActiveGeneration(lifecycleGen)) {
-                schedulePoll(lifecycleGen);
+        boolean shouldResumePoll = false;
+        synchronized (socketOwnershipLock) {
+            if (searchGeneration.get() == scanGen && isActiveGeneration(lifecycleGen)) {
+                searching = false;
+                shouldResumePoll = true;
             }
+        }
+        if (shouldResumePoll) {
+            schedulePoll(lifecycleGen);
         }
     }
 
     public void stopSearch() {
-        searchGeneration.incrementAndGet();
-        this.searching = false;
+        Socket oldSearch;
+        long generation;
+        boolean shouldResumePoll;
+        synchronized (socketOwnershipLock) {
+            searchGeneration.incrementAndGet();
+            this.searching = false;
+            oldSearch = this.searchSocket.getAndSet(null);
+            generation = lifecycleGeneration.get();
+            shouldResumePoll = isActiveGeneration(generation);
+        }
         synchronized (schedulerLock) {
             cancelFuture(pollSearch, true);
             this.pollSearch = null;
         }
-        closeQuietly(this.searchSocket.getAndSet(null));
+        closeQuietly(oldSearch);
 
-        long generation = lifecycleGeneration.get();
-        if (isActiveGeneration(generation)) {
+        if (shouldResumePoll) {
             schedulePoll(generation);
         }
     }

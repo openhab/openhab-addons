@@ -30,6 +30,7 @@ import java.nio.ByteOrder;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -37,11 +38,15 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 import org.openhab.binding.sinope.handler.SinopeGatewayHandler;
+import org.openhab.binding.sinope.handler.SinopeThermostatHandler;
 import org.openhab.binding.sinope.internal.config.SinopeConfig;
+import org.openhab.binding.sinope.internal.core.SinopeApiLoginAnswer;
 import org.openhab.binding.sinope.internal.core.SinopeApiLoginRequest;
 import org.openhab.binding.sinope.internal.core.SinopeAuthenticationKeyAnswer;
+import org.openhab.binding.sinope.internal.core.SinopeDataReadAnswer;
 import org.openhab.binding.sinope.internal.core.SinopeDeviceReportAnswer;
 import org.openhab.binding.sinope.internal.core.SinopePingAnswer;
+import org.openhab.binding.sinope.internal.core.appdata.SinopeRoomTempData;
 import org.openhab.binding.sinope.internal.discovery.SinopeThingsDiscoveryService;
 import org.openhab.binding.sinope.internal.util.ByteUtil;
 import org.openhab.binding.sinope.internal.util.CRC8;
@@ -49,12 +54,14 @@ import org.openhab.core.config.core.Configuration;
 import org.openhab.core.config.discovery.DiscoveryListener;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
 import org.openhab.core.thing.binding.builder.BridgeBuilder;
+import org.openhab.core.thing.binding.builder.ThingBuilder;
 
 /**
  * Unit tests for Sinopé protocol framing, API key pairing, and device discovery.
@@ -535,5 +542,117 @@ public class SinopeDiscoveryAndPairingTest {
         assertEquals(1, invalidHandler.getConfigStatus().size());
         assertEquals(SinopeBindingConstants.CONFIG_PROPERTY_API_KEY,
                 invalidHandler.getConfigStatus().iterator().next().parameterName);
+    }
+
+    @Test
+    public void testTruncatedLoginAndDataAnswersThrowIOException() {
+        // Login frame declaring size=2 (empty data) must fail with IOException instead of ArrayIndexOutOfBounds
+        byte[] emptyLoginFrame = buildFrame((byte) 0x01, (byte) 0x11, new byte[0]);
+        assertThrows(IOException.class, () -> new SinopeApiLoginAnswer(new ByteArrayInputStream(emptyLoginFrame)));
+
+        // Truncated data answer (only 4 data bytes, less than minimum 12) must fail with IOException
+        byte[] shortDataFrame = buildFrame((byte) 0x02, (byte) 0x01, new byte[] { 0x01, 0x00, 0x00, 0x00 });
+        assertThrows(IOException.class,
+                () -> new SinopeDataReadAnswer(new ByteArrayInputStream(shortDataFrame), new SinopeRoomTempData()));
+    }
+
+    @Test
+    public void testThermostatInvalidDeviceIdSetsConfigurationErrorWithoutException() {
+        Thing thing = ThingBuilder.create(SinopeBindingConstants.THING_TYPE_THERMO, "badthermo")
+                .withConfiguration(new Configuration(Map.of("deviceId", "nothex!!"))).build();
+
+        SinopeThermostatHandler handler = new SinopeThermostatHandler(thing);
+        ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
+        AtomicReference<@Nullable ThingStatusInfo> lastStatus = new AtomicReference<>();
+        doAnswer(inv -> {
+            lastStatus.set(inv.getArgument(1));
+            return null;
+        }).when(callback).statusUpdated(any(), any());
+        handler.setCallback(callback);
+
+        assertDoesNotThrow(handler::initialize);
+        ThingStatusInfo status = lastStatus.get();
+        assertNotNull(status);
+        assertEquals(ThingStatus.OFFLINE, status.getStatus());
+        assertEquals(ThingStatusDetail.CONFIGURATION_ERROR, status.getStatusDetail());
+    }
+
+    @Test
+    @Timeout(10)
+    public void testConcurrentGetClientSocketSerializesSingleLogin() throws Exception {
+        AtomicInteger acceptCount = new AtomicInteger();
+        CountDownLatch allowLoginReply = new CountDownLatch(1);
+        CountDownLatch firstAccepted = new CountDownLatch(1);
+
+        try (ServerSocket server = new ServerSocket(0)) {
+            Thread mockGateway = new Thread(() -> {
+                while (!server.isClosed()) {
+                    try {
+                        Socket s = server.accept();
+                        int count = acceptCount.incrementAndGet();
+                        if (count == 1) {
+                            firstAccepted.countDown();
+                            allowLoginReply.await(5, TimeUnit.SECONDS);
+                        }
+                        InputStream in = s.getInputStream();
+                        OutputStream out = s.getOutputStream();
+                        readFrame(in); // login
+                        out.write(buildFrame((byte) 0x01, (byte) 0x11, new byte[10]));
+                        out.flush();
+                    } catch (IOException | InterruptedException ignored) {
+                        break;
+                    }
+                }
+            });
+            mockGateway.setDaemon(true);
+            mockGateway.start();
+
+            Bridge bridge = BridgeBuilder.create(SinopeBindingConstants.THING_TYPE_GATEWAY, "concgw")
+                    .withConfiguration(new Configuration(Map.of("hostname", "127.0.0.1", "port", server.getLocalPort(),
+                            "gatewayId", "002f-c2c2-dd88-aaaa", "apiKey", "0x12 0x57 0x55 0xD5 0xCD 0x4A 0xD5 0x33",
+                            "refresh", 60)))
+                    .build();
+
+            SinopeGatewayHandler handler = new SinopeGatewayHandler(bridge);
+            ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
+            handler.setCallback(callback);
+
+            try {
+                AtomicReference<@Nullable Socket> s1 = new AtomicReference<>();
+                AtomicReference<@Nullable Socket> s2 = new AtomicReference<>();
+                CountDownLatch done = new CountDownLatch(2);
+
+                Thread t1 = new Thread(() -> {
+                    try {
+                        s1.set(handler.getClientSocket());
+                    } catch (IOException ignored) {
+                    } finally {
+                        done.countDown();
+                    }
+                });
+                Thread t2 = new Thread(() -> {
+                    try {
+                        firstAccepted.await(5, TimeUnit.SECONDS);
+                        s2.set(handler.getClientSocket());
+                    } catch (IOException | InterruptedException ignored) {
+                    } finally {
+                        done.countDown();
+                    }
+                });
+                t1.start();
+                t2.start();
+                assertTrue(firstAccepted.await(5, TimeUnit.SECONDS));
+                Thread.sleep(150);
+                allowLoginReply.countDown();
+                assertTrue(done.await(5, TimeUnit.SECONDS));
+
+                assertNotNull(s1.get());
+                assertSame(s1.get(), s2.get(), "Concurrent callers should reuse the single serialized connection");
+                assertEquals(1, acceptCount.get(), "Gateway should receive only one TCP login connection");
+            } finally {
+                allowLoginReply.countDown();
+                handler.dispose();
+            }
+        }
     }
 }

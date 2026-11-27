@@ -52,6 +52,9 @@ public class SinopeApiLoginAnswer extends SinopeAnswer {
      */
     public SinopeApiLoginAnswer(InputStream r) throws IOException {
         super(r);
+        if (this.getFrameData().length < STATUS_SIZE) {
+            throw new IOException("Truncated Sinope login answer");
+        }
     }
 
     /**
@@ -79,8 +82,10 @@ public class SinopeApiLoginAnswer extends SinopeAnswer {
      */
     public byte[] getBackoff() {
         byte[] b = this.getFrameData();
-        b = Arrays.copyOfRange(b, STATUS_SIZE, STATUS_SIZE + BACKOFF_SIZE);
-        return b;
+        if (b.length < STATUS_SIZE + BACKOFF_SIZE) {
+            return new byte[0];
+        }
+        return Arrays.copyOfRange(b, STATUS_SIZE, STATUS_SIZE + BACKOFF_SIZE);
     }
 
     /**
@@ -90,7 +95,8 @@ public class SinopeApiLoginAnswer extends SinopeAnswer {
      */
     public byte getSwRevMaj() {
         byte[] b = this.getFrameData();
-        return b[STATUS_SIZE + BACKOFF_SIZE];
+        int idx = STATUS_SIZE + BACKOFF_SIZE;
+        return b.length > idx ? b[idx] : 0;
     }
 
     /**
@@ -100,7 +106,8 @@ public class SinopeApiLoginAnswer extends SinopeAnswer {
      */
     public byte getSwRevMin() {
         byte[] b = this.getFrameData();
-        return b[STATUS_SIZE + BACKOFF_SIZE + SW_REV_MAJ_SIZE];
+        int idx = STATUS_SIZE + BACKOFF_SIZE + SW_REV_MAJ_SIZE;
+        return b.length > idx ? b[idx] : 0;
     }
 
     /**
@@ -110,7 +117,8 @@ public class SinopeApiLoginAnswer extends SinopeAnswer {
      */
     public byte getSwRevBug() {
         byte[] b = this.getFrameData();
-        return b[STATUS_SIZE + BACKOFF_SIZE + SW_REV_MAJ_SIZE + SW_REV_MIN_SIZE];
+        int idx = STATUS_SIZE + BACKOFF_SIZE + SW_REV_MAJ_SIZE + SW_REV_MIN_SIZE;
+        return b.length > idx ? b[idx] : 0;
     }
 
     /**
@@ -120,9 +128,12 @@ public class SinopeApiLoginAnswer extends SinopeAnswer {
      */
     public byte[] getDeviceId() {
         byte[] b = this.getFrameData();
-        b = Arrays.copyOfRange(b, STATUS_SIZE + BACKOFF_SIZE + SW_REV_MAJ_SIZE + SW_REV_MIN_SIZE + SW_REV_BUG_SIZE,
-                STATUS_SIZE + BACKOFF_SIZE + SW_REV_MAJ_SIZE + SW_REV_MIN_SIZE + SW_REV_BUG_SIZE + DEVICE_ID_SIZE);
-        return ByteUtil.reverse(b);
+        int start = STATUS_SIZE + BACKOFF_SIZE + SW_REV_MAJ_SIZE + SW_REV_MIN_SIZE + SW_REV_BUG_SIZE;
+        int end = start + DEVICE_ID_SIZE;
+        if (b.length < end) {
+            return new byte[0];
+        }
+        return ByteUtil.reverse(Arrays.copyOfRange(b, start, end));
     }
 
     /**

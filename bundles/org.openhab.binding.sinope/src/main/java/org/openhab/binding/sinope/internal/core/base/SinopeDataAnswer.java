@@ -44,6 +44,9 @@ public abstract class SinopeDataAnswer extends SinopeAnswer {
     /** The Constant APP_DATA_SIZE_SIZE. */
     protected static final int APP_DATA_SIZE_SIZE = 1;
 
+    private static final int MIN_FRAME_DATA_SIZE = SEQ_SIZE + STATUS_SIZE + ATTEMPT_NBR_SIZE + MORE_SIZE
+            + SRC_DEVICE_ID_SIZE + APP_DATA_SIZE_SIZE;
+
     /** The app data. */
     private SinopeAppData appData;
 
@@ -56,6 +59,16 @@ public abstract class SinopeDataAnswer extends SinopeAnswer {
      */
     public SinopeDataAnswer(InputStream r, SinopeAppData appData) throws IOException {
         super(r);
+        byte[] frameData = this.getFrameData();
+        if (frameData.length < MIN_FRAME_DATA_SIZE) {
+            throw new IOException("Truncated Sinope data answer: expected at least " + MIN_FRAME_DATA_SIZE
+                    + " bytes, got " + frameData.length);
+        }
+        int appDataLength = frameData[MIN_FRAME_DATA_SIZE - 1] & 0xFF;
+        if (frameData.length < MIN_FRAME_DATA_SIZE + appDataLength) {
+            throw new IOException("Truncated Sinope app data: declared " + appDataLength + " bytes, available "
+                    + (frameData.length - MIN_FRAME_DATA_SIZE));
+        }
         byte[] data = getData();
         this.appData = appData;
         this.appData.read(data);
