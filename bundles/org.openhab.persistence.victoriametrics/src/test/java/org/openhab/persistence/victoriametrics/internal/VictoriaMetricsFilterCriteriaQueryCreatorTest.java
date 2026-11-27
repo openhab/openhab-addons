@@ -40,6 +40,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.openhab.core.items.Metadata;
 import org.openhab.core.items.MetadataKey;
 import org.openhab.core.items.MetadataRegistry;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.StringListType;
@@ -260,6 +261,18 @@ public class VictoriaMetricsFilterCriteriaQueryCreatorTest {
                 new VictoriaMetricsRow(T0, ITEM_NAME, BigDecimal.TEN));
 
         assertThat(instance.applyCriteria(rows.stream(), criteria), hasSize(2));
+    }
+
+    @Test
+    public void testFilterValueIsComparedWithSamplePrecision() {
+        // 68 °F converted to °C, which VictoriaMetrics stores and exports as 20
+        FilterCriteria criteria = createBaseCriteria();
+        criteria.setOperator(FilterCriteria.Operator.EQ);
+        criteria.setState(new DecimalType(new BigDecimal("20.00000000000000000000000000000002")));
+        List<VictoriaMetricsRow> rows = List.of(new VictoriaMetricsRow(T0, ITEM_NAME, new BigDecimal("20")),
+                new VictoriaMetricsRow(T0.plusSeconds(1), ITEM_NAME, new BigDecimal("20.5")));
+
+        assertThat(times(instance.applyCriteria(rows.stream(), criteria)), contains(0L));
     }
 
     @Test

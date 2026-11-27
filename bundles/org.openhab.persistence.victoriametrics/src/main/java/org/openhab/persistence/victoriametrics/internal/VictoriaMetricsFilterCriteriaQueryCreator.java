@@ -20,6 +20,7 @@ import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -155,9 +156,11 @@ public class VictoriaMetricsFilterCriteriaQueryCreator {
             Number filterValue = VictoriaMetricsStateConvertUtils.stateToObject(filterState);
             Map<String, BigDecimal> filterComponents = VictoriaMetricsStateConvertUtils.stateToComponents(filterState);
             if (filterValue != null) {
-                result = result.filter(valueFilter(criteria.getOperator(), new BigDecimal(filterValue.toString())));
+                result = result.filter(valueFilter(criteria.getOperator(), toSamplePrecision(filterValue)));
             } else if (filterComponents != null) {
-                result = result.filter(componentsFilter(criteria.getOperator(), filterComponents));
+                Map<String, BigDecimal> components = new HashMap<>();
+                filterComponents.forEach((name, value) -> components.put(name, toSamplePrecision(value)));
+                result = result.filter(componentsFilter(criteria.getOperator(), components));
             } else if (filterState instanceof StringType) {
                 result = result.filter(stringFilter(criteria.getOperator(), filterState.toFullString()));
             } else {
@@ -179,6 +182,19 @@ public class VictoriaMetricsFilterCriteriaQueryCreator {
                     .limit(criteria.getPageSize());
         }
         return result.toList();
+    }
+
+    /**
+     * Round a filter value to the precision of the stored samples
+     * <p>
+     * VictoriaMetrics stores samples as 64-bit floating point numbers, so e.g. 20.00000000000000000000000000000002
+     * (68 °F converted to °C) is stored and exported as 20.
+     *
+     * @param value the filter value
+     * @return the value as it would be stored
+     */
+    private static BigDecimal toSamplePrecision(Number value) {
+        return BigDecimal.valueOf(value.doubleValue());
     }
 
     private Predicate<VictoriaMetricsRow> timeFilter(FilterCriteria criteria) {

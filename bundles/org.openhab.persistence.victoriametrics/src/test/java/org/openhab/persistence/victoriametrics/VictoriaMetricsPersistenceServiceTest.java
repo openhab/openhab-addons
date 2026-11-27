@@ -29,6 +29,8 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import javax.measure.quantity.Temperature;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -36,9 +38,15 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
+import org.openhab.core.i18n.UnitProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.items.ItemRegistry;
 import org.openhab.core.items.MetadataRegistry;
+import org.openhab.core.library.items.NumberItem;
+import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.unit.ImperialUnits;
+import org.openhab.core.library.unit.SIUnits;
+import org.openhab.core.persistence.FilterCriteria;
 import org.openhab.core.persistence.ModifiablePersistenceService;
 import org.openhab.persistence.victoriametrics.internal.ItemTestHelper;
 import org.openhab.persistence.victoriametrics.internal.UnexpectedConditionException;
@@ -48,7 +56,7 @@ import org.openhab.persistence.victoriametrics.internal.VictoriaMetricsRepositor
 /**
  * @author Joan Pujol Espinar - Initial contribution
  * @author Franz - Initial VictoriaMetrics adaptation
- * @author Michael Weger - Add configuration validation, deactivation and queue tests
+ * @author Michael Weger - Add configuration validation, deactivation, queue and filter unit tests
  */
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -76,6 +84,7 @@ public class VictoriaMetricsPersistenceServiceTest {
 
     private @Mock @NonNullByDefault({}) VictoriaMetricsRepository repositoryMock;
 
+    private final ItemRegistry itemRegistry = mock(ItemRegistry.class);
     private final MetadataRegistry metadataRegistry = mock(MetadataRegistry.class);
     private final VictoriaMetricsMetadataService metadataService = new VictoriaMetricsMetadataService(metadataRegistry);
 
@@ -148,6 +157,40 @@ public class VictoriaMetricsPersistenceServiceTest {
 
         assertThat(batchSizes.stream().mapToInt(Integer::intValue).sum(), is(10_001));
         assertThat(batchSizes, everyItem(lessThanOrEqualTo(10_000)));
+    }
+
+    @Test
+    public void quantityFilterIsConvertedToItemUnit() {
+        VictoriaMetricsPersistenceService instance = getService(VALID_CONFIGURATION_WITHOUT_AUTHENTICATION);
+        when(repositoryMock.isConnected()).thenReturn(true);
+        UnitProvider unitProvider = mock(UnitProvider.class);
+        when(unitProvider.getUnit(Temperature.class)).thenReturn(SIUnits.CELSIUS);
+        NumberItem item = new NumberItem("Number:Temperature", "temperature", unitProvider);
+        when(itemRegistry.get("temperature")).thenReturn(item);
+        FilterCriteria filter = new FilterCriteria().setItemName("temperature")
+                .setState(new QuantityType<>(68, ImperialUnits.FAHRENHEIT));
+
+        instance.query(filter);
+
+        verify(repositoryMock).query(argThat(converted -> converted.getState() instanceof QuantityType<?> quantity
+                && quantity.getUnit().equals(SIUnits.CELSIUS) && quantity.doubleValue() == 20.0), isNull());
+        // the filter of the caller is not changed
+        assertThat(filter.getState(), is(new QuantityType<>(68, ImperialUnits.FAHRENHEIT)));
+    }
+
+    @Test
+    public void quantityFilterWithIncompatibleUnitReturnsNothing() {
+        VictoriaMetricsPersistenceService instance = getService(VALID_CONFIGURATION_WITHOUT_AUTHENTICATION);
+        when(repositoryMock.isConnected()).thenReturn(true);
+        UnitProvider unitProvider = mock(UnitProvider.class);
+        when(unitProvider.getUnit(Temperature.class)).thenReturn(SIUnits.CELSIUS);
+        NumberItem item = new NumberItem("Number:Temperature", "temperature", unitProvider);
+        when(itemRegistry.get("temperature")).thenReturn(item);
+        FilterCriteria filter = new FilterCriteria().setItemName("temperature")
+                .setState(new QuantityType<>(5, SIUnits.METRE));
+
+        assertThat(instance.query(filter).iterator().hasNext(), is(false));
+        verify(repositoryMock, never()).query(any(), any());
     }
 
     @Test
@@ -259,8 +302,8 @@ public class VictoriaMetricsPersistenceServiceTest {
     }
 
     private VictoriaMetricsPersistenceService getService(Map<String, Object> config) {
-        return new VictoriaMetricsPersistenceService(mock(ItemRegistry.class), metadataService,
-                mock(HttpClientFactory.class), config) {
+        return new VictoriaMetricsPersistenceService(itemRegistry, metadataService, mock(HttpClientFactory.class),
+                config) {
             @Override
             protected VictoriaMetricsRepository createVictoriaMetricsRepository() {
                 return repositoryMock;

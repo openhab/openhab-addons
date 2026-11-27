@@ -33,15 +33,19 @@ import java.util.concurrent.TimeoutException;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
+import javax.measure.Unit;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.core.common.ThreadPoolManager;
 import org.openhab.core.config.core.ConfigurableService;
 import org.openhab.core.io.net.http.HttpClientFactory;
+import org.openhab.core.items.GroupItem;
 import org.openhab.core.items.Item;
 import org.openhab.core.items.ItemRegistry;
 import org.openhab.core.items.Metadata;
+import org.openhab.core.library.items.NumberItem;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.persistence.FilterCriteria;
@@ -80,7 +84,7 @@ import org.slf4j.LoggerFactory;
  * @author Franz - Initial contribution
  * @author Joan Pujol Espinar - Original InfluxDB implementation
  * @author Michael Weger - Use Jetty, fix query with alias, store numeric states, components and string states, flush
- *         pending states on deactivation, bound the queue, protect internal labels
+ *         pending states on deactivation, bound the queue, protect internal labels, convert filter units
  */
 @NonNullByDefault
 @Component(service = { PersistenceService.class,
@@ -275,12 +279,48 @@ public class VictoriaMetricsPersistenceService implements QueryablePersistenceSe
         if (serviceActivated && checkConnection()) {
             logger.trace("Query-Filter: {}", filter);
 
-            List<VictoriaMetricsRepository.VictoriaMetricsRow> results = repository.query(filter, alias);
+            FilterCriteria storedUnitFilter = toStoredUnit(filter, itemName);
+            if (storedUnitFilter == null) {
+                return List.of();
+            }
+            List<VictoriaMetricsRepository.VictoriaMetricsRow> results = repository.query(storedUnitFilter, alias);
             return results.stream().map(r -> mapRowToHistoricItem(r, itemName)).collect(Collectors.toList());
         } else {
             logger.debug("Query for persisted data ignored, VictoriaMetrics is not connected");
             return List.of();
         }
+    }
+
+    /**
+     * Convert a quantity filter state to the unit the item's values are stored in
+     * <p>
+     * Number items with a unit convert their state to the item unit, so the samples contain values in this unit, and
+     * {@link VictoriaMetricsStateConvertUtils#objectToState(Object, Item)} reads them in the same unit.
+     *
+     * @param filter the query filter
+     * @param itemName the name of the queried item
+     * @return the filter to compare with the stored values, or <code>null</code> if the filter state cannot be
+     *         converted to the item unit
+     */
+    private @Nullable FilterCriteria toStoredUnit(FilterCriteria filter, String itemName) {
+        if (!(filter.getState() instanceof QuantityType<?> quantity)) {
+            return filter;
+        }
+        Item item = itemRegistry.get(itemName);
+        if (item instanceof GroupItem groupItem) {
+            item = groupItem.getBaseItem();
+        }
+        Unit<?> unit = item instanceof NumberItem numberItem ? numberItem.getUnit() : null;
+        if (unit == null) {
+            return filter;
+        }
+        QuantityType<?> converted = quantity.toInvertibleUnit(unit);
+        if (converted == null) {
+            logger.warn("Failed to execute query '{}': {} cannot be converted to the item unit {}", filter, quantity,
+                    unit);
+            return null;
+        }
+        return new FilterCriteria(filter).setState(converted);
     }
 
     private HistoricItem mapRowToHistoricItem(VictoriaMetricsRepository.VictoriaMetricsRow row, String itemName) {
