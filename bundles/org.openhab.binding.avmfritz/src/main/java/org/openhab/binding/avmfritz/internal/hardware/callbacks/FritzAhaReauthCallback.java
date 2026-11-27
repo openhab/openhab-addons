@@ -97,24 +97,19 @@ public class FritzAhaReauthCallback implements FritzAhaCallback {
 
     @Override
     public void execute(int status, String response) {
-        if (status != 200 || "".equals(response) || ".".equals(response)) {
-            validRequest = false;
-            if (retries >= 1) {
-                webIface.invalidateAuthentication();
-                retries--;
-                switch (httpMethod) {
-                    case GET:
-                        webIface.asyncGet(path, args, retryCallback);
-                        break;
-                    case POST:
-                        webIface.asyncPost(path, args, retryCallback);
-                        break;
-                    default:
-                        break;
-                }
+        validRequest = FritzAhaCallback.isValidResponse(status, response);
+        if (!validRequest && retries >= 1) {
+            retries--;
+            switch (httpMethod) {
+                case GET:
+                    webIface.asyncGet(path, args, retryCallback);
+                    break;
+                case POST:
+                    webIface.asyncPost(path, args, retryCallback);
+                    break;
+                default:
+                    break;
             }
-        } else {
-            validRequest = true;
         }
     }
 
