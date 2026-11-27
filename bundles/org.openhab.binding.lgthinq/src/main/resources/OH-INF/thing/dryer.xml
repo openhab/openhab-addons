@@ -16,6 +16,9 @@
 			<channel-group id="dashboard" typeId="dr-dashboard"/>
 			<channel-group id="rs-grp" typeId="dr-rs-grp"/>
 		</channel-groups>
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 		<config-description>
 			<parameter-group name="Settings">
 				<label>Polling</label>
@@ -52,6 +55,9 @@
 			<channel-group id="dashboard" typeId="dr-dashboard"/>
 			<channel-group id="rs-grp" typeId="dr-rs-grp"/>
 		</channel-groups>
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 		<config-description>
 			<parameter-group name="Settings">
 				<label>Polling</label>
@@ -91,6 +97,7 @@
 		<channels>
 			<channel id="power" typeId="system.power"/>
 			<channel id="state" typeId="dryer-state"/>
+			<channel id="previous-state" typeId="washerdryer-previous-state"/>
 			<channel id="process-state" typeId="washerdryer-process-state"/>
 			<channel id="course" typeId="washerdryer-course"/>
 			<channel id="child-lock" typeId="dryer-child-lock"/>

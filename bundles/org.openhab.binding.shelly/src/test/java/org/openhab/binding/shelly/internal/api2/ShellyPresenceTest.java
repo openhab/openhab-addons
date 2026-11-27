@@ -43,9 +43,9 @@ import org.junit.jupiter.api.Test;
 import org.openhab.binding.shelly.internal.api.ShellyApiException;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor;
-import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceConfig.Shelly2GetConfigResult;
-import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2RpcNotifyEvent;
+import org.openhab.binding.shelly.internal.api2.dto.Shelly2ConfigJsonDTO.Shelly2DeviceConfig.Shelly2GetConfigResult;
+import org.openhab.binding.shelly.internal.api2.dto.Shelly2StatusJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult;
 import org.openhab.binding.shelly.internal.api2.dto.ShellyPresenceJsonDTO.Shelly2StatusPresence;
 import org.openhab.binding.shelly.internal.config.ShellyApiConfiguration;
 import org.openhab.binding.shelly.internal.config.ShellyBindingConfiguration;
@@ -80,7 +80,8 @@ public class ShellyPresenceTest {
         var presence = Objects.requireNonNull(dc.presence);
         assertThat(presence.enable, is(true));
         assertThat(presence.mainZone, is("presencezone:200"));
-        assertThat(dc.sys.device.name, is("mydevice"));
+        var sys = Objects.requireNonNull(dc.sys);
+        assertThat(Objects.requireNonNull(sys.device).name, is("mydevice"));
     }
 
     @Test

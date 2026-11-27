@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="myvaillant"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="circuit">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="system"/>
+		</supported-bridge-type-refs>
+
+		<label>myVAILLANT Circuit</label>
+		<description>A heating circuit of the system</description>
+		<semantic-equipment-tag>HVAC</semantic-equipment-tag>
+
+		<channels>
+			<channel id="circuit-state" typeId="circuit-state"/>
+			<channel id="current-flow-temperature" typeId="temperature">
+				<label>Current Flow Temperature</label>
+			</channel>
+			<channel id="flow-temperature-setpoint" typeId="temperature">
+				<label>Flow Temperature Setpoint</label>
+			</channel>
+			<channel id="heating-curve" typeId="heating-curve"/>
+			<channel id="heat-demand-limited-by-outside-temperature" typeId="outside-temperature-limit"/>
+			<channel id="min-flow-temperature-setpoint" typeId="flow-temperature-setpoint">
+				<label>Minimum Flow Temperature</label>
+			</channel>
+			<channel id="max-flow-temperature-setpoint" typeId="temperature">
+				<label>Maximum Flow Temperature</label>
+			</channel>
+			<channel id="room-temperature-control-mode" typeId="text">
+				<label>Room Temperature Control Mode</label>
+				<description>How the room temperature influences the flow temperature (NON, MODULATING, THERMOSTAT_FUNCTION)</description>
+			</channel>
+			<channel id="calculated-energy-manager-state" typeId="text">
+				<label>Energy Manager State</label>
+			</channel>
+			<channel id="cooling-allowed" typeId="status">
+				<label>Cooling Allowed</label>
+			</channel>
+		</channels>
+
+		<representation-property>componentId</representation-property>
+
+		<config-description>
+			<parameter name="index" type="integer" min="0" required="true">
+				<label>Circuit Index</label>
+				<description>Index of the circuit in the system, the first circuit is 0</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+</thing:thing-descriptions>

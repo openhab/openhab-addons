@@ -64,7 +64,7 @@ import com.google.gson.JsonSyntaxException;
  * @author Nick Waterton - added slideshow handling, upload/download, refactoring
  */
 @NonNullByDefault
-class WebSocketArt extends WebSocketBase {
+public class WebSocketArt extends WebSocketBase {
     private final Logger logger = LoggerFactory.getLogger(WebSocketArt.class);
 
     private String host = "";
@@ -551,7 +551,7 @@ class WebSocketArt extends WebSocketBase {
                 case "go_to_standby":
                     logger.debug("{}: go_to_standby", host);
                     remoteControllerWebSocket.callback.powerUpdatedAsync(false, false);
-                    remoteControllerWebSocket.callback.setOffline();
+                    remoteControllerWebSocket.callback.setStandby();
                     stateMap.clear();
                     break;
                 case "wakeup":

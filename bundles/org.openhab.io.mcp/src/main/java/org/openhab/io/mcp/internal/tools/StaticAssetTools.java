@@ -16,7 +16,6 @@ import static org.openhab.io.mcp.internal.tools.McpToolUtils.*;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.AtomicMoveNotSupportedException;
 import java.nio.file.Files;
@@ -30,20 +29,14 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
-import java.util.function.Function;
 import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.http.HttpMethod;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.modelcontextprotocol.json.McpJsonMapper;
-import io.modelcontextprotocol.server.McpSyncServerExchange;
 import io.modelcontextprotocol.spec.McpSchema;
 import io.modelcontextprotocol.spec.McpSchema.CallToolResult;
 
@@ -64,11 +57,7 @@ import io.modelcontextprotocol.spec.McpSchema.CallToolResult;
  * {@code svg}). The latter four execute in the browser when served from {@code /static/}, so
  * the tool description spells out the XSS implication.</li>
  * <li>Per-call uploads are capped at {@link #MAX_UPLOAD_BYTES}.</li>
- * <li>Every action requires the session's bearer token to belong to an administrator. We
- * verify by probing {@code GET /rest/logging/} (the same admin-gated endpoint
- * {@link LoggingTools} uses) and accepting the call only on HTTP 200. This works for both
- * the legacy bearer-token path and the JWT/OAuth path, where the username is not captured
- * in the transport — so a UserRegistry-based check would silently 403 admin OAuth users.</li>
+ * <li>Every action needs an administrator, enforced by {@code McpService}.</li>
  * </ul>
  *
  * @author Dan Cunningham - Initial contribution
@@ -80,8 +69,6 @@ public class StaticAssetTools {
     private static final int MAX_UPLOAD_BYTES = 10 * 1024 * 1024;
     private static final int DEFAULT_LIST_LIMIT = 500;
     private static final int MAX_LIST_LIMIT = 5000;
-    private static final int ADMIN_PROBE_TIMEOUT_SECONDS = 10;
-    private static final String ADMIN_PROBE_PATH = "/rest/logging/";
 
     private static final Set<String> ALLOWED_EXTENSIONS = Set.of("png", "jpg", "jpeg", "gif", "webp", "svg", "ico",
             "css", "js", "html", "htm", "json", "txt", "md");
@@ -97,18 +84,13 @@ public class StaticAssetTools {
      */
     private final Path htmlRootReal;
     private final String baseUrl;
-    private final HttpClient httpClient;
-    private final Function<String, @Nullable String> tokenForSession;
     private final McpJsonMapper jsonMapper;
     private final String description;
 
-    public StaticAssetTools(Path htmlRoot, String baseUrl, HttpClient httpClient,
-            Function<String, @Nullable String> tokenForSession, McpJsonMapper jsonMapper) {
+    public StaticAssetTools(Path htmlRoot, String baseUrl, McpJsonMapper jsonMapper) {
         this.htmlRoot = htmlRoot;
         this.htmlRootReal = canonicalize(htmlRoot);
         this.baseUrl = baseUrl.endsWith("/") ? baseUrl.substring(0, baseUrl.length() - 1) : baseUrl;
-        this.httpClient = httpClient;
-        this.tokenForSession = tokenForSession;
         this.jsonMapper = jsonMapper;
         this.description = loadDescription();
     }
@@ -153,25 +135,17 @@ public class StaticAssetTools {
                 "Default 'minimal' keeps put/delete responses compact (just success+path+url). 'full' echoes file metadata.",
                 "enum", List.of("minimal", "full")));
 
+        // Annotated for the most impactful action: 'delete' removes the file and 'put' overwrites it.
         return McpSchema.Tool.builder().name("manage_static_asset").description(description)
-                .inputSchema(new McpSchema.JsonSchema("object", p, List.of("action"), null, null, null)).build();
+                .inputSchema(new McpSchema.JsonSchema("object", p, List.of("action"), null, null, null))
+                .annotations(writeAnnotations(true, false)).build();
     }
 
-    public CallToolResult handleManageStaticAsset(McpSyncServerExchange exchange, McpSchema.CallToolRequest request) {
+    public CallToolResult handleManageStaticAsset(McpSchema.CallToolRequest request) {
         Map<String, Object> args = request.arguments();
         String action = getStringArg(args, "action");
         if (action == null || action.isBlank()) {
             return errorResult("'action' is required (one of: list, get, put, delete).");
-        }
-        String token = tokenForSession.apply(exchange.sessionId());
-        if (token == null) {
-            return errorResult(
-                    "No bearer token captured for this session. Reconnect with Authorization: Bearer <token>.");
-        }
-        if (!tokenHasAdminScope(token)) {
-            return errorResult("This tool requires an administrator-scoped token. "
-                    + "Generate the token from an openHAB user with administrator privileges, or have the operator "
-                    + "do so on your behalf.");
         }
         return switch (action.toLowerCase(Locale.ROOT)) {
             case "list" -> listAssets(args);
@@ -548,23 +522,6 @@ public class StaticAssetTools {
     private static String messageOf(Throwable t) {
         String m = t.getMessage();
         return m != null ? m : t.getClass().getSimpleName();
-    }
-
-    /**
-     * Probes an admin-gated REST endpoint with the session token; HTTP 200 means the token
-     * belongs to a user with the administrator role. Matches the pattern {@link LoggingTools}
-     * uses for its own admin check.
-     */
-    private boolean tokenHasAdminScope(String token) {
-        try {
-            ContentResponse resp = httpClient.newRequest(URI.create(baseUrl + ADMIN_PROBE_PATH)).method(HttpMethod.GET)
-                    .header("Authorization", "Bearer " + token).header("Accept", "application/json")
-                    .timeout(ADMIN_PROBE_TIMEOUT_SECONDS, TimeUnit.SECONDS).send();
-            return resp.getStatus() == 200;
-        } catch (Exception e) {
-            logger.debug("Admin scope probe failed: {}", e.getMessage());
-            return false;
-        }
     }
 
     private String loadDescription() {

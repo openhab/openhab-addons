@@ -39,7 +39,10 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 import java.util.stream.Collectors;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 import javax.sound.sampled.AudioFileFormat;
 import javax.sound.sampled.AudioInputStream;
@@ -86,9 +89,10 @@ import io.github.jvoiceproject.piperjni.PiperVoice;
         + " Text-to-Speech", description_uri = SERVICE_CATEGORY + ":" + SERVICE_ID)
 public class PiperTTSService extends AbstractCachedTTSService {
     // piper-jni version from pom.xml
-    private static final String PIPER_VERSION = "1.8.0.0";
+    private static final String PIPER_VERSION = "1.8.0.1";
     private static final Path PIPER_FOLDER = Path.of(OpenHAB.getUserDataFolder(), "piper");
     private static final Path LIB_FOLDER = PIPER_FOLDER.resolve("lib-" + PIPER_VERSION);
+    private static final Path ESPEAK_DATA_FOLDER = LIB_FOLDER.resolve("espeak-ng-data");
     private static final Path JAR_FILE = PIPER_FOLDER.resolve("piper-jni-" + PIPER_VERSION + ".jar");
     private static final String JAR_URL = "https://openhab.jfrog.io/artifactory/libs-online-deps/io/github/jvoice-project/piper-jni/"
             + PIPER_VERSION + "/piper-jni-" + PIPER_VERSION + ".jar";
@@ -112,7 +116,9 @@ public class PiperTTSService extends AbstractCachedTTSService {
         activateTask = executor.submit(() -> {
             try {
                 logger.debug("Setting Piper native library path to: {}", LIB_FOLDER);
-                System.setProperty("io.github.jvoiceproject.piperjni.libdir", LIB_FOLDER.toAbsolutePath().toString());
+                System.setProperty("piper.library.path", LIB_FOLDER.toAbsolutePath().toString());
+                logger.debug("Setting Piper eSpeak NG data path to: {}", ESPEAK_DATA_FOLDER);
+                System.setProperty("piper.espeak.data.path", ESPEAK_DATA_FOLDER.toAbsolutePath().toString());
                 logger.debug("Setting up Piper native dependencies...");
                 setupNativeDependencies();
                 logger.debug("Initializing Piper...");
@@ -135,60 +141,94 @@ public class PiperTTSService extends AbstractCachedTTSService {
     }
 
     private void setupNativeDependencies() throws IOException {
-        String folderName = "";
-        String osName = System.getProperty("os.name").toLowerCase();
-        String osArch = System.getProperty("os.arch").toLowerCase();
+        String osName = System.getProperty("os.name", "").toLowerCase(Locale.ROOT);
+        String osArch = System.getProperty("os.arch", "").toLowerCase(Locale.ROOT);
+        String os;
         if (osName.contains("win")) {
-            if (osArch.contains("amd64") || osArch.contains("x86_64")) {
-                folderName = "win-amd64";
-            }
+            os = "windows";
         } else if (osName.contains("nix") || osName.contains("nux") || osName.contains("aix")) {
-            if (osArch.contains("amd64") || osArch.contains("x86_64")) {
-                folderName = "debian-amd64";
-            } else if (osArch.contains("aarch64") || osArch.contains("arm64")) {
-                folderName = "debian-arm64";
-            }
+            os = "linux";
         } else if (osName.contains("mac") || osName.contains("darwin")) {
-            if (osArch.contains("amd64") || osArch.contains("x86_64")) {
-                folderName = "macos-amd64";
-            } else if (osArch.contains("aarch64") || osArch.contains("arm64")) {
-                folderName = "macos-arm64";
-            }
-        }
-        if (folderName.isBlank()) {
+            os = "macos";
+        } else {
             throw new IOException("Incompatible platform, unable to setup add-on");
         }
+        String arch;
+        if (osArch.contains("amd64") || osArch.contains("x86_64") || osArch.contains("x86-64")) {
+            arch = "x86-64";
+        } else if (osArch.contains("aarch64") || osArch.contains("arm64")) {
+            arch = "aarch64";
+        } else {
+            throw new IOException("Incompatible platform, unable to setup add-on");
+        }
+        String nativePrefix = "native/" + os + "-" + arch + "/";
+
         if (!Files.exists(LIB_FOLDER)) {
             Files.createDirectory(LIB_FOLDER);
         }
         if (!Files.exists(JAR_FILE)) {
             logger.debug("Downloading file: {}", JAR_URL);
-            InputStream in = URI.create(JAR_URL).toURL().openStream();
-            Files.copy(in, JAR_FILE, StandardCopyOption.REPLACE_EXISTING);
+            try (InputStream in = URI.create(JAR_URL).toURL().openStream()) {
+                Files.copy(in, JAR_FILE, StandardCopyOption.REPLACE_EXISTING);
+            }
         }
-        try (java.util.jar.JarFile jar = new java.util.jar.JarFile(JAR_FILE.toFile())) {
+        Path normalizedLibFolder = LIB_FOLDER.toAbsolutePath().normalize();
+        try (JarFile jar = new JarFile(JAR_FILE.toFile())) {
             Enumeration<JarEntry> enumEntries = jar.entries();
             while (enumEntries.hasMoreElements()) {
-                java.util.jar.JarEntry file = enumEntries.nextElement();
+                JarEntry file = enumEntries.nextElement();
                 String filename = file.getName();
-                if (!filename.startsWith(folderName) && !"espeak-ng-data.zip".equals(filename)) {
+                if ("espeak-ng-data.zip".equals(filename)) {
+                    if (Files.isDirectory(ESPEAK_DATA_FOLDER)) {
+                        logger.debug("Found piper eSpeak NG data: {}", ESPEAK_DATA_FOLDER);
+                    } else {
+                        logger.debug("Extracting piper eSpeak NG data to: {}", ESPEAK_DATA_FOLDER);
+                        try (ZipInputStream zis = new ZipInputStream(jar.getInputStream(file))) {
+                            extractZipStream(zis, ESPEAK_DATA_FOLDER);
+                        }
+                    }
                     continue;
                 }
-                Path targetPath = LIB_FOLDER.resolve(file.getName());
+                if (!filename.startsWith(nativePrefix) || file.isDirectory()) {
+                    continue;
+                }
+                String relativeName = filename.substring(nativePrefix.length());
+                if (relativeName.isEmpty()) {
+                    continue;
+                }
+                Path targetPath = normalizedLibFolder.resolve(relativeName).normalize();
+                if (!targetPath.startsWith(normalizedLibFolder)) {
+                    throw new IOException("Bad jar entry: " + filename);
+                }
                 if (Files.exists(targetPath)) {
-                    logger.debug("Found piper native dependency: {}", file.getName());
+                    logger.debug("Found piper native dependency: {}", relativeName);
                     continue;
                 }
-                if (file.isDirectory()) {
-                    logger.debug("Creating dir: {}", targetPath);
-                    Files.createDirectory(targetPath);
-                    continue;
-                }
-                logger.debug("Extracting piper native dependency: {}", file.getName());
+                logger.debug("Extracting piper native dependency: {}", relativeName);
+                Files.createDirectories(targetPath.getParent());
                 try (var is = jar.getInputStream(file)) {
                     Files.copy(is, targetPath, StandardCopyOption.REPLACE_EXISTING);
                 }
             }
+        }
+    }
+
+    private void extractZipStream(ZipInputStream zis, Path destDir) throws IOException {
+        Files.createDirectories(destDir);
+        Path normalizedDest = destDir.toAbsolutePath().normalize();
+        ZipEntry entry;
+        while ((entry = zis.getNextEntry()) != null) {
+            Path entryDest = normalizedDest.resolve(entry.getName()).normalize();
+            if (!entryDest.startsWith(normalizedDest)) {
+                throw new IOException("Bad zip entry: " + entry.getName());
+            }
+            if (entry.isDirectory()) {
+                Files.createDirectories(entryDest);
+            } else {
+                Files.createDirectories(entryDest.getParent());
+                Files.copy(zis, entryDest, StandardCopyOption.REPLACE_EXISTING);
+            }
+            zis.closeEntry();
         }
     }
 

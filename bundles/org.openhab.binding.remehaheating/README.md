@@ -54,18 +54,35 @@ A shorter interval provides more up-to-date data but may increase API usage.
 
 The binding provides the following channels for monitoring and controlling your Remeha heating system:
 
-| Channel             | Type              | Read/Write | Description                                    |
-|---------------------|-------------------|------------|------------------------------------------------|
-| room-temperature    | Number:Temperature| Read       | Current room temperature                       |
-| target-temperature  | Number:Temperature| Read/Write | Target room temperature (5-30°C)              |
-| dhw-temperature     | Number:Temperature| Read       | Current hot water temperature                  |
-| dhw-target          | Number:Temperature| Read       | Target hot water temperature                   |
-| dhw-mode            | String            | Read/Write | DHW mode (anti-frost/schedule/continuous-comfort) |
-| dhw-status          | String            | Read       | Hot water status                               |
-| water-pressure      | Number:Pressure   | Read       | System water pressure                          |
-| water-pressure-ok   | Switch            | Read       | Water pressure status (ON=OK, OFF=Low)        |
-| outdoor-temperature | Number:Temperature| Read       | Outdoor temperature                            |
-| status              | String            | Read       | Boiler error status                            |
+| Channel                            | Type               | Read/Write | Description                                                      |
+|------------------------------------|--------------------|------------|------------------------------------------------------------------|
+| room-temperature                   | Number:Temperature | Read       | Current room temperature                                         |
+| target-temperature                 | Number:Temperature | Read/Write | Target room temperature (5-30°C)                                 |
+| dhw-temperature                    | Number:Temperature | Read       | Current hot water temperature                                    |
+| dhw-target                         | Number:Temperature | Read       | Target hot water temperature                                     |
+| dhw-mode                           | String             | Read/Write | DHW mode (anti-frost/schedule/continuous-comfort)                |
+| dhw-status                         | String             | Read       | Hot water status                                                 |
+| water-pressure                     | Number:Pressure    | Read       | System water pressure                                            |
+| water-pressure-ok                  | Switch             | Read       | Water pressure status (ON=OK, OFF=Low)                           |
+| outdoor-temperature                | Number:Temperature | Read       | Outdoor temperature                                              |
+| status                             | String             | Read       | Boiler error status                                              |
+| thermal-mode                       | String             | Read       | Active thermal mode of the appliance (e.g. heating or hot water) |
+| operating-mode                     | String             | Read       | Operating mode of the appliance                                  |
+| seasonal-mode                      | String             | Read       | Seasonal mode of the appliance (e.g. winter or summer)           |
+| holiday-active                     | Switch             | Read       | Holiday schedule is active                                       |
+| zone-mode                          | String             | Read       | Mode of the climate zone (e.g. scheduling or manual)             |
+| heating-demand                     | String             | Read       | Comfort demand of the climate zone (e.g. producing heat)         |
+| next-setpoint                      | Number:Temperature | Read       | Target temperature of the next schedule switch point             |
+| next-switch-time                   | DateTime           | Read       | Time of the next schedule switch point                           |
+| fireplace-mode-active              | Switch             | Read       | Fireplace mode of the climate zone is active                     |
+| dhw-next-switch-time               | DateTime           | Read       | Time of the next hot water schedule switch point                 |
+| dhw-anti-legionella                | Switch             | Read       | Anti-legionella function of the hot water zone is enabled        |
+| heating-curve-slope                | Number             | Read       | Heating curve slope (0-4)                                        |
+| heating-curve-base-setpoint        | Number:Temperature | Read       | Heating curve base setpoint (15-60°C)                            |
+| heating-curve-max-flow-temperature | Number:Temperature | Read       | Maximum flow temperature of the heating curve                    |
+
+The heating curve channels reflect the heating curve settings of the Remeha Home app.
+They stay `NULL` if the heating curve is not available for your installation, for example with an eTwist RF.
 
 ## Full Example
 

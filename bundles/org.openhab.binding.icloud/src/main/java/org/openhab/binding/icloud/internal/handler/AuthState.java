@@ -24,12 +24,13 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public enum AuthState {
 
     /**
-     * Authentication was not tried yet.
+     * Authentication was not tried yet, or has to be repeated.
      */
     INITIAL,
 
     /**
-     * Entered credentials (apple id / password) are invalid.
+     * Apple rejected the login, e.g. because the entered credentials (apple id / password) are invalid. The login is
+     * not retried before the configuration changes.
      */
     USER_PW_INVALID,
 

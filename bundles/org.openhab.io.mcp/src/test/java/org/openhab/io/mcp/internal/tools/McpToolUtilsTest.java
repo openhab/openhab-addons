@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
@@ -28,8 +29,14 @@ import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.types.UnDefType;
 import org.openhab.io.mcp.internal.McpTestHelper;
+import org.openhab.io.mcp.internal.auth.McpUser;
 
+import io.modelcontextprotocol.common.McpTransportContext;
 import io.modelcontextprotocol.json.McpJsonMapper;
+import io.modelcontextprotocol.server.McpServerFeatures.SyncToolSpecification;
+import io.modelcontextprotocol.server.McpSyncServerExchange;
+import io.modelcontextprotocol.spec.McpSchema;
+import io.modelcontextprotocol.spec.McpSchema.CallToolRequest;
 import io.modelcontextprotocol.spec.McpSchema.CallToolResult;
 
 /**
@@ -41,6 +48,66 @@ import io.modelcontextprotocol.spec.McpSchema.CallToolResult;
 class McpToolUtilsTest {
 
     private final McpJsonMapper jsonMapper = McpTestHelper.newJsonMapper();
+
+    @Test
+    void testAdminOnlyRunsHandlerForAdmin() {
+        CallToolResult ok = McpToolUtils.errorResult("handler ran");
+
+        CallToolResult result = McpToolUtils.adminOnly((ex, req) -> ok).apply(exchangeFor(new McpUser("alice", true)),
+                new CallToolRequest("manage_item", Map.of()));
+
+        assertSame(ok, result);
+    }
+
+    @Test
+    void testAdminOnlyRefusesNonAdminWithoutRunningHandler() {
+        AtomicBoolean ran = new AtomicBoolean();
+
+        CallToolResult result = McpToolUtils.adminOnly((ex, req) -> {
+            ran.set(true);
+            return McpToolUtils.errorResult("handler ran");
+        }).apply(exchangeFor(new McpUser("bob", false)), new CallToolRequest("manage_item", Map.of()));
+
+        assertFalse(ran.get());
+        assertEquals(Boolean.TRUE, result.isError());
+        String text = extractText(result);
+        assertTrue(text.contains("'manage_item'"), text);
+        assertTrue(text.contains("administrator"), text);
+    }
+
+    @Test
+    void testAdminOnlyRefusesRequestWithoutUser() {
+        McpSyncServerExchange exchange = mock(McpSyncServerExchange.class);
+        when(exchange.transportContext()).thenReturn(McpTransportContext.EMPTY);
+
+        CallToolResult result = McpToolUtils.adminOnly((ex, req) -> McpToolUtils.errorResult("handler ran"))
+                .apply(exchange, new CallToolRequest("manage_item", Map.of()));
+
+        assertTrue(extractText(result).contains("administrator"));
+    }
+
+    @Test
+    void testAdminByDefaultOnlyOpensListedTools() {
+        CallToolResult ok = McpToolUtils.errorResult("handler ran");
+        List<SyncToolSpecification> tools = McpToolUtils
+                .adminByDefault(List.of(new SyncToolSpecification(tool("open_tool"), (ex, req) -> ok),
+                        new SyncToolSpecification(tool("new_tool"), (ex, req) -> ok)), Set.of("open_tool"));
+        McpSyncServerExchange user = exchangeFor(new McpUser("bob", false));
+
+        assertSame(ok, tools.get(0).callHandler().apply(user, new CallToolRequest("open_tool", Map.of())));
+        assertNotSame(ok, tools.get(1).callHandler().apply(user, new CallToolRequest("new_tool", Map.of())));
+    }
+
+    private static McpSyncServerExchange exchangeFor(McpUser user) {
+        McpSyncServerExchange exchange = mock(McpSyncServerExchange.class);
+        when(exchange.transportContext()).thenReturn(McpTransportContext.create(Map.of(McpUser.CONTEXT_KEY, user)));
+        return exchange;
+    }
+
+    private static McpSchema.Tool tool(String name) {
+        return McpSchema.Tool.builder().name(name)
+                .inputSchema(new McpSchema.JsonSchema("object", Map.of(), List.of(), null, null, null)).build();
+    }
 
     @Test
     void testGetStringArgReturnsValue() {
@@ -65,6 +132,14 @@ class McpToolUtilsTest {
     @Test
     void testGetIntArgReturnsDefaultWhenMissing() {
         assertEquals(10, McpToolUtils.getIntArg(Map.of(), "key", 10));
+    }
+
+    @Test
+    void testGetIntArgSaturatesOutOfRangeNumbers() {
+        // Plain intValue() would wrap 2^32 + 1 around to 1.
+        assertEquals(Integer.MAX_VALUE, McpToolUtils.getIntArg(Map.of("key", (1L << 32) + 1), "key", 0));
+        assertEquals(Integer.MIN_VALUE, McpToolUtils.getIntArg(Map.of("key", -(1L << 32) - 1), "key", 0));
+        assertEquals(Integer.MAX_VALUE, McpToolUtils.getIntArg(Map.of("key", 1e20), "key", 0));
     }
 
     @Test
@@ -218,5 +293,21 @@ class McpToolUtilsTest {
         CallToolResult result = McpToolUtils.textResult(jsonMapper, data);
         Map<String, Object> parsed = parseResult(result);
         assertEquals("hello", parsed.get("state"));
+    }
+
+    @Test
+    void testWriteAnnotationsSerializeExplicitDestructiveHint() throws Exception {
+        String json = jsonMapper.writeValueAsString(McpToolUtils.writeAnnotations(false, true));
+        assertTrue(json.contains("\"readOnlyHint\":false"), json);
+        assertTrue(json.contains("\"destructiveHint\":false"), json);
+        assertTrue(json.contains("\"idempotentHint\":true"), json);
+    }
+
+    @Test
+    void testReadOnlyAnnotationsOmitWriteHints() throws Exception {
+        String json = jsonMapper.writeValueAsString(McpToolUtils.readOnlyAnnotations());
+        assertTrue(json.contains("\"readOnlyHint\":true"), json);
+        assertFalse(json.contains("destructiveHint"), json);
+        assertFalse(json.contains("idempotentHint"), json);
     }
 }

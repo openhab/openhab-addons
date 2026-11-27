@@ -346,7 +346,7 @@ thing.call_service("climate", "set_temperature", "climate.hallway", { "temperatu
 
 :::
 
-:::
+::::
 
 ## Textual Configuration Examples
 

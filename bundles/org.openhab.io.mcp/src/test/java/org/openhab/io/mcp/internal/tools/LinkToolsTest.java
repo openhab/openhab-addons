@@ -253,4 +253,9 @@ class LinkToolsTest {
         CallToolResult result = tools().handleManageLink(createRequest(Map.of("action", "delete")));
         assertErrorContains(result, "required");
     }
+
+    @Test
+    void toolAnnotationsDescribeSideEffects() {
+        McpTestHelper.assertWriteTool(tools().getManageLinkTool(), true, false);
+    }
 }

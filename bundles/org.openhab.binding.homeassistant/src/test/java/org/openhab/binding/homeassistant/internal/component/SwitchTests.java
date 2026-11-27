@@ -217,14 +217,14 @@ public class SwitchTests extends AbstractComponentTests {
                 TextValue.class);
 
         publishMessage("zigbee2mqtt/th1", "{\"auto_lock\": \"MANUAL\"}");
-        assertState(component, Switch.SWITCH_CHANNEL_ID, UnDefType.UNDEF);
-        assertState(component, Switch.JSON_ATTRIBUTES_CHANNEL_ID, UnDefType.UNDEF);
+        assertState(component, Switch.SWITCH_CHANNEL_ID, UnDefType.NULL);
+        assertState(component, Switch.JSON_ATTRIBUTES_CHANNEL_ID, UnDefType.NULL);
 
         linkChannel(component, Switch.SWITCH_CHANNEL_ID);
 
         publishMessage("zigbee2mqtt/th1", "{\"auto_lock\": \"MANUAL\"}");
         assertState(component, Switch.SWITCH_CHANNEL_ID, OnOffType.OFF);
-        assertState(component, Switch.JSON_ATTRIBUTES_CHANNEL_ID, UnDefType.UNDEF);
+        assertState(component, Switch.JSON_ATTRIBUTES_CHANNEL_ID, UnDefType.NULL);
     }
 
     @Override

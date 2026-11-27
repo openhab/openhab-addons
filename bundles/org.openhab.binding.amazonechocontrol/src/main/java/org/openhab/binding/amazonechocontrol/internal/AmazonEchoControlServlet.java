@@ -39,11 +39,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import javax.servlet.Servlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.util.introspection.UberspectImpl;
@@ -66,10 +61,13 @@ import org.openhab.core.thing.ThingUID;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.http.whiteboard.propertytypes.HttpWhiteboardServletName;
-import org.osgi.service.http.whiteboard.propertytypes.HttpWhiteboardServletPattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import jakarta.servlet.Servlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * The {@link AmazonEchoControlServlet} allows to log in to Amazon accounts using a proxy and shows information about
@@ -77,10 +75,12 @@ import org.slf4j.LoggerFactory;
  *
  * @author Michael Geramb - Initial Contribution
  * @author Jan N. Klug - Refactored to whiteboard, merged both servlets, use Velocity templates
+ * @author Jens Erat - Authorization code + PKCE login flow
  */
-@Component(service = Servlet.class, immediate = true)
-@HttpWhiteboardServletName(SERVLET_PATH)
-@HttpWhiteboardServletPattern({ SERVLET_PATH, SERVLET_PATH + "/*" })
+@Component(service = Servlet.class, immediate = true, property = {
+        "osgi.http.whiteboard.servlet.name=" + AmazonEchoControlServlet.SERVLET_PATH,
+        "osgi.http.whiteboard.servlet.pattern=" + AmazonEchoControlServlet.SERVLET_PATH,
+        "osgi.http.whiteboard.servlet.pattern=" + AmazonEchoControlServlet.SERVLET_PATH + "/*" })
 @NonNullByDefault
 public class AmazonEchoControlServlet extends HttpServlet {
     public static final String SERVLET_PATH = "/" + BINDING_ID;
@@ -101,7 +101,18 @@ public class AmazonEchoControlServlet extends HttpServlet {
 
         velocityEngine.setProperty("introspector.uberspect.class",
                 UberspectImpl.class.getName() + ", " + UberspectPublicFields.class.getName());
-        velocityEngine.init();
+
+        // Velocity loads its implementation classes via Class.forName() with the thread context class loader. The
+        // activating thread may be a long-lived framework thread whose context class loader already resolved these
+        // classes from a previous, uninstalled Velocity bundle, so use Velocity's own class loader during init.
+        Thread currentThread = Thread.currentThread();
+        ClassLoader contextClassLoader = currentThread.getContextClassLoader();
+        try {
+            currentThread.setContextClassLoader(VelocityEngine.class.getClassLoader());
+            velocityEngine.init();
+        } finally {
+            currentThread.setContextClassLoader(contextClassLoader);
+        }
     }
 
     private @Nullable AccountHandler getAccountHandler(String accountUid) {
@@ -420,11 +431,15 @@ public class AmazonEchoControlServlet extends HttpServlet {
                 if (target != null && target.pathAndQuery().startsWith(MAP_LANDING_PATH)) {
                     try {
                         URI oAuthRedirectUri = new URI(location);
-                        String accessToken = getQueryMap(oAuthRedirectUri.getQuery()).get("openid.oa2.access_token");
-                        if (accessToken == null) {
+                        Map<String, String> query = getQueryMap(oAuthRedirectUri.getQuery());
+                        String authorizationCode = query.get("openid.oa2.authorization_code");
+                        String accessToken = query.get("openid.oa2.access_token");
+                        logger.debug("Login redirect to '{}' carried authorization_code={}, access_token={}", host,
+                                authorizationCode != null, accessToken != null);
+                        if (authorizationCode == null && accessToken == null) {
                             returnError(resp, uriParts,
-                                    "Login to '" + host + "' failed: Could not extract accessToken.");
-                        } else if (connection.registerConnectionAsApp(accessToken)) {
+                                    "Login to '" + host + "' failed: neither authorization code nor access token.");
+                        } else if (connection.registerConnectionAsApp(authorizationCode, accessToken)) {
                             accountHandler.setConnection(connection);
                             resp.sendRedirect(SERVLET_PATH + "/" + uriParts.account());
                             // createAccountPage(resp, uriParts, accountHandler, connection);

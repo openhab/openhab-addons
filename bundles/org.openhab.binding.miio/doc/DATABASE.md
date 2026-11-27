@@ -165,6 +165,7 @@ The state description is part of the generated channel type, so it is ignored wh
 - The properties are requested with the `propertyMethod`, at most `maxProperties` per command, for example `get_prop["power","bright"]` or `get_properties[{"did":"on","siid":2,"piid":1}]`.
 - The answer values are matched to the channels in request order through the `property`.
   A `null` value is ignored; if the number of values differs from the request, the whole answer is ignored.
+  Properties are always requested by name; a device that only answers `get_prop` with an empty list and returns its values by position is not supported.
 - The polling interval is the thing `refreshInterval` (default 30 seconds, 0 disables polling).
   A `REFRESH` command updates all channels (at most once every 5 seconds), and all channels are updated 3 seconds after a command.
 - A channel `refreshInterval` of 2 reads the channel every second cycle.
@@ -226,6 +227,7 @@ There is no reverse conversion when writing.
 | `deviceDataTab`         | Cloud response of `/v2/user/getuserdevicedatatab` to a list of the `value` entries           | `lumi.lock.json`                 |
 | `getJsonElement-<name>` | Member `<name>` (case sensitive) of a JSON object, or a JSON path, see below                 | `chuangmi.plug.212a01-miot.json` |
 | `getDiDElement`         | Member of a JSON object named after the device id of the thing                               | `chuangmi.plug.212a01-miot.json` |
+| `decodeUnicode`         | Text with each character as `u` plus 4 hex digits, like `u0064u0065u006du006f`, to `demo`    | `careli.fryer.maf05a-miot.json`  |
 
 #### Selecting Parts of a JSON Response
 
@@ -296,26 +298,28 @@ For each action:
 
 ### Parameter Types
 
-| `parameterType`   | Command   | Value                                                                                                                           |
-|-------------------|-----------|---------------------------------------------------------------------------------------------------------------------------------|
-| `ONOFF`           | ON, OFF   | `"on"`, `"off"`                                                                                                                 |
-| `ONOFFBOOL`       | ON, OFF   | `true`, `false`                                                                                                                 |
-| `ONOFFBOOLSTRING` | ON, OFF   | `"true"`, `"false"`                                                                                                             |
-| `ONOFFNUMBER`     | ON, OFF   | `1`, `0`                                                                                                                        |
-| `ONOFFPARA`       | ON, OFF   | No value: `*` in `command` is replaced by `on`/`off`, parameter list empty.                                                     |
-| `NUMBER`          | number    | The number.                                                                                                                     |
-| `STRING`          | text      | The text as typed.                                                                                                              |
-| `COLOR`           | HSB color | RGB integer (`0xRRGGBB`). A number is passed as brightness, ON/OFF as 100/0.                                                    |
-| `EMPTY`           | any       | Command ignored; the `parameters` (or the condition `returnValue`) are sent, for legacy as one nested element `command[[...]]`. |
-| `NONE`            | any       | Value only available for the `condition`, not placed in the `parameters`.                                                       |
-| `UNKNOWN`         | any       | No value for ON/OFF and text. Used by generated placeholder actions that never send.                                            |
-| `CUSTOMSTRING`    | text      | Replaces only the `$value$` token inside its entry (`"color,$value$"` gives `"color,red"`). Otherwise like `STRING`.            |
+| `parameterType`   | Command   | Value                                                                                                                                                |
+|-------------------|-----------|------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `ONOFF`           | ON, OFF   | `"on"`, `"off"`                                                                                                                                      |
+| `ONOFFBOOL`       | ON, OFF   | `true`, `false`                                                                                                                                      |
+| `ONOFFBOOLSTRING` | ON, OFF   | `"true"`, `"false"`                                                                                                                                  |
+| `ONOFFNUMBER`     | ON, OFF   | `1`, `0`                                                                                                                                             |
+| `ONOFFPARA`       | ON, OFF   | No value: `*` in `command` is replaced by `on`/`off`, parameter list empty.                                                                          |
+| `NUMBER`          | number    | The number.                                                                                                                                          |
+| `STRING`          | text      | The text as typed.                                                                                                                                   |
+| `COLOR`           | HSB color | RGB integer (`0xRRGGBB`). A number is passed as brightness, ON/OFF as 100/0.                                                                         |
+| `EMPTY`           | any       | Command ignored; the `parameters` (or the condition `returnValue`) are sent, for legacy as one nested element `command[[...]]`.                      |
+| `NONE`            | any       | Value only available for the `condition`, not placed in the `parameters`.                                                                            |
+| `UNKNOWN`         | any       | No value for ON/OFF and text. Used by generated placeholder actions that never send.                                                                 |
+| `CUSTOMSTRING`    | text      | Replaces only the `$value$` token inside its entry (`"color,$value$"` gives `"color,red"`). Otherwise like `STRING`.                                 |
+| `JSON`            | text      | MIoT actions only: the text as JSON list of numbers, texts and booleans is the complete `in` list (`["C7795",11,180,true]`). Other text is not sent. |
 
 - A number or percent command always results in the number, except for `COLOR` and `EMPTY`; ON/OFF are only converted by `ONOFF...` and `COLOR`.
   So a `Switch` or `String` channel with `NUMBER` sends nothing unless a `matchValue` `returnValue` supplies the value.
   Other commands (UP, DOWN, STOP, ...) are sent as lower case text.
 - Text is sent exactly as typed (`Auto` stays `Auto`); add the `LowerCase` condition for devices that only accept lower case.
 - A missing `parameterType` is `EMPTY`, which ignores the command value.
+- `JSON` text containing `$` is not supported, as `$...$` is substituted with device variables when sending.
 
 ### Parameters and `$value$`
 
@@ -333,12 +337,21 @@ For each action:
 `$name$` is replaced in every command text before sending (command, parameters, custom refresh commands).
 Quotes directly around it are removed; a variable without value stays as is.
 
-| Variable                                                                                       | Value                                                                                                                                 |
-|------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------|
-| `deviceId`                                                                                     | Device id of the thing, as quoted string.                                                                                             |
-| `modelId`, `firmwareVersion`, `hardwareVersion`, `wifiFirmware`, `mcuFirmware`, `serialNumber` | Thing properties as quoted string. Any other set thing property works as well.                                                        |
-| `timestamp`                                                                                    | Time of the last update or command in seconds since 1970, as number.                                                                  |
-| property name                                                                                  | Last value read (before transformation), unquoted, so only for numbers and booleans. For a custom refresh channel use the channel id. |
+| Variable                                                                                       | Value                                                                                                                                                    |
+|------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `deviceId`                                                                                     | Device id of the thing, as quoted string.                                                                                                                |
+| `modelId`, `firmwareVersion`, `hardwareVersion`, `wifiFirmware`, `mcuFirmware`, `serialNumber` | Thing properties as quoted string. Any other set thing property works as well.                                                                           |
+| `timestamp`                                                                                    | Time of the last update or command in seconds since 1970, as number.                                                                                     |
+| property name                                                                                  | Last value read (before transformation) or sent, see below. Unquoted, so only for numbers and booleans. For a custom refresh channel use the channel id. |
+
+A command that sets the property of its own channel also stores the sent value:
+
+- MIoT: `set_properties` with the value not nested in a parameter, with any condition (the device reports the value that was written).
+- Legacy: parameter type `NUMBER`, `STRING`, `ONOFF`, `ONOFFBOOL`, `ONOFFBOOLSTRING` or `ONOFFNUMBER`, with no condition or one that does not change the value (`LowerCase`, `BrightnessExisting`, `FIRMWARE`, `matchValue` without `returnValue`).
+  The value is at the top level, or nested under the property name (`{"<property>": "$value$"}`).
+  An HSB command on a `NUMBER` action of a color channel only sends its brightness, so it is not stored.
+
+Until the device answers that command (at most a minute), values read do not replace it; when the device answers with an error, the value from before the command is restored.
 
 ### Conditions
 

@@ -78,8 +78,8 @@
 		<label>Distance</label>
 		<description>Distance Reading from the OG unit</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Opening</tag>
+			<point>Measurement</point>
+			<property>Opening</property>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
@@ -105,8 +105,8 @@
 		<label>Status</label>
 		<description>On/Off Status of the OG unit</description>
 		<tags>
-			<tag>Switch</tag>
-			<tag>OpenState</tag>
+			<point>Switch</point>
+			<property>OpenState</property>
 		</tags>
 		<config-description>
 			<parameter name="invert" type="boolean">
@@ -126,8 +126,8 @@
 		<label>Contact Status</label>
 		<description>Contact Status of the OG unit</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>OpenState</tag>
+			<point>Status</point>
+			<property>OpenState</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -136,8 +136,8 @@
 		<label>Rollershutter Status</label>
 		<description>Roller Shutter Status of the OG unit</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>OpenLevel</tag>
+			<point>Control</point>
+			<property>OpenLevel</property>
 		</tags>
 	</channel-type>
 	<channel-type id="opengarage-vehicle" advanced="true">
@@ -151,8 +151,8 @@
 		<label>Vehicle Presence</label>
 		<description>Vehicle presence detection</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>OpenState</tag>
+			<point>Status</point>
+			<property>OpenState</property>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -169,8 +169,8 @@
 		<description>Text status of the current door state, including transition, using values from configuration:
 			doorOpeningState, doorOpenState, doorClosingState, doorClosedState.</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>OpenState</tag>
+			<point>Status</point>
+			<property>OpenState</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>

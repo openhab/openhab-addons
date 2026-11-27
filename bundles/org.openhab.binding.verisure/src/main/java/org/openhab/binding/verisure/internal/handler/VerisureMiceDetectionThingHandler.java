@@ -18,6 +18,8 @@ import java.util.List;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.verisure.internal.VerisureSession;
+import org.openhab.binding.verisure.internal.dto.VerisureClimatesDTO.Threshold;
 import org.openhab.binding.verisure.internal.dto.VerisureMiceDetectionDTO;
 import org.openhab.binding.verisure.internal.dto.VerisureMiceDetectionDTO.Detection;
 import org.openhab.binding.verisure.internal.dto.VerisureMiceDetectionDTO.Mouse;
@@ -27,9 +29,12 @@ import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Channel;
+import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingTypeUID;
+import org.openhab.core.types.Command;
+import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 
@@ -51,6 +56,40 @@ public class VerisureMiceDetectionThingHandler extends VerisureThingHandler<Veri
     @Override
     public Class<VerisureMiceDetectionDTO> getVerisureThingClass() {
         return VerisureMiceDetectionDTO.class;
+    }
+
+    @Override
+    public void handleCommand(ChannelUID channelUID, Command command) {
+        if (command instanceof RefreshType) {
+            super.handleCommand(channelUID, command);
+            return;
+        }
+        switch (channelUID.getId()) {
+            case CHANNEL_TEMPERATURE_ALERT_MIN:
+            case CHANNEL_TEMPERATURE_ALERT_MIN_ENABLED:
+                handleThreshold(true, command);
+                break;
+            case CHANNEL_TEMPERATURE_ALERT_MAX:
+            case CHANNEL_TEMPERATURE_ALERT_MAX_ENABLED:
+                handleThreshold(false, command);
+                break;
+            default:
+                super.handleCommand(channelUID, command);
+        }
+    }
+
+    private void handleThreshold(boolean isMin, Command command) {
+        VerisureSession session = getSession();
+        VerisureMiceDetectionDTO miceDetectionJSON = session != null
+                ? session.getVerisureThing(config.getDeviceId(), getVerisureThingClass())
+                : null;
+        List<Mouse> miceList = miceDetectionJSON != null ? miceDetectionJSON.getData().getInstallation().getMice()
+                : null;
+        if (miceDetectionJSON == null || miceList == null || miceList.isEmpty()) {
+            return;
+        }
+        changeAlertLimit(miceDetectionJSON.getThresholds(), miceList.get(0).getDevice().getDeviceLabel(),
+                miceDetectionJSON.getSiteId(), Threshold.SENSOR_TYPE_TEMPERATURE, isMin, command);
     }
 
     @Override
@@ -114,6 +153,15 @@ public class VerisureMiceDetectionThingHandler extends VerisureThingHandler<Veri
                 return temperature != VerisureMiceDetectionDTO.UNDEFINED
                         ? new QuantityType<>(temperature, SIUnits.CELSIUS)
                         : UnDefType.UNDEF;
+            case CHANNEL_TEMPERATURE_ALERT_MIN:
+                return getAlertLimit(miceDetectionJSON.getThresholds(), Threshold.SENSOR_TYPE_TEMPERATURE, true);
+            case CHANNEL_TEMPERATURE_ALERT_MAX:
+                return getAlertLimit(miceDetectionJSON.getThresholds(), Threshold.SENSOR_TYPE_TEMPERATURE, false);
+            case CHANNEL_TEMPERATURE_ALERT_MIN_ENABLED:
+                return getAlertLimitEnabled(miceDetectionJSON.getThresholds(), Threshold.SENSOR_TYPE_TEMPERATURE, true);
+            case CHANNEL_TEMPERATURE_ALERT_MAX_ENABLED:
+                return getAlertLimitEnabled(miceDetectionJSON.getThresholds(), Threshold.SENSOR_TYPE_TEMPERATURE,
+                        false);
         }
         return UnDefType.UNDEF;
     }

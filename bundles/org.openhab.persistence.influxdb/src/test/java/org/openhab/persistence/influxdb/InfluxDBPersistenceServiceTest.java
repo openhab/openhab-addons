@@ -12,7 +12,10 @@
  */
 package org.openhab.persistence.influxdb;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.openhab.persistence.influxdb.internal.InfluxDBConfiguration.DATABASE_PARAM;
@@ -23,25 +26,32 @@ import static org.openhab.persistence.influxdb.internal.InfluxDBConfiguration.UR
 import static org.openhab.persistence.influxdb.internal.InfluxDBConfiguration.USER_PARAM;
 import static org.openhab.persistence.influxdb.internal.InfluxDBConfiguration.VERSION_PARAM;
 
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import org.openhab.core.items.ItemRegistry;
 import org.openhab.core.items.MetadataRegistry;
+import org.openhab.core.persistence.FilterCriteria;
 import org.openhab.persistence.influxdb.internal.InfluxDBMetadataService;
 import org.openhab.persistence.influxdb.internal.InfluxDBRepository;
+import org.openhab.persistence.influxdb.internal.InfluxDBRepository.WriteResult;
 import org.openhab.persistence.influxdb.internal.InfluxDBVersion;
+import org.openhab.persistence.influxdb.internal.InfluxPoint;
 import org.openhab.persistence.influxdb.internal.ItemTestHelper;
 import org.openhab.persistence.influxdb.internal.UnexpectedConditionException;
 
 /**
  * @author Joan Pujol Espinar - Initial contribution
+ * @author Eugen Freiter - Tests for retried and rejected writes
  */
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -99,6 +109,11 @@ public class InfluxDBPersistenceServiceTest {
     private final InfluxDBMetadataService influxDBMetadataService = new InfluxDBMetadataService(
             mock(MetadataRegistry.class));
 
+    @BeforeEach
+    public void before() {
+        when(influxDBRepositoryMock.write(any())).thenReturn(WriteResult.SUCCESS);
+    }
+
     @Test
     public void activateWithValidV1ConfigShouldConnectRepository() {
         getService(VALID_V1_CONFIGURATION);
@@ -125,18 +140,35 @@ public class InfluxDBPersistenceServiceTest {
     }
 
     @Test
-    public void activateWithInvalidV1ConfigShouldFail() {
-        assertThrows(IllegalArgumentException.class, () -> getService(INVALID_V1_CONFIGURATION));
+    public void activateWithInvalidV1ConfigShouldNotConnectRepository() {
+        getService(INVALID_V1_CONFIGURATION);
+        verify(influxDBRepositoryMock, never()).connect();
     }
 
     @Test
-    public void activateWithInvalidV2ShouldFail() {
-        assertThrows(IllegalArgumentException.class, () -> getService(INVALID_V2_CONFIGURATION));
+    public void activateWithInvalidV2ShouldNotConnectRepository() {
+        getService(INVALID_V2_CONFIGURATION);
+        verify(influxDBRepositoryMock, never()).connect();
     }
 
     @Test
-    public void activateWithInvalidV3ShouldFail() {
-        assertThrows(IllegalArgumentException.class, () -> getService(INVALID_V3_CONFIGURATION));
+    public void activateWithInvalidV3ShouldNotConnectRepository() {
+        getService(INVALID_V3_CONFIGURATION);
+        verify(influxDBRepositoryMock, never()).connect();
+    }
+
+    @Test
+    public void serviceWithInvalidConfigRejectsAllOperations() {
+        InfluxDBPersistenceService instance = getService(INVALID_V2_CONFIGURATION);
+        FilterCriteria filter = new FilterCriteria().setItemName("number");
+
+        instance.store(ItemTestHelper.createNumberItem("number", 5));
+
+        assertFalse(instance.query(filter).iterator().hasNext());
+        assertFalse(instance.remove(filter));
+        assertTrue(instance.getItemInfo().isEmpty());
+        instance.deactivate();
+        verifyNoInteractions(influxDBRepositoryMock);
     }
 
     @Test
@@ -160,6 +192,45 @@ public class InfluxDBPersistenceServiceTest {
         when(influxDBRepositoryMock.isConnected()).thenReturn(false);
         instance.store(ItemTestHelper.createNumberItem("number", 5));
         verify(influxDBRepositoryMock, never()).write(any());
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void failedWriteIsRetried() throws UnexpectedConditionException {
+        InfluxDBPersistenceService instance = getService(VALID_V2_CONFIGURATION);
+        when(influxDBRepositoryMock.isConnected()).thenReturn(true);
+        when(influxDBRepositoryMock.write(any())).thenReturn(WriteResult.retry("connection refused"),
+                WriteResult.SUCCESS);
+
+        instance.store(ItemTestHelper.createNumberItem("number", 5));
+
+        ArgumentCaptor<List<InfluxPoint>> captor = ArgumentCaptor.forClass(List.class);
+        verify(influxDBRepositoryMock, timeout(10000).times(2)).write(captor.capture());
+        assertThat(captor.getAllValues().get(1).size(), is(1));
+        assertThat(captor.getAllValues().get(1).get(0), is(captor.getAllValues().get(0).get(0)));
+        verify(influxDBRepositoryMock).disconnect();
+        instance.deactivate();
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void rejectedWriteIsNotRetried() throws UnexpectedConditionException {
+        InfluxDBPersistenceService instance = getService(VALID_V2_CONFIGURATION);
+        when(influxDBRepositoryMock.isConnected()).thenReturn(true);
+        when(influxDBRepositoryMock.write(any())).thenReturn(WriteResult.rejected("field type conflict"),
+                WriteResult.SUCCESS);
+
+        instance.store(ItemTestHelper.createNumberItem("rejected", 5));
+        verify(influxDBRepositoryMock, timeout(10000)).write(any());
+        instance.store(ItemTestHelper.createNumberItem("accepted", 6));
+
+        ArgumentCaptor<List<InfluxPoint>> captor = ArgumentCaptor.forClass(List.class);
+        verify(influxDBRepositoryMock, timeout(10000).times(2)).write(captor.capture());
+        List<InfluxPoint> secondBatch = captor.getAllValues().get(1);
+        assertThat(secondBatch.size(), is(1));
+        assertThat(secondBatch.get(0).getTags().get("item"), is("accepted"));
+        verify(influxDBRepositoryMock, never()).disconnect();
+        instance.deactivate();
     }
 
     private InfluxDBPersistenceService getService(Map<String, Object> config) {

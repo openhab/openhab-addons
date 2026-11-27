@@ -14,14 +14,11 @@ package org.openhab.binding.netatmo.internal.api;
 
 import static org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.*;
 
-import java.net.URI;
 import java.time.ZonedDateTime;
 import java.util.Comparator;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-
-import javax.ws.rs.core.UriBuilder;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -35,6 +32,8 @@ import org.openhab.binding.netatmo.internal.handler.ApiBridgeHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import jakarta.ws.rs.core.UriBuilder;
+
 /**
  * Base class for all Security related endpoints
  *
@@ -46,28 +45,6 @@ public class SecurityApi extends RestManager {
 
     public SecurityApi(ApiBridgeHandler apiClient) {
         super(apiClient, FeatureArea.SECURITY);
-    }
-
-    /**
-     * Dissociates a webhook from a user.
-     *
-     * @throws NetatmoException If fail to call the API, e.g. server error or deserializing
-     */
-    public void dropWebhook() throws NetatmoException {
-        UriBuilder uriBuilder = getApiUriBuilder(SUB_PATH_DROP_WEBHOOK);
-        post(uriBuilder, ApiResponse.Ok.class, null);
-    }
-
-    /**
-     * Links a callback url to a user.
-     *
-     * @param uri Your webhook callback url (required)
-     * @throws NetatmoException If fail to call the API, e.g. server error or deserializing
-     */
-    public boolean addwebhook(URI uri) throws NetatmoException {
-        UriBuilder uriBuilder = getApiUriBuilder(SUB_PATH_ADD_WEBHOOK, PARAM_URL, uri.toString());
-        post(uriBuilder, ApiResponse.Ok.class, null);
-        return true;
     }
 
     private List<HomeEvent> getEvents(@Nullable Object... params) throws NetatmoException {

@@ -24,8 +24,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ScheduledExecutorService;
@@ -50,6 +48,8 @@ import org.openhab.binding.lgthinq.lgservices.model.DeviceTypes;
 import org.openhab.binding.lgthinq.lgservices.model.FeatureDataType;
 import org.openhab.binding.lgthinq.lgservices.model.LGAPIVerion;
 import org.openhab.binding.lgthinq.lgservices.model.SnapshotDefinition;
+import org.openhab.binding.lgthinq.lgservices.model.devices.commons.washers.CourseDefinition;
+import org.openhab.core.common.ThreadPoolManager;
 import org.openhab.core.items.Item;
 import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.library.types.OnOffType;
@@ -85,13 +85,25 @@ public abstract class LGThinQAbstractDeviceHandler<@NonNull C extends Capability
     protected final ItemChannelLinkRegistry itemChannelLinkRegistry;
     protected final LinkedBlockingQueue<AsyncCommandParams> commandBlockQueue = new LinkedBlockingQueue<>(30);
     protected final LGThinQStateDescriptionProvider stateDescriptionProvider;
-    private final ExecutorService executorService = Executors.newFixedThreadPool(1);
-    private final ScheduledExecutorService pollingScheduler = Executors.newScheduledThreadPool(1);
     protected @Nullable LGThinQBridgeHandler account;
     @Nullable
     protected C thinQCapability;
-    private S lastShot;
-    private @Nullable Future<?> commandExecutorQueueJob;
+    private volatile S lastShot;
+    /**
+     * Requests to LG block (a V1 monitor waits up to 5 seconds for data), so polling and commands run on a pool of the
+     * binding instead of the scheduler shared by all thing handlers.
+     */
+    private final ScheduledExecutorService deviceScheduler = ThreadPoolManager.getScheduledPool(BINDING_ID);
+    /**
+     * Commands are executed by a task that drains {@link #commandBlockQueue} and ends when the queue is empty, so idle
+     * devices don't hold a thread. At most one drain task exists per device, from its submission until it exits, which
+     * keeps the commands of a device in order and one at a time. The fields below are guarded by
+     * {@link #commandQueueLock}.
+     */
+    private final Object commandQueueLock = new Object();
+    private @Nullable Future<?> commandDrainJob;
+    private boolean commandDrainRunning;
+    private boolean commandQueueEnabled;
     private @Nullable ScheduledFuture<?> thingStatePollingJob;
     private @Nullable ScheduledFuture<?> extraInfoCollectorPollingJob;
     /**
@@ -102,55 +114,17 @@ public abstract class LGThinQAbstractDeviceHandler<@NonNull C extends Capability
     private int currentPeriodSeconds = 10;
     private int pollingExtraInfoPeriodSeconds = 60;
     private boolean pollExtraInfoOnPowerOff = false;
-    private Integer fetchMonitorRetries = 0;
-    private boolean monitorV1Began = false;
+
+    private enum MonitorPhase {
+        IDLE,
+        IN_PROGRESS
+    }
+
+    private volatile MonitorPhase monitorPhase = MonitorPhase.IDLE;
     private boolean isThingReconfigured = false;
-    private String monitorWorkId = "";
+    private volatile String monitorWorkId = "";
     private String bridgeId = "";
     private ThingStatus lastThingStatus = ThingStatus.UNKNOWN;
-    private final Runnable queuedCommandExecutor = () -> {
-        while (!Thread.currentThread().isInterrupted()) {
-            AsyncCommandParams params;
-            try {
-                params = commandBlockQueue.take();
-            } catch (InterruptedException e) {
-                getLogger().debug("Interrupting async command queue executor.");
-                return;
-            }
-
-            try {
-                processCommand(params);
-                String channelUid = getSimpleChannelUID(params.channelUID);
-                if (CHANNEL_AC_POWER_ID.equals(channelUid)) {
-                    // if processed command come from POWER channel, then force updateDeviceChannels immediatly
-                    // this is important to analise if the polling needs to be changed in time.
-                    updateThingStateFromLG();
-                } else if (CHANNEL_EXTENDED_INFO_COLLECTOR_ID.equals(channelUid)) {
-                    if (OnOffType.ON.equals(params.command)) {
-                        getLogger().debug("Turning ON extended information collector");
-                        if (pollExtraInfoOnPowerOff
-                                || DevicePowerState.DV_POWER_ON.equals(getLastShot().getPowerStatus())) {
-                            startExtraInfoCollectorPolling();
-                        }
-                    } else if (OnOffType.OFF.equals(params.command)) {
-                        getLogger().debug("Turning OFF extended information collector");
-                        stopExtraInfoCollectorPolling();
-                    } else {
-                        getLogger().error("Command {} for {} channel is unexpected. It's most likely a bug",
-                                params.command, CHANNEL_EXTENDED_INFO_COLLECTOR_ID);
-                    }
-                }
-            } catch (LGThinqException e) {
-                getLogger().error("Error executing Command {} to the channel {}. Thing goes offline until retry",
-                        params.command, params.channelUID, e);
-                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-            } catch (Exception e) {
-                getLogger().error("System error executing Command {} to the channel {}. Ignoring command",
-                        params.command, params.channelUID, e);
-            }
-        }
-        getLogger().debug("Finishing QueueCommandExecutor thread...");
-    };
 
     public LGThinQAbstractDeviceHandler(Thing thing, LGThinQStateDescriptionProvider stateDescriptionProvider,
             ItemChannelLinkRegistry itemChannelLinkRegistry) {
@@ -229,19 +203,109 @@ public abstract class LGThinQAbstractDeviceHandler<@NonNull C extends Capability
         return Objects.requireNonNullElse(map.get(key), key);
     }
 
-    protected void startCommandExecutorQueueJob() {
-        Future<?> commandExecutorQueueJob = this.commandExecutorQueueJob;
-        if (commandExecutorQueueJob == null || commandExecutorQueueJob.isDone()) {
-            this.commandExecutorQueueJob = getExecutorService().submit(getQueuedCommandExecutor());
+    /**
+     * Builds and registers {@link org.openhab.core.types.StateOption}s for a course channel from a
+     * {@link CourseDefinition} map.
+     *
+     * @param courses map of course key → course definition (course name used as display label)
+     * @param channelUID target channel to register the options on
+     */
+    protected void loadCourseOptions(Map<String, CourseDefinition> courses, ChannelUID channelUID) {
+        StateDescriptionBuilder.setStateOptions(stateDescriptionProvider, channelUID, courses,
+                e -> emptyIfNull(e.getValue().getCourseName()));
+    }
+
+    /**
+     * Starts executing queued commands, including the ones queued while the queue was disabled.
+     */
+    protected void enableCommandQueue() {
+        synchronized (commandQueueLock) {
+            commandQueueEnabled = true;
+            scheduleCommandDrain();
         }
     }
 
-    protected void stopCommandExecutorQueueJob() {
-        Future<?> commandExecutorQueueJob = this.commandExecutorQueueJob;
-        if (commandExecutorQueueJob != null) {
-            commandExecutorQueueJob.cancel(true);
+    /**
+     * Stops executing commands and discards the pending ones.
+     */
+    protected void disableCommandQueue() {
+        synchronized (commandQueueLock) {
+            commandQueueEnabled = false;
+            commandBlockQueue.clear();
+            Future<?> commandDrainJob = this.commandDrainJob;
+            // A task that hasn't started isn't cancelled: it must run to release the queue, and it finds no command.
+            // A running task keeps the queue until it exits, so a command queued after the queue is enabled again
+            // can't run concurrently with the one being interrupted.
+            if (commandDrainJob != null && commandDrainRunning) {
+                commandDrainJob.cancel(true);
+            }
         }
-        this.commandExecutorQueueJob = null;
+    }
+
+    private void scheduleCommandDrain() {
+        synchronized (commandQueueLock) {
+            if (commandQueueEnabled && commandDrainJob == null && !commandBlockQueue.isEmpty()) {
+                commandDrainJob = deviceScheduler.submit(this::drainCommandQueue);
+            }
+        }
+    }
+
+    private void drainCommandQueue() {
+        synchronized (commandQueueLock) {
+            commandDrainRunning = true;
+        }
+        try {
+            AsyncCommandParams params;
+            while (!Thread.currentThread().isInterrupted() && (params = nextQueuedCommand()) != null) {
+                executeCommand(params);
+            }
+        } finally {
+            synchronized (commandQueueLock) {
+                commandDrainRunning = false;
+                commandDrainJob = null;
+                // commands left by an interrupted task or queued while it was finishing
+                scheduleCommandDrain();
+            }
+        }
+    }
+
+    private @Nullable AsyncCommandParams nextQueuedCommand() {
+        synchronized (commandQueueLock) {
+            return commandQueueEnabled ? commandBlockQueue.poll() : null;
+        }
+    }
+
+    private void executeCommand(AsyncCommandParams params) {
+        try {
+            processCommand(params);
+            String channelUid = getSimpleChannelUID(params.channelUID());
+            if (CHANNEL_AC_POWER_ID.equals(channelUid)) {
+                // if processed command come from POWER channel, then force updateDeviceChannels immediatly
+                // this is important to analise if the polling needs to be changed in time.
+                updateThingStateFromLG();
+            } else if (CHANNEL_EXTENDED_INFO_COLLECTOR_ID.equals(channelUid)) {
+                if (OnOffType.ON.equals(params.command())) {
+                    getLogger().debug("Turning ON extended information collector");
+                    if (pollExtraInfoOnPowerOff
+                            || DevicePowerState.DV_POWER_ON.equals(getLastShot().getPowerStatus())) {
+                        startExtraInfoCollectorPolling();
+                    }
+                } else if (OnOffType.OFF.equals(params.command())) {
+                    getLogger().debug("Turning OFF extended information collector");
+                    stopExtraInfoCollectorPolling();
+                } else {
+                    getLogger().error("Command {} for {} channel is unexpected. It's most likely a bug",
+                            params.command(), CHANNEL_EXTENDED_INFO_COLLECTOR_ID);
+                }
+            }
+        } catch (LGThinqException e) {
+            getLogger().error("Error executing Command {} to the channel {}. Thing goes offline until retry",
+                    params.command(), params.channelUID(), e);
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+        } catch (Exception e) {
+            getLogger().error("System error executing Command {} to the channel {}. Ignoring command", params.command(),
+                    params.channelUID(), e);
+        }
     }
 
     protected void handleStatusChanged(ThingStatus newStatus, ThingStatusDetail statusDetail) {
@@ -289,13 +353,16 @@ public abstract class LGThinQAbstractDeviceHandler<@NonNull C extends Capability
             try {
                 // Ensure commands are send in a pipe per device.
                 commandBlockQueue.add(params);
+                scheduleCommandDrain();
             } catch (IllegalStateException ex) {
                 getLogger().warn(
                         "Device's command queue reached the size limit. Probably the device is busy or stuck. Ignoring command.");
                 if (getLogger().isDebugEnabled()) {
-                    Future<?> commandExecutorQueueJob = this.commandExecutorQueueJob;
-                    getLogger().debug("Status of the commandQueue: consumer: {}, size: {}",
-                            commandExecutorQueueJob == null || commandExecutorQueueJob.isDone() ? "OFF" : "ON",
+                    boolean draining;
+                    synchronized (commandQueueLock) {
+                        draining = commandDrainJob != null;
+                    }
+                    getLogger().debug("Status of the commandQueue: consumer: {}, size: {}", draining ? "ON" : "OFF",
                             commandBlockQueue.size());
                 }
                 if (getLogger().isTraceEnabled()) {
@@ -311,10 +378,6 @@ public abstract class LGThinQAbstractDeviceHandler<@NonNull C extends Capability
                 updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/error.handler.device-cmd-queue-busy");
             }
         }
-    }
-
-    protected ExecutorService getExecutorService() {
-        return executorService;
     }
 
     public String getDeviceId() {
@@ -427,7 +490,7 @@ public abstract class LGThinQAbstractDeviceHandler<@NonNull C extends Capability
         }
         // finally, start command queue, regardless of the thing state, since we can still try to send commands without
         // property ONLINE (the successful result from command request can put the thing in ONLINE status).
-        startCommandExecutorQueueJob();
+        enableCommandQueue();
         if (getThing().getStatus() == ThingStatus.ONLINE) {
             try {
                 getLgThinQAPIClientService().initializeDevice(bridgeId, getDeviceId());
@@ -518,7 +581,6 @@ public abstract class LGThinQAbstractDeviceHandler<@NonNull C extends Capability
                 // no data to update. Maybe, the monitor stopped, then it's going to be restarted next try.
                 return;
             }
-            fetchMonitorRetries = 0;
             if (!shot.isOnline()) {
                 if (getThing().getStatus() != ThingStatus.OFFLINE) {
                     // only update channels if the device has just gone OFFLINE.
@@ -536,15 +598,10 @@ public abstract class LGThinQAbstractDeviceHandler<@NonNull C extends Capability
         } catch (LGThinqAccessException e) {
             updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         } catch (LGThinqApiExhaustionException e) {
-            fetchMonitorRetries++;
-            getLogger().warn("LG API returns null monitoring data for the thing {}/{}. No data available yet ?",
+            // ThinQ V1 monitors can return no data for several cycles (ex. while the device is idle) although the
+            // device is reachable, so the last known state is kept instead of taking the Thing offline.
+            getLogger().debug("LG API returned no monitoring data for the thing {}/{}. Keeping the last known state.",
                     getDeviceAlias(), getDeviceId());
-            if (fetchMonitorRetries > MAX_GET_MONITOR_RETRIES) {
-                getLogger().error(
-                        "The thing {}/{} reach maximum retries for monitor data. Thing goes OFFLINE until next retry.",
-                        getDeviceAlias(), getDeviceId(), e);
-                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-            }
         } catch (LGThinqException e) {
             getLogger().error("Error updating thing {}/{} from LG API. Thing goes OFFLINE until next retry: {}",
                     getDeviceAlias(), getDeviceId(), e.getMessage(), e);
@@ -648,7 +705,7 @@ public abstract class LGThinQAbstractDeviceHandler<@NonNull C extends Capability
         ScheduledFuture<?> thingStatePollingJob = this.thingStatePollingJob;
         if (thingStatePollingJob == null || thingStatePollingJob.isDone()) {
             getLogger().debug("Starting LG thinq polling for device/alias: {}/{}", getDeviceId(), getDeviceAlias());
-            this.thingStatePollingJob = pollingScheduler.scheduleWithFixedDelay(new UpdateThingStateFromLG(), 5,
+            this.thingStatePollingJob = deviceScheduler.scheduleWithFixedDelay(new UpdateThingStateFromLG(), 5,
                     currentPeriodSeconds, TimeUnit.SECONDS);
         }
     }
@@ -662,14 +719,14 @@ public abstract class LGThinQAbstractDeviceHandler<@NonNull C extends Capability
         ScheduledFuture<?> extraInfoCollectorPollingJob = this.extraInfoCollectorPollingJob;
         if (extraInfoCollectorPollingJob == null || extraInfoCollectorPollingJob.isDone()) {
             getLogger().debug("Starting Energy Collector for device/alias: {}/{}", getDeviceId(), getDeviceAlias());
-            this.extraInfoCollectorPollingJob = pollingScheduler.scheduleWithFixedDelay(new UpdateExtraInfoCollector(),
+            this.extraInfoCollectorPollingJob = deviceScheduler.scheduleWithFixedDelay(new UpdateExtraInfoCollector(),
                     10, pollingExtraInfoPeriodSeconds, TimeUnit.SECONDS);
         }
     }
 
     private void stopDeviceV1Monitor(String deviceId) {
         try {
-            monitorV1Began = false;
+            monitorPhase = MonitorPhase.IDLE;
             getLgThinQAPIClientService().stopMonitor(getBridgeId(), deviceId, monitorWorkId);
         } catch (LGThinqDeviceV1OfflineException e) {
             getLogger().debug("Monitor stopped. Device is unavailable/disconnected", e);
@@ -694,14 +751,13 @@ public abstract class LGThinQAbstractDeviceHandler<@NonNull C extends Capability
 
     @Nullable
     protected S getSnapshotDeviceAdapter(String deviceId) throws LGThinqApiException, LGThinqApiExhaustionException {
-        // analise de platform version
         if (LG_API_PLATFORM_TYPE_V2.equals(lgPlatformType)) {
             return getLgThinQAPIClientService().getDeviceData(getBridgeId(), getDeviceId(), getCapabilities());
         } else {
             try {
-                if (!monitorV1Began) {
+                if (monitorPhase == MonitorPhase.IDLE) {
                     monitorWorkId = getLgThinQAPIClientService().startMonitor(getBridgeId(), getDeviceId());
-                    monitorV1Began = true;
+                    monitorPhase = MonitorPhase.IN_PROGRESS;
                 }
             } catch (LGThinqDeviceV1OfflineException e) {
                 try {
@@ -713,44 +769,44 @@ public abstract class LGThinQAbstractDeviceHandler<@NonNull C extends Capability
                 stopDeviceV1Monitor(deviceId);
                 throw new LGThinqApiException("Error starting device monitor in LG API for the device:" + deviceId, e);
             }
-            int retries = 10;
-            @Nullable
-            S shot;
             try {
-                while (retries > 0) {
-                    // try to get monitoring data result 3 times.
-
-                    shot = getLgThinQAPIClientService().getMonitorData(getBridgeId(), deviceId, monitorWorkId,
-                            getDeviceType(), getCapabilities());
-                    if (shot != null) {
-                        return shot;
-                    }
-                    Thread.sleep(500);
-                    retries--;
-                }
-            } catch (LGThinqDeviceV1MonitorExpiredException | LGThinqUnmarshallException e) {
-                getLogger().debug("Monitor for device {} is invalid. Forcing stop and start to next cycle.", deviceId);
-                return null;
-            } catch (Exception e) {
-                // If it can't get monitor handler, then stop monitor and restart the process again in new
-                // interaction
-                // Force restart monitoring because of the errors returned (just in case)
-                throw new LGThinqApiException("Error getting monitor data for the device:" + deviceId, e);
+                return pollMonitorData(deviceId);
             } finally {
                 try {
                     stopDeviceV1Monitor(deviceId);
                 } catch (Exception ignored) {
                 }
             }
-            throw new LGThinqApiExhaustionException("Exhausted trying to get monitor data for the device:" + deviceId);
         }
     }
 
-    protected abstract void processCommand(AsyncCommandParams params) throws LGThinqApiException;
-
-    protected Runnable getQueuedCommandExecutor() {
-        return queuedCommandExecutor;
+    @Nullable
+    private S pollMonitorData(String deviceId) throws LGThinqApiException, LGThinqApiExhaustionException {
+        int retries = 10;
+        try {
+            while (retries > 0) {
+                @Nullable
+                S shot = getLgThinQAPIClientService().getMonitorData(getBridgeId(), deviceId, monitorWorkId,
+                        getDeviceType(), getCapabilities());
+                if (shot != null) {
+                    return shot;
+                }
+                Thread.sleep(500);
+                retries--;
+            }
+        } catch (LGThinqDeviceV1MonitorExpiredException | LGThinqUnmarshallException e) {
+            getLogger().debug("Monitor for device {} is invalid. Forcing stop and start to next cycle.", deviceId);
+            return null;
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            return null;
+        } catch (Exception e) {
+            throw new LGThinqApiException("Error getting monitor data for the device:" + deviceId, e);
+        }
+        throw new LGThinqApiExhaustionException("Exhausted trying to get monitor data for the device:" + deviceId);
     }
+
+    protected abstract void processCommand(AsyncCommandParams params) throws LGThinqApiException;
 
     @Override
     public void dispose() {
@@ -762,7 +818,7 @@ public abstract class LGThinQAbstractDeviceHandler<@NonNull C extends Capability
 
         stopThingStatePolling();
         stopExtraInfoCollectorPolling();
-        stopCommandExecutorQueueJob();
+        disableCommandQueue();
         try {
             if (LGAPIVerion.V1_0.equals(getCapabilities().getDeviceVersion())) {
                 stopDeviceV1Monitor(getDeviceId());
@@ -803,16 +859,6 @@ public abstract class LGThinQAbstractDeviceHandler<@NonNull C extends Capability
             createDynChannel(channelName, channelUid, itemType);
         } else if (chan != null && (!isFeatureAvailable)) {
             updateThing(editThing().withoutChannel(chan.getUID()).build());
-        }
-    }
-
-    protected static class AsyncCommandParams {
-        final String channelUID;
-        final Command command;
-
-        public AsyncCommandParams(String channelUUID, Command command) {
-            this.channelUID = channelUUID;
-            this.command = command;
         }
     }
 

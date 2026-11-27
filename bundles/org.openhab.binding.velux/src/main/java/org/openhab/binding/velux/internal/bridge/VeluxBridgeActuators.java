@@ -113,6 +113,9 @@ public class VeluxBridgeActuators {
             logger.trace("getProducts() working on step-by-step retrieval.");
             for (int nodeId = 0; nodeId < VeluxKLFAPI.KLF_SYSTEMTABLE_MAX
                     && nodeId < VELUXBINDING_SYSTEMTABLE_MAX; nodeId++) {
+                if (bridge.bridgeInstance.isDisposing()) {
+                    return false;
+                }
                 logger.trace("getProducts() working on product number {}.", nodeId);
                 bcpSbS.setProductId(nodeId);
                 if (bridge.bridgeCommunicate(bcpSbS) && bcpSbS.isCommunicationSuccessful()) {
@@ -122,6 +125,9 @@ public class VeluxBridgeActuators {
                         if (!channel.existingProducts.isRegistered(veluxProduct)) {
                             channel.existingProducts.register(veluxProduct);
                         }
+                    }
+                    if (!bridge.lastCommunicationOk()) {
+                        return false;
                     }
                 }
             }

@@ -1,18 +1,138 @@
 {
 	"deviceMapping": {
 		"id": [
-			"xjx.toilet.pro",
 			"xjx.toilet.relax",
 			"xjx.toilet.pure",
 			"xjx.toilet.zero"
 		],
 		"channels": [
 			{
+				"property": "seating",
+				"friendlyName": "Seated",
+				"channel": "seated",
+				"type": "Switch",
+				"stateDescription": {
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "status",
+				"tags": [
+					"Status",
+					"Presence"
+				]
+			},
+			{
+				"property": "status_tunwash",
+				"friendlyName": "Rear Wash",
+				"channel": "rear_wash",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "work_tun_wash",
+						"parameterType": "ONOFFNUMBER"
+					}
+				],
+				"category": "water",
+				"tags": [
+					"Switch",
+					"Water"
+				]
+			},
+			{
+				"property": "status_womenwash",
+				"friendlyName": "Bidet",
+				"channel": "bidet",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "work_women_wash",
+						"parameterType": "ONOFFNUMBER"
+					}
+				],
+				"category": "water",
+				"tags": [
+					"Switch",
+					"Water"
+				]
+			},
+			{
+				"property": "status_warmdry",
+				"friendlyName": "Dry",
+				"channel": "dry",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "work_warm_dry",
+						"parameterType": "ONOFFNUMBER"
+					}
+				],
+				"category": "fan",
+				"tags": [
+					"Switch",
+					"Airflow"
+				]
+			},
+			{
+				"property": "status_seatheat",
+				"friendlyName": "Seat Heating",
+				"channel": "seat_heating",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "work_seatheat",
+						"parameterType": "ONOFFNUMBER"
+					}
+				],
+				"category": "heating",
+				"tags": [
+					"Switch",
+					"Heating"
+				]
+			},
+			{
+				"property": "status_led",
+				"friendlyName": "Night Light",
+				"channel": "night_light",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "work_night_led",
+						"parameterType": "ONOFFNUMBER"
+					}
+				],
+				"category": "light",
+				"tags": [
+					"Switch",
+					"Light"
+				]
+			},
+			{
 				"property": "seat_temp",
 				"friendlyName": "Seat Temperature",
-				"channel": "seat_temp",
-				"type": "Number:Temperature",
-				"unit": "CELSIUS",
+				"channel": "seat_temperature",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "1",
+							"label": "Low"
+						},
+						{
+							"value": "2",
+							"label": "Medium"
+						},
+						{
+							"value": "3",
+							"label": "High"
+						}
+					]
+				},
 				"refresh": true,
 				"actions": [
 					{
@@ -24,23 +144,30 @@
 				"tags": [
 					"Setpoint",
 					"Temperature"
-				]
-			},
-			{
-				"property": "status_seatheat",
-				"friendlyName": "Seat Status",
-				"channel": "status_seatheat",
-				"type": "Number",
-				"refresh": true,
-				"ChannelGroup": "actions",
-				"actions": []
+				],
+				"readmeComment": "Value mapping `[\"1\"\u003d\"Low\",\"2\"\u003d\"Medium\",\"3\"\u003d\"High\"]`"
 			},
 			{
 				"property": "water_temp_t",
-				"friendlyName": "Water Temperature",
-				"channel": "water_temp_t",
-				"type": "Number:Temperature",
-				"unit": "CELSIUS",
+				"friendlyName": "Rear Wash Water Temperature",
+				"channel": "rear_water_temperature",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "1",
+							"label": "Low"
+						},
+						{
+							"value": "2",
+							"label": "Medium"
+						},
+						{
+							"value": "3",
+							"label": "High"
+						}
+					]
+				},
 				"refresh": true,
 				"actions": [
 					{
@@ -52,14 +179,135 @@
 				"tags": [
 					"Setpoint",
 					"Temperature"
-				]
+				],
+				"readmeComment": "Value mapping `[\"1\"\u003d\"Low\",\"2\"\u003d\"Medium\",\"3\"\u003d\"High\"]`"
+			},
+			{
+				"property": "water_strong_t",
+				"friendlyName": "Rear Wash Water Pressure",
+				"channel": "rear_water_pressure",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "1",
+							"label": "Low"
+						},
+						{
+							"value": "2",
+							"label": "Medium"
+						},
+						{
+							"value": "3",
+							"label": "High"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_water_strong_t",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "water",
+				"tags": [
+					"Setpoint",
+					"Water"
+				],
+				"readmeComment": "Value mapping `[\"1\"\u003d\"Low\",\"2\"\u003d\"Medium\",\"3\"\u003d\"High\"]`"
+			},
+			{
+				"property": "water_temp_w",
+				"friendlyName": "Bidet Water Temperature",
+				"channel": "bidet_water_temperature",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "1",
+							"label": "Low"
+						},
+						{
+							"value": "2",
+							"label": "Medium"
+						},
+						{
+							"value": "3",
+							"label": "High"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_water_temp_w",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "temperature",
+				"tags": [
+					"Setpoint",
+					"Temperature"
+				],
+				"readmeComment": "Value mapping `[\"1\"\u003d\"Low\",\"2\"\u003d\"Medium\",\"3\"\u003d\"High\"]`"
+			},
+			{
+				"property": "water_strong_w",
+				"friendlyName": "Bidet Water Pressure",
+				"channel": "bidet_water_pressure",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "1",
+							"label": "Low"
+						},
+						{
+							"value": "2",
+							"label": "Medium"
+						},
+						{
+							"value": "3",
+							"label": "High"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_water_strong_w",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "water",
+				"tags": [
+					"Setpoint",
+					"Water"
+				],
+				"readmeComment": "Value mapping `[\"1\"\u003d\"Low\",\"2\"\u003d\"Medium\",\"3\"\u003d\"High\"]`"
 			},
 			{
 				"property": "fan_temp",
-				"friendlyName": "Fan Temperature",
-				"channel": "fan_temp",
-				"type": "Number:Temperature",
-				"unit": "CELSIUS",
+				"friendlyName": "Dryer Temperature",
+				"channel": "dryer_temperature",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "1",
+							"label": "Low"
+						},
+						{
+							"value": "2",
+							"label": "Medium"
+						},
+						{
+							"value": "3",
+							"label": "High"
+						}
+					]
+				},
 				"refresh": true,
 				"actions": [
 					{
@@ -71,20 +319,90 @@
 				"tags": [
 					"Setpoint",
 					"Temperature"
-				]
+				],
+				"readmeComment": "Value mapping `[\"1\"\u003d\"Low\",\"2\"\u003d\"Medium\",\"3\"\u003d\"High\"]`"
 			},
 			{
-				"property": "status_led",
-				"friendlyName": "Night Light",
-				"channel": "status_led",
-				"type": "Number",
+				"property": "status_selfclean",
+				"friendlyName": "Self Clean",
+				"channel": "self_clean",
+				"type": "Switch",
 				"refresh": true,
 				"actions": [
 					{
-						"command": "work_night_led",
-						"parameterType": "NUMBER"
+						"command": "self_clean_on",
+						"parameterType": "NONE",
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "ON",
+									"returnValue": 1
+								}
+							]
+						}
 					}
-				]
+				],
+				"category": "water",
+				"tags": [
+					"Switch"
+				],
+				"readmeComment": "ON starts the nozzle self clean; only when nobody is seated."
+			},
+			{
+				"property": "status_flush",
+				"friendlyName": "Flush",
+				"channel": "flush",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "flush_on",
+						"parameterType": "NONE",
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "ON",
+									"returnValue": 1
+								}
+							]
+						}
+					}
+				],
+				"category": "water",
+				"tags": [
+					"Switch",
+					"Water"
+				],
+				"readmeComment": "ON flushes the toilet; only when nobody is seated."
+			},
+			{
+				"property": "status_bubbleshield",
+				"friendlyName": "Foam Shield",
+				"channel": "foam_shield",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "bubble_shield_on",
+						"parameterType": "NONE",
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "ON",
+									"returnValue": 1
+								}
+							]
+						}
+					}
+				],
+				"category": "water",
+				"tags": [
+					"Switch"
+				],
+				"readmeComment": "ON applies the foam shield. Not available on xjx.toilet.pure."
 			}
 		],
 		"experimental": true

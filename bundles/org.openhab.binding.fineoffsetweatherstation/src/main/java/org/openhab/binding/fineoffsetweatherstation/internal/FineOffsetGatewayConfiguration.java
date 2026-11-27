@@ -33,6 +33,10 @@ public class FineOffsetGatewayConfiguration {
     public int port = 45000;
     public int pollingInterval = 16;
     public int discoverInterval = 900;
+    /** seconds to wait for the gateway to accept a connection or answer a request */
+    public int timeout = 10;
+    /** consecutive failed polls after which the gateway is reported OFFLINE */
+    public int failedPollsUntilOffline = 3;
 
     public Protocol protocol = Protocol.DEFAULT;
 }

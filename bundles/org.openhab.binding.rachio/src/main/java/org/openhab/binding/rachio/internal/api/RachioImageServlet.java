@@ -22,20 +22,17 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.api.Response;
-import org.eclipse.jetty.client.util.InputStreamResponseListener;
+import org.eclipse.jetty.client.InputStreamResponseListener;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.Response;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.core.io.net.http.HttpClientFactory;
+import org.ops4j.pax.web.service.http.HttpService;
+import org.ops4j.pax.web.service.http.NamespaceException;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.ConfigurationPolicy;
@@ -43,10 +40,13 @@ import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferencePolicy;
 import org.osgi.service.component.annotations.ReferencePolicyOption;
-import org.osgi.service.http.HttpService;
-import org.osgi.service.http.NamespaceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * {@link RachioImageServlet} Rachio sometimes returns an incorrect media type for images. This servlet is a work around
@@ -194,7 +194,7 @@ public class RachioImageServlet extends HttpServlet {
         logger.debug("RachioImage: {} image '{}'", request.getMethod(), uri);
         Request imageRequest = httpClient.newRequest(imageUrl).method(HTTP_METHOD_GET)
                 .timeout(HTTP_TIMEOUT_MS, TimeUnit.MILLISECONDS)
-                .header(HttpHeader.USER_AGENT, SERVLET_WEBHOOK_USER_AGENT);
+                .headers(h -> h.put(HttpHeader.USER_AGENT, SERVLET_WEBHOOK_USER_AGENT));
         InputStreamResponseListener listener = new InputStreamResponseListener();
         try {
             imageRequest.send(listener);

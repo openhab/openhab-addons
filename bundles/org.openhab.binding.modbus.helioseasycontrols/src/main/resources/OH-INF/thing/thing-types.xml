@@ -322,8 +322,8 @@
 		<label>Enable/Disable</label>
 		<description>Used for functionality that can be enabled or disabled</description>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
+			<point>Switch</point>
+			<property>Mode</property>
 		</tags>
 	</channel-type>
 
@@ -340,8 +340,8 @@
 		<label>On/Off</label>
 		<description>Used for configurations that can be on or off</description>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Power</tag>
+			<point>Switch</point>
+			<property>Power</property>
 		</tags>
 	</channel-type>
 
@@ -432,7 +432,7 @@
 		<label>Percentage</label>
 		<description>Percentage</description>
 		<tags>
-			<tag>Measurement</tag>
+			<point>Measurement</point>
 		</tags>
 		<state min="0" max="100" step="1" pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
@@ -443,8 +443,8 @@
 		<description>Temperature in °C</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state min="-27" max="9998.9" step="0.1" pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -454,7 +454,7 @@
 		<label>Sensor Value</label>
 		<description>Measurement of a sensor</description>
 		<tags>
-			<tag>Measurement</tag>
+			<point>Measurement</point>
 		</tags>
 		<state min="0" max="9998.9" step="0.1" pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -481,8 +481,8 @@
 		<label>RPM</label>
 		<description>RPM</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Speed</tag>
+			<point>Status</point>
+			<property>Speed</property>
 		</tags>
 		<state min="0" max="9999" step="1" pattern="%d rpm" readOnly="true"/>
 	</channel-type>
@@ -506,8 +506,8 @@
 		<label>Date</label>
 		<description>Date</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
+			<point>Status</point>
+			<property>Timestamp</property>
 		</tags>
 	</channel-type>
 
@@ -611,8 +611,8 @@
 		<description>Output power of preheater/afterheater (in percent)</description>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Heating</tag>
+			<point>Measurement</point>
+			<property>Heating</property>
 		</tags>
 		<state min="0" max="100000000" step="1" pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
@@ -664,8 +664,8 @@
 		<label>Errors / Warnings / Infos</label>
 		<description>Errors / warnings / infos as string</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>

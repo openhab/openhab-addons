@@ -26,10 +26,10 @@ import java.util.function.Function;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpMethod;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -101,7 +101,8 @@ public class ApiTools {
                 spec. Filter by tag or HTTP method. Use this to discover endpoints not \
                 covered by the curated tools, then call describe_api_endpoint for the schema \
                 before invoking with call_api.""")
-                .inputSchema(new McpSchema.JsonSchema("object", props, List.of(), null, null, null)).build();
+                .inputSchema(new McpSchema.JsonSchema("object", props, List.of(), null, null, null))
+                .annotations(readOnlyAnnotations()).build();
     }
 
     /**
@@ -187,7 +188,7 @@ public class ApiTools {
                 call_api so you know what arguments are required and how to interpret the \
                 response.""")
                 .inputSchema(new McpSchema.JsonSchema("object", props, List.of("method", "path"), null, null, null))
-                .build();
+                .annotations(readOnlyAnnotations()).build();
     }
 
     /**
@@ -242,6 +243,7 @@ public class ApiTools {
                 "Optional override for the request Content-Type. When omitted it is inferred from the endpoint's "
                         + "OpenAPI spec — application/json for most endpoints, text/plain for commands, states, and "
                         + "enable/runnow/regenerate flags."));
+        // Any REST endpoint can be invoked, including DELETE.
         return McpSchema.Tool.builder().name("call_api").description("""
                 Invoke an arbitrary openHAB REST endpoint. The call uses your own bearer token, \
                 so permissions match a direct REST call. Supports all HTTP methods. Returns \
@@ -250,7 +252,7 @@ public class ApiTools {
                 request shape. BE CAREFUL — this tool can invoke destructive endpoints \
                 (delete items, modify things, change service configs).""")
                 .inputSchema(new McpSchema.JsonSchema("object", props, List.of("method", "path"), null, null, null))
-                .build();
+                .annotations(writeAnnotations(true, false)).build();
     }
 
     /**
@@ -293,14 +295,14 @@ public class ApiTools {
 
         try {
             Request req = httpClient.newRequest(URI.create(url)).method(httpMethod)
-                    .header("Authorization", "Bearer " + token).header("Accept", "application/json");
+                    .headers(h -> h.put("Authorization", "Bearer " + token)).accept("application/json");
             Object body = args.get("body");
             if (body != null && httpMethod != HttpMethod.GET && httpMethod != HttpMethod.DELETE) {
                 String serialized = body instanceof String s ? s : jackson.writeValueAsString(body);
                 String override = getStringArg(args, "contentType");
                 String contentType = override != null ? override
                         : resolveRequestContentType(exchange, path, resolvedPath, method, body);
-                req.content(new StringContentProvider(serialized, StandardCharsets.UTF_8), contentType);
+                req.body(new StringRequestContent(contentType, serialized, StandardCharsets.UTF_8));
             }
             ContentResponse resp = req.send();
             return textResult(jsonMapper, buildResponse(resp));
@@ -328,7 +330,7 @@ public class ApiTools {
         }
         try {
             ContentResponse resp = httpClient.newRequest(URI.create(baseUrl + "/rest/spec")).method(HttpMethod.GET)
-                    .header("Authorization", "Bearer " + token).header("Accept", "application/json").send();
+                    .headers(h -> h.put("Authorization", "Bearer " + token)).accept("application/json").send();
             if (resp.getStatus() != 200) {
                 logger.debug("Spec fetch returned {} ({})", resp.getStatus(), resp.getReason());
                 return new SpecResult(null, "HTTP " + resp.getStatus() + " " + resp.getReason());

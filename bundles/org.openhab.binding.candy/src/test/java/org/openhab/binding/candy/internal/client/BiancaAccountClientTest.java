@@ -88,7 +88,7 @@ class BiancaAccountClientTest {
         server = HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
         base = URI.create("http://127.0.0.1:" + server.getAddress().getPort());
         client = new BiancaAccountClient(http, URI.create(base + "/CandyApp"), base);
-        http.addLifeCycleListener(new LifeCycle.Listener() {
+        http.addEventListener(new LifeCycle.Listener() {
             @Override
             public void lifeCycleStopped(@Nullable LifeCycle event) {
                 stopped.countDown();

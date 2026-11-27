@@ -22,8 +22,8 @@
     </dependency>
     <dependency>
       <groupId>io.github.jvoice-project</groupId>
-      <artifactId>libfvad-jni</artifactId>
-      <version>1.0.0-997e9dc-2</version>
+      <artifactId>silero-vad4j</artifactId>
+      <version>6.2.3.0</version>
     </dependency>
   </dependencies>
 </project>

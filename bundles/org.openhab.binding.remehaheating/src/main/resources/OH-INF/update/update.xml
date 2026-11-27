@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<update:update-descriptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:update="https://openhab.org/schemas/update-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/update-description/v1.0.0 https://openhab.org/schemas/update-description-1.0.0.xsd">
+
+	<thing-type uid="remehaheating:boiler">
+		<instruction-set targetVersion="1">
+			<add-channel id="thermal-mode">
+				<type>remehaheating:thermal-mode</type>
+			</add-channel>
+			<add-channel id="operating-mode">
+				<type>remehaheating:operating-mode</type>
+			</add-channel>
+			<add-channel id="seasonal-mode">
+				<type>remehaheating:seasonal-mode</type>
+			</add-channel>
+			<add-channel id="holiday-active">
+				<type>remehaheating:holiday-active</type>
+			</add-channel>
+			<add-channel id="zone-mode">
+				<type>remehaheating:zone-mode</type>
+			</add-channel>
+			<add-channel id="heating-demand">
+				<type>remehaheating:heating-demand</type>
+			</add-channel>
+			<add-channel id="next-setpoint">
+				<type>remehaheating:next-setpoint</type>
+			</add-channel>
+			<add-channel id="next-switch-time">
+				<type>remehaheating:next-switch-time</type>
+			</add-channel>
+			<add-channel id="fireplace-mode-active">
+				<type>remehaheating:fireplace-mode-active</type>
+			</add-channel>
+			<add-channel id="dhw-next-switch-time">
+				<type>remehaheating:dhw-next-switch-time</type>
+			</add-channel>
+			<add-channel id="dhw-anti-legionella">
+				<type>remehaheating:dhw-anti-legionella</type>
+			</add-channel>
+			<add-channel id="heating-curve-slope">
+				<type>remehaheating:heating-curve-slope</type>
+			</add-channel>
+			<add-channel id="heating-curve-base-setpoint">
+				<type>remehaheating:heating-curve-base-setpoint</type>
+			</add-channel>
+			<add-channel id="heating-curve-max-flow-temperature">
+				<type>remehaheating:heating-curve-max-flow-temperature</type>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+
+</update:update-descriptions>

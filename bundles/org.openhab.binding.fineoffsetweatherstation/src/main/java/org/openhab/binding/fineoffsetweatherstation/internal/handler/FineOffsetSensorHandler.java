@@ -28,11 +28,13 @@ import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
+import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.type.ChannelKind;
@@ -48,7 +50,11 @@ import org.slf4j.LoggerFactory;
  * The {@link FineOffsetSensorHandler} keeps track of the signal and battery of the sensor attached to the gateway,
  * and mirrors the sensor's measured values onto dynamically created channels.
  *
+ * <p>
+ * All updates are made by the gateway's refresh job, so the Thing is never edited concurrently.
+ *
  * @author Andreas Berger - Initial contribution
+ * @author Christopher Smith - Status from the gateway's reports
  */
 @NonNullByDefault
 public class FineOffsetSensorHandler extends BaseThingHandler {
@@ -62,9 +68,26 @@ public class FineOffsetSensorHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(FineOffsetSensorHandler.class);
     private final ChannelTypeRegistry channelTypeRegistry;
-    private final DynamicChannelReconciler reconciler = new DynamicChannelReconciler(STATIC_CHANNEL_IDS);
+    /**
+     * Number of consecutive polls a value may be missing before its channel is removed. A sensor that is briefly out
+     * of reach must keep its channels; this spans about one sensor-list read at the default intervals, after which a
+     * silent sensor is known to have no signal and its channels are kept anyway.
+     */
+    static final int SENSOR_MISSING_VALUE_REMOVAL_THRESHOLD = 60;
 
-    private boolean disposed;
+    private final DynamicChannelReconciler reconciler = new DynamicChannelReconciler(STATIC_CHANNEL_IDS,
+            SENSOR_MISSING_VALUE_REMOVAL_THRESHOLD);
+
+    private volatile boolean disposed;
+
+    /** What the gateway last reported about the sensor, re-applied whenever the gateway comes back. */
+    private enum DeviceState {
+        ONLINE,
+        NO_SIGNAL,
+        GONE
+    }
+
+    private volatile @Nullable DeviceState deviceState;
 
     public FineOffsetSensorHandler(Thing thing, ChannelTypeRegistry channelTypeRegistry) {
         super(thing);
@@ -82,9 +105,45 @@ public class FineOffsetSensorHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        updateStatus(ThingStatus.ONLINE);
         reconciler.reset();
+        deviceState = null;
         disposed = false;
+        applyStatus();
+    }
+
+    @Override
+    public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
+        // unlike the default, do not go ONLINE when the gateway returns if the sensor itself has no signal or is gone
+        if (!disposed) {
+            applyStatus();
+        }
+    }
+
+    /**
+     * Sets the status from the gateway's status and what the gateway last reported about the sensor, so the sensor is
+     * never ONLINE while its gateway is not. Synchronized because core notifies {@link #bridgeStatusChanged} on its own
+     * thread while the gateway's refresh job reports the sensor: reading the state and setting the status must not
+     * interleave.
+     */
+    private synchronized void applyStatus() {
+        Bridge bridge = getBridge();
+        if (bridge == null) {
+            updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED);
+        } else if (bridge.getStatus() != ThingStatus.ONLINE) {
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
+        } else {
+            DeviceState state = deviceState;
+            if (state == DeviceState.NO_SIGNAL) {
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/offline.no-signal");
+            } else if (state == DeviceState.GONE) {
+                updateStatus(ThingStatusDetail.GONE, "@text/offline.sensor-gone");
+            } else if (state == DeviceState.ONLINE) {
+                updateStatus(ThingStatus.ONLINE);
+            } else {
+                // not reported by the gateway yet
+                updateStatus(ThingStatus.UNKNOWN);
+            }
+        }
     }
 
     @Override
@@ -99,15 +158,13 @@ public class FineOffsetSensorHandler extends BaseThingHandler {
         if (sensorDevice == null) {
             // this only happens, if sensor data was read out correctly from the gateway, but the things' device
             // (sensor) is no longer part of the paired sensors
-            updateStatus(ThingStatusDetail.GONE);
+            deviceState = DeviceState.GONE;
+            applyStatus();
             getThing().getChannels().forEach(c -> updateState(c.getUID(), UnDefType.UNDEF));
             return;
         }
-        if (sensorDevice.getSignal() == 0) {
-            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR);
-        } else {
-            updateStatus(ThingStatus.ONLINE);
-        }
+        deviceState = sensorDevice.getSignal() == 0 ? DeviceState.NO_SIGNAL : DeviceState.ONLINE;
+        applyStatus();
         updateState(FineOffsetWeatherStationBindingConstants.SENSOR_CHANNEL_SIGNAL,
                 new DecimalType(sensorDevice.getSignal()));
         BatteryStatus batteryStatus = sensorDevice.getBatteryStatus();
@@ -119,38 +176,39 @@ public class FineOffsetSensorHandler extends BaseThingHandler {
             updateState(FineOffsetWeatherStationBindingConstants.SENSOR_CHANNEL_BATTERY_LEVEL,
                     new DecimalType(new BigDecimal(percentage)));
         } else {
-            @Nullable
-            Channel channel = thing.getChannel(FineOffsetWeatherStationBindingConstants.SENSOR_CHANNEL_BATTERY_LEVEL);
-            if (channel != null) {
-                updateThing(editThing().withoutChannels(channel).build());
-            }
+            removeChannelIfPresent(FineOffsetWeatherStationBindingConstants.SENSOR_CHANNEL_BATTERY_LEVEL);
         }
         Double voltage = batteryStatus.getVoltage();
         if (voltage != null) {
             updateState(FineOffsetWeatherStationBindingConstants.SENSOR_CHANNEL_BATTERY_VOLTAGE,
                     new QuantityType<>(voltage, Units.VOLT));
         } else {
-            @Nullable
-            Channel channel = thing.getChannel(FineOffsetWeatherStationBindingConstants.SENSOR_CHANNEL_BATTERY_VOLTAGE);
-            if (channel != null) {
-                updateThing(editThing().withoutChannels(channel).build());
-            }
+            removeChannelIfPresent(FineOffsetWeatherStationBindingConstants.SENSOR_CHANNEL_BATTERY_VOLTAGE);
+        }
+    }
+
+    private void removeChannelIfPresent(String channelId) {
+        Channel channel = thing.getChannel(channelId);
+        if (channel != null) {
+            updateThing(editThing().withoutChannels(channel).build());
         }
     }
 
     /**
      * Mirrors the sensor's measured values onto dynamic channels: creates channels that do not exist yet, updates the
      * state of existing ones, and removes a managed channel once its value has been absent for
-     * {@link DynamicChannelReconciler#MISSING_VALUE_REMOVAL_THRESHOLD} consecutive dispatches. Static signal/battery
-     * channels are never affected. Called every poll by the gateway, with an empty collection when this sensor
-     * reported nothing.
+     * {@link #SENSOR_MISSING_VALUE_REMOVAL_THRESHOLD} consecutive dispatches while the sensor has signal. Static
+     * signal/battery channels are never affected. Called every poll by the gateway, with an empty collection when this
+     * sensor reported nothing.
      */
     public void updateMeasuredValues(Collection<MeasuredValue> values) {
         if (disposed) {
             return;
         }
+        // a sensor the gateway receives no signal from reports no values; that is no reason to remove its channels
+        boolean countMissing = deviceState != DeviceState.NO_SIGNAL;
         DynamicChannelReconciler.Plan plan = reconciler.reconcile(values, thing.getChannels(),
-                MeasuredValue::getChannelPrefix, this::createChannel);
+                MeasuredValue::getChannelPrefix, this::createChannel, countMissing);
         if (plan.hasChannelChanges()) {
             List<Channel> channels = new ArrayList<>(thing.getChannels());
             channels.addAll(plan.channelsToAdd);

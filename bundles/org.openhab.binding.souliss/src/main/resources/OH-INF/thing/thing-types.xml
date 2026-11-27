@@ -946,8 +946,8 @@
 		<item-type>String</item-type>
 		<label>Fan</label>
 		<tags>
-			<tag>Control</tag>
-			<tag>Speed</tag>
+			<point>Control</point>
+			<property>Speed</property>
 		</tags>
 		<state readOnly="false">
 			<options>
@@ -964,8 +964,8 @@
 		<item-type>String</item-type>
 		<label>Mode</label>
 		<tags>
-			<tag>Control</tag>
-			<tag>Mode</tag>
+			<point>Control</point>
+			<property>Mode</property>
 		</tags>
 		<state readOnly="false">
 			<options>
@@ -1002,8 +1002,8 @@
 		<label>On/Off</label>
 		<description>Switch on/off</description>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Power</tag>
+			<point>Switch</point>
+			<property>Power</property>
 		</tags>
 	</channel-type>
 
@@ -1018,8 +1018,8 @@
 		<label>On/Off Auto Mode</label>
 		<description>Switch on/off</description>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
+			<point>Switch</point>
+			<property>Mode</property>
 		</tags>
 	</channel-type>
 
@@ -1028,8 +1028,8 @@
 		<label>State On/Off</label>
 		<description>Light on/off</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Light</tag>
+			<point>Status</point>
+			<property>Light</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -1040,8 +1040,8 @@
 		<label>State Open/Closed</label>
 		<description>Contact Open/Closed</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>OpenState</tag>
+			<point>Status</point>
+			<property>OpenState</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -1052,8 +1052,8 @@
 		<description>Rollershutter Up/Down</description>
 		<category>Blinds</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>OpenLevel</tag>
+			<point>Control</point>
+			<property>OpenLevel</property>
 		</tags>
 		<state min="0" max="100" pattern="%d %%"/>
 	</channel-type>
@@ -1063,8 +1063,8 @@
 		<label>State</label>
 		<description>State of rollershutter/windows</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Opening</tag>
+			<point>Status</point>
+			<property>Opening</property>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -1124,8 +1124,8 @@
 		<description>Current humidity in %</description>
 		<category>Humidity</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Humidity</tag>
+			<point>Measurement</point>
+			<property>Humidity</property>
 		</tags>
 		<state readOnly="true" pattern="%d %%"/>
 	</channel-type>
@@ -1137,8 +1137,8 @@
 		<description>Current temperature</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -1149,8 +1149,8 @@
 		<description>Setpoint temperature</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state min="12" max="30" step="0.5" pattern="%.1f %unit%" readOnly="false"/>
 	</channel-type>
@@ -1160,8 +1160,8 @@
 		<label>Illuminance</label>
 		<description>Lux</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Illuminance</tag>
+			<point>Measurement</point>
+			<property>Illuminance</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f kLux"/>
 	</channel-type>
@@ -1172,8 +1172,8 @@
 		<description>Current Voltage</description>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Voltage</tag>
+			<point>Measurement</point>
+			<property>Voltage</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f V"/>
 	</channel-type>
@@ -1183,8 +1183,8 @@
 		<description>Current Ampere</description>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Current</tag>
+			<point>Measurement</point>
+			<property>Current</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f A"/>
 	</channel-type>
@@ -1195,8 +1195,8 @@
 		<description>Current Power</description>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point>Measurement</point>
+			<property>Power</property>
 		</tags>
 		<state readOnly="true" pattern="%d W"/>
 	</channel-type>
@@ -1206,8 +1206,8 @@
 		<label>Pressure</label>
 		<description>Pressure</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Pressure</tag>
+			<point>Measurement</point>
+			<property>Pressure</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f hPa"/>
 	</channel-type>
@@ -1219,8 +1219,8 @@
 			control and bind to a Switch for turning the led on or off.</description>
 		<category>ColorLight</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>Color</tag>
+			<point>Control</point>
+			<property>Color</property>
 		</tags>
 	</channel-type>
 
@@ -1230,8 +1230,8 @@
 		<description>The brightness can be set in 16 steps for RGBW/White leds and in 64 steps for RGBWW leds</description>
 		<category>Light</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>Brightness</tag>
+			<point>Control</point>
+			<property>Brightness</property>
 		</tags>
 		<state min="0" max="100" step="1" pattern="%d %%"/>
 	</channel-type>
@@ -1242,8 +1242,8 @@
 		<description>Switch lamp to white mode</description>
 		<category>Light</category>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
+			<point>Switch</point>
+			<property>Mode</property>
 		</tags>
 	</channel-type>
 
@@ -1253,8 +1253,8 @@
 		<description>Brightness Up/Down</description>
 		<category>Light</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>Brightness</tag>
+			<point>Control</point>
+			<property>Brightness</property>
 		</tags>
 		<state min="0" max="100" pattern="%d %%" readOnly="false"/>
 	</channel-type>

@@ -40,7 +40,9 @@ public enum GeniMeasurand {
     PowerConsumption(GeniReadRequest.Motor, 12, ValueFormat.Float32, GeniUnit.Watt, 1),
     Energy(GeniReadRequest.Energy, 0, ValueFormat.Float64, GeniUnit.WattSecond, Units.KILOWATT_HOUR, 3),
     OperatingTime(GeniReadRequest.Counters, 8, ValueFormat.SignedInt32, GeniUnit.Second, 0),
-    StartCount(GeniReadRequest.Counters, 0, ValueFormat.SignedInt32, GeniUnit.Dimensionless, 0);
+    StartCount(GeniReadRequest.Counters, 0, ValueFormat.SignedInt32, GeniUnit.Dimensionless, 0),
+    OperatingMode(GeniReadRequest.OperatingMode, 1, ValueFormat.UnsignedInt8, GeniUnit.Dimensionless, 0),
+    ControlMode(GeniReadRequest.ControlMode, 2, ValueFormat.UnsignedInt8, GeniUnit.Dimensionless, 0);
 
     private final GeniReadRequest readRequest;
     private final int offset;
@@ -76,6 +78,7 @@ public enum GeniMeasurand {
             case Float32 -> Float.BYTES;
             case Float64 -> Double.BYTES;
             case SignedInt32 -> Integer.BYTES;
+            case UnsignedInt8 -> Byte.BYTES;
         };
     }
 
@@ -84,6 +87,7 @@ public enum GeniMeasurand {
             case Float32 -> data.getFloat(dataOffset + offset);
             case Float64 -> data.getDouble(dataOffset + offset);
             case SignedInt32 -> data.getInt(dataOffset + offset);
+            case UnsignedInt8 -> Byte.toUnsignedInt(data.get(dataOffset + offset));
         };
     }
 
@@ -109,6 +113,7 @@ public enum GeniMeasurand {
     private enum ValueFormat {
         Float32,
         Float64,
-        SignedInt32
+        SignedInt32,
+        UnsignedInt8
     }
 }

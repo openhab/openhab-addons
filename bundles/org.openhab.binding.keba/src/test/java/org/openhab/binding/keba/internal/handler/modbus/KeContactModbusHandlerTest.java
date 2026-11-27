@@ -195,6 +195,10 @@ class KeContactModbusHandlerTest {
     void convertsUnlockTriggerAndRejectsOff() {
         assertEquals(0, KeContactModbusHandler.toRawValue(KebaModbusWriteRegister.UNLOCK_PLUG, OnOffType.ON));
         assertNull(KeContactModbusHandler.toRawValue(KebaModbusWriteRegister.UNLOCK_PLUG, OnOffType.OFF));
+        assertEquals(0, KeContactModbusHandler.toRawValue(KebaModbusWriteRegister.STOP_CHARGING, OnOffType.ON));
+        assertNull(KeContactModbusHandler.toRawValue(KebaModbusWriteRegister.STOP_CHARGING, OnOffType.OFF));
+        assertEquals(5004, KebaModbusWriteRegister.STOP_CHARGING.getAddress());
+        assertEquals("stop", KebaModbusWriteRegister.STOP_CHARGING.getChannelId());
         assertEquals(1, KeContactModbusHandler.toRawValue(KebaModbusWriteRegister.FAILSAFE_PERSIST, OnOffType.ON));
         assertNull(KeContactModbusHandler.toRawValue(KebaModbusWriteRegister.FAILSAFE_PERSIST, OnOffType.OFF));
         assertEquals(1,

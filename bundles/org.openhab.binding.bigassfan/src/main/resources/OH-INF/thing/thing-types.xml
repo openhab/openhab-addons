@@ -93,8 +93,8 @@
 		<description>Turn the fan on and off</description>
 		<category>Switch</category>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Power</tag>
+			<point>Switch</point>
+			<property>Power</property>
 		</tags>
 	</channel-type>
 	<channel-type id="fan-speed">
@@ -102,8 +102,8 @@
 		<label>Fan Speed</label>
 		<description>Control the speed of the fan</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Speed</tag>
+			<point>Control</point>
+			<property>Speed</property>
 		</tags>
 	</channel-type>
 	<channel-type id="fan-direction">
@@ -111,8 +111,8 @@
 		<label>Fan Direction</label>
 		<description>Forward or reverse</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
+			<point>Status</point>
+			<property>Mode</property>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -127,8 +127,8 @@
 		<description>Enable or disable fan auto mode</description>
 		<category>Switch</category>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
+			<point>Switch</point>
+			<property>Mode</property>
 		</tags>
 	</channel-type>
 	<channel-type id="fan-whoosh">
@@ -137,8 +137,8 @@
 		<description>Enable or disable fan whoosh mode</description>
 		<category>Switch</category>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
+			<point>Switch</point>
+			<property>Mode</property>
 		</tags>
 	</channel-type>
 	<channel-type id="fan-smartmode">
@@ -146,8 +146,8 @@
 		<label>Fan Smartmode</label>
 		<description>Set Smartmode to OFF, COOLING, or HEATING</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Mode</tag>
+			<point>Control</point>
+			<property>Mode</property>
 		</tags>
 		<state>
 			<options>
@@ -183,8 +183,8 @@
 		<description>Enable or disable fan winter mode</description>
 		<category>Switch</category>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
+			<point>Switch</point>
+			<property>Mode</property>
 		</tags>
 	</channel-type>
 	<channel-type id="fan-sleep">
@@ -193,8 +193,8 @@
 		<description>Enable or disable fan sleep mode</description>
 		<category>Switch</category>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
+			<point>Switch</point>
+			<property>Mode</property>
 		</tags>
 	</channel-type>
 	<channel-type id="light-power">
@@ -263,8 +263,8 @@
 		<label>Motion Sensor</label>
 		<description>The fan's motion sensor has detected motion</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Motion</tag>
+			<point>Status</point>
+			<property>Motion</property>
 		</tags>
 		<state readOnly="true">
 			<options>

@@ -87,7 +87,7 @@ public class MyNettyAuthHandler extends ChannelDuplexHandler {
             return;
         }
 
-        /////// Fresh Digest Authenticate method follows as Basic is already handled and returned ////////
+        // Fresh Digest Authenticate method follows as Basic is already handled and returned
         realm = Helper.searchString(authenticate, "realm=\"");
         if (realm.isEmpty()) {
             logger.warn(

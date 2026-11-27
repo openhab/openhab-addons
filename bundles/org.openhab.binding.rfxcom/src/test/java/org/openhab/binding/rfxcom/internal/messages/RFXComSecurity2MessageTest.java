@@ -13,11 +13,15 @@
 package org.openhab.binding.rfxcom.internal.messages;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.openhab.binding.rfxcom.internal.RFXComBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
+import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedChannelException;
 import org.openhab.binding.rfxcom.internal.messages.RFXComSecurity2Message.SubType;
+import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.util.HexUtils;
 
 /**
@@ -28,6 +32,17 @@ import org.openhab.core.util.HexUtils;
  */
 @NonNullByDefault
 public class RFXComSecurity2MessageTest {
+
+    @Test
+    public void testContactStatesAreNotCommands() {
+        RFXComSecurity2Message message = new RFXComSecurity2Message();
+        for (String channelId : java.util.List.of(CHANNEL_CONTACT, CHANNEL_CONTACT_1, CHANNEL_CONTACT_2,
+                CHANNEL_CONTACT_3)) {
+            for (OpenClosedType state : OpenClosedType.values()) {
+                assertThrows(RFXComUnsupportedChannelException.class, () -> message.convertFromState(channelId, state));
+            }
+        }
+    }
 
     @Test
     public void testSomeMessages() throws RFXComException {

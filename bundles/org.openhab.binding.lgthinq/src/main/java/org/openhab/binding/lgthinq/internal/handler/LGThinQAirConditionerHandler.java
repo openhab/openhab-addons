@@ -15,9 +15,7 @@ package org.openhab.binding.lgthinq.internal.handler;
 import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.*;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -40,13 +38,10 @@ import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
-import org.openhab.core.thing.ChannelGroupUID;
-import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.thing.link.ItemChannelLinkRegistry;
 import org.openhab.core.types.Command;
-import org.openhab.core.types.StateOption;
 import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,25 +57,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @NonNullByDefault
 public class LGThinQAirConditionerHandler extends LGThinQAbstractDeviceHandler<ACCapability, ACCanonicalSnapshot> {
 
-    public final ChannelGroupUID channelGroupExtendedInfoUID;
-    public final ChannelGroupUID channelGroupDashboardUID;
-    private final ChannelUID powerChannelUID;
-    private final ChannelUID opModeChannelUID;
-    private final ChannelUID hpAirWaterSwitchChannelUID;
-    private final ChannelUID fanSpeedChannelUID;
-    private final ChannelUID targetTempChannelUID;
-    private final ChannelUID currTempChannelUID;
-    private final ChannelUID minTempChannelUID;
-    private final ChannelUID maxTempChannelUID;
-    private final ChannelUID jetModeChannelUID;
-    private final ChannelUID airCleanChannelUID;
-    private final ChannelUID autoDryChannelUID;
-    private final ChannelUID stepUpDownChannelUID;
-    private final ChannelUID stepLeftRightChannelUID;
-    private final ChannelUID energySavingChannelUID;
-    private final ChannelUID extendedInfoCollectorChannelUID;
-    private final ChannelUID currentEnergyConsumptionChannelUID;
-    private final ChannelUID remainingFilterChannelUID;
+    private final DeviceChannelGroup dashboard;
+    private final DeviceChannelGroup extendedInfo;
     private final ObjectMapper mapper = new ObjectMapper();
     private final Logger logger = LoggerFactory.getLogger(LGThinQAirConditionerHandler.class);
     private final LGThinQACApiClientService lgThinqACApiClientService;
@@ -91,27 +69,8 @@ public class LGThinQAirConditionerHandler extends LGThinQAbstractDeviceHandler<A
         super(thing, stateDescriptionProvider, itemChannelLinkRegistry);
         lgThinqACApiClientService = LGThinQApiClientServiceFactory.newACApiClientService(lgPlatformType,
                 httpClientFactory);
-        channelGroupDashboardUID = new ChannelGroupUID(getThing().getUID(), CHANNEL_DASHBOARD_GRP_ID);
-        channelGroupExtendedInfoUID = new ChannelGroupUID(getThing().getUID(), CHANNEL_EXTENDED_INFO_GRP_ID);
-
-        opModeChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_AC_MOD_OP_ID);
-        hpAirWaterSwitchChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_AC_AIR_WATER_SWITCH_ID);
-        targetTempChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_AC_TARGET_TEMP_ID);
-        minTempChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_AC_MIN_TEMP_ID);
-        maxTempChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_AC_MAX_TEMP_ID);
-        currTempChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_AC_CURRENT_TEMP_ID);
-        fanSpeedChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_AC_FAN_SPEED_ID);
-        jetModeChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_AC_COOL_JET_ID);
-        airCleanChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_AC_AIR_CLEAN_ID);
-        autoDryChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_AC_AUTO_DRY_ID);
-        energySavingChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_AC_ENERGY_SAVING_ID);
-        stepUpDownChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_AC_STEP_UP_DOWN_ID);
-        stepLeftRightChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_AC_STEP_LEFT_RIGHT_ID);
-        powerChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_AC_POWER_ID);
-        extendedInfoCollectorChannelUID = new ChannelUID(channelGroupExtendedInfoUID,
-                CHANNEL_EXTENDED_INFO_COLLECTOR_ID);
-        currentEnergyConsumptionChannelUID = new ChannelUID(channelGroupExtendedInfoUID, CHANNEL_AC_CURRENT_ENERGY_ID);
-        remainingFilterChannelUID = new ChannelUID(channelGroupExtendedInfoUID, CHANNEL_AC_REMAINING_FILTER_ID);
+        dashboard = new DeviceChannelGroup(getThing().getUID(), CHANNEL_DASHBOARD_GRP_ID);
+        extendedInfo = new DeviceChannelGroup(getThing().getUID(), CHANNEL_EXTENDED_INFO_GRP_ID);
     }
 
     @Override
@@ -121,13 +80,13 @@ public class LGThinQAirConditionerHandler extends LGThinQAbstractDeviceHandler<A
             ACCapability cap = getCapabilities();
             if (!isExtraInfoCollectorSupported()) {
                 ThingBuilder builder = editThing()
-                        .withoutChannels(this.getThing().getChannelsOfGroup(channelGroupExtendedInfoUID.getId()));
+                        .withoutChannels(this.getThing().getChannelsOfGroup(extendedInfo.uid().getId()));
                 updateThing(builder.build());
             } else if (!cap.isEnergyMonitorAvailable()) {
-                ThingBuilder builder = editThing().withoutChannel(currentEnergyConsumptionChannelUID);
+                ThingBuilder builder = editThing().withoutChannel(extendedInfo.channel(CHANNEL_AC_CURRENT_ENERGY_ID));
                 updateThing(builder.build());
             } else if (!cap.isFilterMonitorAvailable()) {
-                ThingBuilder builder = editThing().withoutChannel(remainingFilterChannelUID);
+                ThingBuilder builder = editThing().withoutChannel(extendedInfo.channel(CHANNEL_AC_REMAINING_FILTER_ID));
                 updateThing(builder.build());
             }
         } catch (LGThinqApiException e) {
@@ -137,42 +96,49 @@ public class LGThinQAirConditionerHandler extends LGThinQAbstractDeviceHandler<A
 
     @Override
     protected void updateDeviceChannels(ACCanonicalSnapshot shot) {
-        updateState(powerChannelUID, OnOffType.from(DevicePowerState.DV_POWER_ON == shot.getPowerStatus()));
-        updateState(opModeChannelUID, new DecimalType(shot.getOperationMode()));
+        updateState(dashboard.channel(CHANNEL_AC_POWER_ID),
+                OnOffType.from(DevicePowerState.DV_POWER_ON == shot.getPowerStatus()));
+        updateState(dashboard.channel(CHANNEL_AC_MOD_OP_ID), new DecimalType(shot.getOperationMode()));
         if (DeviceTypes.HEAT_PUMP.equals(getDeviceType())) {
-            updateState(hpAirWaterSwitchChannelUID, new DecimalType(shot.getHpAirWaterTempSwitch()));
+            updateState(dashboard.channel(CHANNEL_AC_AIR_WATER_SWITCH_ID),
+                    new DecimalType(shot.getHpAirWaterTempSwitch()));
         }
-        updateState(fanSpeedChannelUID, new DecimalType(shot.getAirWindStrength()));
-        updateState(currTempChannelUID, new DecimalType(shot.getCurrentTemperature()));
-        updateState(targetTempChannelUID, new DecimalType(shot.getTargetTemperature()));
+        updateState(dashboard.channel(CHANNEL_AC_FAN_SPEED_ID), new DecimalType(shot.getAirWindStrength()));
+        updateState(dashboard.channel(CHANNEL_AC_CURRENT_TEMP_ID), new DecimalType(shot.getCurrentTemperature()));
+        updateState(dashboard.channel(CHANNEL_AC_TARGET_TEMP_ID), new DecimalType(shot.getTargetTemperature()));
         try {
             ACCapability acCap = getCapabilities();
-            if (getThing().getChannel(stepUpDownChannelUID) != null) {
-                updateState(stepUpDownChannelUID, new DecimalType((int) shot.getStepUpDownMode()));
+            if (getThing().getChannel(dashboard.channel(CHANNEL_AC_STEP_UP_DOWN_ID)) != null) {
+                updateState(dashboard.channel(CHANNEL_AC_STEP_UP_DOWN_ID),
+                        new DecimalType((int) shot.getStepUpDownMode()));
             }
-            if (getThing().getChannel(stepLeftRightChannelUID) != null) {
-                updateState(stepLeftRightChannelUID, new DecimalType((int) shot.getStepLeftRightMode()));
+            if (getThing().getChannel(dashboard.channel(CHANNEL_AC_STEP_LEFT_RIGHT_ID)) != null) {
+                updateState(dashboard.channel(CHANNEL_AC_STEP_LEFT_RIGHT_ID),
+                        new DecimalType((int) shot.getStepLeftRightMode()));
             }
-            if (getThing().getChannel(jetModeChannelUID) != null) {
+            if (getThing().getChannel(dashboard.channel(CHANNEL_AC_COOL_JET_ID)) != null) {
                 Double commandCoolJetOn = Double.valueOf(acCap.getCoolJetModeCommandOn());
-                updateState(jetModeChannelUID, OnOffType.from(commandCoolJetOn.equals(shot.getCoolJetMode())));
+                updateState(dashboard.channel(CHANNEL_AC_COOL_JET_ID),
+                        OnOffType.from(commandCoolJetOn.equals(shot.getCoolJetMode())));
             }
-            if (getThing().getChannel(airCleanChannelUID) != null) {
+            if (getThing().getChannel(dashboard.channel(CHANNEL_AC_AIR_CLEAN_ID)) != null) {
                 Double commandAirCleanOn = Double.valueOf(acCap.getAirCleanModeCommandOn());
-                updateState(airCleanChannelUID, OnOffType.from(commandAirCleanOn.equals(shot.getAirCleanMode())));
+                updateState(dashboard.channel(CHANNEL_AC_AIR_CLEAN_ID),
+                        OnOffType.from(commandAirCleanOn.equals(shot.getAirCleanMode())));
             }
-            if (getThing().getChannel(energySavingChannelUID) != null) {
+            if (getThing().getChannel(dashboard.channel(CHANNEL_AC_ENERGY_SAVING_ID)) != null) {
                 Double energySavingOn = Double.valueOf(acCap.getEnergySavingModeCommandOn());
-                updateState(energySavingChannelUID, OnOffType.from(energySavingOn.equals(shot.getEnergySavingMode())));
+                updateState(dashboard.channel(CHANNEL_AC_ENERGY_SAVING_ID),
+                        OnOffType.from(energySavingOn.equals(shot.getEnergySavingMode())));
             }
-            if (getThing().getChannel(autoDryChannelUID) != null) {
-                Double autoDryOn = Double.valueOf(acCap.getCoolJetModeCommandOn());
-                updateState(autoDryChannelUID, OnOffType.from(autoDryOn.equals(shot.getAutoDryMode())));
+            if (getThing().getChannel(dashboard.channel(CHANNEL_AC_AUTO_DRY_ID)) != null) {
+                Double autoDryOn = Double.valueOf(acCap.getAutoDryModeCommandOn());
+                updateState(dashboard.channel(CHANNEL_AC_AUTO_DRY_ID),
+                        OnOffType.from(autoDryOn.equals(shot.getAutoDryMode())));
             }
             if (DeviceTypes.HEAT_PUMP.equals(getDeviceType())) {
                 // HP has different combination of min and max target temperature depending on the switch mode and
-                // operation
-                // mode
+                // operation mode
                 String opModeValue = Objects
                         .requireNonNullElse(acCap.getOpMode().get(getLastShot().getOperationMode().toString()), "");
                 if (CAP_HP_AIR_SWITCH.equals(shot.getHpAirWaterTempSwitch())) {
@@ -195,8 +161,10 @@ public class LGThinQAirConditionerHandler extends LGThinQAbstractDeviceHandler<A
                     logger.warn("Invalid value received by HP snapshot for the air/water switch property: {}",
                             shot.getHpAirWaterTempSwitch());
                 }
-                updateState(minTempChannelUID, new DecimalType(BigDecimal.valueOf(minTempConstraint)));
-                updateState(maxTempChannelUID, new DecimalType(BigDecimal.valueOf(maxTempConstraint)));
+                updateState(dashboard.channel(CHANNEL_AC_MIN_TEMP_ID),
+                        new DecimalType(BigDecimal.valueOf(minTempConstraint)));
+                updateState(dashboard.channel(CHANNEL_AC_MAX_TEMP_ID),
+                        new DecimalType(BigDecimal.valueOf(maxTempConstraint)));
             }
         } catch (LGThinqApiException e) {
             logger.error("Unexpected Error getting ACCapability Capabilities", e);
@@ -208,42 +176,37 @@ public class LGThinQAirConditionerHandler extends LGThinQAbstractDeviceHandler<A
     @Override
     public void updateChannelDynStateDescription() throws LGThinqApiException {
         ACCapability acCap = getCapabilities();
-        manageDynChannel(jetModeChannelUID, CHANNEL_AC_COOL_JET_ID, CoreItemFactory.SWITCH, acCap.isJetModeAvailable());
-        manageDynChannel(autoDryChannelUID, CHANNEL_AC_AUTO_DRY_ID, CoreItemFactory.SWITCH,
+        manageDynChannel(dashboard.channel(CHANNEL_AC_COOL_JET_ID), CHANNEL_AC_COOL_JET_ID, CoreItemFactory.SWITCH,
+                acCap.isJetModeAvailable());
+        manageDynChannel(dashboard.channel(CHANNEL_AC_AUTO_DRY_ID), CHANNEL_AC_AUTO_DRY_ID, CoreItemFactory.SWITCH,
                 acCap.isAutoDryModeAvailable());
-        manageDynChannel(airCleanChannelUID, CHANNEL_AC_AIR_CLEAN_ID, CoreItemFactory.SWITCH,
+        manageDynChannel(dashboard.channel(CHANNEL_AC_AIR_CLEAN_ID), CHANNEL_AC_AIR_CLEAN_ID, CoreItemFactory.SWITCH,
                 acCap.isAirCleanAvailable());
-        manageDynChannel(energySavingChannelUID, CHANNEL_AC_ENERGY_SAVING_ID, CoreItemFactory.SWITCH,
-                acCap.isEnergySavingAvailable());
-        manageDynChannel(stepUpDownChannelUID, CHANNEL_AC_STEP_UP_DOWN_ID, CoreItemFactory.SWITCH,
-                acCap.isStepUpDownAvailable());
-        manageDynChannel(stepLeftRightChannelUID, CHANNEL_AC_STEP_LEFT_RIGHT_ID, CoreItemFactory.SWITCH,
-                acCap.isStepLeftRightAvailable());
-        manageDynChannel(stepLeftRightChannelUID, CHANNEL_AC_STEP_LEFT_RIGHT_ID, CoreItemFactory.SWITCH,
-                acCap.isStepLeftRightAvailable());
+        manageDynChannel(dashboard.channel(CHANNEL_AC_ENERGY_SAVING_ID), CHANNEL_AC_ENERGY_SAVING_ID,
+                CoreItemFactory.SWITCH, acCap.isEnergySavingAvailable());
+        manageDynChannel(dashboard.channel(CHANNEL_AC_STEP_UP_DOWN_ID), CHANNEL_AC_STEP_UP_DOWN_ID,
+                CoreItemFactory.SWITCH, acCap.isStepUpDownAvailable());
+        manageDynChannel(dashboard.channel(CHANNEL_AC_STEP_LEFT_RIGHT_ID), CHANNEL_AC_STEP_LEFT_RIGHT_ID,
+                CoreItemFactory.SWITCH, acCap.isStepLeftRightAvailable());
 
         if (!acCap.getFanSpeed().isEmpty()) {
-            List<StateOption> options = new ArrayList<>();
-            acCap.getFanSpeed()
-                    .forEach((k, v) -> options.add(new StateOption(k, emptyIfNull(CAP_AC_FAN_SPEED.get(v)))));
-            stateDescriptionProvider.setStateOptions(fanSpeedChannelUID, options);
+            StateDescriptionBuilder.setStateOptions(stateDescriptionProvider,
+                    dashboard.channel(CHANNEL_AC_FAN_SPEED_ID), acCap.getFanSpeed(),
+                    e -> Objects.requireNonNullElse(CAP_AC_FAN_SPEED.get(e.getValue()), ""));
         }
         if (!acCap.getOpMode().isEmpty()) {
-            List<StateOption> options = new ArrayList<>();
-            acCap.getOpMode().forEach((k, v) -> options.add(new StateOption(k, emptyIfNull(CAP_AC_OP_MODE.get(v)))));
-            stateDescriptionProvider.setStateOptions(opModeChannelUID, options);
+            StateDescriptionBuilder.setStateOptions(stateDescriptionProvider, dashboard.channel(CHANNEL_AC_MOD_OP_ID),
+                    acCap.getOpMode(), e -> Objects.requireNonNullElse(CAP_AC_OP_MODE.get(e.getValue()), ""));
         }
         if (!acCap.getStepLeftRight().isEmpty()) {
-            List<StateOption> options = new ArrayList<>();
-            acCap.getStepLeftRight().forEach(
-                    (k, v) -> options.add(new StateOption(k, emptyIfNull(CAP_AC_STEP_LEFT_RIGHT_MODE.get(v)))));
-            stateDescriptionProvider.setStateOptions(stepLeftRightChannelUID, options);
+            StateDescriptionBuilder.setStateOptions(stateDescriptionProvider,
+                    dashboard.channel(CHANNEL_AC_STEP_LEFT_RIGHT_ID), acCap.getStepLeftRight(),
+                    e -> Objects.requireNonNullElse(CAP_AC_STEP_LEFT_RIGHT_MODE.get(e.getValue()), ""));
         }
         if (!acCap.getStepUpDown().isEmpty()) {
-            List<StateOption> options = new ArrayList<>();
-            acCap.getStepUpDown()
-                    .forEach((k, v) -> options.add(new StateOption(k, emptyIfNull(CAP_AC_STEP_UP_DOWN_MODE.get(v)))));
-            stateDescriptionProvider.setStateOptions(stepUpDownChannelUID, options);
+            StateDescriptionBuilder.setStateOptions(stateDescriptionProvider,
+                    dashboard.channel(CHANNEL_AC_STEP_UP_DOWN_ID), acCap.getStepUpDown(),
+                    e -> Objects.requireNonNullElse(CAP_AC_STEP_UP_DOWN_MODE.get(e.getValue()), ""));
         }
     }
 
@@ -287,17 +250,17 @@ public class LGThinQAirConditionerHandler extends LGThinQAbstractDeviceHandler<A
     }
 
     protected void resetExtraInfoChannels() {
-        updateState(currentEnergyConsumptionChannelUID, UnDefType.UNDEF);
+        updateState(extendedInfo.channel(CHANNEL_AC_CURRENT_ENERGY_ID), UnDefType.UNDEF);
         if (!isExtraInfoCollectorEnabled()) { // if collector is enabled we can keep the current value
-            updateState(remainingFilterChannelUID, UnDefType.UNDEF);
+            updateState(extendedInfo.channel(CHANNEL_AC_REMAINING_FILTER_ID), UnDefType.UNDEF);
         }
     }
 
     protected void processCommand(AsyncCommandParams params) throws LGThinqApiException {
-        Command command = params.command;
-        switch (getSimpleChannelUID(params.channelUID)) {
+        Command command = params.command();
+        switch (getSimpleChannelUID(params.channelUID())) {
             case CHANNEL_AC_MOD_OP_ID: {
-                if (params.command instanceof DecimalType dtCmd) {
+                if (params.command() instanceof DecimalType dtCmd) {
                     lgThinqACApiClientService.changeOperationMode(getBridgeId(), getDeviceId(), dtCmd.intValue());
                 } else {
                     logger.warn("Received command different of Numeric in Mod Operation. Ignoring");
@@ -389,9 +352,7 @@ public class LGThinQAirConditionerHandler extends LGThinQAbstractDeviceHandler<A
                     logger.warn("Received command different of Numeric in TargetTemp Channel. Ignoring");
                     break;
                 }
-                // analise temperature constraints
                 if (targetTemp > maxTempConstraint || targetTemp < minTempConstraint) {
-                    // values out of range
                     logger.warn("Target Temperature: {} is out of range: {} - {}. Ignoring command", targetTemp,
                             minTempConstraint, maxTempConstraint);
                     break;
@@ -404,11 +365,12 @@ public class LGThinQAirConditionerHandler extends LGThinQAbstractDeviceHandler<A
                 break;
             }
             default: {
-                logger.warn("Command {} to the channel {} not supported. Ignored.", command, params.channelUID);
+                logger.warn("Command {} to the channel {} not supported. Ignored.", command, params.channelUID());
             }
         }
     }
-    // =========== Energy Colletor Implementation =============
+
+    // =========== Energy Collector Implementation =============
 
     @Override
     protected boolean isExtraInfoCollectorSupported() {
@@ -422,7 +384,7 @@ public class LGThinQAirConditionerHandler extends LGThinQAbstractDeviceHandler<A
 
     @Override
     protected boolean isExtraInfoCollectorEnabled() {
-        String value = getItemLinkedValue(extendedInfoCollectorChannelUID);
+        String value = getItemLinkedValue(extendedInfo.channel(CHANNEL_EXTENDED_INFO_COLLECTOR_ID));
         return value != null && OnOffType.from(value) == OnOffType.ON;
     }
 
@@ -441,26 +403,28 @@ public class LGThinQAirConditionerHandler extends LGThinQAbstractDeviceHandler<A
         String filterUsed = (String) energyStateAttributes.get(CAP_EXTRA_ATTR_FILTER_USED_TIME);
         String filterLifetime = (String) energyStateAttributes.get(CAP_EXTRA_ATTR_FILTER_MAX_TIME_TO_USE);
         if (instantEnergyConsumption == null) {
-            updateState(currentEnergyConsumptionChannelUID, UnDefType.NULL);
+            updateState(extendedInfo.channel(CHANNEL_AC_CURRENT_ENERGY_ID), UnDefType.NULL);
         } else {
             try {
                 double ip = Double.parseDouble(instantEnergyConsumption);
-                updateState(currentEnergyConsumptionChannelUID, new QuantityType<>(ip, Units.WATT_HOUR));
+                updateState(extendedInfo.channel(CHANNEL_AC_CURRENT_ENERGY_ID),
+                        new QuantityType<>(ip, Units.WATT_HOUR));
             } catch (NumberFormatException e) {
-                updateState(currentEnergyConsumptionChannelUID, UnDefType.UNDEF);
+                updateState(extendedInfo.channel(CHANNEL_AC_CURRENT_ENERGY_ID), UnDefType.UNDEF);
             }
         }
 
         if (filterLifetime == null || filterUsed == null) {
-            updateState(remainingFilterChannelUID, UnDefType.NULL);
+            updateState(extendedInfo.channel(CHANNEL_AC_REMAINING_FILTER_ID), UnDefType.NULL);
         } else {
             try {
                 double used = Double.parseDouble(filterUsed);
                 double max = Double.parseDouble(filterLifetime);
                 double perc = (1 - (used / max)) * 100;
-                updateState(remainingFilterChannelUID, new QuantityType<>(perc, Units.PERCENT));
+                updateState(extendedInfo.channel(CHANNEL_AC_REMAINING_FILTER_ID),
+                        new QuantityType<>(perc, Units.PERCENT));
             } catch (NumberFormatException ex) {
-                updateState(remainingFilterChannelUID, UnDefType.UNDEF);
+                updateState(extendedInfo.channel(CHANNEL_AC_REMAINING_FILTER_ID), UnDefType.UNDEF);
             }
         }
     }

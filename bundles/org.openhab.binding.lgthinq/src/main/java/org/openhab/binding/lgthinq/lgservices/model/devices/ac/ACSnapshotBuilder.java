@@ -34,7 +34,7 @@ public class ACSnapshotBuilder extends DefaultSnapshotBuilder<ACCanonicalSnapsho
     }
 
     @Override
-    public ACCanonicalSnapshot createFromBinary(String binaryData, List<MonitoringBinaryProtocol> prot,
+    public ACCanonicalSnapshot createFromBinary(byte[] binaryData, List<MonitoringBinaryProtocol> prot,
             CapabilityDefinition capDef) throws LGThinqUnmarshallException, LGThinqApiException {
         return super.createFromBinary(binaryData, prot, capDef);
     }
@@ -45,7 +45,7 @@ public class ACSnapshotBuilder extends DefaultSnapshotBuilder<ACCanonicalSnapsho
         switch (capDef.getDeviceType()) {
             case AIR_CONDITIONER:
             case HEAT_PUMP:
-                snap = MAPPER.convertValue(snapMap, snapClass);
+                snap = java.util.Objects.requireNonNull(MAPPER.convertValue(snapMap, snapClass));
                 snap.setRawData(snapMap);
                 return snap;
             default:

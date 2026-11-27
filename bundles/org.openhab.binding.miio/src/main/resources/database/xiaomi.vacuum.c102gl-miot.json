@@ -1213,21 +1213,17 @@
 							"value": "3",
 							"label": "High"
 						}
-					]
+					],
+					"readOnly": true
 				},
 				"refresh": true,
-				"actions": [
-					{
-						"command": "set_properties",
-						"parameterType": "NUMBER"
-					}
-				],
+				"actions": [],
 				"category": "water",
 				"tags": [
-					"Control",
+					"Status",
 					"Level"
 				],
-				"readmeComment": "Value mapping `[\"1\"\u003d\"Low\",\"2\"\u003d\"Medium\",\"3\"\u003d\"High\"]`"
+				"readmeComment": "Not written by the Mi Home app of this model, which sets the mop water level in `clean_setting`. Value mapping `[\"1\"\u003d\"Low\",\"2\"\u003d\"Medium\",\"3\"\u003d\"High\"]`"
 			},
 			{
 				"property": "waterbox-status",
@@ -1531,6 +1527,32 @@
 				]
 			},
 			{
+				"property": "clean-setting",
+				"siid": 4,
+				"piid": 23,
+				"friendlyName": "Vacuum Extend - Clean Setting",
+				"channel": "clean_setting",
+				"type": "Number",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 16777215,
+					"step": 1,
+					"pattern": "%d"
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "cleaningrobot",
+				"tags": [
+					"Control"
+				],
+				"readmeComment": "Packed setting that the Mi Home app writes for the cleaning type, the mop pad washing frequency and the mop water level: cleaning type in bits 0 and 1 (0 vacuuming and mopping, 1 mopping, 2 vacuuming, 3 vacuuming before mopping), the area in square meters after which the mop pad is washed in bits 8 to 15 (0 washes per room, otherwise a multiple of 5) and the mop water level (1 to 3, `mop_mode`) from bit 16. The value is the cleaning type plus 256 times the area plus 65536 times the water level. To change one part, send the complete value with the other parts unchanged"
+			},
+			{
 				"property": "wash-station",
 				"siid": 4,
 				"piid": 25,
@@ -1618,6 +1640,158 @@
 				"tags": [
 					"Status"
 				]
+			},
+			{
+				"property": "carpet-recognition",
+				"siid": 4,
+				"piid": 33,
+				"friendlyName": "Vacuum Extend - Carpet Recognition",
+				"channel": "carpet_recognition",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "Off"
+						},
+						{
+							"value": "1",
+							"label": "On"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "switch",
+				"tags": [
+					"Control",
+					"Enabled"
+				],
+				"readmeComment": "Values 2, 4, 5 and 6 are reported while the ultrasonic sensor has an error; the Mi Home app then refuses to switch it on. Value mapping `[\"0\"\u003d\"Off\",\"1\"\u003d\"On\"]`"
+			},
+			{
+				"property": "smart-wash-switch",
+				"siid": 4,
+				"piid": 34,
+				"friendlyName": "Vacuum Extend - Auto Mop Pad Washing",
+				"channel": "smart_wash_switch",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFNUMBER"
+					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch",
+					"Enabled"
+				],
+				"readmeComment": "Off keeps the robot from returning to the station to wash the mop pads during a cleaning task"
+			},
+			{
+				"property": "carpet-escape",
+				"siid": 4,
+				"piid": 36,
+				"friendlyName": "Vacuum Extend - Carpet Cleanup Method",
+				"channel": "carpet_escape",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "1",
+							"label": "Avoid Carpets"
+						},
+						{
+							"value": "2",
+							"label": "Vacuum Only On Carpets"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "cleaningrobot",
+				"tags": [
+					"Control",
+					"Mode"
+				],
+				"readmeComment": "Used by the Mi Home app only while `carpet_recognition` is on. Value mapping `[\"1\"\u003d\"Avoid Carpets\",\"2\"\u003d\"Vacuum Only On Carpets\"]`"
+			},
+			{
+				"property": "drying-time",
+				"siid": 4,
+				"piid": 40,
+				"friendlyName": "Vacuum Extend - Mop Pad Drying Time",
+				"channel": "drying_time",
+				"type": "Number:Time",
+				"unit": "hours",
+				"stateDescription": {
+					"minimum": 2,
+					"maximum": 4,
+					"step": 1,
+					"pattern": "%.0f %unit%"
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "time",
+				"tags": [
+					"Setpoint",
+					"Duration"
+				],
+				"readmeComment": "Duration of the mop pad drying in the station, 2 to 4 hours as offered by the Mi Home app"
+			},
+			{
+				"property": "mop-wash-mode",
+				"siid": 4,
+				"piid": 46,
+				"friendlyName": "Vacuum Extend - Mop Pad Washing Mode",
+				"channel": "mop_wash_mode",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "Water Saving"
+						},
+						{
+							"value": "1",
+							"label": "Daily"
+						},
+						{
+							"value": "2",
+							"label": "Deep"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "water",
+				"tags": [
+					"Control",
+					"Mode"
+				],
+				"readmeComment": "The Mi Home app of this model only offers Daily and Deep. Value mapping `[\"0\"\u003d\"Water Saving\",\"1\"\u003d\"Daily\",\"2\"\u003d\"Deep\"]`"
 			},
 			{
 				"property": "enable",

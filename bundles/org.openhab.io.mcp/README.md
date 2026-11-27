@@ -27,12 +27,12 @@ Every connection must present an openHAB bearer token (see [Authentication](#aut
 | `enabled`              | `true`  | NO       | Turn the server on or off without uninstalling.                                                                                                                                                                                                                                    |
 | `enableFullApiAccess`  | `false` | NO       | Give the assistant access to the **full openHAB REST API** — including destructive endpoints. Only turn this on if you trust the assistant with that scope. See [Full REST API access](#full-rest-api-access-opt-in).                                                              |
 | `enableScripting`      | `false` | NO       | Let the assistant include JavaScript snippets as rule actions/conditions, run scripts ad-hoc via `execute_script`, and fetch openhab-js type definitions via `get_openhabjs_types`. Requires the `openhab-automation-jsscripting` add-on. See [Scripting](#scripting-opt-in).      |
-| `enableLoggingAccess`  | `false` | NO       | Give the assistant tools to read recent log entries and adjust logger verbosity for diagnostics. Level changes require an ADMIN-scoped token. See [Diagnostic logging](#diagnostic-logging-opt-in).                                                                                |
+| `enableLoggingAccess`  | `false` | NO       | Give the assistant tools to read recent log entries and adjust logger verbosity for diagnostics. Both require an ADMIN-scoped token. See [Diagnostic logging](#diagnostic-logging-opt-in).                                                                                         |
 | `enableUiDesign`       | `false` | NO       | Let the assistant design Main UI pages and reusable custom widgets via `list_widgets`, `describe_widget`, `get_page_skeleton`, `manage_ui_component`, and `validate_ui_component`. Writes require an ADMIN-scoped token. See [Main UI design](#main-ui-design-opt-in).             |
 | `enableStaticAssets`   | `false` | NO       | Let the assistant list, read, upload, and delete files in `$OPENHAB_CONF/html` (the folder served at `/static/*`). Useful for SVG icons, images, CSS overrides, and other static files the UI references. ADMIN-scoped token required. See [Static assets](#static-assets-opt-in). |
 | `registerCloudWebhook` | `false` | NO       | Let remote MCP clients reach this server through openHAB Cloud (`myopenhab.org`) with no port forwarding. Requires the openHAB Cloud add-on. See [openHAB Cloud](#2-openhab-cloud) under Connecting a client.                                                                      |
 | `exposeUntaggedItems`  | `false` | YES      | Also include items that aren't assigned to a Location/Equipment/Point. Most people leave this off.                                                                                                                                                                                 |
-| `maxItemsPerPage`      | `100`   | YES      | Maximum items returned in one paginated response.                                                                                                                                                                                                                                  |
+| `maxItemsPerPage`      | `100`   | YES      | Upper bound for the `limit` argument of `search_items`, `get_things`, and `get_rules`. Those tools return 50 results per page by default, or this value if it is lower.                                                                                                            |
 | `resourceCoalesceMs`   | `500`   | YES      | Rate-limit update notifications for chatty items like power meters.                                                                                                                                                                                                                |
 
 ## Authentication
@@ -57,6 +57,25 @@ Paste the token into your MCP client as an `Authorization: Bearer oh.…` header
 
 Tokens are tied to the user that created them, so the assistant's permissions match whatever that user can do through the openHAB UI.
 If you want to restrict what the assistant can touch, create a dedicated openHAB user with limited permissions and generate the token from that account.
+
+### Keeping the token out of config files
+
+The examples below show `oh.YOUR_TOKEN` inline for brevity, but a token pasted into a client config file is stored in plain text, where it can end up in backups, dotfile repositories, or a project folder the assistant itself can read.
+Where your client allows it, keep the token in a secret store and have the client read it at connect time instead:
+
+- **OAuth:** clients that support it never need a static token (see the note below).
+- **Claude Code `headersHelper`:** a command that prints the headers as JSON each time Claude Code connects.
+  On macOS, store the token once in the Keychain with `security add-generic-password -a "$USER" -s openhab-api-token -w` (it prompts for the value), then add the server with:
+
+  ```bash
+  claude mcp add-json --scope user openhab "$(cat <<'EOF'
+  {"type":"http","url":"http://openhab.local:8080/mcp","headersHelper":"printf '{\"Authorization\":\"Bearer %s\"}' \"$(security find-generic-password -a \"$USER\" -s openhab-api-token -w)\""}
+  EOF
+  )"
+  ```
+
+- **Environment variables:** many clients expand variables in header values, for example `"Authorization": "Bearer ${OPENHAB_API_TOKEN}"` in Claude Code's `.mcp.json`.
+  Check your client's documentation for the exact syntax, and set the variable from your secret store rather than a plain-text profile.
 
 > Modern MCP clients (recent Claude, ChatGPT, `mcp-remote`) can drive a browser-based OAuth login — no token pasting needed.
 > The server advertises the necessary OAuth metadata automatically; just give the client your server URL and it'll walk you through sign-in the first time.
@@ -279,6 +298,10 @@ Requires a paid ChatGPT plan (Plus, Pro, Business, Enterprise, Education).
 
 ## What the assistant can do
 
+`search_items`, `get_things`, and `get_rules` return results in pages (50 by default, up to `maxItemsPerPage`, adjustable with the `limit` and `offset` arguments), and each response includes the `total` so the assistant knows when to fetch more.
+Tool-description context usage depends on the client: clients that load every enabled tool up front incur a larger baseline, while clients with tool search can defer descriptions until needed.
+Leave features off that you don't need.
+
 ### Items
 
 | Tool                 | What it does                                                                                                                                                                                                                                                                                                                                                                                                                                         |
@@ -403,8 +426,7 @@ Things you can ask once scripting is on:
 
 ## Diagnostic logging (opt-in)
 
-> **Note:** Reading logs is gated by `enableLoggingAccess` alone.
-> Changing log levels additionally requires the connected user's bearer token to have **administrator** scope — openHAB's REST API enforces this, the MCP server just forwards the token.
+> **Note:** Both tools require the connected user's bearer token to have **administrator** scope, the same as the log viewer and logging settings in the openHAB UI.
 
 Setting `enableLoggingAccess=true` exposes two tools:
 

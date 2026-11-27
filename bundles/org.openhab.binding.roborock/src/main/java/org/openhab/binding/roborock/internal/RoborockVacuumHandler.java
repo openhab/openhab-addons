@@ -27,8 +27,6 @@ import java.security.SecureRandom;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -106,7 +104,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSyntaxException;
 
 /**
@@ -123,8 +120,6 @@ public class RoborockVacuumHandler extends BaseThingHandler {
     private static final long MAP_DOWNLOAD_TIMEOUT_MS = 30_000L;
 
     private final Logger logger = LoggerFactory.getLogger(RoborockVacuumHandler.class);
-
-    private static final String ROOM_NAME_NOT_FOUND = "Not found";
 
     private @Nullable RoborockAccountHandler bridgeHandler;
     private final SchedulerTask initTask;
@@ -170,14 +165,6 @@ public class RoborockVacuumHandler extends BaseThingHandler {
     private final RRMapRenderer rrMapRenderer = new RRMapRenderer();
     private final MapUpdateDeduplicator mapUpdateDeduplicator = new MapUpdateDeduplicator();
     private final Map<Integer, CompletableFuture<byte[]>> pendingRrMapDownloads = new ConcurrentHashMap<>();
-
-    private static final Set<RobotCapabilities> FEATURES_CHANNELS = Collections.unmodifiableSet(
-            EnumSet.of(RobotCapabilities.SEGMENT_STATUS, RobotCapabilities.MAP_STATUS, RobotCapabilities.LED_STATUS,
-                    RobotCapabilities.CARPET_MODE, RobotCapabilities.FW_FEATURES, RobotCapabilities.ROOM_MAPPING,
-                    RobotCapabilities.MULTI_MAP_LIST, RobotCapabilities.CUSTOMIZE_CLEAN_MODE,
-                    RobotCapabilities.COLLECT_DUST, RobotCapabilities.CLEAN_MOP_START, RobotCapabilities.CLEAN_MOP_STOP,
-                    RobotCapabilities.MOP_DRYING, RobotCapabilities.MOP_DRYING_REMAINING_TIME,
-                    RobotCapabilities.DOCK_STATE_ID, RobotCapabilities.CLEAN_PERCENT));
 
     public RoborockVacuumHandler(Thing thing, ChannelTypeRegistry channelTypeRegistry,
             RoborockStateDescriptionOptionProvider stateDescriptionProvider) {
@@ -625,16 +612,12 @@ public class RoborockVacuumHandler extends BaseThingHandler {
                     && parsedRoutines.get("result").getAsJsonArray().get(0).isJsonObject()) {
 
                 JsonArray routinesArray = parsedRoutines.get("result").getAsJsonArray();
-                Map<String, Object> routines = new HashMap<>();
                 for (int i = 0; i < routinesArray.size(); ++i) {
                     JsonObject routinesJsonObject = routinesArray.get(i).getAsJsonObject();
-                    routines.put(routinesJsonObject.get("id").getAsString(),
-                            routinesJsonObject.get("name").getAsString());
                     options.add(new StateOption(routinesJsonObject.get("id").getAsString(),
                             routinesJsonObject.get("name").getAsString()));
                 }
-                updateState(CHANNEL_ROUTINES, new StringType(gson.toJson(routines)));
-                stateDescriptionProvider.setStateOptions(new ChannelUID(getThing().getUID(), CHANNEL_ROUTINE), options);
+                stateDescriptionProvider.setStateOptions(routineChannelUID(), options);
             } else {
                 logger.debug("Routines not supported for device {}", config.duid);
                 supportsRoutines = false;
@@ -881,39 +864,58 @@ public class RoborockVacuumHandler extends BaseThingHandler {
     }
 
     private void handleGetRoomMapping(String response) {
-        for (RobotCapabilities cmd : FEATURES_CHANNELS) {
-            if (COMMAND_GET_ROOM_MAPPING.equals(cmd.getCommand())) {
-                JsonArray rooms = JsonParser.parseString(response).getAsJsonObject().get("result").getAsJsonArray();
-                if (rooms.size() > 0) {
-                    JsonArray mappedRoom = new JsonArray();
-                    Map<Integer, String> resolvedSegmentNames = new HashMap<>();
-                    for (JsonElement roomE : rooms) {
-                        JsonArray room = roomE.getAsJsonArray();
-                        String name = ROOM_NAME_NOT_FOUND;
-                        for (int i = 0; i < homeRooms.length; i++) {
-                            if (room.get(1).getAsString().equals(Integer.toString(homeRooms[i].id))) {
-                                name = homeRooms[i].name;
-                                break;
-                            }
-                        }
-                        if (!ROOM_NAME_NOT_FOUND.equals(name)) {
-                            putResolvedSegmentName(resolvedSegmentNames, room, name);
-                        }
-                        room.set(1, new JsonPrimitive(name));
-                        if (room.size() == 3) {
-                            room.remove(2);
-                        }
-                        mappedRoom.add(room);
-                    }
-                    installSegmentRoomNames(resolvedSegmentNames);
-                    updateState(cmd.getChannel(), new StringType(mappedRoom.toString()));
-                } else {
-                    clearSegmentRoomNames();
-                    updateState(cmd.getChannel(), new StringType(response));
-                }
-                break;
-            }
+        JsonArray rooms = JsonParser.parseString(response).getAsJsonObject().get("result").getAsJsonArray();
+        Map<Integer, String> resolvedSegmentNames = new HashMap<>();
+        List<StateOption> options = buildSegmentOptions(rooms, homeRooms, resolvedSegmentNames);
+        if (options.isEmpty()) {
+            clearSegmentRoomNames();
+        } else {
+            installSegmentRoomNames(resolvedSegmentNames);
         }
+        stateDescriptionProvider.setStateOptions(segmentChannelUID(), options);
+    }
+
+    /**
+     * Builds the room selection options of {@code actions#segment} from a {@code get_room_mapping} result,
+     * whose entries are {@code [segmentId, homeRoomId, ...]}. Segments whose home room is unknown stay
+     * selectable under a generic label but are not added to {@code resolvedSegmentNames}, so that
+     * {@code status#current-room} reports UNDEF rather than a placeholder name for them.
+     */
+    static List<StateOption> buildSegmentOptions(JsonArray rooms, Rooms[] homeRooms,
+            Map<Integer, String> resolvedSegmentNames) {
+        List<StateOption> options = new ArrayList<>();
+        for (JsonElement entry : rooms) {
+            int segmentId;
+            String homeRoomId;
+            try {
+                JsonArray room = entry.getAsJsonArray();
+                segmentId = room.get(0).getAsInt();
+                homeRoomId = room.get(1).getAsString();
+            } catch (IllegalStateException | IndexOutOfBoundsException | UnsupportedOperationException
+                    | NumberFormatException e) {
+                continue;
+            }
+            String name = null;
+            for (Rooms homeRoom : homeRooms) {
+                if (homeRoomId.equals(Integer.toString(homeRoom.id)) && !homeRoom.name.isBlank()) {
+                    name = homeRoom.name;
+                    break;
+                }
+            }
+            if (name != null) {
+                resolvedSegmentNames.put(segmentId, name);
+            }
+            options.add(new StateOption(Integer.toString(segmentId), name != null ? name : "Room " + segmentId));
+        }
+        return options;
+    }
+
+    private ChannelUID segmentChannelUID() {
+        return new ChannelUID(getThing().getUID(), RobotCapabilities.SEGMENT_CLEAN.getChannel());
+    }
+
+    private ChannelUID routineChannelUID() {
+        return new ChannelUID(getThing().getUID(), CHANNEL_ROUTINE);
     }
 
     void installSegmentRoomNames(Map<Integer, String> resolvedSegmentNames) {
@@ -923,14 +925,6 @@ public class RoborockVacuumHandler extends BaseThingHandler {
             if (mapData != null) {
                 updateCurrentRoomState(mapData);
             }
-        }
-    }
-
-    private void putResolvedSegmentName(Map<Integer, String> target, JsonArray room, String name) {
-        try {
-            target.put(room.get(0).getAsInt(), name);
-        } catch (ClassCastException | IllegalStateException | NumberFormatException e) {
-            logger.debug("Could not parse room-mapping segment id from entry '{}': {}", room, e.getMessage());
         }
     }
 
@@ -2280,22 +2274,20 @@ public class RoborockVacuumHandler extends BaseThingHandler {
     }
 
     private void disableRoutinesState(String reason) {
-        updateChannelStateIfExists(CHANNEL_ROUTINES, UnDefType.UNDEF);
-        if (!cloudMetadataRefreshDisabledLogged) {
-            logger.info(
-                    "Cloud metadata refresh disabled for {}: {}. Channels '{}' and '{}' are set to UNDEF when available.",
-                    config.duid, reason, CHANNEL_ROUTINES, RobotCapabilities.ROOM_MAPPING.getChannel());
-            cloudMetadataRefreshDisabledLogged = true;
-        }
+        stateDescriptionProvider.setStateOptions(routineChannelUID(), List.of());
+        logCloudMetadataRefreshDisabled(reason);
     }
 
     private void disableRoomMappingState(String reason) {
-        updateChannelStateIfExists(RobotCapabilities.ROOM_MAPPING.getChannel(), UnDefType.UNDEF);
+        stateDescriptionProvider.setStateOptions(segmentChannelUID(), List.of());
         clearSegmentRoomNames();
+        logCloudMetadataRefreshDisabled(reason);
+    }
+
+    private void logCloudMetadataRefreshDisabled(String reason) {
         if (!cloudMetadataRefreshDisabledLogged) {
-            logger.info(
-                    "Cloud metadata refresh disabled for {}: {}. Channels '{}' and '{}' are set to UNDEF when available.",
-                    config.duid, reason, CHANNEL_ROUTINES, RobotCapabilities.ROOM_MAPPING.getChannel());
+            logger.info("Cloud metadata refresh disabled for {}: {}. Options of channels '{}' and '{}' are cleared.",
+                    config.duid, reason, CHANNEL_ROUTINE, RobotCapabilities.SEGMENT_CLEAN.getChannel());
             cloudMetadataRefreshDisabledLogged = true;
         }
     }

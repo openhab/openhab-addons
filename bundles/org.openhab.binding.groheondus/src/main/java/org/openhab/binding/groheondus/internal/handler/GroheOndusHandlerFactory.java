@@ -24,8 +24,11 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.groheondus.internal.discovery.GroheOndusDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryService;
+import org.openhab.core.i18n.TimeZoneProvider;
+import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.storage.StorageService;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
@@ -35,25 +38,53 @@ import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
 import org.osgi.framework.ServiceRegistration;
+import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Florian Schmidt and Arne Wohlert - Initial contribution
+ * @author Arne Seime - Provide dedicated HTTP client and time zone provider
  */
 @NonNullByDefault
 @Component(configurationPid = "binding.groheondus", service = ThingHandlerFactory.class)
 public class GroheOndusHandlerFactory extends BaseThingHandlerFactory {
+    private final Logger logger = LoggerFactory.getLogger(GroheOndusHandlerFactory.class);
 
     private final Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
 
-    private StorageService storageService;
+    private final StorageService storageService;
+    private final TimeZoneProvider timeZoneProvider;
+    // Dedicated client: the web form login relies on a cookie session that must not be shared with other bindings
+    private final HttpClient httpClient;
     private int thingCounter = 0;
 
     @Activate
-    public GroheOndusHandlerFactory(@Reference StorageService storageService) {
+    public GroheOndusHandlerFactory(@Reference StorageService storageService,
+            @Reference HttpClientFactory httpClientFactory, @Reference TimeZoneProvider timeZoneProvider) {
         this.storageService = storageService;
+        this.timeZoneProvider = timeZoneProvider;
+        this.httpClient = httpClientFactory.createHttpClient("groheondus");
+        try {
+            httpClient.start();
+        } catch (Exception e) {
+            throw new IllegalStateException("Could not start HTTP client", e);
+        }
+    }
+
+    @Override
+    @Deactivate
+    protected void deactivate(ComponentContext componentContext) {
+        super.deactivate(componentContext);
+        try {
+            httpClient.stop();
+        } catch (Exception e) {
+            logger.debug("Could not stop HTTP client", e);
+        }
     }
 
     private static final Collection<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Arrays.asList(THING_TYPE_SENSEGUARD,
@@ -70,13 +101,14 @@ public class GroheOndusHandlerFactory extends BaseThingHandlerFactory {
 
         if (THING_TYPE_BRIDGE_ACCOUNT.equals(thingTypeUID)) {
             GroheOndusAccountHandler handler = new GroheOndusAccountHandler((Bridge) thing,
-                    storageService.getStorage(thing.getUID().toString(), String.class.getClassLoader()));
+                    storageService.getStorage(thing.getUID().toString(), String.class.getClassLoader()), httpClient,
+                    timeZoneProvider);
             onAccountCreated(thing, handler);
             return handler;
         } else if (THING_TYPE_SENSEGUARD.equals(thingTypeUID)) {
-            return new GroheOndusSenseGuardHandler<>(thing, thingCounter++);
+            return new GroheOndusSenseGuardHandler(thing, thingCounter++, timeZoneProvider);
         } else if (THING_TYPE_SENSE.equals(thingTypeUID)) {
-            return new GroheOndusSenseHandler<>(thing, thingCounter++);
+            return new GroheOndusSenseHandler(thing, thingCounter++, timeZoneProvider);
         }
 
         return null;

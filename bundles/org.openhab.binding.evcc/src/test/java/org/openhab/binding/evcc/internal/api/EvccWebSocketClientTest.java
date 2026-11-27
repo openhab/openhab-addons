@@ -51,7 +51,7 @@ public class EvccWebSocketClientTest {
 
     private EvccWebSocketClient createClient() {
         return new EvccWebSocketClient("ws://evcc/ws", scheduler, fullStates::add,
-                (key, value) -> partialUpdates.put(key, value), () -> {
+                delta -> delta.entrySet().forEach(e -> partialUpdates.put(e.getKey(), e.getValue())), () -> {
                 }, () -> {
                 });
     }

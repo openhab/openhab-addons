@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="modbus"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<channel-group-type id="hager-flow-storage-status">
+		<label>Storage Status</label>
+		<description>State of the battery storage.</description>
+		<channels>
+			<channel id="storage-index" typeId="hager-flow-storage-index"/>
+			<channel id="storage-dcdc-status" typeId="hager-flow-storage-dcdc-status"/>
+			<channel id="storage-bat-status" typeId="hager-flow-storage-bat-status"/>
+			<channel id="battery-state-of-charge" typeId="hager-flow-storage-battery-state-of-charge"/>
+		</channels>
+	</channel-group-type>
+</thing:thing-descriptions>

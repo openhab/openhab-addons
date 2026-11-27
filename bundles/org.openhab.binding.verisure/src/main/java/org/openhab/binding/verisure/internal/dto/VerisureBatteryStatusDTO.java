@@ -12,11 +12,15 @@
  */
 package org.openhab.binding.verisure.internal.dto;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * The battery status of the Verisure System.
+ * The battery status of the devices in a Verisure installation.
  *
  * @author Jan Gustafsson - Initial contribution
  *
@@ -24,30 +28,66 @@ import org.eclipse.jdt.annotation.Nullable;
 @NonNullByDefault
 public class VerisureBatteryStatusDTO {
 
-    public boolean chosen;
-    public @Nullable String id;
-    public @Nullable String pictureBase;
-    public @Nullable String translatedType;
-    public @Nullable String location;
-    public @Nullable String batteryInfo;
-    public @Nullable String status;
-    public @Nullable String alias;
-    public int index;
-    public boolean selectable;
+    public static final String STATUS_GOOD = "GOOD";
+    public static final String STATUS_UNAVAILABLE = "UNAVAILABLE";
 
-    public @Nullable String getId() {
-        return id;
+    private @Nullable Data data;
+
+    /**
+     * @return battery status per device label
+     */
+    public Map<String, Battery> getBatteryByDeviceLabel() {
+        Map<String, Battery> result = new HashMap<>();
+        Data localData = data;
+        Installation installation = localData != null ? localData.installation : null;
+        DeviceBatteryLifeCycle lifeCycle = installation != null ? installation.deviceBatteryLifeCycle : null;
+        List<BatteryDevice> devices = lifeCycle != null ? lifeCycle.devices : null;
+        if (devices != null) {
+            for (BatteryDevice batteryDevice : devices) {
+                Device device = batteryDevice.device;
+                String deviceLabel = device != null ? device.deviceLabel : null;
+                String status = batteryDevice.status;
+                if (deviceLabel != null) {
+                    PredictionData predictionData = batteryDevice.predictionData;
+                    Integer level = predictionData != null ? predictionData.estimatedBatteryPercentage : null;
+                    // The API reports -1 when it has no estimate
+                    result.put(deviceLabel, new Battery(status, level != null && level >= 0 ? level : null));
+                }
+            }
+        }
+        return result;
     }
 
-    public @Nullable String getLocation() {
-        return location;
+    public static boolean isLowBattery(@Nullable String status) {
+        return status != null && !STATUS_GOOD.equals(status) && !STATUS_UNAVAILABLE.equals(status);
     }
 
-    public @Nullable String getBatteryInfo() {
-        return batteryInfo;
+    public record Battery(@Nullable String status, @Nullable Integer level) {
     }
 
-    public @Nullable String getStatus() {
-        return status;
+    private static class Data {
+        private @Nullable Installation installation;
+    }
+
+    private static class Installation {
+        private @Nullable DeviceBatteryLifeCycle deviceBatteryLifeCycle;
+    }
+
+    private static class DeviceBatteryLifeCycle {
+        private @Nullable List<BatteryDevice> devices;
+    }
+
+    private static class BatteryDevice {
+        private @Nullable Device device;
+        private @Nullable String status;
+        private @Nullable PredictionData predictionData;
+    }
+
+    private static class PredictionData {
+        private @Nullable Integer estimatedBatteryPercentage;
+    }
+
+    private static class Device {
+        private @Nullable String deviceLabel;
     }
 }

@@ -14,8 +14,8 @@
 		<description>Switches the power state on/off</description>
 		<category>PowerOutlet</category>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Power</tag>
+			<point>Switch</point>
+			<property>Power</property>
 		</tags>
 		<state readOnly="false"/>
 	</channel-type>
@@ -27,8 +27,8 @@
 		<description>Switches the light on/off</description>
 		<category>LightBulb</category>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Light</tag>
+			<point>Switch</point>
+			<property>Light</property>
 		</tags>
 		<state readOnly="false"/>
 	</channel-type>
@@ -40,8 +40,8 @@
 		<description>Brightness</description>
 		<category>LightBulb</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>Brightness</tag>
+			<point>Control</point>
+			<property>Brightness</property>
 		</tags>
 		<state readOnly="false"/>
 	</channel-type>
@@ -53,8 +53,8 @@
 		<description>Working mode of device</description>
 		<category>LightBulb</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>Mode</tag>
+			<point>Control</point>
+			<property>Mode</property>
 		</tags>
 		<state readOnly="false"/>
 		<command>
@@ -73,8 +73,8 @@
 		<description>Color</description>
 		<category>ColorLight</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>Color</tag>
+			<point>Control</point>
+			<property>Color</property>
 		</tags>
 		<state readOnly="false"/>
 	</channel-type>
@@ -87,8 +87,8 @@
 		<description>Contact (Window/Door) is Open</description>
 		<category>Switch</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>OpenState</tag>
+			<point>Status</point>
+			<property>OpenState</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -100,8 +100,8 @@
 		<description>Temperature as measured by the sensor</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%" step="0.1"/>
 	</channel-type>
@@ -113,8 +113,8 @@
 		<description>Current relative humidity</description>
 		<category>Humidity</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Humidity</tag>
+			<point>Measurement</point>
+			<property>Humidity</property>
 		</tags>
 		<state readOnly="true" pattern="%.0f %%"/>
 	</channel-type>
@@ -154,8 +154,8 @@
 		<description>Battery of device is low</description>
 		<category>LowBattery</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>LowBattery</tag>
+			<point>Status</point>
+			<property>LowBattery</property>
 		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
@@ -168,8 +168,8 @@
 		<description>Actual power usage</description>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point>Measurement</point>
+			<property>Power</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"></state>
 	</channel-type>
@@ -181,8 +181,8 @@
 		<description>Today energy usage</description>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"></state>
 	</channel-type>
@@ -203,8 +203,8 @@
 		<description>Energy usage last month</description>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"></state>
 	</channel-type>
@@ -226,8 +226,8 @@
 		<description>Switch the Smart Home device led on or off.</description>
 		<category>Switch</category>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Light</tag>
+			<point>Switch</point>
+			<property>Light</property>
 		</tags>
 	</channel-type>
 
@@ -247,7 +247,7 @@
 		<description>Device has an active alarm</description>
 		<category>Alarm</category>
 		<tags>
-			<tag>Alarm</tag>
+			<point>Alarm</point>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -289,7 +289,7 @@
 		<description>Switches the manual siren alarm of the camera on/off</description>
 		<category>Alarm</category>
 		<tags>
-			<tag>Switch</tag>
+			<point>Switch</point>
 		</tags>
 		<state readOnly="false"/>
 	</channel-type>
@@ -301,8 +301,8 @@
 		<description>Type of alarm signal used when the alarm is triggered</description>
 		<category>Alarm</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>Mode</tag>
+			<point>Control</point>
+			<property>Mode</property>
 		</tags>
 		<state readOnly="false">
 			<options>
@@ -338,7 +338,7 @@
 		<description>Closes the privacy shutter of the camera (lens mask)</description>
 		<category>Camera</category>
 		<tags>
-			<tag>Switch</tag>
+			<point>Switch</point>
 		</tags>
 		<state readOnly="false"/>
 	</channel-type>
@@ -350,8 +350,8 @@
 		<description>Enables/disables motion detection</description>
 		<category>Motion</category>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Motion</tag>
+			<point>Switch</point>
+			<property>Motion</property>
 		</tags>
 		<state readOnly="false"/>
 	</channel-type>
@@ -378,7 +378,7 @@
 		<description>Enables or disables the status LED of the camera</description>
 		<category>Switch</category>
 		<tags>
-			<tag>Switch</tag>
+			<point>Switch</point>
 		</tags>
 		<state readOnly="false"/>
 	</channel-type>

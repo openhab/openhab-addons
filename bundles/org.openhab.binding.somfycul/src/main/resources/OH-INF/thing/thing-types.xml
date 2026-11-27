@@ -57,8 +57,8 @@
 		<label>Control</label>
 		<description>Device control (UP, DOWN, MY/STOP)</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>OpenLevel</tag>
+			<point>Control</point>
+			<property>OpenLevel</property>
 		</tags>
 	</channel-type>
 
@@ -67,8 +67,8 @@
 		<label>Program</label>
 		<description>Device program</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Mode</tag>
+			<point>Control</point>
+			<property>Mode</property>
 		</tags>
 	</channel-type>
 

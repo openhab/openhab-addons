@@ -25,9 +25,9 @@ import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
@@ -306,7 +306,7 @@ public class PlivoApiClient {
         try {
             ContentResponse response = httpClient.newRequest(url) //
                     .method(HttpMethod.GET) //
-                    .header(HttpHeader.AUTHORIZATION, authHeader) //
+                    .headers(h -> h.put(HttpHeader.AUTHORIZATION, authHeader)) //
                     .timeout(TIMEOUT_SECONDS, TimeUnit.SECONDS) //
                     .send();
             return handleResponse(response);
@@ -323,8 +323,8 @@ public class PlivoApiClient {
         try {
             ContentResponse response = httpClient.newRequest(url) //
                     .method(HttpMethod.POST) //
-                    .header(HttpHeader.AUTHORIZATION, authHeader) //
-                    .content(new StringContentProvider(CONTENT_TYPE_JSON, jsonBody, StandardCharsets.UTF_8)) //
+                    .headers(h -> h.put(HttpHeader.AUTHORIZATION, authHeader)) //
+                    .body(new StringRequestContent(CONTENT_TYPE_JSON, jsonBody, StandardCharsets.UTF_8)) //
                     .timeout(TIMEOUT_SECONDS, TimeUnit.SECONDS) //
                     .send();
             return handleResponse(response);

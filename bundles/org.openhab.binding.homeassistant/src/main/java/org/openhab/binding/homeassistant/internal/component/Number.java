@@ -78,7 +78,8 @@ public class Number extends AbstractComponent<Number.Configuration> {
         value.setNullValue(config.getPayloadReset());
 
         buildChannel(NUMBER_CHANNEL_ID, ComponentChannelType.NUMBER, value, "Number",
-                componentContext.getUpdateListener()).stateTopic(config.getStateTopic(), config.getValueTemplate())
+                componentContext.getUpdateListener()).withUnitHint(UnitUtils.parseUnit(config.getUnitOfMeasurement()))
+                .stateTopic(config.getStateTopic(), config.getValueTemplate())
                 .commandTopic(config.getCommandTopic(), config.isRetain(), config.getQos(), config.getCommandTemplate())
                 .inferOptimistic(config.isOptimistic()).build();
 

@@ -79,19 +79,27 @@ public class MiIoAsyncCommunication {
     private int errorCounter;
     private int timeout;
     private boolean needPing = true;
+    private volatile boolean online;
     private static final int MAX_ERRORS = 3;
     private static final int MAX_ID = 15000;
     private final CloudConnector cloudConnector;
+    private final boolean cloudCommunication;
 
     private ConcurrentLinkedQueue<MiIoSendCommand> concurrentLinkedQueue = new ConcurrentLinkedQueue<>();
 
+    /**
+     * @param cloudCommunication {@code true} when the device is configured to communicate via the cloud. Only the
+     *            configured communication path determines the reported status; cloud requests for a directly
+     *            connected device (e.g. recipes or the RPC channel) do not change it.
+     */
     public MiIoAsyncCommunication(String ip, byte[] token, String did, int id, int timeout,
-            CloudConnector cloudConnector) {
+            CloudConnector cloudConnector, boolean cloudCommunication) {
         this.ip = ip;
         this.token = token;
         this.deviceId = did;
         this.timeout = timeout;
         this.cloudConnector = cloudConnector;
+        this.cloudCommunication = cloudCommunication;
         setId(id);
     }
 
@@ -180,7 +188,9 @@ public class MiIoAsyncCommunication {
                             miIoSendCommand.getCloudServer(), miIoSendCommand);
                     logger.debug("Command {} send via cloudserver {}", miIoSendCommand.getCommandString(),
                             miIoSendCommand.getCloudServer());
-                    updateStatus(ThingStatus.ONLINE);
+                    if (cloudCommunication) {
+                        updateStatus(ThingStatus.ONLINE);
+                    }
                 } else {
                     String data = miIoSendCommand.getParams().toString();
                     logger.debug("Custom cloud request send to url '{}' with data '{}'", miIoSendCommand.getMethod(),
@@ -213,6 +223,10 @@ public class MiIoAsyncCommunication {
                     int id = resJson.get("id").getAsInt();
                     if (id == miIoSendCommand.getId()) {
                         miIoSendCommand.setResponse(response.getAsJsonObject());
+                        if (miIoSendCommand.getCloudServer().isBlank()) {
+                            // a decrypted reply to our own command proves the device is reachable with this token
+                            setOnline();
+                        }
                         return miIoSendCommand;
                     } else {
                         if (id < miIoSendCommand.getId()) {
@@ -243,8 +257,9 @@ public class MiIoAsyncCommunication {
             logger.debug("Send command '{}'  -> cloudserver '{}' (Device: {}) gave error {}",
                     miIoSendCommand.getCommandString(), miIoSendCommand.getCloudServer(), deviceId, e.getMessage());
             errorMsg = e.getMessage();
-            // a failing custom cloud request (e.g. no cloud login) says nothing about the device connection
-            if (!miIoSendCommand.getMethod().startsWith("/")) {
+            // a failing cloud request (e.g. no cloud login) only says something about the device connection when the
+            // device is configured to communicate via the cloud; custom cloud urls are never device communication
+            if (cloudCommunication && !miIoSendCommand.getMethod().startsWith("/")) {
                 updateStatus(ThingStatusDetail.COMMUNICATION_ERROR);
             }
         }
@@ -393,7 +408,16 @@ public class MiIoAsyncCommunication {
         }
     }
 
+    private void setOnline() {
+        if (!online) {
+            errorCounter = 0;
+            status = ThingStatusDetail.NONE;
+            updateStatus(ThingStatus.ONLINE);
+        }
+    }
+
     private void updateStatus(ThingStatus status) {
+        online = ThingStatus.ONLINE.equals(status);
         for (MiIoMessageListener listener : listeners) {
             logger.trace("inform listener {}, status {}", listener, status);
             try {
@@ -405,6 +429,7 @@ public class MiIoAsyncCommunication {
     }
 
     private void updateStatus(ThingStatusDetail statusDetail) {
+        online = false;
         for (MiIoMessageListener listener : listeners) {
             logger.trace("inform listener {}, status detail {}", listener, statusDetail);
             try {

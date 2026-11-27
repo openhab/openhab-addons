@@ -24,6 +24,9 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -63,7 +66,6 @@ import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants;
 import org.openhab.binding.amazonechocontrol.internal.ConnectionException;
 import org.openhab.binding.amazonechocontrol.internal.dto.AscendingAlarmModelTO;
-import org.openhab.binding.amazonechocontrol.internal.dto.CookieTO;
 import org.openhab.binding.amazonechocontrol.internal.dto.DeviceNotificationStateTO;
 import org.openhab.binding.amazonechocontrol.internal.dto.DeviceTO;
 import org.openhab.binding.amazonechocontrol.internal.dto.DoNotDisturbDeviceStatusTO;
@@ -131,6 +133,7 @@ import com.google.gson.JsonObject;
  *
  * @author Michael Geramb - Initial contribution
  * @author Jan N. Klug - Refactored to use jetty client, add {@link HttpRequestBuilder}
+ * @author Jens Erat - Authorization code + PKCE login flow
  */
 @NonNullByDefault
 public class Connection {
@@ -138,10 +141,14 @@ public class Connection {
     private static final long EXPIRES_IN = 432000; // five days
     private static final double RENEW_AFTER_FRACTION_OF_LIFETIME = 0.8;
     private static final String SIGN_IN_URL = "https://" + AmazonEchoControlBindingConstants.SIGN_IN_HOST;
-    // Amazon answers /api/notifications with 400 ThrottlingException for the app agent the binding otherwise
-    // sends, and with 200 for a browser agent; a quiet window of hours does not clear the 400.
+    // Amazon answers /api/notifications with 400 ThrottlingException for the AmazonWebView app agent, and with 200
+    // for a browser agent; a quiet window of hours does not clear the 400.
     private static final String NOTIFICATIONS_USER_AGENT = "Mozilla/5.0 (iPhone; CPU iPhone OS 16_6 like Mac OS X) "
             + "AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.6 Mobile/15E148 Safari/604.1";
+    private static final String AUTH_USER_AGENT = "AmazonWebView/Amazon Alexa/"
+            + AmazonEchoControlBindingConstants.API_VERSION + "/iOS/" + AmazonEchoControlBindingConstants.DI_OS_VERSION
+            + "/iPhone";
+    private static final SecureRandom SECURE_RANDOM = new SecureRandom();
 
     private final Logger logger = LoggerFactory.getLogger(Connection.class);
 
@@ -150,7 +157,8 @@ public class Connection {
     private final Gson gson;
 
     private LoginData loginData;
-    private CookieManager cookieManager = new CookieManager();
+    // The request builder holds this exact instance, so it must never be replaced, only cleared.
+    private final CookieManager cookieManager = new CookieManager();
     private final HttpRequestBuilder requestBuilder;
     private @Nullable Date verifyTime;
     private volatile boolean closed = false;
@@ -158,6 +166,10 @@ public class Connection {
     private long accessTokenRenewalTime = 0;
     private @Nullable String customerName;
     private @Nullable String accessToken;
+    // Per login attempt, never persisted; set in getLoginPage() and consumed by registerConnectionAsApp().
+    // A concurrent login for the same account would overwrite it between the two calls, so login attempts
+    // for one account must not run concurrently.
+    private @Nullable String codeVerifier;
 
     private final Map<Integer, AnnouncementWrapper> announcements = Collections.synchronizedMap(new LinkedHashMap<>());
     private final Map<Integer, TextWrapper> textToSpeeches = Collections.synchronizedMap(new LinkedHashMap<>());
@@ -185,13 +197,16 @@ public class Connection {
         this.requestBuilder = new HttpRequestBuilder(httpClient, cookieManager, gson);
         if (oldConnection != null) {
             LoginData oldLoginData = oldConnection.getLoginData();
-            this.loginData = new LoginData(cookieManager, oldLoginData.getDeviceId(), oldLoginData.getFrc(),
-                    oldLoginData.getSerial());
+            this.loginData = new LoginData(cookieManager, oldLoginData.getFrc(), oldLoginData.getSerial());
         } else {
             this.loginData = new LoginData(cookieManager);
         }
 
         ensureSequenceNodeDispatcherIsRunning();
+    }
+
+    public void setUserAgent(String userAgent) {
+        requestBuilder.setUserAgent(userAgent);
     }
 
     public HttpRequestBuilder getRequestBuilder() {
@@ -305,21 +320,31 @@ public class Connection {
         return host.startsWith("www.") ? host.substring(4) : host;
     }
 
-    public boolean registerConnectionAsApp(String accessToken) {
+    public boolean registerConnectionAsApp(@Nullable String authorizationCode, @Nullable String accessToken) {
         try {
-            List<CookieTO> webSiteCookies = cookieManager.getCookieStore().get(URI.create(SIGN_IN_URL)).stream()
-                    .map(TOMapper::mapCookie).toList();
-
             AuthRegisterTO registerAppRequest = new AuthRegisterTO();
             registerAppRequest.registrationData.deviceSerial = loginData.getSerial();
-            registerAppRequest.authData.accessToken = accessToken;
+            if (authorizationCode != null) {
+                registerAppRequest.authData.clientId = loginData.getDeviceId();
+                registerAppRequest.authData.authorizationCode = authorizationCode;
+                registerAppRequest.authData.codeVerifier = this.codeVerifier;
+                registerAppRequest.authData.codeAlgorithm = "SHA-256";
+                registerAppRequest.authData.clientDomain = "DeviceLegacy";
+            } else {
+                registerAppRequest.authData.accessToken = accessToken;
+            }
             registerAppRequest.userContextMap = Map.of("frc", loginData.getFrc());
-            registerAppRequest.cookies.webSiteCookies = webSiteCookies;
+            // Amazon rejects non-empty website cookies with InvalidValue; the working reference for this
+            // app flow (alexapy) always registers with an empty cookie list, so keep the default here.
+            registerAppRequest.cookies.webSiteCookies = List.of();
 
-            AuthRegisterResponseTO registerAppResponse = requestBuilder.post("https://api.amazon.com/auth/register")
+            // Fail fast instead of retrying a rejected registration payload; a failed login is retried manually.
+            org.openhab.binding.amazonechocontrol.internal.dto.response.AuthRegisterTO registerResponse = requestBuilder
+                    .post("https://api.amazon.com/auth/register").withHeader("User-Agent", AUTH_USER_AGENT)
                     .withContent(registerAppRequest)
-                    .withHeaders(Map.of("x-amzn-identity-auth-domain", "api.amazon.com")).syncSend(
-                            org.openhab.binding.amazonechocontrol.internal.dto.response.AuthRegisterTO.class).response;
+                    .withHeaders(Map.of("x-amzn-identity-auth-domain", "api.amazon.com")).retry(false)
+                    .syncSend(org.openhab.binding.amazonechocontrol.internal.dto.response.AuthRegisterTO.class);
+            AuthRegisterResponseTO registerAppResponse = registerResponse.response;
 
             AuthRegisterTokensTO tokens = registerAppResponse.success.tokens;
             String refreshToken = tokens.bearer.refreshToken;
@@ -327,7 +352,8 @@ public class Connection {
             this.loginData.setRefreshToken(refreshToken);
 
             if (refreshToken == null || refreshToken.isBlank()) {
-                logger.warn("Could not determine refreshToken while trying to register as app.");
+                logger.warn("Could not determine refreshToken while trying to register as app, requestId: {}",
+                        registerResponse.requestId);
                 return false;
             }
 
@@ -346,7 +372,7 @@ public class Connection {
 
             HttpRequestBuilder.HttpResponse response = requestBuilder
                     .put("https://api.amazonalexa.com/v1/devices/@self/capabilities")
-                    .withContent(CAPABILITY_REGISTRATION)
+                    .withHeader("User-Agent", AUTH_USER_AGENT).withContent(CAPABILITY_REGISTRATION)
                     .withHeaders(Map.of(HttpHeader.AUTHORIZATION.toString(), "Bearer " + tokens.bearer.accessToken))
                     .retry(false).syncSend();
             if (response.statusCode() != NO_CONTENT_204 && response.statusCode() != OK_200) {
@@ -383,8 +409,8 @@ public class Connection {
 
         String url = getRetailUrl() + "/ap/exchangetoken";
 
-        ExchangeTokenTO exchangeToken = requestBuilder.post(url).withContent(exchangePostData).withHeader("Cookie", "")
-                .syncSend(ExchangeTokenTO.class);
+        ExchangeTokenTO exchangeToken = requestBuilder.post(url).withHeader("User-Agent", AUTH_USER_AGENT)
+                .withContent(exchangePostData).withHeader("Cookie", "").syncSend(ExchangeTokenTO.class);
 
         CookieStore cookieStore = cookieManager.getCookieStore();
         exchangeToken.response.tokens.cookies
@@ -423,7 +449,8 @@ public class Connection {
                     + "&current_version=6.12.4";
 
             AuthTokenTO tokenResponse = requestBuilder.post("https://api.amazon.com/auth/token")
-                    .withContent(renewTokenPostData).syncSend(AuthTokenTO.class);
+                    .withHeader("User-Agent", AUTH_USER_AGENT).withContent(renewTokenPostData)
+                    .syncSend(AuthTokenTO.class);
 
             String accessToken = tokenResponse.accessToken;
             this.accessToken = accessToken;
@@ -447,9 +474,26 @@ public class Connection {
         return loginData.getLoginTime() != null;
     }
 
+    private static String newCodeVerifier() {
+        byte[] bytes = new byte[32];
+        SECURE_RANDOM.nextBytes(bytes);
+        return Base64.getUrlEncoder().withoutPadding().encodeToString(bytes);
+    }
+
+    private static String codeChallenge(String verifier) {
+        try {
+            byte[] digest = MessageDigest.getInstance("SHA-256").digest(verifier.getBytes(StandardCharsets.US_ASCII));
+            return Base64.getUrlEncoder().withoutPadding().encodeToString(digest);
+        } catch (NoSuchAlgorithmException e) {
+            throw new IllegalStateException("SHA-256 algorithm not available", e);
+        }
+    }
+
     public String getLoginPage(Map<String, String> browserHeaders) throws ConnectionException {
         // clear session data
         logout(false);
+        String codeVerifier = newCodeVerifier();
+        this.codeVerifier = codeVerifier;
 
         logger.debug("Start Login to {}", getAlexaServer());
 
@@ -470,7 +514,9 @@ public class Connection {
                 + "&openid.ns.oa2=http://www.amazon.com/ap/ext/oauth/2" //
                 + "&openid.oa2.client_id=device:" + loginData.getDeviceId() //
                 + "&openid.ns.pape=http://specs.openid.net/extensions/pape/1.0" //
-                + "&openid.oa2.response_type=token" //
+                + "&openid.oa2.response_type=code" //
+                + "&openid.oa2.code_challenge_method=S256" //
+                + "&openid.oa2.code_challenge=" + codeChallenge(codeVerifier) //
                 + "&openid.ns=http://specs.openid.net/auth/2.0&openid.pape.max_auth_age=0" //
                 + "&openid.oa2.scope=device_auth_access";
 
@@ -544,11 +590,10 @@ public class Connection {
     }
 
     public void logout(boolean reset) {
+        cookieManager.getCookieStore().removeAll();
         if (reset) {
-            cookieManager = new CookieManager();
             loginData = new LoginData(cookieManager);
         } else {
-            cookieManager.getCookieStore().removeAll();
             // reset all members
             loginData.setRefreshToken(null);
             loginData.setLoginTime(null);

@@ -33,7 +33,7 @@ public class AuthRegisterBearerTokenTO {
 
     @Override
     public @NonNull String toString() {
-        return "AuthRegisterBearerTO{accessToken='" + accessToken + "', refreshToken='" + refreshToken
-                + "', expiresIn='" + expiresIn + "'}";
+        // accessToken and refreshToken are secrets and must not be exposed
+        return "AuthRegisterBearerTO{expiresIn='" + expiresIn + "'}";
     }
 }

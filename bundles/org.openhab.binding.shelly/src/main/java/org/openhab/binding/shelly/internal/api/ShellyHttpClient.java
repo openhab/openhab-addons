@@ -29,14 +29,12 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import javax.ws.rs.core.HttpHeaders;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpFields;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
@@ -51,6 +49,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+
+import jakarta.ws.rs.core.HttpHeaders;
 
 /**
  * {@link ShellyHttpClient} implements basic HTTP access
@@ -198,7 +198,8 @@ public class ShellyHttpClient {
                     }
                 }
                 if (!authHeader.isEmpty()) {
-                    request.header(HTTP_HEADER_AUTH, authHeader);
+                    final String finalAuthHeader = authHeader;
+                    request.headers(h -> h.add(HTTP_HEADER_AUTH, finalAuthHeader));
                 }
             }
             fillPostData(request, data);
@@ -223,11 +224,15 @@ public class ShellyHttpClient {
                     // keep the HTTP status and auth header handling below instead of failing on the body
                     logger.debug("{}: Unable to parse error response: {}", thingName, e.getMessage());
                 }
-                if (message != null && message.error != null) {
-                    builder.httpCode(message.error.code);
-                    builder.response(message.error.message);
-                    if (getInteger(message.error.code) == HttpStatus.UNAUTHORIZED_401) {
-                        builder.authChallenge(getString(message.error.message).replaceAll("\\\"", "\""));
+                var error = message != null ? message.error : null;
+                if (error != null) {
+                    Integer code = error.code;
+                    if (code != null) {
+                        builder.httpCode(code);
+                    }
+                    builder.response(error.message);
+                    if (getInteger(error.code) == HttpStatus.UNAUTHORIZED_401) {
+                        builder.authChallenge(getString(error.message).replaceAll("\\\"", "\""));
                     }
                 }
             }
@@ -321,12 +326,9 @@ public class ShellyHttpClient {
     private void fillPostData(Request request, String data) {
         boolean json = data.startsWith("{") || data.contains("\": {");
         String type = json ? CONTENT_TYPE_JSON : CONTENT_TYPE_FORM_URLENC;
-        request.header(HttpHeader.CONTENT_TYPE, type);
+        request.headers(h -> h.add(HttpHeader.CONTENT_TYPE, type));
         if (!data.isEmpty()) {
-            StringContentProvider postData;
-            postData = new StringContentProvider(type, data, StandardCharsets.UTF_8);
-            request.content(postData);
-            // request.header(HttpHeader.CONTENT_LENGTH, Long.toString(postData.getLength()));
+            request.body(new StringRequestContent(type, data));
         }
     }
 
@@ -374,6 +376,11 @@ public class ShellyHttpClient {
 
     public int getTimeoutsRecovered() {
         return timeoutsRecovered.get();
+    }
+
+    public void resetTimeoutCounters() {
+        timeoutErrors.set(0);
+        timeoutsRecovered.set(0);
     }
 
     public void postEvent(String device, String index, String event, Map<String, String> parms)

@@ -1,0 +1,250 @@
+{
+	"deviceMapping": {
+		"id": [
+			"airdog.airpurifier.x5"
+		],
+		"propertyMethod": "get_prop",
+		"maxProperties": 6,
+		"channels": [
+			{
+				"property": "power",
+				"friendlyName": "Power",
+				"channel": "on",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_power",
+						"parameterType": "ONOFFNUMBER"
+					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch"
+				]
+			},
+			{
+				"property": "mode",
+				"friendlyName": "Mode",
+				"channel": "mode",
+				"type": "String",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "auto",
+							"label": "Auto"
+						},
+						{
+							"value": "manual",
+							"label": "Manual"
+						},
+						{
+							"value": "sleep",
+							"label": "Sleep"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_wind",
+						"parameterType": "STRING",
+						"parameters": [
+							"$value$",
+							1
+						],
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "auto",
+									"returnValue": 0
+								},
+								{
+									"matchValue": "sleep",
+									"returnValue": 2
+								}
+							]
+						}
+					},
+					{
+						"command": "set_wind",
+						"parameterType": "STRING",
+						"parameters": [
+							"$value$",
+							"$speed$"
+						],
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "manual",
+									"returnValue": 1
+								}
+							]
+						}
+					}
+				],
+				"category": "fan",
+				"tags": [
+					"Control",
+					"Mode"
+				],
+				"readmeComment": "Value mapping `[\"auto\"\u003d\"Auto\",\"manual\"\u003d\"Manual\",\"sleep\"\u003d\"Sleep\"]`"
+			},
+			{
+				"property": "speed",
+				"friendlyName": "Fan Level",
+				"channel": "fan_level",
+				"type": "Number",
+				"stateDescription": {
+					"minimum": 1,
+					"maximum": 4,
+					"step": 1,
+					"pattern": "%.0f"
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_wind",
+						"parameterType": "NUMBER",
+						"parameters": [
+							1,
+							"$value$"
+						]
+					}
+				],
+				"category": "fan",
+				"tags": [
+					"Control",
+					"Level"
+				],
+				"readmeComment": "Setting the fan level switches to Manual mode."
+			},
+			{
+				"property": "lock",
+				"friendlyName": "Child Lock",
+				"channel": "physical_controls_locked",
+				"type": "String",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "lock",
+							"label": "Locked"
+						},
+						{
+							"value": "unlock",
+							"label": "Unlocked"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_lock",
+						"parameterType": "NUMBER",
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "lock",
+									"returnValue": 1
+								},
+								{
+									"matchValue": "unlock",
+									"returnValue": 0
+								}
+							]
+						}
+					}
+				],
+				"category": "lock",
+				"tags": [
+					"Control"
+				],
+				"readmeComment": "Value mapping `[\"lock\"\u003d\"Locked\",\"unlock\"\u003d\"Unlocked\"]`"
+			},
+			{
+				"property": "clean",
+				"friendlyName": "Cleaning Needed",
+				"channel": "cleaning_needed",
+				"type": "String",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "y",
+							"label": "Yes"
+						},
+						{
+							"value": "n",
+							"label": "No"
+						}
+					],
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "status",
+				"tags": [
+					"Status"
+				],
+				"readmeComment": "Value mapping `[\"y\"\u003d\"Yes\",\"n\"\u003d\"No\"]`"
+			},
+			{
+				"property": "pm",
+				"friendlyName": "PM2.5 Density",
+				"channel": "pm2_5_density",
+				"type": "Number:Density",
+				"unit": "μg/m3",
+				"stateDescription": {
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "smoke",
+				"tags": [
+					"Measurement",
+					"ParticulateMatter"
+				]
+			},
+			{
+				"property": "",
+				"friendlyName": "Reset Cleaning Reminder",
+				"channel": "reset_cleaning",
+				"type": "String",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "reset",
+							"label": "Reset"
+						}
+					]
+				},
+				"refresh": false,
+				"actions": [
+					{
+						"command": "set_clean",
+						"parameterType": "NONE",
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "reset",
+									"returnValue": "reset"
+								}
+							]
+						}
+					}
+				],
+				"category": "settings",
+				"tags": [
+					"Control"
+				],
+				"readmeComment": "Value mapping `[\"reset\"\u003d\"Reset\"]`"
+			}
+		],
+		"readmeComment": "Values are requested by property name, while the Mi Home app reads them by position; not yet confirmed on a real device. Mode Manual uses the last fan level read, so link the Fan Level channel too.",
+		"experimental": true
+	}
+}

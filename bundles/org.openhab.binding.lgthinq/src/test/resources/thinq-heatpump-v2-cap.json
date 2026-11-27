@@ -1,0 +1,85 @@
+{
+  "Info": {
+    "productType": "AC",
+    "country": "WW",
+    "modelType": "AWHP",
+    "model": "AWHP",
+    "modelName": "AWHP",
+    "networkType": "WIFI",
+    "version": "16.5",
+    "productCode": "AI05"
+  },
+  "Value": {
+    "support.airState.opMode": {
+      "data_type": "enum",
+      "value_mapping": {
+        "0": "@NON",
+        "1": "@AC_MAIN_OPERATION_MODE_COOL_W",
+        "4": "@AC_MAIN_OPERATION_MODE_AI_W",
+        "5": "@AC_MAIN_OPERATION_MODE_HEAT_W"
+      }
+    },
+    "support.airState.windStrength": {
+      "data_type": "enum",
+      "value_mapping": {
+        "0": "@NON"
+      }
+    },
+    "support.racSubMode": {
+      "data_type": "enum",
+      "value_mapping": {
+        "0": "@NON"
+      }
+    },
+    "support.racMode": {
+      "data_type": "enum",
+      "value_mapping": {
+        "0": "@NON"
+      }
+    },
+    "support.airState.miscFuncState.awhpTempSwitch": {
+      "data_type": "enum",
+      "value_mapping": {
+        "0": "@AIR",
+        "1": "@WATER"
+      }
+    },
+    "airState.opMode": {
+      "data_type": "enum",
+      "default": "0",
+      "value_mapping": {
+        "0": "@AC_MAIN_OPERATION_MODE_COOL_W",
+        "1": "@AC_MAIN_OPERATION_MODE_DRY_W",
+        "2": "@AC_MAIN_OPERATION_MODE_FAN_W",
+        "3": "@AC_MAIN_OPERATION_MODE_AI_W",
+        "4": "@AC_MAIN_OPERATION_MODE_HEAT_W"
+      }
+    },
+    "airState.windStrength": {
+      "data_type": "enum",
+      "value_mapping": {
+        "0": "@AC_MAIN_WIND_STRENGTH_SLOW_W",
+        "2": "@AC_MAIN_WIND_STRENGTH_LOW_W"
+      }
+    },
+    "airState.miscFuncState.awhpTempSwitch": {
+      "_comment": "##air/water temp selector AWHP",
+      "data_type": "enum",
+      "default": "1",
+      "value_mapping": {
+        "0": "@AIR",
+        "1": "@WATER"
+      }
+    }
+  },
+  "ControlDevice": [
+    {
+      "ctrlKey": "basicCtrl",
+      "command": "Operation|Get|Set",
+      "dataValue": "{%airState.operation%}|{%airState.opMode%}|{%airState.windStrength%}|{%airState.tempState.target%}"
+    }
+  ],
+  "Config": {
+    "audibleDiagnosis": "false"
+  }
+}

@@ -22,5 +22,5 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * @author Jonas Brüstel - Initial contribution
  */
 @NonNullByDefault
-public record ApiCollectionResponse<T> (List<T> data) {
+public record ApiCollectionResponse<T>(List<T> data) {
 }

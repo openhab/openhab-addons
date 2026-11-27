@@ -139,6 +139,8 @@ public interface ShellyApiInterface extends ShellyDiscoveryInterface {
 
     int getTimeoutErrors();
 
+    void resetTimeoutCounters();
+
     String getCoIoTDescription() throws ShellyApiException;
 
     ShellySettingsLogin setCoIoTPeer(String peer) throws ShellyApiException;

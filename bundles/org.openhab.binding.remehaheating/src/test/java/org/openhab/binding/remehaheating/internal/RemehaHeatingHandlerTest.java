@@ -16,6 +16,8 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
+import java.time.Instant;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -23,8 +25,13 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.openhab.core.config.core.Configuration;
+import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.SIUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -32,6 +39,10 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
 import org.openhab.core.types.RefreshType;
+import org.openhab.core.types.State;
+import org.openhab.core.types.UnDefType;
+
+import com.google.gson.JsonParser;
 
 /**
  * Unit tests for {@link RemehaHeatingHandler}.
@@ -103,6 +114,159 @@ public class RemehaHeatingHandlerTest {
 
         // Should not throw exception
         assertDoesNotThrow(() -> handler.handleCommand(dhwChannelUID, mode));
+    }
+
+    private static final String DASHBOARD = """
+            {
+              "appliances": [{
+                "waterPressure": 1.6,
+                "errorStatus": "Running",
+                "waterPressureOK": true,
+                "activeThermalMode": "HeatingCH",
+                "operatingMode": "AutomaticHeating",
+                "seasonalMode": "Winter",
+                "holidaySchedule": { "startTime": "0001-01-01T00:00:01Z", "active": false },
+                "climateZones": [{
+                  "climateZoneId": "zone123",
+                  "roomTemperature": 21.5,
+                  "setPoint": 21.5,
+                  "zoneMode": "Scheduling",
+                  "activeComfortDemand": "ProducingHeat",
+                  "nextSetpoint": 17.0,
+                  "nextSwitchTime": "2026-11-08T21:00:00Z",
+                  "firePlaceModeActive": false
+                }],
+                "hotWaterZones": [{
+                  "hotWaterZoneId": "zone456",
+                  "dhwTemperature": 58.6,
+                  "targetSetpoint": 56.0,
+                  "dhwZoneMode": "Scheduling",
+                  "dhwStatus": "Idle",
+                  "nextSwitchTime": "0001-01-01T00:00:00Z",
+                  "antiLegionellaEnabled": true
+                }]
+              }]
+            }
+            """;
+
+    private void verifyState(String channelId, State expected) {
+        verify(callback).stateUpdated(new ChannelUID(thingUID, channelId), expected);
+    }
+
+    @Test
+    public void testUpdateChannelsFromDashboardNewChannels() {
+        handler.updateChannelsFromDashboard(JsonParser.parseString(DASHBOARD).getAsJsonObject());
+
+        verifyState(RemehaHeatingBindingConstants.CHANNEL_THERMAL_MODE, new StringType("HeatingCH"));
+        verifyState(RemehaHeatingBindingConstants.CHANNEL_OPERATING_MODE, new StringType("AutomaticHeating"));
+        verifyState(RemehaHeatingBindingConstants.CHANNEL_SEASONAL_MODE, new StringType("Winter"));
+        verifyState(RemehaHeatingBindingConstants.CHANNEL_HOLIDAY_ACTIVE, OnOffType.OFF);
+        verifyState(RemehaHeatingBindingConstants.CHANNEL_ZONE_MODE, new StringType("Scheduling"));
+        verifyState(RemehaHeatingBindingConstants.CHANNEL_HEATING_DEMAND, new StringType("ProducingHeat"));
+        verifyState(RemehaHeatingBindingConstants.CHANNEL_NEXT_SETPOINT, new QuantityType<>(17.0, SIUnits.CELSIUS));
+        verifyState(RemehaHeatingBindingConstants.CHANNEL_FIREPLACE_MODE_ACTIVE, OnOffType.OFF);
+        verifyState(RemehaHeatingBindingConstants.CHANNEL_DHW_ANTI_LEGIONELLA, OnOffType.ON);
+        verify(callback).stateUpdated(
+                eq(new ChannelUID(thingUID, RemehaHeatingBindingConstants.CHANNEL_NEXT_SWITCH_TIME)),
+                argThat(state -> state instanceof DateTimeType dt
+                        && dt.getInstant().equals(Instant.parse("2026-11-08T21:00:00Z"))));
+    }
+
+    @Test
+    public void testPlaceholderTimestampIsUndefined() {
+        handler.updateChannelsFromDashboard(JsonParser.parseString(DASHBOARD).getAsJsonObject());
+
+        verifyState(RemehaHeatingBindingConstants.CHANNEL_DHW_NEXT_SWITCH_TIME, UnDefType.UNDEF);
+    }
+
+    @Test
+    public void testMissingFieldsAreUndefined() {
+        String minimal = """
+                { "appliances": [{
+                  "waterPressure": 1.6, "errorStatus": "Running", "waterPressureOK": true,
+                  "climateZones": [{ "roomTemperature": 21.5, "setPoint": 21.5, "nextSwitchTime": "invalid" }],
+                  "hotWaterZones": [{ "dhwTemperature": 58.6, "targetSetpoint": 56.0,
+                    "dhwZoneMode": "Scheduling", "dhwStatus": "Idle" }]
+                }] }
+                """;
+        handler.updateChannelsFromDashboard(JsonParser.parseString(minimal).getAsJsonObject());
+
+        verifyState(RemehaHeatingBindingConstants.CHANNEL_THERMAL_MODE, UnDefType.UNDEF);
+        verifyState(RemehaHeatingBindingConstants.CHANNEL_HOLIDAY_ACTIVE, UnDefType.UNDEF);
+        verifyState(RemehaHeatingBindingConstants.CHANNEL_ZONE_MODE, UnDefType.UNDEF);
+        verifyState(RemehaHeatingBindingConstants.CHANNEL_NEXT_SETPOINT, UnDefType.UNDEF);
+        verifyState(RemehaHeatingBindingConstants.CHANNEL_NEXT_SWITCH_TIME, UnDefType.UNDEF);
+        verifyState(RemehaHeatingBindingConstants.CHANNEL_DHW_ANTI_LEGIONELLA, UnDefType.UNDEF);
+    }
+
+    @Test
+    public void testUnexpectedValueTypesAreUndefined() {
+        String unexpected = """
+                { "appliances": [{
+                  "waterPressure": 1.6, "errorStatus": "Running", "waterPressureOK": true,
+                  "activeThermalMode": null,
+                  "holidaySchedule": { "active": "yes" },
+                  "climateZones": [{ "roomTemperature": 21.5, "setPoint": 21.5,
+                    "nextSetpoint": "warm", "nextSwitchTime": 12345, "firePlaceModeActive": null }],
+                  "hotWaterZones": [{ "dhwTemperature": 58.6, "targetSetpoint": 56.0,
+                    "dhwZoneMode": "Scheduling", "dhwStatus": "Idle" }]
+                }] }
+                """;
+        assertDoesNotThrow(
+                () -> handler.updateChannelsFromDashboard(JsonParser.parseString(unexpected).getAsJsonObject()));
+
+        verifyState(RemehaHeatingBindingConstants.CHANNEL_THERMAL_MODE, UnDefType.UNDEF);
+        verifyState(RemehaHeatingBindingConstants.CHANNEL_HOLIDAY_ACTIVE, UnDefType.UNDEF);
+        verifyState(RemehaHeatingBindingConstants.CHANNEL_NEXT_SETPOINT, UnDefType.UNDEF);
+        verifyState(RemehaHeatingBindingConstants.CHANNEL_NEXT_SWITCH_TIME, UnDefType.UNDEF);
+        verifyState(RemehaHeatingBindingConstants.CHANNEL_FIREPLACE_MODE_ACTIVE, UnDefType.UNDEF);
+    }
+
+    @Test
+    public void testNullValuesInDashboardAreUndefined() {
+        // The Remeha API returns null for unavailable values, e.g. no hot water temperature on some appliances
+        String json = """
+                { "appliances": [{
+                  "waterPressure": null, "errorStatus": "Running", "waterPressureOK": true,
+                  "outdoorTemperatureInformation": { "internetOutdoorTemperature": null },
+                  "climateZones": [{ "climateZoneId": "zone123", "roomTemperature": 21.5, "setPoint": 21.5 }],
+                  "hotWaterZones": [{ "hotWaterZoneId": "zone456", "dhwTemperature": null, "targetSetpoint": 60.0,
+                    "dhwZoneMode": "Off", "dhwStatus": "Idle" }]
+                }] }
+                """;
+        assertDoesNotThrow(() -> handler.updateChannelsFromDashboard(JsonParser.parseString(json).getAsJsonObject()));
+
+        verifyState(RemehaHeatingBindingConstants.CHANNEL_WATER_PRESSURE, UnDefType.UNDEF);
+        verifyState(RemehaHeatingBindingConstants.CHANNEL_OUTDOOR_TEMPERATURE, UnDefType.UNDEF);
+        verifyState(RemehaHeatingBindingConstants.CHANNEL_DHW_TEMPERATURE, UnDefType.UNDEF);
+        // values after a null value are still processed
+        verifyState(RemehaHeatingBindingConstants.CHANNEL_DHW_TARGET, new QuantityType<>(60.0, SIUnits.CELSIUS));
+        verifyState(RemehaHeatingBindingConstants.CHANNEL_DHW_MODE, new StringType("Off"));
+        verifyState(RemehaHeatingBindingConstants.CHANNEL_ROOM_TEMPERATURE, new QuantityType<>(21.5, SIUnits.CELSIUS));
+        verifyState(RemehaHeatingBindingConstants.CHANNEL_STATUS, new StringType("Running"));
+    }
+
+    @Test
+    public void testDashboardValuesAreMapped() {
+        String json = """
+                { "appliances": [{
+                  "waterPressure": 1.6, "errorStatus": "Running", "waterPressureOK": true,
+                  "outdoorTemperatureInformation": { "internetOutdoorTemperature": 7.5 },
+                  "climateZones": [{ "roomTemperature": 21.5, "setPoint": 22.0 }],
+                  "hotWaterZones": [{ "dhwTemperature": 58.6, "targetSetpoint": 56.0,
+                    "dhwZoneMode": "Scheduling", "dhwStatus": "Idle" }]
+                }] }
+                """;
+        handler.updateChannelsFromDashboard(JsonParser.parseString(json).getAsJsonObject());
+
+        verifyState(RemehaHeatingBindingConstants.CHANNEL_WATER_PRESSURE, new QuantityType<>(1.6, Units.BAR));
+        verifyState(RemehaHeatingBindingConstants.CHANNEL_WATER_PRESSURE_OK, OnOffType.ON);
+        verifyState(RemehaHeatingBindingConstants.CHANNEL_OUTDOOR_TEMPERATURE,
+                new QuantityType<>(7.5, SIUnits.CELSIUS));
+        verifyState(RemehaHeatingBindingConstants.CHANNEL_TARGET_TEMPERATURE,
+                new QuantityType<>(22.0, SIUnits.CELSIUS));
+        verifyState(RemehaHeatingBindingConstants.CHANNEL_DHW_TEMPERATURE, new QuantityType<>(58.6, SIUnits.CELSIUS));
+        verifyState(RemehaHeatingBindingConstants.CHANNEL_DHW_STATUS, new StringType("Idle"));
     }
 
     @Test

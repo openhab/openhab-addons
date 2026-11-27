@@ -15,12 +15,12 @@ package org.openhab.binding.amazonechocontrol.internal.util;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Answers.RETURNS_SELF;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.contains;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -28,23 +28,28 @@ import static org.mockito.Mockito.when;
 import static org.openhab.binding.amazonechocontrol.internal.util.HttpRequestBuilder.abortedMessage;
 import static org.openhab.binding.amazonechocontrol.internal.util.HttpRequestBuilder.buildFailureReason;
 import static org.openhab.binding.amazonechocontrol.internal.util.HttpRequestBuilder.isThrottled;
+import static org.openhab.binding.amazonechocontrol.internal.util.HttpRequestBuilder.responseBodySuffix;
 
 import java.net.CookieManager;
 import java.net.URI;
 import java.net.UnknownHostException;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.api.Response;
-import org.eclipse.jetty.client.api.Result;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.Response;
+import org.eclipse.jetty.client.Result;
 import org.eclipse.jetty.http.HttpFields;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.openhab.binding.amazonechocontrol.internal.ConnectionException;
 import org.openhab.binding.amazonechocontrol.internal.util.HttpRequestBuilder.FailMode;
 import org.openhab.binding.amazonechocontrol.internal.util.HttpRequestBuilder.HttpResponse;
@@ -67,6 +72,7 @@ public class HttpRequestBuilderTest {
     private static final URI REQUEST_URI = URI.create("https://alexa.amazon.de/api/notifications");
     private static final String BROWSER_USER_AGENT = "Mozilla/5.0 (iPhone; CPU iPhone OS 16_6 like Mac OS X) "
             + "AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.6 Mobile/15E148 Safari/604.1";
+    private static final String CONFIGURED_USER_AGENT = "AmazonWebView/Amazon Alexa/2.2.556530.0/iOS/17.0/iPhone";
 
     @Test
     public void testMissingErrorTypeHeaderIsNotThrottled() {
@@ -122,14 +128,30 @@ public class HttpRequestBuilderTest {
     }
 
     @Test
+    public void testBlankResponseBodyIsNotAppendedToTheFailureMessage() {
+        assertThat(responseBodySuffix(""), is(""));
+        assertThat(responseBodySuffix("  \n "), is(""));
+    }
+
+    @Test
+    public void testResponseBodyIsAppendedToTheFailureMessage() {
+        assertThat(responseBodySuffix("{\"response\":{\"error\":{}}}"), is(" body: {\"response\":{\"error\":{}}}"));
+    }
+
+    @Test
+    public void testLongResponseBodyIsTruncated() {
+        String body = "x".repeat(1500);
+        assertThat(responseBodySuffix(body), is(" body: " + "x".repeat(1000) + "..."));
+    }
+
+    @Test
     public void testThrottledResponseFailsFastInsteadOfRetrying() {
         HttpClient httpClient = mock(HttpClient.class);
         // stubbed so that a regression retries instead of failing with a NullPointerException
         when(httpClient.newRequest(any(URI.class))).thenReturn(mock(Request.class, RETURNS_SELF));
         HttpRequestBuilder requestBuilder = new HttpRequestBuilder(httpClient, new CookieManager(), new Gson());
 
-        HttpFields headers = new HttpFields();
-        headers.add("x-amzn-ErrorType", THROTTLING_ERROR_TYPE);
+        HttpFields headers = HttpFields.build().add("x-amzn-ErrorType", THROTTLING_ERROR_TYPE);
 
         CompletableFuture<HttpResponse> httpResponse = new CompletableFuture<>();
         RequestParams params = new RequestParams(HttpMethod.GET, null, false, Map.of());
@@ -144,8 +166,7 @@ public class HttpRequestBuilderTest {
 
     @Test
     public void testAFailedResponseCarriesItsStatusAndErrorTypeOnTheException() {
-        HttpFields headers = new HttpFields();
-        headers.add("x-amzn-ErrorType", UNSUPPORTED_PROVIDER_ERROR_TYPE);
+        HttpFields headers = HttpFields.build().add("x-amzn-ErrorType", UNSUPPORTED_PROVIDER_ERROR_TYPE);
 
         ConnectionException failure = failureOf(resultWithStatus(404, headers));
 
@@ -155,7 +176,7 @@ public class HttpRequestBuilderTest {
 
     @Test
     public void testAFailureWithoutAnErrorTypeHeaderCarriesAnEmptyErrorType() {
-        ConnectionException failure = failureOf(resultWithStatus(500, new HttpFields()));
+        ConnectionException failure = failureOf(resultWithStatus(500, HttpFields.build()));
 
         assertThat(failure.getHttpStatus(), is(500));
         assertThat(failure.getAmazonErrorType(), is(""));
@@ -167,7 +188,7 @@ public class HttpRequestBuilderTest {
         when(httpClient.newRequest(any(URI.class))).thenReturn(mock(Request.class, RETURNS_SELF));
         HttpRequestBuilder requestBuilder = new HttpRequestBuilder(httpClient, new CookieManager(), new Gson());
 
-        HttpFields headers = new HttpFields();
+        HttpFields.Mutable headers = HttpFields.build();
         headers.add("Location", "https://www.amazon.com/ap/cvf/request?arb=1");
 
         CompletableFuture<HttpResponse> httpResponse = new CompletableFuture<>();
@@ -186,7 +207,7 @@ public class HttpRequestBuilderTest {
         requestBuilderFor(request).get(REQUEST_URI.toString()).withHeader("User-Agent", BROWSER_USER_AGENT).send();
 
         verify(request).agent(BROWSER_USER_AGENT);
-        verify(request, never()).header(eq("User-Agent"), anyString());
+        assertThat(headersOf(request).get(HttpHeader.USER_AGENT), is(nullValue()));
     }
 
     @Test
@@ -196,7 +217,7 @@ public class HttpRequestBuilderTest {
         requestBuilderFor(request).get(REQUEST_URI.toString()).withHeader("user-agent", BROWSER_USER_AGENT).send();
 
         verify(request).agent(BROWSER_USER_AGENT);
-        verify(request, never()).header(eq("user-agent"), anyString());
+        assertThat(headersOf(request).get(HttpHeader.USER_AGENT), is(nullValue()));
     }
 
     @Test
@@ -205,9 +226,8 @@ public class HttpRequestBuilderTest {
 
         requestBuilderFor(request).get(REQUEST_URI.toString()).withHeader("Accept-Language", "de-DE,de;q=0.9").send();
 
-        verify(request).header(HttpHeader.ACCEPT_LANGUAGE, "de-DE,de;q=0.9");
-        verify(request, never()).header(HttpHeader.ACCEPT_LANGUAGE, "en-US");
-        verify(request, never()).header(eq("Accept-Language"), anyString());
+        // a single value proves the custom one replaced the default instead of being added next to it
+        assertThat(headersOf(request).getValuesList(HttpHeader.ACCEPT_LANGUAGE), is(List.of("de-DE,de;q=0.9")));
     }
 
     @Test
@@ -216,8 +236,83 @@ public class HttpRequestBuilderTest {
 
         requestBuilderFor(request).get(REQUEST_URI.toString()).send();
 
-        verify(request).agent(contains("AmazonWebView"));
-        verify(request).header(HttpHeader.ACCEPT_LANGUAGE, "en-US");
+        verify(request).agent(contains("PitanguiBridge"));
+        assertThat(headersOf(request).get(HttpHeader.ACCEPT_LANGUAGE), is("en-US"));
+    }
+
+    /**
+     * Replays every header block the builder passed to {@link Request#headers} so the resulting fields can be
+     * asserted on. Jetty 12 has no {@code Request.header(String, String)} left to verify against.
+     */
+    private static HttpFields headersOf(Request request) {
+        ArgumentCaptor<Consumer<HttpFields.Mutable>> captor = ArgumentCaptor.captor();
+        verify(request, atLeastOnce()).headers(captor.capture());
+        HttpFields.Mutable headers = HttpFields.build();
+        captor.getAllValues().forEach(block -> block.accept(headers));
+        return headers;
+    }
+
+    @Test
+    @SuppressWarnings("null")
+    public void testAConfiguredUserAgentReplacesTheDefault() {
+        Request request = mock(Request.class, RETURNS_SELF);
+        HttpRequestBuilder requestBuilder = requestBuilderFor(request);
+
+        requestBuilder.setUserAgent(" " + CONFIGURED_USER_AGENT + " ");
+        requestBuilder.get(REQUEST_URI.toString()).send();
+
+        verify(request).agent(CONFIGURED_USER_AGENT);
+    }
+
+    @Test
+    @SuppressWarnings("null")
+    public void testABlankConfiguredUserAgentKeepsTheDefault() {
+        Request request = mock(Request.class, RETURNS_SELF);
+        HttpRequestBuilder requestBuilder = requestBuilderFor(request);
+
+        requestBuilder.setUserAgent(" ");
+        requestBuilder.get(REQUEST_URI.toString()).send();
+
+        verify(request).agent(contains("PitanguiBridge"));
+    }
+
+    @Test
+    @SuppressWarnings("null")
+    public void testTheUserAgentOfARequestWinsOverTheConfiguredOne() {
+        Request request = mock(Request.class, RETURNS_SELF);
+        HttpRequestBuilder requestBuilder = requestBuilderFor(request);
+
+        requestBuilder.setUserAgent(CONFIGURED_USER_AGENT);
+        requestBuilder.get(REQUEST_URI.toString()).withHeader("User-Agent", BROWSER_USER_AGENT).send();
+
+        verify(request).agent(BROWSER_USER_AGENT);
+        verify(request, never()).agent(CONFIGURED_USER_AGENT);
+    }
+
+    @Test
+    @SuppressWarnings("null")
+    public void testARequestIsSentWithATimeout() {
+        Request request = mock(Request.class, RETURNS_SELF);
+
+        requestBuilderFor(request).get(REQUEST_URI.toString()).send();
+
+        verify(request).timeout(10, TimeUnit.SECONDS);
+    }
+
+    @Test
+    @SuppressWarnings("null")
+    public void testARetriedRequestKeepsTheTimeout() {
+        Request retriedRequest = mock(Request.class, RETURNS_SELF);
+        Result abortedResult = resultWithStatus(0, HttpFields.EMPTY);
+
+        CompletableFuture<HttpResponse> httpResponse = new CompletableFuture<>();
+        RequestParams params = new RequestParams(HttpMethod.GET, null, false, Map.of());
+        requestBuilderFor(retriedRequest).new HttpResponseListener(httpResponse, params, false, FailMode.RETRY)
+                .onComplete(abortedResult);
+
+        verify(retriedRequest).timeout(10, TimeUnit.SECONDS);
+        verify(retriedRequest).send(any(Response.CompleteListener.class));
+        assertThat(httpResponse.isDone(), is(false));
     }
 
     private HttpRequestBuilder requestBuilderFor(Request request) {

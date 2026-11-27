@@ -19,7 +19,7 @@ import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.shelly.internal.api.ShellyApiLightUtil.ShellyLightApiComponent;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor.ShellyMotionSettings;
-import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2APClientList;
+import org.openhab.binding.shelly.internal.api2.dto.Shelly2ConfigJsonDTO.Shelly2APClientList;
 import org.openhab.binding.shelly.internal.api2.dto.ShellyMediaJsonDTO.Shelly2DeviceStatusMedia;
 import org.openhab.binding.shelly.internal.api2.dto.ShellyThermostatJsonDTO.Shelly2DeviceStatusThermostat;
 import org.openhab.core.thing.CommonTriggerEvents;
@@ -860,6 +860,8 @@ public class Shelly1ApiJsonDTO {
         @SerializedName("fs_free")
         public Long fsFree;
         public Long uptime;
+        @SerializedName("restart_required") // Gen2+ only
+        public @Nullable Boolean restartRequired;
 
         @SerializedName("sleep_time") // Shelly Motion
         public Integer sleepTime;

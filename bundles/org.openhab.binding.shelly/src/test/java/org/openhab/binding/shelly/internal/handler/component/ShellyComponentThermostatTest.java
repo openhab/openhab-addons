@@ -17,8 +17,12 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
 import static org.openhab.binding.shelly.internal.ShellyDevices.*;
+import static org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.SHELLYRPC_METHOD_THERMOSTAT_SCHEDULE_LISTPROFILES;
+import static org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.SHELLYRPC_METHOD_THERMOSTAT_SCHEDULE_SETCONFIG;
 import static org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.SHELLYRPC_METHOD_THERMOSTAT_SETCONFIG;
 
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Stream;
@@ -32,18 +36,23 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.ArgumentCaptor;
+import org.openhab.binding.shelly.internal.api.ShellyApiException;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsStatus;
-import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2RpcRequest;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiRpc;
+import org.openhab.binding.shelly.internal.api2.dto.Shelly2StatusJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult;
 import org.openhab.binding.shelly.internal.api2.dto.ShellyThermostatJsonDTO.Shelly2DeviceStatusThermostat;
+import org.openhab.binding.shelly.internal.api2.dto.ShellyThermostatJsonDTO.Shelly2DeviceStatusThermostat.Shelly2DeviceStatusThermostatSchedules;
+import org.openhab.binding.shelly.internal.api2.dto.ShellyThermostatJsonDTO.Shelly2ThermostatProfiles;
+import org.openhab.binding.shelly.internal.api2.dto.ShellyThermostatJsonDTO.Shelly2ThermostatProfiles.Shelly2ThermostatProfile;
 import org.openhab.binding.shelly.internal.handler.ShellyThingInterface;
 import org.openhab.binding.shelly.internal.provider.ShellyChannelDefinitions;
 import org.openhab.binding.shelly.internal.provider.ShellyTranslationProvider;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.ImperialUnits;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -62,6 +71,10 @@ public class ShellyComponentThermostatTest {
             + CHANNEL_THERMOSTAT_ENABLE;
     private static final String TARGET_TEMP_ID = CHANNEL_GROUP_CONTROL + ChannelUID.CHANNEL_GROUP_SEPARATOR
             + CHANNEL_CONTROL_SETTEMP;
+    private static final String SCHEDULE_ID = CHANNEL_GROUP_CONTROL + ChannelUID.CHANNEL_GROUP_SEPARATOR
+            + CHANNEL_CONTROL_SCHEDULE;
+    private static final String PROFILE_ID = CHANNEL_GROUP_CONTROL + ChannelUID.CHANNEL_GROUP_SEPARATOR
+            + CHANNEL_CONTROL_PROFILE;
 
     @BeforeAll
     static void initChannelDefinitions() {
@@ -114,7 +127,9 @@ public class ShellyComponentThermostatTest {
     }
 
     private static Stream<Arguments> provideRemovedChannelsWithoutThermostat() {
-        return Stream.of(Arguments.of(THING_TYPE_SHELLYPLUSWALLDISPLAY, Set.of(ENABLE_ID, TARGET_TEMP_ID)),
+        return Stream.of(
+                Arguments.of(THING_TYPE_SHELLYPLUSWALLDISPLAY,
+                        Set.of(ENABLE_ID, TARGET_TEMP_ID, SCHEDULE_ID, PROFILE_ID)),
                 Arguments.of(THING_TYPE_SHELLYTRV, Set.of(ENABLE_ID)));
     }
 
@@ -157,5 +172,166 @@ public class ShellyComponentThermostatTest {
             assertNotNull(actualC);
             assertEquals(targetC, actualC, 0.01);
         }
+    }
+
+    private static Shelly2ThermostatProfiles profiles(Object... idsAndNames) {
+        Shelly2ThermostatProfiles response = new Shelly2ThermostatProfiles();
+        response.profiles = new ArrayList<>();
+        for (int i = 0; i < idsAndNames.length; i += 2) {
+            Shelly2ThermostatProfile profile = new Shelly2ThermostatProfile();
+            profile.id = (Integer) idsAndNames[i];
+            profile.name = (String) idsAndNames[i + 1];
+            response.profiles.add(profile);
+        }
+        return response;
+    }
+
+    private static ShellySettingsStatus statusWithSchedule(@Nullable Boolean enable, @Nullable Integer profileId,
+            @Nullable String profileName) {
+        ShellySettingsStatus status = new ShellySettingsStatus();
+        status.thermostat = new Shelly2DeviceStatusThermostat();
+        status.thermostat.schedules = new Shelly2DeviceStatusThermostatSchedules();
+        status.thermostat.schedules.enable = enable;
+        status.thermostat.schedules.profileId = profileId;
+        status.thermostat.schedules.profileName = profileName;
+        return status;
+    }
+
+    @Test
+    void scheduleCreatesChannelsReadsProfilesOnceAndPublishesState() throws Exception {
+        Shelly2ApiRpc api = mock(Shelly2ApiRpc.class);
+        when(api.apiRequest(any(Shelly2RpcRequest.class), eq(Shelly2ThermostatProfiles.class)))
+                .thenReturn(profiles(0, "Winter", 1, "Sommer"));
+        ShellyThingInterface handler = newHandler(THING_TYPE_SHELLYPLUSWALLDISPLAY);
+        when(handler.getApi()).thenReturn(api);
+        ShellySettingsStatus status = statusWithSchedule(true, 1, "Sommer");
+
+        ShellyComponentThermostat.updateChannels(handler, status);
+        ShellyComponentThermostat.updateChannels(handler, status);
+
+        ArgumentCaptor<Map<String, Channel>> channels = ArgumentCaptor.forClass(Map.class);
+        verify(handler, times(2)).updateThingChannels(eq(Map.of()), channels.capture());
+        assertEquals(Set.of(ENABLE_ID, TARGET_TEMP_ID, SCHEDULE_ID, PROFILE_ID), channels.getValue().keySet());
+
+        ArgumentCaptor<Shelly2RpcRequest> request = ArgumentCaptor.forClass(Shelly2RpcRequest.class);
+        verify(api, times(1)).apiRequest(request.capture(), eq(Shelly2ThermostatProfiles.class));
+        assertEquals(SHELLYRPC_METHOD_THERMOSTAT_SCHEDULE_LISTPROFILES, request.getValue().method);
+        assertEquals(0, request.getValue().params.id);
+
+        Map<String, String> options = new LinkedHashMap<>();
+        options.put("0", "Winter");
+        options.put("1", "Sommer");
+        verify(handler, times(1)).updateStateOptions(CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_PROFILE, options);
+        verify(handler, times(2)).updateChannel(CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_SCHEDULE, OnOffType.ON);
+        verify(handler, times(2)).updateChannel(CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_PROFILE, new StringType("1"));
+    }
+
+    @Test
+    void unknownActiveProfileIsReadAgainAndKeptEvenIfNotListed() throws Exception {
+        Shelly2ApiRpc api = mock(Shelly2ApiRpc.class);
+        when(api.apiRequest(any(Shelly2RpcRequest.class), eq(Shelly2ThermostatProfiles.class)))
+                .thenReturn(profiles(0, "Winter"));
+        ShellyThingInterface handler = newHandler(THING_TYPE_SHELLYPLUSWALLDISPLAY);
+        when(handler.getApi()).thenReturn(api);
+
+        ShellyComponentThermostat.updateChannels(handler, statusWithSchedule(true, 0, "Winter"));
+        ShellyComponentThermostat.updateChannels(handler, statusWithSchedule(true, 7, "Guests"));
+        ShellyComponentThermostat.updateChannels(handler, statusWithSchedule(true, 7, "Guests"));
+
+        verify(api, times(2)).apiRequest(any(Shelly2RpcRequest.class), eq(Shelly2ThermostatProfiles.class));
+        Map<String, String> options = new LinkedHashMap<>();
+        options.put("0", "Winter");
+        options.put("7", "Guests");
+        verify(handler).updateStateOptions(CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_PROFILE, options);
+    }
+
+    @Test
+    void failedProfileReadOffersActiveProfileAndIsNotRepeated() throws Exception {
+        Shelly2ApiRpc api = mock(Shelly2ApiRpc.class);
+        when(api.apiRequest(any(Shelly2RpcRequest.class), eq(Shelly2ThermostatProfiles.class)))
+                .thenThrow(new ShellyApiException("timeout"));
+        ShellyThingInterface handler = newHandler(THING_TYPE_SHELLYPLUSWALLDISPLAY);
+        when(handler.getApi()).thenReturn(api);
+        ShellySettingsStatus status = statusWithSchedule(false, 2, "Away");
+
+        ShellyComponentThermostat.updateChannels(handler, status);
+        ShellyComponentThermostat.updateChannels(handler, status);
+
+        verify(api, times(1)).apiRequest(any(Shelly2RpcRequest.class), eq(Shelly2ThermostatProfiles.class));
+        verify(handler).updateStateOptions(CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_PROFILE, Map.of("2", "Away"));
+        verify(handler, times(2)).updateChannel(CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_SCHEDULE, OnOffType.OFF);
+        verify(handler, times(2)).updateChannel(CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_PROFILE, new StringType("2"));
+    }
+
+    @Test
+    void profilesAreReadAgainAfterReinitialization() throws Exception {
+        Shelly2ApiRpc api = mock(Shelly2ApiRpc.class);
+        when(api.apiRequest(any(Shelly2RpcRequest.class), eq(Shelly2ThermostatProfiles.class)))
+                .thenReturn(profiles(0, "Winter")).thenReturn(profiles(0, "Holiday"));
+        ShellyThingInterface handler = newHandler(THING_TYPE_SHELLYPLUSWALLDISPLAY);
+        when(handler.getApi()).thenReturn(api);
+        ShellySettingsStatus status = statusWithSchedule(true, 0, "Winter");
+
+        ShellyComponentThermostat.updateChannels(handler, status);
+        handler.getProfile().initFromThingType(THING_TYPE_SHELLYPLUSWALLDISPLAY);
+        ShellyComponentThermostat.updateChannels(handler, status);
+
+        verify(api, times(2)).apiRequest(any(Shelly2RpcRequest.class), eq(Shelly2ThermostatProfiles.class));
+        verify(handler).updateStateOptions(CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_PROFILE, Map.of("0", "Holiday"));
+    }
+
+    @Test
+    void scheduleCommandSetsScheduleConfig() throws Exception {
+        Shelly2ApiRpc api = mock(Shelly2ApiRpc.class);
+        ShellyThingInterface handler = newHandler(THING_TYPE_SHELLYPLUSWALLDISPLAY);
+        when(handler.getApi()).thenReturn(api);
+
+        ShellyComponentThermostat.handleCommand(handler, CHANNEL_CONTROL_SCHEDULE, OnOffType.OFF);
+
+        ArgumentCaptor<Shelly2RpcRequest> request = ArgumentCaptor.forClass(Shelly2RpcRequest.class);
+        verify(api).apiRequest(request.capture());
+        assertEquals(SHELLYRPC_METHOD_THERMOSTAT_SCHEDULE_SETCONFIG, request.getValue().method);
+        assertEquals(0, request.getValue().params.id);
+        assertEquals(false, request.getValue().params.config.enable);
+        assertNull(request.getValue().params.config.profileId);
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = { "1", " 1 ", "sommer", "Sommer" })
+    void profileCommandAcceptsIdOrName(String command) throws Exception {
+        Shelly2ApiRpc api = mock(Shelly2ApiRpc.class);
+        ShellyThingInterface handler = newHandler(THING_TYPE_SHELLYPLUSWALLDISPLAY);
+        when(handler.getApi()).thenReturn(api);
+        handler.getProfile().thermostatProfiles.putAll(Map.of(0, "Winter", 1, "Sommer"));
+
+        ShellyComponentThermostat.handleCommand(handler, CHANNEL_CONTROL_PROFILE, new StringType(command));
+
+        ArgumentCaptor<Shelly2RpcRequest> request = ArgumentCaptor.forClass(Shelly2RpcRequest.class);
+        verify(api).apiRequest(request.capture());
+        assertEquals(SHELLYRPC_METHOD_THERMOSTAT_SCHEDULE_SETCONFIG, request.getValue().method);
+        assertEquals(1, request.getValue().params.config.profileId);
+        assertNull(request.getValue().params.config.enable);
+    }
+
+    @Test
+    void profileCommandWithUnknownNameIsIgnored() throws Exception {
+        Shelly2ApiRpc api = mock(Shelly2ApiRpc.class);
+        ShellyThingInterface handler = newHandler(THING_TYPE_SHELLYPLUSWALLDISPLAY);
+        when(handler.getApi()).thenReturn(api);
+        handler.getProfile().thermostatProfiles.put(0, "Winter");
+
+        ShellyComponentThermostat.handleCommand(handler, CHANNEL_CONTROL_PROFILE, new StringType("Holiday"));
+
+        verify(api, never()).apiRequest(any(Shelly2RpcRequest.class));
+    }
+
+    @Test
+    void profileIdIsResolvedFromIdOrName() {
+        Map<Integer, String> profiles = Map.of(0, "Winter", 1, "Sommer");
+
+        assertEquals(1, ShellyComponentThermostat.getProfileId(profiles, "1"));
+        assertEquals(5, ShellyComponentThermostat.getProfileId(profiles, "5"));
+        assertEquals(0, ShellyComponentThermostat.getProfileId(profiles, "WINTER"));
+        assertNull(ShellyComponentThermostat.getProfileId(profiles, "Holiday"));
     }
 }

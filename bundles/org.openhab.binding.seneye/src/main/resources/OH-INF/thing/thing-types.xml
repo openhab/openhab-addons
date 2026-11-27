@@ -56,8 +56,8 @@
 		<label>Temperature</label>
 		<description>The water temperature</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -66,7 +66,7 @@
 		<label>PH</label>
 		<description>The PH Level</description>
 		<tags>
-			<tag>Measurement</tag>
+			<point>Measurement</point>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -75,7 +75,7 @@
 		<label>NH3</label>
 		<description>The NH3 Level</description>
 		<tags>
-			<tag>Measurement</tag>
+			<point>Measurement</point>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -84,7 +84,7 @@
 		<label>NH4</label>
 		<description>The NH4 Level</description>
 		<tags>
-			<tag>Measurement</tag>
+			<point>Measurement</point>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -93,7 +93,7 @@
 		<label>O2</label>
 		<description>The oxygen level</description>
 		<tags>
-			<tag>Measurement</tag>
+			<point>Measurement</point>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -102,8 +102,8 @@
 		<label>LUX</label>
 		<description>The lux light level</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Illuminance</tag>
+			<point>Measurement</point>
+			<property>Illuminance</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -118,8 +118,8 @@
 		<label>Kelvin</label>
 		<description>The kelvin light level</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>ColorTemperature</tag>
+			<point>Measurement</point>
+			<property>ColorTemperature</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -152,8 +152,8 @@
 		<label>Out of Water</label>
 		<description>The sensor is reporting being out of the water</description>
 		<tags>
-			<tag>Alarm</tag>
-			<tag>Level</tag>
+			<point>Alarm</point>
+			<property>Level</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>

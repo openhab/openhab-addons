@@ -18,16 +18,22 @@ import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+import java.util.List;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.shelly.internal.api.ShellyApiException;
-import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult;
-import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2DeviceStatusPower;
-import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusSys;
+import org.openhab.binding.shelly.internal.api2.dto.Shelly2StatusJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult;
+import org.openhab.binding.shelly.internal.api2.dto.Shelly2StatusJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2DeviceStatusPower;
+import org.openhab.binding.shelly.internal.api2.dto.Shelly2StatusJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2DeviceStatusPower.Shelly2DeviceStatusBattery;
+import org.openhab.binding.shelly.internal.api2.dto.Shelly2StatusJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusSys;
 import org.openhab.binding.shelly.internal.api2.dto.ShellyMediaJsonDTO.Shelly2DeviceStatusMedia;
 import org.openhab.binding.shelly.internal.api2.dto.ShellyMediaJsonDTO.Shelly2DeviceStatusMedia.Shelly2DeviceStatusMediaPlayback;
 import org.openhab.binding.shelly.internal.api2.dto.ShellyMediaJsonDTO.Shelly2DeviceStatusMedia.Shelly2DeviceStatusMediaPlayback.Shelly2DeviceStatusMediaMeta;
 import org.openhab.binding.shelly.internal.api2.dto.ShellyThermostatJsonDTO.Shelly2DeviceStatusThermostat;
+import org.openhab.binding.shelly.internal.api2.dto.ShellyThermostatJsonDTO.Shelly2DeviceStatusThermostat.Shelly2DeviceStatusThermostatSchedules;
+import org.openhab.binding.shelly.internal.api2.dto.ShellyThermostatJsonDTO.Shelly2ThermostatProfiles;
+import org.openhab.binding.shelly.internal.api2.dto.ShellyThermostatJsonDTO.Shelly2ThermostatProfiles.Shelly2ThermostatProfile;
 import org.openhab.binding.shelly.internal.util.ShellyUtils;
 
 import com.google.gson.Gson;
@@ -74,8 +80,9 @@ public class Shelly2WallDisplayStatusJsonTest {
 
         Shelly2DeviceStatusPower power1 = status.devicepower1;
         assertNotNull(power1);
-        assertNotNull(power1.battery);
-        assertThat(power1.battery.percent, is(equalTo(99.0)));
+        Shelly2DeviceStatusBattery battery = power1.battery;
+        assertNotNull(battery);
+        assertThat(battery.percent, is(equalTo(99.0)));
 
         Shelly2DeviceStatusMedia media = status.media;
         assertNotNull(media);
@@ -104,6 +111,37 @@ public class Shelly2WallDisplayStatusJsonTest {
         assertThat(thermostat.targetC, is(equalTo(21.5)));
         assertThat(thermostat.currentC, is(equalTo(20.3)));
         assertThat(thermostat.output, is(equalTo(Boolean.TRUE)));
+    }
+
+    @Test
+    void thermostatScheduleMapsProfileIdAndName() throws ShellyApiException {
+        String json = """
+                {"thermostat:0":{"id":0,"enable":true,"target_C":21.5,
+                "schedules":{"enable":true,"profile_id":1,"profile_name":"Summer"}}}
+                """;
+
+        Shelly2DeviceStatusResult status = ShellyUtils.fromJson(gson, json, Shelly2DeviceStatusResult.class);
+        Shelly2DeviceStatusThermostat thermostat = status.thermostat0;
+        assertNotNull(thermostat);
+        Shelly2DeviceStatusThermostatSchedules schedules = thermostat.schedules;
+        assertNotNull(schedules);
+        assertThat(schedules.enable, is(equalTo(Boolean.TRUE)));
+        assertThat(schedules.profileId, is(equalTo(1)));
+        assertThat(schedules.profileName, is(equalTo("Summer")));
+    }
+
+    @Test
+    void thermostatProfileListMapsIdsAndNames() throws ShellyApiException {
+        String json = """
+                {"profiles":[{"id":0,"name":"Winter"},{"id":1,"name":"Summer"}]}
+                """;
+
+        Shelly2ThermostatProfiles response = ShellyUtils.fromJson(gson, json, Shelly2ThermostatProfiles.class);
+        List<Shelly2ThermostatProfile> profiles = response.profiles;
+        assertNotNull(profiles);
+        assertThat(profiles.size(), is(equalTo(2)));
+        assertThat(profiles.get(1).id, is(equalTo(1)));
+        assertThat(profiles.get(1).name, is(equalTo("Summer")));
     }
 
     @Test

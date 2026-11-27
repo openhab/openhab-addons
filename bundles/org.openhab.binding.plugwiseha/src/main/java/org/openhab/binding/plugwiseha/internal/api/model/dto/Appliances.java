@@ -35,7 +35,9 @@ public class Appliances extends PlugwiseHACollection<Appliance> {
                     originalApplianceIsOlder = originalAppliance.isOlderThan(applianceToMerge);
                 }
 
-                if (originalAppliance != null && originalApplianceIsOlder) {
+                if (originalAppliance == null) {
+                    this.put(id, applianceToMerge);
+                } else if (originalApplianceIsOlder) {
                     PointLogs updatedPointLogs = applianceToMerge.getPointLogs();
                     if (updatedPointLogs != null) {
                         updatedPointLogs.merge(originalAppliance.getPointLogs());

@@ -43,6 +43,8 @@ public class KM200BindingConstants {
     public static final ThingTypeUID THING_TYPE_SWITCH_PROGRAM = new ThingTypeUID(BINDING_ID, "switchProgram");
     public static final ThingTypeUID THING_TYPE_SYSTEMSTATES = new ThingTypeUID(BINDING_ID, "systemStates");
 
+    public static final String CONFIG_ROOT_SERVICE = "rootService";
+
     // KM200 DataTypes
     public static final String DATA_TYPE_STRING_VALUE = "stringValue";
     public static final String DATA_TYPE_FLOAT_VALUE = "floatValue";

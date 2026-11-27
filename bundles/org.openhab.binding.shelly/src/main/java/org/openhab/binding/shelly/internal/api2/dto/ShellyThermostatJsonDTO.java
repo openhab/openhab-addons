@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.shelly.internal.api2.dto;
 
+import java.util.List;
+
 import org.eclipse.jdt.annotation.Nullable;
 
 import com.google.gson.annotations.SerializedName;
@@ -27,6 +29,10 @@ public class ShellyThermostatJsonDTO {
     public static class Shelly2DeviceStatusThermostat {
         public static class Shelly2DeviceStatusThermostatSchedules {
             public @Nullable Boolean enable;
+            @SerializedName("profile_id")
+            public @Nullable Integer profileId;
+            @SerializedName("profile_name")
+            public @Nullable String profileName;
         }
 
         public @Nullable Boolean enable;
@@ -36,5 +42,17 @@ public class ShellyThermostatJsonDTO {
         public @Nullable Double currentC;
         public @Nullable Boolean output;
         public @Nullable Shelly2DeviceStatusThermostatSchedules schedules;
+    }
+
+    /**
+     * Response of Thermostat.Schedule.ListProfiles
+     */
+    public static class Shelly2ThermostatProfiles {
+        public static class Shelly2ThermostatProfile {
+            public @Nullable Integer id;
+            public @Nullable String name;
+        }
+
+        public @Nullable List<Shelly2ThermostatProfile> profiles;
     }
 }

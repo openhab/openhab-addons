@@ -14,10 +14,15 @@ package org.openhab.binding.miio.internal.handler;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Semaphore;
@@ -27,6 +32,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
@@ -188,6 +194,21 @@ public class MiIoBasicHandlerRefreshOnceTest {
         }
     }
 
+    private void loadFromDatabase(String fileName, String channelId) throws IOException {
+        try (InputStream is = getClass().getResourceAsStream("/database/" + fileName)) {
+            assertNotNull(is, "Database file not found: " + fileName);
+            device = new Gson().fromJson(JsonParser.parseReader(new InputStreamReader(is, StandardCharsets.UTF_8)),
+                    MiIoBasicDevice.class);
+        }
+        handler.refreshListCustomCommands.clear();
+        handler.refreshList.clear();
+        for (MiIoBasicChannel channel : device.getDevice().getChannels()) {
+            if (channel.getChannel().equals(channelId)) {
+                handler.refreshListCustomCommands.put(channel.getChannelCustomRefreshCommand(), channel);
+            }
+        }
+    }
+
     @Test
     public void readOnceChannelIsNotRequestedAgainAfterSuccess() {
         load(ONCE_CHANNEL);
@@ -211,6 +232,38 @@ public class MiIoBasicHandlerRefreshOnceTest {
         assertEquals(List.of("/v2/test/query"), handler.poll(device));
         handler.respond("once", "{\"code\":0,\"result\":{}}");
         assertEquals(List.of(), handler.poll(device));
+    }
+
+    @Test
+    public void cloudErrorDoesNotUpdateChannel() {
+        load(ONCE_CHANNEL);
+
+        handler.poll(device);
+        handler.respond("once", "{\"code\":-8,\"message\":\"auth err\"}");
+        verify(callback, never()).stateUpdated(any(ChannelUID.class), any(State.class));
+    }
+
+    @Test
+    public void databaseRecipesAreTransformed() throws IOException {
+        loadFromDatabase("careli.fryer.maf02-miot.json", "recipes");
+
+        assertEquals(List.of("/v2/recipes/query"), handler.poll(device));
+        // response shape as used by the app: recipeCommand is a JSON string
+        handler.respond("recipes",
+                """
+                        {"code":0,"message":"ok","result":{"recipes":[
+                        {"recipeID":8174,"recipeName":"Chicken Wings","recipeImage":"https://example.com/1.png",
+                        "recipeCommand":"{\\"cookCommand\\":{\\"time\\":18,\\"temperature\\":200,\\"preHeat\\":2,\\"capacity\\":1},\\"tips\\":\\"long text\\"}"},
+                        {"recipeID":8175,"recipeName":"Fries",
+                        "recipeCommand":"{\\"cookCommand\\":{\\"time\\":15,\\"temperature\\":180,\\"preHeat\\":1,\\"capacity\\":0}}"}],
+                        "hasMore":false}}
+                        """);
+        ArgumentCaptor<State> state = ArgumentCaptor.forClass(State.class);
+        verify(callback).stateUpdated(eq(new ChannelUID(thingUID, "recipes")), state.capture());
+        assertEquals(JsonParser.parseString("""
+                [{"recipeID":8174,"recipeName":"Chicken Wings","time":18,"temperature":200,"preHeat":2,"capacity":1},
+                {"recipeID":8175,"recipeName":"Fries","time":15,"temperature":180,"preHeat":1,"capacity":0}]
+                """), JsonParser.parseString(state.getValue().toString()));
     }
 
     @Test

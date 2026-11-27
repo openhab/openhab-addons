@@ -12,15 +12,16 @@
 				"channel": "dry",
 				"type": "Switch",
 				"refresh": true,
-				"ChannelGroup": "actions",
 				"actions": [
 					{
 						"command": "set_dry",
 						"parameterType": "ONOFFNUMBER"
 					}
 				],
+				"category": "heating",
 				"tags": [
-					"Switch"
+					"Switch",
+					"Heating"
 				],
 				"readmeComment": "Only available when the airer is at its highest position. ON starts the shortest drying cycle (30 minutes), use the drymode channel to select the drying time. The channel is ON for any running drying cycle."
 			},
@@ -54,7 +55,6 @@
 					]
 				},
 				"refresh": false,
-				"ChannelGroup": "actions",
 				"actions": [
 					{
 						"command": "set_dry",
@@ -82,25 +82,26 @@
 						}
 					}
 				],
+				"category": "heating",
 				"tags": [
 					"Control",
 					"Mode"
 				],
-				"readmeComment": "Only available when the airer is at its highest position. Write only, the current drying state is shown by the dry channel. Value mapping `[\"0\"=\"Off\",\"1\"=\"30 minutes\",\"2\"=\"60 minutes\",\"3\"=\"90 minutes\",\"4\"=\"120 minutes\"]`. Mode 4 is sent with `set_dryswitch`, like the Mi Home app does."
+				"readmeComment": "Only available when the airer is at its highest position. Write only, the current drying state is shown by the dry channel. Value mapping `[\"0\"\u003d\"Off\",\"1\"\u003d\"30 minutes\",\"2\"\u003d\"60 minutes\",\"3\"\u003d\"90 minutes\",\"4\"\u003d\"120 minutes\"]`. Mode 4 is sent with `set_dryswitch`, like the Mi Home app does."
 			},
 			{
 				"property": "led",
-				"friendlyName": "LED",
+				"friendlyName": "Lamp",
 				"channel": "led",
 				"type": "Switch",
 				"refresh": true,
-				"ChannelGroup": "actions",
 				"actions": [
 					{
 						"command": "set_led",
 						"parameterType": "ONOFFNUMBER"
 					}
 				],
+				"category": "light",
 				"tags": [
 					"Switch",
 					"Light"
@@ -115,7 +116,7 @@
 					"options": [
 						{
 							"value": "0",
-							"label": "Stop"
+							"label": "Pause"
 						},
 						{
 							"value": "1",
@@ -128,21 +129,21 @@
 					]
 				},
 				"refresh": true,
-				"ChannelGroup": "actions",
 				"actions": [
 					{
 						"command": "set_motor",
 						"parameterType": "NUMBER"
 					}
 				],
+				"category": "movecontrol",
 				"tags": [
 					"Control"
 				],
-				"readmeComment": "Value mapping `[\"0\"=\"Stop\",\"1\"=\"Rise\",\"2\"=\"Down\"]`"
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Pause\",\"1\"\u003d\"Rise\",\"2\"\u003d\"Down\"]`"
 			},
 			{
 				"property": "drytime",
-				"friendlyName": "Dry Time",
+				"friendlyName": "Dry Remaining",
 				"channel": "drytime",
 				"type": "Number:Time",
 				"unit": "minutes",
@@ -151,9 +152,9 @@
 					"readOnly": true
 				},
 				"refresh": true,
-				"ChannelGroup": "Status",
+				"category": "time",
 				"tags": [
-					"Status",
+					"Measurement",
 					"Duration"
 				]
 			},
@@ -180,12 +181,12 @@
 					"readOnly": true
 				},
 				"refresh": true,
-				"ChannelGroup": "Status",
+				"category": "status",
 				"tags": [
 					"Status",
 					"Position"
 				],
-				"readmeComment": "Value mapping `[\"0\"=\"Normal\",\"1\"=\"Highest\",\"2\"=\"Lowest\"]`"
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Normal\",\"1\"\u003d\"Highest\",\"2\"\u003d\"Lowest\"]`"
 			}
 		],
 		"experimental": true

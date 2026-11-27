@@ -31,14 +31,12 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import javax.ws.rs.core.MediaType;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
@@ -70,6 +68,8 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
+
+import jakarta.ws.rs.core.MediaType;
 
 /**
  * The {@link PortalHandler} is responsible for handling commands, which are sent to one of the channels.
@@ -271,15 +271,22 @@ public class PortalHandler extends BaseBridgeHandler {
         try {
             Request request = httpClient.newRequest(url).method(method).timeout(REQUEST_TIMEOUT_MS,
                     TimeUnit.MILLISECONDS);
-            request.header(HttpHeader.USER_AGENT, USER_AGENT).header(HttpHeader.ORIGIN, ORIGIN)
-                    .header(HttpHeader.REFERER, ORIGIN + "/").header(HttpHeader.ACCEPT, MediaType.APPLICATION_JSON)
-                    .header(HTTP_HEADER_TOKEN, gson.toJson(token)).header(HTTP_HEADER_SIGNATURE,
-                            SEMSSecurity.signature(token.getUid(), token.getToken(), System.currentTimeMillis()));
+            final String tokenHeader = gson.toJson(token);
+            final String signature = SEMSSecurity.signature(token.getUid(), token.getToken(),
+                    System.currentTimeMillis());
+            request.headers(h -> {
+                h.put(HttpHeader.USER_AGENT, USER_AGENT);
+                h.put(HttpHeader.ORIGIN, ORIGIN);
+                h.put(HttpHeader.REFERER, ORIGIN + "/");
+                h.put(HttpHeader.ACCEPT, MediaType.APPLICATION_JSON);
+                h.put(HTTP_HEADER_TOKEN, tokenHeader);
+                h.put(HTTP_HEADER_SIGNATURE, signature);
+                h.remove(HttpHeader.ACCEPT_ENCODING);
+            });
             params.forEach(request::param);
             if (payload != null) {
-                request.content(new StringContentProvider(payload, StandardCharsets.UTF_8), MediaType.APPLICATION_JSON);
+                request.body(new StringRequestContent(MediaType.APPLICATION_JSON, payload, StandardCharsets.UTF_8));
             }
-            request.getHeaders().remove(HttpHeader.ACCEPT_ENCODING);
             ContentResponse response = request.send();
             if (!LOGIN_URL.equals(url)) {
                 logger.trace("received response: {}", response.getContentAsString());

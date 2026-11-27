@@ -1,0 +1,14 @@
+{
+  "startDate": "2026-11-18T23:00:00Z",
+  "endDate": "2026-11-20T23:00:00Z",
+  "resolution": "HOUR",
+  "operationMode": "HEATING",
+  "energyType": "CONSUMED_ELECTRICAL_ENERGY",
+  "totalConsumption": 1600.0,
+  "data": [
+    { "startDate": "2026-11-19T22:00:00Z", "endDate": "2026-11-19T23:00:00Z", "value": 1000.0 },
+    { "startDate": "2026-11-19T23:00:00Z", "endDate": "2026-11-20T00:00:00Z", "value": 400.0 },
+    { "startDate": "2026-11-20T00:00:00Z", "endDate": "2026-11-20T01:00:00Z", "value": 200.0 },
+    { "startDate": "2026-11-20T01:00:00Z", "endDate": "2026-11-20T02:00:00Z", "value": null }
+  ]
+}

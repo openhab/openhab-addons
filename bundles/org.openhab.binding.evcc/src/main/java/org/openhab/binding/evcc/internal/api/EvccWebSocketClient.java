@@ -13,19 +13,22 @@
 package org.openhab.binding.evcc.internal.api;
 
 import java.net.URI;
+import java.nio.ByteBuffer;
+import java.time.Duration;
 import java.util.Optional;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.websocket.api.Callback;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 /**
@@ -38,19 +41,24 @@ import com.google.gson.JsonObject;
  * decoupled from openHAB-specific logic or Thing lifecycle management.
  *
  * @author Marcel Goerentz - Initial contribution
+ * @author Michael Weger - Detect dead connections by ping/pong
  */
 
 @NonNullByDefault
 public class EvccWebSocketClient {
 
+    private static final long PING_INTERVAL_SECONDS = 15;
+    private static final int MAX_UNANSWERED_PINGS = 3;
+
     private final Logger logger = LoggerFactory.getLogger(EvccWebSocketClient.class);
+    private final AtomicInteger unansweredPings = new AtomicInteger();
 
     private final WebSocketClient client = new WebSocketClient();
     private final ScheduledExecutorService scheduler;
     private final String wsUrl;
 
     private final java.util.function.Consumer<JsonObject> onFullState;
-    private final java.util.function.BiConsumer<String, JsonElement> onPartialUpdate;
+    private final java.util.function.Consumer<JsonObject> onPartialUpdate;
     private final Runnable onConnected;
     private final Runnable onDisconnected;
 
@@ -68,8 +76,7 @@ public class EvccWebSocketClient {
 
     public EvccWebSocketClient(String wsUrl, ScheduledExecutorService scheduler,
             java.util.function.Consumer<JsonObject> onFullState,
-            java.util.function.BiConsumer<String, JsonElement> onPartialUpdate, Runnable onConnected,
-            Runnable onDisconnected) {
+            java.util.function.Consumer<JsonObject> onPartialUpdate, Runnable onConnected, Runnable onDisconnected) {
         this.wsUrl = wsUrl;
         this.scheduler = scheduler;
         this.onFullState = onFullState;
@@ -85,9 +92,9 @@ public class EvccWebSocketClient {
     public void start() {
         stopped = false;
         try {
-            client.getPolicy().setIdleTimeout(0); // Jetty 9
-            client.getPolicy().setMaxTextMessageSize(1024 * 1024);
-            client.getPolicy().setMaxTextMessageBufferSize(1024 * 1024);
+            client.setIdleTimeout(Duration.ZERO);
+            // Jetty 12 has no separate message buffer size; the message limit alone bounds assembly
+            client.setMaxTextMessageSize(1024 * 1024);
             client.start();
             connect();
         } catch (Exception e) {
@@ -140,13 +147,31 @@ public class EvccWebSocketClient {
         logger.info("Scheduled EVCC WebSocket reconnect in 10 seconds");
     }
 
+    // evcc only sends messages once per control cycle (its configurable "interval"), so silence alone does not
+    // indicate a dead connection. The watchdog pings evcc instead and reconnects only if neither a pong nor a
+    // message is received for several consecutive pings.
     private void startWatchdog() {
         stopWatchdog();
-        watchdogJob = scheduler.schedule(() -> {
-            logger.warn("EVCC WebSocket watchdog timeout — reconnecting");
+        unansweredPings.set(0);
+        watchdogJob = scheduler.scheduleWithFixedDelay(this::checkConnection, PING_INTERVAL_SECONDS,
+                PING_INTERVAL_SECONDS, TimeUnit.SECONDS);
+    }
+
+    private void checkConnection() {
+        Session s = session;
+        if (stopped || s == null) {
+            return;
+        }
+        if (unansweredPings.get() >= MAX_UNANSWERED_PINGS) {
+            logger.warn("EVCC WebSocket did not answer {} pings — reconnecting", MAX_UNANSWERED_PINGS);
+            stopWatchdog();
             closeSession();
             scheduleReconnect();
-        }, 30, TimeUnit.SECONDS);
+            return;
+        }
+        unansweredPings.incrementAndGet();
+        s.sendPing(ByteBuffer.allocate(0), Callback.from(() -> {
+        }, e -> logger.debug("Failed to send EVCC WebSocket ping: {}", e.getMessage())));
     }
 
     private void stopWatchdog() {
@@ -210,12 +235,16 @@ public class EvccWebSocketClient {
         scheduleReconnect();
     }
 
+    void handlePong() {
+        unansweredPings.set(0);
+    }
+
     void handleMessage(@Nullable JsonObject obj) {
         if (stopped) {
             return;
         }
         logger.trace("Message received: {}", obj);
-        startWatchdog();
+        unansweredPings.set(0);
         if (obj == null) {
             return;
         }
@@ -228,7 +257,7 @@ public class EvccWebSocketClient {
             awaitingInitialState = false;
             onFullState.accept(obj);
         } else {
-            obj.entrySet().forEach(e -> onPartialUpdate.accept(e.getKey(), e.getValue()));
+            onPartialUpdate.accept(obj);
         }
     }
 }

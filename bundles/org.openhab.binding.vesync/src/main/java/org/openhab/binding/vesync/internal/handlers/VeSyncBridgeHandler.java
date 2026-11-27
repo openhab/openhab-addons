@@ -26,8 +26,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import javax.validation.constraints.NotNull;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.vesync.internal.VeSyncBridgeConfiguration;
@@ -59,6 +57,8 @@ import org.osgi.framework.FrameworkUtil;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import jakarta.validation.constraints.NotNull;
 
 /**
  * The {@link VeSyncBridgeHandler} is responsible for handling the bridge things created to use the VeSync
