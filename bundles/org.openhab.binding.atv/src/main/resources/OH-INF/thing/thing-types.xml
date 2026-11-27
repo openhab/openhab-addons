@@ -60,8 +60,7 @@
 			<parameter name="host" type="text">
 				<context>network-address</context>
 				<label>Host</label>
-				<description>IP address of the Apple TV. Populated and kept current by discovery; set manually only for
-					a static IP
+				<description>IP address of the Apple TV. Populated and kept current by discovery; set manually only for a static IP
 					or a device on a different subnet.</description>
 			</parameter>
 			<parameter name="name" type="text">
@@ -88,8 +87,7 @@
 			</parameter>
 			<parameter name="notificationVolume" type="integer" min="0" max="100" unit="%">
 				<label>Audio Sink Volume</label>
-				<description>Default volume (0-100) for audio played to this device as an openHAB audio sink
-					(text-to-speech,
+				<description>Default volume (0-100) for audio played to this device as an openHAB audio sink (text-to-speech,
 					playSound, notifications).</description>
 				<default>50</default>
 				<advanced>true</advanced>
@@ -136,9 +134,8 @@
 			<parameter name="host" type="text">
 				<context>network-address</context>
 				<label>Host</label>
-				<description>IP address of the speaker. Populated and kept current by discovery; set manually only for
-					a static IP or
-					a device on a different subnet.</description>
+				<description>IP address of the speaker. Populated and kept current by discovery; set manually only for a static IP
+					or a device on a different subnet.</description>
 			</parameter>
 			<parameter name="name" type="text">
 				<label>Name</label>
@@ -170,8 +167,7 @@
 			</parameter>
 			<parameter name="notificationVolume" type="integer" min="0" max="100" unit="%">
 				<label>Audio Sink Volume</label>
-				<description>Default volume (0-100) for audio played to this device as an openHAB audio sink
-					(text-to-speech,
+				<description>Default volume (0-100) for audio played to this device as an openHAB audio sink (text-to-speech,
 					playSound, notifications).</description>
 				<default>50</default>
 				<advanced>true</advanced>
@@ -192,7 +188,7 @@
 		<description>Sends a remote-control button press.</description>
 		<category>Player</category>
 		<tags>
-			<tag>Control</tag>
+			<point>Control</point>
 		</tags>
 		<command>
 			<options>
@@ -228,8 +224,8 @@
 		<label>Title</label>
 		<description>Title of the media currently playing.</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -239,8 +235,8 @@
 		<label>Artist</label>
 		<description>Artist of the media currently playing.</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -250,8 +246,8 @@
 		<label>Album</label>
 		<description>Album of the media currently playing.</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -261,8 +257,8 @@
 		<label>Genre</label>
 		<description>Genre of the media currently playing.</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -272,7 +268,7 @@
 		<label>Media Type</label>
 		<description>Type of the media currently playing.</description>
 		<tags>
-			<tag>Status</tag>
+			<point>Status</point>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -289,7 +285,7 @@
 		<label>Playback State</label>
 		<description>Current playback state.</description>
 		<tags>
-			<tag>Status</tag>
+			<point>Status</point>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -309,7 +305,7 @@
 		<description>Playback position of the current media. Send a value to seek.</description>
 		<category>Time</category>
 		<tags>
-			<tag>Control</tag>
+			<point>Control</point>
 		</tags>
 		<state pattern="%d s"/>
 	</channel-type>
@@ -320,7 +316,7 @@
 		<description>Total length of the current media.</description>
 		<category>Time</category>
 		<tags>
-			<tag>Status</tag>
+			<point>Status</point>
 		</tags>
 		<state pattern="%d s" readOnly="true"/>
 	</channel-type>
@@ -330,7 +326,7 @@
 		<label>Progress</label>
 		<description>Playback progress as a percentage.</description>
 		<tags>
-			<tag>Status</tag>
+			<point>Status</point>
 		</tags>
 		<state pattern="%d %%" readOnly="true"/>
 	</channel-type>
@@ -340,7 +336,7 @@
 		<label>Shuffle</label>
 		<description>Shuffle mode.</description>
 		<tags>
-			<tag>Control</tag>
+			<point>Control</point>
 		</tags>
 		<state>
 			<options>
@@ -356,7 +352,7 @@
 		<label>Repeat</label>
 		<description>Repeat mode.</description>
 		<tags>
-			<tag>Control</tag>
+			<point>Control</point>
 		</tags>
 		<state>
 			<options>
@@ -372,8 +368,8 @@
 		<label>Series Name</label>
 		<description>Name of the TV series currently playing.</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -383,7 +379,7 @@
 		<label>Season Number</label>
 		<description>Season number of the TV series currently playing.</description>
 		<tags>
-			<tag>Status</tag>
+			<point>Status</point>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -393,7 +389,7 @@
 		<label>Episode Number</label>
 		<description>Episode number of the TV series currently playing.</description>
 		<tags>
-			<tag>Status</tag>
+			<point>Status</point>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -417,7 +413,7 @@
 		<label>Artwork</label>
 		<description>Artwork of the media currently playing.</description>
 		<tags>
-			<tag>Status</tag>
+			<point>Status</point>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -427,8 +423,8 @@
 		<label>App</label>
 		<description>Bundle identifier of the foreground app. Send a value to launch an app.</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>App</tag>
+			<point>Control</point>
+			<property>App</property>
 		</tags>
 	</channel-type>
 
@@ -437,8 +433,8 @@
 		<label>App Name</label>
 		<description>Name of the foreground app.</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -448,7 +444,7 @@
 		<label>User Account</label>
 		<description>Switches the active user account.</description>
 		<tags>
-			<tag>Control</tag>
+			<point>Control</point>
 		</tags>
 	</channel-type>
 
@@ -457,7 +453,7 @@
 		<label>Output Devices</label>
 		<description>Comma-separated identifiers of the active AirPlay output devices. Send a list to set them.</description>
 		<tags>
-			<tag>Control</tag>
+			<point>Control</point>
 		</tags>
 	</channel-type>
 
@@ -466,7 +462,7 @@
 		<label>Output Device Volume</label>
 		<description>Sets the volume of a single output device, formatted as "identifier=level" (level 0-100).</description>
 		<tags>
-			<tag>Control</tag>
+			<point>Control</point>
 		</tags>
 	</channel-type>
 
@@ -475,7 +471,7 @@
 		<label>Keyboard Input</label>
 		<description>Text of the focused input field. Send a value to set the text (empty clears it).</description>
 		<tags>
-			<tag>Control</tag>
+			<point>Control</point>
 		</tags>
 	</channel-type>
 
@@ -497,7 +493,7 @@
 		<label>Touch Gesture</label>
 		<description>Performs a trackpad gesture. Formats: "click", "swipe:x1,y1,x2,y2,ms", "action:x,y,mode".</description>
 		<tags>
-			<tag>Control</tag>
+			<point>Control</point>
 		</tags>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
@@ -507,7 +503,7 @@
 		<label>Play URL</label>
 		<description>Plays an http(s) media URL, or a file name from the openHAB sounds folder, on the device via AirPlay.</description>
 		<tags>
-			<tag>Control</tag>
+			<point>Control</point>
 		</tags>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
@@ -517,7 +513,7 @@
 		<label>Stream URL</label>
 		<description>Streams an http(s) audio URL, or a file name from the openHAB sounds folder, to the device via RAOP.</description>
 		<tags>
-			<tag>Control</tag>
+			<point>Control</point>
 		</tags>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>

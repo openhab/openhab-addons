@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>Apple TV Binding</name>
 	<description>Controls Apple TV and AirPlay devices over AirPlay, Companion, MRP, and RAOP.</description>
+	<connection>local</connection>
 
 </addon:addon>
