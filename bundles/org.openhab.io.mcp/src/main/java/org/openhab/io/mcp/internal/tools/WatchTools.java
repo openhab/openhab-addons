@@ -69,6 +69,7 @@ public class WatchTools {
                         List.of("start", "stop")));
         props.put("itemNames", Map.of("type", "array", "items", Map.of("type", "string"), "description",
                 "Exact item names. Required for action='start'; for action='stop' omit to stop watching everything."));
+        // Only changes this session's subscriptions, not openHAB itself.
         return McpSchema.Tool.builder().name("watch_items").description("""
                 Start or stop watching items for state changes in this session. \
                 Use action='start' with itemNames when the user says things like 'let me know if X \
@@ -76,7 +77,8 @@ public class WatchTools {
                 user asks about changes) to retrieve buffered events. Use action='stop' to unsubscribe \
                 (omit itemNames to stop all). Watches are scoped to the current MCP session and persist \
                 until stopped or the session ends.""")
-                .inputSchema(new McpSchema.JsonSchema("object", props, List.of("action"), null, null, null)).build();
+                .inputSchema(new McpSchema.JsonSchema("object", props, List.of("action"), null, null, null))
+                .annotations(writeAnnotations(false, true)).build();
     }
 
     /**
@@ -132,13 +134,15 @@ public class WatchTools {
      * @return the {@code get_events} tool definition
      */
     public McpSchema.Tool getEventsTool() {
+        // Draining only clears this session's event buffer; nothing in openHAB is modified.
         return McpSchema.Tool.builder().name("get_events").description("""
                 Retrieve and drain the buffered state-change events for items this session is \
                 watching. Returns all events captured since the previous call; subsequent calls \
                 return only new events. Use when the user asks 'did anything happen' or 'what \
                 changed', or call proactively after long user messages to pick up any events \
                 that fired meanwhile.""")
-                .inputSchema(new McpSchema.JsonSchema("object", Map.of(), List.of(), null, null, null)).build();
+                .inputSchema(new McpSchema.JsonSchema("object", Map.of(), List.of(), null, null, null))
+                .annotations(readOnlyAnnotations()).build();
     }
 
     /**

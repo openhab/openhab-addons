@@ -26,16 +26,6 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Stream;
 
-import javax.annotation.security.RolesAllowed;
-import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.GET;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.sse.OutboundSseEvent;
-import javax.ws.rs.sse.Sse;
-import javax.ws.rs.sse.SseEventSink;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -50,6 +40,16 @@ import org.openhab.core.auth.Role;
 import org.openhab.core.items.ItemRegistry;
 import org.openhab.core.thing.ThingRegistry;
 import org.openhab.core.thing.link.ItemChannelLinkRegistry;
+
+import jakarta.annotation.security.RolesAllowed;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.sse.OutboundSseEvent;
+import jakarta.ws.rs.sse.Sse;
+import jakarta.ws.rs.sse.SseEventSink;
 
 /**
  * Checks what the REST resource itself does: at activation it empties the upload folder of what a crash left, the
@@ -152,7 +152,7 @@ class KnxResourceTest {
         Method method = KnxResource.class.getMethod("groupAddress", String.class, String.class);
 
         assertNotNull(method.getAnnotation(GET.class));
-        javax.ws.rs.Path path = method.getAnnotation(javax.ws.rs.Path.class);
+        jakarta.ws.rs.Path path = method.getAnnotation(jakarta.ws.rs.Path.class);
         assertNotNull(path);
         assertEquals("bridges/{b}/project/group-address", path.value());
         RolesAllowed roles = method.getAnnotation(RolesAllowed.class);

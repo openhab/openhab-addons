@@ -24,6 +24,8 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -125,6 +127,9 @@ public abstract class AbstractKNXClient implements NetworkLinkListener, KNXClien
     private volatile @Nullable SecureSenderCheck senderCheck;
     private @Nullable ReadTrackingCommunicator processCommunicator;
     private @Nullable ProcessCommunicationResponder responseCommunicator;
+    // A Data Secure receiver drops a telegram whose sequence number is not above the last one it accepted, so
+    // commands, reads and read responses must reach the link in the order their numbers were taken.
+    private final Lock sendLock = new ReentrantLock();
     private @Nullable ManagementProcedures managementProcedures;
     private @Nullable ManagementClient managementClient;
     private @Nullable KNXNetworkLink link;
@@ -288,13 +293,13 @@ public abstract class AbstractKNXClient implements NetworkLinkListener, KNXClien
             deviceInfoClient = new DeviceInfoClientImpl(managementClient);
 
             // ProcessCommunicator provides main KNX communication (Calimero).
-            ReadTrackingCommunicator processCommunicator = newProcessCommunicator(link, sal);
+            ReadTrackingCommunicator processCommunicator = newProcessCommunicator(link, sal, sendLock);
             processCommunicator.responseTimeout(Duration.ofSeconds(responseTimeout));
             processCommunicator.addProcessListener(processListener);
             this.processCommunicator = processCommunicator;
 
             // ProcessCommunicationResponder provides responses to requests from KNX bus (Calimero).
-            ProcessCommunicationResponder responseCommunicator = new ProcessCommunicationResponder(link, sal);
+            ProcessCommunicationResponder responseCommunicator = newResponseCommunicator(link, sal, sendLock);
             this.responseCommunicator = responseCommunicator;
 
             // register this class, callbacks will be triggered
@@ -695,9 +700,25 @@ public abstract class AbstractKNXClient implements NetworkLinkListener, KNXClien
         }
     }
 
-    static ReadTrackingCommunicator newProcessCommunicator(KNXNetworkLink link, SecureApplicationLayer sal)
-            throws KNXLinkClosedException {
-        return new ReadTrackingCommunicator(link, sal);
+    static ReadTrackingCommunicator newProcessCommunicator(KNXNetworkLink link, SecureApplicationLayer sal,
+            Lock sendLock) throws KNXLinkClosedException {
+        return new ReadTrackingCommunicator(link, sal, sendLock);
+    }
+
+    static ProcessCommunicationResponder newResponseCommunicator(KNXNetworkLink link, SecureApplicationLayer sal,
+            Lock sendLock) throws KNXLinkClosedException {
+        return new ProcessCommunicationResponder(link, sal) {
+            @Override
+            @NonNullByDefault({})
+            public void write(final Datapoint dp, final String value) throws KNXException {
+                sendLock.lock();
+                try {
+                    super.write(dp, value);
+                } finally {
+                    sendLock.unlock();
+                }
+            }
+        };
     }
 
     public void dispose() {

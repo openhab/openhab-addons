@@ -14,12 +14,15 @@ package org.openhab.binding.amplipi.internal.audio;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.amplipi.internal.AmpliPiBindingConstants;
 import org.openhab.binding.amplipi.internal.AmpliPiHandler;
+import org.openhab.binding.amplipi.internal.AmpliPiZoneHandler;
 import org.openhab.core.audio.AudioFormat;
 import org.openhab.core.audio.AudioSinkSync;
 import org.openhab.core.audio.AudioStream;
@@ -38,8 +41,13 @@ import org.slf4j.LoggerFactory;
 /**
  * This is an audio sink that allows to do public announcements on the AmpliPi.
  *
- * @author Kai Kreuzer - Initial contribution
+ * <p>
+ * Attached to the controller bridge, the announcement is played on all zones; attached to a zone thing (opt-in via
+ * the {@code audioSink} configuration parameter), it is restricted to that zone only. Announcements to disabled
+ * zones are rejected, since the controller would otherwise filter the target out and could let the announcement
+ * leak to other zones listening on the announcement source.
  *
+ * @author Kai Kreuzer - Initial contribution
  */
 @Component(scope = ServiceScope.PROTOTYPE, service = PAAudioSink.class)
 @NonNullByDefault
@@ -50,7 +58,7 @@ public class PAAudioSink extends AudioSinkSync implements ThingHandlerService {
     private static final Set<AudioFormat> SUPPORTED_AUDIO_FORMATS = Set.of(AudioFormat.MP3, AudioFormat.WAV);
     private static final Set<Class<? extends AudioStream>> SUPPORTED_AUDIO_STREAMS = Set.of(AudioStream.class);
 
-    private @Nullable AmpliPiHandler handler;
+    private @Nullable ThingHandler handler;
 
     private @Nullable PercentType volume;
 
@@ -63,39 +71,69 @@ public class PAAudioSink extends AudioSinkSync implements ThingHandlerService {
             logger.debug("AmpliPi sink does not support stopping the currently playing stream.");
             return;
         }
-        AmpliPiHandler localHandler = this.handler;
-        if (localHandler == null) {
+        ThingHandler localHandler = this.handler;
+        AmpliPiHandler bridgeHandler = null;
+        List<Integer> zones = null;
+        boolean targetResolved = false;
+        if (localHandler instanceof AmpliPiHandler bridgeHandlerInstance) {
+            bridgeHandler = bridgeHandlerInstance;
+            targetResolved = true;
+        } else if (localHandler instanceof AmpliPiZoneHandler zoneHandler) {
+            bridgeHandler = zoneHandler.getBridgeHandler();
+            Object zoneId = zoneHandler.getThing().getConfiguration().get(AmpliPiBindingConstants.CFG_PARAM_ID);
+            if (zoneId != null) {
+                zones = List.of(Integer.valueOf(zoneId.toString()));
+                targetResolved = true;
+            }
+        }
+        if (bridgeHandler == null || !targetResolved) {
             tryClose(audioStream);
             return;
+        }
+        AmpliPiHandler localBridgeHandler = bridgeHandler;
+        if (zones != null) {
+            for (Integer zoneId : zones) {
+                if (zoneId != null && localBridgeHandler.isZoneDisabled(zoneId)) {
+                    logger.warn("Announcement rejected: zone {} is disabled on the AmpliPi.", zoneId);
+                    volume = null;
+                    tryClose(audioStream);
+                    return;
+                }
+            }
         }
         logger.debug("Received audio stream of format {}", audioStream.getFormat());
-        String callbackUrl = localHandler.getCallbackUrl();
-        String audioUrl;
-        if (audioStream instanceof URLAudioStream urlAudioStream) {
-            // it is an external URL, so we can directly pass this on.
-            audioUrl = urlAudioStream.getURL();
-            tryClose(audioStream);
-        } else if (callbackUrl != null) {
-            // we need to serve it for a while
-            StreamServed streamServed;
-            try {
-                streamServed = localHandler.getAudioHTTPServer().serve(audioStream, 10, true);
-            } catch (IOException e) {
+        // Serialize announcements per controller until /api/announce completed. Serving the stream is held
+        // inside the same lock, so a queued announcement's served URL cannot expire before playback starts.
+        synchronized (localBridgeHandler.getAnnouncementLock()) {
+            String callbackUrl = localBridgeHandler.getCallbackUrl();
+            String audioUrl;
+            if (audioStream instanceof URLAudioStream urlAudioStream) {
+                // it is an external URL, so we can directly pass this on.
+                audioUrl = urlAudioStream.getURL();
                 tryClose(audioStream);
-                throw new UnsupportedAudioStreamException(
-                        "AmpliPi was not able to handle the audio stream (cache on disk failed).",
-                        audioStream.getClass(), e);
+            } else if (callbackUrl != null) {
+                // we need to serve it for a while
+                StreamServed streamServed;
+                try {
+                    streamServed = localBridgeHandler.getAudioHTTPServer().serve(audioStream, 10, true);
+                } catch (IOException e) {
+                    tryClose(audioStream);
+                    volume = null;
+                    throw new UnsupportedAudioStreamException(
+                            "AmpliPi was not able to handle the audio stream (cache on disk failed).",
+                            audioStream.getClass(), e);
+                }
+                audioUrl = callbackUrl + streamServed.url();
+            } else {
+                logger.warn("We do not have any callback url, so AmpliPi cannot play the audio stream!");
+                tryClose(audioStream);
+                return;
             }
-            audioUrl = callbackUrl + streamServed.url();
-        } else {
-            logger.warn("We do not have any callback url, so AmpliPi cannot play the audio stream!");
-            tryClose(audioStream);
-            return;
+            localBridgeHandler.playPA(audioUrl, volume, zones);
+            // we reset the volume value again, so that a next invocation without a volume will again use the zones
+            // defaults.
+            volume = null;
         }
-        localHandler.playPA(audioUrl, volume);
-        // we reset the volume value again, so that a next invocation without a volume will again use the zones
-        // defaults.
-        volume = null;
     }
 
     private void tryClose(@Nullable InputStream is) {
@@ -152,7 +190,7 @@ public class PAAudioSink extends AudioSinkSync implements ThingHandlerService {
 
     @Override
     public void setThingHandler(ThingHandler handler) {
-        this.handler = (AmpliPiHandler) handler;
+        this.handler = handler;
     }
 
     @Override

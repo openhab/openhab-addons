@@ -25,11 +25,11 @@ import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.HttpResponseException;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
@@ -156,8 +156,8 @@ public class MillheatCloudApiClient {
         if (token == null) {
             throw new MillheatCommunicationException("Cannot refresh without a refresh token");
         }
-        final Request request = newRequest(HttpMethod.POST, "/customer/auth/refresh").header(HttpHeader.AUTHORIZATION,
-                BEARER_PREFIX + token);
+        final Request request = newRequest(HttpMethod.POST, "/customer/auth/refresh")
+                .headers(h -> h.put(HttpHeader.AUTHORIZATION, BEARER_PREFIX + token));
         final SignInResponse response = execute(request, SignInResponse.class);
         if (response == null) {
             throw new MillheatCommunicationException("Token refresh returned an empty response");
@@ -254,20 +254,20 @@ public class MillheatCloudApiClient {
             final boolean authenticated) {
         final Request request = newRequest(method, path);
         if (authenticated) {
-            request.header(HttpHeader.AUTHORIZATION, BEARER_PREFIX + accessToken);
+            request.headers(h -> h.put(HttpHeader.AUTHORIZATION, BEARER_PREFIX + accessToken));
         }
         if (body != null) {
-            request.content(new StringContentProvider(gson.toJson(body), StandardCharsets.UTF_8),
-                    MimeTypes.Type.APPLICATION_JSON.asString());
+            request.body(new StringRequestContent(MimeTypes.Type.APPLICATION_JSON.asString(), gson.toJson(body),
+                    StandardCharsets.UTF_8));
         }
         return request;
     }
 
     private Request newRequest(final HttpMethod method, final String path) {
-        final Request request = httpClient.newRequest(endpoint + path).method(method)
-                .header(HttpHeader.CONTENT_TYPE, MimeTypes.Type.APPLICATION_JSON.asString())
-                .header(HttpHeader.ACCEPT, MimeTypes.Type.APPLICATION_JSON.asString())
-                .timeout(REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS);
+        final Request request = httpClient.newRequest(endpoint + path).method(method).headers(h -> {
+            h.put(HttpHeader.CONTENT_TYPE, MimeTypes.Type.APPLICATION_JSON.asString());
+            h.put(HttpHeader.ACCEPT, MimeTypes.Type.APPLICATION_JSON.asString());
+        }).timeout(REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS);
         // Sign-in carries the password and both auth endpoints return tokens, so their payloads
         // must never reach the log.
         requestLogger.listenTo(request, path.startsWith(AUTH_PATH_PREFIX));

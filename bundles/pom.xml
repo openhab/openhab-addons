@@ -23,6 +23,7 @@
     <module>org.openhab.automation.jsscripting</module>
     <module>org.openhab.automation.jsscriptingnashorn</module>
     <module>org.openhab.automation.jythonscripting</module>
+    <module>org.openhab.automation.optimalwindow</module>
     <module>org.openhab.automation.pidcontroller</module>
     <module>org.openhab.automation.pwm</module>
     <module>org.openhab.automation.pythonscripting</module>
@@ -95,9 +96,11 @@
     <module>org.openhab.binding.bluetooth.grundfosalpha</module>
     <module>org.openhab.binding.bluetooth.hdpowerview</module>
     <module>org.openhab.binding.bluetooth.listener</module>
+    <module>org.openhab.binding.bluetooth.miflora</module>
     <module>org.openhab.binding.bluetooth.radoneye</module>
     <module>org.openhab.binding.bluetooth.roaming</module>
     <module>org.openhab.binding.bluetooth.ruuvitag</module>
+    <module>org.openhab.binding.bmwcardata</module>
     <module>org.openhab.binding.bondhome</module>
     <module>org.openhab.binding.boschindego</module>
     <module>org.openhab.binding.boschshc</module>
@@ -107,6 +110,7 @@
     <module>org.openhab.binding.bsblan</module>
     <module>org.openhab.binding.bticinosmarther</module>
     <module>org.openhab.binding.buienradar</module>
+    <module>org.openhab.binding.bydbatterybox</module>
     <module>org.openhab.binding.caddx</module>
     <module>org.openhab.binding.caldav</module>
     <module>org.openhab.binding.candy</module>
@@ -126,6 +130,7 @@
     <module>org.openhab.binding.deconz</module>
     <module>org.openhab.binding.denonmarantz</module>
     <module>org.openhab.binding.deutschebahn</module>
+    <module>org.openhab.binding.dreame</module>
     <module>org.openhab.binding.digiplex</module>
     <module>org.openhab.binding.digitalstrom</module>
     <module>org.openhab.binding.dirigera</module>
@@ -222,6 +227,7 @@
     <module>org.openhab.binding.homewizard</module>
     <module>org.openhab.binding.hpprinter</module>
     <module>org.openhab.binding.http</module>
+    <module>org.openhab.binding.httphook</module>
     <module>org.openhab.binding.hue</module>
     <module>org.openhab.binding.huesync</module>
     <module>org.openhab.binding.hydrawise</module>
@@ -302,6 +308,7 @@
     <module>org.openhab.binding.modbus.ankersolix</module>
     <module>org.openhab.binding.modbus.e3dc</module>
     <module>org.openhab.binding.modbus.foxinverter</module>
+    <module>org.openhab.binding.modbus.hager</module>
     <module>org.openhab.binding.modbus.kermi</module>
     <module>org.openhab.binding.modbus.lambda</module>
     <module>org.openhab.binding.modbus.sbc</module>
@@ -323,6 +330,7 @@
     <module>org.openhab.binding.mynice</module>
     <module>org.openhab.binding.mystrom</module>
     <module>org.openhab.binding.myuplink</module>
+    <module>org.openhab.binding.myvaillant</module>
     <module>org.openhab.binding.nanoleaf</module>
     <module>org.openhab.binding.neato</module>
     <module>org.openhab.binding.neeo</module>
@@ -492,6 +500,7 @@
     <module>org.openhab.binding.vektiva</module>
     <module>org.openhab.binding.velbus</module>
     <module>org.openhab.binding.velux</module>
+    <module>org.openhab.binding.veluxactive</module>
     <module>org.openhab.binding.venstarthermostat</module>
     <module>org.openhab.binding.ventaair</module>
     <module>org.openhab.binding.verisure</module>
@@ -502,7 +511,6 @@
     <module>org.openhab.binding.vitotronic</module>
     <module>org.openhab.binding.vizio</module>
     <module>org.openhab.binding.volvocars</module>
-    <module>org.openhab.binding.volvooncall</module>
     <module>org.openhab.binding.volumio</module>
     <module>org.openhab.binding.warmup</module>
     <module>org.openhab.binding.weathercompany</module>
@@ -528,7 +536,6 @@
     <module>org.openhab.binding.yeelight</module>
     <module>org.openhab.binding.zoneminder</module>
     <module>org.openhab.binding.zwavejs</module>
-    <module>org.openhab.binding.zway</module>
     <!-- persistence -->
     <module>org.openhab.persistence.dynamodb</module>
     <module>org.openhab.persistence.influxdb</module>
@@ -544,6 +551,7 @@
     <module>org.openhab.voice.googletts</module>
     <module>org.openhab.voice.mactts</module>
     <module>org.openhab.voice.marytts</module>
+    <module>org.openhab.voice.microwakewordks</module>
     <module>org.openhab.voice.mimictts</module>
     <module>org.openhab.voice.openaitts</module>
     <module>org.openhab.voice.picotts</module>
@@ -829,7 +837,7 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>xml-maven-plugin</artifactId>
-        <version>1.2.2</version>
+        <version>1.4.0</version>
         <configuration>
           <validationSets>
             <validationSet>
@@ -846,6 +854,41 @@
             <goals>
               <goal>validate</goal>
             </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <!-- Warn on deprecated channel XML 'tag' element -->
+      <plugin>
+        <groupId>org.codehaus.gmavenplus</groupId>
+        <artifactId>gmavenplus-plugin</artifactId>
+        <version>5.1.0</version>
+        <dependencies>
+          <dependency>
+            <groupId>org.apache.groovy</groupId>
+            <artifactId>groovy</artifactId>
+            <version>${groovy.version}</version>
+          </dependency>
+        </dependencies>
+        <executions>
+          <execution>
+            <id>warn-deprecated-channel-tags</id>
+            <goals>
+              <goal>execute</goal>
+            </goals>
+            <phase>generate-resources</phase>
+            <configuration>
+              <scripts>
+                <script><![CDATA[
+                  def files = new File(project.basedir, 'src/main/resources/OH-INF/thing')
+                    .listFiles({ f -> f.name.endsWith('.xml') } as FileFilter)
+                    ?.findAll { it.text =~ /<tag[\s>\/]/ } ?: []
+                  if (!files.isEmpty()) {
+                    log.warn("DEPRECATED: channel XML element 'tag' is deprecated; use 'point' and 'property' instead. Affected files: " + files.collect { project.basedir.toPath().relativize(it.toPath()) }.join(', '))
+                  }
+                ]]></script>
+              </scripts>
+            </configuration>
           </execution>
         </executions>
       </plugin>

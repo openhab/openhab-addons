@@ -82,27 +82,27 @@ public class Location extends PlugwiseBaseModel implements PlugwiseComparableDat
     }
 
     public Optional<Double> getTemperature() {
-        return this.pointLogs.getTemperature();
+        return getPointLogs().getTemperature();
     }
 
     public Optional<String> getTemperatureUnit() {
-        return this.pointLogs.getTemperatureUnit();
+        return getPointLogs().getTemperatureUnit();
     }
 
     public Optional<Double> getSetpointTemperature() {
-        return this.pointLogs.getThermostatTemperature();
+        return getPointLogs().getThermostatTemperature();
     }
 
     public Optional<String> getSetpointTemperatureUnit() {
-        return this.pointLogs.getThermostatTemperatureUnit();
+        return getPointLogs().getThermostatTemperatureUnit();
     }
 
     public Optional<Boolean> getPreHeatState() {
-        return this.actuatorFunctionalities.getPreHeatState();
+        return getActuatorFunctionalities().getPreHeatState();
     }
 
     public Optional<Boolean> getCoolingAllowed() {
-        return this.actuatorFunctionalities.getCoolingAllowed();
+        return getActuatorFunctionalities().getCoolingAllowed();
     }
 
     public String getRegulationControl() {

@@ -14,17 +14,7 @@
 
   <name>openHAB Add-ons :: Bundles :: LaMetric Time Binding</name>
 
-  <properties>
-    <bnd.importpackage>!javax.activation</bnd.importpackage>
-  </properties>
-
   <dependencies>
-    <dependency>
-      <groupId>org.apache.servicemix.specs</groupId>
-      <artifactId>org.apache.servicemix.specs.activation-api-1.2.1</artifactId>
-      <version>1.2.1_3</version>
-      <scope>compile</scope>
-    </dependency>
     <dependency>
       <groupId>com.googlecode.junit-toolbox</groupId>
       <artifactId>junit-toolbox</artifactId>

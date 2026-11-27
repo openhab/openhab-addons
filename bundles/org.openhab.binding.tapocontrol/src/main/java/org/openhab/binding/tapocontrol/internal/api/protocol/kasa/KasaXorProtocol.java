@@ -23,20 +23,23 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.api.ContentResponse;
+import org.eclipse.jetty.client.ContentResponse;
 import org.openhab.binding.tapocontrol.internal.api.TapoDeviceConnector;
 import org.openhab.binding.tapocontrol.internal.api.protocol.TapoProtocolInterface;
 import org.openhab.binding.tapocontrol.internal.dto.TapoBaseRequestInterface;
+import org.openhab.binding.tapocontrol.internal.dto.TapoChildRequest;
 import org.openhab.binding.tapocontrol.internal.dto.TapoMultipleRequest;
 import org.openhab.binding.tapocontrol.internal.dto.TapoRequest;
 import org.openhab.binding.tapocontrol.internal.dto.TapoResponse;
 import org.openhab.binding.tapocontrol.internal.helpers.TapoCredentials;
 import org.openhab.binding.tapocontrol.internal.helpers.TapoErrorHandler;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -45,6 +48,7 @@ import com.google.gson.JsonParser;
  * Implements the legacy TP-Link/Kasa XOR protocol used by devices such as early HS200 and HS220 switches.
  *
  * @author Lee Ballard - Initial contribution
+ * @author Christopher Smith - Add child outlet support for Kasa power strips
  */
 @NonNullByDefault
 public class KasaXorProtocol implements TapoProtocolInterface {
@@ -121,7 +125,8 @@ public class KasaXorProtocol implements TapoProtocolInterface {
 
     @Override
     public void sendAsyncRequest(TapoBaseRequestInterface request) throws TapoErrorHandler {
-        if (!(request instanceof TapoRequest) && !(request instanceof TapoMultipleRequest)) {
+        if (!(request instanceof TapoRequest) && !(request instanceof TapoMultipleRequest)
+                && !(request instanceof TapoChildRequest)) {
             throw new TapoErrorHandler(ERR_API_PARAMS, request.method());
         }
         long requestSession = requireActiveSession();
@@ -143,13 +148,16 @@ public class KasaXorProtocol implements TapoProtocolInterface {
         synchronized (requestLock) {
             requireActiveSession(requestSession);
             TapoResponse response;
+            SysinfoCache sysinfo = new SysinfoCache(requestSession);
             if (request instanceof TapoRequest singleRequest) {
-                response = executeSingle(singleRequest, requestSession);
+                response = executeSingle(singleRequest, sysinfo);
+            } else if (request instanceof TapoChildRequest childRequest) {
+                response = executeControlChild(childRequest, requestSession);
             } else if (request instanceof TapoMultipleRequest multipleRequest
                     && multipleRequest.params() instanceof TapoMultipleRequest.SubRequest subRequest) {
                 List<TapoResponse> responses = new ArrayList<>();
                 for (TapoRequest singleRequest : subRequest.requests()) {
-                    TapoResponse singleResponse = executeSingle(singleRequest, requestSession);
+                    TapoResponse singleResponse = executeSingle(singleRequest, sysinfo);
                     if (singleResponse.hasError()) {
                         return new TapoResponse(singleResponse.errorCode(), new JsonObject(), DEVICE_CMD_MULTIPLE_REQ,
                                 "");
@@ -167,11 +175,15 @@ public class KasaXorProtocol implements TapoProtocolInterface {
         }
     }
 
-    private TapoResponse executeSingle(TapoRequest request, long requestSession) throws TapoErrorHandler {
+    private TapoResponse executeSingle(TapoRequest request, SysinfoCache sysinfo) throws TapoErrorHandler {
         try {
             return switch (request.method()) {
-                case DEVICE_CMD_GETINFO -> mapSysinfo(sendCommand(GET_SYSINFO, requestSession));
-                case DEVICE_CMD_SETINFO -> executeSetDeviceInfo(request.params(), requestSession);
+                case DEVICE_CMD_GETINFO -> mapSysinfo(sysinfo.get());
+                case DEVICE_CMD_SETINFO -> {
+                    sysinfo.invalidate();
+                    yield executeSetDeviceInfo(request.params(), sysinfo.requestSession);
+                }
+                case DEVICE_CMD_GETCHILDDEVICELIST -> mapChildList(sysinfo.get());
                 default -> throw new TapoErrorHandler(ERR_BINDING_NOT_IMPLEMENTED, request.method());
             };
         } catch (TapoErrorHandler e) {
@@ -200,13 +212,91 @@ public class KasaXorProtocol implements TapoProtocolInterface {
         return new TapoResponse(0, new JsonObject(), DEVICE_CMD_SETINFO, "");
     }
 
-    private TapoResponse mapSysinfo(String response) throws TapoErrorHandler {
+    private TapoResponse executeControlChild(TapoChildRequest request, long requestSession) throws TapoErrorHandler {
+        try {
+            JsonElement params = GSON.toJsonTree(request.params());
+            JsonObject control = params.isJsonObject() ? params.getAsJsonObject() : new JsonObject();
+            JsonElement childId = control.get("device_id");
+            JsonObject requestData = object(control, "requestData");
+            JsonObject values = requestData == null ? null : object(requestData, "params");
+            if (childId == null || !childId.isJsonPrimitive() || childId.getAsString().isBlank() || values == null
+                    || !values.has("device_on")) {
+                throw new TapoErrorHandler(ERR_API_PARAMS, DEVICE_CMD_CONTROL_CHILD);
+            }
+            String command = buildChildRelayCommand(childId.getAsString(), values.get("device_on").getAsBoolean());
+            JsonObject response = JsonParser.parseString(sendCommand(command, requestSession)).getAsJsonObject();
+            return new TapoResponse(findErrorCode(response), new JsonObject(), DEVICE_CMD_CONTROL_CHILD, "");
+        } catch (TapoErrorHandler e) {
+            throw e;
+        } catch (IOException e) {
+            throw new TapoErrorHandler(ERR_BINDING_SEND_REQUEST, e.getMessage());
+        } catch (RuntimeException e) {
+            throw new TapoErrorHandler(ERR_API_JSON_DECODE_FAIL, e.getMessage());
+        }
+    }
+
+    static String buildChildRelayCommand(String childId, boolean on) {
+        JsonObject command = new JsonObject();
+        JsonObject context = new JsonObject();
+        JsonArray childIds = new JsonArray();
+        childIds.add(childId);
+        context.add("child_ids", childIds);
+        command.add("context", context);
+        JsonObject state = new JsonObject();
+        state.addProperty("state", on ? 1 : 0);
+        JsonObject relay = new JsonObject();
+        relay.add("set_relay_state", state);
+        command.add("system", relay);
+        return command.toString();
+    }
+
+    /**
+     * Maps the {@code children} of a Kasa power strip sysinfo to a Tapo {@code get_child_device_list} result.
+     * Kasa does not report a position, so the outlet order in the sysinfo is used, starting at 1 as on Tapo strips.
+     */
+    static TapoResponse mapChildList(String response) throws TapoErrorHandler {
+        JsonObject sysinfo = parseSysinfo(response, DEVICE_CMD_GETCHILDDEVICELIST);
+        int errorCode = integer(sysinfo, "err_code", 0);
+        if (errorCode != 0) {
+            return new TapoResponse(errorCode, new JsonObject(), DEVICE_CMD_GETCHILDDEVICELIST, "");
+        }
+        JsonArray childList = new JsonArray();
+        JsonElement children = sysinfo.get("children");
+        if (children != null && children.isJsonArray()) {
+            int position = 1;
+            for (JsonElement element : children.getAsJsonArray()) {
+                if (element.isJsonObject()) {
+                    JsonObject kasaChild = element.getAsJsonObject();
+                    JsonObject child = new JsonObject();
+                    copy(child, kasaChild, "device_id", "id");
+                    copyAlias(child, kasaChild);
+                    copy(child, kasaChild, "on_time", "on_time");
+                    child.addProperty("device_on", integer(kasaChild, "state", 0) != 0);
+                    child.addProperty("position", position);
+                    childList.add(child);
+                }
+                position++;
+            }
+        }
+        JsonObject result = new JsonObject();
+        result.addProperty("start_index", 0);
+        result.addProperty("sum", childList.size());
+        result.add("child_device_list", childList);
+        return new TapoResponse(0, result, DEVICE_CMD_GETCHILDDEVICELIST, "");
+    }
+
+    private static JsonObject parseSysinfo(String response, String command) throws TapoErrorHandler {
         JsonObject root = JsonParser.parseString(response).getAsJsonObject();
         JsonObject system = object(root, "system");
         JsonObject sysinfo = system == null ? null : object(system, "get_sysinfo");
         if (sysinfo == null) {
-            throw new TapoErrorHandler(ERR_API_JSON_DECODE_FAIL, DEVICE_CMD_GETINFO);
+            throw new TapoErrorHandler(ERR_API_JSON_DECODE_FAIL, command);
         }
+        return sysinfo;
+    }
+
+    static TapoResponse mapSysinfo(String response) throws TapoErrorHandler {
+        JsonObject sysinfo = parseSysinfo(response, DEVICE_CMD_GETINFO);
         int errorCode = integer(sysinfo, "err_code", 0);
         if (errorCode != 0) {
             return new TapoResponse(errorCode, new JsonObject(), DEVICE_CMD_GETINFO, "");
@@ -218,9 +308,9 @@ public class KasaXorProtocol implements TapoProtocolInterface {
         copy(result, sysinfo, "hw_id", "hwId");
         copy(result, sysinfo, "fw_id", "fwId");
         copy(result, sysinfo, "oem_id", "oemId");
-        copy(result, sysinfo, "nickname", "alias");
+        copyAlias(result, sysinfo);
         result.addProperty("device_on", integer(sysinfo, "relay_state", 0) != 0);
-        result.addProperty("signal_level", integer(sysinfo, "rssi", 0));
+        result.addProperty("signal_level", signalLevel(integer(sysinfo, "rssi", 0)));
         return new TapoResponse(0, result, DEVICE_CMD_GETINFO, "");
     }
 
@@ -319,6 +409,29 @@ public class KasaXorProtocol implements TapoProtocolInterface {
         return new String(plainText, StandardCharsets.UTF_8);
     }
 
+    /**
+     * Converts the Kasa RSSI in dBm to the 0-4 level of the {@code system.signal-strength} channel.
+     */
+    static int signalLevel(int rssi) {
+        if (rssi >= 0) {
+            return 0; // not reported
+        }
+        return rssi > -50 ? 4 : rssi > -60 ? 3 : rssi > -70 ? 2 : rssi > -85 ? 1 : 0;
+    }
+
+    /**
+     * Copies the Kasa {@code alias} to {@code nickname}. Tapo devices report the nickname Base64 encoded and
+     * {@code TapoBaseDeviceData} decodes anything that looks like Base64, so the plain Kasa alias is encoded to keep
+     * names such as "Shed" from being decoded.
+     */
+    private static void copyAlias(JsonObject target, JsonObject source) {
+        JsonElement alias = source.get("alias");
+        if (alias != null && alias.isJsonPrimitive()) {
+            target.addProperty("nickname",
+                    Base64.getEncoder().encodeToString(alias.getAsString().getBytes(StandardCharsets.UTF_8)));
+        }
+    }
+
     private static int findErrorCode(JsonElement element) {
         if (element.isJsonObject()) {
             JsonObject object = element.getAsJsonObject();
@@ -350,6 +463,32 @@ public class KasaXorProtocol implements TapoProtocolInterface {
     private static int integer(JsonObject object, String name, int defaultValue) {
         JsonElement value = object.get(name);
         return value == null || value.isJsonNull() ? defaultValue : value.getAsInt();
+    }
+
+    /**
+     * Reads the sysinfo from the device at most once per request, so a multi-request asking for device info and the
+     * child list of a power strip shares one round trip. A set command invalidates it.
+     */
+    private final class SysinfoCache {
+        private final long requestSession;
+        private @Nullable String sysinfo;
+
+        SysinfoCache(long requestSession) {
+            this.requestSession = requestSession;
+        }
+
+        String get() throws IOException, TapoErrorHandler {
+            String cached = sysinfo;
+            if (cached == null) {
+                cached = sendCommand(GET_SYSINFO, requestSession);
+                sysinfo = cached;
+            }
+            return cached;
+        }
+
+        void invalidate() {
+            sysinfo = null;
+        }
     }
 
     @Override

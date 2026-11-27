@@ -926,9 +926,6 @@ public class ModbusDataHandlerTest extends AbstractModbusOSGiTest {
                 // ON/OFF commands
                 Arguments.of((short) 0b1011_0100_0000_1111, "1", (short) 0b1011_0100_0000_1101, OnOffType.OFF),
                 Arguments.of((short) 0b1011_0100_0000_1111, "4", (short) 0b1011_0100_0001_1111, OnOffType.ON),
-                // OPEN/CLOSED commands
-                Arguments.of((short) 0b1011_0100_0000_1111, "1", (short) 0b1011_0100_0000_1101, OpenClosedType.CLOSED),
-                Arguments.of((short) 0b1011_0100_0000_1111, "4", (short) 0b1011_0100_0001_1111, OpenClosedType.OPEN),
                 // DecimalType commands
                 Arguments.of((short) 0b1011_0100_0000_1111, "1", (short) 0b1011_0100_0000_1101, new DecimalType(0)),
                 Arguments.of((short) 0b1011_0100_0010_1111, "5", (short) 0b1011_0100_0000_1111, new DecimalType(0)),

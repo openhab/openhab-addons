@@ -9,7 +9,7 @@
 		<label>Printer State</label>
 		<description>Current operational state of the printer.</description>
 		<tags>
-			<tag>Status</tag>
+			<point>Status</point>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -28,7 +28,7 @@
 		<label>Job Name</label>
 		<description>Name of the currently loaded or active print job file.</description>
 		<tags>
-			<tag>Status</tag>
+			<point>Status</point>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -38,8 +38,8 @@
 		<label>Print Progress</label>
 		<description>Percentage of the current print job completed.</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Progress</tag>
+			<point>Measurement</point>
+			<property>Progress</property>
 		</tags>
 		<state readOnly="true" min="0" max="100" pattern="%.1f %%"/>
 	</channel-type>
@@ -49,8 +49,8 @@
 		<label>Time Elapsed</label>
 		<description>Time elapsed since the current print job started.</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Duration</tag>
+			<point>Measurement</point>
+			<property>Duration</property>
 		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
@@ -60,8 +60,8 @@
 		<label>Time Remaining</label>
 		<description>Estimated time remaining for the current print job.</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Duration</tag>
+			<point>Measurement</point>
+			<property>Duration</property>
 		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
@@ -71,8 +71,8 @@
 		<label>Nozzle Temperature</label>
 		<description>Current nozzle (hotend) temperature.</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -82,8 +82,8 @@
 		<label>Nozzle Setpoint</label>
 		<description>Target nozzle temperature. Send a value to change the setpoint.</description>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state min="0" max="350" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -93,8 +93,8 @@
 		<label>Bed Temperature</label>
 		<description>Current heated bed temperature.</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -104,8 +104,8 @@
 		<label>Bed Setpoint</label>
 		<description>Target bed temperature. Send a value to change the setpoint.</description>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state min="0" max="120" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -115,7 +115,7 @@
 		<label>Print Speed</label>
 		<description>Print speed as a percentage of the nominal speed (100 = normal speed).</description>
 		<tags>
-			<tag>Setpoint</tag>
+			<point>Setpoint</point>
 		</tags>
 		<state min="1" max="200" pattern="%d %unit%"/>
 	</channel-type>
@@ -125,7 +125,7 @@
 		<label>Fan Speed</label>
 		<description>Part-cooling fan speed as a percentage (0 = off, 100 = full speed).</description>
 		<tags>
-			<tag>Setpoint</tag>
+			<point>Setpoint</point>
 		</tags>
 		<state min="0" max="100" pattern="%d %unit%"/>
 	</channel-type>
@@ -139,8 +139,8 @@
 		<label>Nozzle Setpoint</label>
 		<description>Target nozzle temperature. Read-only: PrusaLink does not support changing this setpoint.</description>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" min="0" max="350" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -150,8 +150,8 @@
 		<label>Bed Setpoint</label>
 		<description>Target bed temperature. Read-only: PrusaLink does not support changing this setpoint.</description>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" min="0" max="120" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -162,7 +162,7 @@
 		<description>Print speed as a percentage of the nominal speed (100 = normal speed). Read-only: PrusaLink does not
 			support changing the print speed.</description>
 		<tags>
-			<tag>Setpoint</tag>
+			<point>Setpoint</point>
 		</tags>
 		<state readOnly="true" min="1" max="200" pattern="%d %unit%"/>
 	</channel-type>
@@ -173,7 +173,7 @@
 		<description>Part-cooling fan speed in RPM. Read-only: PrusaLink does not support changing the fan speed, and the
 			maximum RPM varies by printer model, so a percentage cannot be derived reliably.</description>
 		<tags>
-			<tag>Measurement</tag>
+			<point>Measurement</point>
 		</tags>
 		<state readOnly="true" min="0" pattern="%d %unit%"/>
 	</channel-type>
@@ -183,8 +183,8 @@
 		<label>Pause / Resume</label>
 		<description>ON pauses the current print; OFF resumes a paused print.</description>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Control</tag>
+			<point>Switch</point>
+			<property>Mode</property>
 		</tags>
 	</channel-type>
 
@@ -193,8 +193,8 @@
 		<label>Cancel Print</label>
 		<description>Send ON to cancel the current print job. Resets to OFF automatically.</description>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Control</tag>
+			<point>Switch</point>
+			<property>Mode</property>
 		</tags>
 		<state readOnly="false"/>
 	</channel-type>
@@ -204,7 +204,7 @@
 		<label>Print Preview</label>
 		<description>Thumbnail image of the object being printed. Populated when the sliced file contains embedded thumbnails.</description>
 		<tags>
-			<tag>Status</tag>
+			<point>Status</point>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>

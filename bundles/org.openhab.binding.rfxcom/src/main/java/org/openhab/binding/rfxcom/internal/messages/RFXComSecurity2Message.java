@@ -149,62 +149,7 @@ public class RFXComSecurity2Message extends RFXComBatteryDeviceMessage<RFXComSec
 
     @Override
     public void convertFromState(String channelId, Type type) throws RFXComUnsupportedChannelException {
-        switch (channelId) {
-            case CHANNEL_CONTACT:
-                if (type instanceof OpenClosedType) {
-                    if (type == OpenClosedType.CLOSED) {
-                        buttonStatus |= BUTTON_0_BIT;
-                    } else {
-                        buttonStatus &= ~BUTTON_0_BIT;
-                    }
-
-                } else {
-                    throw new RFXComUnsupportedChannelException("Channel " + channelId + " does not accept " + type);
-                }
-                break;
-
-            case CHANNEL_CONTACT_1:
-                if (type instanceof OpenClosedType) {
-                    if (type == OpenClosedType.CLOSED) {
-                        buttonStatus |= BUTTON_1_BIT;
-                    } else {
-                        buttonStatus &= ~BUTTON_1_BIT;
-                    }
-
-                } else {
-                    throw new RFXComUnsupportedChannelException("Channel " + channelId + " does not accept " + type);
-                }
-                break;
-
-            case CHANNEL_CONTACT_2:
-                if (type instanceof OpenClosedType) {
-                    if (type == OpenClosedType.CLOSED) {
-                        buttonStatus |= BUTTON_2_BIT;
-                    } else {
-                        buttonStatus &= ~BUTTON_2_BIT;
-                    }
-
-                } else {
-                    throw new RFXComUnsupportedChannelException("Channel " + channelId + " does not accept " + type);
-                }
-                break;
-
-            case CHANNEL_CONTACT_3:
-                if (type instanceof OpenClosedType) {
-                    if (type == OpenClosedType.CLOSED) {
-                        buttonStatus |= BUTTON_3_BIT;
-                    } else {
-                        buttonStatus &= ~BUTTON_3_BIT;
-                    }
-
-                } else {
-                    throw new RFXComUnsupportedChannelException("Channel " + channelId + " does not accept " + type);
-                }
-                break;
-
-            default:
-                throw new RFXComUnsupportedChannelException("Channel " + channelId + " is not relevant here");
-        }
+        throw new RFXComUnsupportedChannelException("Channel " + channelId + " is not relevant here");
     }
 
     @Override

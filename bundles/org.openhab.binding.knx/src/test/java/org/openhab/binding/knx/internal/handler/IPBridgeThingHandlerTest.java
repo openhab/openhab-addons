@@ -169,7 +169,7 @@ class IPBridgeThingHandlerTest {
         ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
         handler.setCallback(callback);
 
-        handler.initializeLater();
+        handler.initializeLater(0);
 
         ArgumentCaptor<ThingStatusInfo> captor = ArgumentCaptor.forClass(ThingStatusInfo.class);
         verify(callback, atLeastOnce()).statusUpdated(eq(bridge), captor.capture());

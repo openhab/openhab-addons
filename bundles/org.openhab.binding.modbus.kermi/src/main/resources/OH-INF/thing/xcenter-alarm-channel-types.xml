@@ -8,7 +8,7 @@
 		<label>Alarm State</label>
 		<description>Current alarm-state of your heat pump</description>
 		<tags>
-			<tag>Alarm</tag>
+			<point>Alarm</point>
 		</tags>
 	</channel-type>
 </thing:thing-descriptions>

@@ -18,15 +18,15 @@ import static org.mockito.Mockito.*;
 
 import java.util.concurrent.CompletableFuture;
 
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.sse.OutboundSseEvent;
-import javax.ws.rs.sse.Sse;
-import javax.ws.rs.sse.SseEventSink;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.knx.internal.rest.dto.StreamAliveDTO;
+
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.sse.OutboundSseEvent;
+import jakarta.ws.rs.sse.Sse;
+import jakarta.ws.rs.sse.SseEventSink;
 
 /**
  * Checks the client of a real event stream: how it builds an event, counts the sends that have not been written,

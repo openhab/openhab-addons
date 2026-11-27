@@ -1,0 +1,1184 @@
+{
+  "Info": {
+    "productType": "DW",
+    "country": "WW",
+    "modelType": "DW",
+    "model": "XD NonSteam",
+    "modelName": "D30",
+    "networkType": "WIFI",
+    "version": "2.4"
+  },
+  "Module": {
+    "WPM": {
+      "GDM_CEN01_Main": "003",
+      "GDM_CRS01_Main": "003",
+      "GDM_CRS02_CourseList": "003",
+      "GDM_CRS03_CourseDetail": "003",
+      "GCM_SDS01_SdsMain": "001",
+      "GDM_SET01_Main": "001",
+      "GDM_SET02_PushList": "001",
+      "GDM_SET02_Settings": "003",
+      "GDM_FOT01_Main": "003",
+      "GDM_WCH01_Main": "003",
+      "GDM_WCH01_UserGuide": "001"
+    },
+    "Menu": ["GDM_CRS02_CourseList", "GDM_WCH01_Main", "GCM_SDS01_SdsMain", "GDM_SET01_Main"]
+  },
+  "Config": {
+    "maxDownloadCourseNum": "false",
+    "defaultCourseId": "1",
+    "defaultSmartCourseId": "1",
+    "tubCleanCourseId": "9",
+    "fota": "true",
+    "wifiDiagnosis": "true",
+    "changeCourseInPause": "false",
+    "remoteStartLabel": "@WM_OPTION_REMOTE_START_W",
+    "TubCleanLabel": "@WM_COURSE_TUB_CLEAN_W",
+    "downloadPanelLabel": "@DW_TERM_DOWNLOADED_W"
+  },
+  "Push": [{
+    "category": "PUSH_DW_STATE",
+    "label": "@CP_ALARM_PRODUCT_STATE_W",
+    "groupCode": "20401",
+    "pushList": [{
+      "0000": "PUSH_DW_COMPLETE"
+    },
+      {
+        "0100": "PUSH_DW_ERROR"
+      },
+      {
+        "0101": "PUSH_DW_WATERLEAK"
+      },
+      {
+        "0102": "PUSH_DW_ADD_RINSE"
+      },
+      {
+        "0103": "PUSH_DW_ADD_SALT"
+      }
+    ]
+  }],
+
+  "Value": {
+    "State": {
+      "type": "Enum",
+      "default": "0",
+      "option": {
+        "0": "@DW_STATE_POWER_OFF_W",
+        "1": "@DW_STATE_INITIAL_W",
+        "2": "@DW_STATE_RUNNING_W",
+        "3": "@DW_STATE_PAUSE_W",
+        "4": "@DW_STATE_POWER_OFF_W",
+        "5": "@DW_STATE_COMPLETE_W",
+        "6": "-"
+      }
+    },
+    "Process": {
+      "type": "Enum",
+      "default": "0",
+      "option": {
+        "0": "-",
+        "1": "@DW_STATE_RESERVE_W",
+        "2": "@DW_STATE_RUNNING_W",
+        "3": "@DW_STATE_RINSING_W",
+        "4": "@DW_STATE_DRYING_W",
+        "5": "@DW_STATE_COMPLETE_W",
+        "6": "@DW_STATE_NIGHTDRY_W",
+        "99": "@DW_STATE_CANCEL_W"
+      }
+    },
+    "ChildLock": {
+      "type": "Enum",
+      "default": "0",
+      "label": "@DW_OPTION_CHILD_LOCK_W",
+      "option": {
+        "0": "@CP_OFF_EN_W",
+        "1": "@CP_ON_EN_W"
+      }
+    },
+    "Door": {
+      "type": "Enum",
+      "default": "0",
+      "label": "Door Open or Close####",
+      "option": {
+        "0": "@CP_OFF_EN_W",
+        "1": "@CP_ON_EN_W"
+      }
+    },
+    "RinseRefill": {
+      "type": "Enum",
+      "default": "0",
+      "label": "RinseRefill####",
+      "option": {
+        "0": "@CP_OFF_EN_W",
+        "1": "@CP_ON_EN_W"
+      }
+    },
+    "SaltRefill": {
+      "type": "Enum",
+      "default": "0",
+      "label": "Salt Refill####",
+      "option": {
+        "0": "@CP_OFF_EN_W",
+        "1": "@CP_ON_EN_W"
+      }
+    },
+    "Buzzer": {
+      "type": "Enum",
+      "default": "0",
+      "label": "Buzzer####",
+      "option": {
+        "0": "@CP_OFF_EN_W",
+        "1": "@CP_ON_EN_W"
+      }
+    },
+    "NightDry": {
+      "type": "Enum",
+      "default": "0",
+      "label": "@DW_OPTION_NIGHT_DRY_W",
+      "option": {
+        "0": "@CP_OFF_EN_W",
+        "1": "@CP_ON_EN_W"
+      }
+    },
+    "DelayStart": {
+      "type": "Enum",
+      "default": "0",
+      "label": "@DW_OPTION_RESERVE_W",
+      "option": {
+        "0": "@CP_OFF_EN_W",
+        "1": "@CP_ON_EN_W"
+      }
+    },
+    "EnergySaver": {
+      "type": "Enum",
+      "default": "0",
+      "label": "@DW_OPTION_ENERGY_SAVER_W",
+      "option": {
+        "0": "@CP_OFF_EN_W",
+        "1": "@CP_ON_EN_W"
+      }
+    },
+    "ExtraDry": {
+      "type": "Enum",
+      "default": "0",
+      "label": "@DW_OPTION_EXTRA_DRY_W",
+      "option": {
+        "0": "@CP_OFF_EN_W",
+        "1": "@CP_ON_EN_W"
+      }
+    },
+    "HighTemp": {
+      "type": "Enum",
+      "default": "0",
+      "label": "@DW_OPTION_HIGH_TEMP_W",
+      "option": {
+        "0": "@CP_OFF_EN_W",
+        "1": "@CP_ON_EN_W"
+      }
+    },
+    "DualZone": {
+      "type": "Enum",
+      "default": "0",
+      "label": "@DW_OPTION_DUAL_ZONE_W",
+      "option": {
+        "0": "@CP_OFF_EN_W",
+        "1": "@CP_ON_EN_W"
+      }
+    },
+    "HalfloadLower": {
+      "type": "Enum",
+      "default": "0",
+      "label": "@DW_OPTION_HALF_LOAD_LOWER_W",
+      "option": {
+        "0": "@CP_OFF_EN_W",
+        "1": "@CP_ON_EN_W"
+      }
+    },
+    "HalfloadUpper": {
+      "type": "Enum",
+      "default": "0",
+      "label": "@DW_OPTION_HALF_LOAD_UPPER_W",
+      "option": {
+        "0": "@CP_OFF_EN_W",
+        "1": "@CP_ON_EN_W"
+      }
+    },
+    "PreSteam": {
+      "type": "Enum",
+      "default": "0",
+      "label": "@DW_OPTION_PRE_STEAM_W",
+      "option": {
+        "0": "@CP_OFF_EN_W",
+        "1": "@CP_ON_EN_W"
+      }
+    },
+    "Rinse": {
+      "type": "Enum",
+      "default": "0",
+      "label": "@DW_OPTION_RINSE_W####",
+      "option": {
+        "0": "@CP_OFF_EN_W",
+        "1": "@DW_OPTION_RINSE_EXTRAHOT_W",
+        "2": "@DW_OPTION_RINSE_RINSE+_W",
+        "3": "@DW_OPTION_RINSE_RINSE+EXTRAHOT_W"
+      }
+    },
+    "HalfLoad": {
+      "type": "Enum",
+      "default": "0",
+      "label": "@DW_OPTION_HALF_LOAD_W",
+      "option": {
+        "0": "@CP_OFF_EN_W",
+        "1": "@DW_OPTION_HALF_LOAD_LOWER_W",
+        "2": "@DW_OPTION_HALF_LOAD_UPPER_W"
+      }
+    },
+    "Spray": {
+      "type": "Enum",
+      "default": "0",
+      "label": "@DW_OPTION_SPRAY_W####",
+      "option": {
+        "0": "@CP_OFF_EN_W",
+        "1": "@DW_OPTION_SPRAY_STRONG_W",
+        "2": "@DW_OPTION_SPRAY_MEDIUM_W",
+        "4": "@DW_OPTION_SPRAY_SOFT_W"
+      }
+    },
+    "RinseLevel": {
+      "type": "Enum",
+      "default": "0",
+      "label": "@DW_TERM_SETTINGS_RINSE_LEVEL_W",
+      "option": {
+        "0": "0",
+        "1": "1",
+        "2": "2",
+        "3": "3",
+        "4": "4",
+        "7": "@DW_TERM_UNSET_W"
+      }
+    },
+    "MCReminderSetting": {
+      "type": "Enum",
+      "default": "0",
+      "label": "@DW_TERM_SETTINGS_MACHINE_CLEAN_REMINDER_W",
+      "option": {
+        "0": "@CP_OFF_EN_W",
+        "1": "@CP_ON_EN_W",
+        "2": "@DW_TERM_UNSET_W"
+      }
+    },
+    "MCReminder": {
+      "type": "Enum",
+      "default": "0",
+      "label": "@DW_TERM_SETTINGS_MACHINE_CLEAN_REMINDER_W",
+      "option": {
+        "0": "@CP_OFF_EN_W",
+        "1": "@CP_ON_EN_W",
+        "2": "@DW_TERM_UNSET_W"
+      }
+    },
+    "SignalLevelSetting": {
+      "type": "Enum",
+      "default": "0",
+      "label": "@DW_TERM_SETTINGS_BEEP_W",
+      "option": {
+        "0": "@CP_OFF_EN_W",
+        "1": "@CP_ON_EN_W",
+        "2": "@DW_TERM_UNSET_W"
+      }
+    },
+    "SignalLevel": {
+      "type": "Enum",
+      "default": "0",
+      "label": "@DW_TERM_SETTINGS_BEEP_W",
+      "option": {
+        "0": "@CP_OFF_EN_W",
+        "1": "@CP_ON_EN_W",
+        "2": "@DW_TERM_UNSET_W"
+      }
+    },
+    "CleanLReminderSetting": {
+      "type": "Enum",
+      "default": "0",
+      "label": "@DW_TERM_SETTINGS_CLEAN_LIGHT_W",
+      "option": {
+        "0": "@CP_OFF_EN_W",
+        "1": "@CP_ON_EN_W",
+        "2": "@DW_TERM_UNSET_W"
+      }
+    },
+    "CleanLReminder": {
+      "type": "Enum",
+      "default": "0",
+      "label": "@DW_TERM_SETTINGS_CLEAN_LIGHT_W",
+      "option": {
+        "0": "@CP_OFF_EN_W",
+        "1": "@CP_ON_EN_W",
+        "2": "@DW_TERM_UNSET_W"
+      }
+    },
+    "Option1": {
+      "type": "Bit",
+      "default": "0",
+      "option": [{
+        "startbit": 0,
+        "length": 1,
+        "default": "0",
+        "value": "ChildLock"
+      }, {
+        "startbit": 1,
+        "length": 1,
+        "default": "0",
+        "value": "Door"
+      }, {
+        "startbit": 2,
+        "length": 1,
+        "default": "0",
+        "value": "RinseRefill"
+      }, {
+        "startbit": 3,
+        "length": 1,
+        "default": "0",
+        "value": "SaltRefill"
+      }, {
+        "startbit": 4,
+        "length": 1,
+        "default": "0",
+        "value": "SignalLevel"
+      }, {
+        "startbit": 5,
+        "length": 1,
+        "default": "0",
+        "value": "MCReminder"
+      }, {
+        "startbit": 6,
+        "length": 1,
+        "default": "0",
+        "value": "CleanLReminder"
+      }, {
+        "startbit": 7,
+        "length": 1,
+        "default": "0",
+        "value": "NightDry"
+      }]
+    },
+    "Option2": {
+      "type": "Bit",
+      "default": "0",
+      "option": [{
+        "startbit": 0,
+        "length": 1,
+        "default": "0",
+        "value": "DelayStart"
+      }, {
+        "startbit": 1,
+        "length": 1,
+        "default": "0",
+        "value": "EnergySaver"
+      }, {
+        "startbit": 2,
+        "length": 1,
+        "default": "0",
+        "value": "ExtraDry"
+      }, {
+        "startbit": 3,
+        "length": 1,
+        "default": "0",
+        "value": "HighTemp"
+      }, {
+        "startbit": 4,
+        "length": 1,
+        "default": "0",
+        "value": "DualZone"
+      }, {
+        "startbit": 5,
+        "length": 2,
+        "default": "0",
+        "value": "HalfLoad"
+      }, {
+        "startbit": 6,
+        "length": 1,
+        "default": "0",
+        "value": "-"
+      }, {
+        "startbit": 7,
+        "length": 1,
+        "default": "0",
+        "value": "PreSteam"
+      }]
+    },
+    "Option3": {
+      "type": "Bit",
+      "default": "0",
+      "option": [{
+        "startbit": 0,
+        "length": 2,
+        "default": "0",
+        "value": "MCReminder"
+      }, {
+        "startbit": 2,
+        "length": 2,
+        "default": "0",
+        "value": "SignalLevel"
+      }, {
+        "startbit": 4,
+        "length": 2,
+        "default": "0",
+        "value": "CleanLReminder"
+      }]
+    },
+    "Remain_Time_H": {
+      "type": "Range",
+      "default": 0,
+      "option": {
+        "min": 0,
+        "max": 30
+      }
+    },
+    "Remain_Time_M": {
+      "type": "Range",
+      "default": 0,
+      "option": {
+        "min": 0,
+        "max": 59
+      }
+    },
+    "Initial_Time_H": {
+      "type": "Range",
+      "default": 0,
+      "option": {
+        "min": 0,
+        "max": 30
+      }
+    },
+    "Initial_Time_M": {
+      "type": "Range",
+      "default": 0,
+      "option": {
+        "min": 0,
+        "max": 59
+      }
+    },
+    "Reserve_Time_H": {
+      "type": "Range",
+      "default": 0,
+      "label": "@WM_OPTION_RESERVE_W",
+      "option": {
+        "min": 3,
+        "max": 18
+      }
+    },
+    "Reserve_Time_M": {
+      "type": "Range",
+      "default": 0,
+      "option": {
+        "min": 0,
+        "max": 59
+      }
+    },
+    "Error": {
+      "type": "Reference",
+      "option": ["Error"]
+    },
+    "Course": {
+      "type": "Reference",
+      "option": ["Course"]
+    },
+    "SmartCourse": {
+      "type": "Reference",
+      "option": ["SmartCourse"]
+    }
+  },
+  "Settings": [{
+    "value": "RinseLevel",
+    "default": "2",
+    "selectable": [7, 0, 1, 2, 3, 4]
+  }, {
+    "value": "MCReminder",
+    "default": "0",
+    "selectable": [2, 0, 1]
+  }, {
+    "value": "SignalLevel",
+    "default": "0",
+    "selectable": [2, 0, 1]
+  }, {
+    "value": "CleanLReminder",
+    "default": "0",
+    "selectable": [2, 0, 1]
+  }],
+  "Error": {
+    "0": {
+      "_comment": "No Error",
+      "title": "No_Error",
+      "content": "No_Error",
+      "label": "No Error"
+    },
+    "1": {
+      "_comment": "",
+      "title": "",
+      "content": "",
+      "label": ""
+    },
+    "2": {
+      "_comment": "",
+      "title": "",
+      "content": "",
+      "label": ""
+    },
+    "3": {
+      "_comment": "",
+      "title": "",
+      "content": "",
+      "label": ""
+    },
+    "4": {
+      "_comment": "",
+      "title": "",
+      "content": "",
+      "label": ""
+    },
+    "5": {
+      "_comment": "HE, ���� ����",
+      "title": "@DW_ERROR_HE_TITLE",
+      "content": "@DW_ERROR_HE_CONTENT",
+      "label": "@DW_ERROR_HE_LABEL"
+    },
+    "6": {
+      "_comment": "IE, ���� ����",
+      "title": "@DW_ERROR_IE_TITLE",
+      "content": "@DW_ERROR_IE_CONTENT",
+      "label": "@DW_ERROR_IE_LABEL"
+    },
+    "7": {
+      "_comment": "OE, ���� ����",
+      "title": "@DW_ERROR_OE_TITLE",
+      "content": "@DW_ERROR_OE_CONTENT",
+      "label": "@DW_ERROR_OE_LABEL"
+    },
+    "8": {
+      "_comment": "FE, ���� ����(���ܾȵ�)",
+      "title": "@DW_ERROR_FE_TITLE",
+      "content": "@DW_ERROR_FE_CONTENT",
+      "label": "@DW_ERROR_FE_LABEL"
+    },
+    "9": {
+      "_comment": "tE, ���� ����",
+      "title": "@DW_ERROR_TE_TITLE",
+      "content": "@DW_ERROR_TE_CONTENT",
+      "label": "@DW_ERROR_TE_LABEL"
+    },
+    "10": {
+      "_comment": "AE, ���� ����(���ܾȵ�)",
+      "title": "@DW_ERROR_AE_TITLE",
+      "content": "@DW_ERROR_AE_CONTENT",
+      "label": "@DW_ERROR_AE_LABEL"
+    },
+    "11": {
+      "_comment": "",
+      "title": "",
+      "content": "",
+      "label": ""
+    },
+    "12": {
+      "_comment": "LE, ���� ����",
+      "title": "@DW_ERROR_LE_TITLE",
+      "content": "@DW_ERROR_LE_CONTENT",
+      "label": "@DW_ERROR_LE_LABEL"
+    },
+    "13": {
+      "_comment": "nE, ���� ����",
+      "title": "@DW_ERROR_NE_TITLE",
+      "content": "@DW_ERROR_NE_CONTENT",
+      "label": "@DW_ERROR_NE_LABEL"
+    },
+    "14": {
+      "_comment": "bE, ���� ����",
+      "title": "@DW_ERROR_BE_TITLE",
+      "content": "@DW_ERROR_BE_CONTENT",
+      "label": "@DW_ERROR_BE_LABEL"
+    }
+  },
+  "Monitoring": {
+    "type": "BINARY(BYTE)",
+    "protocol": [{
+      "_comment": "State",
+      "startByte": 0,
+      "length": 1,
+      "value": "State"
+    }, {
+      "_comment": "Process",
+      "startByte": 1,
+      "length": 1,
+      "value": "Process"
+    }, {
+      "_comment": "Error",
+      "startByte": 2,
+      "length": 1,
+      "value": "Error"
+    }, {
+      "_comment": "Initial Time H",
+      "startByte": 3,
+      "length": 1,
+      "value": "Initial_Time_H"
+    }, {
+      "_comment": "Initial Time M",
+      "startByte": 4,
+      "length": 1,
+      "value": "Initial_Time_M"
+    }, {
+      "_comment": "Course Idx",
+      "startByte": 5,
+      "length": 1,
+      "value": "Course"
+    }, {
+      "_comment": "Course Type",
+      "startByte": 6,
+      "length": 1,
+      "value": "CourseType"
+    }, {
+      "_comment": "Remain H",
+      "startByte": 7,
+      "length": 1,
+      "value": "Remain_Time_H"
+    }, {
+      "_comment": "Remain M",
+      "startByte": 8,
+      "length": 1,
+      "value": "Remain_Time_M"
+    }, {
+      "_comment": "Reserve H",
+      "startByte": 9,
+      "length": 1,
+      "value": "Reserve_Time_H"
+    }, {
+      "_comment": "Reserve M",
+      "startByte": 10,
+      "length": 1,
+      "value": "Reserve_Time_M"
+    }, {
+      "_comment": "Option 1",
+      "startByte": 11,
+      "length": 1,
+      "value": "Option1"
+    }, {
+      "_comment": "Option 2",
+      "startByte": 12,
+      "length": 1,
+      "value": "Option2"
+    }, {
+      "_comment": "Rinse-Aid Dispensing Level",
+      "startByte": 13,
+      "length": 1,
+      "value": "RinseLevel"
+    }, {
+      "_comment": "Softening Level",
+      "startByte": 14,
+      "length": 1,
+      "value": "SofteningLevel"
+    }, {
+      "_comment": "Reserved",
+      "startByte": 15,
+      "length": 5,
+      "value": "15~19"
+    }, {
+      "_comment": "Smart Course",
+      "startByte": 20,
+      "length": 1,
+      "value": "SmartCourse"
+    }, {
+      "_comment": "Reserved",
+      "startByte": 21,
+      "length": 2,
+      "value": "21~22"
+    }, {
+      "_comment": "Cur Download Idx",
+      "startByte": 23,
+      "length": 1,
+      "value": "CurDownload"
+    }]
+  },
+  "ControlWifi": {
+    "type": "BINARY(BYTE)",
+    "action": {
+      "CourseDownload": {
+        "tag": ["COURSE", "ID", "DATA"],
+        "data": "[{{Course}},{{SmartCourse}},0,0,{{Option1}},{{Option2}}]"
+      },
+      "OperationStart": {
+        "cmd": "Control",
+        "cmdOpt": "Operation",
+        "value": "Start",
+        "data": "[{{RinseLevel}},0,{{Option3}}]",
+        "encode": true
+      }
+    }
+  },
+  "Course": {
+    "1": {
+      "_comment": "Auto",
+      "courseType": "Course",
+      "id": 1,
+      "name": "@DW_COURSE_AUTO_W",
+      "imgIndex": 1,
+      "function": [{
+        "value": "DualZone",
+        "default": "0"
+      }, {
+        "value": "HalfLoad",
+        "default": "0"
+      }, {
+        "value": "EnergySaver",
+        "default": "0"
+      }, {
+        "value": "PreSteam",
+        "default": "0"
+      }, {
+        "value": "HighTemp",
+        "default": "0"
+      }, {
+        "value": "ExtraDry",
+        "default": "0"
+      }, {
+        "value": "NightDry",
+        "default": "0"
+      }, {
+        "value": "DelayStart",
+        "default": "0"
+      }]
+    },
+    "2": {
+      "_comment": "Haeavy",
+      "courseType": "Course",
+      "id": 2,
+      "name": "@DW_COURSE_HEAVY_W",
+      "imgIndex": 1,
+      "function": [{
+        "value": "DualZone",
+        "default": "0"
+      }, {
+        "value": "HalfLoad",
+        "default": "0"
+      }, {
+        "value": "EnergySaver",
+        "default": "0"
+      }, {
+        "value": "PreSteam",
+        "default": "0"
+      }, {
+        "value": "HighTemp",
+        "default": "0"
+      }, {
+        "value": "ExtraDry",
+        "default": "0"
+      }, {
+        "value": "NightDry",
+        "default": "0"
+      }, {
+        "value": "DelayStart",
+        "default": "0"
+      }]
+    },
+    "3": {
+      "_comment": "Delicate",
+      "courseType": "Course",
+      "id": 3,
+      "name": "@DW_COURSE_DELICATE_W",
+      "imgIndex": 1,
+      "function": [{
+        "value": "DualZone",
+        "default": "0"
+      }, {
+        "value": "HalfLoad",
+        "default": "0"
+      }, {
+        "value": "EnergySaver",
+        "default": "0"
+      }, {
+        "value": "PreSteam",
+        "default": "0"
+      }, {
+        "value": "HighTemp",
+        "default": "0"
+      }, {
+        "value": "ExtraDry",
+        "default": "0"
+      }, {
+        "value": "NightDry",
+        "default": "0"
+      }, {
+        "value": "DelayStart",
+        "default": "0"
+      }]
+    },
+    "4": {
+      "_comment": "Turbo",
+      "courseType": "Course",
+      "id": 4,
+      "name": "@DW_COURSE_TURBO_W",
+      "imgIndex": 1,
+      "function": [{
+        "value": "DualZone",
+        "default": "0"
+      }, {
+        "value": "HalfLoad",
+        "default": "0"
+      }, {
+        "value": "EnergySaver",
+        "default": "0"
+      }, {
+        "value": "PreSteam",
+        "default": "0"
+      }, {
+        "value": "HighTemp",
+        "default": "0"
+      }, {
+        "value": "ExtraDry",
+        "default": "0"
+      }, {
+        "value": "NightDry",
+        "default": "0"
+      }, {
+        "value": "DelayStart",
+        "default": "0"
+      }]
+    },
+    "5": {
+      "_comment": "Normal",
+      "courseType": "Course",
+      "id": 5,
+      "name": "@DW_COURSE_NORMAL_W",
+      "imgIndex": 1,
+      "function": [{
+        "value": "DualZone",
+        "default": "0"
+      }, {
+        "value": "HalfLoad",
+        "default": "0"
+      }, {
+        "value": "EnergySaver",
+        "default": "0"
+      }, {
+        "value": "PreSteam",
+        "default": "0"
+      }, {
+        "value": "HighTemp",
+        "default": "0"
+      }, {
+        "value": "ExtraDry",
+        "default": "0"
+      }, {
+        "value": "NightDry",
+        "default": "0"
+      }, {
+        "value": "DelayStart",
+        "default": "0"
+      }]
+    },
+    "6": {
+      "_comment": "Rinse",
+      "courseType": "Course",
+      "id": 6,
+      "name": "@DW_COURSE_RINSE_W",
+      "imgIndex": 1,
+      "function": [{
+        "value": "DualZone",
+        "default": "0"
+      }, {
+        "value": "HalfLoad",
+        "default": "0"
+      }, {
+        "value": "EnergySaver",
+        "default": "0"
+      }, {
+        "value": "PreSteam",
+        "default": "0"
+      }, {
+        "value": "HighTemp",
+        "default": "0"
+      }, {
+        "value": "ExtraDry",
+        "default": "0"
+      }, {
+        "value": "NightDry",
+        "default": "0"
+      }, {
+        "value": "DelayStart",
+        "default": "0"
+      }]
+    },
+    "7": {
+      "_comment": "Refresh",
+      "courseType": "Course",
+      "id": 7,
+      "name": "@DW_COURSE_REFRESH_W",
+      "imgIndex": 1,
+      "function": [{
+        "value": "DualZone",
+        "default": "0"
+      }, {
+        "value": "HalfLoad",
+        "default": "0"
+      }, {
+        "value": "EnergySaver",
+        "default": "0"
+      }, {
+        "value": "PreSteam",
+        "default": "0"
+      }, {
+        "value": "HighTemp",
+        "default": "0"
+      }, {
+        "value": "ExtraDry",
+        "default": "0"
+      }, {
+        "value": "NightDry",
+        "default": "0"
+      }, {
+        "value": "DelayStart",
+        "default": "0"
+      }]
+    },
+    "8": {
+      "_comment": "Express",
+      "courseType": "Course",
+      "id": 8,
+      "name": "@DW_COURSE_EXPRESS_W",
+      "imgIndex": 1,
+      "function": [{
+        "value": "DualZone",
+        "default": "0"
+      }, {
+        "value": "HalfLoad",
+        "default": "0"
+      }, {
+        "value": "EnergySaver",
+        "default": "0"
+      }, {
+        "value": "PreSteam",
+        "default": "0"
+      }, {
+        "value": "HighTemp",
+        "default": "0"
+      }, {
+        "value": "ExtraDry",
+        "default": "0"
+      }, {
+        "value": "NightDry",
+        "default": "0"
+      }, {
+        "value": "DelayStart",
+        "default": "0"
+      }]
+    },
+    "9": {
+      "_comment": "Machine Clean",
+      "courseType": "Course",
+      "id": 9,
+      "name": "@DW_COURSE_MACHINE_CLEAN_W",
+      "imgIndex": 1,
+      "function": [{
+        "value": "DualZone",
+        "default": "0"
+      }, {
+        "value": "HalfLoad",
+        "default": "0"
+      }, {
+        "value": "EnergySaver",
+        "default": "0"
+      }, {
+        "value": "PreSteam",
+        "default": "0"
+      }, {
+        "value": "HighTemp",
+        "default": "0"
+      }, {
+        "value": "ExtraDry",
+        "default": "0"
+      }, {
+        "value": "NightDry",
+        "default": "0"
+      }, {
+        "value": "DelayStart",
+        "default": "0"
+      }]
+    },
+    "10": {
+      "_comment": "Short Mode",
+      "courseType": "Course",
+      "id": 10,
+      "name": "@DW_COURSE_SHORT_MODE_W",
+      "imgIndex": 1,
+      "function": [{
+        "value": "DualZone",
+        "default": "0"
+      }, {
+        "value": "HalfLoad",
+        "default": "0"
+      }, {
+        "value": "EnergySaver",
+        "default": "0"
+      }, {
+        "value": "PreSteam",
+        "default": "0"
+      }, {
+        "value": "HighTemp",
+        "default": "0"
+      }, {
+        "value": "ExtraDry",
+        "default": "0"
+      }, {
+        "value": "NightDry",
+        "default": "0"
+      }, {
+        "value": "DelayStart",
+        "default": "0"
+      }]
+    },
+    "11": {
+      "_comment": "Download Cycle",
+      "courseType": "Course",
+      "id": 11,
+      "name": "@DW_TERM_SMARTCOURSE_W",
+      "imgIndex": 1,
+      "function": [{
+        "value": "DualZone",
+        "default": "0"
+      }, {
+        "value": "HalfLoad",
+        "default": "0"
+      }, {
+        "value": "EnergySaver",
+        "default": "0"
+      }, {
+        "value": "PreSteam",
+        "default": "0"
+      }, {
+        "value": "HighTemp",
+        "default": "0"
+      }, {
+        "value": "ExtraDry",
+        "default": "0"
+      }, {
+        "value": "NightDry",
+        "default": "0"
+      }, {
+        "value": "DelayStart",
+        "default": "0"
+      }]
+    }
+  },
+  "SmartCourse": {
+    "1": {
+      "_comment": "Pots & Pans (Default)",
+      "courseType": "SmartCourse",
+      "id": 1,
+      "Course": 2,
+      "name": "@DW_SMARTCOURSE_POTS_PANS_W",
+      "script": "@DW_SMARTCOURSE_SCRIPT_POTS_PANS_S",
+      "imgIndex": 14,
+      "function": [{
+        "value": "DualZone",
+        "default": "0"
+      }, {
+        "value": "HalfLoad",
+        "default": "0"
+      }, {
+        "value": "EnergySaver",
+        "default": "0"
+      }, {
+        "value": "HighTemp",
+        "default": "1"
+      }, {
+        "value": "ExtraDry",
+        "default": "1"
+      }, {
+        "value": "NightDry",
+        "default": "1"
+      }]
+    },
+    "2": {
+      "_comment": "Casseroles",
+      "courseType": "SmartCourse",
+      "id": 2,
+      "Course": 2,
+      "name": "@DW_SMARTCOURSE_GREASY_DISHES_W",
+      "script": "@DW_SMARTCOURSE_SCRIPT_GREASY_DISHES_S",
+      "imgIndex": 12,
+      "function": [{
+        "value": "DualZone",
+        "default": "0"
+      }, {
+        "value": "HalfLoad",
+        "default": "0"
+      }, {
+        "value": "EnergySaver",
+        "default": "0"
+      }, {
+        "value": "HighTemp",
+        "default": "1"
+      }, {
+        "value": "ExtraDry",
+        "default": "0"
+      }, {
+        "value": "NightDry",
+        "default": "1"
+      }]
+    },
+    "3": {
+      "_comment": "Glasswares",
+      "courseType": "SmartCourse",
+      "id": 3,
+      "Course": 3,
+      "name": "@DW_SMARTCOURSE_GLASSWARES_W",
+      "script": "@DW_SMARTCOURSE_SCRIPT_GLASSWARES_S",
+      "imgIndex": 15,
+      "function": [{
+        "value": "DualZone",
+        "default": "0"
+      }, {
+        "value": "HalfLoad",
+        "default": "0"
+      }, {
+        "value": "EnergySaver",
+        "default": "0"
+      }, {
+        "value": "HighTemp",
+        "default": "0"
+      }, {
+        "value": "ExtraDry",
+        "default": "0"
+      }, {
+        "value": "NightDry",
+        "default": "1"
+      }]
+    },
+    "4": {
+      "_comment": "Night Care(US)",
+      "courseType": "SmartCourse",
+      "id": 4,
+      "Course": 3,
+      "name": "@DW_SMARTCOURSE_OVERNIGHT_W",
+      "script": "@DW_SMARTCOURSE_SCRIPT_OVERNIGHT_S",
+      "imgIndex": 11,
+      "function": [{
+        "value": "DualZone",
+        "default": "0"
+      }, {
+        "value": "HalfLoad",
+        "default": "0"
+      }, {
+        "value": "EnergySaver",
+        "default": "0"
+      }, {
+        "value": "HighTemp",
+        "default": "0"
+      }, {
+        "value": "ExtraDry",
+        "default": "1"
+      }, {
+        "value": "NightDry",
+        "default": "1"
+      }]
+    }
+  }
+}

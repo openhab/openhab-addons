@@ -16,17 +16,11 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import javax.annotation.security.RolesAllowed;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.auth.Role;
+import org.openhab.core.config.core.ConfigParser;
 import org.openhab.core.config.core.ConfigurableService;
-import org.openhab.core.config.core.Configuration;
 import org.openhab.core.io.monitor.MeterRegistryProvider;
 import org.openhab.core.io.rest.RESTConstants;
 import org.openhab.io.metrics.exporters.InfluxMetricsExporter;
@@ -35,10 +29,10 @@ import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Modified;
 import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.jaxrs.whiteboard.JaxrsWhiteboardConstants;
-import org.osgi.service.jaxrs.whiteboard.propertytypes.JSONRequired;
-import org.osgi.service.jaxrs.whiteboard.propertytypes.JaxrsApplicationSelect;
-import org.osgi.service.jaxrs.whiteboard.propertytypes.JaxrsResource;
+import org.osgi.service.jakartars.whiteboard.JakartarsWhiteboardConstants;
+import org.osgi.service.jakartars.whiteboard.propertytypes.JSONRequired;
+import org.osgi.service.jakartars.whiteboard.propertytypes.JakartarsApplicationSelect;
+import org.osgi.service.jakartars.whiteboard.propertytypes.JakartarsResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,6 +44,11 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.annotation.security.RolesAllowed;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.MediaType;
 
 /**
  * The {@link MetricsRestController} class implements the REST endpoints for all pull based monitoring systems.
@@ -57,8 +56,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
  * @author Robert Bach - Initial contribution
  */
 @Component(configurationPid = "org.openhab.metrics", immediate = true, service = MetricsRestController.class)
-@JaxrsResource
-@JaxrsApplicationSelect("(" + JaxrsWhiteboardConstants.JAX_RS_NAME + "=" + RESTConstants.JAX_RS_NAME + ")")
+@JakartarsResource
+@JakartarsApplicationSelect("(" + JakartarsWhiteboardConstants.JAKARTA_RS_NAME + "=" + RESTConstants.JAX_RS_NAME + ")")
 @Path(MetricsRestController.PATH_METRICS)
 @JSONRequired
 @RolesAllowed({ Role.USER, Role.ADMIN })
@@ -97,7 +96,7 @@ public class MetricsRestController {
     }
 
     @Activate
-    protected void activate(Map<@Nullable String, @Nullable Object> configuration) {
+    protected void activate(Map<String, @Nullable Object> configuration) {
         logger.info("Metrics service activated, serving the following URL(s): /rest/metrics/prometheus");
         metricsExporters.add(new InfluxMetricsExporter());
         metricsExporters.add(new JmxMetricsExporter());
@@ -106,12 +105,12 @@ public class MetricsRestController {
     }
 
     @Modified
-    protected synchronized void modified(Map<@Nullable String, @Nullable Object> configuration) {
+    protected synchronized void modified(Map<String, @Nullable Object> configuration) {
         updateConfig(configuration);
     }
 
-    private void updateConfig(@Nullable Map<@Nullable String, @Nullable Object> configuration) {
-        this.config = new Configuration(configuration).as(MetricsConfiguration.class);
+    private void updateConfig(Map<String, @Nullable Object> configuration) {
+        this.config = ConfigParser.configurationAs(configuration, MetricsConfiguration.class);
         logger.debug("Configuration: {}", this.config);
         this.metricsExporters.forEach(e -> e.updateExporterState(config));
     }

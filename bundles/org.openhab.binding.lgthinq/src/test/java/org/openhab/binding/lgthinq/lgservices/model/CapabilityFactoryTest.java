@@ -16,6 +16,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
@@ -27,6 +28,7 @@ import org.openhab.binding.lgthinq.lgservices.model.devices.washerdryer.WasherDr
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
  * The {@link CapabilityFactoryTest}
@@ -57,6 +59,20 @@ class CapabilityFactoryTest {
             for (CourseFunction f : cotton.getFunctions()) {
                 assertNotNull(f.getDefaultValue(), f.getValue());
             }
+            assertEquals(Set.of("steam", "preWash", "turboWash", "medicRinse", "soilWash", "steamSoftener"),
+                    wpCap.getOptionFeatures().keySet());
+            FeatureDefinition steam = wpCap.getOptionFeatures().get("steam");
+            assertNotNull(steam);
+            assertTrue(steam.getValuesMapping().containsKey("STEAM_ON"));
+            assertEquals("preState", wpCap.getPreviousState().getName());
+            assertSame(FeatureDefinition.NULL_DEFINITION, wpCap.getProcessState());
+
+            ObjectNode monitoringValue = (ObjectNode) mapper.path("MonitoringValue");
+            monitoringValue.set("processState", monitoringValue.path("preState").deepCopy());
+            WasherDryerCapability processStateCap = CapabilityFactory.getInstance().create(mapper,
+                    WasherDryerCapability.class);
+            assertEquals("preState", processStateCap.getPreviousState().getName());
+            assertEquals("processState", processStateCap.getProcessState().getName());
         }
     }
 }

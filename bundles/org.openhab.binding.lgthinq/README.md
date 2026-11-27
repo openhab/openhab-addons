@@ -1,6 +1,67 @@
-# LG ThinQ Binding
+# LG ThinQ Binding for openHAB
 
-This binding was developed to integrate the LG ThinQ API with openHAB.
+This binding integrates the **LG ThinQ** cloud API with **openHAB**,
+enabling monitoring and control of several LG home appliances from both
+the ThinQ 1.0 and ThinQ 2.0 platforms.
+
+It provides a standardized, robust, and officially aligned
+implementation following openHAB add-on guidelines.
+
+------------------------------------------------------------------------
+
+# ⚠️ Compatibility Notice for Users Migrating from Unofficial or Legacy Versions
+
+## Migration from Non-Official or Pre-5.0 LG ThinQ Bindings
+
+If you are currently using **any unofficial**, manually installed, or
+forked version of the LG ThinQ binding --- **particularly any version
+older than 5.0** --- please be aware that **direct upgrade to the
+official binding distributed via the openHAB Add-on Store is not
+supported**.
+
+Major structural changes were introduced in the official version,
+including:
+
+- Standardization and renaming of channels\
+- Reorganization of metadata\
+- New Thing IDs\
+- Updated discovery and bridge flow\
+- Conformance to openHAB's add-on development guidelines
+
+Because of these differences, **Things created by older bindings are not
+compatible and cannot be migrated automatically**.
+
+### Required Migration Steps
+
+To migrate successfully:
+
+1. **Delete all existing LG ThinQ Things**, including:
+
+    - The LG ThinQ Bridge\
+    - All discovered LG ThinQ devices
+
+1. **Install the official LG ThinQ binding** from the openHAB Add-on
+    Store.
+
+1. **Create a new LG ThinQ Bridge Thing** using the official binding.
+
+1. **Allow auto-discovery** to detect your devices again and re-add
+    them.
+
+### What Can Be Preserved?
+
+Your **Items do NOT need to be deleted**.
+
+You may:
+
+- Keep all existing Items\
+- Re-link each Item to its corresponding new channel once devices are
+    rediscovered
+
+This allows you to preserve UI pages, sitemaps, HABPanels, and
+automation rules.
+
+------------------------------------------------------------------------
 
 ## Supported Things
 
@@ -30,7 +91,7 @@ The following parameters are available to configure the Bridge and to link to yo
 | language           | User Language              | More frequent languages used                                                                                                                                                                                                | If you choose other, you can fill Manual user language (only if your language was not pre-defined in this combo |
 | country            | User Country               | More frequent countries used                                                                                                                                                                                                | If you choose other, you can fill Manual user country (only if your country was not pre-defined in this combo   |
 | manualLanguage     | Manual User Language       | The acronym for the language (PT, EN, IT, etc)                                                                                                                                                                              |                                                                                                                 |
-| manualCountry      | Manual User Country        | The acronym for the country (UK, US, BR, etc)                                                                                                                                                                               |                                                                                                                 |
+| manualCountry      | Manual User Country        | The ISO 3166-1 alpha-2 country code, e.g. GB, US, BR (use GB — not UK — for the United Kingdom; the country must match the one your LG account was created in)                                                              |                                                                                                                 |
 | username           | LG User name               | The LG user's account (normally an email)                                                                                                                                                                                   |                                                                                                                 |
 | password           | LG Password                | The LG user's password                                                                                                                                                                                                      |                                                                                                                 |
 | pollingIntervalSec | Polling Discovery Interval | It is the time (in seconds) that the bridge waits to try to fetch the devices registered to the user's account and, if it finds some new device, will show it as available to link. Please, choose a long time greater than 300 seconds. |                                                                                                                 |
@@ -116,6 +177,7 @@ LG ThinQ Washer Machine supports the following channels
 |--------------------|-------------------|------------|------------------------------------------------------------------------------------------------------------|
 | state              | Washer State      | String     | General State of the Washer                                                                                |
 | power              | Power             | Switch     | Define the device's Current Power state.                                                                   |
+| previous-state     | Previous State    | String     | Previous operation state reported by LG ThinQ                                                              |
 | process-state      | Process State     | String     | States of the running cycle                                                                                |
 | course             | Course            | String     | Course set up to work                                                                                      |
 | temperature-level  | Temperature Level | String     | Temperature level supported by the Washer (Cold, 20, 30, 40, 50, etc.)                                     |
@@ -126,18 +188,38 @@ LG ThinQ Washer Machine supports the following channels
 | remain-time        | Remaining Time    | String     | Remaining time to finish the course                                                                        |
 | stand-by           | Stand By Mode     | Switch     | If the Washer is in stand-by-mode                                                                          |
 | rs-flag            | Remote Start      | Switch     | If the Washer is in remote start mode waiting to be remotely started                                       |
+| dry-level          | Dry Level         | String     | Dry level set for the course                                                                               |
+| eco-hybrid         | Eco Hybrid        | String     | Eco hybrid drying option set for the course                                                                |
+| steam              | Steam             | String     | Steam option set for the course                                                                            |
+| pre-wash           | Pre-Wash          | String     | Pre-wash option set for the course                                                                         |
+| turbo-wash         | TurboWash         | String     | TurboWash option set for the course                                                                        |
+| medic-rinse        | Medic Rinse       | String     | Medic rinse option set for the course                                                                      |
+| soil-wash          | Soil Level        | String     | Soil level set for the course                                                                              |
+| steam-softener     | Steam Softener    | String     | Steam softener option set for the course                                                                   |
+
+The channels `dry-level` to `steam-softener` only exist on V2 washers that support the option.
 
 #### Washer Machine Remote Start Option
 
 These channels are always present, but a remote start only works while it is enabled on the washer (`rs-flag` is ON).
 
-| channel #            | channel           | type               | description                         |
-|----------------------|-------------------|--------------------|-------------------------------------|
-| rs-start-stop        | Remote Start/Stop | Switch             | `ON` starts the washer              |
-| rs-course            | Course to Run     | String (Selection) | Course to use for the remote start  |
-| rs-temperature-level | Temperature Level | String (Selection) | Temperature for the remote start    |
-| rs-spin              | Spin              | String             | Spin speed for the remote start     |
-| rs-rinse             | Rinse             | String             | Rinse option for the remote start   |
+| channel #            | channel           | type               | description                                |
+|----------------------|-------------------|--------------------|--------------------------------------------|
+| rs-start-stop        | Remote Start/Stop | Switch             | `ON` starts the washer                     |
+| rs-course            | Course to Run     | String (Selection) | Course to use for the remote start         |
+| rs-temperature-level | Temperature Level | String (Selection) | Temperature for the remote start           |
+| rs-spin              | Spin              | String             | Spin speed for the remote start            |
+| rs-rinse             | Rinse             | String             | Rinse option for the remote start          |
+| rs-dry-level         | Dry Level         | String (Selection) | Dry level for the remote start             |
+| rs-eco-hybrid        | Eco Hybrid        | String (Selection) | Eco hybrid option for the remote start     |
+| rs-steam             | Steam             | String (Selection) | Steam option for the remote start          |
+| rs-pre-wash          | Pre-Wash          | String (Selection) | Pre-wash option for the remote start       |
+| rs-turbo-wash        | TurboWash         | String (Selection) | TurboWash option for the remote start      |
+| rs-medic-rinse       | Medic Rinse       | String (Selection) | Medic rinse option for the remote start    |
+| rs-soil-wash         | Soil Level        | String (Selection) | Soil level for the remote start            |
+| rs-steam-softener    | Steam Softener    | String (Selection) | Steam softener option for the remote start |
+
+`rs-dry-level` to `rs-steam-softener` only exist if the washer supports setting the option for a remote start.
 
 When remote start gets enabled on the washer, these channels take over its current settings once.
 After that they keep your values, also while the washer is in stand-by. Changing `rs-course` doesn't change the other channels.
@@ -153,6 +235,7 @@ LG ThinQ Dryer Machine supports the following channels
 |--------------------|-------------------|---------|------------------------------------------------------------------------|
 | power              | Power             | Switch  | Define the device's Current Power state.                               |
 | state              | Dryer State       | String  | General State of the Washer                                            |
+| previous-state     | Previous State    | String  | Previous operation state reported by LG ThinQ                          |
 | process-state      | Process State     | String  | States of the running cycle                                            |
 | course             | Course            | String  | Course set up to work                                                  |
 | temperature-level  | Temperature Level | String  | Temperature level supported by the Washer (Cold, 20, 30, 40, 50, etc.) |
@@ -171,6 +254,8 @@ These channels are always present, but a remote start only works while it is ena
 |---------------|-------------------|--------------------|------------------------------------|
 | rs-start-stop | Remote Start/Stop | Switch             | `ON` starts the dryer              |
 | rs-course     | Course to Run     | String (Selection) | Course to use for the remote start |
+
+V2 dryers also get the option channels of the washer for the options they support.
 
 ### Dryer/Washer Tower
 

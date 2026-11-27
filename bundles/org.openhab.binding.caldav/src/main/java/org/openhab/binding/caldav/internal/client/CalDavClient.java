@@ -28,14 +28,14 @@ import javax.xml.stream.XMLStreamException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.Authentication;
+import org.eclipse.jetty.client.BasicAuthentication;
+import org.eclipse.jetty.client.BufferingResponseListener;
+import org.eclipse.jetty.client.DigestAuthentication;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.Authentication;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.api.Result;
-import org.eclipse.jetty.client.util.BasicAuthentication;
-import org.eclipse.jetty.client.util.BufferingResponseListener;
-import org.eclipse.jetty.client.util.DigestAuthentication;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.Result;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.caldav.internal.config.AccountConfiguration;
 
@@ -83,9 +83,9 @@ public final class CalDavClient implements DavTransport {
     public String request(String method, URI uri, String body, String depth) throws IOException, InterruptedException {
         URI target = CalDavUris.resolve(origin, uri.toString());
         Request request = client.newRequest(target).method(method).followRedirects(false)
-                .timeout(timeout, TimeUnit.SECONDS).header("Depth", depth);
+                .timeout(timeout, TimeUnit.SECONDS).headers(h -> h.put("Depth", depth));
         if (!body.isEmpty()) {
-            request.content(new StringContentProvider("application/xml", body, StandardCharsets.UTF_8));
+            request.body(new StringRequestContent("application/xml", body, StandardCharsets.UTF_8));
         }
         Authentication.Result authentication = preemptiveAuthentication;
         if (authentication != null) {
@@ -94,7 +94,7 @@ public final class CalDavClient implements DavTransport {
         CompletableFuture<String> result = new CompletableFuture<>();
         request.send(new BufferingResponseListener(MAX_RESPONSE_BYTES) {
             @Override
-            public void onComplete(Result response) {
+            public void onComplete(@NonNullByDefault({}) Result response) {
                 var received = response.getResponse();
                 int status = received == null ? 0 : received.getStatus();
                 if (response.isFailed()) {

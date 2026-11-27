@@ -101,7 +101,7 @@ public class SolarmanChannelTypeProvider implements ChannelTypeProvider {
         String itemType = getItemType(item);
 
         StateDescriptionFragmentBuilder stateDescriptionFragmentBuilder = StateDescriptionFragmentBuilder.create()
-                .withReadOnly(true);
+                .withReadOnly(!Boolean.FALSE.equals(item.getIsReadOnly()));
         String pattern = computePatternForItem(item, itemType);
         if (pattern != null) {
             stateDescriptionFragmentBuilder.withPattern(pattern);

@@ -13,36 +13,22 @@
 package org.openhab.io.mcp.internal.tools;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
 import static org.openhab.io.mcp.internal.McpTestHelper.*;
 
-import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
-import java.util.function.Function;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.http.HttpMethod;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.openhab.io.mcp.internal.McpTestHelper;
 
 import io.modelcontextprotocol.json.McpJsonMapper;
-import io.modelcontextprotocol.server.McpSyncServerExchange;
 import io.modelcontextprotocol.spec.McpSchema.CallToolResult;
 
 /**
@@ -51,51 +37,18 @@ import io.modelcontextprotocol.spec.McpSchema.CallToolResult;
  * @author Dan Cunningham - Initial contribution
  */
 @NonNullByDefault
-@ExtendWith(MockitoExtension.class)
 class StaticAssetToolsTest {
 
-    private static final String TOKEN = "test-token";
     private static final String BASE_URL = "http://localhost:8080";
 
     @TempDir
     @Nullable
     Path tempDir;
 
-    @Mock
-    @Nullable
-    HttpClient httpClient;
-
-    @Mock
-    @Nullable
-    Request request;
-
-    @Mock
-    @Nullable
-    ContentResponse response;
-
-    @Mock
-    @Nullable
-    McpSyncServerExchange exchange;
-
     private final McpJsonMapper jsonMapper = McpTestHelper.newJsonMapper();
-    private final Function<String, @Nullable String> tokenSupplier = sid -> TOKEN;
-
-    @BeforeEach
-    void setUp() throws Exception {
-        Request r = requireNonNull(request);
-        lenient().when(r.method(any(HttpMethod.class))).thenReturn(r);
-        lenient().when(r.header(anyString(), anyString())).thenReturn(r);
-        lenient().when(r.timeout(anyLong(), any(TimeUnit.class))).thenReturn(r);
-        lenient().when(r.send()).thenReturn(requireNonNull(response));
-        lenient().when(httpClient.newRequest(any(URI.class))).thenReturn(r);
-        lenient().when(exchange.sessionId()).thenReturn("session-1");
-        // Default: admin probe returns 200 so tests focus on filesystem behaviour rather than auth plumbing.
-        lenient().when(response.getStatus()).thenReturn(200);
-    }
 
     private StaticAssetTools tools() {
-        return new StaticAssetTools(requireNonNull(tempDir), BASE_URL, requireNonNull(httpClient), tokenSupplier,
-                jsonMapper);
+        return new StaticAssetTools(requireNonNull(tempDir), BASE_URL, jsonMapper);
     }
 
     private static <T> T requireNonNull(@Nullable T value) {
@@ -104,7 +57,7 @@ class StaticAssetToolsTest {
     }
 
     private CallToolResult call(StaticAssetTools t, Map<String, Object> args) {
-        return t.handleManageStaticAsset(requireNonNull(exchange), createRequest(args));
+        return t.handleManageStaticAsset(createRequest(args));
     }
 
     private static Map<String, Object> args(Object... kv) {
@@ -113,24 +66,6 @@ class StaticAssetToolsTest {
             m.put((String) kv[i], kv[i + 1]);
         }
         return m;
-    }
-
-    // ============ admin gate ============
-
-    @Test
-    void rejectsWhenAdminProbeReturns403() throws Exception {
-        when(response.getStatus()).thenReturn(403);
-        CallToolResult result = call(tools(), args("action", "list"));
-        assertErrorContains(result, "administrator-scoped token");
-    }
-
-    @Test
-    void rejectsWhenSessionHasNoToken() throws Exception {
-        Function<String, @Nullable String> noToken = sid -> null;
-        StaticAssetTools t = new StaticAssetTools(requireNonNull(tempDir), BASE_URL, requireNonNull(httpClient),
-                noToken, jsonMapper);
-        CallToolResult result = call(t, args("action", "list"));
-        assertErrorContains(result, "No bearer token");
     }
 
     // ============ list ============
@@ -324,5 +259,10 @@ class StaticAssetToolsTest {
     void invalidActionRejected() throws Exception {
         CallToolResult result = call(tools(), args("action", "wat"));
         assertErrorContains(result, "Invalid action");
+    }
+
+    @Test
+    void toolAnnotationsDescribeSideEffects() {
+        McpTestHelper.assertWriteTool(tools().getManageStaticAssetTool(), true, false);
     }
 }

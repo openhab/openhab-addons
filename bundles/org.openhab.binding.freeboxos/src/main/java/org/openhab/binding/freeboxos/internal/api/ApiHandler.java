@@ -24,10 +24,10 @@ import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
@@ -109,15 +109,15 @@ public class ApiHandler {
             @Nullable Object payload) throws FreeboxException, InterruptedException {
         logger.debug("executeUrl {}: {} ", method, uri);
 
-        Request request = httpClient.newRequest(uri).method(method).timeout(timeoutInMs, TimeUnit.MILLISECONDS)
-                .header(HttpHeader.CONTENT_TYPE, CONTENT_TYPE);
+        Request request = httpClient.newRequest(uri).method(method).timeout(timeoutInMs, TimeUnit.MILLISECONDS);
+        request.headers(h -> h.add(HttpHeader.CONTENT_TYPE, CONTENT_TYPE));
 
         if (sessionToken != null) {
-            request.header(AUTH_HEADER, sessionToken);
+            request.headers(h -> h.add(AUTH_HEADER, sessionToken));
         }
 
         if (payload != null) {
-            request.content(new StringContentProvider(serialize(payload), DEFAULT_CHARSET), null);
+            request.body(new StringRequestContent(CONTENT_TYPE, serialize(payload), DEFAULT_CHARSET));
         }
 
         try {

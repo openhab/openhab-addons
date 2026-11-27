@@ -15,6 +15,7 @@ package org.openhab.binding.knx.internal.handler;
 import static org.openhab.binding.knx.internal.KNXBindingConstants.OWN_ADDRESS;
 
 import java.io.File;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -43,6 +44,7 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
+import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -133,6 +135,11 @@ public abstract class KNXBridgeBaseThingHandler extends BaseBridgeHandler implem
     /** {@return the client of this bridge, to send through it the way a channel does} */
     public KNXClient client() {
         return getClient();
+    }
+
+    @Override
+    public Collection<Class<? extends ThingHandlerService>> getServices() {
+        return List.of(KNXActions.class);
     }
 
     public CommandExtensionData getCommandExtensionData() {

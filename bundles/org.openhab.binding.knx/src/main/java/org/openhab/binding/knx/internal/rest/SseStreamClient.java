@@ -15,13 +15,13 @@ package org.openhab.binding.knx.internal.rest;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.sse.OutboundSseEvent;
-import javax.ws.rs.sse.Sse;
-import javax.ws.rs.sse.SseEventSink;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.slf4j.LoggerFactory;
+
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.sse.OutboundSseEvent;
+import jakarta.ws.rs.sse.Sse;
+import jakarta.ws.rs.sse.SseEventSink;
 
 /**
  * A reader of the stream behind a server-sent event sink. Core's broadcaster is not used, as it does not tell

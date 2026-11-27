@@ -1,0 +1,82 @@
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+package org.openhab.binding.bmwcardata.internal;
+
+import java.util.Set;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.core.thing.ThingTypeUID;
+
+/**
+ * The {@link BMWCarDataBindingConstants} class defines common constants, which are
+ * used across the whole binding.
+ *
+ * @author Michael Weger - Initial contribution
+ */
+@NonNullByDefault
+public class BMWCarDataBindingConstants {
+
+    public static final String BINDING_ID = "bmwcardata";
+
+    // List of all Thing Type UIDs
+    public static final ThingTypeUID THING_TYPE_ACCOUNT = new ThingTypeUID(BINDING_ID, "account");
+    public static final ThingTypeUID THING_TYPE_VEHICLE = new ThingTypeUID(BINDING_ID, "vehicle");
+
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_ACCOUNT, THING_TYPE_VEHICLE);
+
+    // Configuration and property names
+    public static final String CONFIG_VIN = "vin";
+    // the VIN the basic data shown as properties belongs to
+    public static final String PROPERTY_VIN = "vin";
+    public static final String PROPERTY_BRAND = "brand";
+    public static final String PROPERTY_MODEL = "model";
+    public static final String PROPERTY_SERIES = "series";
+    public static final String PROPERTY_DRIVE_TRAIN = "driveTrain";
+    public static final String PROPERTY_PROPULSION_TYPE = "propulsionType";
+    public static final String PROPERTY_COLOR = "color";
+    public static final String PROPERTY_CONSTRUCTION_DATE = "constructionDate";
+    public static final String PROPERTY_HAS_SUNROOF = "hasSunroof";
+    public static final String PROPERTY_HAS_NAVIGATION = "hasNavigation";
+    // further basic data; BMW does not document all of them, so the less obvious ones keep BMW's names
+    public static final String PROPERTY_TELEMATICS_CAPABLE = "telematicsCapable";
+    public static final String PROPERTY_MODEL_KEY = "modelKey";
+    public static final String PROPERTY_SERIES_DEVT = "seriesDevt";
+    public static final String PROPERTY_BODY_TYPE = "bodyType";
+    public static final String PROPERTY_NUMBER_OF_DOORS = "numberOfDoors";
+    public static final String PROPERTY_STEERING = "steering";
+    public static final String PROPERTY_ENGINE = "engine";
+    public static final String PROPERTY_HEAD_UNIT = "headUnit";
+    public static final String PROPERTY_PU_STEP = "puStep";
+    public static final String PROPERTY_CHARGING_MODES = "chargingModes";
+    public static final String PROPERTY_HVS_MAX_ENERGY = "hvsMaxEnergyAbsolute";
+    public static final String PROPERTY_REESS_CAPACITY = "reessNominalCapacityGross";
+    public static final String PROPERTY_SIM_STATUS = "simStatus";
+    public static final String PROPERTY_COUNTRY_CODE = "countryCode";
+
+    // Channel groups and derived channels; descriptor-backed channels are defined in VehicleChannel
+    public static final String GROUP_STATUS = "status";
+    public static final String GROUP_RANGE = "range";
+    public static final String GROUP_CHARGE = "charge";
+    public static final String GROUP_NAVIGATION = "navigation";
+    public static final String GROUP_CLIMATE = "climate";
+    public static final String GROUP_TRIP = "trip";
+    public static final String GROUP_TYRES = "tyres";
+    public static final String GROUP_SECURITY = "security";
+    public static final String GROUP_BATTERY = "battery";
+    public static final String GROUP_SERVICE = "service";
+    public static final String GROUP_STATISTICS = "statistics";
+    public static final String GROUP_OTHER = "other";
+    public static final String CHANNEL_LAST_UPDATE = GROUP_STATUS + "#last-update";
+    public static final String CHANNEL_GPS = GROUP_NAVIGATION + "#gps";
+    public static final String CHANNEL_IMAGE = GROUP_STATUS + "#image";
+}

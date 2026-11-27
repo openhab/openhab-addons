@@ -1,0 +1,355 @@
+{
+	"deviceMapping": {
+		"id": [
+			"xiaomi.heater.nb1"
+		],
+		"propertyMethod": "get_properties",
+		"maxProperties": 1,
+		"channels": [
+			{
+				"property": "on",
+				"siid": 2,
+				"piid": 1,
+				"friendlyName": "Power",
+				"channel": "on",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch"
+				]
+			},
+			{
+				"property": "fault",
+				"siid": 2,
+				"piid": 2,
+				"friendlyName": "Fault",
+				"channel": "fault",
+				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "0",
+							"label": "No Faults"
+						},
+						{
+							"value": "1",
+							"label": "Temperature Error"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "error",
+				"tags": [
+					"Status"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"No Faults\",\"1\"\u003d\"Temperature Error\"]`"
+			},
+			{
+				"property": "mode",
+				"siid": 2,
+				"piid": 3,
+				"friendlyName": "Mode",
+				"channel": "mode",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "Constant Temperature"
+						},
+						{
+							"value": "1",
+							"label": "Natural"
+						},
+						{
+							"value": "2",
+							"label": "Warm"
+						},
+						{
+							"value": "3",
+							"label": "Hot"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "heating",
+				"tags": [
+					"Control",
+					"Mode"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Constant Temperature\",\"1\"\u003d\"Natural\",\"2\"\u003d\"Warm\",\"3\"\u003d\"Hot\"]`"
+			},
+			{
+				"property": "target-temperature",
+				"siid": 2,
+				"piid": 5,
+				"friendlyName": "Target Temperature",
+				"channel": "target_temperature",
+				"type": "Number:Temperature",
+				"unit": "celsius",
+				"stateDescription": {
+					"minimum": 22,
+					"maximum": 28,
+					"step": 1,
+					"pattern": "%.0f %unit%"
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "temperature",
+				"tags": [
+					"Setpoint",
+					"Temperature"
+				]
+			},
+			{
+				"property": "temperature",
+				"siid": 3,
+				"piid": 2,
+				"friendlyName": "Temperature",
+				"channel": "temperature",
+				"type": "Number:Temperature",
+				"unit": "celsius",
+				"stateDescription": {
+					"minimum": -30,
+					"maximum": 100,
+					"step": 0.1,
+					"pattern": "%.1f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "temperature",
+				"tags": [
+					"Measurement",
+					"Temperature"
+				]
+			},
+			{
+				"property": "oscillation",
+				"siid": 4,
+				"piid": 2,
+				"friendlyName": "Oscillation",
+				"channel": "oscillation",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "fan",
+				"tags": [
+					"Switch",
+					"Airflow"
+				]
+			},
+			{
+				"property": "indicator",
+				"siid": 5,
+				"piid": 1,
+				"friendlyName": "Indicator",
+				"channel": "indicator",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "screen",
+				"tags": [
+					"Switch"
+				]
+			},
+			{
+				"property": "alarm",
+				"siid": 7,
+				"piid": 1,
+				"friendlyName": "Notification Sound",
+				"channel": "alarm",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "soundvolume",
+				"tags": [
+					"Switch",
+					"Enabled"
+				]
+			},
+			{
+				"property": "physical-controls-locked",
+				"siid": 8,
+				"piid": 1,
+				"friendlyName": "Child Lock",
+				"channel": "physical_controls_locked",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "lock",
+				"tags": [
+					"Switch",
+					"Enabled"
+				]
+			},
+			{
+				"property": "delay",
+				"siid": 9,
+				"piid": 1,
+				"friendlyName": "Power-Off Timer",
+				"channel": "delay",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "time",
+				"tags": [
+					"Switch",
+					"Enabled"
+				]
+			},
+			{
+				"property": "delay-time",
+				"siid": 9,
+				"piid": 2,
+				"friendlyName": "Power-Off Timer Duration",
+				"channel": "delay_time",
+				"type": "Number:Time",
+				"unit": "hours",
+				"stateDescription": {
+					"minimum": 1,
+					"maximum": 8,
+					"step": 1,
+					"pattern": "%.0f %unit%"
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "time",
+				"tags": [
+					"Setpoint",
+					"Duration"
+				]
+			},
+			{
+				"property": "delay-remain-time",
+				"siid": 9,
+				"piid": 3,
+				"friendlyName": "Power-Off Timer Remaining",
+				"channel": "delay_remain_time",
+				"type": "Number:Time",
+				"unit": "hours",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 8,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "time",
+				"tags": [
+					"Measurement",
+					"Duration"
+				]
+			},
+			{
+				"property": "country-code",
+				"siid": 10,
+				"piid": 1,
+				"friendlyName": "Country Code",
+				"channel": "country_code",
+				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "1",
+							"label": "US"
+						},
+						{
+							"value": "2",
+							"label": "EU"
+						},
+						{
+							"value": "44",
+							"label": "UK"
+						},
+						{
+							"value": "66",
+							"label": "TH"
+						},
+						{
+							"value": "82",
+							"label": "KR"
+						},
+						{
+							"value": "86",
+							"label": "CN"
+						},
+						{
+							"value": "91",
+							"label": "IN"
+						},
+						{
+							"value": "886",
+							"label": "TW"
+						},
+						{
+							"value": "81",
+							"label": "JP"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "settings",
+				"tags": [
+					"Status"
+				],
+				"readmeComment": "Value mapping `[\"1\"\u003d\"US\",\"2\"\u003d\"EU\",\"44\"\u003d\"UK\",\"66\"\u003d\"TH\",\"82\"\u003d\"KR\",\"86\"\u003d\"CN\",\"91\"\u003d\"IN\",\"886\"\u003d\"TW\",\"81\"\u003d\"JP\"]`"
+			}
+		],
+		"experimental": true
+	}
+}

@@ -19,10 +19,10 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
@@ -108,12 +108,15 @@ public class SenecHomeApi {
         logger.trace("sending request to: {}", location);
 
         Request request = httpClient.newRequest(location);
-        request.header(HttpHeader.ACCEPT, MimeTypes.Type.APPLICATION_JSON.asString());
-        request.header(HttpHeader.CONTENT_TYPE, MimeTypes.Type.APPLICATION_JSON.asString());
+        request.headers(h -> {
+            h.add(HttpHeader.ACCEPT, MimeTypes.Type.APPLICATION_JSON.asString());
+            h.add(HttpHeader.CONTENT_TYPE, MimeTypes.Type.APPLICATION_JSON.asString());
+        });
         ContentResponse response = null;
         try {
             logger.trace("data to send: {}", dataToSend);
-            response = request.method(HttpMethod.POST).content(new StringContentProvider(dataToSend))
+            response = request.method(HttpMethod.POST)
+                    .body(new StringRequestContent(MimeTypes.Type.APPLICATION_JSON.asString(), dataToSend))
                     .timeout(15, TimeUnit.SECONDS).send();
             if (response.getStatus() == HttpStatus.OK_200) {
                 return response;

@@ -1621,6 +1621,10 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 updateChannelList();
                 updateChannelItemLinksFromLegacy();
                 updateEquipmentTag();
+                serviceContributorsCache.values().stream()
+                        .filter(r -> r.getType() == ResourceType.ZIGBEE_CONNECTIVITY
+                                || r.getType() == ResourceType.ZGP_CONNECTIVITY)
+                        .findFirst().ifPresent(this::updateConnectivityState);
                 if (!hasConnectivityIssue) {
                     updateStatus(ThingStatus.ONLINE);
                 }
@@ -1674,10 +1678,11 @@ public class Clip2ThingHandler extends BaseThingHandler {
         ColorTemperature colorTemperature = resource.getColorTemperature();
         if (colorTemperature != null) {
             MirekSchema mirekSchema = colorTemperature.getMirekSchema();
-            if (mirekSchema != null) {
-                stateDescriptionProvider.setMinMaxKelvin(channelUID, 1000000 / mirekSchema.getMirekMaximum(),
-                        1000000 / mirekSchema.getMirekMinimum());
+            if (mirekSchema == null || mirekSchema.invalid()) {
+                mirekSchema = MirekSchema.DEFAULT_SCHEMA;
             }
+            stateDescriptionProvider.setMinMaxKelvin(channelUID, 1000000 / mirekSchema.getMirekMaximum(),
+                    1000000 / mirekSchema.getMirekMinimum());
         }
     }
 

@@ -32,6 +32,7 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingRegistry;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.link.ItemChannelLinkRegistry;
+import org.openhab.io.mcp.internal.auth.McpUser;
 import org.openhab.io.mcp.internal.util.SemanticModelBuilder;
 
 import io.modelcontextprotocol.json.McpJsonMapper;
@@ -142,7 +143,10 @@ public class ResourceProvider {
                 new SyncResourceTemplateSpecification(new ResourceTemplate("openhab://thing/{thingUID}",
                         "openHAB Thing", null,
                         "Status and channels of a Thing. Subscribe to receive notifications when the Thing's online/offline status changes.",
-                        APPLICATION_JSON, null), (ex, req) -> readThing(req.uri())),
+                        APPLICATION_JSON, null),
+                        (ex, req) -> McpUser.isAdmin(ex) ? readThing(req.uri())
+                                : toResult(req.uri(),
+                                        Map.of(KEY_ERROR, "Thing resources require an openHAB administrator."))),
                 new SyncResourceTemplateSpecification(new ResourceTemplate("openhab://rule/{ruleUID}", "openHAB Rule",
                         null,
                         "Status and last-fired info for an automation rule. Subscribe to receive notifications when the rule fires or its status changes.",

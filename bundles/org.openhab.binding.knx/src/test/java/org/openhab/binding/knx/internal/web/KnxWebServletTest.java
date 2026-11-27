@@ -24,32 +24,24 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.ServletException;
-import javax.servlet.ServletOutputStream;
-import javax.servlet.WriteListener;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.knx.internal.projectstore.LogCapture;
-import org.osgi.service.http.HttpContext;
-import org.osgi.service.http.HttpService;
-import org.osgi.service.http.NamespaceException;
+
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletOutputStream;
+import jakarta.servlet.WriteListener;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 /**
- * Checks the page's servlet on mocked requests and responses, without a server: how it registers, and what it
- * answers.
+ * Checks the page's servlet on mocked requests and responses, without a server: what it answers.
  *
  * @author Stamate Viorel - Initial contribution
  */
 @NonNullByDefault
 class KnxWebServletTest {
-    private HttpService httpService = mock(HttpService.class);
-    private HttpContext context = mock(HttpContext.class);
-
     /** What the servlet did to a mocked response. */
     static final class Answer {
         final HttpServletResponse response = mock(HttpServletResponse.class);
@@ -90,13 +82,6 @@ class KnxWebServletTest {
         }
     }
 
-    @BeforeEach
-    void setUp() {
-        httpService = mock(HttpService.class);
-        context = mock(HttpContext.class);
-        when(httpService.createDefaultHttpContext()).thenReturn(context);
-    }
-
     static HttpServletRequest request(String method, @Nullable String pathInfo) {
         HttpServletRequest request = mock(HttpServletRequest.class);
         when(request.getMethod()).thenReturn(method);
@@ -112,33 +97,8 @@ class KnxWebServletTest {
     }
 
     @Test
-    void itRegistersItselfAtKnxWithTheDefaultContextAndUnregistersOnDeactivate() throws Exception {
-        KnxWebServlet servlet = new KnxWebServlet(httpService);
-
-        verify(httpService).registerServlet("/knx", servlet, null, context);
-        servlet.deactivate();
-        verify(httpService).unregister("/knx");
-    }
-
-    @Test
-    void aFailedRegistrationIsOneWarningAndTheDeactivateAfterItThrowsNothing() throws Exception {
-        doThrow(new NamespaceException("made-up clash")).when(httpService).registerServlet(anyString(), any(), any(),
-                any());
-        doThrow(new IllegalArgumentException("made-up: not registered")).when(httpService).unregister(anyString());
-
-        try (LogCapture log = new LogCapture()) {
-            KnxWebServlet servlet = new KnxWebServlet(httpService);
-            servlet.deactivate();
-
-            List<String> warnings = log.warnings();
-            assertEquals(1, warnings.size(), warnings.toString());
-            assertTrue(warnings.get(0).contains("/knx"), warnings.get(0));
-        }
-    }
-
-    @Test
     void theStartPageIsServedAtTheSlash() throws Exception {
-        KnxWebServlet servlet = new KnxWebServlet(httpService);
+        KnxWebServlet servlet = new KnxWebServlet();
 
         Answer answer = call(servlet, request("GET", "/"));
 
@@ -186,7 +146,7 @@ class KnxWebServletTest {
 
     @Test
     void aFoundFileHasTheFourHeadersAnEtagAndItsLength() throws Exception {
-        Answer answer = call(new KnxWebServlet(httpService), request("GET", "/index.html"));
+        Answer answer = call(new KnxWebServlet(), request("GET", "/index.html"));
 
         assertEquals(200, answer.status);
         assertFixedHeaders(answer);
@@ -198,7 +158,7 @@ class KnxWebServletTest {
     void theTileImageIsServedAsSvgToARequestWithoutAnyHeader() throws Exception {
         HttpServletRequest request = request("GET", "/img/tile.svg");
 
-        Answer answer = call(new KnxWebServlet(httpService), request);
+        Answer answer = call(new KnxWebServlet(), request);
 
         assertEquals(200, answer.status);
         assertEquals("image/svg+xml", answer.contentType);
@@ -209,7 +169,7 @@ class KnxWebServletTest {
 
     @Test
     void headIsGetWithoutTheBody() throws Exception {
-        Answer answer = call(new KnxWebServlet(httpService), request("HEAD", "/index.html"));
+        Answer answer = call(new KnxWebServlet(), request("HEAD", "/index.html"));
 
         assertEquals(200, answer.status);
         assertFixedHeaders(answer);
@@ -224,7 +184,7 @@ class KnxWebServletTest {
         HttpServletRequest request = request("GET", "/");
         when(request.getHeader("If-None-Match")).thenReturn(etag());
 
-        Answer answer = call(new KnxWebServlet(httpService), request);
+        Answer answer = call(new KnxWebServlet(), request);
 
         assertEquals(304, answer.status);
         assertFixedHeaders(answer);
@@ -237,7 +197,7 @@ class KnxWebServletTest {
         HttpServletRequest request = request("GET", "/");
         when(request.getHeader("If-None-Match")).thenReturn("\"0000000000000000\", " + etag());
 
-        assertEquals(304, call(new KnxWebServlet(httpService), request).status);
+        assertEquals(304, call(new KnxWebServlet(), request).status);
     }
 
     @Test
@@ -245,7 +205,7 @@ class KnxWebServletTest {
         HttpServletRequest request = request("GET", "/");
         when(request.getHeader("If-None-Match")).thenReturn("\"0000000000000000\"");
 
-        Answer answer = call(new KnxWebServlet(httpService), request);
+        Answer answer = call(new KnxWebServlet(), request);
 
         assertEquals(200, answer.status);
         assertTrue(answer.body.size() > 0);
@@ -253,7 +213,7 @@ class KnxWebServletTest {
 
     @Test
     void knxWithoutSlashRedirectsToTheRelativeFolder() throws Exception {
-        Answer answer = call(new KnxWebServlet(httpService), marked("GET", null));
+        Answer answer = call(new KnxWebServlet(), marked("GET", null));
 
         assertEquals(302, answer.status);
         assertEquals("knx/", answer.headers.get("Location"));
@@ -264,7 +224,7 @@ class KnxWebServletTest {
 
     @Test
     void anUnknownPathIs404WithAFixedTextAndTheFourHeaders() throws Exception {
-        Answer answer = call(new KnxWebServlet(httpService), marked("GET", "/" + MARK + ".html"));
+        Answer answer = call(new KnxWebServlet(), marked("GET", "/" + MARK + ".html"));
 
         assertEquals(404, answer.status);
         assertFixedHeaders(answer);
@@ -276,7 +236,7 @@ class KnxWebServletTest {
 
     @Test
     void aHeadOfAnUnknownPathIs404WithoutBody() throws Exception {
-        Answer answer = call(new KnxWebServlet(httpService), request("HEAD", "/../index.html"));
+        Answer answer = call(new KnxWebServlet(), request("HEAD", "/../index.html"));
 
         assertEquals(404, answer.status);
         assertFixedHeaders(answer);
@@ -287,7 +247,7 @@ class KnxWebServletTest {
     void everyOtherMethodIs405WithAllowAndTheFourHeadersAndNothingEchoed() throws Exception {
         for (String method : List.of("POST", "PUT", "DELETE", "OPTIONS", "TRACE", "PATCH", "PROPFIND")) {
             for (String path : new String[] { "/", "/index.html", "/" + MARK }) {
-                Answer answer = call(new KnxWebServlet(httpService), marked(method, path));
+                Answer answer = call(new KnxWebServlet(), marked(method, path));
 
                 assertEquals(405, answer.status, method);
                 assertEquals("GET, HEAD", answer.headers.get("Allow"), method);
@@ -305,7 +265,7 @@ class KnxWebServletTest {
                 List.of(java.util.Objects.requireNonNull(new KnxWebFiles(KnxWebFiles.ENTRIES).find("/")), missing));
 
         try (LogCapture log = new LogCapture()) {
-            KnxWebServlet servlet = new KnxWebServlet(httpService, files);
+            KnxWebServlet servlet = new KnxWebServlet(files);
             List<String> errors = log.errors();
             assertEquals(1, errors.size(), errors.toString());
             assertTrue(errors.get(0).contains("gone.js"), errors.get(0));
@@ -321,7 +281,7 @@ class KnxWebServletTest {
 
     @Test
     void requestsLogNothing() throws Exception {
-        KnxWebServlet servlet = new KnxWebServlet(httpService);
+        KnxWebServlet servlet = new KnxWebServlet();
 
         try (LogCapture log = new LogCapture()) {
             call(servlet, request("GET", "/"));

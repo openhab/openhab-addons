@@ -34,6 +34,7 @@ import javax.crypto.spec.SecretKeySpec;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.websocket.api.Callback;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
@@ -122,7 +123,9 @@ public class WebSocketAesClientService extends AbstractWebSocketClientService {
                 logger.debug(">> {} ({})", message, getThingUID());
                 logger.trace(">> {} ({})", HexUtils.bytesToHex(encryptedMessage), getWebSocketHandler());
                 ByteBuffer buffer = ByteBuffer.wrap(encryptedMessage);
-                session.getRemote().sendBytes(buffer);
+                session.sendBinary(buffer, Callback.from(() -> {
+                }, failure -> logger.error("Failed to send message! error={} thingUID={}", failure.getMessage(),
+                        getThingUID())));
             }
         } catch (Exception e) {
             logger.error("Failed to send message! error={} thingUID={}", e.getMessage(), getThingUID());
@@ -132,6 +135,7 @@ public class WebSocketAesClientService extends AbstractWebSocketClientService {
     @OnWebSocketMessage
     public void onBinaryMessage(Session session, InputStream inputStream)
             throws IOException, NoSuchAlgorithmException, InvalidKeyException {
+        updateLastMessageReceived();
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         byte[] buffer = new byte[8192];
         int bytesRead;

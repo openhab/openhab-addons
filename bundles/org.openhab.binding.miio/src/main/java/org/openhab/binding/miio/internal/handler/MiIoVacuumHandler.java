@@ -51,7 +51,7 @@ import org.openhab.binding.miio.internal.cloud.HomeRoomDTO;
 import org.openhab.binding.miio.internal.cloud.MiCloudException;
 import org.openhab.binding.miio.internal.robot.ConsumablesType;
 import org.openhab.binding.miio.internal.robot.DockStatusType;
-import org.openhab.binding.miio.internal.robot.FanModeType;
+import org.openhab.binding.miio.internal.robot.FanSpeedPresets;
 import org.openhab.binding.miio.internal.robot.HistoryRecordDTO;
 import org.openhab.binding.miio.internal.robot.RRMapDraw;
 import org.openhab.binding.miio.internal.robot.RRMapDrawOptions;
@@ -132,6 +132,7 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
     private ConcurrentHashMap<RobotCababilities, Boolean> deviceCapabilities = new ConcurrentHashMap<>();
     private ChannelTypeRegistry channelTypeRegistry;
     private final MiIoStateDescriptionProvider stateDescriptionProvider;
+    private FanSpeedPresets fanPresets = FanSpeedPresets.DEFAULT;
     private RRMapDrawOptions mapDrawOptions = new RRMapDrawOptions();
 
     public MiIoVacuumHandler(Thing thing, MiIoDatabaseWatchService miIoDatabaseWatchService,
@@ -355,8 +356,9 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
         }
 
         if (statusInfo.getFanPower() != null) {
+            updateFanPresets();
             updateState(CHANNEL_FAN_POWER, new DecimalType(statusInfo.getFanPower()));
-            updateState(CHANNEL_FAN_CONTROL, new DecimalType(FanModeType.getType(statusInfo.getFanPower()).getId()));
+            updateState(CHANNEL_FAN_CONTROL, new DecimalType(fanPresets.getValue(statusInfo.getFanPower())));
         }
         safeUpdateState(CHANNEL_IN_CLEANING, statusInfo.getInCleaning());
         safeUpdateState(CHANNEL_MAP_PRESENT, statusInfo.getMapPresent());
@@ -697,7 +699,22 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
         this.mapDrawOptions = RRMapDrawOptions
                 .getOptionsFromFile(BINDING_USERDATA_PATH + File.separator + "mapConfig.json", logger);
         updateState(RobotCababilities.SEGMENT_CLEAN.getChannel(), new StringType("-"));
+        fanPresets = FanSpeedPresets.DEFAULT;
+        updateFanPresets();
         cloudConnector.getHomeLists();
+    }
+
+    /**
+     * Select the fan presets for the configured model. The model can be set after initialization, when it was
+     * learned from the device, so this is also called when the status is updated.
+     */
+    private void updateFanPresets() {
+        FanSpeedPresets presets = FanSpeedPresets.forModel(getConfigAs(MiIoBindingConfiguration.class).model);
+        if (presets != fanPresets) {
+            fanPresets = presets;
+            stateDescriptionProvider.setStateOptions(new ChannelUID(getThing().getUID(), CHANNEL_FAN_CONTROL),
+                    presets.getOptions());
+        }
     }
 
     @Override

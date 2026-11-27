@@ -54,7 +54,7 @@ import org.openhab.core.types.UnDefType;
  */
 @NonNullByDefault
 public abstract class Value {
-    protected State state = UnDefType.UNDEF;
+    protected State state = UnDefType.NULL;
     protected final List<Class<? extends Command>> commandTypes;
     private final String itemType;
 
@@ -124,11 +124,11 @@ public abstract class Value {
 
     /**
      * If the MQTT connection is not yet initialised or no values have
-     * been received yet, the default value is {@link UnDefType#UNDEF}. To restore to the
+     * been received yet, the default value is {@link UnDefType#NULL}. To restore to the
      * default value after a connection got lost etc, this method will be called.
      */
     public final void resetState() {
-        state = UnDefType.UNDEF;
+        state = UnDefType.NULL;
     }
 
     /**

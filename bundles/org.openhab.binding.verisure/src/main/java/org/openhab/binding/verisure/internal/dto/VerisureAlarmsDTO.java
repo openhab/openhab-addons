@@ -16,9 +16,11 @@ import static org.openhab.binding.verisure.internal.VerisureBindingConstants.THI
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.verisure.internal.dto.VerisureInstallationInfoDTO.VacationMode;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
@@ -30,6 +32,31 @@ import org.openhab.core.thing.ThingTypeUID;
 @NonNullByDefault
 public class VerisureAlarmsDTO extends VerisureBaseThingDTO {
 
+    private @Nullable String systemHealth;
+    private @Nullable String systemHealthAlerts;
+    private @Nullable VacationMode vacationMode;
+
+    public @Nullable VacationMode getVacationMode() {
+        return vacationMode;
+    }
+
+    public void setVacationMode(@Nullable VacationMode vacationMode) {
+        this.vacationMode = vacationMode;
+    }
+
+    public @Nullable String getSystemHealth() {
+        return systemHealth;
+    }
+
+    public @Nullable String getSystemHealthAlerts() {
+        return systemHealthAlerts;
+    }
+
+    public void setSystemHealth(@Nullable String systemHealth, @Nullable String systemHealthAlerts) {
+        this.systemHealth = systemHealth;
+        this.systemHealthAlerts = systemHealthAlerts;
+    }
+
     @Override
     public ThingTypeUID getThingTypeUID() {
         return THING_TYPE_ALARM;
@@ -40,7 +67,6 @@ public class VerisureAlarmsDTO extends VerisureBaseThingDTO {
         return super.hashCode();
     }
 
-    @SuppressWarnings("PMD.SimplifyBooleanReturns")
     @Override
     public boolean equals(@Nullable Object obj) {
         if (this == obj) {
@@ -55,7 +81,10 @@ public class VerisureAlarmsDTO extends VerisureBaseThingDTO {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        return true;
+        VerisureAlarmsDTO other = (VerisureAlarmsDTO) obj;
+        return Objects.equals(systemHealth, other.systemHealth)
+                && Objects.equals(systemHealthAlerts, other.systemHealthAlerts)
+                && Objects.equals(vacationMode, other.vacationMode);
     }
 
     public static class ArmState {

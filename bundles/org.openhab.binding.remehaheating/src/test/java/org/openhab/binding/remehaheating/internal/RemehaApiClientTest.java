@@ -17,9 +17,9 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.Request;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -59,6 +59,12 @@ public class RemehaApiClientTest {
     public void testGetDashboardWithoutToken() {
         JsonObject result = apiClient.getDashboard();
         assertNull(result);
+    }
+
+    @Test
+    public void testGetHeatingCurveWithoutToken() {
+        JsonObject result = apiClient.getHeatingCurve("zone123");
+        assertNull(result); // Should return null without access token
     }
 
     @Test

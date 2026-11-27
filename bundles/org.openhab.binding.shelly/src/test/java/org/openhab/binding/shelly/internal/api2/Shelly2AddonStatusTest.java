@@ -32,8 +32,9 @@ import org.mockito.Mockito;
 import org.openhab.binding.shelly.internal.api.ShellyApiException;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsStatus;
-import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult;
-import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatusTemp;
+import org.openhab.binding.shelly.internal.api2.dto.Shelly2StatusJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult;
+import org.openhab.binding.shelly.internal.api2.dto.Shelly2StatusJsonDTO.Shelly2DeviceStatusTemp;
+import org.openhab.binding.shelly.internal.api2.dto.ShellyMeterJsonDTO.Shelly2DeviceStatusVoltage;
 import org.openhab.binding.shelly.internal.config.ShellyApiConfiguration;
 import org.openhab.binding.shelly.internal.config.ShellyBindingConfiguration;
 import org.openhab.binding.shelly.internal.config.ShellyBindingRuntimeConfig;
@@ -236,7 +237,7 @@ public class Shelly2AddonStatusTest {
     @Test
     void fillDeviceStatusVoltageReadErrorExtVoltageNull() throws ShellyApiException {
         Shelly2DeviceStatusResult result = new Shelly2DeviceStatusResult();
-        result.voltmeter100 = result.new Shelly2DeviceStatusVoltage();
+        result.voltmeter100 = new Shelly2DeviceStatusVoltage();
         result.voltmeter100.id = 100;
         result.voltmeter100.errors = new ArrayList<>(List.of("read"));
 
@@ -249,7 +250,7 @@ public class Shelly2AddonStatusTest {
     @Test
     void fillDeviceStatusVoltageValidExtVoltagePopulated() throws ShellyApiException {
         Shelly2DeviceStatusResult result = new Shelly2DeviceStatusResult();
-        result.voltmeter100 = result.new Shelly2DeviceStatusVoltage();
+        result.voltmeter100 = new Shelly2DeviceStatusVoltage();
         result.voltmeter100.id = 100;
         result.voltmeter100.voltage = 3.3;
 

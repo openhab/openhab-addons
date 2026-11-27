@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.util.HexUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,6 +46,28 @@ public class GeniResponseDecoder {
     private boolean complete;
     private byte[] response = new byte[0];
     private final List<ReplyCandidate> candidates = new ArrayList<>();
+    private final @Nullable GeniReadRequest expectedRequest;
+    private byte @Nullable [] objectData;
+    private boolean decoded;
+
+    public GeniResponseDecoder() {
+        this(null);
+    }
+
+    GeniResponseDecoder(@Nullable GeniReadRequest expectedRequest) {
+        this.expectedRequest = expectedRequest;
+    }
+
+    /** Returns the validated object data after decoding a reply to the expected request. */
+    byte @Nullable [] objectData() {
+        byte[] data = objectData;
+        return !decoded || data == null ? null : data.clone();
+    }
+
+    /** A class-10 write returns an acknowledgement and a single object-status byte. */
+    boolean isWriteAcknowledged() {
+        return complete && responseTotalSize == 9 && response[4] == 10 && response[5] == 1 && response[6] == 0;
+    }
 
     /**
      * Add packet from response payload.
@@ -104,6 +127,8 @@ public class GeniResponseDecoder {
     }
 
     public Map<GeniMeasurand, BigDecimal> decode() {
+        objectData = null;
+        decoded = false;
         Map<GeniMeasurand, BigDecimal> values = new EnumMap<>(GeniMeasurand.class);
         if (!complete) {
             return values;
@@ -139,6 +164,7 @@ public class GeniResponseDecoder {
             }
         }
 
+        decoded = true;
         return values;
     }
 
@@ -169,8 +195,21 @@ public class GeniResponseDecoder {
         }
 
         int dataOffset = payload.position();
+        GeniReadRequest expectedRequest = this.expectedRequest;
+        if (expectedRequest != null && expectedRequest.matchesObject(objectType, objectVersion, objectLength)) {
+            if (objectData != null) {
+                return false;
+            }
+            objectData = new byte[objectLength];
+            payload.duplicate().get(objectData);
+        }
         boolean supportedObject = false;
         for (GeniMeasurand measurand : GeniMeasurand.values()) {
+            // Both settings share layout 303. Their identity comes from the outstanding request.
+            if (expectedRequest != null ? measurand.readRequest() != expectedRequest
+                    : measurand == GeniMeasurand.OperatingMode || measurand == GeniMeasurand.ControlMode) {
+                continue;
+            }
             if (measurand.readRequest().matchesObject(objectType, objectVersion, objectLength)
                     && measurand.offset() <= objectLength - measurand.valueLength()) {
                 supportedObject = true;
@@ -193,6 +232,8 @@ public class GeniResponseDecoder {
         responseTotalSize = 0;
         complete = false;
         candidates.clear();
+        objectData = null;
+        decoded = false;
     }
 
     private static class ReplyCandidate {

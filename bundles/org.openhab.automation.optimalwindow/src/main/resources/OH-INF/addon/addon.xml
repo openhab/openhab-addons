@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<addon:addon id="optimalwindow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:addon="https://openhab.org/schemas/addon/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/addon/v1.0.0 https://openhab.org/schemas/addon-1.0.0.xsd">
+
+	<type>automation</type>
+	<name>Optimal Window</name>
+	<description>Run devices during the cheapest, cleanest or sunniest period. Finds the best time window in any forecast
+		time series, e.g. electricity prices, CO2 intensity or PV forecast.</description>
+	<connection>none</connection>
+
+</addon:addon>

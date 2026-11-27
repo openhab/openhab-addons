@@ -137,6 +137,7 @@ See section _Smart Home Devices_ below for more information.
 | `activityRequestDelay`          | 10      | The number of seconds the binding waits between the voice command event and the history request. The minimum is 2 seconds. Amazon needs a moment to write a spoken command into the history.                     |
 | `activityRequestWindow`         | 120     | The number of seconds of voice history a request covers, counted backwards from the request time. When polling, it must be at least as large as the polling interval. The recommended minimum is 60 seconds.     |
 | `activityPollingInterval`       | 0       | The number of seconds between automatic voice history requests, for accounts without push events. 0 disables polling. Each poll is one request to Amazon; below 60 seconds risks rate limiting.                  |
+| `userAgent`                     | (empty) | The User-Agent header sent with requests to the Alexa API. If left empty, the built-in default is used. Set it only if Amazon starts to refuse requests with the default.                                        |
 
 ### Channels
 

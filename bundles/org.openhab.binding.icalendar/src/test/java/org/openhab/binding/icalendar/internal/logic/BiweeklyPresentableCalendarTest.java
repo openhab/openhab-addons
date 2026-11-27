@@ -31,7 +31,6 @@ import org.junit.jupiter.api.Test;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.OnOffType;
-import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.PlayPauseType;
 import org.openhab.core.library.types.QuantityType;
@@ -55,6 +54,7 @@ public class BiweeklyPresentableCalendarTest {
     private AbstractPresentableCalendar calendar_issue9647;
     private AbstractPresentableCalendar calendar_issue10808;
     private AbstractPresentableCalendar calendar_issue11084;
+    private AbstractPresentableCalendar calendar_issueXXXXX;
     private AbstractPresentableCalendar calendar_location;
 
     @BeforeEach
@@ -68,6 +68,8 @@ public class BiweeklyPresentableCalendarTest {
                 new FileInputStream("src/test/resources/test-issue10808.ics"));
         calendar_issue11084 = new BiweeklyPresentableCalendar(
                 new FileInputStream("src/test/resources/test-issue11084.ics"));
+        calendar_issueXXXXX = new BiweeklyPresentableCalendar(
+                new FileInputStream("src/test/resources/test-issueXXXXX.ics"));
         calendar_location = new BiweeklyPresentableCalendar(
                 new FileInputStream("src/test/resources/test-location.ics"));
     }
@@ -150,6 +152,14 @@ public class BiweeklyPresentableCalendarTest {
         Event currentEvent6 = calendar_issue11084.getCurrentEvent(Instant.parse("2021-08-16T16:45:05Z"));
         assertNotNull(currentEvent6);
         assertTrue("TEST_REPEATING_EVENT_3".contentEquals(currentEvent6.title));
+
+        Event currentEvent7 = calendar_issueXXXXX.getNextEvent(Instant.parse("2026-03-01T00:00:00Z"));
+        assertNotNull(currentEvent7);
+        assertEquals(Instant.parse("2026-03-10T03:55:00Z"), currentEvent7.start);
+
+        Event currentEvent8 = calendar_issueXXXXX.getNextEvent(Instant.parse("2026-04-01T00:00:00Z"));
+        assertNotNull(currentEvent8);
+        assertEquals(Instant.parse("2026-04-14T03:55:00Z"), currentEvent8.start);
     }
 
     /**
@@ -311,11 +321,6 @@ public class BiweeklyPresentableCalendarTest {
         assertNotNull(cmd0);
         assertEquals(OnOffType.class, cmd0.getClass());
 
-        // BEGIN:Calendar_Test_Contact:OPEN:abc
-        Command cmd1 = cmdTags.get(1).getCommand();
-        assertNotNull(cmd1);
-        assertEquals(OpenClosedType.class, cmd1.getClass());
-
         // BEGIN:Calendar_Test_Dimmer:ON:abc
         Command cmd2 = cmdTags.get(2).getCommand();
         assertNotNull(cmd2);
@@ -374,11 +379,6 @@ public class BiweeklyPresentableCalendarTest {
         assertNotNull(cmd0);
         assertEquals(PercentType.class, cmd0.getClass());
 
-        // BEGIN:Calendar_Test_Contact:CLOSED:abc
-        cmd1 = cmdTags.get(1).getCommand();
-        assertNotNull(cmd1);
-        assertEquals(OpenClosedType.class, cmd1.getClass());
-
         // BEGIN:Calendar_Test_Dimmer:0%:abc
         cmd2 = cmdTags.get(2).getCommand();
         assertNotNull(cmd2);
@@ -436,11 +436,6 @@ public class BiweeklyPresentableCalendarTest {
         cmd0 = cmdTags.get(0).getCommand();
         assertNotNull(cmd0);
         assertEquals(HSBType.class, cmd0.getClass());
-
-        // BEGIN:Calendar_Test_Contact:OPEN:abc
-        cmd1 = cmdTags.get(1).getCommand();
-        assertNotNull(cmd1);
-        assertEquals(OpenClosedType.class, cmd1.getClass());
 
         // BEGIN:Calendar_Test_Dimmer:50%:abc
         cmd2 = cmdTags.get(2).getCommand();
@@ -548,7 +543,7 @@ public class BiweeklyPresentableCalendarTest {
         assertEquals(QuantityType.class, cmd0.getClass());
 
         // <p>END:Calendar_Test_Temperature:23.4°C:abc</p>
-        cmd1 = cmdTags.get(1).getCommand();
+        Command cmd1 = cmdTags.get(1).getCommand();
         assertNotNull(cmd1);
         assertEquals(QuantityType.class, cmd1.getClass());
 

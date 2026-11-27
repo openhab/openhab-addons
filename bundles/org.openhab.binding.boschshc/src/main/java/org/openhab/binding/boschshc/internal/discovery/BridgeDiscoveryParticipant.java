@@ -23,8 +23,8 @@ import javax.jmdns.ServiceInfo;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
@@ -79,7 +79,7 @@ public class BridgeDiscoveryParticipant implements MDNSDiscoveryParticipant {
     @Activate
     public BridgeDiscoveryParticipant(@Reference HttpClientFactory httpClientFactory) {
         // create http client upfront to later request public information from SHC
-        SslContextFactory sslContextFactory = new SslContextFactory.Client.Client(true); // Accept all certificates
+        SslContextFactory.Client sslContextFactory = new SslContextFactory.Client(true); // Accept all certificates
         sslContextFactory.setTrustAll(true);
         sslContextFactory.setValidateCerts(false);
         sslContextFactory.setValidatePeerCerts(false);

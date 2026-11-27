@@ -13,15 +13,20 @@
 package org.openhab.binding.homeassistant.internal.component;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
+import org.openhab.binding.homeassistant.internal.ComponentChannelType;
 import org.openhab.binding.mqtt.generic.values.NumberValue;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.thing.type.AutoUpdatePolicy;
+import org.openhab.core.types.util.UnitUtils;
 
 /**
  * Tests for {@link Number}
@@ -140,6 +145,37 @@ public class NumberTests extends AbstractComponentTests {
 
         assertChannel(component, Number.NUMBER_CHANNEL_ID, "homie/bwa/spa/pump1", "homie/bwa/spa/pump1/set",
                 "BWA Link Hot Tub Pump 1", NumberValue.class, AutoUpdatePolicy.RECOMMEND);
+    }
+
+    @ParameterizedTest
+    @CsvSource({ "W,Power,true", "m/s,Speed,true", "mm/h,Speed,true", "mm,Length,true", "°C,Temperature,true",
+            "°F,Temperature,true", "mired,Temperature,true", "%,Dimensionless,true", "m/s,Speed,false" })
+    public void testUnitHint(String unit, String dimension, boolean enabledByDefault) {
+        var component = discoverComponent(configTopicToMqtt(CONFIG_TOPIC), """
+                {"name":"Measurement", "state_topic":"test/state", "command_topic":"test/set",
+                 "unit_of_measurement":"%s", "enabled_by_default":%s}
+                """.formatted(unit, enabledByDefault));
+        var channel = component.getChannel(Number.NUMBER_CHANNEL_ID);
+        var type = channel.getChannelType();
+        assertThat(type.isAdvanced(), is(!enabledByDefault));
+        assertThat(type.getConfigDescriptionURI().toString(), is("channel-type:homeassistant:channel"));
+        assertThat(type.getItemType(), is("Number:" + dimension));
+        assertThat(type.getUnitHint(), is(UnitUtils.parseUnit(unit).toString()));
+        assertThat(channel.getChannel().getAcceptedItemType(), is(type.getItemType()));
+        assertThat(channel.getChannel().getChannelTypeUID(), is(type.getUID()));
+        assertThat(channelTypeProvider.getChannelType(type.getUID(), null).getUnitHint(), is(type.getUnitHint()));
+    }
+
+    @ParameterizedTest
+    @CsvSource({ "widgets", "''" })
+    public void testUnknownUnit(String unit) {
+        var component = discoverComponent(configTopicToMqtt(CONFIG_TOPIC), """
+                {"name":"Measurement", "state_topic":"test/state", "command_topic":"test/set",
+                 "unit_of_measurement":"%s"}
+                """.formatted(unit));
+        var channel = component.getChannel(Number.NUMBER_CHANNEL_ID);
+        assertThat(channel.getChannelType(), is(nullValue()));
+        assertThat(channel.getChannel().getChannelTypeUID(), is(ComponentChannelType.NUMBER.getChannelTypeUID()));
     }
 
     @Override

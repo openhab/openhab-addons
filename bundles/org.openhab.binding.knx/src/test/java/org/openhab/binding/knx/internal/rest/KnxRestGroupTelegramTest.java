@@ -28,10 +28,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.function.BooleanSupplier;
 
-import javax.annotation.security.RolesAllowed;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.POST;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.AfterEach;
@@ -65,6 +61,9 @@ import io.calimero.GroupAddress;
 import io.calimero.IndividualAddress;
 import io.calimero.KNXTimeoutException;
 import io.calimero.datapoint.StateDP;
+import jakarta.annotation.security.RolesAllowed;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.POST;
 
 /**
  * Call 24, the Group Monitor's read and write, on a real client over a stand-in link that records what goes out.
@@ -640,7 +639,7 @@ class KnxRestGroupTelegramTest {
         Method method = KnxResource.class.getMethod("groupTelegram", String.class, GroupTelegramRequestDTO.class);
 
         assertNotNull(method.getAnnotation(POST.class));
-        javax.ws.rs.Path path = method.getAnnotation(javax.ws.rs.Path.class);
+        jakarta.ws.rs.Path path = method.getAnnotation(jakarta.ws.rs.Path.class);
         assertNotNull(path);
         assertEquals("bridges/{b}/group-telegram", path.value());
         RolesAllowed roles = method.getAnnotation(RolesAllowed.class);

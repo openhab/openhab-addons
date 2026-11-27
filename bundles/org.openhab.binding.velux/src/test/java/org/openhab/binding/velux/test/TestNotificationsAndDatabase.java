@@ -13,17 +13,37 @@
 package org.openhab.binding.velux.test;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
+
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.time.Duration;
+import java.util.Map;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
+import org.openhab.binding.velux.internal.bridge.VeluxBridge;
+import org.openhab.binding.velux.internal.bridge.common.BridgeAPI;
+import org.openhab.binding.velux.internal.bridge.common.RunReboot;
 import org.openhab.binding.velux.internal.bridge.slip.FunctionalParameters;
 import org.openhab.binding.velux.internal.bridge.slip.SCgetHouseStatus;
 import org.openhab.binding.velux.internal.bridge.slip.SCgetProduct;
 import org.openhab.binding.velux.internal.bridge.slip.SCgetProductStatus;
 import org.openhab.binding.velux.internal.bridge.slip.SCrunProductCommand;
+import org.openhab.binding.velux.internal.bridge.slip.io.Poller;
+import org.openhab.binding.velux.internal.handler.VeluxBridgeHandler;
 import org.openhab.binding.velux.internal.things.VeluxExistingProducts;
 import org.openhab.binding.velux.internal.things.VeluxKLFAPI;
 import org.openhab.binding.velux.internal.things.VeluxKLFAPI.Command;
@@ -34,13 +54,21 @@ import org.openhab.binding.velux.internal.things.VeluxProductName;
 import org.openhab.binding.velux.internal.things.VeluxProductPosition;
 import org.openhab.binding.velux.internal.things.VeluxProductPosition.PositionType;
 import org.openhab.binding.velux.internal.things.VeluxProductType.ActuatorType;
+import org.openhab.binding.velux.internal.utils.Localization;
+import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.PercentType;
+import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.ThingStatusInfo;
+import org.openhab.core.thing.ThingUID;
+import org.openhab.core.thing.binding.ThingHandlerCallback;
 
 /**
  * JUnit test suite to check the proper parsing of actuator notification packets, and to confirm that the existing
  * products database is working correctly.
  *
  * @author Andrew Fiddian-Green - Initial contribution.
+ * @author Cold Leeks - Connection recovery and shutdown tests
  */
 @NonNullByDefault
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -913,5 +941,140 @@ public class TestNotificationsAndDatabase {
 
         // check the product state
         assertEquals(ProductState.UNKNOWN.value, bcp.getProduct().getState());
+    }
+
+    @Test
+    public void testPollerTreatsEndOfStreamAsConnectionFailure() throws Exception {
+        var executor = Executors.newSingleThreadExecutor(r -> {
+            Thread thread = new Thread(r);
+            thread.setDaemon(true);
+            return thread;
+        });
+        try {
+            var result = executor
+                    .submit(new Poller(new ByteArrayInputStream(new byte[0]), new ConcurrentLinkedQueue<>()));
+            var exception = assertThrows(java.util.concurrent.ExecutionException.class,
+                    () -> result.get(5, TimeUnit.SECONDS));
+            assertInstanceOf(IOException.class, exception.getCause());
+        } finally {
+            executor.shutdownNow();
+        }
+    }
+
+    @Test
+    public void testConnectionFailureDuringLoginIsRetried() throws Exception {
+        int port;
+        try (ServerSocket socket = new ServerSocket(0)) {
+            port = socket.getLocalPort();
+        }
+
+        Bridge bridge = mock(Bridge.class);
+        when(bridge.getUID()).thenReturn(new ThingUID("velux:klf200:test"));
+        when(bridge.getConfiguration()).thenReturn(new Configuration(Map.of("ipAddress", "127.0.0.1", "tcpPort", port,
+                "timeoutMsecs", 500, "retries", 0, "protocol", "slip")));
+        ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
+        CountDownLatch offline = new CountDownLatch(1);
+        doAnswer(invocation -> {
+            ThingStatusInfo status = invocation.getArgument(1);
+            if (status.getStatusDetail() == ThingStatusDetail.COMMUNICATION_ERROR) {
+                offline.countDown();
+            }
+            return null;
+        }).when(callback).statusUpdated(eq(bridge), any());
+        VeluxBridgeHandler handler = new VeluxBridgeHandler(bridge, mock(Localization.class));
+        handler.setCallback(callback);
+        try {
+            handler.initialize();
+            assertTrue(offline.await(10, TimeUnit.SECONDS), "Expected a communication error after login failed");
+            try (ServerSocket server = new ServerSocket(port)) {
+                server.setSoTimeout(10000);
+                try (Socket ignored = server.accept()) {
+                    assertTrue(ignored.isConnected(), "Expected the binding to retry the connection");
+                }
+            }
+        } finally {
+            handler.dispose();
+        }
+    }
+
+    @Test
+    public void testDisposeClosesSocketAfterIncompleteHandshake() throws Exception {
+        try (ServerSocket server = new ServerSocket(0)) {
+            server.setSoTimeout(10000);
+            Bridge bridge = mock(Bridge.class);
+            when(bridge.getUID()).thenReturn(new ThingUID("velux:klf200:shutdown"));
+            when(bridge.getConfiguration()).thenReturn(new Configuration(Map.of("ipAddress", "127.0.0.1", "tcpPort",
+                    server.getLocalPort(), "timeoutMsecs", 500, "retries", 0, "protocol", "slip")));
+            VeluxBridgeHandler handler = new VeluxBridgeHandler(bridge, mock(Localization.class));
+            handler.setCallback(mock(ThingHandlerCallback.class));
+            try {
+                handler.initialize();
+                try (Socket client = server.accept()) {
+                    client.setSoTimeout(10000);
+                    assertNotEquals(-1, client.getInputStream().read());
+                    assertTimeoutPreemptively(Duration.ofSeconds(3), handler::dispose);
+                    client.getInputStream().transferTo(OutputStream.nullOutputStream());
+                }
+            } finally {
+                handler.dispose();
+            }
+        }
+    }
+
+    @Test
+    public void testDisposeDoesNotInterruptActiveCommunication() throws Exception {
+        int port;
+        try (ServerSocket socket = new ServerSocket(0)) {
+            port = socket.getLocalPort();
+        }
+        Bridge bridge = mock(Bridge.class);
+        when(bridge.getUID()).thenReturn(new ThingUID("velux:klf200:active"));
+        when(bridge.getConfiguration()).thenReturn(new Configuration(Map.of("ipAddress", "127.0.0.1", "tcpPort", port,
+                "timeoutMsecs", 500, "retries", 0, "protocol", "slip")));
+        CountDownLatch offline = new CountDownLatch(1);
+        ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
+        doAnswer(invocation -> {
+            ThingStatusInfo status = invocation.getArgument(1);
+            if (status.getStatusDetail() == ThingStatusDetail.COMMUNICATION_ERROR) {
+                offline.countDown();
+            }
+            return null;
+        }).when(callback).statusUpdated(eq(bridge), any());
+        VeluxBridgeHandler handler = new VeluxBridgeHandler(bridge, mock(Localization.class));
+        handler.setCallback(callback);
+        CountDownLatch started = new CountDownLatch(1);
+        CountDownLatch release = new CountDownLatch(1);
+        CountDownLatch finished = new CountDownLatch(1);
+        AtomicBoolean interrupted = new AtomicBoolean();
+        try {
+            handler.initialize();
+            assertTrue(offline.await(10, TimeUnit.SECONDS));
+            VeluxBridge transport = mock(VeluxBridge.class);
+            BridgeAPI api = mock(BridgeAPI.class);
+            when(transport.bridgeAPI()).thenReturn(api);
+            when(api.runReboot()).thenReturn(mock(RunReboot.class));
+            when(transport.bridgeCommunicate(any())).thenAnswer(invocation -> {
+                started.countDown();
+                try {
+                    return release.await(10, TimeUnit.SECONDS);
+                } catch (InterruptedException e) {
+                    interrupted.set(true);
+                    Thread.currentThread().interrupt();
+                    return false;
+                } finally {
+                    finished.countDown();
+                }
+            });
+            handler.thisBridge = transport;
+            assertTrue(handler.rebootBridge());
+            assertTrue(started.await(5, TimeUnit.SECONDS));
+            assertTimeoutPreemptively(Duration.ofSeconds(3), handler::dispose);
+            release.countDown();
+            assertTrue(finished.await(5, TimeUnit.SECONDS));
+            assertFalse(interrupted.get());
+        } finally {
+            release.countDown();
+            handler.dispose();
+        }
     }
 }

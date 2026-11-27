@@ -30,6 +30,8 @@ import org.openhab.binding.shelly.internal.util.ShellyUtils;
 @NonNullByDefault
 public class ShellyDeviceStats {
 
+    public static final int MAX_INTERNAL_TEMP_UNSET = Integer.MIN_VALUE;
+
     public record ShellyDeviceAlarm(String message, long timeStamp) {
     }
 
@@ -43,7 +45,7 @@ public class ShellyDeviceStats {
     public final AtomicLong protocolMessages = new AtomicLong(0);
     public final AtomicInteger protocolErrors = new AtomicInteger(0);
     public final AtomicInteger wifiRssi = new AtomicInteger(0);
-    public final AtomicInteger maxInternalTemp = new AtomicInteger(0);
+    public final AtomicInteger maxInternalTemp = new AtomicInteger(MAX_INTERNAL_TEMP_UNSET);
 
     public Map<String, String> asProperties() {
         Map<String, String> prop = new HashMap<>();
@@ -61,7 +63,8 @@ public class ShellyDeviceStats {
         prop.put("protocolMessages", String.valueOf(protocolMessages));
         prop.put("protocolErrors", String.valueOf(protocolErrors));
         prop.put("wifiRssi", String.valueOf(wifiRssi));
-        prop.put("maxInternalTemp", String.valueOf(maxInternalTemp.get()));
+        int maxTemp = maxInternalTemp.get();
+        prop.put("maxInternalTemp", maxTemp != MAX_INTERNAL_TEMP_UNSET ? String.valueOf(maxTemp) : "n/a");
         return prop;
     }
 }

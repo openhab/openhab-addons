@@ -22,17 +22,17 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.security.RolesAllowed;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.Test;
 import org.openhab.core.auth.Role;
+
+import jakarta.annotation.security.RolesAllowed;
+import jakarta.ws.rs.DELETE;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.PUT;
+import jakarta.ws.rs.Path;
 
 /**
  * Checks by reflection that the REST resource is for admins only: the class and every endpoint method carry the

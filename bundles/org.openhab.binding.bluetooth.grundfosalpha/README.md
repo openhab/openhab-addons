@@ -1,6 +1,7 @@
 # Bluetooth Grundfos Alpha Adapter
 
 This binding supports reading data from Grundfos Alpha pumps with a [Grundfos Alpha Reader](https://product-selection.grundfos.com/products/alpha-reader) or [Alpha3 pump](https://product-selection.grundfos.com/products/alpha/alpha3) with built-in Bluetooth.
+For Alpha3 pumps, it also supports changing the operating mode and control mode.
 
 The reverse engineering of the Alpha Reader protocol was taken from [https://github.com/JsBergbau/AlphaDecoder](https://github.com/JsBergbau/AlphaDecoder).
 
@@ -61,6 +62,34 @@ Pairing successful
 | energy           | Number:Energy             | R          | Accumulated electrical energy consumed by the pump | kWh  |
 | operating-time   | Number:Time               | R          | Accumulated running time of the pump               | s    |
 | start-count      | Number                    | R          | Accumulated number of pump starts                  |      |
+| operating-mode   | String                    | RW         | Pump operating mode                                |      |
+| control-mode     | String                    | RW         | Pump control mode, including AUTOADAPT             |      |
+
+Commands require an active Bluetooth connection and are discarded if that connection is lost; they are not replayed on reconnection.
+
+#### Operating Mode
+
+The `operating-mode` channel provides the following String options:
+
+| Operating Mode | Value    |
+|----------------|----------|
+| Normal         | `NORMAL` |
+| Stop           | `STOP`   |
+| Min            | `MIN`    |
+| Max            | `MAX`    |
+
+#### Control Mode
+
+The `control-mode` channel provides the following String options:
+
+| Control Mode                                 | Value                     |
+|----------------------------------------------|---------------------------|
+| Constant pressure                            | `CONSTANT_PRESSURE`       |
+| Proportional pressure                        | `PROPORTIONAL_PRESSURE`   |
+| Constant curve                               | `CONSTANT_CURVE`          |
+| Radiator (AUTOADAPT)                         | `RADIATOR`                |
+| Underfloor (AUTOADAPT)                       | `UNDERFLOOR`              |
+| Combined radiator and underfloor (AUTOADAPT) | `RADIATOR_AND_UNDERFLOOR` |
 
 ### `mi401` Channels
 
@@ -115,4 +144,6 @@ Number:Energy Alpha3_Energy "Energy" <energy> ["Measurement", "Energy"] { channe
 Number:Frequency Alpha3_MotorSpeed "Pump speed" <fan> { channel="bluetooth:alpha3:hci0:alpha3:motor-speed", unit="rpm" }
 Number:Time Alpha3_OperatingTime "Operating time" <time> { channel="bluetooth:alpha3:hci0:alpha3:operating-time", unit="d" }
 Number Alpha3_StartCount "Start count" { channel="bluetooth:alpha3:hci0:alpha3:start-count" }
+String Alpha3_OperatingMode "Operating mode" ["Control", "Mode"] { channel="bluetooth:alpha3:hci0:alpha3:operating-mode" }
+String Alpha3_ControlMode "Control mode" ["Control", "Mode"] { channel="bluetooth:alpha3:hci0:alpha3:control-mode" }
 ```

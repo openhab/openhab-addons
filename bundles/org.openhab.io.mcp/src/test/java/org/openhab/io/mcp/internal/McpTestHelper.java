@@ -136,4 +136,18 @@ public class McpTestHelper {
         lenient().when(thing.getProperties()).thenReturn(Map.of());
         return thing;
     }
+
+    public static void assertReadOnlyTool(McpSchema.Tool tool) {
+        McpSchema.ToolAnnotations annotations = tool.annotations();
+        assertNotNull(annotations, tool.name() + " has no annotations");
+        assertEquals(Boolean.TRUE, annotations.readOnlyHint(), tool.name() + " readOnlyHint");
+    }
+
+    public static void assertWriteTool(McpSchema.Tool tool, boolean destructive, boolean idempotent) {
+        McpSchema.ToolAnnotations annotations = tool.annotations();
+        assertNotNull(annotations, tool.name() + " has no annotations");
+        assertEquals(Boolean.FALSE, annotations.readOnlyHint(), tool.name() + " readOnlyHint");
+        assertEquals(destructive, annotations.destructiveHint(), tool.name() + " destructiveHint");
+        assertEquals(idempotent, annotations.idempotentHint(), tool.name() + " idempotentHint");
+    }
 }

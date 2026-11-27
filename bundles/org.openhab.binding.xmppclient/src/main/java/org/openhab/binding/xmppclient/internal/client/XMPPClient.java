@@ -32,6 +32,8 @@ import org.jivesoftware.smack.chat2.Chat;
 import org.jivesoftware.smack.chat2.ChatManager;
 import org.jivesoftware.smack.chat2.IncomingChatMessageListener;
 import org.jivesoftware.smack.packet.Message;
+import org.jivesoftware.smack.sasl.SASLMechanism;
+import org.jivesoftware.smack.sasl.core.SCRAMSHA1Mechanism;
 import org.jivesoftware.smack.tcp.XMPPTCPConnection;
 import org.jivesoftware.smack.tcp.XMPPTCPConnectionConfiguration;
 import org.jivesoftware.smackx.disco.ServiceDiscoveryManager;
@@ -95,13 +97,19 @@ public class XMPPClient implements IncomingChatMessageListener, ConnectionListen
         XMPPTCPConnectionConfiguration config;
 
         try {
-            config = XMPPTCPConnectionConfiguration.builder() //
+            var configBuilder = XMPPTCPConnectionConfiguration.builder() //
                     .setHost(serverHost) //
                     .setPort(port) //
                     .setUsernameAndPassword(login, password) //
                     .setXmppDomain(domain) //
-                    .setSecurityMode(securityMode)//
-                    .build();
+                    .setSecurityMode(securityMode) //
+                    .addEnabledSaslMechanism(SCRAMSHA1Mechanism.NAME);
+
+            if (securityMode == SecurityMode.required) {
+                configBuilder.addEnabledSaslMechanism(SASLMechanism.PLAIN);
+            }
+
+            config = configBuilder.build();
         } catch (XmppStringprepException e) {
             throw new XMPPClientConfigException(Objects.requireNonNullElse(e.getMessage(), "Unknown error message"));
         }
@@ -193,6 +201,12 @@ public class XMPPClient implements IncomingChatMessageListener, ConnectionListen
             return;
         }
 
+        ChatManager chatManager = this.chatManager;
+        if (chatManager == null) {
+            eventListener.onErrorEvent("XMPP chatManager is null");
+            return;
+        }
+
         File file = new File(filename);
         if (!file.isFile() || !file.canRead()) {
             logger.warn("XMPP image file does not exist or is not readable: {}", filename);
@@ -225,9 +239,15 @@ public class XMPPClient implements IncomingChatMessageListener, ConnectionListen
 
             URL url = uploadManager.uploadFile(file);
 
-            // Simple fallback: just send the URL as a message.
-            // If you want true out-of-band metadata, build an OOB extension stanza instead.
-            sendMessage(to, url.toString());
+            EntityBareJid jid = JidCreate.entityBareFrom(to);
+
+            Message message = connection.getStanzaFactory().buildMessageStanza() //
+                    .to(jid).ofType(Message.Type.chat) //
+                    .setBody(url.toString()) //
+                    .addExtension(new OobExtension(url.toString(), file.getName())) //
+                    .build();
+
+            chatManager.chatWith(jid).send(message);
         } catch (XMPPException.XMPPErrorException e) {
             logger.warn("XMPP HTTP upload rejected by server: {}", e.getMessage(), e);
         } catch (SmackException.NoResponseException e) {

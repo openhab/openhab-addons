@@ -18,9 +18,9 @@ import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.amplipi.internal.model.Group;
@@ -57,7 +57,7 @@ public class AmpliPiGroupHandler extends BaseThingHandler implements AmpliPiStat
     private final HttpClient httpClient;
     private final Gson gson;
 
-    private @Nullable AmpliPiHandler bridgeHandler;
+    private volatile @Nullable AmpliPiHandler bridgeHandler;
 
     private @Nullable Group groupState;
 
@@ -137,10 +137,9 @@ public class AmpliPiGroupHandler extends BaseThingHandler implements AmpliPiStat
         }
         if (bridgeHandler != null) {
             String url = bridgeHandler.getUrl() + "/api/groups/" + getId(thing);
-            StringContentProvider contentProvider = new StringContentProvider(gson.toJson(update));
             try {
                 ContentResponse response = httpClient.newRequest(url).method(HttpMethod.PATCH)
-                        .content(contentProvider, "application/json").send();
+                        .body(new StringRequestContent("application/json", gson.toJson(update))).send();
                 if (response.getStatus() != HttpStatus.OK_200) {
                     logger.error("AmpliPi API returned HTTP status {}.", response.getStatus());
                     logger.debug("Content: {}", response.getContentAsString());
@@ -154,7 +153,20 @@ public class AmpliPiGroupHandler extends BaseThingHandler implements AmpliPiStat
     }
 
     @Override
+    public void dispose() {
+        AmpliPiHandler localBridgeHandler = bridgeHandler;
+        if (localBridgeHandler != null) {
+            localBridgeHandler.removeStatusChangeListener(this);
+            bridgeHandler = null;
+        }
+        super.dispose();
+    }
+
+    @Override
     public void receive(Status status) {
+        if (bridgeHandler == null) {
+            return;
+        }
         int id = getId(thing);
         Optional<Group> group = status.getGroups().stream().filter(z -> z.getId().equals(id)).findFirst();
         group.ifPresent(this::updateGroupState);

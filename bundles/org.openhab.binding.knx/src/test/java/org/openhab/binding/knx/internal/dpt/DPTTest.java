@@ -30,18 +30,22 @@ import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.IncreaseDecreaseType;
+import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
+import org.openhab.core.types.Type;
 import org.openhab.core.util.ColorUtil;
 
+import io.calimero.KNXException;
 import io.calimero.dptxlator.DPTXlator2ByteUnsigned;
 import io.calimero.dptxlator.DPTXlator4ByteFloat;
 import io.calimero.dptxlator.DPTXlator4ByteSigned;
 import io.calimero.dptxlator.DPTXlator4ByteUnsigned;
 import io.calimero.dptxlator.DPTXlator64BitSigned;
 import io.calimero.dptxlator.DPTXlator8BitSigned;
+import io.calimero.dptxlator.DPTXlator8BitUnsigned;
 import io.calimero.dptxlator.DptXlator2ByteSigned;
 
 /**
@@ -81,6 +85,29 @@ class DPTTest {
         assertNull(ValueDecoder.decode("3.042", new byte[] { 0 }, IncreaseDecreaseType.class));
         assertNotNull(ValueEncoder.encode(new HSBType(), "5.003"));
         assertNotNull(ValueEncoder.encode(new HSBType(), "5.001"));
+    }
+
+    @Test
+    void dpt5LowestStepIsNotOff() {
+        assertEquals(PercentType.ZERO, ValueDecoder.decode("5.001", new byte[] { 0 }, PercentType.class));
+        assertEquals(new PercentType("0.4"), ValueDecoder.decode("5.001", new byte[] { 1 }, PercentType.class));
+        assertEquals(PercentType.HUNDRED, ValueDecoder.decode("5.001", new byte[] { (byte) 255 }, PercentType.class));
+        assertEquals(new PercentType("0.4"), ValueDecoder.decode("5.001", new byte[] { 1 }, HSBType.class));
+    }
+
+    @Test
+    void dpt5PercentRoundTripKeepsEveryStep() throws KNXException {
+        DPTXlator8BitUnsigned translator = new DPTXlator8BitUnsigned(DPTXlator8BitUnsigned.DPT_SCALING);
+        for (int raw = 0; raw < 256; raw++) {
+            Type state = ValueDecoder.decode("5.001", new byte[] { (byte) raw }, PercentType.class);
+            translator.setValue(Objects.requireNonNull(ValueEncoder.encode(Objects.requireNonNull(state), "5.001")));
+            assertEquals(raw, translator.getData()[0] & 0xff, "raw " + raw);
+        }
+        for (int percent = 0; percent <= 100; percent++) {
+            translator.setValue(Objects.requireNonNull(ValueEncoder.encode(new PercentType(percent), "5.001")));
+            assertEquals(new PercentType(percent),
+                    ValueDecoder.decode("5.001", translator.getData(), PercentType.class), percent + " %");
+        }
     }
 
     @Test

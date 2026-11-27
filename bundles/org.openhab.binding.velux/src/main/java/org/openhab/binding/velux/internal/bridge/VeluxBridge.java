@@ -157,6 +157,7 @@ public abstract class VeluxBridge {
                 return true;
             }
         }
+        resetAuthentication();
         return false;
     }
 

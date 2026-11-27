@@ -12,13 +12,16 @@
  */
 package org.openhab.binding.evcc.internal.api;
 
+import java.nio.ByteBuffer;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
-import org.eclipse.jetty.websocket.api.annotations.OnWebSocketConnect;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketError;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketOpen;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketPong;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 
 import com.google.gson.Gson;
@@ -43,7 +46,7 @@ public class EvccWebSocketAdapter {
         this.parent = parent;
     }
 
-    @OnWebSocketConnect
+    @OnWebSocketOpen
     public void onConnect(Session session) {
         parent.handleConnected(session);
     }
@@ -53,6 +56,11 @@ public class EvccWebSocketAdapter {
         @Nullable
         JsonObject obj = gson.fromJson(message, JsonObject.class);
         parent.handleMessage(obj);
+    }
+
+    @OnWebSocketPong
+    public void onPong(Session session, ByteBuffer payload) {
+        parent.handlePong();
     }
 
     @OnWebSocketError

@@ -156,8 +156,8 @@
 		<label>At Home</label>
 		<description>ON if at home, OFF if away</description>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
+			<point>Switch</point>
+			<property>Mode</property>
 		</tags>
 	</channel-type>
 
@@ -166,8 +166,8 @@
 		<label>Geofencing Enabled</label>
 		<description>Selects if automatic geofencing is enabled or disabled</description>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
+			<point>Switch</point>
+			<property>Mode</property>
 		</tags>
 	</channel-type>
 
@@ -177,8 +177,8 @@
 		<description>Current temperature</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -196,8 +196,8 @@
 		<label>HVAC Mode</label>
 		<description>Mode of the device (OFF, HEAT, COOL, DRY, FAN, AUTO - if supported)</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Mode</tag>
+			<point>Control</point>
+			<property>Mode</property>
 		</tags>
 		<state>
 			<options>
@@ -217,8 +217,8 @@
 		<description>Thermostat temperature setpoint</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state step="0.1" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -229,8 +229,8 @@
 		<description>AC fan speed (only if supported by AC)</description>
 		<category>Fan</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>Speed</tag>
+			<point>Control</point>
+			<property>Speed</property>
 		</tags>
 		<state>
 			<options>
@@ -248,8 +248,8 @@
 		<description>State of AC swing (only if supported by AC)</description>
 		<category>Flow</category>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Airflow</tag>
+			<point>Switch</point>
+			<property>Airflow</property>
 		</tags>
 	</channel-type>
 
@@ -259,8 +259,8 @@
 		<description>State of control panel light (only if supported by AC)</description>
 		<category>Light</category>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Light</tag>
+			<point>Switch</point>
+			<property>Light</property>
 		</tags>
 	</channel-type>
 
@@ -270,8 +270,8 @@
 		<description>AC fan level (only if supported by AC)</description>
 		<category>Fan</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>Speed</tag>
+			<point>Control</point>
+			<property>Speed</property>
 		</tags>
 		<state>
 			<options>
@@ -292,8 +292,8 @@
 		<description>State of AC horizontal swing (only if supported by AC)</description>
 		<category>Flow</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>Airflow</tag>
+			<point>Control</point>
+			<property>Airflow</property>
 		</tags>
 		<state>
 			<options>
@@ -315,8 +315,8 @@
 		<description>State of AC vertical swing (only if supported by AC)</description>
 		<category>Flow</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>Airflow</tag>
+			<point>Control</point>
+			<property>Airflow</property>
 		</tags>
 		<state>
 			<options>
@@ -337,8 +337,8 @@
 		<label>Zone Operation Mode</label>
 		<description>Active operation mode (schedule, manual, timer or until next change)</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Mode</tag>
+			<point>Control</point>
+			<property>Mode</property>
 		</tags>
 		<state>
 			<options>
@@ -356,8 +356,8 @@
 		<description>Total duration of a timer</description>
 		<category>Time</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>Duration</tag>
+			<point>Control</point>
+			<property>Duration</property>
 		</tags>
 		<state min="0" step="1" pattern="%d min"/>
 	</channel-type>
@@ -368,8 +368,8 @@
 		<description>Time until when the overlay is active. Null if no overlay is set or overlay type is manual.</description>
 		<category>Time</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
+			<point>Status</point>
+			<property>Timestamp</property>
 		</tags>
 		<state readOnly="true" pattern="%1$tF %1$tR"/>
 	</channel-type>
@@ -379,8 +379,8 @@
 		<label>At Home</label>
 		<description>ON if at home, OFF if away</description>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
+			<point>Switch</point>
+			<property>Mode</property>
 		</tags>
 	</channel-type>
 
@@ -390,8 +390,8 @@
 		<description>Current power state of the air-conditioning</description>
 		<category>Climate</category>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Power</tag>
+			<point>Switch</point>
+			<property>Power</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -402,8 +402,8 @@
 		<description>Indicates if an open window has been detected</description>
 		<category>Window</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>OpenState</tag>
+			<point>Status</point>
+			<property>OpenState</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -414,8 +414,8 @@
 		<description>The remaining Open Window heating/cooling Override time in the Zone</description>
 		<category>Window</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Duration</tag>
+			<point>Status</point>
+			<property>Duration</property>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
@@ -426,8 +426,8 @@
 		<description>Duration in which the API count rises until maximum</description>
 		<category>Time</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Duration</tag>
+			<point>Status</point>
+			<property>Duration</property>
 		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
@@ -437,7 +437,7 @@
 		<label>API Calls remaining</label>
 		<description>Number of API calls remaining before the maximum is reached</description>
 		<tags>
-			<tag>Status</tag>
+			<point>Status</point>
 		</tags>
 		<state readOnly="true" pattern="%d"/>
 	</channel-type>
@@ -447,7 +447,7 @@
 		<label>API Max</label>
 		<description>Maximum API calls allowed per specified duration</description>
 		<tags>
-			<tag>Status</tag>
+			<point>Status</point>
 		</tags>
 		<state readOnly="true" pattern="%d"/>
 	</channel-type>
@@ -458,8 +458,8 @@
 		<description>Time until the API count resets</description>
 		<category>Time</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Duration</tag>
+			<point>Status</point>
+			<property>Duration</property>
 		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>

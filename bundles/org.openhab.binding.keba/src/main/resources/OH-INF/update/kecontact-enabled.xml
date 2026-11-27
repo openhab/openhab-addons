@@ -221,10 +221,6 @@
 			<update-channel id="failsafetimeout">
 				<type>keba:failsafe-timeout-setting</type>
 			</update-channel>
-			<add-channel id="restoutput">
-				<type>keba:status</type>
-				<label>REST X2 Output Active</label>
-			</add-channel>
 		</instruction-set>
 	</thing-type>
 </update:update-descriptions>

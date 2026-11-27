@@ -21,14 +21,14 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import javax.ws.rs.core.UriBuilder;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.FeatureArea;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.Scope;
 import org.openhab.binding.netatmo.internal.handler.ApiBridgeHandler;
+
+import jakarta.ws.rs.core.UriBuilder;
 
 /**
  * Base class for all various rest managers
@@ -54,6 +54,15 @@ public abstract class RestManager {
     protected <T extends ApiResponse<?>> T post(UriBuilder uriBuilder, Class<T> clazz, @Nullable String payload)
             throws NetatmoException {
         return executeUri(uriBuilder, HttpMethod.POST, clazz, payload, payload == null ? null : CONTENT_APP_JSON);
+    }
+
+    protected <T extends ApiResponse<?>> T put(UriBuilder uriBuilder, Class<T> clazz, @Nullable String payload)
+            throws NetatmoException {
+        return executeUri(uriBuilder, HttpMethod.PUT, clazz, payload, payload == null ? null : CONTENT_APP_JSON);
+    }
+
+    protected <T extends ApiResponse<?>> T delete(UriBuilder uriBuilder, Class<T> clazz) throws NetatmoException {
+        return executeUri(uriBuilder, HttpMethod.DELETE, clazz, null, null);
     }
 
     protected <T> T post(URI uri, Class<T> clazz, Map<String, String> entries) throws NetatmoException {
@@ -90,7 +99,7 @@ public abstract class RestManager {
 
     protected static UriBuilder getApiBaseBuilder(String... paths) {
         UriBuilder builder = UriBuilder.fromUri(URL_API);
-        Stream.of(paths).forEach(path -> builder.path(path));
+        Stream.of(paths).forEach(builder::path);
         return builder;
     }
 

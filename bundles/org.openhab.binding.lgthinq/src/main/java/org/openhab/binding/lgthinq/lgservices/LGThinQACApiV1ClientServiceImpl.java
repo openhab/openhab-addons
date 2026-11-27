@@ -15,6 +15,7 @@ package org.openhab.binding.lgthinq.lgservices;
 import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.*;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Map;
 
@@ -76,7 +77,7 @@ public class LGThinQACApiV1ClientServiceImpl extends
             // analyses if its b64 or not
             JsonNode format = node.path(LG_ROOT_TAG_V1).path("format");
             if ("B64".equals(format.textValue())) {
-                String dataStr = new String(Base64.getDecoder().decode(data.textValue()));
+                String dataStr = new String(Base64.getDecoder().decode(data.textValue()), StandardCharsets.UTF_8);
                 objectMapper.readerForUpdating(obj).readValue(dataStr);
             } else {
                 objectMapper.readerForUpdating(obj).readValue(data.textValue());

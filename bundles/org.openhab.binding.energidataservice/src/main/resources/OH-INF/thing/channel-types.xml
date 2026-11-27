@@ -10,8 +10,8 @@
 		<description>Spot price.</description>
 		<category>Price</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Price</tag>
+			<point>Status</point>
+			<property>Price</property>
 		</tags>
 		<state readOnly="true" pattern="%.9f %unit%"></state>
 	</channel-type>
@@ -22,8 +22,8 @@
 		<description>Datahub price.</description>
 		<category>Price</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Price</tag>
+			<point>Status</point>
+			<property>Price</property>
 		</tags>
 		<state readOnly="true" pattern="%.6f %unit%"></state>
 		<config-description-ref uri="channel-type:energidataservice:datahub-price"/>

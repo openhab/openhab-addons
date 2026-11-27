@@ -12,8 +12,8 @@
 		<description>FEK Temperature</description>
 		<category>temperature</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -23,8 +23,8 @@
 		<description>FEK Temperature Setpoint</description>
 		<category>temperature</category>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -34,8 +34,8 @@
 		<description>FEK Humidity</description>
 		<category>humidity</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Humidity</tag>
+			<point>Measurement</point>
+			<property>Humidity</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -45,8 +45,8 @@
 		<description>FEK Dewpoint Temperature</description>
 		<category>temperature</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -56,8 +56,8 @@
 		<description>Outdoor Temperature</description>
 		<category>temperature</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -67,8 +67,8 @@
 		<description>HK1 Temperature</description>
 		<category>temperature</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -78,8 +78,8 @@
 		<description>HK1 Temperature Setpoint</description>
 		<category>temperature</category>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -89,8 +89,8 @@
 		<description>Supply Temperature</description>
 		<category>temperature</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -100,8 +100,8 @@
 		<description>Return Temperature</description>
 		<category>temperature</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -111,8 +111,8 @@
 		<description>Source Temperature</description>
 		<category>temperature</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -122,8 +122,8 @@
 		<description>Water Temperature</description>
 		<category>temperature</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -133,8 +133,8 @@
 		<description>Water Temperature Setpoint</description>
 		<category>temperature</category>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -146,8 +146,8 @@
 		<description>FE7 Temperature</description>
 		<category>temperature</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -157,8 +157,8 @@
 		<description>FE7 Temperature Setpoint</description>
 		<category>temperature</category>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -168,8 +168,8 @@
 		<description>HC1 Temperature</description>
 		<category>temperature</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -179,8 +179,8 @@
 		<description>HC1 Temperature Setpoint</description>
 		<category>temperature</category>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -190,8 +190,8 @@
 		<description>HC2 Temperature</description>
 		<category>temperature</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -201,8 +201,8 @@
 		<description>HC2 Temperature Setpoint</description>
 		<category>temperature</category>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -212,8 +212,8 @@
 		<description>Electric Reheating Flow Temperature</description>
 		<category>temperature</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -223,8 +223,8 @@
 		<description>Flow Temperature</description>
 		<category>temperature</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -234,8 +234,8 @@
 		<description>Fixed Temperature Setpoint</description>
 		<category>temperature</category>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -245,8 +245,8 @@
 		<description>Buffer Temperature</description>
 		<category>temperature</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -256,8 +256,8 @@
 		<description>Buffer Temperature Setpoint</description>
 		<category>temperature</category>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -267,8 +267,8 @@
 		<description>Heating Pressure</description>
 		<category>pressure</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Pressure</tag>
+			<point>Measurement</point>
+			<property>Pressure</property>
 		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
@@ -278,8 +278,8 @@
 		<description>Flow Rate</description>
 		<category>flow</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Level</tag>
+			<point>Measurement</point>
+			<property>Level</property>
 		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
@@ -289,8 +289,8 @@
 		<description>Hot Water Temperature</description>
 		<category>temperature</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -300,8 +300,8 @@
 		<description>Hot Water Temperature Setpoint</description>
 		<category>temperature</category>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -311,8 +311,8 @@
 		<description>Fan Cooling Temperature</description>
 		<category>temperature</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -322,8 +322,8 @@
 		<description>Fan Cooling Temperature Setpoint</description>
 		<category>temperature</category>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -333,8 +333,8 @@
 		<description>Area Cooling Temperature</description>
 		<category>temperature</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -344,8 +344,8 @@
 		<description>Area Cooling Temperature Setpoint</description>
 		<category>temperature</category>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -355,8 +355,8 @@
 		<description>Solar Thermal Collector Temperature</description>
 		<category>temperature</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -366,8 +366,8 @@
 		<description>Solar Thermal Cylinder Temperature</description>
 		<category>temperature</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -377,8 +377,8 @@
 		<description>Solar Thermal Cylinder Runtime</description>
 		<category>time</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Duration</tag>
+			<point>Measurement</point>
+			<property>Duration</property>
 		</tags>
 		<state readOnly="true" pattern="%u %unit%"/>
 	</channel-type>
@@ -388,8 +388,8 @@
 		<description>External Heat Source Temperature</description>
 		<category>temperature</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -399,8 +399,8 @@
 		<description>External Heat Source Temperature Setpoint</description>
 		<category>temperature</category>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -410,8 +410,8 @@
 		<description>Lower Application Limit Heating</description>
 		<category>temperature</category>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -421,8 +421,8 @@
 		<description>Lower Application Limit Hot Water</description>
 		<category>temperature</category>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -432,8 +432,8 @@
 		<description>External Heat Source Runtime</description>
 		<category>time</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Duration</tag>
+			<point>Measurement</point>
+			<property>Duration</property>
 		</tags>
 		<state readOnly="true" pattern="%u %unit%"/>
 	</channel-type>
@@ -443,8 +443,8 @@
 		<description>Minimal Source Temperature</description>
 		<category>temperature</category>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -454,8 +454,8 @@
 		<description>Source Pressure</description>
 		<category>pressure</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Pressure</tag>
+			<point>Measurement</point>
+			<property>Pressure</property>
 		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
@@ -465,8 +465,8 @@
 		<description>Hot Gas Temperature</description>
 		<category>temperature</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -476,8 +476,8 @@
 		<description>High Pressure</description>
 		<category>pressure</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Pressure</tag>
+			<point>Measurement</point>
+			<property>Pressure</property>
 		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
@@ -487,8 +487,8 @@
 		<description>Mean Pressure</description>
 		<category>pressure</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Pressure</tag>
+			<point>Measurement</point>
+			<property>Pressure</property>
 		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
@@ -498,8 +498,8 @@
 		<description>Low Pressure</description>
 		<category>pressure</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Pressure</tag>
+			<point>Measurement</point>
+			<property>Pressure</property>
 		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
@@ -513,8 +513,8 @@
 		<description>Operation Mode</description>
 		<category>settings</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>Mode</tag>
+			<point>Control</point>
+			<property>Mode</property>
 		</tags>
 		<state>
 			<options>
@@ -533,8 +533,8 @@
 		<description>Heating Comfort Temperature</description>
 		<category>temperature</category>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
@@ -544,8 +544,8 @@
 		<description>Heating Eco Temperature</description>
 		<category>temperature</category>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
@@ -555,8 +555,8 @@
 		<description>Hot Water Comfort Temperature</description>
 		<category>temperature</category>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
@@ -566,8 +566,8 @@
 		<description>Hot Water Eco Temperature</description>
 		<category>temperature</category>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
@@ -579,8 +579,8 @@
 		<description>Operating Mode</description>
 		<category>heating</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>Mode</tag>
+			<point>Control</point>
+			<property>Mode</property>
 		</tags>
 		<state>
 			<options>
@@ -599,8 +599,8 @@
 		<description>HC1 Comfort Temperature</description>
 		<category>temperature</category>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
@@ -610,8 +610,8 @@
 		<description>HC1 Eco Temperature</description>
 		<category>temperature</category>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
@@ -621,8 +621,8 @@
 		<description>HC1 Heating Curve Rise</description>
 		<category>line</category>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Level</tag>
+			<point>Setpoint</point>
+			<property>Level</property>
 		</tags>
 		<state pattern="%.2f"/>
 	</channel-type>
@@ -632,8 +632,8 @@
 		<description>HC2 Comfort Temperature</description>
 		<category>temperature</category>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
@@ -643,8 +643,8 @@
 		<description>HC2 Eco Temperature</description>
 		<category>temperature</category>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
@@ -654,8 +654,8 @@
 		<description>HC2 Heating Curve Rise</description>
 		<category>line</category>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Level</tag>
+			<point>Setpoint</point>
+			<property>Level</property>
 		</tags>
 		<state pattern="%.2f"/>
 	</channel-type>
@@ -665,8 +665,8 @@
 		<description>Fixed Value Operation</description>
 		<category>temperature</category>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
@@ -676,8 +676,8 @@
 		<description>Heating DualMode Temperature (bivalence)</description>
 		<category>temperature</category>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
@@ -687,8 +687,8 @@
 		<description>Hot Water Comfort Temperature</description>
 		<category>temperature</category>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
@@ -698,8 +698,8 @@
 		<description>Hot Water Eco Temperature</description>
 		<category>temperature</category>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
@@ -709,8 +709,8 @@
 		<description>Hot Water Stages</description>
 		<category>status</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Level</tag>
+			<point>Status</point>
+			<property>Level</property>
 		</tags>
 		<state pattern="%u"/>
 	</channel-type>
@@ -720,8 +720,8 @@
 		<description>Hot Water DualMode Temperature (bivalence)</description>
 		<category>temperature</category>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
@@ -731,8 +731,8 @@
 		<description>Area Cooling Flow Temperature Setpoint</description>
 		<category>temperature</category>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
@@ -742,8 +742,8 @@
 		<description>Area Cooling Flow Temperature Hysteresis</description>
 		<category>temperature</category>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
@@ -753,8 +753,8 @@
 		<description>Area Cooling Room Temperature Setpoint</description>
 		<category>temperature</category>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
@@ -764,8 +764,8 @@
 		<description>Fan Cooling Flow Temperature Setpoint</description>
 		<category>temperature</category>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
@@ -775,8 +775,8 @@
 		<description>Fan Cooling Flow Temperature Hysteresis</description>
 		<category>temperature</category>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
@@ -786,8 +786,8 @@
 		<description>Fan Cooling Room Temperature Setpoint</description>
 		<category>temperature</category>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
@@ -797,8 +797,8 @@
 		<description>Reset</description>
 		<category>settings</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>Enabled</tag>
+			<point>Control</point>
+			<property>Enabled</property>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -815,8 +815,8 @@
 		<description>Restart ISG</description>
 		<category>settings</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>Enabled</tag>
+			<point>Control</point>
+			<property>Enabled</property>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -836,8 +836,8 @@
 		<description>Currently Heating</description>
 		<category>status</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>OpenState</tag>
+			<point>Status</point>
+			<property>OpenState</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -847,8 +847,8 @@
 		<description>Currently Heating Water</description>
 		<category>status</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>OpenState</tag>
+			<point>Status</point>
+			<property>OpenState</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -858,8 +858,8 @@
 		<description>Currently Cooling</description>
 		<category>status</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>OpenState</tag>
+			<point>Status</point>
+			<property>OpenState</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -869,8 +869,8 @@
 		<description>Currently Pumping</description>
 		<category>status</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>OpenState</tag>
+			<point>Status</point>
+			<property>OpenState</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -880,8 +880,8 @@
 		<description>Summer Operation Mode</description>
 		<category>status</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>OpenState</tag>
+			<point>Status</point>
+			<property>OpenState</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -893,8 +893,8 @@
 		<description>HC1 Pump Active</description>
 		<category>pump</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>OpenState</tag>
+			<point>Status</point>
+			<property>OpenState</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -904,8 +904,8 @@
 		<description>HC2 Pump Active</description>
 		<category>pump</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>OpenState</tag>
+			<point>Status</point>
+			<property>OpenState</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -915,8 +915,8 @@
 		<description>Heat-Up Program Active</description>
 		<category>status</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>OpenState</tag>
+			<point>Status</point>
+			<property>OpenState</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -926,8 +926,8 @@
 		<description>Electric Reheating Stages Active</description>
 		<category>status</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>OpenState</tag>
+			<point>Status</point>
+			<property>OpenState</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -937,8 +937,8 @@
 		<description>Heat Pump Currently Heating</description>
 		<category>status</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>OpenState</tag>
+			<point>Status</point>
+			<property>OpenState</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -948,8 +948,8 @@
 		<description>Heat Pump Currently Heating Hot Water</description>
 		<category>status</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>OpenState</tag>
+			<point>Status</point>
+			<property>OpenState</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -959,8 +959,8 @@
 		<description>Compressor Running</description>
 		<category>status</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>OpenState</tag>
+			<point>Status</point>
+			<property>OpenState</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -970,8 +970,8 @@
 		<description>Summer Mode Active</description>
 		<category>status</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>OpenState</tag>
+			<point>Status</point>
+			<property>OpenState</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -981,8 +981,8 @@
 		<description>Currently Cooling</description>
 		<category>status</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>OpenState</tag>
+			<point>Status</point>
+			<property>OpenState</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -992,8 +992,8 @@
 		<description>Min. one IWS In Defrosting Mode</description>
 		<category>status</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>OpenState</tag>
+			<point>Status</point>
+			<property>OpenState</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -1003,8 +1003,8 @@
 		<description>Silent Mode 1 Active</description>
 		<category>status</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>OpenState</tag>
+			<point>Status</point>
+			<property>OpenState</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -1014,8 +1014,8 @@
 		<description>Silent Mode 2 Active</description>
 		<category>status</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>OpenState</tag>
+			<point>Status</point>
+			<property>OpenState</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -1025,8 +1025,8 @@
 		<description>Power Off</description>
 		<category>status</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>OpenState</tag>
+			<point>Status</point>
+			<property>OpenState</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -1036,8 +1036,8 @@
 		<description>Compressor 1 Active</description>
 		<category>status</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>OpenState</tag>
+			<point>Status</point>
+			<property>OpenState</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -1047,8 +1047,8 @@
 		<description>Compressor 2 Active</description>
 		<category>status</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>OpenState</tag>
+			<point>Status</point>
+			<property>OpenState</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -1058,8 +1058,8 @@
 		<description>Compressor 3 Active</description>
 		<category>status</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>OpenState</tag>
+			<point>Status</point>
+			<property>OpenState</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -1069,8 +1069,8 @@
 		<description>Compressor 4 Active</description>
 		<category>status</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>OpenState</tag>
+			<point>Status</point>
+			<property>OpenState</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -1080,8 +1080,8 @@
 		<description>Compressor 5 Active</description>
 		<category>status</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>OpenState</tag>
+			<point>Status</point>
+			<property>OpenState</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -1091,8 +1091,8 @@
 		<description>Compressor 6 Active</description>
 		<category>status</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>OpenState</tag>
+			<point>Status</point>
+			<property>OpenState</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -1102,8 +1102,8 @@
 		<description>Buffer Charging Pump 1 Active</description>
 		<category>status</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>OpenState</tag>
+			<point>Status</point>
+			<property>OpenState</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -1113,8 +1113,8 @@
 		<description>Buffer Charging Pump 2 Active</description>
 		<category>status</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>OpenState</tag>
+			<point>Status</point>
+			<property>OpenState</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -1124,8 +1124,8 @@
 		<description>Buffer Charging Pump 3 Active</description>
 		<category>status</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>OpenState</tag>
+			<point>Status</point>
+			<property>OpenState</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -1135,8 +1135,8 @@
 		<description>Buffer Charging Pump 4 Active</description>
 		<category>status</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>OpenState</tag>
+			<point>Status</point>
+			<property>OpenState</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -1146,8 +1146,8 @@
 		<description>Buffer Charging Pump 5 Active</description>
 		<category>status</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>OpenState</tag>
+			<point>Status</point>
+			<property>OpenState</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -1157,8 +1157,8 @@
 		<description>Buffer Charging Pump 6 Active</description>
 		<category>status</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>OpenState</tag>
+			<point>Status</point>
+			<property>OpenState</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -1168,8 +1168,8 @@
 		<description>Electric Reheating Stage 1 Active</description>
 		<category>status</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>OpenState</tag>
+			<point>Status</point>
+			<property>OpenState</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -1179,8 +1179,8 @@
 		<description>Electric Reheating Stage 2 Active</description>
 		<category>status</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>OpenState</tag>
+			<point>Status</point>
+			<property>OpenState</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -1190,8 +1190,8 @@
 		<description>Fault Status</description>
 		<category>status</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
+			<point>Status</point>
+			<property>Mode</property>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -1206,8 +1206,8 @@
 		<description>Bus Status</description>
 		<category>status</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
+			<point>Status</point>
+			<property>Mode</property>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -1225,8 +1225,8 @@
 		<description>Defrost initiated</description>
 		<category>status</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
+			<point>Status</point>
+			<property>Mode</property>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -1241,8 +1241,8 @@
 		<description>Active Error</description>
 		<category>status</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
+			<point>Status</point>
+			<property>Mode</property>
 		</tags>
 		<state readOnly="true" pattern="%u"/>
 	</channel-type>
@@ -1256,8 +1256,8 @@
 		<description>Heat Quantity Today</description>
 		<category>energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state readOnly="true" pattern="%.f %unit%"/>
 	</channel-type>
@@ -1267,8 +1267,8 @@
 		<description>Heat Quantity Total</description>
 		<category>energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
@@ -1278,8 +1278,8 @@
 		<description>Water Heat Quantity Today</description>
 		<category>energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
@@ -1289,8 +1289,8 @@
 		<description>Water Heat Quantity Total</description>
 		<category>energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
@@ -1300,8 +1300,8 @@
 		<description>Power Consumption for Heating Today</description>
 		<category>energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
@@ -1311,8 +1311,8 @@
 		<description>Power Consumption for Heating Total</description>
 		<category>energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
@@ -1322,8 +1322,8 @@
 		<description>Power Consumption for Water Today</description>
 		<category>energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
@@ -1333,8 +1333,8 @@
 		<description>Power Consumption for Water Total</description>
 		<category>energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
@@ -1346,8 +1346,8 @@
 		<description>Electric Reheating Heat Quantity Total</description>
 		<category>energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
@@ -1357,8 +1357,8 @@
 		<description>Electric Reheating Hot Water Quantity Total</description>
 		<category>energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
@@ -1368,8 +1368,8 @@
 		<description>Heating Compressor Runtime</description>
 		<category>time</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Duration</tag>
+			<point>Measurement</point>
+			<property>Duration</property>
 		</tags>
 		<state readOnly="true" pattern="%u %unit%"/>
 	</channel-type>
@@ -1379,8 +1379,8 @@
 		<description>Hot Water Compressor Runtime</description>
 		<category>time</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Duration</tag>
+			<point>Measurement</point>
+			<property>Duration</property>
 		</tags>
 		<state readOnly="true" pattern="%u %unit%"/>
 	</channel-type>
@@ -1390,8 +1390,8 @@
 		<description>Heat Pump Cooling Compressor Runtime</description>
 		<category>time</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Duration</tag>
+			<point>Measurement</point>
+			<property>Duration</property>
 		</tags>
 		<state readOnly="true" pattern="%u %unit%"/>
 	</channel-type>
@@ -1401,8 +1401,8 @@
 		<description>Electric Reheating Stage 1 Runtime</description>
 		<category>time</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Duration</tag>
+			<point>Measurement</point>
+			<property>Duration</property>
 		</tags>
 		<state readOnly="true" pattern="%u %unit%"/>
 	</channel-type>
@@ -1412,8 +1412,8 @@
 		<description>Electric Reheating Stage 2 Runtime</description>
 		<category>time</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Duration</tag>
+			<point>Measurement</point>
+			<property>Duration</property>
 		</tags>
 		<state readOnly="true" pattern="%u %unit%"/>
 	</channel-type>
@@ -1423,8 +1423,8 @@
 		<description>Electric Reheating Stages 1/2 Runtime</description>
 		<category>time</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Duration</tag>
+			<point>Measurement</point>
+			<property>Duration</property>
 		</tags>
 		<state readOnly="true" pattern="%u %unit%"/>
 	</channel-type>
@@ -1434,8 +1434,8 @@
 		<description>Heat Pump Heating Compressor 1 Runtime</description>
 		<category>time</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Duration</tag>
+			<point>Measurement</point>
+			<property>Duration</property>
 		</tags>
 		<state readOnly="true" pattern="%u %unit%"/>
 	</channel-type>
@@ -1445,8 +1445,8 @@
 		<description>Heat Pump Heating Compressor 2 Runtime</description>
 		<category>time</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Duration</tag>
+			<point>Measurement</point>
+			<property>Duration</property>
 		</tags>
 		<state readOnly="true" pattern="%u %unit%"/>
 	</channel-type>
@@ -1456,8 +1456,8 @@
 		<description>Heat Pump Heating Compressor 1/2 Runtime</description>
 		<category>time</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Duration</tag>
+			<point>Measurement</point>
+			<property>Duration</property>
 		</tags>
 		<state readOnly="true" pattern="%u %unit%"/>
 	</channel-type>
@@ -1467,8 +1467,8 @@
 		<description>Heat Pump Hot Water Compressor 1 Runtime</description>
 		<category>time</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Duration</tag>
+			<point>Measurement</point>
+			<property>Duration</property>
 		</tags>
 		<state readOnly="true" pattern="%u %unit%"/>
 	</channel-type>
@@ -1478,8 +1478,8 @@
 		<description>Heat Pump Hot Water Compressor 2 Runtime</description>
 		<category>time</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Duration</tag>
+			<point>Measurement</point>
+			<property>Duration</property>
 		</tags>
 		<state readOnly="true" pattern="%u %unit%"/>
 	</channel-type>
@@ -1489,8 +1489,8 @@
 		<description>Heat Pump Hot Water Compressor 1/2 Runtime</description>
 		<category>time</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Duration</tag>
+			<point>Measurement</point>
+			<property>Duration</property>
 		</tags>
 		<state readOnly="true" pattern="%u %unit%"/>
 	</channel-type>
@@ -1503,8 +1503,8 @@
 		<description>SG Ready On/Off Switch</description>
 		<category>settings</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>Mode</tag>
+			<point>Control</point>
+			<property>Mode</property>
 		</tags>
 		<state readOnly="false">
 			<options>
@@ -1520,8 +1520,8 @@
 			Only OS1 to OS4 can be used for setting. Other values are for indication.</description>
 		<category>settings</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>Mode</tag>
+			<point>Control</point>
+			<property>Mode</property>
 		</tags>
 		<state readOnly="false">
 			<options>
@@ -1540,8 +1540,8 @@
 		<description>SG Ready Operating State</description>
 		<category>status</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
+			<point>Status</point>
+			<property>Mode</property>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -1559,8 +1559,8 @@
 		<description>SG Ready Controller Identification</description>
 		<category>status</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
+			<point>Status</point>
+			<property>Mode</property>
 		</tags>
 		<state readOnly="true">
 			<options>

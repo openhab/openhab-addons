@@ -15,6 +15,8 @@ package org.openhab.binding.samsungtv.internal.service;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
+import static org.openhab.binding.samsungtv.internal.SamsungTvBindingConstants.ART_MODE;
+import static org.openhab.binding.samsungtv.internal.SamsungTvBindingConstants.POWER;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,6 +29,7 @@ import org.junit.jupiter.api.Test;
 import org.openhab.binding.samsungtv.internal.config.SamsungTvConfiguration;
 import org.openhab.binding.samsungtv.internal.handler.SamsungTvHandler;
 import org.openhab.core.io.net.http.WebSocketFactory;
+import org.openhab.core.library.types.OnOffType;
 
 /**
  * Tests for {@link RemoteControllerService}
@@ -49,6 +52,24 @@ public class RemoteControllerServiceTest {
         doAnswer(invocation -> queued.add(invocation.getArgument(0))).when(scheduler).execute(any());
         when(handler.getScheduler()).thenReturn(scheduler);
         when(handler.fetchPowerState()).thenReturn("on");
+    }
+
+    @Test
+    public void artModeWakeIsNotDeferredWithoutConnection() throws Exception {
+        RemoteControllerService service = new RemoteControllerService("192.168.1.10", 8002, false, handler);
+
+        assertFalse(service.handleCommand(ART_MODE, OnOffType.ON));
+
+        verify(handler, never()).handleCommand(eq(ART_MODE), eq(OnOffType.ON), anyInt());
+    }
+
+    @Test
+    public void powerWakeIsNotDeferredWithoutConnection() throws Exception {
+        RemoteControllerService service = new RemoteControllerService("192.168.1.10", 8002, false, handler);
+
+        assertFalse(service.handleCommand(POWER, OnOffType.ON));
+
+        verify(handler, never()).handleCommand(eq(POWER), eq(OnOffType.ON), anyInt());
     }
 
     @Test

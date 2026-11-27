@@ -43,10 +43,15 @@ import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.Thing;
+
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import pl.grzeslowski.jbambuapi.mqtt.PrinterClient;
 import pl.grzeslowski.jbambuapi.mqtt.PrinterClient.Channel.Command;
 import pl.grzeslowski.jbambuapi.mqtt.PrinterClient.Channel.PrintSpeedCommand;
+import pl.grzeslowski.jbambuapi.mqtt.Report;
 
 /**
  * @author Martin Grześlowski - Initial contribution
@@ -132,5 +137,24 @@ class PrinterHandlerTest {
         return stream(PrinterChannel.values())//
                 .filter(not(PrinterChannel::isSupportCommand))//
                 .map(Arguments::of);
+    }
+
+    @Test
+    @DisplayName("after a reconnect the AMS reports still reach the AMS handler")
+    void amsSurvivesReconnect() throws Exception {
+        // given an AMS registered with the printer
+        var ams = mock(AmsDeviceHandler.class);
+        when(ams.getAmsNumber()).thenReturn(1);
+        printerHandler.childHandlerInitialized(ams, mock(Thing.class));
+        doNothing().when(printerHandler).initialize();
+
+        // when the connection is lost and made again
+        printerHandler.reconnectNow();
+        var report = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false).readValue(
+                "{\"print\":{\"ams\":{\"ams\":[{\"id\":\"0\",\"humidity_raw\":\"5\",\"tray\":[]}]}}}", Report.class);
+        printerHandler.newState(report, report);
+
+        // then the AMS thing (which stayed ONLINE and is never initialized again) still gets its reports
+        verify(ams).updateAms(any());
     }
 }

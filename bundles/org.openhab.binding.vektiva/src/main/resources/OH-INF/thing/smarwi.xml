@@ -42,8 +42,8 @@
 		<label>Control</label>
 		<description>Control channel for Smarwi thing.</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>OpenLevel</tag>
+			<point>Control</point>
+			<property>OpenLevel</property>
 		</tags>
 	</channel-type>
 

@@ -17,22 +17,20 @@ import java.io.Serial;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.knx.internal.web.KnxWebFiles.Entry;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Deactivate;
-import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.http.HttpService;
-import org.osgi.service.http.NamespaceException;
+import org.osgi.service.servlet.whiteboard.propertytypes.HttpWhiteboardServletName;
+import org.osgi.service.servlet.whiteboard.propertytypes.HttpWhiteboardServletPattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import jakarta.servlet.Servlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * Serves the add-on's page at {@code /knx/}: the files of {@link KnxWebFiles} and nothing else, without login. The
@@ -41,12 +39,15 @@ import org.slf4j.LoggerFactory;
  * @author Stamate Viorel - Initial contribution
  */
 @NonNullByDefault
-@Component(service = KnxWebServlet.class, immediate = true)
+@Component(service = Servlet.class, immediate = true)
+@HttpWhiteboardServletName(KnxWebServlet.NAME)
+@HttpWhiteboardServletPattern({ KnxWebServlet.ALIAS, KnxWebServlet.ALIAS + "/*" })
 public class KnxWebServlet extends HttpServlet {
     @Serial
     private static final long serialVersionUID = 1L;
 
     static final String ALIAS = "/knx";
+    static final String NAME = "knx";
 
     static final Map<String, String> FIXED_HEADERS = Map.of( //
             "Content-Security-Policy",
@@ -60,34 +61,17 @@ public class KnxWebServlet extends HttpServlet {
     private static final byte[] NOT_FOUND = "Not found".getBytes(StandardCharsets.UTF_8);
 
     private final Logger logger = LoggerFactory.getLogger(KnxWebServlet.class);
-    private final HttpService httpService;
     private final KnxWebFiles files;
 
     @Activate
-    public KnxWebServlet(final @Reference HttpService httpService) {
-        this(httpService, new KnxWebFiles(KnxWebFiles.ENTRIES));
+    public KnxWebServlet() {
+        this(new KnxWebFiles(KnxWebFiles.ENTRIES));
     }
 
-    KnxWebServlet(HttpService httpService, KnxWebFiles files) {
-        this.httpService = httpService;
+    KnxWebServlet(KnxWebFiles files) {
         this.files = files;
         for (Entry entry : files.missing()) {
             logger.error("KNX page: the file {} is missing from the add-on; it answers 404", entry.path());
-        }
-        try {
-            httpService.registerServlet(ALIAS, this, null, httpService.createDefaultHttpContext());
-        } catch (ServletException | NamespaceException | RuntimeException e) {
-            logger.warn("KNX page: it cannot be registered at {} ({}); the add-on works without it", ALIAS,
-                    e.getClass().getName());
-        }
-    }
-
-    @Deactivate
-    void deactivate() {
-        try {
-            httpService.unregister(ALIAS);
-        } catch (IllegalArgumentException e) {
-            // the registration had failed
         }
     }
 
@@ -98,6 +82,7 @@ public class KnxWebServlet extends HttpServlet {
      * request's address.
      */
     @Override
+    @NonNullByDefault({})
     protected void service(HttpServletRequest request, HttpServletResponse response) throws IOException {
         FIXED_HEADERS.forEach(response::setHeader);
         String method = request.getMethod();

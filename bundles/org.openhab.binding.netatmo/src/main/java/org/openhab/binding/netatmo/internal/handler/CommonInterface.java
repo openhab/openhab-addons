@@ -175,7 +175,7 @@ public interface CommonInterface {
                 .orElse(Optional.empty()));
     }
 
-    default void setNewData(NAObject newData) {
+    default void setNewData(Object newData) {
         if (newData instanceof NAThing thingData && getId().equals(thingData.getBridge())) {
             getActiveChildren().stream().filter(child -> child.getId().equals(thingData.getId())). //
                     findFirst().ifPresent(child -> child.setNewData(thingData));
@@ -199,7 +199,7 @@ public interface CommonInterface {
             channelHelper.setNewData(newData);
         }
 
-        if (newData.isIgnoredForThingUpdate()) {
+        if (newData instanceof NAObject naObject && naObject.isIgnoredForThingUpdate()) {
             return;
         }
 

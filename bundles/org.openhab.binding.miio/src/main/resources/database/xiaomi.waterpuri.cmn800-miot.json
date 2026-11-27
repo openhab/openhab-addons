@@ -1,0 +1,373 @@
+{
+	"deviceMapping": {
+		"id": [
+			"xiaomi.waterpuri.cmn800"
+		],
+		"propertyMethod": "get_properties",
+		"maxProperties": 1,
+		"channels": [
+			{
+				"property": "status",
+				"siid": 2,
+				"piid": 3,
+				"friendlyName": "Status",
+				"channel": "status",
+				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "0",
+							"label": "Idle"
+						},
+						{
+							"value": "1",
+							"label": "Purifying"
+						},
+						{
+							"value": "2",
+							"label": "Cleaning"
+						},
+						{
+							"value": "3",
+							"label": "Error"
+						},
+						{
+							"value": "4",
+							"label": "Holiday Cleaning"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "status",
+				"tags": [
+					"Status"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Idle\",\"1\"\u003d\"Purifying\",\"2\"\u003d\"Cleaning\",\"3\"\u003d\"Error\",\"4\"\u003d\"Holiday Cleaning\"]`"
+			},
+			{
+				"property": "fault",
+				"siid": 2,
+				"piid": 1,
+				"friendlyName": "Fault",
+				"channel": "fault",
+				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "0",
+							"label": "No Fault"
+						},
+						{
+							"value": "1",
+							"label": "Water Running Too Long"
+						},
+						{
+							"value": "2",
+							"label": "Power Fault"
+						},
+						{
+							"value": "3",
+							"label": "Water Shortage"
+						},
+						{
+							"value": "4",
+							"label": "Sensor Fault"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "alarm",
+				"tags": [
+					"Status"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"No Fault\",\"1\"\u003d\"Water Running Too Long\",\"2\"\u003d\"Power Fault\",\"3\"\u003d\"Water Shortage\",\"4\"\u003d\"Sensor Fault\"]`"
+			},
+			{
+				"property": "temperature",
+				"siid": 2,
+				"piid": 4,
+				"friendlyName": "Water Temperature",
+				"channel": "temperature",
+				"type": "Number:Temperature",
+				"unit": "celsius",
+				"stateDescription": {
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "temperature",
+				"tags": [
+					"Measurement",
+					"Temperature"
+				]
+			},
+			{
+				"property": "tds-out",
+				"siid": 4,
+				"piid": 1,
+				"friendlyName": "TDS Out",
+				"channel": "tds_out",
+				"type": "Number:Dimensionless",
+				"unit": "PPM",
+				"stateDescription": {
+					"pattern": "%.0f ppm",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "water",
+				"tags": [
+					"Measurement",
+					"Water"
+				]
+			},
+			{
+				"property": "filter-life-level1",
+				"siid": 3,
+				"piid": 1,
+				"friendlyName": "PPC Filter Life",
+				"channel": "filter_life_ppc",
+				"type": "Number:Dimensionless",
+				"unit": "percentage",
+				"stateDescription": {
+					"pattern": "%.0f %%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "status",
+				"tags": [
+					"Measurement",
+					"Level"
+				]
+			},
+			{
+				"property": "filter-life-level",
+				"siid": 6,
+				"piid": 1,
+				"friendlyName": "RO Filter Life",
+				"channel": "filter_life_ro",
+				"type": "Number:Dimensionless",
+				"unit": "percentage",
+				"stateDescription": {
+					"pattern": "%.0f %%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "status",
+				"tags": [
+					"Measurement",
+					"Level"
+				]
+			},
+			{
+				"property": "",
+				"friendlyName": "Reset Filter",
+				"channel": "filter_reset",
+				"type": "String",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "ppc",
+							"label": "PPC Filter"
+						},
+						{
+							"value": "ro",
+							"label": "RO Filter"
+						}
+					]
+				},
+				"refresh": false,
+				"actions": [
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 3,
+						"aiid": 1,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "ppc"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 6,
+						"aiid": 1,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "ro"
+								}
+							]
+						}
+					}
+				],
+				"category": "water",
+				"tags": [
+					"Control"
+				],
+				"readmeComment": "Resets the remaining life of the selected filter, only after replacing it"
+			},
+			{
+				"property": "pipeline-connection",
+				"siid": 2,
+				"piid": 6,
+				"friendlyName": "Dispenser Mode",
+				"channel": "pipeline_connection",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch"
+				],
+				"readmeComment": "For a connected water dispenser"
+			},
+			{
+				"property": "holiday-mode",
+				"siid": 2,
+				"piid": 8,
+				"friendlyName": "Holiday Mode",
+				"channel": "holiday_mode",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch"
+				]
+			},
+			{
+				"property": "anti-icing-remind",
+				"siid": 2,
+				"piid": 9,
+				"friendlyName": "Low Temperature Notification",
+				"channel": "anti_icing_remind",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFNUMBER"
+					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch"
+				]
+			},
+			{
+				"property": "no-production-water-time",
+				"siid": 2,
+				"piid": 5,
+				"friendlyName": "Long Idle",
+				"channel": "no_production_water_time",
+				"type": "Switch",
+				"stateDescription": {
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "status",
+				"tags": [
+					"Status"
+				],
+				"readmeComment": "On when no water was produced for a long time"
+			},
+			{
+				"property": "no-disturb",
+				"siid": 9,
+				"piid": 1,
+				"friendlyName": "Do Not Disturb",
+				"channel": "no_disturb",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch"
+				]
+			},
+			{
+				"property": "enable-time-period",
+				"siid": 9,
+				"piid": 2,
+				"friendlyName": "Do Not Disturb Period",
+				"channel": "no_disturb_period",
+				"type": "String",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "STRING"
+					}
+				],
+				"category": "time",
+				"tags": [
+					"Control"
+				],
+				"readmeComment": "Start and end time as HHMMHHMM, for example 22000700"
+			},
+			{
+				"property": "reset-status",
+				"siid": 12,
+				"piid": 25,
+				"friendlyName": "Reset Status",
+				"channel": "reset_status",
+				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "0",
+							"label": "Reset Completed"
+						},
+						{
+							"value": "1",
+							"label": "Device Needs Reset"
+						},
+						{
+							"value": "2",
+							"label": "App Needs Reset"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "status",
+				"tags": [
+					"Status"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Reset Completed\",\"1\"\u003d\"Device Needs Reset\",\"2\"\u003d\"App Needs Reset\"]`"
+			}
+		],
+		"experimental": true
+	}
+}

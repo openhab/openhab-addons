@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="smartthings"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="refrigerator">
+		<label>Samsung Refrigerator</label>
+		<description>Samsung refrigerator or freezer.</description>
+		<semantic-equipment-tag>Refrigerator</semantic-equipment-tag>
+		<channels>
+			<channel id="cooler-current-temperature" typeId="temperature-readonly">
+				<label>Cooler Temperature</label>
+				<description>Current temperature of the cooler (fridge) compartment reported by the refrigerator.</description>
+			</channel>
+			<channel id="cooler-target-temperature" typeId="temperature">
+				<label>Cooler Target Temperature</label>
+				<description>Target temperature of the cooler (fridge) compartment, writable within the refrigerator-reported range
+					and increment.</description>
+			</channel>
+			<channel id="freezer-current-temperature" typeId="temperature-readonly">
+				<label>Freezer Temperature</label>
+				<description>Current temperature of the freezer compartment reported by the refrigerator.</description>
+			</channel>
+			<channel id="freezer-target-temperature" typeId="temperature">
+				<label>Freezer Target Temperature</label>
+				<description>Target temperature of the freezer compartment, writable within the refrigerator-reported range and
+					increment.</description>
+			</channel>
+			<channel id="cooler-door" typeId="contact-readonly">
+				<label>Cooler Door</label>
+				<description>Whether the cooler (fridge) door is open or closed.</description>
+			</channel>
+			<channel id="freezer-door" typeId="contact-readonly">
+				<label>Freezer Door</label>
+				<description>Whether the freezer door is open or closed.</description>
+			</channel>
+			<channel id="rapid-cool" typeId="switch">
+				<label>Power Cool</label>
+				<description>Power Cool (rapid fridge) mode of the refrigerator. Enable or disable it with On or Off; writes require
+					remote control.</description>
+			</channel>
+			<channel id="rapid-freeze" typeId="switch">
+				<label>Power Freeze</label>
+				<description>Power Freeze (rapid freezing) mode of the refrigerator. Enable or disable it with On or Off; writes
+					require remote control.</description>
+			</channel>
+			<channel id="mode" typeId="string-readonly">
+				<label>Operating Mode</label>
+				<description>Operating mode reported by the refrigerator.</description>
+			</channel>
+			<channel id="power-consumption" typeId="system.electric-power">
+				<label>Power Consumption</label>
+				<description>Instantaneous electrical power reported by the refrigerator.</description>
+			</channel>
+			<channel id="cumulative-energy" typeId="energy-readonly">
+				<label>Cumulative Energy</label>
+				<description>Cumulative energy reported by the refrigerator.</description>
+			</channel>
+		</channels>
+		<representation-property>deviceId</representation-property>
+		<config-description-ref uri="thing-type:smartthings:device"/>
+	</thing-type>
+</thing:thing-descriptions>

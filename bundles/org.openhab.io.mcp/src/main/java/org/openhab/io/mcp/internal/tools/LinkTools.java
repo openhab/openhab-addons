@@ -85,13 +85,15 @@ public class LinkTools {
         props.put("configuration", Map.of("type", "object", "description",
                 "create only: optional link configuration properties (profile, etc.)."));
 
+        // Annotated for the most impactful action: 'delete' removes the link, although 'get' is read-only.
         return McpSchema.Tool.builder().name("manage_link").description("""
                 List, create, or delete item-channel links. Action-dispatched: \
                 action='get' returns matching links (filter by itemName exact and/or channelUID prefix; \
                 use get_thing_details to find available channel UIDs); \
                 action='create' wires an item to a channel (requires itemName + channelUID); \
                 action='delete' removes the link (requires itemName + channelUID).""")
-                .inputSchema(new McpSchema.JsonSchema("object", props, List.of("action"), null, null, null)).build();
+                .inputSchema(new McpSchema.JsonSchema("object", props, List.of("action"), null, null, null))
+                .annotations(writeAnnotations(true, false)).build();
     }
 
     /**

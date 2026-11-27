@@ -24,13 +24,15 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.client.WWWAuthenticationProtocolHandler;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.transport.HttpClientTransportOverHTTP;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
+import org.eclipse.jetty.io.ClientConnector;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.openhab.binding.keba.internal.handler.KeContactCombinedConfiguration;
 import org.openhab.binding.keba.internal.handler.KeContactProtocolHandler;
@@ -48,6 +50,7 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
+import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -85,6 +88,7 @@ public class KeContactRestHandler extends KeContactProtocolHandler {
     private final AtomicInteger generation = new AtomicInteger();
     private boolean initializing;
     private boolean disposed;
+    private volatile @Nullable Integer phaseSwitchSource;
 
     public KeContactRestHandler(Thing thing) {
         this(thing, null, null);
@@ -147,6 +151,7 @@ public class KeContactRestHandler extends KeContactProtocolHandler {
                         serialNumber = resolvedSerialNumber;
                         lastWallboxPoll = null;
                         nextSupplementalPoll = 0;
+                        phaseSwitchSource = null;
                         consecutivePollFailures = 0;
                         online = false;
                         pollingJob = scheduler.scheduleWithFixedDelay(() -> {
@@ -270,16 +275,15 @@ public class KeContactRestHandler extends KeContactProtocolHandler {
                 consecutivePollFailures = 0;
                 online = true;
                 updateStatus(ThingStatus.ONLINE);
+                // the phase switching source decides how phaseswitchstate is derived, so read it first
+                updatePhaseSwitchSource();
                 updateWallbox(wallbox);
             }
             if (supplementalDue && (!supplemental || isLinked("dipswitchinterpretation"))) {
                 updateDipSwitchInterpretation();
             }
-            if (supplementalDue && (!supplemental || isLinked("phaseswitchsource"))) {
-                updatePhaseSwitchSource();
-            }
             if (supplementalDue && (!supplemental || isLinked("sessionstart") || isLinked("sessionduration")
-                    || isLinked("sessionconsumption"))) {
+                    || isLinked("sessionconsumption") || isLinked("sessionid"))) {
                 try {
                     updateSession();
                 } catch (Exception e) {
@@ -310,7 +314,8 @@ public class KeContactRestHandler extends KeContactProtocolHandler {
         updateOptionalState("session", wallbox, "sessionActive", value -> OnOffType.from(Boolean.parseBoolean(value)));
         updateOptionalState("error", wallbox, "errorCode", StringType::new);
         updateOptionalState("reserved", wallbox, "reserved", value -> OnOffType.from(Boolean.parseBoolean(value)));
-        updateOptionalState("restoutput", wallbox, "x2active", value -> OnOffType.from(Boolean.parseBoolean(value)));
+        updateOptionalState("output", wallbox, "x2active",
+                value -> new DecimalType(Boolean.parseBoolean(value) ? 1 : 0));
         updateOptionalState("authon", wallbox, "authorizationEnabled",
                 value -> OnOffType.from(Boolean.parseBoolean(value)));
         updateOptionalState("externalmeter", wallbox, "hasExternalMeter",
@@ -319,10 +324,18 @@ public class KeContactRestHandler extends KeContactProtocolHandler {
                 value -> OnOffType.from(Boolean.parseBoolean(value)));
         updateOptionalState("maxphases", wallbox, "maxPhases", DecimalType::new);
         updateOptionalState("maxsupportedcurrent", wallbox, "maxCurrent",
-                value -> new QuantityType<>(Double.parseDouble(value), Units.AMPERE));
+                value -> new QuantityType<>(Double.parseDouble(value) / 1000.0, Units.AMPERE));
         updateOptionalState("phaseconfiguration", wallbox, "phaseUsed", StringType::new);
-        updateOptionalState("phaseswitchstate", wallbox, "phaseUsed",
-                value -> new DecimalType(value.contains("_") ? 3 : 1));
+        Integer phaseSwitchSource = this.phaseSwitchSource;
+        // leave phaseswitchstate untouched while the phase switching source is unknown
+        if (phaseSwitchSource != null) {
+            if (phaseSwitchSource == 0) {
+                updateState("phaseswitchstate", new DecimalType(0));
+            } else {
+                updateOptionalState("phaseswitchstate", wallbox, "phaseUsed",
+                        value -> new DecimalType(value.contains("_") ? 3 : 1));
+            }
+        }
         JsonElement dipSwitchSettings = wallbox.get("dipSwitchSettings");
         if (dipSwitchSettings != null && dipSwitchSettings.isJsonArray()) {
             updateState("dipswitchsettings", new StringType(dipSwitchSettings.toString()));
@@ -385,6 +398,7 @@ public class KeContactRestHandler extends KeContactProtocolHandler {
         if (session == null) {
             return;
         }
+        updateOptionalState("sessionid", session, "id", DecimalType::new);
         if (session.has("startDate")) {
             updateState("sessionstart", new DateTimeType(
                     Objects.requireNonNull(Instant.ofEpochMilli(session.get("startDate").getAsLong()))));
@@ -429,14 +443,20 @@ public class KeContactRestHandler extends KeContactProtocolHandler {
         try {
             JsonObject response = request("/configs/lmgmt/", "GET", null, true);
             JsonElement enabled = configurationValue(response, "connector_phase_enable");
-            JsonElement source = configurationValue(response, "connector_phase_source");
-            Integer channelValue = enabled != null && !enabled.isJsonNull() && !enabled.getAsBoolean()
-                    ? Integer.valueOf(0)
-                    : phaseSourceChannelValue(source);
-            if (channelValue != null) {
-                updateState("phaseswitchsource", new DecimalType(channelValue));
+            Integer channelValue;
+            if (enabled == null || enabled.isJsonNull()) {
+                channelValue = null;
+            } else if (!enabled.getAsBoolean()) {
+                channelValue = 0;
+            } else {
+                channelValue = phaseSourceChannelValue(configurationValue(response, "connector_phase_source"));
             }
+            phaseSwitchSource = channelValue;
+            // publish UNDEF for an unknown source so the combined handler stops routing phase commands to it
+            updateState("phaseswitchsource", channelValue != null ? new DecimalType(channelValue) : UnDefType.UNDEF);
         } catch (Exception e) {
+            phaseSwitchSource = null;
+            updateState("phaseswitchsource", UnDefType.UNDEF);
             logger.debug("Failed to read REST phase switching source: {}", e.getMessage());
         }
     }
@@ -474,6 +494,7 @@ public class KeContactRestHandler extends KeContactProtocolHandler {
         }
         body.add("configs", configs);
         request("/configs/lmgmt/", "PUT", body.toString(), true);
+        phaseSwitchSource = channelValue;
         updateState("phaseswitchsource", new DecimalType(channelValue));
     }
 
@@ -507,7 +528,6 @@ public class KeContactRestHandler extends KeContactProtocolHandler {
             case "CPM_DIR_CTRL" -> 2;
             case "MODBUS" -> 3;
             case "UDP" -> 4;
-            case "NONE", "DISABLED", "0" -> 0;
             default -> null;
         };
     }
@@ -516,6 +536,20 @@ public class KeContactRestHandler extends KeContactProtocolHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
             scheduler.execute(this::poll);
+            return;
+        }
+        if ("phaseswitchstate".equals(channelUID.getId())) {
+            if (command instanceof DecimalType decimalCommand) {
+                try {
+                    int phases = decimalCommand.toBigDecimal().intValueExact();
+                    if (phases == 1 || phases == 3) {
+                        request("/wallboxes/" + serialNumber() + "/phase-toggle?numberOfPhases=" + phases, "POST", "{}",
+                                true);
+                    }
+                } catch (Exception e) {
+                    logger.debug("REST phase switching command failed: {}", e.getMessage());
+                }
+            }
             return;
         }
         if (command instanceof DecimalType decimalCommand && "phaseswitchsource".equals(channelUID.getId())) {
@@ -552,16 +586,18 @@ public class KeContactRestHandler extends KeContactProtocolHandler {
         }
         String apiPath = "/serialnumber".equals(path) ? path : API_PREFIX + path;
         Request request = client.newRequest(URI.create(normalizedBaseUrl() + apiPath))
-                .timeout(CONNECT_TIMEOUT_SECONDS, TimeUnit.SECONDS).header(HttpHeader.ACCEPT, "application/json");
-        if (authenticated && accessToken != null) {
-            request.header(HttpHeader.AUTHORIZATION, "Bearer " + accessToken);
+                .timeout(CONNECT_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+                .headers(h -> h.put(HttpHeader.ACCEPT, "application/json"));
+        String token = accessToken;
+        if (authenticated && token != null) {
+            request.headers(h -> h.put(HttpHeader.AUTHORIZATION, "Bearer " + token));
         }
         if ("POST".equals(method)) {
-            request.method(HttpMethod.POST).content(new StringContentProvider(body == null ? "{}" : body),
-                    "application/json");
+            request.method(HttpMethod.POST)
+                    .body(new StringRequestContent("application/json", body == null ? "{}" : body));
         } else if ("PUT".equals(method)) {
-            request.method(HttpMethod.PUT).content(new StringContentProvider(body == null ? "{}" : body),
-                    "application/json");
+            request.method(HttpMethod.PUT)
+                    .body(new StringRequestContent("application/json", body == null ? "{}" : body));
         } else if ("DELETE".equals(method)) {
             request.method(HttpMethod.DELETE);
         } else {
@@ -609,7 +645,9 @@ public class KeContactRestHandler extends KeContactProtocolHandler {
     }
 
     private static HttpClient createHttpClient(boolean verifyCertificate) {
-        return new HttpClient(new SslContextFactory.Client(!verifyCertificate));
+        ClientConnector connector = new ClientConnector();
+        connector.setSslContextFactory(new SslContextFactory.Client(!verifyCertificate));
+        return new HttpClient(new HttpClientTransportOverHTTP(connector));
     }
 
     private void disableAuthenticationProtocolHandler(HttpClient client) {

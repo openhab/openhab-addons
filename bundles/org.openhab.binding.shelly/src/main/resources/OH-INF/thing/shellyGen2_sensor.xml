@@ -14,6 +14,7 @@
 			<channel-group id="control" typeId="control"/>
 			<channel-group id="battery" typeId="batteryStatus"/>
 			<channel-group id="device" typeId="deviceStatus"/>
+			<channel-group id="diagnostics" typeId="diagnostics"/>
 		</channel-groups>
 
 		<representation-property>serviceName</representation-property>
@@ -29,6 +30,7 @@
 			<channel-group id="sensors" typeId="sensorData"/>
 			<channel-group id="battery" typeId="batteryStatus"/>
 			<channel-group id="device" typeId="deviceStatus"/>
+			<channel-group id="diagnostics" typeId="diagnostics"/>
 		</channel-groups>
 
 		<representation-property>serviceName</representation-property>
@@ -45,6 +47,7 @@
 			<channel-group id="control" typeId="control"/>
 			<channel-group id="battery" typeId="batteryStatus"/>
 			<channel-group id="device" typeId="deviceStatus"/>
+			<channel-group id="diagnostics" typeId="diagnostics"/>
 		</channel-groups>
 
 		<representation-property>serviceName</representation-property>
@@ -64,6 +67,7 @@
 			<channel-group id="control" typeId="control">
 				<label>Thermostat Control</label>
 			</channel-group>
+			<channel-group id="diagnostics" typeId="diagnostics"/>
 		</channel-groups>
 
 		<representation-property>serviceName</representation-property>
@@ -79,6 +83,7 @@
 			<channel-group id="sensors" typeId="sensorData"/>
 			<channel-group id="control" typeId="control"/>
 			<channel-group id="device" typeId="deviceStatus"/>
+			<channel-group id="diagnostics" typeId="diagnostics"/>
 		</channel-groups>
 
 		<representation-property>serviceName</representation-property>
@@ -113,8 +118,8 @@
 		<description>Occupancy state of the main detection zone (ON = presence detected)</description>
 		<category>Motion</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Presence</tag>
+			<point>Status</point>
+			<property>Presence</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -124,7 +129,7 @@
 		<label>Object Count</label>
 		<description>Number of objects/persons currently detected in the main zone</description>
 		<tags>
-			<tag>Measurement</tag>
+			<point>Measurement</point>
 		</tags>
 		<state readOnly="true" pattern="%d"/>
 	</channel-type>
@@ -134,8 +139,8 @@
 		<label>Sensor Enable</label>
 		<description>Enable or disable the mmWave radar sensor</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Enabled</tag>
+			<point>Control</point>
+			<property>Enabled</property>
 		</tags>
 		<state readOnly="false"/>
 	</channel-type>
@@ -199,8 +204,8 @@
 		<label>Thermostat Enabled</label>
 		<description>Enable or disable the Wall Display thermostat</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Enabled</tag>
+			<point>Control</point>
+			<property>Enabled</property>
 		</tags>
 		<state readOnly="false"/>
 	</channel-type>

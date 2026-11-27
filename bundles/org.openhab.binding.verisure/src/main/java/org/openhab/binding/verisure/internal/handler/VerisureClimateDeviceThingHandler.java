@@ -19,18 +19,25 @@ import java.util.List;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.verisure.internal.VerisureSession;
 import org.openhab.binding.verisure.internal.dto.VerisureBatteryStatusDTO;
 import org.openhab.binding.verisure.internal.dto.VerisureClimatesDTO;
 import org.openhab.binding.verisure.internal.dto.VerisureClimatesDTO.Climate;
+import org.openhab.binding.verisure.internal.dto.VerisureClimatesDTO.Threshold;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Channel;
+import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingTypeUID;
+import org.openhab.core.types.Command;
+import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 
@@ -53,6 +60,48 @@ public class VerisureClimateDeviceThingHandler extends VerisureThingHandler<Veri
 
     public VerisureClimateDeviceThingHandler(Thing thing) {
         super(thing);
+    }
+
+    @Override
+    public void handleCommand(ChannelUID channelUID, Command command) {
+        if (command instanceof RefreshType) {
+            super.handleCommand(channelUID, command);
+            return;
+        }
+        switch (channelUID.getId()) {
+            case CHANNEL_TEMPERATURE_ALERT_MIN:
+            case CHANNEL_TEMPERATURE_ALERT_MIN_ENABLED:
+                handleThreshold(Threshold.SENSOR_TYPE_TEMPERATURE, true, command);
+                break;
+            case CHANNEL_TEMPERATURE_ALERT_MAX:
+            case CHANNEL_TEMPERATURE_ALERT_MAX_ENABLED:
+                handleThreshold(Threshold.SENSOR_TYPE_TEMPERATURE, false, command);
+                break;
+            case CHANNEL_HUMIDITY_ALERT_MIN:
+            case CHANNEL_HUMIDITY_ALERT_MIN_ENABLED:
+                handleThreshold(Threshold.SENSOR_TYPE_HUMIDITY, true, command);
+                break;
+            case CHANNEL_HUMIDITY_ALERT_MAX:
+            case CHANNEL_HUMIDITY_ALERT_MAX_ENABLED:
+                handleThreshold(Threshold.SENSOR_TYPE_HUMIDITY, false, command);
+                break;
+            default:
+                super.handleCommand(channelUID, command);
+        }
+    }
+
+    private void handleThreshold(String sensorType, boolean isMin, Command command) {
+        VerisureSession session = getSession();
+        VerisureClimatesDTO climateJSON = session != null
+                ? session.getVerisureThing(config.getDeviceId(), getVerisureThingClass())
+                : null;
+        List<Climate> climateList = climateJSON != null ? climateJSON.getData().getInstallation().getClimates() : null;
+        if (climateJSON == null || climateList == null || climateList.isEmpty()) {
+            return;
+        }
+        Climate climate = climateList.get(0);
+        changeAlertLimit(climate.getThresholds(), climate.getDevice().getDeviceLabel(), climateJSON.getSiteId(),
+                sensorType, isMin, command);
     }
 
     @Override
@@ -106,16 +155,32 @@ public class VerisureClimateDeviceThingHandler extends VerisureThingHandler<Veri
                 String location = climateJSON.getLocation();
                 return location != null ? new StringType(location) : UnDefType.NULL;
             case CHANNEL_BATTERY_STATUS:
-                VerisureBatteryStatusDTO batteryStatus = climateJSON.getBatteryStatus();
-                if (batteryStatus != null) {
-                    String status = batteryStatus.getStatus();
-                    if ("CRITICAL".equals(status)) {
-                        return OnOffType.from(true);
-                    }
-                }
-                return OnOffType.from(false);
+                return OnOffType.from(VerisureBatteryStatusDTO.isLowBattery(climateJSON.getBatteryStatus()));
+            case CHANNEL_BATTERY_LEVEL:
+                Integer batteryLevel = climateJSON.getBatteryLevel();
+                return batteryLevel != null ? new DecimalType(batteryLevel) : UnDefType.UNDEF;
+            case CHANNEL_TEMPERATURE_ALERT_MIN:
+                return getAlertLimit(getThresholds(climateList), Threshold.SENSOR_TYPE_TEMPERATURE, true);
+            case CHANNEL_TEMPERATURE_ALERT_MAX:
+                return getAlertLimit(getThresholds(climateList), Threshold.SENSOR_TYPE_TEMPERATURE, false);
+            case CHANNEL_HUMIDITY_ALERT_MIN:
+                return getAlertLimit(getThresholds(climateList), Threshold.SENSOR_TYPE_HUMIDITY, true);
+            case CHANNEL_HUMIDITY_ALERT_MAX:
+                return getAlertLimit(getThresholds(climateList), Threshold.SENSOR_TYPE_HUMIDITY, false);
+            case CHANNEL_TEMPERATURE_ALERT_MIN_ENABLED:
+                return getAlertLimitEnabled(getThresholds(climateList), Threshold.SENSOR_TYPE_TEMPERATURE, true);
+            case CHANNEL_TEMPERATURE_ALERT_MAX_ENABLED:
+                return getAlertLimitEnabled(getThresholds(climateList), Threshold.SENSOR_TYPE_TEMPERATURE, false);
+            case CHANNEL_HUMIDITY_ALERT_MIN_ENABLED:
+                return getAlertLimitEnabled(getThresholds(climateList), Threshold.SENSOR_TYPE_HUMIDITY, true);
+            case CHANNEL_HUMIDITY_ALERT_MAX_ENABLED:
+                return getAlertLimitEnabled(getThresholds(climateList), Threshold.SENSOR_TYPE_HUMIDITY, false);
         }
         return UnDefType.UNDEF;
+    }
+
+    private List<Threshold> getThresholds(@Nullable List<Climate> climateList) {
+        return climateList != null && !climateList.isEmpty() ? climateList.get(0).getThresholds() : List.of();
     }
 
     @Override

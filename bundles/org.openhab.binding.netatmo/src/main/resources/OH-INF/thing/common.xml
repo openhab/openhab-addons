@@ -8,6 +8,7 @@
 		<label>API Monitoring</label>
 		<channels>
 			<channel id="request-count" typeId="request-count"/>
+			<channel id="hook-set" typeId="hook-set"/>
 		</channels>
 	</channel-group-type>
 

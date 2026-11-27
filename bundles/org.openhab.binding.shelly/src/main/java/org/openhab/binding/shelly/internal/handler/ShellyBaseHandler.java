@@ -29,6 +29,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -52,9 +53,9 @@ import org.openhab.binding.shelly.internal.api1.Shelly1CoapJSonDTO;
 import org.openhab.binding.shelly.internal.api1.Shelly1CoapServer;
 import org.openhab.binding.shelly.internal.api1.Shelly1HttpApi;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO;
-import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2APClientList.Shelly2APClient;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiRpc;
 import org.openhab.binding.shelly.internal.api2.ShellyBluApi;
+import org.openhab.binding.shelly.internal.api2.dto.Shelly2ConfigJsonDTO.Shelly2APClientList.Shelly2APClient;
 import org.openhab.binding.shelly.internal.config.ShellyApiConfiguration;
 import org.openhab.binding.shelly.internal.config.ShellyBindingRuntimeConfig;
 import org.openhab.binding.shelly.internal.config.ShellyThingConfiguration;
@@ -140,6 +141,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
     private volatile double watchdog = now();
     private volatile double lastReport = 0;
     protected volatile int scheduledUpdates = 0;
+    private final AtomicBoolean statusRefreshRunning = new AtomicBoolean();
     private volatile boolean throttleRetryPending = false;
     private int skipCount = UPDATE_SKIP_COUNT;
     private int skipUpdate = 0;
@@ -213,7 +215,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
     }
 
     @Override
-    public boolean checkRepresentation(String key) {
+    public boolean isIdentifiedBy(String key) {
         InetAddress ipAddr;
         return key.equalsIgnoreCase(getUID()) || key.equalsIgnoreCase(apiConfig.getBdAddr())
                 || ((ipAddr = apiConfig.getDeviceIpAddress()) != null && key.equalsIgnoreCase(ipAddr.getHostAddress()))
@@ -228,6 +230,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
     public void initialize() {
         // core re-initializes the same instance after dispose() on thingUpdated() and handleConfigurationUpdate()
         stopping = false;
+        resetStats();
         // start background initialization:
         initJob = scheduler.schedule(() -> {
             boolean start = false;
@@ -365,7 +368,8 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         lastWakeupReason.set("");
         cache.setThingName(thingName);
         cache.clear();
-        resetStats();
+        // A device restart or reconnect also gets here and must not wipe the counters and alarm it just recorded
+        stats.lastUptime.set(0);
 
         profile.initFromThingType(thing.getThingTypeUID());
         if (logger.isDebugEnabled()) {
@@ -540,9 +544,15 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
                                 command == OnOffType.ON ? "Enable" : "Disable");
                         api.setValveProfile(0,
                                 command == OnOffType.OFF ? 0 : profile.status.thermostats.get(0).profile);
+                    } else {
+                        ShellyComponentThermostat.handleCommand(this, CHANNEL_CONTROL_SCHEDULE, command);
                     }
                     break;
                 case CHANNEL_CONTROL_PROFILE:
+                    if (!profile.isTRV) {
+                        ShellyComponentThermostat.handleCommand(this, CHANNEL_CONTROL_PROFILE, command);
+                        break;
+                    }
                     logger.debug("{}: Select profile {}", thingName, command);
                     int id = -1;
                     if (command instanceof Number) {
@@ -679,6 +689,19 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
      * Update device status and channels
      */
     protected void refreshStatus() {
+        // A wakeup runs this outside the status job. A cycle overlapping a running one returns before anything else,
+        // so it doesn't consume a pending update
+        if (!statusRefreshRunning.compareAndSet(false, true)) {
+            return;
+        }
+        try {
+            refreshStatusSerialized();
+        } finally {
+            statusRefreshRunning.set(false);
+        }
+    }
+
+    private void refreshStatusSerialized() {
         if (stopping) {
             // cancel(true) only interrupts the job, a cycle which is already running has to bail out itself
             return;
@@ -836,8 +859,9 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
     }
 
     private void checkRangeExtender(ShellyDeviceProfile prf) {
-        if (getBool(prf.settings.rangeExtender) && apiConfig.getEnableRangeExtender()
-                && prf.status.rangeExtender != null && prf.status.rangeExtender.apClients != null) {
+        var apClientList = prf.status.rangeExtender;
+        List<Shelly2APClient> apClients = apClientList != null ? apClientList.apClients : null;
+        if (getBool(prf.settings.rangeExtender) && apiConfig.getEnableRangeExtender() && apClients != null) {
             InetAddress inetAddr = apiConfig.getDeviceIpAddress();
             if (inetAddr == null) {
                 if (logger.isDebugEnabled()) {
@@ -845,9 +869,14 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
                 }
             } else {
                 String ipAddr = inetAddr.getHostAddress();
-                for (Shelly2APClient client : profile.status.rangeExtender.apClients) {
-                    String secondaryIp = ipAddr + ":" + client.mport.toString();
-                    String name = SERVICE_NAME_SHELLYPLUSRANGE_PREFIX + "-" + client.mac.replaceAll(":", "");
+                for (Shelly2APClient client : apClients) {
+                    Integer mport = client.mport;
+                    String mac = client.mac;
+                    if (mport == null || mac == null) {
+                        continue;
+                    }
+                    String secondaryIp = ipAddr + ":" + mport;
+                    String name = SERVICE_NAME_SHELLYPLUSRANGE_PREFIX + "-" + mac.replaceAll(":", "");
                     DiscoveryResult result = ShellyBasicDiscoveryService.createResult(true, name, secondaryIp,
                             bindingConfig, httpClient, messages, thingTable);
                     if (result != null) {
@@ -1051,10 +1080,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         }
         State internalTemp = getChannelValue(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_ITEMP);
         if (internalTemp instanceof Number number) {
-            int temp = number.intValue();
-            if (temp > stats.maxInternalTemp.get()) {
-                stats.maxInternalTemp.set(temp);
-            }
+            stats.maxInternalTemp.accumulateAndGet(number.intValue(), Math::max);
         }
 
         if (status.uptime != null) {
@@ -1064,6 +1090,8 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         if (!alarm.isEmpty()) {
             postEvent(alarm, false);
         }
+
+        ShellyComponents.updateDiagnosticsStats(this, stats);
     }
 
     @Override
@@ -1505,6 +1533,45 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
     }
 
     /**
+     * A sleeping battery device announces itself via mDNS each time it wakes up, and is reachable only for a short
+     * while. A Thing that still waits for its device is updated right away, the next cycle of the status job may come
+     * too late. That is a Thing that is ONLINE/CONFIGURATION_PENDING, or OFFLINE for a reason that can clear once the
+     * device is reachable again. Once initialized and online, the device reports its status itself, so such a Thing
+     * needs no poll. A Thing with a configuration error is left to the user, as retrying a wrong password on every
+     * wake-up could lock the device.
+     * <p>
+     * The announcement doesn't restart the watchdog, as it doesn't prove that status reporting works. A successful
+     * update does.
+     * <p>
+     * Always-on devices report their status event driven and BLU devices can't be polled, both are left out. These
+     * flags are derived from the Thing type, so they are valid before the device was initialized.
+     */
+    @Override
+    public void onDeviceWakeup() {
+        if (profile.alwaysOn || profile.isBlu) {
+            return;
+        }
+        if (getThingStatusDetail() != ThingStatusDetail.CONFIGURATION_ERROR) {
+            // An initialization that failed without retry left the Thing without status job
+            startUpdateJob();
+        }
+        if (isWaitingForDevice()) {
+            logger.debug("{}: Device woke up, requesting update", thingName);
+            requestUpdates(1, false);
+            scheduler.execute(this::refreshStatus);
+        }
+    }
+
+    private boolean isWaitingForDevice() {
+        ThingStatusDetail detail = getThingStatusDetail();
+        return switch (getThingStatus()) {
+            case ONLINE -> detail == ThingStatusDetail.CONFIGURATION_PENDING;
+            case OFFLINE -> detail == ThingStatusDetail.COMMUNICATION_ERROR || detail == ThingStatusDetail.DUTY_CYCLE;
+            default -> false;
+        };
+    }
+
+    /**
      * Map input states to channels
      *
      * @param status Shelly device status
@@ -1906,6 +1973,17 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         return null;
     }
 
+    @Override
+    public void updateStateOptions(String group, String channel, Map<String, String> options) {
+        String channelId = mkChannelId(group, channel);
+        channelDefinitions.clearStateOptions(channelId);
+        options.forEach((value, label) -> channelDefinitions.addStateOption(channelId, value, label));
+        Channel ch = thing.getChannel(channelId);
+        if (ch != null) {
+            stateDescriptionProvider.notifyStateDescriptionUpdated(ch);
+        }
+    }
+
     protected ShellyDeviceProfile getDeviceProfile() {
         return profile;
     }
@@ -1993,6 +2071,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
     public void resetStats() {
         // reset statistics
         stats = new ShellyDeviceStats();
+        api.resetTimeoutCounters();
     }
 
     @Override

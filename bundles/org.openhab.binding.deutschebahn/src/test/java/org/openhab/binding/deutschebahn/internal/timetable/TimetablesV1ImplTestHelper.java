@@ -33,8 +33,9 @@ public interface TimetablesV1ImplTestHelper {
 
     static final String EVA_LEHRTE = "8000226";
     static final String EVA_HANNOVER_HBF = "8000152";
-    static final String CLIENT_ID = "bdwrpmxuo6157jrekftlbcc6ju9awo";
-    static final String CLIENT_SECRET = "354c8161cd7fb0936c840240280c131e";
+    // Values are never sent to the real service, as all requests are handled by TimetableStubHttpCallable.
+    static final String CLIENT_ID = "test-client-id";
+    static final String CLIENT_SECRET = "test-client-secret";
     static final ZoneId TIME_ZONE = ZoneId.of("Europe/Berlin");
     static final TimetableTimeConverter TIME_CONVERTER = new TimetableTimeConverter(TIME_ZONE);
 

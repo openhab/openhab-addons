@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.knx.internal.client;
 
+import java.util.concurrent.locks.Lock;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
@@ -36,10 +38,13 @@ import io.calimero.secure.SecureApplicationLayer;
 @NonNullByDefault
 class ReadTrackingCommunicator extends ProcessCommunicatorImpl {
     private final ThreadLocal<@Nullable Runnable> requestSent = new ThreadLocal<>();
+    private final Lock sendLock;
 
-    ReadTrackingCommunicator(KNXNetworkLink link, SecureApplicationLayer sal) throws KNXLinkClosedException {
+    ReadTrackingCommunicator(KNXNetworkLink link, SecureApplicationLayer sal, Lock sendLock)
+            throws KNXLinkClosedException {
         // secure group addresses are written with their group key; GO diagnostics would need device tool keys
         super(link, sal, false);
+        this.sendLock = sendLock;
     }
 
     /**
@@ -61,7 +66,13 @@ class ReadTrackingCommunicator extends ProcessCommunicatorImpl {
     @NonNullByDefault({})
     protected void send(GroupAddress dst, Priority p, int service, DPTXlator t)
             throws KNXTimeoutException, KNXLinkClosedException, InterruptedException {
-        super.send(dst, p, service, t);
+        // the wait for the answer to a read is outside of send(), so it does not hold up other telegrams
+        sendLock.lock();
+        try {
+            super.send(dst, p, service, t);
+        } finally {
+            sendLock.unlock();
+        }
         Runnable sent = requestSent.get();
         if (sent != null) {
             sent.run();

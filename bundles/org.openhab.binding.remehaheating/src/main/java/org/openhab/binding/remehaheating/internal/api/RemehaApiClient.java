@@ -12,22 +12,23 @@
  */
 package org.openhab.binding.remehaheating.internal.api;
 
-import java.net.CookieStore;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.SecureRandom;
 import java.util.Base64;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpFields;
 import org.eclipse.jetty.http.HttpMethod;
 import org.slf4j.Logger;
@@ -35,6 +36,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 
 /**
  * The {@link RemehaApiClient} handles OAuth2 PKCE authentication and API communication with Remeha Home services.
@@ -110,10 +112,7 @@ public class RemehaApiClient {
         this.password = password;
 
         // Clear cookies from any previous session to ensure a clean authentication flow
-        CookieStore cookieStore = httpClient.getCookieStore();
-        if (cookieStore != null) {
-            cookieStore.removeAll();
-        }
+        httpClient.getHttpCookieStore().clear();
 
         try {
             codeVerifier = generateRandomString();
@@ -225,9 +224,12 @@ public class RemehaApiClient {
             }
         }
         try {
+            String authBearer = "Bearer " + accessToken;
             ContentResponse response = httpClient.newRequest(API_BASE_URL + "/homes/dashboard").method(HttpMethod.GET)
-                    .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS).header("Authorization", "Bearer " + accessToken)
-                    .header("Ocp-Apim-Subscription-Key", SUBSCRIPTION_KEY).send();
+                    .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS).headers(h -> {
+                        h.add("Authorization", authBearer);
+                        h.add("Ocp-Apim-Subscription-Key", SUBSCRIPTION_KEY);
+                    }).send();
             if (response.getStatus() == 401) {
                 logger.debug("Received 401 Unauthorized, attempting re-authentication");
                 accessToken = null;
@@ -245,6 +247,16 @@ public class RemehaApiClient {
             logger.warn("Failed to get dashboard: {} - {}", e.getClass().getSimpleName(), e.getMessage());
             return null;
         }
+    }
+
+    /**
+     * Retrieves the heating curve settings of a climate zone.
+     *
+     * @param climateZoneId Climate zone identifier from dashboard data
+     * @return Heating curve JSON object or null if the request fails or the installation has no heating curve
+     */
+    public @Nullable JsonObject getHeatingCurve(String climateZoneId) {
+        return getJson("/climate-zones/" + climateZoneId + "/heating-curve");
     }
 
     /**
@@ -270,6 +282,56 @@ public class RemehaApiClient {
         return apiRequest("/hot-water-zones/" + hotWaterZoneId + "/modes/" + mode, null);
     }
 
+    /** Sends an authenticated GET request. On HTTP 401 it re-authenticates and repeats the request once. */
+    private @Nullable JsonObject getJson(String path) {
+        String token = accessToken;
+        if (token == null) {
+            if (!reAuthenticate()) {
+                return null;
+            }
+            token = accessToken;
+            if (token == null) {
+                return null;
+            }
+        }
+        try {
+            ContentResponse response = sendGet(path, token);
+            if (response.getStatus() == 401) {
+                logger.debug("GET {} received 401, attempting re-authentication", path);
+                accessToken = null;
+                if (!reAuthenticate()) {
+                    return null;
+                }
+                token = accessToken;
+                if (token == null) {
+                    return null;
+                }
+                response = sendGet(path, token);
+            }
+            if (response.getStatus() != 200) {
+                logger.debug("GET {} failed with status {}", path, response.getStatus());
+                return null;
+            }
+            return gson.fromJson(response.getContentAsString(), JsonObject.class);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            logger.debug("GET {} interrupted", path);
+            return null;
+        } catch (TimeoutException | ExecutionException | JsonParseException e) {
+            logger.debug("GET {} failed: {}", path, e.getMessage());
+            return null;
+        }
+    }
+
+    private ContentResponse sendGet(String path, String token)
+            throws InterruptedException, TimeoutException, ExecutionException {
+        return httpClient.newRequest(API_BASE_URL + path).method(HttpMethod.GET)
+                .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS).headers(h -> {
+                    h.add("Authorization", "Bearer " + token);
+                    h.add("Ocp-Apim-Subscription-Key", SUBSCRIPTION_KEY);
+                }).send();
+    }
+
     /**
      * Internal dashboard request without 401 retry logic (to prevent recursion).
      */
@@ -279,8 +341,10 @@ public class RemehaApiClient {
         }
         try {
             ContentResponse response = httpClient.newRequest(API_BASE_URL + "/homes/dashboard").method(HttpMethod.GET)
-                    .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS).header("Authorization", "Bearer " + accessToken)
-                    .header("Ocp-Apim-Subscription-Key", SUBSCRIPTION_KEY).send();
+                    .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS)
+                    .headers(h -> h.add("Authorization", "Bearer " + accessToken).add("Ocp-Apim-Subscription-Key",
+                            SUBSCRIPTION_KEY))
+                    .send();
             if (response.getStatus() == 200) {
                 return gson.fromJson(response.getContentAsString(), JsonObject.class);
             }
@@ -313,8 +377,8 @@ public class RemehaApiClient {
 
             Request request = httpClient.newRequest(TOKEN_ENDPOINT).method(HttpMethod.POST)
                     .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS)
-                    .header("Content-Type", "application/x-www-form-urlencoded")
-                    .content(new StringContentProvider(formData));
+                    .headers(h -> h.add("Content-Type", "application/x-www-form-urlencoded"))
+                    .body(new StringRequestContent(formData));
 
             ContentResponse response = request.send();
             if (response.getStatus() == 200) {
@@ -410,8 +474,10 @@ public class RemehaApiClient {
             Request request = httpClient.newRequest(baseUrl).method(HttpMethod.POST)
                     .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS)
                     .param("tx", "StateProperties=" + stateProperties).param("p", "B2C_1A_RPSignUpSignInNewRoomv3.1")
-                    .header("x-csrf-token", csrfToken).header("Content-Type", "application/x-www-form-urlencoded")
-                    .content(new StringContentProvider(formData));
+                    .headers(h -> {
+                        h.add("x-csrf-token", csrfToken);
+                        h.add("Content-Type", "application/x-www-form-urlencoded");
+                    }).body(new StringRequestContent("application/x-www-form-urlencoded", formData));
 
             ContentResponse response = request.send();
             int status = response.getStatus();
@@ -474,8 +540,8 @@ public class RemehaApiClient {
 
             Request request = httpClient.newRequest(TOKEN_ENDPOINT).method(HttpMethod.POST)
                     .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS)
-                    .header("Content-Type", "application/x-www-form-urlencoded")
-                    .content(new StringContentProvider(formData));
+                    .headers(h -> h.add("Content-Type", "application/x-www-form-urlencoded"))
+                    .body(new StringRequestContent("application/x-www-form-urlencoded", formData));
 
             ContentResponse response = request.send();
             if (response.getStatus() == 200) {
@@ -501,11 +567,15 @@ public class RemehaApiClient {
             }
         }
         try {
+            String authBearer2 = "Bearer " + accessToken;
             Request request = httpClient.newRequest(API_BASE_URL + path).method(HttpMethod.POST)
-                    .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS).header("Authorization", "Bearer " + accessToken)
-                    .header("Ocp-Apim-Subscription-Key", SUBSCRIPTION_KEY).header("Content-Type", "application/json");
+                    .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS).headers(h -> {
+                        h.add("Authorization", authBearer2);
+                        h.add("Ocp-Apim-Subscription-Key", SUBSCRIPTION_KEY);
+                        h.add("Content-Type", "application/json");
+                    });
             if (jsonData != null) {
-                request.content(new StringContentProvider(jsonData));
+                request.body(new StringRequestContent("application/json", jsonData));
             }
             int status = request.send().getStatus();
             if (status == 401) {
@@ -536,10 +606,12 @@ public class RemehaApiClient {
         }
         try {
             Request request = httpClient.newRequest(API_BASE_URL + path).method(HttpMethod.POST)
-                    .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS).header("Authorization", "Bearer " + accessToken)
-                    .header("Ocp-Apim-Subscription-Key", SUBSCRIPTION_KEY).header("Content-Type", "application/json");
+                    .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS)
+                    .headers(h -> h.add("Authorization", "Bearer " + accessToken)
+                            .add("Ocp-Apim-Subscription-Key", SUBSCRIPTION_KEY)
+                            .add("Content-Type", "application/json"));
             if (jsonData != null) {
-                request.content(new StringContentProvider(jsonData));
+                request.body(new StringRequestContent(jsonData));
             }
             return request.send().getStatus() == 200;
         } catch (InterruptedException e) {

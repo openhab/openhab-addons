@@ -37,11 +37,11 @@ import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.api.Response;
-import org.eclipse.jetty.client.util.InputStreamResponseListener;
+import org.eclipse.jetty.client.InputStreamResponseListener;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.Response;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.miio.internal.MiIoCommand;
 import org.openhab.binding.miio.internal.basic.CommandParameterType;
@@ -207,23 +207,7 @@ public class MiotParser {
                             List<MiIoDeviceAction> miIoDeviceActions = new ArrayList<>();
                             MiIoDeviceAction action = new MiIoDeviceAction();
                             action.setCommand("set_properties");
-                            switch (property.format != null ? property.format : "") {
-                                case "bool":
-                                    action.setparameterType(CommandParameterType.ONOFFBOOL);
-                                    break;
-                                case "uint8":
-                                case "int32":
-                                case "float":
-                                    action.setparameterType(CommandParameterType.NUMBER);
-                                    break;
-                                case "string":
-                                    action.setparameterType(CommandParameterType.STRING);
-
-                                    break;
-                                default:
-                                    action.setparameterType(CommandParameterType.STRING);
-                                    break;
-                            }
+                            action.setparameterType(parameterType(property.format));
                             miIoDeviceActions.add(action);
                             miIoBasicChannel.setActions(miIoDeviceActions);
                         } else {
@@ -388,6 +372,17 @@ public class MiotParser {
     }
 
     /**
+     * Returns the parameter type that sends a command as the value of a MIoT property or action input of this format.
+     */
+    private static CommandParameterType parameterType(@Nullable String format) {
+        return switch (format != null ? format : "") {
+            case "bool" -> CommandParameterType.ONOFFBOOL;
+            case "uint8", "uint16", "uint32", "int8", "int16", "int32", "int64", "float" -> CommandParameterType.NUMBER;
+            default -> CommandParameterType.STRING;
+        };
+    }
+
+    /**
      * Creates a channel for an action with exactly one input. The command value of the channel is sent as that input,
      * with the {@code $value$} token in the parameters of the action. An action with several inputs can not be filled
      * from one channel value, so it is not handled here and stays on the actions channel.
@@ -430,14 +425,7 @@ public class MiotParser {
         miIoDeviceAction.setCommand("action");
         miIoDeviceAction.setSiid(service.siid);
         miIoDeviceAction.setAiid(action.iid);
-        String channelType = miIoBasicChannel.getType();
-        if (channelType.startsWith("Number")) {
-            miIoDeviceAction.setparameterType(CommandParameterType.NUMBER);
-        } else if ("Switch".equals(channelType)) {
-            miIoDeviceAction.setparameterType(CommandParameterType.ONOFFBOOL);
-        } else {
-            miIoDeviceAction.setparameterType(CommandParameterType.STRING);
-        }
+        miIoDeviceAction.setparameterType(parameterType(input.format));
         JsonObject inputParameter = new JsonObject();
         inputParameter.addProperty("piid", piid);
         inputParameter.addProperty("value", VALUE_TOKEN);

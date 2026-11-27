@@ -81,6 +81,9 @@ public class AwattarBestPriceHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
+        logger.warn("Thing '{}': the bestprice thing is deprecated and will be removed in a future version, "
+                + "use the Optimal Window automation add-on instead", getThing().getUID());
+
         AwattarBestPriceConfiguration config = getConfigAs(AwattarBestPriceConfiguration.class);
 
         if (config.length >= config.rangeDuration) {
