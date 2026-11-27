@@ -53,6 +53,11 @@ import org.slf4j.LoggerFactory;
 public class E3DCDiscoveryService extends AbstractThingHandlerDiscoveryService<E3DCBridgeHandler> {
 
     private static final int TIMEOUT_SECONDS = 30;
+    /**
+     * A scan asks the device up to 33 times, so it stops asking once this budget is used up and keeps the
+     * discoveries found so far. A request that is already running may still take its own timeout.
+     */
+    private static final int SCAN_BUDGET_SECONDS = 20;
     private static final int FIRST_SCAN_DELAY_SECONDS = 30;
     private static final int SCAN_INTERVAL_SECONDS = 3600;
     /** Gives the first poll after the connection came up a moment, before the discovery asks as well. */
@@ -156,19 +161,20 @@ public class E3DCDiscoveryService extends AbstractThingHandlerDiscoveryService<E
         }
         ThingUID bridgeUid = bridge.getThing().getUID();
         long started = System.nanoTime();
+        long deadline = started + TimeUnit.SECONDS.toNanos(SCAN_BUDGET_SECONDS);
         logger.debug("Discovery scan of {} started", bridgeUid);
         thingDiscovered(E3DCDiscovery.powerPlant(bridgeUid));
-        int batteries = scanBatteries(bridge, bridgeUid);
+        int batteries = scanBatteries(bridge, bridgeUid, deadline);
         int meters = probe(bridge, bridgeUid, E3DCBindingConstants.GROUP_METER, E3DCDiscovery.MAX_METERS,
-                E3DCDiscovery::isMeterAnswered, E3DCDiscovery::meter);
+                E3DCDiscovery::isMeterAnswered, E3DCDiscovery::meter, deadline);
         int wallboxes = probe(bridge, bridgeUid, E3DCBindingConstants.GROUP_WALLBOX, E3DCDiscovery.MAX_WALLBOXES,
-                E3DCDiscovery::isWallboxAnswered, E3DCDiscovery::wallbox);
+                E3DCDiscovery::isWallboxAnswered, E3DCDiscovery::wallbox, deadline);
         logger.debug(
                 "Discovery scan of {} finished after {} ms: 1 power plant, {} batteries, {} power meters, {} wallboxes",
                 bridgeUid, (System.nanoTime() - started) / 1_000_000, batteries, meters, wallboxes);
     }
 
-    private int scanBatteries(E3DCBridgeHandler bridge, ThingUID bridgeUid) {
+    private int scanBatteries(E3DCBridgeHandler bridge, ThingUID bridgeUid, long deadline) {
         RscpValue available = null;
         try {
             available = bridge.sendRequest(List.of(RscpValue.none(RscpTag.BAT_REQ_AVAILABLE_BATTERIES)));
@@ -186,6 +192,9 @@ public class E3DCDiscoveryService extends AbstractThingHandlerDiscoveryService<E
         for (int battery : candidates) {
             if (!active) {
                 logger.debug("The discovery service is not in use any more, the batteries are no longer asked for");
+                break;
+            }
+            if (budgetUsedUp(deadline, "batteries")) {
                 break;
             }
             try {
@@ -233,7 +242,7 @@ public class E3DCDiscoveryService extends AbstractThingHandlerDiscoveryService<E
      */
     @SuppressWarnings("null") // the JDK functional interfaces carry no null annotations
     private int probe(E3DCBridgeHandler bridge, ThingUID bridgeUid, String groupId, int max,
-            Predicate<RscpValue> answered, BiFunction<ThingUID, Integer, DiscoveryResult> result) {
+            Predicate<RscpValue> answered, BiFunction<ThingUID, Integer, DiscoveryResult> result, long deadline) {
         E3DCContainerRequests.Container request = E3DCContainerRequests.forGroup(groupId);
         if (request == null) {
             return 0;
@@ -243,6 +252,9 @@ public class E3DCDiscoveryService extends AbstractThingHandlerDiscoveryService<E
             if (!active) {
                 logger.debug("The discovery service is not in use any more, the remaining {} are not asked for",
                         groupId);
+                break;
+            }
+            if (budgetUsedUp(deadline, groupId)) {
                 break;
             }
             try {
@@ -262,6 +274,15 @@ public class E3DCDiscoveryService extends AbstractThingHandlerDiscoveryService<E
             }
         }
         return proposed;
+    }
+
+    /** Whether the scan used up its budget; the check keeps a manual scan within the timeout of the framework. */
+    private boolean budgetUsedUp(long deadline, String what) {
+        if (System.nanoTime() > deadline) {
+            logger.debug("The scan budget is used up, the remaining {} are no longer asked for", what);
+            return true;
+        }
+        return false;
     }
 
     /** The tree is only built when the log is read at DEBUG level, because an answer can be long. */
