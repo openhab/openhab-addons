@@ -863,6 +863,9 @@ public class SamsungTvHandler extends BaseThingHandler implements RegistryListen
     }
 
     private void poll() {
+        if (isStandby()) {
+            return;
+        }
         try {
             // Skip channels if service is not connected/started
             // Only poll SmartThings if TV is ON (ie playing)
@@ -878,6 +881,17 @@ public class SamsungTvHandler extends BaseThingHandler implements RegistryListen
                 logger.debug("{}: Polling Job exception: {}", host, e.getMessage());
             }
         }
+    }
+
+    /**
+     * Polling keeps running in standby for 2022 Frame TV's with Wake-on-LAN, as they keep the websocket open (see
+     * {@link #stopServices()}), but there is nothing to refresh until the TV wakes.
+     *
+     * @return true if power is OFF and the TV is not in art mode
+     */
+    private boolean isStandby() {
+        return OnOffType.OFF.equals(powerState) && findServiceInstance(RemoteControllerService.SERVICE_NAME)
+                .map(s -> !((RemoteControllerService) s).getArtMode()).orElse(true);
     }
 
     public synchronized void valueReceived(String variable, State value) {

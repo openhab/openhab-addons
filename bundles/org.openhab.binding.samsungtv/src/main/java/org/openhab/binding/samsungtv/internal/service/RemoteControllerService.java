@@ -668,6 +668,10 @@ public class RemoteControllerService implements SamsungTvService {
         }
     }
 
+    public boolean getArtMode() {
+        return artMode;
+    }
+
     public boolean getArtMode2022() {
         return handler.getArtMode2022();
     }
