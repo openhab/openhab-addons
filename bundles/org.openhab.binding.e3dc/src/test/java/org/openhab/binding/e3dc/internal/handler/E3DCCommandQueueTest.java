@@ -119,4 +119,41 @@ class E3DCCommandQueueTest {
 
         assertEquals(0, runs.get());
     }
+
+    @Test
+    void whenTheQueueIsFullThenFurtherTasksAreDropped() {
+        ManualExecutor executor = new ManualExecutor();
+        E3DCCommandQueue queue = new E3DCCommandQueue(executor);
+        AtomicInteger runs = new AtomicInteger();
+
+        for (int submitted = 0; submitted < E3DCCommandQueue.MAX_PENDING_TASKS + 1; submitted++) {
+            queue.submit(runs::incrementAndGet);
+        }
+        executor.runAll();
+
+        assertEquals(E3DCCommandQueue.MAX_PENDING_TASKS, runs.get(),
+                "the queue must not grow without bound, so the excess command is dropped");
+    }
+
+    @Test
+    void whenTheExecutorRejectsWorkThenTheQueueStartsAgainOnTheNextTask() {
+        AtomicInteger executions = new AtomicInteger();
+        List<Runnable> pending = new ArrayList<>();
+        Executor rejectingOnce = command -> {
+            if (executions.incrementAndGet() == 1) {
+                throw new IllegalStateException("shut down by the test");
+            }
+            pending.add(command);
+        };
+        E3DCCommandQueue queue = new E3DCCommandQueue(rejectingOnce);
+        AtomicInteger runs = new AtomicInteger();
+
+        queue.submit(runs::incrementAndGet);
+        queue.submit(runs::incrementAndGet);
+        while (!pending.isEmpty()) {
+            pending.remove(0).run();
+        }
+
+        assertEquals(1, runs.get(), "the task that came after the rejection must still run");
+    }
 }

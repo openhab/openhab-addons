@@ -39,6 +39,9 @@ public class E3DCCommandQueue {
     private final Deque<Runnable> tasks = new ArrayDeque<>();
     private boolean draining;
 
+    /** The most tasks that may wait; a rule that writes faster than the device answers must not grow the queue. */
+    static final int MAX_PENDING_TASKS = 32;
+
     public E3DCCommandQueue(Executor executor) {
         this.executor = executor;
     }
@@ -46,13 +49,28 @@ public class E3DCCommandQueue {
     /** Queues a task and starts the executor if no other task is being worked off. */
     public void submit(Runnable task) {
         synchronized (this) {
+            if (tasks.size() >= MAX_PENDING_TASKS) {
+                logger.warn("The command queue holds {} commands already, the new command is dropped",
+                        MAX_PENDING_TASKS);
+                return;
+            }
             tasks.add(task);
             if (draining) {
                 return;
             }
             draining = true;
         }
-        executor.execute(this::drain);
+        try {
+            executor.execute(this::drain);
+        } catch (RuntimeException e) {
+            // the executor is shut down, so no task of this queue can run any more
+            synchronized (this) {
+                draining = false;
+                tasks.clear();
+            }
+            logger.debug("The command executor does not accept work any more, the command is dropped: {}",
+                    e.getMessage());
+        }
     }
 
     /** Drops the tasks that have not started yet, which a disposed handler must not run any more. */

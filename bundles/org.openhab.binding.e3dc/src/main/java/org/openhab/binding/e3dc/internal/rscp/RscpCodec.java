@@ -73,6 +73,8 @@ public final class RscpCodec {
     static final byte[] CTRL_BYTES = { 0, (byte) VERSION };
     static final int HEADER_LENGTH = 18;
     static final int ITEM_HEADER_LENGTH = 7;
+    /** The deepest nesting a frame may use; the device nests a handful of levels, never thousands. */
+    private static final int MAX_DEPTH = 32;
 
     private RscpCodec() {
     }
@@ -107,7 +109,7 @@ public final class RscpCodec {
         List<RscpValue> items = new ArrayList<>();
         try {
             while (data.hasRemaining()) {
-                items.add(decodeItem(data));
+                items.add(decodeItem(data, 0));
             }
         } catch (BufferUnderflowException | IllegalArgumentException | DateTimeException e) {
             throw new RscpException("Malformed RSCP item: " + e, e);
@@ -123,17 +125,30 @@ public final class RscpCodec {
         return (int) crc.getValue() == expected;
     }
 
-    private static RscpValue decodeItem(ByteBuffer buffer) {
+    private static RscpValue decodeItem(ByteBuffer buffer, int depth) {
         int tag = buffer.getInt();
         int typeCode = buffer.get() & 0xFF;
         int length = buffer.getShort() & 0xFFFF;
         RscpType type = RscpType.fromCode(typeCode);
+        if (depth > MAX_DEPTH) {
+            throw new IllegalArgumentException("RSCP item nesting is deeper than " + MAX_DEPTH);
+        }
         requireLength(type, length);
+        if (length > buffer.remaining()) {
+            // an announced length beyond the end of the frame would otherwise decode into a shortened item
+            throw new IllegalArgumentException(
+                    "Item announces " + length + " bytes, only " + buffer.remaining() + " are left in the frame");
+        }
         if (type == RscpType.CONTAINER) {
-            int end = buffer.position() + length;
+            int start = buffer.position();
+            int end = start + length;
             List<RscpValue> children = new ArrayList<>();
-            while (buffer.position() < end && buffer.hasRemaining()) {
-                children.add(decodeItem(buffer));
+            while (buffer.position() < end) {
+                children.add(decodeItem(buffer, depth + 1));
+            }
+            if (buffer.position() != end) {
+                throw new IllegalArgumentException(
+                        "Container announces " + length + " bytes, its items use " + (buffer.position() - start));
             }
             return RscpValue.container(tag, children);
         }

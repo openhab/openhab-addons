@@ -1011,8 +1011,15 @@ public class E3DCPowerPlantHandler extends E3DCThingHandler {
             }
         }
         E3DCBridgeHandler bridge = getBridgeHandler();
-        if (mode != null && bridge != null) {
-            commandHandler.send(bridge, mode.toRequest());
+        if (mode == null || bridge == null) {
+            return;
         }
+        // the write must not hold up the poll dispatch, and it runs in turn with the commands of the user
+        E3DCPowerMode repeat = mode;
+        commandQueue.submit(() -> {
+            if (!commandHandler.send(bridge, repeat.toRequest())) {
+                logger.warn("The held power mode could not be repeated, the device may no longer follow it");
+            }
+        });
     }
 }

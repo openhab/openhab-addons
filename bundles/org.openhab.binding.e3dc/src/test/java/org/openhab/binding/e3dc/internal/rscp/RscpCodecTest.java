@@ -244,6 +244,27 @@ class RscpCodecTest {
     }
 
     @Test
+    void anItemThatAnnouncesMoreBytesThanTheFrameCarriesIsRejected() {
+        byte[] payload = ByteBuffer.allocate(ITEM_HEADER).order(ByteOrder.LITTLE_ENDIAN)
+                .putInt(RscpTag.EMS_REQ_POWER_PV).put((byte) RscpType.INT32.getCode()).putShort((short) 40).array();
+
+        assertThrows(RscpException.class, () -> RscpCodec.decodeFrame(frame(payload, false)),
+                "an announced length beyond the frame would decode into a shortened item");
+    }
+
+    @Test
+    void aFrameNestedDeeperThanTheDecoderAllowsIsRejected() {
+        byte[] payload = item(RscpTag.EMS_REQ_POWER_PV, RscpType.NONE.getCode(), new byte[0]);
+        for (int level = 0; level < 40; level++) {
+            payload = item(RscpTag.EMS_GET_POWER_SETTINGS, RscpType.CONTAINER.getCode(), payload);
+        }
+        byte[] deepFrame = frame(payload, false);
+
+        RscpException error = assertThrows(RscpException.class, () -> RscpCodec.decodeFrame(deepFrame));
+        assertTrue(error.getMessage().contains("nesting"), error.getMessage());
+    }
+
+    @Test
     void anErrorItemBecomesTheCorrespondingErrorCode() throws Exception {
         // RSCP_ERR_UNKNOWN_TAG is what a device answers for a data point it does not implement
         byte[] payload = item(RscpTag.EMS_REQ_BAT_SOC, RscpType.ERROR.getCode(),
