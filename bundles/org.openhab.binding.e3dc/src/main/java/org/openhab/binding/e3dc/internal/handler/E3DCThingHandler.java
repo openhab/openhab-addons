@@ -72,6 +72,9 @@ public abstract class E3DCThingHandler extends BaseThingHandler implements E3DCD
     /** Works off the writes to the device one after the other, off the thread the framework called the handler on. */
     protected final E3DCCommandQueue commandQueue = new E3DCCommandQueue(scheduler);
 
+    /** Whether a poll answer already carried a value of this thing; an index the device does not know never does. */
+    private boolean valueSeen;
+
     protected E3DCThingHandler(Thing thing) {
         super(thing);
     }
@@ -86,6 +89,8 @@ public abstract class E3DCThingHandler extends BaseThingHandler implements E3DCD
 
     @Override
     public void initialize() {
+        // a thing that is initialized again after a configuration change starts over like a new one
+        valueSeen = false;
         updateStatus(ThingStatus.UNKNOWN);
         E3DCBridgeHandler bridge = getBridgeHandler();
         if (bridge == null) {
@@ -128,20 +133,31 @@ public abstract class E3DCThingHandler extends BaseThingHandler implements E3DCD
         onPowerSettings(response);
         updateLists(response);
         Set<String> computed = channelsComputedByHandler();
+        boolean carriesValue = false;
         for (Map.Entry<String, Map<String, E3DCChannelSpec>> group : getRegistry().groups().entrySet()) {
             for (Map.Entry<String, E3DCChannelSpec> channel : group.getValue().entrySet()) {
+                RscpValue value = findValue(response, channel.getValue(), getDeviceIndex());
+                if (value != null) {
+                    carriesValue = true;
+                }
                 if (computed.contains(channel.getKey())) {
                     // the handler publishes the value itself, from more than one data point of the answer
                     continue;
                 }
-                RscpValue value = findValue(response, channel.getValue(), getDeviceIndex());
                 if (value != null) {
                     updateChannel(group.getKey(), channel.getKey(), channel.getValue(), value);
                 }
             }
         }
-        if (getThing().getStatus() != ThingStatus.ONLINE) {
-            updateStatus(ThingStatus.ONLINE);
+        if (carriesValue) {
+            valueSeen = true;
+            if (getThing().getStatus() != ThingStatus.ONLINE) {
+                updateStatus(ThingStatus.ONLINE);
+            }
+        } else if (!valueSeen && getThing().getStatus() != ThingStatus.OFFLINE) {
+            // an index the device does not answer for leaves every channel of this thing without a value
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
+                    "The device reports no values for the configured index");
         }
     }
 

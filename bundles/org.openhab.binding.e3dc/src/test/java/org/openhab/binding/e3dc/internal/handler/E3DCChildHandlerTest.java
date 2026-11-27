@@ -144,7 +144,7 @@ class E3DCChildHandlerTest {
 
     @ParameterizedTest
     @MethodSource("children")
-    void whenDataArrivesThenTheThingGoesOnline(Child child) {
+    void whenDataCarriesNoValueThenTheThingReportsAConfigurationError(Child child) {
         ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
         E3DCBridgeHandler bridgeHandler = mock(E3DCBridgeHandler.class);
         when(bridgeHandler.isConnected()).thenReturn(true);
@@ -154,6 +154,29 @@ class E3DCChildHandlerTest {
         // the battery module handler only accepts the data container of its own battery
         handler.onData(RscpValue.container(0,
                 List.of(RscpValue.container(RscpTag.BAT_DATA, List.of(RscpValue.uchar8(RscpTag.BAT_INDEX, 0))))));
+
+        ThingStatusInfo status = lastStatus(callback);
+        assertEquals(ThingStatus.OFFLINE, status.getStatus());
+        assertEquals(ThingStatusDetail.CONFIGURATION_ERROR, status.getStatusDetail());
+    }
+
+    @Test
+    void whenDataCarriesAValueThenTheThingGoesOnline() {
+        ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
+        E3DCBridgeHandler bridgeHandler = mock(E3DCBridgeHandler.class);
+        when(bridgeHandler.isConnected()).thenReturn(true);
+        Child module = children().filter(child -> E3DCBindingConstants.THING_TYPE_BATTERY_MODULE.equals(child.type()))
+                .findFirst().orElseThrow();
+        E3DCThingHandler handler = createHandler(module, bridgeHandler, callback);
+        handler.initialize();
+
+        handler.onData(
+                RscpValue.container(0,
+                        List.of(RscpValue.container(RscpTag.BAT_DATA,
+                                List.of(RscpValue.uchar8(RscpTag.BAT_INDEX, 0),
+                                        RscpValue.container(RscpTag.BAT_DCB_INFO, List.of(
+                                                RscpValue.uchar8(RscpTag.BAT_DCB_INDEX, 0),
+                                                RscpValue.int32(RscpTag.BAT_DCB_REMAINING_CAPACITY, 7400))))))));
 
         assertEquals(ThingStatus.ONLINE, lastStatus(callback).getStatus());
     }
