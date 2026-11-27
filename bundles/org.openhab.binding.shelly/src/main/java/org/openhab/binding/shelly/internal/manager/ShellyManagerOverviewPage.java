@@ -270,7 +270,7 @@ public class ShellyManagerOverviewPage extends ShellyManagerPage {
         }
         State wifiSignal = handler.getChannelValue(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_RSSI);
         if ((profile.alwaysOn || (profile.hasBattery && (status == ThingStatus.ONLINE)))
-                && ((wifiSignal != UnDefType.NULL) && (((DecimalType) wifiSignal).intValue() < 2))) {
+                && wifiSignal instanceof DecimalType signal && signal.intValue() < 2) {
             result.put("Weak WiFi Signal", wifiSignal.toString());
         }
         if (profile.hasBattery) {
