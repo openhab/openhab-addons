@@ -197,9 +197,8 @@ public class PleosAccountHandler extends BaseBridgeHandler {
     }
 
     private boolean isStaleClient(PleosApiClient client) {
-        boolean clientChanged = this.apiClient != client;
-        return Thread.currentThread().isInterrupted() || clientChanged; // NOPMD - intentional reference comparison for
-                                                                        // thread safety
+        boolean clientChanged = this.apiClient != client; // NOPMD - intentional reference comparison for thread safety
+        return Thread.currentThread().isInterrupted() || clientChanged;
     }
 
     @Override
