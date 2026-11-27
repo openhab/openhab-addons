@@ -46,68 +46,116 @@ public final class RscpValue {
         return new RscpValue(tag, type, value, List.of());
     }
 
+    /**
+     * A container with the given children.
+     */
     public static RscpValue container(int tag, List<RscpValue> children) {
         return new RscpValue(tag, RscpType.CONTAINER, null, Collections.unmodifiableList(children));
     }
 
+    /**
+     * An item of the given type and value.
+     */
     public static RscpValue of(int tag, RscpType type, @Nullable Object value) {
         return new RscpValue(tag, type, value, List.of());
     }
 
+    /**
+     * An item without data, as a request uses it.
+     */
     public static RscpValue none(int tag) {
         return new RscpValue(tag, RscpType.NONE, null, List.of());
     }
 
+    /**
+     * An item with a string value.
+     */
     public static RscpValue cstring(int tag, String value) {
         return new RscpValue(tag, RscpType.CSTRING, value, List.of());
     }
 
+    /**
+     * An unsigned char item.
+     */
     public static RscpValue uchar8(int tag, int value) {
         return new RscpValue(tag, RscpType.UCHAR8, value, List.of());
     }
 
+    /**
+     * A boolean item.
+     */
     public static RscpValue bool(int tag, boolean value) {
         return new RscpValue(tag, RscpType.BOOL, value, List.of());
     }
 
+    /**
+     * An unsigned 32 bit item.
+     */
     public static RscpValue uint32(int tag, long value) {
         return new RscpValue(tag, RscpType.UINT32, value, List.of());
     }
 
+    /**
+     * A signed 32 bit item.
+     */
     public static RscpValue int32(int tag, int value) {
         return new RscpValue(tag, RscpType.INT32, value, List.of());
     }
 
     /** A moment, which the interface carries as seconds and nanoseconds since 1970. */
+    /**
+     * A timestamp item.
+     */
     public static RscpValue timestamp(int tag, Instant instant) {
         return new RscpValue(tag, RscpType.TIMESTAMP, instant, List.of());
     }
 
+    /**
+     * The tag of the item.
+     */
     public int getTag() {
         return tag;
     }
 
+    /**
+     * The type of the item.
+     */
     public RscpType getType() {
         return type;
     }
 
+    /**
+     * The raw value, or null for a container or an empty item.
+     */
     public @Nullable Object getValue() {
         return value;
     }
 
+    /**
+     * The children of a container.
+     */
     public List<RscpValue> getChildren() {
         return children;
     }
 
+    /**
+     * Whether the item reports an error.
+     */
     public boolean isError() {
         return type == RscpType.ERROR;
     }
 
+    /**
+     * The error of the item, or null.
+     */
     public @Nullable RscpError getError() {
         return value instanceof RscpError error ? error : null;
     }
 
     /** First descendant with the given tag, depth first, or {@code null}. */
+    /**
+     * The child with the given tag, or null.
+     */
     public @Nullable RscpValue find(int searchTag) {
         if (tag == searchTag) {
             return this;
@@ -137,6 +185,9 @@ public final class RscpValue {
         return current;
     }
 
+    /**
+     * All children with the given tag, in the order of the answer.
+     */
     public List<RscpValue> findAll(int searchTag) {
         List<RscpValue> result = new ArrayList<>();
         if (tag == searchTag) {
@@ -148,16 +199,25 @@ public final class RscpValue {
         return result;
     }
 
+    /**
+     * The number of the child with the given tag, or null.
+     */
     public @Nullable Number findNumber(int searchTag) {
         RscpValue found = find(searchTag);
         return found != null && found.value instanceof Number number ? number : null;
     }
 
+    /**
+     * The number of the child with the given tag as double, or null.
+     */
     public @Nullable Double findDouble(int searchTag) {
         Number number = findNumber(searchTag);
         return number != null ? number.doubleValue() : null;
     }
 
+    /**
+     * The text of the child with the given tag, or null.
+     */
     public @Nullable String findString(int searchTag) {
         RscpValue found = find(searchTag);
         if (found == null) {
@@ -170,6 +230,9 @@ public final class RscpValue {
         return found.value instanceof String string ? string : null;
     }
 
+    /**
+     * Whether the item or one of its children reports an error.
+     */
     public boolean containsError() {
         if (isError()) {
             return true;
@@ -182,6 +245,9 @@ public final class RscpValue {
         return false;
     }
 
+    /**
+     * The first error in the item tree, or null.
+     */
     public @Nullable RscpError findError() {
         if (isError()) {
             return getError();
@@ -195,10 +261,16 @@ public final class RscpValue {
         return null;
     }
 
+    /**
+     * The value as a number, or null.
+     */
     public @Nullable Number asNumber() {
         return value instanceof Number number ? number : null;
     }
 
+    /**
+     * The value as bytes, or null.
+     */
     public byte @Nullable [] asBytes() {
         return value instanceof byte[] bytes ? bytes : null;
     }
@@ -230,6 +302,9 @@ public final class RscpValue {
         }
     }
 
+    /**
+     * The value for the log.
+     */
     public String describeValue() {
         if (value == null) {
             return "<none>";

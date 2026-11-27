@@ -33,6 +33,9 @@ import org.osgi.service.component.annotations.Reference;
 @NonNullByDefault
 public class E3DCCommandOptionsProvider extends BaseDynamicCommandDescriptionProvider {
 
+    /**
+     * Creates the provider that offers the options of the device.
+     */
     @Activate
     public E3DCCommandOptionsProvider(final @Reference EventPublisher eventPublisher, //
             final @Reference ItemChannelLinkRegistry itemChannelLinkRegistry, //
@@ -43,6 +46,9 @@ public class E3DCCommandOptionsProvider extends BaseDynamicCommandDescriptionPro
     }
 
     /** Drops the choices of a thing that is gone, so a thing created anew does not inherit them. */
+    /**
+     * Removes the offered options of one thing.
+     */
     public void removeOptions(ThingUID thingUID) {
         channelOptionsMap.keySet().removeIf(channelUID -> channelUID.getThingUID().equals(thingUID));
     }

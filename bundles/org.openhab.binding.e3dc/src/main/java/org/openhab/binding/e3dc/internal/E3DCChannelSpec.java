@@ -34,28 +34,46 @@ public record E3DCChannelSpec(int tag, int container, double divisor, int bitMas
     /** Marks a spec that reads the first occurrence of its tag. */
     public static final int NO_INDEX = -1;
 
+    /**
+     * A value that is read at the top level of the answer.
+     */
     public static E3DCChannelSpec of(int tag) {
         return new E3DCChannelSpec(tag, 0, 1, 0, -1, 0, NO_INDEX, false, false);
     }
 
     /** Renders the whole list of idle periods as text; they are containers, not one value. */
+    /**
+     * The channel that lists the idle periods of the battery.
+     */
     public static E3DCChannelSpec idlePeriods() {
         return new E3DCChannelSpec(RscpTag.EMS_GET_IDLE_PERIODS_2, 0, 1, 0, -1, 0, NO_INDEX, true, false);
     }
 
     /** Reports the stored messages, which arrive as one container per message. */
+    /**
+     * The channel that lists the messages of the device.
+     */
     public static E3DCChannelSpec messages() {
         return new E3DCChannelSpec(RscpTag.EMS_STORED_ERRORS, 0, 1, 0, -1, 0, NO_INDEX, true, false);
     }
 
+    /**
+     * Whether the channel publishes a list instead of a single value.
+     */
     public boolean isList() {
         return list;
     }
 
+    /**
+     * A value inside the given container.
+     */
     public static E3DCChannelSpec in(int container, int tag) {
         return new E3DCChannelSpec(tag, container, 1, 0, -1, 0, NO_INDEX, false, false);
     }
 
+    /**
+     * A value inside the given container, divided by the divisor.
+     */
     public static E3DCChannelSpec scaledIn(int container, int tag, double divisor) {
         return new E3DCChannelSpec(tag, container, divisor, 0, -1, 0, NO_INDEX, false, false);
     }
@@ -69,47 +87,80 @@ public record E3DCChannelSpec(int tag, int container, double divisor, int bitMas
     }
 
     /** One of several occurrences of the tag, selected by position because the values carry no index. */
+    /**
+     * A value that the device reports once per index.
+     */
     public static E3DCChannelSpec indexedIn(int container, int tag, int valueIndex) {
         return new E3DCChannelSpec(tag, container, 1, 0, -1, 0, valueIndex, false, false);
     }
 
+    /**
+     * A value inside a nested container.
+     */
     public static E3DCChannelSpec nested(int container, int nestedContainer, int tag) {
         return new E3DCChannelSpec(tag, container, 1, 0, -1, nestedContainer, NO_INDEX, false, false);
     }
 
+    /**
+     * A value inside a nested container, divided by the divisor.
+     */
     public static E3DCChannelSpec scaledNested(int container, int nestedContainer, int tag, double divisor) {
         return new E3DCChannelSpec(tag, container, divisor, 0, -1, nestedContainer, NO_INDEX, false, false);
     }
 
     /** One occurrence, selected by the index its container carries, or by position when it carries none. */
+    /**
+     * A value inside a nested container that the device reports once per index.
+     */
     public static E3DCChannelSpec indexedNested(int container, int nestedContainer, int tag, int valueIndex) {
         return new E3DCChannelSpec(tag, container, 1, 0, -1, nestedContainer, valueIndex, false, false);
     }
 
+    /**
+     * A bit field whose set bits are counted.
+     */
     public static E3DCChannelSpec bitCount(int tag) {
         return new E3DCChannelSpec(tag, 0, 1, 0, -1, 0, NO_INDEX, false, true);
     }
 
+    /**
+     * A bit field inside the given container whose set bits are counted.
+     */
     public static E3DCChannelSpec bitCountIn(int container, int tag) {
         return new E3DCChannelSpec(tag, container, 1, 0, -1, 0, NO_INDEX, false, true);
     }
 
+    /**
+     * One bit of a bit field.
+     */
     public static E3DCChannelSpec bit(int tag, int bitMask) {
         return new E3DCChannelSpec(tag, 0, 1, bitMask, -1, 0, NO_INDEX, false, false);
     }
 
+    /**
+     * One bit of a bit field inside the given container.
+     */
     public static E3DCChannelSpec bitIn(int container, int tag, int bitMask) {
         return new E3DCChannelSpec(tag, container, 1, bitMask, -1, 0, NO_INDEX, false, false);
     }
 
+    /**
+     * One bit of a multi byte bit field.
+     */
     public static E3DCChannelSpec bitAt(int tag, int byteIndex, int bitMask) {
         return new E3DCChannelSpec(tag, 0, 1, bitMask, byteIndex, 0, NO_INDEX, false, false);
     }
 
+    /**
+     * Whether the channel publishes a switched bit instead of a number.
+     */
     public boolean isBitField() {
         return bitMask != 0;
     }
 
+    /**
+     * The tags from the outer container down to the value.
+     */
     public List<Integer> valuePath() {
         List<Integer> path = new ArrayList<>(3);
         if (container != 0) {
@@ -122,6 +173,9 @@ public record E3DCChannelSpec(int tag, int container, double divisor, int bitMas
         return path;
     }
 
+    /**
+     * The value divided by the divisor of this specification.
+     */
     public double scale(double raw) {
         if (countBits) {
             return Long.bitCount((long) raw);
@@ -310,6 +364,9 @@ public record E3DCChannelSpec(int tag, int container, double divisor, int bitMas
                         entry("solar", E3DCChannelSpec.scaledIn(RscpTag.WB_DATA, RscpTag.WB_ENERGY_SOLAR, 1000))));
     }
 
+    /**
+     * The channels of a power meter.
+     */
     public static E3DCChannelRegistry powerMeter() {
         return new E3DCChannelRegistry().group(E3DCBindingConstants.GROUP_METER, Map.ofEntries(//
                 entry("power-l1", E3DCChannelSpec.in(RscpTag.PM_DATA, RscpTag.PM_POWER_L1)), //
@@ -358,6 +415,9 @@ public record E3DCChannelSpec(int tag, int container, double divisor, int bitMas
         return E3DCChannelSpec.nested(RscpTag.PVI_DATA, tag, RscpTag.PVI_VALUE);
     }
 
+    /**
+     * The channels of a battery.
+     */
     public static E3DCChannelRegistry battery() {
         Map<String, E3DCChannelSpec> channels = new LinkedHashMap<>();
         channels.put("voltage", E3DCChannelSpec.in(RscpTag.BAT_DATA, RscpTag.BAT_MODULE_VOLTAGE));

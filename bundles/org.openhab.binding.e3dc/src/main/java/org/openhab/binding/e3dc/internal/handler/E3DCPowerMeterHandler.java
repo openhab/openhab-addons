@@ -30,6 +30,9 @@ public class E3DCPowerMeterHandler extends E3DCThingHandler {
     private final E3DCChannelRegistry registry = E3DCChannelSpec.powerMeter();
     private E3DCPowerMeterConfiguration config = new E3DCPowerMeterConfiguration();
 
+    /**
+     * Creates the handler of a power meter thing.
+     */
     public E3DCPowerMeterHandler(Thing thing) {
         super(thing);
     }

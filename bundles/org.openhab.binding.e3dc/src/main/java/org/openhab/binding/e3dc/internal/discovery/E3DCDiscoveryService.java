@@ -77,6 +77,9 @@ public class E3DCDiscoveryService extends AbstractThingHandlerDiscoveryService<E
 
     private final Runnable onlineScan = this::scheduleDelayedScan;
 
+    /**
+     * Creates the discovery service of the bridge.
+     */
     public E3DCDiscoveryService() {
         super(E3DCBridgeHandler.class,
                 Set.of(E3DCBindingConstants.THING_TYPE_POWER_PLANT, E3DCBindingConstants.THING_TYPE_BATTERY,

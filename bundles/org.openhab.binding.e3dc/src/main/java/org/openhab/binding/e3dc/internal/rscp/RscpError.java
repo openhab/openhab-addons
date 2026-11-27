@@ -38,10 +38,16 @@ public enum RscpError {
         this.code = code;
     }
 
+    /**
+     * The wire code of the error.
+     */
     public int getCode() {
         return code;
     }
 
+    /**
+     * The error of the given wire code.
+     */
     public static RscpError fromCode(int code) {
         for (RscpError error : values()) {
             if (error.code == code) {

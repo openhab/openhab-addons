@@ -52,6 +52,9 @@ public class E3DCBatteryHandler extends E3DCThingHandler {
     private final E3DCChannelRegistry registry = E3DCChannelSpec.battery();
     private E3DCBatteryConfiguration config = new E3DCBatteryConfiguration();
 
+    /**
+     * Creates the handler of a battery thing.
+     */
     public E3DCBatteryHandler(Thing thing) {
         super(thing);
     }

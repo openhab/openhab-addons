@@ -43,18 +43,30 @@ public record E3DCCommandSpec(int tag, RscpType type, int container, boolean swi
 
     private static final List<Unit<?>> DEVICE_UNITS = List.of(Units.AMPERE, Units.WATT, Units.WATT_HOUR);
 
+    /**
+     * A switch that is sent as a flag.
+     */
     public static E3DCCommandSpec flag(int tag) {
         return new E3DCCommandSpec(tag, RscpType.UCHAR8, 0, true);
     }
 
+    /**
+     * A switch of the given container that is sent as a boolean.
+     */
     public static E3DCCommandSpec bool(int tag, int container) {
         return new E3DCCommandSpec(tag, RscpType.BOOL, container, true);
     }
 
+    /**
+     * A number of the given container.
+     */
     public static E3DCCommandSpec number(int tag, int container) {
         return new E3DCCommandSpec(tag, RscpType.UINT32, container, false);
     }
 
+    /**
+     * A number that is sent at the top level.
+     */
     public static E3DCCommandSpec number(int tag) {
         return new E3DCCommandSpec(tag, RscpType.UINT32, 0, false);
     }
@@ -67,15 +79,24 @@ public record E3DCCommandSpec(int tag, RscpType type, int container, boolean swi
         return new E3DCCommandSpec(tag, RscpType.FLOAT32, container, false);
     }
 
+    /**
+     * A switch that is sent as an unsigned char.
+     */
     public static E3DCCommandSpec uchar8Flag(int tag, int container) {
         return new E3DCCommandSpec(tag, RscpType.UCHAR8, container, true);
     }
 
+    /**
+     * A number that is sent as an unsigned char.
+     */
     public static E3DCCommandSpec uchar8Number(int tag, int container) {
         return new E3DCCommandSpec(tag, RscpType.UCHAR8, container, false);
     }
 
     /** Converts a command into the RSCP value the device expects, or {@code null} when it cannot be represented. */
+    /**
+     * The value to send for the command, or null when the command does not fit.
+     */
     public @Nullable RscpValue toValue(Command command) {
         if (switchValue) {
             Boolean on = toBoolean(command);
@@ -192,6 +213,9 @@ public record E3DCCommandSpec(int tag, RscpType type, int container, boolean swi
     }
 
     /** The settable channels of a wallbox: one channel per value reports and sets it, without a second one. */
+    /**
+     * The writable channels of a wallbox.
+     */
     public static E3DCCommandRegistry wallbox() {
         return new E3DCCommandRegistry().group(E3DCBindingConstants.GROUP_WALLBOX_STATUS_CONTROL, Map.of(//
                 "sun-mode", E3DCCommandSpec.uchar8Flag(RscpTag.WB_REQ_SET_SUN_MODE_ACTIVE, RscpTag.WB_REQ_DATA), //

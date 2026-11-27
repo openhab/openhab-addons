@@ -143,6 +143,9 @@ public class E3DCPowerPlantHandler extends E3DCThingHandler {
     /** Offers the energies the user may write, which follow the battery the device reports. */
     private final E3DCCommandOptionsProvider commandOptions;
 
+    /**
+     * Creates the handler of the power plant thing.
+     */
     public E3DCPowerPlantHandler(Thing thing, E3DCCommandOptionsProvider commandOptions) {
         super(thing);
         this.commandOptions = commandOptions;
@@ -252,6 +255,9 @@ public class E3DCPowerPlantHandler extends E3DCThingHandler {
     }
 
     /** Reads the idle periods of the second version from the device, one per line, or {@code null} on failure. */
+    /**
+     * The idle periods in their written form.
+     */
     public @Nullable String getIdlePeriods() {
         synchronized (idleLock) {
             List<E3DCIdlePeriod> periods = readIdlePeriods();
@@ -260,6 +266,9 @@ public class E3DCPowerPlantHandler extends E3DCThingHandler {
     }
 
     /** Replaces the whole list of idle periods of the second version on the device; an empty text removes all. */
+    /**
+     * Sets the idle periods from the written form.
+     */
     public boolean setIdlePeriods(String text) {
         List<E3DCIdlePeriod> periods = E3DCIdlePeriod.parseAll(text);
         if (periods == null) {
@@ -298,6 +307,9 @@ public class E3DCPowerPlantHandler extends E3DCThingHandler {
     }
 
     /** Removes the idle period of the given name and keeps all others. */
+    /**
+     * Removes the idle period of the given name.
+     */
     public boolean deleteIdlePeriod(String name) {
         String wanted = name.trim();
         boolean[] found = new boolean[1];

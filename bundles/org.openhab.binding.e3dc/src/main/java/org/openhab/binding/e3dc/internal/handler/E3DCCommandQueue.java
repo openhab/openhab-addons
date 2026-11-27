@@ -42,11 +42,17 @@ public class E3DCCommandQueue {
     /** The most tasks that may wait; a rule that writes faster than the device answers must not grow the queue. */
     static final int MAX_PENDING_TASKS = 32;
 
+    /**
+     * Creates the queue that runs its tasks on the given executor.
+     */
     public E3DCCommandQueue(Executor executor) {
         this.executor = executor;
     }
 
     /** Queues a task and starts the executor if no other task is being worked off. */
+    /**
+     * Queues a task and starts the executor when no task is running.
+     */
     public void submit(Runnable task) {
         synchronized (this) {
             if (tasks.size() >= MAX_PENDING_TASKS) {
@@ -74,6 +80,9 @@ public class E3DCCommandQueue {
     }
 
     /** Drops the tasks that have not started yet, which a disposed handler must not run any more. */
+    /**
+     * Drops the tasks that have not started yet.
+     */
     public synchronized void clear() {
         tasks.clear();
     }

@@ -75,14 +75,23 @@ public abstract class E3DCThingHandler extends BaseThingHandler implements E3DCD
     /** Whether a poll answer already carried a value of this thing; an index the device does not know never does. */
     private boolean valueSeen;
 
+    /**
+     * Creates the handler of a thing.
+     */
     protected E3DCThingHandler(Thing thing) {
         super(thing);
     }
 
     /** The channels this handler publishes, grouped by channel group. */
+    /**
+     * The channel specifications of this thing.
+     */
     protected abstract E3DCChannelRegistry getRegistry();
 
     /** The index of this thing's device in a container that holds several, or {@code null} for a single device. */
+    /**
+     * The index of this thing's device in a container that holds several.
+     */
     protected @Nullable Integer getDeviceIndex() {
         return null;
     }
@@ -162,6 +171,9 @@ public abstract class E3DCThingHandler extends BaseThingHandler implements E3DCD
     }
 
     /** The channels this handler publishes itself instead of from one data point of the poll answer. */
+    /**
+     * The channels this handler publishes itself instead of from one data point.
+     */
     protected Set<String> channelsComputedByHandler() {
         return Set.of();
     }
@@ -321,6 +333,9 @@ public abstract class E3DCThingHandler extends BaseThingHandler implements E3DCD
     }
 
     /** Updates a thing property only when its value changed, so a poll does not rewrite it every cycle. */
+    /**
+     * Sets one thing property, or removes it when the value is null.
+     */
     protected void setProperty(String property, @Nullable String value) {
         if (value == null || value.isBlank()) {
             return;
@@ -525,6 +540,9 @@ public abstract class E3DCThingHandler extends BaseThingHandler implements E3DCD
         }
     }
 
+    /**
+     * The value of one channel in a poll answer, or null when it does not carry it.
+     */
     protected @Nullable Double readValue(RscpValue response, String groupId, String channelId) {
         E3DCChannelSpec spec = getRegistry().spec(groupId, channelId);
         if (spec == null) {
@@ -539,11 +557,17 @@ public abstract class E3DCThingHandler extends BaseThingHandler implements E3DCD
         return ampereHours == null ? null : ampereHours * volts / 1000.0;
     }
 
+    /**
+     * The time zone the device reports its timestamps in.
+     */
     protected ZoneId getZone() {
         E3DCBridgeHandler bridge = getBridgeHandler();
         return bridge != null ? bridge.getZone() : ZoneId.systemDefault();
     }
 
+    /**
+     * The bridge handler, or null when the bridge has none.
+     */
     protected @Nullable E3DCBridgeHandler getBridgeHandler() {
         Bridge bridge = getBridge();
         if (bridge != null && bridge.getHandler() instanceof E3DCBridgeHandler handler) {
@@ -630,16 +654,25 @@ public abstract class E3DCThingHandler extends BaseThingHandler implements E3DCD
     }
 
     /** Whether the value written to a channel is published as its state, which a command only channel does not do. */
+    /**
+     * Whether the channel shows the value it was written with.
+     */
     protected boolean publishesWrittenState(ChannelUID channelUID) {
         return true;
     }
 
     /** The writable channels of this thing, or {@code null} when it has none. */
+    /**
+     * The writable channels of this thing, or null when none can be written.
+     */
     protected @Nullable E3DCCommandRegistry getCommandRegistry() {
         return null;
     }
 
     /** Applies power settings received from the device to the command snapshot. */
+    /**
+     * Takes the settings of the answer as the current device state.
+     */
     protected void onPowerSettings(RscpValue response) {
         commandHandler.updateFromResponse(response);
     }

@@ -18,6 +18,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
+ * Channel groups, channel ids and thing type ids of the binding.
+ *
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault

@@ -15,6 +15,8 @@ package org.openhab.binding.e3dc.internal.rscp;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
+ * The exception the RSCP layer throws when a request or a frame fails.
+ *
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
@@ -22,10 +24,16 @@ public class RscpException extends Exception {
 
     private static final long serialVersionUID = 1L;
 
+    /**
+     * Creates the exception with a message.
+     */
     public RscpException(String message) {
         super(message);
     }
 
+    /**
+     * Creates the exception with a message and a cause.
+     */
     public RscpException(String message, Throwable cause) {
         super(message, cause);
     }

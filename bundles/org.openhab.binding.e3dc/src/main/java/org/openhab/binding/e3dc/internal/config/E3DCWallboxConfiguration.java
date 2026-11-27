@@ -15,6 +15,8 @@ package org.openhab.binding.e3dc.internal.config;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
+ * The configuration of a wallbox thing.
+ *
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault

@@ -21,6 +21,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
+ * The writable channels of one thing type, grouped by channel group.
+ *
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
@@ -33,15 +35,24 @@ public final class E3DCCommandRegistry {
         return this;
     }
 
+    /**
+     * All groups with their commands, keyed by the group id.
+     */
     public Map<String, Map<String, E3DCCommandSpec>> groups() {
         return Collections.unmodifiableMap(byGroup);
     }
 
+    /**
+     * The command specification of one channel, or null when it cannot be written.
+     */
     public @Nullable E3DCCommandSpec spec(String groupId, String channelId) {
         Map<String, E3DCCommandSpec> channels = byGroup.get(groupId);
         return channels != null ? channels.get(channelId) : null;
     }
 
+    /**
+     * Every command specification of this registry.
+     */
     public List<E3DCCommandSpec> all() {
         return byGroup.values().stream().flatMap(map -> map.values().stream()).distinct().toList();
     }

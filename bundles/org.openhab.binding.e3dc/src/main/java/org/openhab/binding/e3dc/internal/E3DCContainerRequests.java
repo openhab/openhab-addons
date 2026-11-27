@@ -32,6 +32,9 @@ import org.openhab.binding.e3dc.internal.rscp.RscpValue;
 @NonNullByDefault
 public final class E3DCContainerRequests {
 
+    /**
+     * One requested container and the tags that answer with its index and values.
+     */
     public record Container(String groupId, int containerTag, int indexTag, int responseTag, List<Integer> parameters) {
 
         public RscpValue request(int index, Set<Integer> unsupported) {
@@ -89,6 +92,9 @@ public final class E3DCContainerRequests {
     }
 
     // A probed parameter may not exist on the device, so an error for it says nothing about the parameter.
+    /**
+     * Whether the container is requested because the device offers no count for it.
+     */
     public static boolean isProbed(int requestTag) {
         return PROBED_PARAMETERS.contains(requestTag);
     }
@@ -149,6 +155,9 @@ public final class E3DCContainerRequests {
     private static final List<Container> CONTAINERS = List.of(WALLBOX, METER, BATTERY, BATTERY_MODULE, INVERTER,
             RESERVE);
 
+    /**
+     * The container of one channel group.
+     */
     public static @Nullable Container forGroup(String groupId) {
         for (Container container : CONTAINERS) {
             if (container.groupId().equals(groupId)) {
@@ -158,6 +167,9 @@ public final class E3DCContainerRequests {
         return null;
     }
 
+    /**
+     * The container whose answer carries the given tag.
+     */
     public static @Nullable Container forResponseTag(int responseTag) {
         for (Container container : CONTAINERS) {
             if (container.responseTag() == responseTag) {
@@ -167,6 +179,9 @@ public final class E3DCContainerRequests {
         return null;
     }
 
+    /**
+     * The container with the given container tag.
+     */
     public static @Nullable Container forContainerTag(int containerTag) {
         for (Container container : CONTAINERS) {
             if (container.containerTag() == containerTag) {
@@ -178,6 +193,9 @@ public final class E3DCContainerRequests {
 
     // Whether the tag is a parameter of one of these containers, so its value arrives with the container
     // request and is not asked for on its own.
+    /**
+     * Whether the tag is a parameter the container request repeats.
+     */
     public static boolean isParameter(int requestTag) {
         for (Container container : CONTAINERS) {
             if (container.parameters().contains(requestTag)) {
@@ -187,6 +205,9 @@ public final class E3DCContainerRequests {
         return false;
     }
 
+    /**
+     * Every container request.
+     */
     public static List<Container> all() {
         return CONTAINERS;
     }

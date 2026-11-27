@@ -43,6 +43,9 @@ public record E3DCPowerMode(int mode, int watts, int cycles) {
     private static final Pattern POWER_PATTERN = Pattern.compile("(discharge|charge|grid_charge):(\\d{1,5}):(\\d{1,4})",
             Pattern.CASE_INSENSITIVE);
 
+    /**
+     * The mode of its written form, or null when the text names no mode.
+     */
     public static @Nullable E3DCPowerMode parse(String text) {
         String value = text.trim();
         if (AUTO_PATTERN.matcher(value).matches()) {
@@ -64,12 +67,18 @@ public record E3DCPowerMode(int mode, int watts, int cycles) {
         return null;
     }
 
+    /**
+     * The settings container that sets the mode.
+     */
     public List<RscpValue> toRequest() {
         return List.of(RscpValue.container(RscpTag.EMS_REQ_SET_POWER,
                 List.of(RscpValue.uchar8(RscpTag.EMS_REQ_SET_POWER_MODE, mode),
                         RscpValue.int32(RscpTag.EMS_REQ_SET_POWER_VALUE, watts))));
     }
 
+    /**
+     * Whether the mode is sent again while it is active.
+     */
     public boolean isHeld() {
         return mode != AUTO && cycles > 0;
     }

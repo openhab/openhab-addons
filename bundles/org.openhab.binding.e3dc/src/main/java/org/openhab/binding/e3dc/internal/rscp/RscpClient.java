@@ -72,6 +72,9 @@ public class RscpClient implements AutoCloseable {
     private volatile @Nullable OutputStream output;
     private volatile @Nullable RscpCipher cipher;
 
+    /**
+     * Creates the client for the given device.
+     */
     public RscpClient(String host, int port, String user, String password, String rscpPassword, int timeoutMillis) {
         this.host = host;
         this.port = port;
@@ -81,6 +84,9 @@ public class RscpClient implements AutoCloseable {
         this.timeoutMillis = timeoutMillis;
     }
 
+    /**
+     * Connects to the device and authenticates, or throws when it does not answer.
+     */
     public void connect() throws RscpException {
         close();
         logger.debug("Connecting to {}:{} with a timeout of {} ms", host, port, timeoutMillis);
@@ -182,6 +188,9 @@ public class RscpClient implements AutoCloseable {
         return detail;
     }
 
+    /**
+     * Whether the connection exists.
+     */
     public boolean isConnected() {
         Socket current = socket;
         return current != null && current.isConnected() && !current.isClosed();
@@ -240,14 +249,23 @@ public class RscpClient implements AutoCloseable {
         return busyNanos.get();
     }
 
+    /**
+     * The time the last request needed on the wire.
+     */
     public long getLastWireNanos() {
         return lastWireNanos;
     }
 
+    /**
+     * The time the device needed to answer the last request.
+     */
     public long getLastDeviceWaitNanos() {
         return lastDeviceWaitNanos;
     }
 
+    /**
+     * The size of the last answer.
+     */
     public int getLastAnswerBytes() {
         return lastAnswerBytes;
     }
@@ -256,6 +274,9 @@ public class RscpClient implements AutoCloseable {
         return String.format("%.1f", nanos / 1_000_000.0);
     }
 
+    /**
+     * Requests one tag and returns its value.
+     */
     public RscpValue requestTag(int tag) throws RscpException {
         return request(List.of(RscpValue.none(tag)));
     }

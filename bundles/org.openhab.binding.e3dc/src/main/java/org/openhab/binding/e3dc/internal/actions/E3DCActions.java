@@ -61,6 +61,9 @@ public class E3DCActions implements ThingActions {
         return current != null ? current.getIdlePeriods() : null;
     }
 
+    /**
+     * Replaces the idle periods from their written form.
+     */
     @RuleAction(label = "@text/action.setIdlePeriods.label", description = "@text/action.setIdlePeriods.description")
     public @ActionOutput(name = "result", type = "java.lang.Boolean") boolean setIdlePeriods(
             @ActionInput(name = "periods", label = "@text/action.setIdlePeriods.periods.label", //
@@ -69,6 +72,9 @@ public class E3DCActions implements ThingActions {
         return current != null && current.setIdlePeriods(periods);
     }
 
+    /**
+     * Removes the idle period of the given name.
+     */
     @RuleAction(label = "@text/action.deleteIdlePeriod.label", description = "@text/action.deleteIdlePeriod.description")
     public @ActionOutput(name = "result", type = "java.lang.Boolean") boolean deleteIdlePeriod(
             @ActionInput(name = "name", label = "@text/action.deleteIdlePeriod.name.label", //
@@ -77,6 +83,9 @@ public class E3DCActions implements ThingActions {
         return current != null && current.deleteIdlePeriod(name);
     }
 
+    /**
+     * Sets the power mode with the given parameters.
+     */
     @RuleAction(label = "@text/action.setPowerMode.label", description = "@text/action.setPowerMode.description")
     public @ActionOutput(name = "result", type = "java.lang.Boolean") boolean setPowerMode(
             @ActionInput(name = "mode", label = "@text/action.setPowerMode.mode.label", //
@@ -98,16 +107,25 @@ public class E3DCActions implements ThingActions {
         return current.setPowerMode(text);
     }
 
+    /**
+     * Reads the history of the current period.
+     */
     @RuleAction(label = "@text/action.fetchHistory.label", description = "@text/action.fetchHistory.description")
     public @ActionOutput(name = "result", type = "java.lang.Integer") int fetchHistory() {
         E3DCPowerPlantHandler current = handler;
         return current != null ? current.fetchHistory() : -1;
     }
 
+    /**
+     * Reads the history of the current period through the static action interface.
+     */
     public static int fetchHistory(ThingActions actions) {
         return ((E3DCActions) actions).fetchHistory();
     }
 
+    /**
+     * Reads the history of a period with the given number of days.
+     */
     @RuleAction(label = "@text/action.fetchPeriodHistory.label", description = "@text/action.fetchPeriodHistory.description")
     public @ActionOutput(name = "result", type = "java.lang.Integer") int fetchPeriodHistory(
             @ActionInput(name = "period", label = "@text/action.fetchPeriodHistory.period.label", description = "@text/action.fetchPeriodHistory.period.description") String period,
@@ -116,22 +134,37 @@ public class E3DCActions implements ThingActions {
         return current != null ? current.fetchPeriodHistory(period, count) : -1;
     }
 
+    /**
+     * Reads the history of a period through the static action interface.
+     */
     public static int fetchPeriodHistory(ThingActions actions, String period, int count) {
         return ((E3DCActions) actions).fetchPeriodHistory(period, count);
     }
 
+    /**
+     * The idle periods of the battery through the static action interface.
+     */
     public static @Nullable String getIdlePeriods(ThingActions actions) {
         return ((E3DCActions) actions).getIdlePeriods();
     }
 
+    /**
+     * Sets the power mode through the static action interface.
+     */
     public static boolean setPowerMode(ThingActions actions, String mode, int watts, int cycles) {
         return ((E3DCActions) actions).setPowerMode(mode, watts, cycles);
     }
 
+    /**
+     * Removes an idle period through the static action interface.
+     */
     public static boolean deleteIdlePeriod(ThingActions actions, String name) {
         return ((E3DCActions) actions).deleteIdlePeriod(name);
     }
 
+    /**
+     * Replaces the idle periods through the static action interface.
+     */
     public static boolean setIdlePeriods(ThingActions actions, String periods) {
         return ((E3DCActions) actions).setIdlePeriods(periods);
     }

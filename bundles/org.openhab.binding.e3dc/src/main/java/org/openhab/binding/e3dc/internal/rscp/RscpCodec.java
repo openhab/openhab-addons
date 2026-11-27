@@ -371,6 +371,9 @@ public final class RscpCodec {
         return requireNumber(item).longValue();
     }
 
+    /**
+     * Reads one frame from the stream, or throws when it is incomplete.
+     */
     public static byte[] readFrame(InputStream in) throws IOException {
         byte[] header = readFully(in, HEADER_LENGTH);
         ByteBuffer buffer = ByteBuffer.wrap(header).order(ByteOrder.LITTLE_ENDIAN);
@@ -393,6 +396,9 @@ public final class RscpCodec {
         return frame;
     }
 
+    /**
+     * Reads exactly the given number of bytes.
+     */
     public static byte[] readFully(InputStream in, int length) throws IOException {
         byte[] out = new byte[length];
         int read = 0;

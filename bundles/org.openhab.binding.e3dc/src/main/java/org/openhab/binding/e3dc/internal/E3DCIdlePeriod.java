@@ -33,6 +33,9 @@ import org.openhab.binding.e3dc.internal.rscp.RscpValue;
 @NonNullByDefault
 public record E3DCIdlePeriod(String name, int weekdays, Type type, boolean active, LocalTime start, LocalTime stop) {
 
+    /**
+     * The two kinds of idle periods: blocking and charging.
+     */
     public enum Type {
         CHARGE(0),
         DISCHARGE(1);
@@ -66,6 +69,9 @@ public record E3DCIdlePeriod(String name, int weekdays, Type type, boolean activ
     }
 
     /** Parses one period, or returns {@code null} when the text is not a valid period. */
+    /**
+     * The idle period of its written form, or null when the text is not valid.
+     */
     public static @Nullable E3DCIdlePeriod parse(String text) {
         return parseInternal(text, null);
     }
@@ -180,6 +186,9 @@ public record E3DCIdlePeriod(String name, int weekdays, Type type, boolean activ
     /** The end of a window that covers the whole day; the device counts in minutes and has no 24:00. */
     public static final LocalTime DAY_END = LocalTime.of(23, 59);
 
+    /**
+     * The period that blocks the whole day.
+     */
     public static E3DCIdlePeriod blocker(Type type) {
         String name = type == Type.CHARGE ? BLOCK_CHARGE_NAME : BLOCK_DISCHARGE_NAME;
         return new E3DCIdlePeriod(name, ALL_DAYS, type, true, DAY_START, DAY_END);
@@ -195,10 +204,16 @@ public record E3DCIdlePeriod(String name, int weekdays, Type type, boolean activ
     }
 
     /** Whether the window ends after it starts, which is what the device and rscp2mqtt require. */
+    /**
+     * Whether the start lies before the end of the window.
+     */
     public boolean hasValidWindow() {
         return start.isBefore(stop);
     }
 
+    /**
+     * The period as the value the device expects.
+     */
     public RscpValue toValue() {
         return RscpValue.container(RscpTag.EMS_IDLE_PERIOD_2,
                 List.of(RscpValue.cstring(RscpTag.EMS_PERIOD_NAME, name),
@@ -209,6 +224,9 @@ public record E3DCIdlePeriod(String name, int weekdays, Type type, boolean activ
                         RscpValue.uint32(RscpTag.EMS_PERIOD_STOP, stop.toSecondOfDay())));
     }
 
+    /**
+     * The periods without the one of the given name.
+     */
     public static List<E3DCIdlePeriod> removeByName(List<E3DCIdlePeriod> periods, String name) {
         List<E3DCIdlePeriod> result = new ArrayList<>(periods);
         result.removeIf(period -> period.name().equals(name));
@@ -216,6 +234,9 @@ public record E3DCIdlePeriod(String name, int weekdays, Type type, boolean activ
     }
 
     /** The request that replaces the whole list of periods on the device. */
+    /**
+     * The values that set the given periods.
+     */
     public static List<RscpValue> toRequest(List<E3DCIdlePeriod> periods) {
         List<RscpValue> children = new ArrayList<>();
         for (E3DCIdlePeriod period : periods) {
@@ -225,6 +246,9 @@ public record E3DCIdlePeriod(String name, int weekdays, Type type, boolean activ
     }
 
     /** The text form of this period, which parses back to an equal period. */
+    /**
+     * The period in its written form.
+     */
     public String toText() {
         return name + ":" + daysText() + ":" + (type == Type.CHARGE ? "charge" : "discharge") + ":" + active + ":"
                 + windowText();
@@ -288,6 +312,9 @@ public record E3DCIdlePeriod(String name, int weekdays, Type type, boolean activ
         return periods;
     }
 
+    /**
+     * The periods in their written form, one per line.
+     */
     public static String toText(List<E3DCIdlePeriod> periods) {
         StringBuilder text = new StringBuilder();
         for (E3DCIdlePeriod period : periods) {
@@ -297,6 +324,9 @@ public record E3DCIdlePeriod(String name, int weekdays, Type type, boolean activ
     }
 
     /** The text of the periods of one direction, as the channel of that direction carries them. */
+    /**
+     * The periods of one type in their written form.
+     */
     public static String toText(List<E3DCIdlePeriod> periods, Type type) {
         StringBuilder text = new StringBuilder();
         for (E3DCIdlePeriod period : periods) {

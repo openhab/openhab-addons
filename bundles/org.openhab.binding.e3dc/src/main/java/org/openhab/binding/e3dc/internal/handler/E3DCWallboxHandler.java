@@ -47,6 +47,9 @@ public class E3DCWallboxHandler extends E3DCThingHandler {
     private final E3DCCommandRegistry commandRegistry = E3DCCommandSpec.wallbox();
     private E3DCWallboxConfiguration config = new E3DCWallboxConfiguration();
 
+    /**
+     * Creates the handler of a wallbox thing.
+     */
     public E3DCWallboxHandler(Thing thing) {
         super(thing);
     }

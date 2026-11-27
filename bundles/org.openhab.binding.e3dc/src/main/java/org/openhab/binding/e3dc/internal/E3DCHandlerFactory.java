@@ -32,6 +32,8 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
 /**
+ * Creates the handlers of the binding and keeps the reference map up to date.
+ *
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
@@ -41,6 +43,9 @@ public class E3DCHandlerFactory extends BaseThingHandlerFactory {
     private final TimeZoneProvider timeZoneProvider;
     private final E3DCCommandOptionsProvider commandOptions;
 
+    /**
+     * Creates the factory with the time zone the device reports its timestamps in.
+     */
     @Activate
     public E3DCHandlerFactory(@Reference TimeZoneProvider timeZoneProvider,
             @Reference E3DCCommandOptionsProvider commandOptions) {

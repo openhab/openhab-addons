@@ -17,6 +17,8 @@ import java.nio.charset.StandardCharsets;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
+ * The RSCP value types and their wire codes.
+ *
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
@@ -47,10 +49,16 @@ public enum RscpType {
         this.code = code;
     }
 
+    /**
+     * The wire code of the type.
+     */
     public int getCode() {
         return code;
     }
 
+    /**
+     * The type of the given wire code.
+     */
     public static RscpType fromCode(int code) {
         for (RscpType type : values()) {
             if (type.code == code) {

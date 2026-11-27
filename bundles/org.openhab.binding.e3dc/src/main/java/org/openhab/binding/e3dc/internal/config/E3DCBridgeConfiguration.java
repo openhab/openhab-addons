@@ -15,6 +15,8 @@ package org.openhab.binding.e3dc.internal.config;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
+ * The configuration of the bridge.
+ *
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
@@ -51,15 +53,24 @@ public class E3DCBridgeConfiguration {
     public int timeout = 10;
 
     /** The poll interval limited to the supported range; things file values are not checked against the metadata. */
+    /**
+     * The poll interval in seconds, at least one second.
+     */
     public int refreshIntervalSeconds() {
         return Math.clamp(refreshInterval, MIN_REFRESH_INTERVAL_SECONDS, MAX_REFRESH_INTERVAL_SECONDS);
     }
 
+    /**
+     * The interval in seconds between two histories.
+     */
     public int historyIntervalSeconds() {
         int minutes = Math.clamp(historyInterval, MIN_HISTORY_INTERVAL_MINUTES, MAX_HISTORY_INTERVAL_MINUTES);
         return Math.max(minutes * 60, refreshIntervalSeconds());
     }
 
+    /**
+     * The timeout of one request in seconds.
+     */
     public int timeoutSeconds() {
         return Math.clamp(timeout, MIN_TIMEOUT_SECONDS, MAX_TIMEOUT_SECONDS);
     }

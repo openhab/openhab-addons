@@ -52,6 +52,9 @@ public final class E3DCInverterChannels {
 
     public static final String TEMPERATURE_TYPE = "inverter-temperature";
 
+    /**
+     * The tracker and sensor indexes an answer carries.
+     */
     public record Found(SortedSet<Integer> trackers, SortedSet<Integer> sensors) {
 
         public boolean isEmpty() {
@@ -95,14 +98,23 @@ public final class E3DCInverterChannels {
         }
     }
 
+    /**
+     * The channel id of a tracker value.
+     */
     public static String trackerChannelId(int tracker, String kind) {
         return TRACKER_PREFIX + tracker + "-" + kind;
     }
 
+    /**
+     * The channel id of a temperature sensor.
+     */
     public static String temperatureChannelId(int sensor) {
         return TEMPERATURE_PREFIX + sensor;
     }
 
+    /**
+     * The tracker index of a tracker channel id.
+     */
     public static int trackerOf(String channelId) {
         for (String kind : KINDS) {
             String suffix = "-" + kind;
@@ -113,6 +125,9 @@ public final class E3DCInverterChannels {
         return 0;
     }
 
+    /**
+     * The sensor index of a temperature channel id.
+     */
     public static int sensorOf(String channelId) {
         return channelId.startsWith(TEMPERATURE_PREFIX) ? number(channelId.substring(TEMPERATURE_PREFIX.length())) : 0;
     }
@@ -245,6 +260,9 @@ public final class E3DCInverterChannels {
     }
 
     /** The values of every tracker and sensor in the answer, one line per index. */
+    /**
+     * The tracker values of an answer for the debug log.
+     */
     public static String describeValues(RscpValue inverter) {
         Found found = discover(inverter);
         if (found.isEmpty()) {

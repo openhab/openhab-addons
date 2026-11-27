@@ -38,6 +38,9 @@ public final class E3DCCommandOptions {
     }
 
     /** The reserve values from zero up to the energy the device accepts, in whole kilowatt hours. */
+    /**
+     * The reserve energies a user may choose, up to the given maximum.
+     */
     public static List<CommandOption> reserve(double maxWh) {
         List<CommandOption> options = new ArrayList<>();
         for (int wh = 0; wh <= maxWh; wh += RESERVE_STEP_WH) {
@@ -47,6 +50,9 @@ public final class E3DCCommandOptions {
     }
 
     /** The manual charge values from half a kilowatt hour up to the energy the battery holds. */
+    /**
+     * The manual charge energies a user may choose, up to the given maximum.
+     */
     public static List<CommandOption> manualCharge(double maxWh) {
         List<CommandOption> options = new ArrayList<>();
         for (int wh = MANUAL_CHARGE_STEP_WH; wh <= maxWh; wh += MANUAL_CHARGE_STEP_WH) {

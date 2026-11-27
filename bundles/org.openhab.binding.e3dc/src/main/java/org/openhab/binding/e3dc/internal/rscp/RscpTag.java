@@ -33,6 +33,10 @@ public final class RscpTag {
      */
     public static final int RESPONSE_MARKER = 0x00800000;
 
+    /**
+     * The handshake and authentication tags of the protocol itself.
+     */
+
     public static final int RSCP_REQ_AUTHENTICATION = 0x00000001;
     public static final int RSCP_AUTHENTICATION_USER = 0x00000002;
     public static final int RSCP_AUTHENTICATION_PASSWORD = 0x00000003;
@@ -41,6 +45,10 @@ public final class RscpTag {
     public static final int RSCP_SET_PROTOCOL_VERSION = 0x00800009;
     public static final int RSCP_SUPPORTED_PROTOCOL_VERSIONS = 0x0080000A;
     public static final int RSCP_GENERAL_ERROR = 0x00FFFFFF;
+    /**
+     * The energy management tags: power values, settings and idle periods.
+     */
+
     public static final int EMS_REQ_POWER_PV = 0x01000001;
     public static final int EMS_REQ_POWER_BAT = 0x01000002;
     public static final int EMS_REQ_POWER_HOME = 0x01000003;
@@ -194,6 +202,10 @@ public final class RscpTag {
     public static final int PVI_REQ_USED_STRING_COUNT = 0x02000090;
     public static final int PVI_REQ_TEMPERATURE_COUNT = 0x02000101;
     public static final int PVI_VALUE = 0x02040005;
+    /**
+     * The photovoltaic inverter tags: power, energy and the trackers.
+     */
+
     public static final int PVI_REQ_DATA = 0x02040000;
     public static final int PVI_DATA = 0x02840000;
     public static final int PVI_REQ_INVERTER_COUNT = 0x020CCCC9;
@@ -254,6 +266,10 @@ public final class RscpTag {
     /**
      * The container the battery data arrives in, including the cell module values in {@link #BAT_DCB_INFO}.
      */
+    /**
+     * The battery tags: state, capacities and the cell modules.
+     */
+
     public static final int BAT_REQ_DATA = 0x03040000;
 
     /** The battery a request addresses; the first child of {@link #BAT_REQ_DATA}. */
@@ -273,6 +289,10 @@ public final class RscpTag {
     public static final int PM_VOLTAGE_L2 = 0x05800012;
     public static final int PM_VOLTAGE_L3 = 0x05800013;
     public static final int PM_DATA = 0x05840000;
+    /**
+     * The power meter tags.
+     */
+
     public static final int PM_REQ_DATA = 0x05040000;
 
     /**
@@ -328,6 +348,10 @@ public final class RscpTag {
     public static final int BAT_DCB_VOLTAGE = 0x03800112;
     public static final int BAT_DCB_VOLTAGE_AVG_30S = 0x03800114;
     public static final int BAT_DCB_WARNING = 0x03800307;
+    /**
+     * The history tags: the energy counters of the periods.
+     */
+
     public static final int DB_REQ_HISTORY_DATA_DAY = 0x06000100;
     public static final int DB_REQ_HISTORY_DATA_WEEK = 0x06000200;
     public static final int DB_REQ_HISTORY_DATA_MONTH = 0x06000300;
@@ -358,7 +382,15 @@ public final class RscpTag {
     public static final int DB_CONSUMED_PRODUCTION = 0x0680000C;
     public static final int DB_AUTARKY = 0x0680000D;
     public static final int DB_VALUE_CONTAINER = 0x06800020;
+    /**
+     * The home appliance tags.
+     */
+
     public static final int HA_REQ_ACTUATOR_STATES = 0x09000010;
+    /**
+     * The device information tags.
+     */
+
     public static final int INFO_REQ_SERIAL_NUMBER = 0x0A000001;
     public static final int INFO_REQ_PRODUCTION_DATE = 0x0A000002;
     public static final int INFO_REQ_TIME_ZONE = 0x0A000010;
@@ -405,6 +437,10 @@ public final class RscpTag {
      * {@code WB_REQ_DATA} carries the wallbox index and these tags, each one a parameter of its own;
      * without them the device answers the container with its index only.
      */
+    /**
+     * The wallbox tags: state, session and counters.
+     */
+
     public static final int WB_REQ_ENERGY_ALL = 0x0E000001;
     public static final int WB_REQ_PM_ACTIVE_PHASES = 0x0E00000F;
     public static final int WB_REQ_PM_ENERGY_L1 = 0x0E000012;
@@ -458,6 +494,10 @@ public final class RscpTag {
      * The container asks for the data points listed as its parameters and answers in {@link #SE_EP_RESERVE},
      * so asking for the container alone yields the parameters the device reports by itself.
      */
+    /**
+     * The parameter tags of the device settings.
+     */
+
     public static final int SE_REQ_EP_RESERVE = 0x1B000009;
 
     /** The container the reserve values arrive in. */
@@ -819,6 +859,9 @@ public final class RscpTag {
     private RscpTag() {
     }
 
+    /**
+     * The name of the tag, or its hex value when it is unknown.
+     */
     public static String nameOf(int tag) {
         String name = NAMES.get(tag);
         return name != null ? name : String.format("UNKNOWN_0x%08X", tag);
@@ -860,6 +903,9 @@ public final class RscpTag {
         return requestTag != 0 ? requestTag : tag;
     }
 
+    /**
+     * Whether the tag is a request the binding sends.
+     */
     public static boolean isRequestTag(int tag) {
         String name = NAMES.get(tag);
         return name != null && name.contains("REQ");

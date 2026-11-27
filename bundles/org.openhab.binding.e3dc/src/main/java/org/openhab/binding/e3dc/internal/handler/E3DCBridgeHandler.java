@@ -201,6 +201,9 @@ public class E3DCBridgeHandler extends BaseBridgeHandler {
     /** Time the last refresh command started a poll, so a burst of refreshes becomes one poll. */
     private final AtomicLong lastRefreshMillis = new AtomicLong();
 
+    /**
+     * Creates the handler of the bridge.
+     */
     public E3DCBridgeHandler(Bridge bridge, TimeZoneProvider timeZoneProvider) {
         super(bridge);
         this.timeZoneProvider = timeZoneProvider;
@@ -706,12 +709,18 @@ public class E3DCBridgeHandler extends BaseBridgeHandler {
     }
 
     /** The request for the history of one whole calendar year, used by the history fetch of the thing action. */
+    /**
+     * The request that reads the history of one year.
+     */
     public static RscpValue yearHistoryRequest(int year, ZoneId zone) {
         LocalDate start = LocalDate.of(year, 1, 1);
         return periodHistoryRequest(RscpTag.DB_HISTORY_DATA_YEAR, start, start.lengthOfYear(), zone);
     }
 
     /** The request for the history of a finished period, used by the history fetch of the thing action. */
+    /**
+     * The request that reads the days of one period.
+     */
     public static RscpValue periodHistoryRequest(int container, LocalDate start, int days, ZoneId zone) {
         Instant startTime = start.atStartOfDay(zone).toInstant();
         return historyPeriodRequest(RscpTag.pollTagFor(container), startTime, Duration.ofDays(days).toSeconds());
@@ -798,6 +807,9 @@ public class E3DCBridgeHandler extends BaseBridgeHandler {
     }
 
     /** Sends one RSCP request over the existing connection. Used by child handlers for commands. */
+    /**
+     * Sends the request and returns the answer, or throws when the device does not answer.
+     */
     public RscpValue sendRequest(List<RscpValue> items) throws RscpException {
         RscpClient current = client;
         if (current == null || !current.isConnected()) {
@@ -807,29 +819,47 @@ public class E3DCBridgeHandler extends BaseBridgeHandler {
     }
 
     /** The interval between two poll cycles in seconds. */
+    /**
+     * The poll interval in seconds.
+     */
     public int getRefreshIntervalSeconds() {
         E3DCBridgeConfiguration current = config;
         return current != null ? current.refreshIntervalSeconds() : 60;
     }
 
+    /**
+     * Whether the connection to the device exists.
+     */
     public boolean isConnected() {
         RscpClient current = client;
         return current != null && current.isConnected();
     }
 
     /** Registers something to run each time the connection to the device has come up, as the discovery does. */
+    /**
+     * Adds a listener that is told when the bridge came online.
+     */
     public void addOnlineListener(Runnable listener) {
         onlineListeners.add(listener);
     }
 
+    /**
+     * Removes the online listener.
+     */
     public void removeOnlineListener(Runnable listener) {
         onlineListeners.remove(listener);
     }
 
+    /**
+     * Registers a child handler that receives the poll answers.
+     */
     public void registerDataListener(E3DCDataListener listener) {
         listeners.add(listener);
     }
 
+    /**
+     * Removes the child handler.
+     */
     public void unregisterDataListener(E3DCDataListener listener) {
         listeners.remove(listener);
     }
