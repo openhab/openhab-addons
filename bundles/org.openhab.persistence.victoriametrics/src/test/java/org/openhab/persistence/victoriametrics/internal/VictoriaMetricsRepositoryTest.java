@@ -27,6 +27,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -187,6 +189,44 @@ public class VictoriaMetricsRepositoryTest {
     public void writeIsNotRetriedOnBadRequest() {
         when(response.getStatus()).thenReturn(400);
         assertThat(createRepository().write(List.of(createPoint())), is(true));
+    }
+
+    @Test
+    public void closeAbortsRunningRequest() throws Exception {
+        CountDownLatch sendStarted = new CountDownLatch(1);
+        CountDownLatch aborted = new CountDownLatch(1);
+        when(request.send()).thenAnswer(invocation -> {
+            sendStarted.countDown();
+            if (!aborted.await(20, TimeUnit.SECONDS)) {
+                return response;
+            }
+            throw new ExecutionException(new IOException("aborted"));
+        });
+        when(request.abort(any())).thenAnswer(invocation -> {
+            aborted.countDown();
+            return CompletableFuture.completedFuture(true);
+        });
+        VictoriaMetricsRepository repository = createRepository();
+
+        CompletableFuture<Boolean> write = CompletableFuture
+                .supplyAsync(() -> repository.write(List.of(createPoint())));
+        assertThat(sendStarted.await(10, TimeUnit.SECONDS), is(true));
+        repository.close();
+
+        assertThat(write.get(10, TimeUnit.SECONDS), is(false));
+        assertThat(repository.isConnected(), is(false));
+    }
+
+    @Test
+    public void requestsAfterCloseAreRejected() throws Exception {
+        when(response.getStatus()).thenReturn(200);
+        VictoriaMetricsRepository repository = createRepository();
+        repository.close();
+
+        assertThat(repository.connect(), is(false));
+        assertThat(repository.write(List.of(createPoint())), is(false));
+        assertThat(repository.getStringStates("Mode", "Mode"), nullValue());
+        verify(request, never()).send();
     }
 
     @Test

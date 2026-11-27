@@ -16,6 +16,7 @@ import static org.openhab.persistence.victoriametrics.internal.VictoriaMetricsCo
 
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 import java.time.Instant;
 import java.util.HashSet;
 import java.util.List;
@@ -27,6 +28,7 @@ import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -84,7 +86,8 @@ import org.slf4j.LoggerFactory;
  * @author Franz - Initial contribution
  * @author Joan Pujol Espinar - Original InfluxDB implementation
  * @author Michael Weger - Use Jetty, fix query with alias, store numeric states, components and string states, flush
- *         pending states on deactivation, bound the queue, protect internal labels, convert filter units
+ *         pending states on deactivation within a deadline, bound the queue, protect internal labels, convert filter
+ *         units
  */
 @NonNullByDefault
 @Component(service = { PersistenceService.class,
@@ -97,7 +100,10 @@ public class VictoriaMetricsPersistenceService implements QueryablePersistenceSe
     private final Logger logger = LoggerFactory.getLogger(VictoriaMetricsPersistenceService.class);
 
     private static final int COMMIT_INTERVAL = 3; // in s
-    private static final int STOP_TIMEOUT = 10; // in s
+    // one deadline for writing the pending states on deactivation, long enough for one complete request
+    private static final Duration STOP_TIMEOUT = Duration.ofSeconds(30);
+    // aborted requests fail at once, this only bounds the wait for the commit to return after the abort
+    private static final Duration ABORT_TIMEOUT = Duration.ofSeconds(5);
     // default -maxLabelValueLen of VictoriaMetrics
     private static final int MAX_STRING_STATE_BYTES = 4096;
     // limits the size of a single import request, e.g. when writing the backlog after an outage
@@ -119,6 +125,8 @@ public class VictoriaMetricsPersistenceService implements QueryablePersistenceSe
     private volatile boolean serviceActivated;
 
     // storage
+    private final ScheduledExecutorService scheduler = ThreadPoolManager
+            .getScheduledPool("org.openhab.victoriametrics");
     private final ScheduledFuture<?> storeJob;
     private final VictoriaMetricsPointQueue pointsQueue;
     // points dropped from the full queue since the last successful write, guarded by commitLock
@@ -145,8 +153,8 @@ public class VictoriaMetricsPersistenceService implements QueryablePersistenceSe
             this.stringStateLimiter = new VictoriaMetricsStringStateLimiter(configuration.getMaxStringStates(),
                     repository::getStringStates);
             this.repository.connect();
-            this.storeJob = ThreadPoolManager.getScheduledPool("org.openhab.victoriametrics")
-                    .scheduleWithFixedDelay(this::commit, COMMIT_INTERVAL, COMMIT_INTERVAL, TimeUnit.SECONDS);
+            this.storeJob = scheduler.scheduleWithFixedDelay(this::commit, COMMIT_INTERVAL, COMMIT_INTERVAL,
+                    TimeUnit.SECONDS);
             serviceActivated = true;
         } else {
             throw new IllegalArgumentException("Configuration invalid.");
@@ -160,23 +168,37 @@ public class VictoriaMetricsPersistenceService implements QueryablePersistenceSe
         return new VictoriaMetricsRepository(configuration, metricNameResolver, httpClient);
     }
 
+    // Visible for testing
+    protected Duration getStopTimeout() {
+        return STOP_TIMEOUT;
+    }
+
     /**
-     * Disconnect from database when service is deactivated
+     * Write the pending states and close the repository when the service is deactivated
+     * <p>
+     * New states are rejected at once. The pending conversions, a running commit and the final commit share one
+     * deadline: when it is reached, the running requests are aborted, so that no write or re-queue happens after the
+     * deactivation, and the states that are still queued are reported as lost.
      */
     @Deactivate
     public void deactivate() {
+        Duration stopTimeout = getStopTimeout();
+        long deadline = System.nanoTime() + stopTimeout.toNanos();
         List<CompletableFuture<@Nullable Void>> stores;
         synchronized (pendingStores) {
             serviceActivated = false;
             stores = List.copyOf(pendingStores);
         }
         storeJob.cancel(false);
+        ScheduledFuture<?> closeJob = scheduler.schedule(repository::close, stopTimeout.toNanos(),
+                TimeUnit.NANOSECONDS);
 
         try {
             // conversions run asynchronously, so their points may not be queued yet
-            CompletableFuture.allOf(stores.toArray(new CompletableFuture<?>[0])).get(STOP_TIMEOUT, TimeUnit.SECONDS);
+            CompletableFuture.allOf(stores.toArray(new CompletableFuture<?>[0])).get(deadline - System.nanoTime(),
+                    TimeUnit.NANOSECONDS);
         } catch (TimeoutException e) {
-            logger.warn("VictoriaMetrics did not finish converting states within {} s.", STOP_TIMEOUT);
+            logger.warn("VictoriaMetrics did not finish converting states within {} s.", stopTimeout.toSeconds());
         } catch (ExecutionException e) {
             // not possible, the pending stores are only completed normally
         } catch (InterruptedException e) {
@@ -184,8 +206,8 @@ public class VictoriaMetricsPersistenceService implements QueryablePersistenceSe
         }
 
         try {
-            // a running scheduled commit may still write or re-queue points
-            if (commitLock.tryLock(STOP_TIMEOUT, TimeUnit.SECONDS)) {
+            // a running scheduled commit may still write or re-queue points, at the deadline its requests are aborted
+            if (commitLock.tryLock(deadline - System.nanoTime() + ABORT_TIMEOUT.toNanos(), TimeUnit.NANOSECONDS)) {
                 try {
                     commit(); // ensure we at least tried to store the data
                     if (droppedPoints > 0) {
@@ -196,17 +218,19 @@ public class VictoriaMetricsPersistenceService implements QueryablePersistenceSe
                 }
             } else {
                 logger.warn("VictoriaMetrics did not finish writing within {} s, the final commit is skipped.",
-                        STOP_TIMEOUT);
+                        stopTimeout.toSeconds());
             }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
+        } finally {
+            closeJob.cancel(false);
+            repository.close();
         }
 
         if (!pointsQueue.isEmpty()) {
-            logger.warn("VictoriaMetrics failed to finally store {} points.", pointsQueue.size());
+            logger.warn("VictoriaMetrics failed to store {} states within {} s, they are lost.", pointsQueue.size(),
+                    stopTimeout.toSeconds());
         }
-
-        repository.disconnect();
         logger.info("VictoriaMetrics persistence service stopped.");
     }
 

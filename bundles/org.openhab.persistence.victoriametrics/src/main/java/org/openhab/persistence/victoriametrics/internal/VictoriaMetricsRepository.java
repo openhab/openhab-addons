@@ -30,6 +30,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -62,7 +63,8 @@ import com.google.gson.JsonParser;
  *
  * @author Joan Pujol Espinar - Initial contribution
  * @author Franz - Initial VictoriaMetrics adaptation
- * @author Michael Weger - Use Jetty, query raw samples, join state components, read string states
+ * @author Michael Weger - Use Jetty, query raw samples, join state components, read string states, abort requests on
+ *         stop
  */
 @NonNullByDefault
 public class VictoriaMetricsRepository {
@@ -77,6 +79,8 @@ public class VictoriaMetricsRepository {
     private final HttpClient httpClient;
     private final String baseUrl;
     private volatile boolean connected;
+    private volatile boolean closed;
+    private final Set<Request> runningRequests = ConcurrentHashMap.newKeySet();
 
     public VictoriaMetricsRepository(VictoriaMetricsConfiguration configuration,
             VictoriaMetricsMetricNameResolver metricNameResolver, HttpClient httpClient) {
@@ -93,7 +97,7 @@ public class VictoriaMetricsRepository {
      * @return True if it's connected, otherwise false
      */
     public boolean isConnected() {
-        return connected;
+        return connected && !closed;
     }
 
     /**
@@ -103,7 +107,7 @@ public class VictoriaMetricsRepository {
      */
     public boolean connect() {
         try {
-            ContentResponse response = newRequest(PATH_HEALTH).send();
+            ContentResponse response = send(newRequest(PATH_HEALTH));
             connected = response.getStatus() == HttpStatus.OK_200;
             if (connected) {
                 logger.debug("Successfully connected to VictoriaMetrics at {}", baseUrl);
@@ -128,6 +132,36 @@ public class VictoriaMetricsRepository {
     }
 
     /**
+     * Abort the running requests and reject all further requests
+     * <p>
+     * Used when the service stops, so that a hanging request cannot write or re-queue points after the deactivation.
+     * The shared {@link HttpClient} is not stopped, only the requests of this repository are aborted.
+     */
+    public void close() {
+        closed = true;
+        connected = false;
+        runningRequests.forEach(request -> request.abort(new IOException("VictoriaMetrics persistence stopped")));
+    }
+
+    private ContentResponse send(Request request) throws InterruptedException, TimeoutException, ExecutionException {
+        register(request);
+        try {
+            return request.send();
+        } finally {
+            runningRequests.remove(request);
+        }
+    }
+
+    private void register(Request request) throws ExecutionException {
+        // registered before checking closed, so that close() either sees the request or the request sees closed
+        runningRequests.add(request);
+        if (closed) {
+            runningRequests.remove(request);
+            throw new ExecutionException(new IOException("VictoriaMetrics persistence stopped"));
+        }
+    }
+
+    /**
      * Write points to database
      *
      * @param points {@link List<VictoriaMetricsPoint>} to write
@@ -141,8 +175,8 @@ public class VictoriaMetricsRepository {
         String body = points.stream().map(VictoriaMetricsPoint::toPrometheusFormat)
                 .collect(Collectors.joining("\n", "", "\n"));
         try {
-            ContentResponse response = newRequest(PATH_IMPORT).method(HttpMethod.POST)
-                    .body(new StringRequestContent("text/plain", body, StandardCharsets.UTF_8)).send();
+            ContentResponse response = send(newRequest(PATH_IMPORT).method(HttpMethod.POST)
+                    .body(new StringRequestContent("text/plain", body, StandardCharsets.UTF_8)));
             int status = response.getStatus();
             if (HttpStatus.isSuccess(status)) {
                 return true;
@@ -202,9 +236,10 @@ public class VictoriaMetricsRepository {
 
         // the export can be large, so stream it instead of buffering the complete response
         InputStreamResponseListener listener = new InputStreamResponseListener();
-        request.send(listener);
         boolean completed = false;
         try {
+            register(request);
+            request.send(listener);
             Response response = listener.get(REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS);
             try (InputStream inputStream = listener.getInputStream()) {
                 if (response.getStatus() != HttpStatus.OK_200) {
@@ -219,6 +254,7 @@ public class VictoriaMetricsRepository {
             if (!completed) {
                 request.abort(new IOException("Export aborted"));
             }
+            runningRequests.remove(request);
         }
     }
 
@@ -326,9 +362,9 @@ public class VictoriaMetricsRepository {
     private @Nullable Set<String> getLabelValues(String labelName, String selector, Instant start) {
         try {
             // the end defaults to the current time, which would exclude future states
-            ContentResponse response = newRequest(PATH_LABEL_VALUES.formatted(labelName)).param("match[]", selector)
-                    .param("start", formatTimestamp(start))
-                    .param("end", formatTimestamp(VictoriaMetricsFilterCriteriaQueryCreator.OPEN_END)).send();
+            ContentResponse response = send(newRequest(PATH_LABEL_VALUES.formatted(labelName))
+                    .param("match[]", selector).param("start", formatTimestamp(start))
+                    .param("end", formatTimestamp(VictoriaMetricsFilterCriteriaQueryCreator.OPEN_END)));
             if (response.getStatus() != HttpStatus.OK_200) {
                 logger.warn("Failed to query values of label '{}': HTTP status {}: {}", labelName, response.getStatus(),
                         response.getContentAsString());

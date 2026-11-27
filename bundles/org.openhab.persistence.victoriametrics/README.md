@@ -89,6 +89,9 @@ When the queue is full, the oldest states are dropped by default, so the most re
 Set `queueOverflow=dropNewest` to keep the oldest states instead.
 A warning is logged when states start being dropped, and the number of dropped states is logged when writing succeeds again or the service stops.
 
+When the service stops, e.g. on shutdown or when its configuration changes, it writes the pending states for at most 30 seconds.
+Writes still running after 30 seconds are aborted, and the states that could not be written are logged as lost.
+
 ### Additional configuration for customized storage options in VictoriaMetrics
 
 By default, the plugin writes the data to a metric name equal to the `item's name` and adds a label with key `item` and value `item's name` as well.

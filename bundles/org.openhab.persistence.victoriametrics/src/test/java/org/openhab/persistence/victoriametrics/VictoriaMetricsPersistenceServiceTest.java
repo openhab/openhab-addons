@@ -21,6 +21,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.openhab.persistence.victoriametrics.internal.VictoriaMetricsConfiguration.*;
 
+import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -28,6 +29,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.measure.quantity.Temperature;
 
@@ -56,7 +58,7 @@ import org.openhab.persistence.victoriametrics.internal.VictoriaMetricsRepositor
 /**
  * @author Joan Pujol Espinar - Initial contribution
  * @author Franz - Initial VictoriaMetrics adaptation
- * @author Michael Weger - Add configuration validation, deactivation, queue and filter unit tests
+ * @author Michael Weger - Add configuration validation, deactivation, stop deadline, queue and filter unit tests
  */
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -194,10 +196,10 @@ public class VictoriaMetricsPersistenceServiceTest {
     }
 
     @Test
-    public void deactivateShouldDisconnectRepository() {
+    public void deactivateShouldCloseRepository() {
         VictoriaMetricsPersistenceService instance = getService(VALID_CONFIGURATION_WITHOUT_AUTHENTICATION);
         instance.deactivate();
-        verify(repositoryMock).disconnect();
+        verify(repositoryMock).close();
     }
 
     @Test
@@ -262,7 +264,42 @@ public class VictoriaMetricsPersistenceServiceTest {
         deactivation.get(30, TimeUnit.SECONDS);
 
         verify(repositoryMock, times(1)).write(any());
-        verify(repositoryMock).disconnect();
+        verify(repositoryMock).close();
+    }
+
+    @Test
+    public void deactivateAbortsHangingWriteAtDeadline() throws Exception {
+        VictoriaMetricsPersistenceService instance = getService(VALID_CONFIGURATION_WITHOUT_AUTHENTICATION,
+                Duration.ofSeconds(1));
+        CountDownLatch closed = new CountDownLatch(1);
+        CountDownLatch writeStarted = new CountDownLatch(1);
+        AtomicBoolean finalCommitRan = new AtomicBoolean();
+        when(repositoryMock.isConnected()).thenAnswer(invocation -> {
+            // only the final commit checks the connection after the abort, it runs once the aborted commit returned
+            finalCommitRan.compareAndSet(false, closed.getCount() == 0);
+            return closed.getCount() > 0;
+        });
+        doAnswer(invocation -> {
+            closed.countDown();
+            return null;
+        }).when(repositoryMock).close();
+        // like a request that only ends when it is aborted
+        when(repositoryMock.write(any())).thenAnswer(invocation -> {
+            writeStarted.countDown();
+            closed.await(20, TimeUnit.SECONDS);
+            return false;
+        });
+
+        instance.store(ItemTestHelper.createNumberItem("number", 5));
+        // the scheduled commit runs every 3 seconds
+        assertTrue(writeStarted.await(10, TimeUnit.SECONDS));
+        CompletableFuture.runAsync(instance::deactivate).get(10, TimeUnit.SECONDS);
+
+        assertThat(closed.getCount(), is(0L));
+        // the running commit was aborted at the deadline instead of making the final commit wait for the lock
+        assertTrue(finalCommitRan.get());
+        // the re-queued point is not written after the abort
+        verify(repositoryMock, times(1)).write(any());
     }
 
     @Test
@@ -302,11 +339,20 @@ public class VictoriaMetricsPersistenceServiceTest {
     }
 
     private VictoriaMetricsPersistenceService getService(Map<String, Object> config) {
+        return getService(config, Duration.ofSeconds(30));
+    }
+
+    private VictoriaMetricsPersistenceService getService(Map<String, Object> config, Duration stopTimeout) {
         return new VictoriaMetricsPersistenceService(itemRegistry, metadataService, mock(HttpClientFactory.class),
                 config) {
             @Override
             protected VictoriaMetricsRepository createVictoriaMetricsRepository() {
                 return repositoryMock;
+            }
+
+            @Override
+            protected Duration getStopTimeout() {
+                return stopTimeout;
             }
         };
     }
