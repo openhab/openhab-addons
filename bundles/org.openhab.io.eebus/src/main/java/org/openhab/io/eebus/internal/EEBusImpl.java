@@ -153,8 +153,7 @@ public class EEBusImpl implements EEBus, ReadyService.ReadyTracker {
             this.shipCommunication = communication;
 
             Device newDevice = Device.getBuilder().withDeviceType(deviceType).withCommunication(communication)
-                    .withId(settings.deviceId).withDiscoverDevices(false).addEntity().setType(entityType)
-                    .applyToDevice().build();
+                    .withId(settings.deviceId).addEntity().setType(entityType).applyToDevice().build();
             this.device = newDevice;
 
             // Device.build() also adds an implicit DEVICE_INFORMATION entity alongside the one
