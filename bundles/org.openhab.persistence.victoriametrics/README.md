@@ -198,6 +198,11 @@ The states do not need to be configured, but every distinct state creates a new 
 A few states per item have no measurable impact, but each series uses space in the index, so free text (messages, JSON, timestamps) would make the index grow without limit.
 To protect the database, only the first `maxStringStates` (default 50) distinct states of an item are stored.
 Further new states are not stored and a warning is logged once per item.
+
+To apply the limit across restarts, the states already stored are read from the index once per item after the service starts.
+On a large database, this lookup can exceed the limit of VictoriaMetrics for label queries (`-search.maxLabelsAPIDuration`, default 5 seconds), especially while openHAB restores the item states at startup.
+The string states of the item are then kept in the queue and retried with the next write, while the states of all other items are written.
+If the lookup fails 5 times in a row, a warning is logged; increasing `-search.maxLabelsAPIDuration` (e.g. to `30s`) avoids this.
 The states already stored are read from VictoriaMetrics, so the limit also applies after a restart.
 The empty string does not count towards the limit.
 States longer than 4096 bytes are not stored, because VictoriaMetrics ignores them by default (`-maxLabelValueLen`).

@@ -15,6 +15,7 @@ package org.openhab.persistence.victoriametrics.internal;
 import static org.openhab.persistence.victoriametrics.internal.VictoriaMetricsConstants.TAG_ITEM_NAME;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -35,17 +36,21 @@ import org.slf4j.LoggerFactory;
  * series, so new states are dropped once an item has reached the configured maximum.
  * <p>
  * The states already stored are read from the database the first time a series is written, so the limit also applies
- * across restarts.
+ * across restarts. Until they can be read, the string states of the item are deferred.
  *
  * @author Michael Weger - Initial contribution
  */
 @NonNullByDefault
 public class VictoriaMetricsStringStateLimiter {
+    static final int WARN_AFTER_FAILURES = 5;
+
     private final Logger logger = LoggerFactory.getLogger(VictoriaMetricsStringStateLimiter.class);
     private final int maxStates;
     private final BiFunction<String, String, @Nullable Set<String>> storedStatesLoader;
     private final Map<SeriesKey, Set<String>> knownStates = new ConcurrentHashMap<>();
     private final Set<SeriesKey> loggedLimitedSeries = ConcurrentHashMap.newKeySet();
+    // consecutive failures to read the stored states, per series
+    private final Map<SeriesKey, Integer> failures = new ConcurrentHashMap<>();
 
     /**
      * @param maxStates the maximum number of distinct string states per item
@@ -60,42 +65,71 @@ public class VictoriaMetricsStringStateLimiter {
 
     /**
      * Remove the string states exceeding the limit from the points to write
+     * <p>
+     * If the stored states of an item cannot be read, its string states are returned as deferred, so they can be
+     * retried later without delaying the states of all other items.
      *
      * @param points the points to write
-     * @return the points to write, or <code>null</code> if the stored states could not be read and the points should
-     *         be retried later
+     * @return the points to write now and the points to retry later
      */
-    public @Nullable List<VictoriaMetricsPoint> filter(List<VictoriaMetricsPoint> points) {
-        List<VictoriaMetricsPoint> result = new ArrayList<>(points.size());
+    public Result filter(List<VictoriaMetricsPoint> points) {
+        List<VictoriaMetricsPoint> accepted = new ArrayList<>(points.size());
+        List<VictoriaMetricsPoint> deferred = new ArrayList<>();
+        // the stored states are read at most once per call, a failed read is not repeated for the following points
+        Set<SeriesKey> failedSeries = new HashSet<>();
         for (VictoriaMetricsPoint point : points) {
             String stringState = point.getStringState();
             // the empty string state is stored without label, so it does not add a label value
             if (stringState == null || stringState.isEmpty()) {
-                result.add(point);
+                accepted.add(point);
                 continue;
             }
             SeriesKey key = new SeriesKey(point.getMetricName(),
                     Objects.requireNonNullElse(point.getTags().get(TAG_ITEM_NAME), ""));
-            Set<String> states = knownStates.get(key);
+            Set<String> states = failedSeries.contains(key) ? null : getStates(key);
             if (states == null) {
-                // read outside of any lock, the database request may take a while
-                Set<String> storedStates = storedStatesLoader.apply(key.metricName(), key.itemName());
-                if (storedStates == null) {
-                    return null;
+                if (failedSeries.add(key)) {
+                    countFailure(key);
                 }
-                Set<String> loadedStates = ConcurrentHashMap.newKeySet();
-                loadedStates.addAll(storedStates);
-                Set<String> existingStates = knownStates.putIfAbsent(key, loadedStates);
-                states = existingStates != null ? existingStates : loadedStates;
-            }
-            if (accept(states, stringState)) {
-                result.add(point);
+                deferred.add(point);
+            } else if (accept(states, stringState)) {
+                accepted.add(point);
             } else if (loggedLimitedSeries.add(key)) {
                 logger.warn("Item '{}' has reached the maximum of {} distinct string states, new states are not stored",
                         key.itemName(), maxStates);
             }
         }
-        return result;
+        return new Result(accepted, deferred);
+    }
+
+    private @Nullable Set<String> getStates(SeriesKey key) {
+        Set<String> states = knownStates.get(key);
+        if (states != null) {
+            return states;
+        }
+        // read outside of any lock, the database request may take a while
+        Set<String> storedStates = storedStatesLoader.apply(key.metricName(), key.itemName());
+        if (storedStates == null) {
+            return null;
+        }
+        failures.remove(key);
+        Set<String> loadedStates = ConcurrentHashMap.newKeySet();
+        loadedStates.addAll(storedStates);
+        Set<String> existingStates = knownStates.putIfAbsent(key, loadedStates);
+        return existingStates != null ? existingStates : loadedStates;
+    }
+
+    private void countFailure(SeriesKey key) {
+        int count = failures.merge(key, 1, Integer::sum);
+        // a single failure is expected when the database is busy, e.g. while openHAB restores the item states
+        if (count == WARN_AFTER_FAILURES) {
+            logger.warn("Failed {} times in a row to read the stored string states of item '{}', its string states are "
+                    + "kept in the queue and retried. Reading them may exceed '-search.maxLabelsAPIDuration' of "
+                    + "VictoriaMetrics.", count, key.itemName());
+        } else {
+            logger.debug("Failed to read the stored string states of item '{}', its string states are retried",
+                    key.itemName());
+        }
     }
 
     private boolean accept(Set<String> states, String stringState) {
@@ -109,6 +143,15 @@ public class VictoriaMetricsStringStateLimiter {
             states.add(stringState);
             return true;
         }
+    }
+
+    /**
+     * The result of {@link VictoriaMetricsStringStateLimiter#filter(List)}
+     *
+     * @param accepted the points to write now
+     * @param deferred the string states of items whose stored states could not be read, to retry later
+     */
+    public record Result(List<VictoriaMetricsPoint> accepted, List<VictoriaMetricsPoint> deferred) {
     }
 
     private record SeriesKey(String metricName, String itemName) {

@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -61,10 +60,26 @@ public class VictoriaMetricsStringStateLimiterTest {
         storedStates.put("Mode", null);
         VictoriaMetricsStringStateLimiter limiter = createLimiter(3);
 
-        assertThat(limiter.filter(List.of(number("Mode"), point("Mode", "A"))), nullValue());
+        VictoriaMetricsStringStateLimiter.Result result = limiter
+                .filter(List.of(number("Mode"), point("Mode", "A"), point("Mode", "B")));
+        assertThat(states(result), contains((String) null));
+        assertThat(deferredStates(result), contains("A", "B"));
+        // a failed read is not repeated for the following points of the same item
+        assertThat(loadedItems, contains("Mode"));
 
         storedStates.put("Mode", Set.of());
-        assertThat(states(limiter.filter(List.of(number("Mode"), point("Mode", "A")))), contains(null, "A"));
+        assertThat(states(limiter.filter(List.of(point("Mode", "A"), point("Mode", "B")))), contains("A", "B"));
+    }
+
+    @Test
+    public void failedReadOnlyDefersStatesOfThatItem() {
+        storedStates.put("Mode", null);
+        VictoriaMetricsStringStateLimiter limiter = createLimiter(3);
+
+        VictoriaMetricsStringStateLimiter.Result result = limiter
+                .filter(List.of(point("Mode", "A"), point("Other", "B"), number("Number")));
+        assertThat(states(result), contains("B", null));
+        assertThat(deferredStates(result), contains("A"));
     }
 
     @Test
@@ -100,7 +115,11 @@ public class VictoriaMetricsStringStateLimiterTest {
                 .build();
     }
 
-    private static List<@Nullable String> states(@Nullable List<VictoriaMetricsPoint> points) {
-        return Objects.requireNonNull(points).stream().map(VictoriaMetricsPoint::getStringState).toList();
+    private static List<@Nullable String> states(VictoriaMetricsStringStateLimiter.Result result) {
+        return result.accepted().stream().map(VictoriaMetricsPoint::getStringState).toList();
+    }
+
+    private static List<@Nullable String> deferredStates(VictoriaMetricsStringStateLimiter.Result result) {
+        return result.deferred().stream().map(VictoriaMetricsPoint::getStringState).toList();
     }
 }

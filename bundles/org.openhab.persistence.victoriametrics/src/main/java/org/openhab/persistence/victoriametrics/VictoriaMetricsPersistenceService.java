@@ -18,6 +18,7 @@ import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
@@ -87,7 +88,7 @@ import org.slf4j.LoggerFactory;
  * @author Joan Pujol Espinar - Original InfluxDB implementation
  * @author Michael Weger - Use Jetty, fix query with alias, store numeric states, components and string states, flush
  *         pending states on deactivation within a deadline, bound the queue, protect internal labels, convert filter
- *         and stored units
+ *         and stored units, defer string states of items whose stored states cannot be read
  */
 @NonNullByDefault
 @Component(service = { PersistenceService.class,
@@ -390,26 +391,29 @@ public class VictoriaMetricsPersistenceService implements QueryablePersistenceSe
             }
             // points queued while writing are left for the next commit
             int remaining = pointsQueue.size();
-            while (remaining > 0) {
-                List<VictoriaMetricsPoint> queuedPoints = pointsQueue.poll(Math.min(remaining, MAX_BATCH_SIZE));
-                if (queuedPoints.isEmpty()) {
-                    break;
+            // string states of items whose stored states could not be read are retried with the next commit, so a
+            // slow read is not repeated for every batch and does not delay the states of other items
+            List<VictoriaMetricsPoint> deferredPoints = new ArrayList<>();
+            try {
+                while (remaining > 0) {
+                    List<VictoriaMetricsPoint> queuedPoints = pointsQueue.poll(Math.min(remaining, MAX_BATCH_SIZE));
+                    if (queuedPoints.isEmpty()) {
+                        break;
+                    }
+                    remaining -= queuedPoints.size();
+                    VictoriaMetricsStringStateLimiter.Result filtered = stringStateLimiter.filter(queuedPoints);
+                    deferredPoints.addAll(filtered.deferred());
+                    List<VictoriaMetricsPoint> points = filtered.accepted();
+                    if (!repository.write(points)) {
+                        logger.warn("Re-queuing {} elements, failed to write batch.", points.size());
+                        pointsQueue.requeue(points);
+                        repository.disconnect();
+                        return;
+                    }
+                    logger.trace("Wrote {} elements to database", points.size());
                 }
-                remaining -= queuedPoints.size();
-                List<VictoriaMetricsPoint> points = stringStateLimiter.filter(queuedPoints);
-                if (points == null) {
-                    logger.warn("Re-queuing {} elements, failed to read the stored string states.",
-                            queuedPoints.size());
-                    pointsQueue.requeue(queuedPoints);
-                    repository.disconnect();
-                    return;
-                } else if (!repository.write(points)) {
-                    logger.warn("Re-queuing {} elements, failed to write batch.", points.size());
-                    pointsQueue.requeue(points);
-                    repository.disconnect();
-                    return;
-                }
-                logger.trace("Wrote {} elements to database", points.size());
+            } finally {
+                pointsQueue.requeue(deferredPoints);
             }
             countDroppedPoints();
             if (droppedPoints > 0) {

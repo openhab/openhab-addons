@@ -24,6 +24,7 @@ import static org.openhab.persistence.victoriametrics.internal.VictoriaMetricsCo
 import java.time.Duration;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CountDownLatch;
@@ -43,9 +44,13 @@ import org.mockito.quality.Strictness;
 import org.openhab.core.i18n.UnitProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.items.ItemRegistry;
+import org.openhab.core.items.Metadata;
+import org.openhab.core.items.MetadataKey;
 import org.openhab.core.items.MetadataRegistry;
 import org.openhab.core.library.items.NumberItem;
+import org.openhab.core.library.items.StringItem;
 import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.ImperialUnits;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.persistence.FilterCriteria;
@@ -53,12 +58,14 @@ import org.openhab.core.persistence.ModifiablePersistenceService;
 import org.openhab.persistence.victoriametrics.internal.ItemTestHelper;
 import org.openhab.persistence.victoriametrics.internal.UnexpectedConditionException;
 import org.openhab.persistence.victoriametrics.internal.VictoriaMetricsMetadataService;
+import org.openhab.persistence.victoriametrics.internal.VictoriaMetricsPoint;
 import org.openhab.persistence.victoriametrics.internal.VictoriaMetricsRepository;
 
 /**
  * @author Joan Pujol Espinar - Initial contribution
  * @author Franz - Initial VictoriaMetrics adaptation
- * @author Michael Weger - Add configuration validation, deactivation, stop deadline, queue and filter unit tests
+ * @author Michael Weger - Add configuration validation, deactivation, stop deadline, queue, filter unit and string
+ *         state read tests
  */
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -159,6 +166,38 @@ public class VictoriaMetricsPersistenceServiceTest {
 
         assertThat(batchSizes.stream().mapToInt(Integer::intValue).sum(), is(10_001));
         assertThat(batchSizes, everyItem(lessThanOrEqualTo(10_000)));
+    }
+
+    @Test
+    public void failedStringStateReadOnlyDefersStatesOfThatItem() throws Exception {
+        VictoriaMetricsPersistenceService instance = getService(VALID_CONFIGURATION_WITHOUT_AUTHENTICATION);
+        when(repositoryMock.isConnected()).thenReturn(true);
+        MetadataKey modeKey = new MetadataKey(VictoriaMetricsPersistenceService.SERVICE_NAME, "Mode");
+        when(metadataRegistry.get(modeKey)).thenReturn(new Metadata(modeKey, "", Map.of("stringStates", true)));
+        // the first read fails, e.g. because the database is busy, the retry succeeds
+        when(repositoryMock.getStringStates("Mode", "Mode")).thenReturn(null).thenReturn(Set.of());
+        List<String> written = new CopyOnWriteArrayList<>();
+        when(repositoryMock.write(any())).thenAnswer(invocation -> {
+            invocation.<List<VictoriaMetricsPoint>> getArgument(0).forEach(point -> written.add(point.getMetricName()));
+            return true;
+        });
+
+        StringItem mode = new StringItem("Mode");
+        mode.setState(new StringType("IDLE"));
+        instance.store(mode);
+        instance.store(ItemTestHelper.createNumberItem("number", 5));
+
+        // the scheduled commit (every 3 seconds) writes the other item, although the read for Mode failed
+        long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(20);
+        while (!written.contains("number") && System.nanoTime() < deadline) {
+            Thread.sleep(100);
+        }
+        assertThat(written, is(List.of("number")));
+        verify(repositoryMock, never()).disconnect();
+
+        // the deferred string state is written with the next commit
+        CompletableFuture.runAsync(instance::deactivate).get(30, TimeUnit.SECONDS);
+        assertThat(written, is(List.of("number", "Mode")));
     }
 
     @Test

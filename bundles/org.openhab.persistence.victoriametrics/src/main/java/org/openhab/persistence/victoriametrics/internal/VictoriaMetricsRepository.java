@@ -393,8 +393,14 @@ public class VictoriaMetricsRepository {
                 : "{" + LABEL_METRIC_NAME + "=~\"" + prefix + ".*" + suffix + "\"," + TAG_ITEM_NAME + "!=\"\"}";
         Instant start = Instant.now().minus(ITEM_NAMES_RANGE_DAYS, ChronoUnit.DAYS);
 
-        Set<String> result = getLabelValues(TAG_ITEM_NAME, selector, start);
-        return result != null ? result : Set.of();
+        try {
+            return getLabelValues(TAG_ITEM_NAME, selector, start);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        } catch (IOException e) {
+            logger.warn("Failed to read the stored item names: {}", e.getMessage());
+        }
+        return Set.of();
     }
 
     /**
@@ -407,19 +413,27 @@ public class VictoriaMetricsRepository {
     public @Nullable Set<String> getStringStates(String metricName, String itemName) {
         String selector = "{" + LABEL_METRIC_NAME + "=\"" + metricName + "\"," + TAG_ITEM_NAME + "=\""
                 + VictoriaMetricsPoint.escapeLabelValue(itemName) + "\"}";
-        return getLabelValues(TAG_STATE_NAME, selector, EARLIEST_START);
+        try {
+            return getLabelValues(TAG_STATE_NAME, selector, EARLIEST_START);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        } catch (IOException e) {
+            // e.g. when the search exceeds -search.maxLabelsAPIDuration on a busy database, the caller retries
+            logger.debug("Failed to read the stored string states of item '{}': {}", itemName, e.getMessage());
+        }
+        return null;
     }
 
-    private @Nullable Set<String> getLabelValues(String labelName, String selector, Instant start) {
+    private Set<String> getLabelValues(String labelName, String selector, Instant start)
+            throws IOException, InterruptedException {
         try {
             // the end defaults to the current time, which would exclude future states
             ContentResponse response = send(newRequest(PATH_LABEL_VALUES.formatted(labelName))
                     .param("match[]", selector).param("start", formatTimestamp(start))
                     .param("end", formatTimestamp(VictoriaMetricsFilterCriteriaQueryCreator.OPEN_END)));
             if (response.getStatus() != HttpStatus.OK_200) {
-                logger.warn("Failed to query values of label '{}': HTTP status {}: {}", labelName, response.getStatus(),
-                        response.getContentAsString());
-                return null;
+                throw new IOException("Failed to query values of label '" + labelName + "': HTTP status "
+                        + response.getStatus() + ": " + response.getContentAsString());
             }
             JsonArray values = JsonParser.parseString(response.getContentAsString()).getAsJsonObject()
                     .getAsJsonArray("data");
@@ -431,13 +445,10 @@ public class VictoriaMetricsRepository {
                 result.add(value.getAsString());
             }
             return result;
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
         } catch (TimeoutException | ExecutionException | JsonParseException | IllegalStateException e) {
             // IllegalStateException is thrown for unexpected JSON types
-            logger.warn("Failed to query values of label '{}': {}", labelName, e.getMessage());
+            throw new IOException("Failed to query values of label '" + labelName + "': " + e.getMessage(), e);
         }
-        return null;
     }
 
     private Request newRequest(String path) {
