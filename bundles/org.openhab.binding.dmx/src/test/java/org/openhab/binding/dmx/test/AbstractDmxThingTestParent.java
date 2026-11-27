@@ -35,7 +35,7 @@ import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
-import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
 import org.openhab.core.thing.binding.builder.BridgeBuilder;
@@ -103,12 +103,10 @@ public class AbstractDmxThingTestParent extends JavaTest {
     }
 
     protected void assertThingStatusWithoutBridge(ThingHandler handler) {
+        ThingStatusInfo previousStatus = handler.getThing().getStatusInfo();
         handler.setCallback(mockCallback);
         handler.initialize();
-        waitForAssert(() -> {
-            assertEquals(ThingStatus.OFFLINE, handler.getThing().getStatus());
-            assertEquals(ThingStatusDetail.CONFIGURATION_ERROR, handler.getThing().getStatusInfo().getStatusDetail());
-        });
+        assertEquals(previousStatus, handler.getThing().getStatusInfo());
     }
 
     public void assertPercentTypeCommands(ThingHandler handler, ChannelUID channelUID, int fadeTime) {

@@ -12,10 +12,10 @@
  */
 package org.openhab.binding.deutschebahn.internal.timetable;
 
-import javax.xml.bind.JAXBException;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.deutschebahn.internal.timetable.TimetablesV1Impl.HttpCallable;
+
+import jakarta.xml.bind.JAXBException;
 
 /**
  * Factory for {@link TimetablesV1Api}.
@@ -28,6 +28,6 @@ public interface TimetablesV1ApiFactory {
     /**
      * Creates a new instance of the {@link TimetablesV1Api}.
      */
-    TimetablesV1Api create(final String clientId, final String clientSecret, final HttpCallable httpCallable)
-            throws JAXBException;
+    TimetablesV1Api create(final String clientId, final String clientSecret, final HttpCallable httpCallable,
+            final TimetableTimeConverter timeConverter) throws JAXBException;
 }

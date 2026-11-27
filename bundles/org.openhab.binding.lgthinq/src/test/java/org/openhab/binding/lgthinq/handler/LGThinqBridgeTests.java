@@ -20,15 +20,12 @@ import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.*;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URI;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-
-import javax.ws.rs.core.UriBuilder;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
@@ -80,8 +77,7 @@ class LGThinqBridgeTests {
             fakeUserName);
     private final String dashboardListReturned = JsonUtils.loadJson("dashboard-list-response-1.json");
     private final String dashboardWMListReturned = JsonUtils.loadJson("dashboard-list-response-wm.json");
-    private final String secretKey = "gregre9812012910291029120912091209";
-    private final String oauthTokenSearchKeyReturned = "{\"returnData\":\"" + secretKey + "\"}";
+    private final String empSessionSignature = "ZW1wLXNlc3Npb24tc2lnbmF0dXJl";
     private final String refreshToken = "12897238974bb327862378ef290128390273aa7389723894734de";
     private final String accessToken = "11a1222c39f16a5c8b3fa45bb4c9be2e00a29a69dced2fa7fe731f1728346ee669f1a96d1f0b4925e5aa330b6dbab882772";
     private final String sessionTokenReturned = String.format(JsonUtils.loadJson("session-token-response-1.json"),
@@ -120,9 +116,10 @@ class LGThinqBridgeTests {
         String preLoginPwd = RestUtils.getPreLoginEncPwd(fakePassword);
         stubFor(post("/spx" + LG_API_PRE_LOGIN_PATH).withRequestBody(containing("user_auth2=" + preLoginPwd))
                 .willReturn(ok(preLoginResponse)));
-        URI uri = UriBuilder.fromUri("http://localhost:8880").path("spx" + LG_API_OAUTH_SEARCH_KEY_PATH)
-                .queryParam("key_name", "OAUTH_SECRETKEY").queryParam("sever_type", "OP").build();
-        stubFor(get(String.format("%s?%s", uri.getPath(), uri.getQuery())).willReturn(ok(oauthTokenSearchKeyReturned)));
+        stubFor(get(urlPathEqualTo("/spx" + LG_API_OAUTH_SIGNATURE_PATH)).withQueryParam("kind", equalTo("oauth2"))
+                .withQueryParam("key_name", equalTo("OAUTH_SECRETKEY")).withQueryParam("sever_type", equalTo("OP"))
+                .withQueryParam("timestamp", containing("/emp/oauth2/token/empsession?"))
+                .willReturn(ok(empSessionSignature)));
         String fakeUserNameEncoded = URLEncoder.encode(fakeUserName, StandardCharsets.UTF_8);
         stubFor(post(LG_API_V2_SESSION_LOGIN_PATH + fakeUserNameEncoded)
                 .withRequestBody(containing("user_auth2=SOME_DUMMY_ENC_PWD"))
@@ -138,7 +135,8 @@ class LGThinqBridgeTests {
         stubFor(post("/emp/oauth2/token/empsession").withRequestBody(containing("account_type=" + userIdType))
                 .withRequestBody(containing("country_code=" + fakeCountry))
                 .withRequestBody(containing("username=" + URLEncoder.encode(fakeUserName, StandardCharsets.UTF_8)))
-                .withHeader("lgemp-x-session-key", equalTo(loginSessionId)).willReturn(ok(sessionTokenReturned)));
+                .withHeader("lgemp-x-session-key", equalTo(loginSessionId))
+                .withHeader("lgemp-x-signature", equalTo(empSessionSignature)).willReturn(ok(sessionTokenReturned)));
         // faking some constants
         Bridge fakeThing = mock(Bridge.class);
         ThingUID fakeThingUid = mock(ThingUID.class);
@@ -176,9 +174,10 @@ class LGThinqBridgeTests {
         String preLoginPwd = RestUtils.getPreLoginEncPwd(fakePassword);
         stubFor(post("/spx" + LG_API_PRE_LOGIN_PATH).withRequestBody(containing("user_auth2=" + preLoginPwd))
                 .willReturn(ok(preLoginResponse)));
-        URI uri = UriBuilder.fromUri("http://localhost:8880").path("spx" + LG_API_OAUTH_SEARCH_KEY_PATH)
-                .queryParam("key_name", "OAUTH_SECRETKEY").queryParam("sever_type", "OP").build();
-        stubFor(get(String.format("%s?%s", uri.getPath(), uri.getQuery())).willReturn(ok(oauthTokenSearchKeyReturned)));
+        stubFor(get(urlPathEqualTo("/spx" + LG_API_OAUTH_SIGNATURE_PATH)).withQueryParam("kind", equalTo("oauth2"))
+                .withQueryParam("key_name", equalTo("OAUTH_SECRETKEY")).withQueryParam("sever_type", equalTo("OP"))
+                .withQueryParam("timestamp", containing("/emp/oauth2/token/empsession?"))
+                .willReturn(ok(empSessionSignature)));
         stubFor(post(LG_API_V2_SESSION_LOGIN_PATH + URLEncoder.encode(fakeUserName, StandardCharsets.UTF_8))
                 .withRequestBody(containing("user_auth2=SOME_DUMMY_ENC_PWD"))
                 .withHeader("X-Signature", equalTo("SOME_DUMMY_SIGNATURE"))
@@ -195,7 +194,8 @@ class LGThinqBridgeTests {
         stubFor(post("/emp/oauth2/token/empsession").withRequestBody(containing("account_type=" + userIdType))
                 .withRequestBody(containing("country_code=" + fakeCountry))
                 .withRequestBody(containing("username=" + URLEncoder.encode(fakeUserName, StandardCharsets.UTF_8)))
-                .withHeader("lgemp-x-session-key", equalTo(loginSessionId)).willReturn(ok(sessionTokenReturned)));
+                .withHeader("lgemp-x-session-key", equalTo(loginSessionId))
+                .withHeader("lgemp-x-signature", equalTo(empSessionSignature)).willReturn(ok(sessionTokenReturned)));
 
         String tempDir = Objects.requireNonNull(System.getProperty("java.io.tmpdir"),
                 "java.io.tmpdir environment variable must be set");

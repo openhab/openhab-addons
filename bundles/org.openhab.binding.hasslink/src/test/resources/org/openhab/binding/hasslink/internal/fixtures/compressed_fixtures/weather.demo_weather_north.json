@@ -1,0 +1,27 @@
+{
+  "id": 10,
+  "type": "event",
+  "event": {
+    "a": {
+      "weather.demo_weather_north": {
+        "s": "rainy",
+        "a": {
+          "temperature": -24.4,
+          "temperature_unit": "\u00b0C",
+          "humidity": 54,
+          "pressure": 33423.66,
+          "pressure_unit": "hPa",
+          "wind_speed": 7.72,
+          "wind_speed_unit": "km/h",
+          "visibility_unit": "km",
+          "precipitation_unit": "mm",
+          "attribution": "Powered by Home Assistant",
+          "friendly_name": "Demo Weather North",
+          "supported_features": 7
+        },
+        "c": "01M3201RH2RXBYSJKC6ZE0Z9D5",
+        "lc": 1789994787.3629844
+      }
+    }
+  }
+}

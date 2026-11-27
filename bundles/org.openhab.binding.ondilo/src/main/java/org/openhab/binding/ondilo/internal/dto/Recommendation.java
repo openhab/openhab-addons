@@ -17,7 +17,7 @@ import com.google.gson.annotations.SerializedName;
 /**
  * The {@link Recommendation} DTO for representing Ondilo recommendations.
  *
- * @author MikeTheTux - Initial contribution
+ * @author Michael Weger - Initial contribution
  */
 public class Recommendation {
     /*

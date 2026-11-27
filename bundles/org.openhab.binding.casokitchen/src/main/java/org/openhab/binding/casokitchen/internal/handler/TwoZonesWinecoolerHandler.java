@@ -23,10 +23,10 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpHeader;
 import org.openhab.binding.casokitchen.internal.config.TwoZonesWinecoolerConfiguration;
 import org.openhab.binding.casokitchen.internal.dto.CallResponse;
@@ -77,11 +77,10 @@ public class TwoZonesWinecoolerHandler extends BaseThingHandler {
         configuration = getConfigAs(TwoZonesWinecoolerConfiguration.class);
         String configInvalidReason = configValid();
         if (configInvalidReason.isEmpty()) {
-            updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE,
-                    "@text/casokitchen.winecooler-2z.status.wait-for-response");
+            updateStatus(ThingStatus.UNKNOWN, "@text/casokitchen.winecooler-2z.status.wait-for-response");
             startSchedule();
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, configInvalidReason);
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, configInvalidReason);
         }
     }
 
@@ -204,9 +203,8 @@ public class TwoZonesWinecoolerHandler extends BaseThingHandler {
                 updateChannels(statusResult);
             }
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/casokitchen.winecooler-2z.status.http-status [\"" + responseStatus + " - " + responseContent
-                            + "\"]");
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/casokitchen.winecooler-2z.status.http-status [\""
+                    + responseStatus + " - " + responseContent + "\"]");
         }
     }
 
@@ -233,9 +231,11 @@ public class TwoZonesWinecoolerHandler extends BaseThingHandler {
 
     private CallResponse post(String url, Object dto) {
         Request req = httpClient.POST(url);
-        req.header(HttpHeader.CONTENT_TYPE, "application/json");
-        req.header(HTTP_HEADER_API_KEY, configuration.apiKey);
-        req.content(new StringContentProvider(GSON.toJson(dto)));
+        req.headers(headers -> {
+            headers.add(HttpHeader.CONTENT_TYPE, "application/json");
+            headers.add(HTTP_HEADER_API_KEY, configuration.apiKey);
+        });
+        req.body(new StringRequestContent(GSON.toJson(dto)));
         CallResponse callResponse = new CallResponse();
         try {
             ContentResponse cr = req.timeout(60, TimeUnit.SECONDS).send();

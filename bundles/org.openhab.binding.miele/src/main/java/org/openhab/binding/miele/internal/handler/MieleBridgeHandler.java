@@ -129,7 +129,7 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
         try {
             gatewayCommunication = new MieleGatewayCommunicationController(httpClient, config.ipAddress);
         } catch (URISyntaxException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, e.getMessage());
             return;
         }
 
@@ -145,7 +145,7 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
 
     private boolean validateConfig() {
         if (config.ipAddress.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
+            updateStatus(ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
                     "@text/offline.configuration-error.ip-address-not-set");
             return false;
         }
@@ -153,7 +153,7 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
             try {
                 new Locale.Builder().setLanguageTag(config.language).build();
             } catch (IllformedLocaleException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
+                updateStatus(ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
                         "@text/offline.configuration-error.invalid-language [\"" + config.language + "\"]");
                 return false;
             }
@@ -222,7 +222,7 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
                     logger.debug("Connection to Miele Gateway {} lost.", config.ipAddress);
                     lastBridgeConnectionState = false;
                 }
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, message);
+                updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, message);
             }
         }
     };

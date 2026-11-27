@@ -199,7 +199,12 @@ public final class Utils {
             throw new ConfigurationException(
                     "channel (" + channel.getUID().getId() + ") does not have a validation expression configured");
         }
-        return expr;
+        // channels created by earlier versions carry expressions which reject negative values, migrate them on the fly
+        return switch (expr) {
+            case LEGACY_DEFAULT_VALIDATION_EXPRESSION -> DEFAULT_VALIDATION_EXPRESSION;
+            case LEGACY_DECIMAL_VALIDATION_EXPRESSION -> DECIMAL_VALIDATION_EXPRESSION;
+            default -> expr;
+        };
     }
 
     /**

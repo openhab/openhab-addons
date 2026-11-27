@@ -41,7 +41,6 @@ import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
-import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.types.State;
@@ -102,25 +101,25 @@ public class OpenWeatherMapOneCallHandler extends AbstractOpenWeatherMapHandler 
         boolean configValid = true;
         int newForecastMinutes = config.forecastMinutes;
         if (newForecastMinutes < 0 || newForecastMinutes > 60) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.conf-error-not-supported-onecall-number-of-minutes");
             configValid = false;
         }
         int newForecastHours = config.forecastHours;
         if (newForecastHours < 0 || newForecastHours > 48) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.conf-error-not-supported-onecall-number-of-hours");
             configValid = false;
         }
         int newForecastDays = config.forecastDays;
         if (newForecastDays < 0 || newForecastDays > 8) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.conf-error-not-supported-onecall-number-of-days");
             configValid = false;
         }
         int newNumberOfAlerts = config.numberOfAlerts;
         if (newNumberOfAlerts < 0) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.conf-error-not-supported-onecall-number-of-alerts");
             configValid = false;
         }

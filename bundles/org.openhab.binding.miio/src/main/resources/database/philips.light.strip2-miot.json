@@ -1,0 +1,353 @@
+{
+	"deviceMapping": {
+		"id": [
+			"philips.light.strip2"
+		],
+		"propertyMethod": "get_properties",
+		"maxProperties": 4,
+		"channels": [
+			{
+				"property": "on",
+				"siid": 2,
+				"piid": 1,
+				"friendlyName": "Power",
+				"channel": "on",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "switch"
+			},
+			{
+				"property": "mode",
+				"siid": 2,
+				"piid": 2,
+				"friendlyName": "Scene",
+				"channel": "mode",
+				"type": "Number",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 4,
+					"step": 1,
+					"pattern": "%.0f",
+					"options": [
+						{
+							"value": "0",
+							"label": "Manual"
+						},
+						{
+							"value": "1",
+							"label": "Passion Party"
+						},
+						{
+							"value": "2",
+							"label": "Romantic Time"
+						},
+						{
+							"value": "3",
+							"label": "Bright"
+						},
+						{
+							"value": "4",
+							"label": "Warm"
+						}
+					]
+				},
+				"category": "light",
+				"tags": [
+					"Control",
+					"Mode"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Manual\",\"1\"\u003d\"Passion Party\",\"2\"\u003d\"Romantic Time\",\"3\"\u003d\"Bright\",\"4\"\u003d\"Warm\"]`"
+			},
+			{
+				"property": "brightness",
+				"siid": 2,
+				"piid": 3,
+				"friendlyName": "Brightness",
+				"channel": "brightness",
+				"type": "Dimmer",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "light",
+				"tags": [
+					"Control",
+					"Brightness"
+				]
+			},
+			{
+				"property": "color-temperature",
+				"siid": 2,
+				"piid": 4,
+				"friendlyName": "Color Temperature",
+				"channel": "cct",
+				"type": "Number:Temperature",
+				"unit": "kelvin",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"stateDescription": {
+					"minimum": 1882,
+					"maximum": 7000,
+					"step": 1,
+					"pattern": "%.0f K"
+				},
+				"category": "colorlight"
+			},
+			{
+				"property": "color",
+				"siid": 2,
+				"piid": 5,
+				"friendlyName": "Color",
+				"channel": "color",
+				"type": "Color",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "COLOR",
+						"condition": {
+							"name": "HSBOnly"
+						}
+					}
+				],
+				"category": "colorlight",
+				"tags": [
+					"Control",
+					"Color"
+				],
+				"readmeComment": "RGB color of the light. The brightness part of a color command scales the RGB value, use the brightness channel to dim the light."
+			},
+			{
+				"property": "sta",
+				"siid": 3,
+				"piid": 6,
+				"friendlyName": "Color Mode",
+				"channel": "colorMode",
+				"type": "Number",
+				"refresh": true,
+				"actions": [],
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 1,
+					"step": 1,
+					"pattern": "%.0f",
+					"options": [
+						{
+							"value": "0",
+							"label": "White"
+						},
+						{
+							"value": "1",
+							"label": "Color"
+						}
+					],
+					"readOnly": true
+				},
+				"category": "colorlight",
+				"tags": [
+					"Status",
+					"Mode"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"White\",\"1\"\u003d\"Color\"]`"
+			},
+			{
+				"property": "dvalue",
+				"siid": 3,
+				"piid": 1,
+				"friendlyName": "Delayed Turn-off",
+				"channel": "dv",
+				"type": "Number:Time",
+				"unit": "seconds",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 21600,
+					"step": 1,
+					"pattern": "%.0f %unit%"
+				},
+				"category": "time",
+				"tags": [
+					"Setpoint",
+					"Duration"
+				]
+			},
+			{
+				"property": "wall-scene-en",
+				"siid": 3,
+				"piid": 2,
+				"friendlyName": "Wall Switch Scenes",
+				"channel": "WallSceneEn",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch",
+					"Enabled"
+				]
+			},
+			{
+				"property": "wall-scene",
+				"siid": 3,
+				"piid": 3,
+				"friendlyName": "Wall Switch Scene List",
+				"channel": "WallScene",
+				"type": "String",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "STRING"
+					}
+				],
+				"category": "text",
+				"tags": [
+					"Setpoint"
+				],
+				"readmeComment": "The 3 scenes the wall switch cycles through, as `[3,scene,color mode,brightness,color temperature or RGB,...]`: a fixed scene is `scene,0,0,0`, a custom scene is `0,color mode,brightness,color temperature or RGB`."
+			},
+			{
+				"property": "",
+				"friendlyName": "Actions",
+				"channel": "actions",
+				"type": "String",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "brightness-down",
+							"label": "Brightness Down"
+						},
+						{
+							"value": "brightness-up",
+							"label": "Brightness Up"
+						},
+						{
+							"value": "toggle",
+							"label": "Toggle"
+						},
+						{
+							"value": "temperature-down",
+							"label": "Color Temperature Down"
+						},
+						{
+							"value": "temperature-up",
+							"label": "Color Temperature Up"
+						}
+					]
+				},
+				"refresh": false,
+				"actions": [
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 3,
+						"aiid": 1,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "brightness-down"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 3,
+						"aiid": 2,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "brightness-up"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 3,
+						"aiid": 3,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "toggle"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 3,
+						"aiid": 4,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "temperature-down"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 3,
+						"aiid": 5,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "temperature-up"
+								}
+							]
+						}
+					}
+				],
+				"category": "light",
+				"tags": [
+					"Control",
+					"Light"
+				],
+				"readmeComment": "Value mapping `[\"brightness-down\"\u003d\"Brightness Down\",\"brightness-up\"\u003d\"Brightness Up\",\"toggle\"\u003d\"Toggle\",\"temperature-down\"\u003d\"Color Temperature Down\",\"temperature-up\"\u003d\"Color Temperature Up\"]`"
+			}
+		],
+		"experimental": true
+	}
+}

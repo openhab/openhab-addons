@@ -34,15 +34,25 @@ public class OppoBindingConstants {
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_PLAYER = new ThingTypeUID(BINDING_ID, "player");
+    public static final ThingTypeUID THING_TYPE_BDP83 = new ThingTypeUID(BINDING_ID, "bdp-83");
+    public static final ThingTypeUID THING_TYPE_BDP93 = new ThingTypeUID(BINDING_ID, "bdp-93");
+    public static final ThingTypeUID THING_TYPE_BDP103 = new ThingTypeUID(BINDING_ID, "bdp-103");
+    public static final ThingTypeUID THING_TYPE_BDP105 = new ThingTypeUID(BINDING_ID, "bdp-105");
+    public static final ThingTypeUID THING_TYPE_UDP203 = new ThingTypeUID(BINDING_ID, "udp-203");
+    public static final ThingTypeUID THING_TYPE_UDP205 = new ThingTypeUID(BINDING_ID, "udp-205");
+    public static final ThingTypeUID THING_TYPE_DV983H = new ThingTypeUID(BINDING_ID, "dv-983h");
 
     public static final Unit<Time> API_SECONDS_UNIT = Units.SECOND;
     public static final Unit<Dimensionless> API_PERCENT_UNIT = Units.PERCENT;
 
-    public static final int MODEL83 = 83;
-    public static final int MODEL103 = 103;
-    public static final int MODEL105 = 105;
-    public static final int MODEL203 = 203;
-    public static final int MODEL205 = 205;
+    public static final Set<String> BDPXX_HDMI_MODES = Set.of("AUTO", "SRC", "1080P", "1080I", "720P", "SDP", "SDI");
+    public static final Set<String> BDP10X_HDMI_MODES = Set.of("AUTO", "SRC", "4K2K", "1080P", "1080I", "720P", "SDP",
+            "SDI");
+    public static final Set<String> UDP20X_HDMI_MODES = Set.of("AUTO", "SRC", "UHD_AUTO", "UHD24", "UHD50", "UHD60",
+            "1080P_AUTO", "1080P24", "1080P50", "1080P60", "1080I50", "1080I60", "720P50", "720P60", "576P", "576I",
+            "480P", "480I");
+    public static final Set<String> DV983H_HDMI_MODES = Set.of("1080PAUTO", "1080P50", "1080P60", "1080IAUTO",
+            "1080I50", "1080I60", "720PAUTO", "720P50", "720P60", "576P", "480PAUTO", "480P");
 
     public static final Integer BDP83_PORT = 19999;
     public static final Integer BDP10X_PORT = 48360;
@@ -53,32 +63,32 @@ public class OppoBindingConstants {
     public static final String CHANNEL_VOLUME = "volume";
     public static final String CHANNEL_MUTE = "mute";
     public static final String CHANNEL_SOURCE = "source";
-    public static final String CHANNEL_PLAY_MODE = "play_mode";
+    public static final String CHANNEL_PLAY_MODE = "play-mode";
     public static final String CHANNEL_CONTROL = "control";
-    public static final String CHANNEL_TIME_MODE = "time_mode";
-    public static final String CHANNEL_TIME_DISPLAY = "time_display";
-    public static final String CHANNEL_CURRENT_TITLE = "current_title";
-    public static final String CHANNEL_TOTAL_TITLE = "total_title";
-    public static final String CHANNEL_CURRENT_CHAPTER = "current_chapter";
-    public static final String CHANNEL_TOTAL_CHAPTER = "total_chapter";
+    public static final String CHANNEL_TIME_MODE = "time-mode";
+    public static final String CHANNEL_TIME_DISPLAY = "time-display";
+    public static final String CHANNEL_CURRENT_TITLE = "current-title";
+    public static final String CHANNEL_TOTAL_TITLE = "total-title";
+    public static final String CHANNEL_CURRENT_CHAPTER = "current-chapter";
+    public static final String CHANNEL_TOTAL_CHAPTER = "total-chapter";
     public static final String CHANNEL_TITLE_ELAPSED = "title-elapsed";
     public static final String CHANNEL_TITLE_LENGTH = "title-length";
     public static final String CHANNEL_TITLE_END_TIME = "title-end-time";
     public static final String CHANNEL_TITLE_PROGRESS = "title-progress";
-    public static final String CHANNEL_REPEAT_MODE = "repeat_mode";
-    public static final String CHANNEL_ZOOM_MODE = "zoom_mode";
-    public static final String CHANNEL_DISC_TYPE = "disc_type";
-    public static final String CHANNEL_AUDIO_TYPE = "audio_type";
-    public static final String CHANNEL_SUBTITLE_TYPE = "subtitle_type";
-    public static final String CHANNEL_ASPECT_RATIO = "aspect_ratio"; // 203 and 205 only
-    public static final String CHANNEL_SOURCE_RESOLUTION = "source_resolution";
-    public static final String CHANNEL_OUTPUT_RESOLUTION = "output_resolution";
-    public static final String CHANNEL_3D_INDICATOR = "3d_indicator";
-    public static final String CHANNEL_SUB_SHIFT = "sub_shift"; // not on 83
-    public static final String CHANNEL_OSD_POSITION = "osd_position"; // not on 83
-    public static final String CHANNEL_HDMI_MODE = "hdmi_mode";
-    public static final String CHANNEL_HDR_MODE = "hdr_mode"; // 203 and 205 only
-    public static final String CHANNEL_REMOTE_BUTTON = "remote_button";
+    public static final String CHANNEL_REPEAT_MODE = "repeat-mode";
+    public static final String CHANNEL_ZOOM_MODE = "zoom-mode";
+    public static final String CHANNEL_DISC_TYPE = "disc-type";
+    public static final String CHANNEL_AUDIO_TYPE = "audio-type";
+    public static final String CHANNEL_SUBTITLE_TYPE = "subtitle-type";
+    public static final String CHANNEL_ASPECT_RATIO = "aspect-ratio"; // 203 and 205 only
+    public static final String CHANNEL_SOURCE_RESOLUTION = "source-resolution";
+    public static final String CHANNEL_OUTPUT_RESOLUTION = "output-resolution";
+    public static final String CHANNEL_3D_INDICATOR = "3d-indicator";
+    public static final String CHANNEL_SUB_SHIFT = "sub-shift";
+    public static final String CHANNEL_OSD_POSITION = "osd-position";
+    public static final String CHANNEL_HDMI_MODE = "hdmi-mode";
+    public static final String CHANNEL_HDR_MODE = "hdr-mode"; // 203 and 205 only
+    public static final String CHANNEL_REMOTE_BUTTON = "remote-button";
 
     // misc
     public static final String BLANK = "";
@@ -90,8 +100,6 @@ public class OppoBindingConstants {
     public static final String OFF = "OFF";
     public static final String ONE = "1";
     public static final String ZERO = "0";
-    public static final String VERBOSE_2 = "2";
-    public static final String VERBOSE_3 = "3";
     public static final String MUTE = "MUTE";
     public static final String MUT = "MUT";
     public static final String UMT = "UMT";

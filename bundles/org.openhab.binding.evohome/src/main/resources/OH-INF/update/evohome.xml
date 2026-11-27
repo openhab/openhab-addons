@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<update:update-descriptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:update="https://openhab.org/schemas/update-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/update-description/v1.0.0 https://openhab.org/schemas/update-description-1.0.0.xsd">
+	<thing-type uid="evohome:account">
+		<instruction-set targetVersion="1">
+			<update-channel id="lastSuccessfulUpdate" preserveConfiguration="true">
+				<type>evohome:lastSuccessfulUpdate</type>
+			</update-channel>
+		</instruction-set>
+	</thing-type>
+	<thing-type uid="evohome:display">
+		<instruction-set targetVersion="1">
+			<add-channel id="Reset">
+				<type>evohome:reset</type>
+			</add-channel>
+		</instruction-set>
+		<instruction-set targetVersion="2">
+			<add-channel id="SystemModeUntil">
+				<type>evohome:systemModeUntil</type>
+			</add-channel>
+			<add-channel id="SystemModePermanent">
+				<type>evohome:systemModePermanent</type>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+	<thing-type uid="evohome:heatingzone">
+		<instruction-set targetVersion="1">
+			<add-channel id="TemporarySetPoint">
+				<type>evohome:temporarysetpoint</type>
+			</add-channel>
+			<add-channel id="SetPointUntil">
+				<type>evohome:setpointuntil</type>
+			</add-channel>
+		</instruction-set>
+		<instruction-set targetVersion="2">
+			<add-channel id="WeeklySchedule">
+				<type>evohome:weeklySchedule</type>
+			</add-channel>
+			<add-channel id="NextSwitchpoint">
+				<type>evohome:nextSwitchpoint</type>
+			</add-channel>
+			<add-channel id="NextScheduledTemperature">
+				<type>evohome:nextScheduledTemperature</type>
+			</add-channel>
+			<add-channel id="ScheduleLastUpdated">
+				<type>evohome:scheduleLastUpdated</type>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+</update:update-descriptions>

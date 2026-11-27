@@ -17,19 +17,30 @@ import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.timeout;
+import static org.mockito.Mockito.verify;
 
 import java.math.BigInteger;
+import java.net.ServerSocket;
+import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jetty.websocket.api.RemoteEndpoint;
+import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.ServerConnector;
+import org.eclipse.jetty.websocket.api.Callback;
 import org.eclipse.jetty.websocket.api.Session;
-import org.eclipse.jetty.websocket.api.WebSocketPolicy;
+import org.eclipse.jetty.websocket.client.WebSocketClient;
+import org.eclipse.jetty.websocket.server.WebSocketUpgradeHandler;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.matter.internal.client.dto.Endpoint;
@@ -38,6 +49,7 @@ import org.openhab.binding.matter.internal.client.dto.cluster.gen.DescriptorClus
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.LevelControlCluster;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.OccupancySensingCluster;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.OnOffCluster;
+import org.openhab.binding.matter.internal.client.dto.cluster.gen.ThreadNetworkDiagnosticsCluster.NeighborTableStruct;
 import org.openhab.binding.matter.internal.client.dto.ws.AttributeChangedMessage;
 import org.openhab.binding.matter.internal.client.dto.ws.EventTriggeredMessage;
 import org.openhab.binding.matter.internal.client.dto.ws.Message;
@@ -118,6 +130,50 @@ class MatterWebsocketClientTest {
         assertEquals("testAttribute", message.path.attributeName);
         assertEquals(1, message.version);
         assertEquals("testValue", message.value);
+    }
+
+    @Test
+    void testDeserializeListAttributeChangedMessageUsesElementType() {
+        String json = """
+                {
+                    "path": {
+                        "clusterId": 53,
+                        "attributeName": "neighborTable"
+                    },
+                    "version": 1,
+                    "value": [
+                        {
+                            "extAddress": "13706561541729176713",
+                            "rloc16": 29696,
+                            "lqi": 3,
+                            "isChild": false
+                        }
+                    ]
+                }
+                """;
+        AttributeChangedMessage message = client.getGson().fromJson(json, AttributeChangedMessage.class);
+        assertNotNull(message);
+        List<?> table = assertInstanceOf(List.class, message.value);
+        NeighborTableStruct neighbor = assertInstanceOf(NeighborTableStruct.class, table.get(0));
+        assertEquals(new BigInteger("13706561541729176713"), neighbor.extAddress);
+        assertEquals(29696, neighbor.rloc16);
+    }
+
+    @Test
+    void testDeserializeUint32AboveIntegerRange() {
+        String json = """
+                {
+                    "path": {
+                        "clusterId": 53,
+                        "attributeName": "partitionId"
+                    },
+                    "version": 1,
+                    "value": 3000000000
+                }
+                """;
+        AttributeChangedMessage message = client.getGson().fromJson(json, AttributeChangedMessage.class);
+        assertNotNull(message);
+        assertEquals(3_000_000_000L, message.value);
     }
 
     @Test
@@ -357,6 +413,104 @@ class MatterWebsocketClientTest {
         assertThrows(TimeoutException.class, () -> future.get(2, TimeUnit.SECONDS));
     }
 
+    @Test
+    void testFailedConnectionsReleaseTheirThreads() throws Exception {
+        int port;
+        try (ServerSocket socket = new ServerSocket(0)) {
+            port = socket.getLocalPort();
+        }
+        long threadsBefore = webSocketClientThreads();
+
+        for (int i = 0; i < 3; i++) {
+            client.onNodeReady(port);
+        }
+
+        assertThreadsReleased(threadsBefore);
+    }
+
+    @Test
+    void testConnectionsClosedByTheServerReleaseTheirThreads() throws Exception {
+        Server server = new Server();
+        ServerConnector connector = new ServerConnector(server);
+        server.addConnector(connector);
+        server.setHandler(WebSocketUpgradeHandler.from(server,
+                container -> container.addMapping("/", (request, response, callback) -> new ClosingSocket())));
+        server.start();
+        try {
+            long threadsBefore = webSocketClientThreads();
+            // Handlers disconnect from within onDisconnect, which runs on a Jetty client thread
+            AtomicLong slowestDisconnectMillis = new AtomicLong();
+            MatterClientListener listener = mock(MatterClientListener.class);
+            doAnswer(invocation -> {
+                long start = System.nanoTime();
+                client.disconnect();
+                slowestDisconnectMillis.accumulateAndGet(TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - start),
+                        Math::max);
+                return null;
+            }).when(listener).onDisconnect(anyString());
+            client.addListener(listener);
+
+            for (int i = 0; i < 3; i++) {
+                client.onNodeReady(connector.getLocalPort());
+                verify(listener, timeout(10000).atLeast(i + 1)).onDisconnect(anyString());
+            }
+
+            assertTrue(slowestDisconnectMillis.get() < 5000,
+                    "disconnect took " + slowestDisconnectMillis.get() + " ms");
+            assertThreadsReleased(threadsBefore);
+        } finally {
+            server.stop();
+        }
+    }
+
+    @Test
+    void testDisconnectDuringStartupReleasesTheClient() throws Exception {
+        int port;
+        try (ServerSocket socket = new ServerSocket(0)) {
+            port = socket.getLocalPort();
+        }
+        long threadsBefore = webSocketClientThreads();
+        Thread disconnectThread = new Thread(() -> client.disconnect());
+        disconnectThread.setDaemon(true);
+        client = new MatterWebsocketClient() {
+            @Override
+            void startWebSocketClient(WebSocketClient webSocketClient) throws Exception {
+                // A disconnect lands after the new client is registered but before it has started
+                disconnectThread.start();
+                Thread.sleep(500);
+                super.startWebSocketClient(webSocketClient);
+            }
+        };
+
+        client.onNodeReady(port);
+        disconnectThread.join(10000);
+
+        assertThreadsReleased(threadsBefore);
+    }
+
+    /**
+     * Closes every connection right away, like the Matter server does when the controller fails to start
+     */
+    public static class ClosingSocket implements Session.Listener.AutoDemanding {
+        @Override
+        public void onWebSocketOpen(@Nullable Session session) {
+            Objects.requireNonNull(session).close(1002, "MdnsService unavailable", Callback.NOOP);
+        }
+    }
+
+    private static void assertThreadsReleased(long threadsBefore) throws InterruptedException {
+        long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(10);
+        while (webSocketClientThreads() > threadsBefore && System.nanoTime() < deadline) {
+            Thread.sleep(50);
+        }
+        assertEquals(threadsBefore, webSocketClientThreads());
+    }
+
+    private static long webSocketClientThreads() {
+        return Thread.getAllStackTraces().keySet().stream()
+                .filter(thread -> thread.isAlive() && thread.getName().startsWith("WebSocketClient@")).count();
+    }
+
     /**
      * Installs a mocked WebSocket session on the client so sendMessage reaches the request-scheduling path (instead of
      * failing early with "No valid session"). The remote endpoint is stubbed so the outgoing message is silently
@@ -364,9 +518,6 @@ class MatterWebsocketClientTest {
      */
     private void connectMockSession() {
         Session session = mock(Session.class);
-        when(session.getPolicy()).thenReturn(WebSocketPolicy.newClientPolicy());
-        RemoteEndpoint remote = mock(RemoteEndpoint.class);
-        when(session.getRemote()).thenReturn(remote);
-        client.onWebSocketConnect(session);
+        client.onWebSocketOpen(session);
     }
 }

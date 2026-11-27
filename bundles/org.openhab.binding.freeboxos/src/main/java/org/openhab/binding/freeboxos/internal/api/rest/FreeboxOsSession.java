@@ -19,8 +19,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.ws.rs.core.UriBuilder;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.http.HttpMethod;
@@ -34,6 +32,8 @@ import org.openhab.binding.freeboxos.internal.config.FreeboxOsConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import jakarta.ws.rs.core.UriBuilder;
+
 /**
  * The {@link FreeboxOsSession} is responsible for sending requests toward a given url and transform the answer in
  * appropriate dto.
@@ -43,6 +43,13 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class FreeboxOsSession {
     private static final String API_VERSION_PATH = "api_version";
+
+    private static final Map<Class<? extends RestManager>, Class<? extends RestManager>> PARENT_REST_MANAGERS = Map.of(
+            MediaReceiverManager.class, AirMediaManager.class, //
+            LanBrowserManager.class, LanManager.class, //
+            SambaManager.class, NetShareManager.class, //
+            AfpManager.class, NetShareManager.class, //
+            APManager.class, WifiManager.class);
 
     private final Logger logger = LoggerFactory.getLogger(FreeboxOsSession.class);
 
@@ -204,6 +211,10 @@ public class FreeboxOsSession {
 
     @SuppressWarnings("unchecked")
     public synchronized <T extends RestManager> T getManager(Class<T> clazz) throws FreeboxException {
+        Class<? extends RestManager> parentClazz = PARENT_REST_MANAGERS.get(clazz);
+        if (parentClazz != null) {
+            getManager(parentClazz);
+        }
         RestManager manager = restManagers.get(clazz);
         if (manager == null) {
             try {

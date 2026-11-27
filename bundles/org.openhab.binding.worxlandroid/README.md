@@ -98,12 +98,14 @@ As second step you are able to set time in percent and split in parts of 10 betw
 
 ### Schedule
 
-| Channel        | Type     | ChannelName             |                   |
-|----------------|----------|-------------------------|-------------------|
-| mode           | String   | schedule#mode           | ONLY IF SUPPORTED |
-| time-extension | Number   | schedule#time-extension |                   |
-| next-start     | DateTime | schedule#next-start     |                   |
-| next-stop      | DateTime | schedule#next-stop      |                   |
+| Channel        | Type     | ChannelName             |                      |
+|----------------|----------|-------------------------|----------------------|
+| mode           | String   | schedule#mode           | *1 ONLY IF SUPPORTED |
+| time-extension | Number   | schedule#time-extension |                      |
+| next-start     | DateTime | schedule#next-start     |                      |
+| next-stop      | DateTime | schedule#next-stop      |                      |
+
+*1: Commands for **mode** Channel: Normal, Party.
 
 ### Aws
 

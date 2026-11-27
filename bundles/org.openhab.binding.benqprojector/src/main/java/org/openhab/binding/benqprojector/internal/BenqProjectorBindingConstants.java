@@ -38,6 +38,8 @@ public class BenqProjectorBindingConstants {
 
     // Some Channel types
     public static final String CHANNEL_TYPE_POWER = "power";
+    public static final String CHANNEL_TYPE_FREEZE = "freeze";
+    public static final String CHANNEL_TYPE_BLANK = "blank";
 
     // Config properties
     public static final String THING_PROPERTY_HOST = "host";

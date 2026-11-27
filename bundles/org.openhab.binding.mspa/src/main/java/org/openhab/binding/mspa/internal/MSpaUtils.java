@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.HexFormat;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -151,7 +152,7 @@ public class MSpaUtils {
     public static JSONObject token2Json(AccessTokenResponse atr) {
         JSONObject json = new JSONObject();
         json.put("token", atr.getAccessToken());
-        json.put("created", atr.getCreatedOn().toString());
+        json.put("created", Objects.requireNonNullElse(atr.getCreatedOn(), Instant.EPOCH).toString());
         json.put("expires", atr.getExpiresIn());
         return json;
     }

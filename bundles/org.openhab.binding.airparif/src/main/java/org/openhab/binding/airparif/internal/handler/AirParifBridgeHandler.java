@@ -36,14 +36,12 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
-import javax.ws.rs.core.MediaType;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.InputStreamContentProvider;
+import org.eclipse.jetty.client.InputStreamRequestContent;
+import org.eclipse.jetty.client.Request;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
@@ -73,6 +71,8 @@ import org.openhab.core.types.Command;
 import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import jakarta.ws.rs.core.MediaType;
 
 /**
  * {@link AirParifBridgeHandler} is the handler for OpenUV API and connects it
@@ -106,8 +106,7 @@ public class AirParifBridgeHandler extends BaseBridgeHandler implements HandlerU
         logger.debug("Initializing AirParif bridge handler.");
         config = getConfigAs(BridgeConfiguration.class);
         if (config.apikey.isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.config-error-unknown-apikey");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.config-error-unknown-apikey");
             return;
         }
         updateStatus(ThingStatus.UNKNOWN);
@@ -125,13 +124,14 @@ public class AirParifBridgeHandler extends BaseBridgeHandler implements HandlerU
         logger.debug("executeUrl: {} ", uri);
 
         Request request = httpClient.newRequest(uri).method(method).timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS)
-                .header(HttpHeader.ACCEPT, MediaType.APPLICATION_JSON).header("X-Api-Key", config.apikey);
+                .headers(h -> {
+                    h.add(HttpHeader.ACCEPT, MediaType.APPLICATION_JSON);
+                    h.add("X-Api-Key", config.apikey);
+                });
 
         if (payload != null && HttpMethod.POST.equals(method)) {
             InputStream stream = new ByteArrayInputStream(payload.getBytes(DEFAULT_CHARSET));
-            try (InputStreamContentProvider inputStreamContentProvider = new InputStreamContentProvider(stream)) {
-                request.content(inputStreamContentProvider, MediaType.APPLICATION_JSON);
-            }
+            request.body(new InputStreamRequestContent(MediaType.APPLICATION_JSON, stream));
             logger.trace(" -with payload : {} ", payload);
         }
 
@@ -178,7 +178,7 @@ public class AirParifBridgeHandler extends BaseBridgeHandler implements HandlerU
         try { // This is only intended to validate communication with the server
             version = executeUri(VERSION_URI, Version.class);
         } catch (AirParifException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             return;
         }
 
@@ -186,7 +186,7 @@ public class AirParifBridgeHandler extends BaseBridgeHandler implements HandlerU
         try { // This validates the api key value
             keyInfo = executeUri(KEY_INFO_URI, KeyInfo.class);
         } catch (AirParifException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
             return;
         }
 
@@ -276,8 +276,8 @@ public class AirParifBridgeHandler extends BaseBridgeHandler implements HandlerU
     }
 
     @Override
-    public void updateStatus(ThingStatus status, ThingStatusDetail statusDetail, @Nullable String description) {
-        super.updateStatus(status, statusDetail, description);
+    public void updateStatus(ThingStatusDetail statusDetail, @Nullable String description) {
+        super.updateStatus(statusDetail, description);
     }
 
     @Override

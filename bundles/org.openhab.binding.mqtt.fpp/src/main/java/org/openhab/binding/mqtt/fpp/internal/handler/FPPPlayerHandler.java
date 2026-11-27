@@ -214,15 +214,14 @@ public class FPPPlayerHandler extends BaseThingHandler implements MqttMessageSub
     @Override
     public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
         if (bridgeStatusInfo.getStatus() == ThingStatus.OFFLINE) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
             connection = null;
             return;
         }
 
         Bridge localBridge = this.getBridge();
         if (localBridge == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED,
-                    "Bridge is missing or offline, you need to setup a working MQTT broker first.");
+            logger.debug("Bridge unavailable for Thing {}", getThing().getUID());
             return;
         }
         ThingHandler handler = localBridge.getHandler();
@@ -231,8 +230,7 @@ public class FPPPlayerHandler extends BaseThingHandler implements MqttMessageSub
             try {
                 connection = abh.getConnectionAsync().get(5000, TimeUnit.MILLISECONDS);
             } catch (InterruptedException | ExecutionException | TimeoutException ignored) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED,
-                        "Bridge handler has no valid broker connection!");
+                updateStatus(ThingStatus.UNKNOWN, "Bridge handler has no valid broker connection!");
                 return;
             }
             this.connection = connection;

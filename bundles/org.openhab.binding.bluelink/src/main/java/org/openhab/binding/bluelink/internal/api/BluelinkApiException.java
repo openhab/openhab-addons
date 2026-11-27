@@ -32,4 +32,11 @@ public class BluelinkApiException extends Exception {
     public BluelinkApiException(String message, @Nullable Throwable cause) {
         super(message, cause);
     }
+
+    /**
+     * @return the description to show in the Thing status, either the message or an i18n reference
+     */
+    public @Nullable String getStatusDescription() {
+        return getMessage();
+    }
 }

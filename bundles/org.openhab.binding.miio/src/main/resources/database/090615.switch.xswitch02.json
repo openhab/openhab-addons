@@ -1,37 +1,47 @@
 {
 	"deviceMapping": {
 		"id": [
-			"090615.switch.xswitch02"
+			"090615.switch.xswitch02",
+			"090615.switch.switch02"
 		],
 		"propertyMethod": "get_prop",
 		"maxProperties": 1,
+		"experimental": false,
 		"channels": [
 			{
 				"property": "switch1",
 				"friendlyName": "Switch 1",
 				"channel": "switch1state",
-				"type": "Number",
+				"type": "Switch",
 				"refresh": true,
-				"ChannelGroup": "actions",
 				"actions": [
 					{
 						"command": "SetSwitch1",
-						"parameterType": "NUMBER"
+						"parameterType": "ONOFFNUMBER"
 					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch",
+					"Power"
 				]
 			},
 			{
 				"property": "switch2",
 				"friendlyName": "Switch 2",
 				"channel": "switch2state",
-				"type": "Number",
+				"type": "Switch",
 				"refresh": true,
-				"ChannelGroup": "actions",
 				"actions": [
 					{
 						"command": "SetSwitch2",
-						"parameterType": "NUMBER"
+						"parameterType": "ONOFFNUMBER"
 					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch",
+					"Power"
 				]
 			},
 			{
@@ -40,13 +50,17 @@
 				"channel": "switch1name",
 				"type": "String",
 				"refresh": true,
-				"ChannelGroup": "actions",
 				"actions": [
 					{
 						"command": "SetSwtichname1",
 						"parameterType": "STRING"
 					}
-				]
+				],
+				"category": "text",
+				"tags": [
+					"Control"
+				],
+				"readmeComment": "Non-ASCII characters of names set in the Mi Home app are shown as \\u codes."
 			},
 			{
 				"property": "switchname2",
@@ -54,13 +68,87 @@
 				"channel": "switch2name",
 				"type": "String",
 				"refresh": true,
-				"ChannelGroup": "actions",
 				"actions": [
 					{
 						"command": "SetSwtichname2",
 						"parameterType": "STRING"
 					}
-				]
+				],
+				"category": "text",
+				"tags": [
+					"Control"
+				],
+				"readmeComment": "Non-ASCII characters of names set in the Mi Home app are shown as \\u codes."
+			},
+			{
+				"property": "",
+				"friendlyName": "All Switches",
+				"channel": "all",
+				"type": "Switch",
+				"refresh": false,
+				"actions": [
+					{
+						"command": "SetSwitchAll",
+						"parameterType": "NONE",
+						"parameters": [
+							1,
+							1,
+							1
+						],
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "ON",
+									"returnValue": 1
+								}
+							]
+						}
+					},
+					{
+						"command": "SetSwitchAll",
+						"parameterType": "NONE",
+						"parameters": [
+							0,
+							0,
+							0
+						],
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "OFF",
+									"returnValue": 0
+								}
+							]
+						}
+					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch",
+					"Power"
+				],
+				"readmeComment": "Switches all gangs on or off. Write only."
+			},
+			{
+				"property": "",
+				"friendlyName": "Backlight",
+				"channel": "backlight",
+				"type": "Switch",
+				"refresh": false,
+				"actions": [
+					{
+						"command": "SetBlacklight",
+						"parameterType": "ONOFFNUMBER"
+					}
+				],
+				"category": "light",
+				"tags": [
+					"Switch",
+					"Light"
+				],
+				"readmeComment": "Write only: the device reports the backlight only in an unnamed status list."
 			}
 		]
 	}

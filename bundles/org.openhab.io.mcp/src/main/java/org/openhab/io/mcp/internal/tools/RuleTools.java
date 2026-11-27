@@ -66,6 +66,7 @@ public class RuleTools {
     private final RuleManager ruleManager;
     private final McpJsonMapper jsonMapper;
     private final boolean scriptingEnabled;
+    private final Paging paging;
 
     /**
      * Creates a new {@code RuleTools} instance.
@@ -75,13 +76,16 @@ public class RuleTools {
      * @param jsonMapper the JSON mapper used to serialize tool results
      * @param scriptingEnabled when true, allows {@code script}-typed actions and conditions; when false,
      *            those types are rejected with an error pointing at the {@code enableScripting} config flag
+     * @param maxItemsPerPage upper bound for the {@code limit} argument of the paginated list tool; values
+     *            below 1 are treated as 1
      */
     public RuleTools(RuleRegistry ruleRegistry, RuleManager ruleManager, McpJsonMapper jsonMapper,
-            boolean scriptingEnabled) {
+            boolean scriptingEnabled, int maxItemsPerPage) {
         this.ruleRegistry = ruleRegistry;
         this.ruleManager = ruleManager;
         this.jsonMapper = jsonMapper;
         this.scriptingEnabled = scriptingEnabled;
+        this.paging = Paging.of(maxItemsPerPage);
     }
 
     /**
@@ -91,12 +95,12 @@ public class RuleTools {
         Map<String, Object> properties = new HashMap<>();
         properties.put("tag", Map.of("type", "string", "description", "Filter rules by tag"));
         properties.put("enabled", Map.of("type", "boolean", "description", "Filter by enabled/disabled state"));
-        properties.put("limit", Map.of("type", "integer", "description", "Maximum results to return (default: 50)"));
-        properties.put("offset", Map.of("type", "integer", "description", "Number of results to skip (default: 0)"));
+        paging.addSchemaProperties(properties);
 
         return McpSchema.Tool.builder().name("get_rules").description(
                 "List automation rules with their status, triggers, and tags. Use tag='MCP' to see rules created by this agent.")
-                .inputSchema(new McpSchema.JsonSchema("object", properties, List.of(), null, null, null)).build();
+                .inputSchema(new McpSchema.JsonSchema("object", properties, List.of(), null, null, null))
+                .annotations(readOnlyAnnotations()).build();
     }
 
     /**
@@ -106,8 +110,6 @@ public class RuleTools {
         Map<String, Object> args = request.arguments();
         String tagFilter = getStringArg(args, "tag");
         Boolean enabledFilter = getNullableBooleanArg(args, "enabled");
-        int limit = getIntArg(args, "limit", 50);
-        int offset = getIntArg(args, "offset", 0);
 
         List<Map<String, Object>> rules = new ArrayList<>();
         for (Rule rule : ruleRegistry.getAll()) {
@@ -122,14 +124,9 @@ public class RuleTools {
             rules.add(buildRuleSummary(rule, status));
         }
 
-        int total = rules.size();
-        List<Map<String, Object>> page = rules.subList(Math.min(offset, total), Math.min(offset + limit, total));
-
         Map<String, Object> response = new HashMap<>();
+        List<Map<String, Object>> page = paging.page(rules, args, response);
         response.put("rules", page);
-        response.put("total", total);
-        response.put("offset", offset);
-        response.put("limit", limit);
         return textResult(jsonMapper, response);
     }
 
@@ -137,6 +134,7 @@ public class RuleTools {
      * Returns the {@code manage_rule} tool schema.
      */
     public McpSchema.Tool getManageRuleTool() {
+        // Annotated for the most impactful actions: 'remove' deletes the rule and 'trigger' runs its actions.
         return McpSchema.Tool.builder().name("manage_rule")
                 .description("Enable, disable, manually trigger, or permanently remove an automation rule.")
                 .inputSchema(new McpSchema.JsonSchema("object",
@@ -146,19 +144,22 @@ public class RuleTools {
                                         "Action to perform: 'enable', 'disable', 'trigger', or 'remove'", "enum",
                                         List.of("enable", "disable", "trigger", "remove"))),
                         List.of("ruleUID", "action"), null, null, null))
-                .build();
+                .annotations(writeAnnotations(true, false)).build();
     }
 
     /**
-     * Handles a {@code manage_rule} call.
+     * Handles a {@code manage_rule} call. Like REST, non-admins may only trigger a rule.
      */
-    public CallToolResult handleManageRule(McpSchema.CallToolRequest request) {
+    public CallToolResult handleManageRule(McpSchema.CallToolRequest request, boolean admin) {
         Map<String, Object> args = request.arguments();
         String ruleUID = getStringArg(args, "ruleUID");
         String action = getStringArg(args, "action");
 
         if (ruleUID == null || action == null) {
             return errorResult("Both 'ruleUID' and 'action' are required.");
+        }
+        if (!admin && !"trigger".equalsIgnoreCase(action)) {
+            return adminRequiredResult("'manage_rule' action '" + action + "'");
         }
 
         Rule rule = ruleRegistry.get(ruleUID);
@@ -218,10 +219,11 @@ public class RuleTools {
         properties.put("actions", Map.of("type", "array", "description", actionsDescription(), "items",
                 Map.of("type", "object", "properties", actionProps(), "required", List.of("type"))));
 
+        // Each call adds a new rule with a freshly generated UID.
         return McpSchema.Tool.builder().name("create_rule").description(createRuleDescription())
                 .inputSchema(
                         new McpSchema.JsonSchema("object", properties, List.of("name", "actions"), null, null, null))
-                .build();
+                .annotations(writeAnnotations(false, false)).build();
     }
 
     /**
@@ -319,11 +321,13 @@ public class RuleTools {
                         "Replace all actions (omit to keep current). Same format as create_rule.", "items",
                         Map.of("type", "object", "properties", actionProps(), "required", List.of("type"))));
 
+        // Provided conditions, actions and tags replace the existing ones.
         return McpSchema.Tool.builder().name("update_rule").description("""
                 Update a rule's name, description, tags, conditions, or actions without recreating it. \
                 Only provided fields are changed; omitted fields keep their current values. \
                 To change the triggers, delete and recreate the rule instead.""")
-                .inputSchema(new McpSchema.JsonSchema("object", props, List.of("ruleUID"), null, null, null)).build();
+                .inputSchema(new McpSchema.JsonSchema("object", props, List.of("ruleUID"), null, null, null))
+                .annotations(writeAnnotations(true, true)).build();
     }
 
     /**

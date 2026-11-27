@@ -15,11 +15,12 @@ package org.openhab.binding.solaredge.internal.command;
 import static org.openhab.binding.solaredge.internal.SolarEdgeBindingConstants.*;
 
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.api.Result;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.Result;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.solaredge.internal.connector.StatusUpdateListener;
@@ -66,18 +67,35 @@ public class AggregateDataUpdatePrivateApi extends AbstractCommand implements So
         this.transformer = new AggregateDataResponseTransformerPrivateApi(handler);
         this.period = period;
         switch (period) {
-            case DAY:
-                this.urlSuffix = PRIVATE_DATA_API_URL_AGGREGATE_DATA_DAY_WEEK_SUFFIX;
+            case DAY: {
+                String today = LocalDate.now().toString();
+                this.urlSuffix = PRIVATE_DATA_API_URL_AGGREGATE_DATA_DAY_WEEK_MONTH_SUFFIX
+                        + PRIVATE_DATA_API_PARAM_START_DATE + today + PRIVATE_DATA_API_PARAM_END_DATE + today;
                 break;
-            case WEEK:
-                this.urlSuffix = PRIVATE_DATA_API_URL_AGGREGATE_DATA_DAY_WEEK_SUFFIX;
+            }
+            case WEEK: {
+                String startDate = LocalDate.now().minusDays(6).toString();
+                String endDate = LocalDate.now().toString();
+                this.urlSuffix = PRIVATE_DATA_API_URL_AGGREGATE_DATA_DAY_WEEK_MONTH_SUFFIX
+                        + PRIVATE_DATA_API_PARAM_START_DATE + startDate + PRIVATE_DATA_API_PARAM_END_DATE + endDate;
                 break;
-            case MONTH:
-                this.urlSuffix = PRIVATE_DATA_API_URL_AGGREGATE_DATA_MONTH_YEAR_SUFFIX;
+            }
+            case MONTH: {
+                LocalDate today = LocalDate.now();
+                String startDate = today.withDayOfMonth(1).toString();
+                String endDate = today.toString();
+                this.urlSuffix = PRIVATE_DATA_API_URL_AGGREGATE_DATA_DAY_WEEK_MONTH_SUFFIX
+                        + PRIVATE_DATA_API_PARAM_START_DATE + startDate + PRIVATE_DATA_API_PARAM_END_DATE + endDate;
                 break;
-            case YEAR:
-                this.urlSuffix = PRIVATE_DATA_API_URL_AGGREGATE_DATA_MONTH_YEAR_SUFFIX;
+            }
+            case YEAR: {
+                LocalDate today = LocalDate.now();
+                String startDate = today.minusYears(1).plusDays(1).toString();
+                String endDate = today.toString();
+                this.urlSuffix = PRIVATE_DATA_API_URL_AGGREGATE_DATA_YEAR_SUFFIX + PRIVATE_DATA_API_PARAM_START_DATE
+                        + startDate + PRIVATE_DATA_API_PARAM_END_DATE + endDate;
                 break;
+            }
             default:
                 this.urlSuffix = "";
         }
@@ -94,12 +112,13 @@ public class AggregateDataUpdatePrivateApi extends AbstractCommand implements So
 
     @Override
     protected String getURL() {
-        return PRIVATE_DATA_API_URL + config.getSolarId() + urlSuffix;
+        return PRIVATE_DATA_API_URL_AGGREGATE + config.getSolarId() + urlSuffix;
     }
 
     @Override
-    public void onComplete(@Nullable Result result) {
-        logger.debug("onComplete()");
+    protected void handleResponse(@Nullable Result result) {
+        logger.debug("[AggregateDataUpdatePrivateApi] onComplete()");
+        logger.trace("URL: {}", getURL());
 
         if (!HttpStatus.Code.OK.equals(getCommunicationStatus().getHttpCode())) {
             if (retries++ < MAX_RETRIES) {

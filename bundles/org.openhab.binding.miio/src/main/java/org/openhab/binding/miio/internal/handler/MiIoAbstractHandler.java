@@ -21,7 +21,6 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.time.Instant;
 import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
@@ -107,7 +106,7 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
     protected int lastId;
 
     protected Map<Integer, String> cmds = new ConcurrentHashMap<>();
-    protected Map<String, Object> deviceVariables = new HashMap<>();
+    protected Map<String, Object> deviceVariables = new ConcurrentHashMap<>();
     protected final ExpiringCache<String> network = new ExpiringCache<>(CACHE_EXPIRY_NETWORK, () -> {
         int ret = sendCommand(MiIoCommand.MIIO_INFO);
         if (ret != 0) {
@@ -162,13 +161,11 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
         this.configuration = configuration;
         if (!getThing().getThingTypeUID().equals(THING_TYPE_LUMI)) {
             if (configuration.host.isEmpty()) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "@text/offline.config-error-ip");
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.config-error-ip");
                 return;
             }
             if (!tokenCheckPass(configuration.token)) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "@text/offline.config-error-token");
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.config-error-token");
                 return;
             }
         }
@@ -394,8 +391,7 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
     }
 
     protected void disconnected(@Nullable String message) {
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                message != null ? message : "");
+        updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, message != null ? message : "");
         final MiIoAsyncCommunication miioCom = this.miioCom;
         if (miioCom != null) {
             lastId = miioCom.getId();
@@ -412,8 +408,7 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
             return null;
         }
         if (deviceId.isBlank() && !getCloudServer().isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
-                    "@text/offline.config-error-cloud");
+            updateStatus(ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, "@text/offline.config-error-cloud");
             return null;
         }
         if (deviceId.length() == 8 && deviceId.matches("^.*[a-zA-Z]+.*$")) {
@@ -431,14 +426,14 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
 
         if (!deviceId.isBlank() && (tokenCheckPass(configuration.token) || !getCloudServer().isBlank())) {
             final MiIoAsyncCommunication miioComF = new MiIoAsyncCommunication(configuration.host, token, deviceId,
-                    lastId, configuration.timeout, cloudConnector);
+                    lastId, configuration.timeout, cloudConnector, !getCloudServer().isBlank());
             miioComF.registerListener(this);
             this.miioCom = miioComF;
             return miioComF;
         } else {
             logger.debug("No deviceId defined. Retrieving Mi deviceId");
             final MiIoAsyncCommunication miioComF = new MiIoAsyncCommunication(configuration.host, token, "", lastId,
-                    configuration.timeout, cloudConnector);
+                    configuration.timeout, cloudConnector, !getCloudServer().isBlank());
             try {
                 Message miIoResponse = miioComF.sendPing(configuration.host);
                 if (miIoResponse != null) {
@@ -625,8 +620,13 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
     }
 
     @Override
-    public void onStatusUpdated(ThingStatus status, ThingStatusDetail statusDetail) {
-        updateStatus(status, statusDetail);
+    public void onStatusUpdated(ThingStatusDetail statusDetail) {
+        updateStatus(statusDetail);
+    }
+
+    @Override
+    public void onStatusUpdated(ThingStatus status) {
+        updateStatus(status);
     }
 
     @Override
@@ -649,7 +649,7 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
                 MiIoCommand.UNKNOWN.equals(response.getCommand())
                         ? response.getCommand().toString() + "(" + response.getCommandString() + ")"
                         : response.getCommand(),
-                response.getResult(), response.getResponse());
+                Utils.sanitizeForLog(response.getResult()), Utils.sanitizeForLog(response.getResponse()));
         if (response.isError()) {
             logger.debug("Error received for command '{}': {}.", response.getCommandString(),
                     response.getResponse().get("error"));

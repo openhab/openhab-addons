@@ -139,6 +139,11 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
     private volatile @Nullable Channel stopMoveChannel = null;
 
     /*
+     * Channel for the current position (rollershutters)
+     */
+    private volatile @Nullable Channel positionCurrentChannel = null;
+
+    /*
      * Internal record representing a link between an OH channel and a HomeKit characteristic type & iid.
      * Used for light model management.
      */
@@ -488,8 +493,11 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
             if (command instanceof StopMoveType stopMoveType && StopMoveType.STOP == stopMoveType) {
                 if (stopMoveChannel instanceof Channel stopMoveChannel) {
                     writeChannel(stopMoveChannel, OnOffType.ON);
-                } else if (readChannel(channel) instanceof Command actualPosition) {
-                    writeChannel(channel, actualPosition);
+                } else if (positionCurrentChannel instanceof Channel positionChannel
+                        && readChannel(positionChannel) instanceof Command currentPosition) {
+                    writeChannel(channel, currentPosition);
+                } else {
+                    logger.debug("{} not able to execute stop command", thing.getUID());
                 }
             } else if (channelUID.equals(lightModelClientHSBTypeChannel)) {
                 lightModelHandleCommand(command);
@@ -534,14 +542,19 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
     public void initialize() {
         super.initialize();
         if (isBridgedAccessory) {
-            if (getBridge() instanceof Bridge bridge && bridge.getStatus() == ThingStatus.ONLINE) {
+            Bridge bridge = getBridge();
+            if (bridge == null) {
+                logger.debug("Bridge unavailable while initializing Thing: {}", thing.getUID());
+                return;
+            }
+            if (bridge.getStatus() == ThingStatus.ONLINE) {
                 scheduler.submit(() -> {
                     onConnectedThingAccessoriesLoaded();
                     enableEvents(true);
                     updateStatus(ThingStatus.ONLINE);
                 });
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+                updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
             }
         }
     }
@@ -553,6 +566,7 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
         lightModelLinks.clear();
         lightModelClientHSBTypeChannel = null;
         stopMoveChannel = null;
+        positionCurrentChannel = null;
         super.dispose();
     }
 
@@ -724,20 +738,26 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
     }
 
     /**
-     * Initializes the stop/move button channel by searching for a characteristic of type POSITION_HOLD.
+     * Initializes the stop/move button channel by searching for a characteristic of type POSITION_HOLD,
+     * and the current position channel by searching for a characteristic of type POSITION_CURRENT.
      *
      * @param accessory the accessory containing the characteristics
      * @param channels the list of channels to search
      */
     private void stopMoveFinalize(Accessory accessory, Map<String, Channel> channels) {
+        stopMoveChannel = null;
+        positionCurrentChannel = null;
         for (Channel channel : channels.values()) {
             if (channel.getProperties().get(PROPERTY_IID) instanceof String iid) {
                 for (Service service : accessory.services) {
                     for (Characteristic cxx : service.characteristics) {
-                        if (iid.equals(String.valueOf(cxx.iid))
-                                && CharacteristicType.POSITION_HOLD == cxx.getCharacteristicType()) {
-                            stopMoveChannel = channel;
-                            return;
+                        if (iid.equals(String.valueOf(cxx.iid))) {
+                            CharacteristicType cxxType = cxx.getCharacteristicType();
+                            if (CharacteristicType.POSITION_HOLD == cxxType) {
+                                stopMoveChannel = channel;
+                            } else if (CharacteristicType.POSITION_CURRENT == cxxType) {
+                                positionCurrentChannel = channel;
+                            }
                         }
                     }
                 }
@@ -1257,8 +1277,7 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
                 getScheduler().schedule(() -> doMigration(sourceUniqueId, sourceThing, targetBridge, targetThing),
                         MIGRATION_DELAY_SECONDS, TimeUnit.SECONDS);
                 logger.info("{} has embedded accessories; auto-migrating it", thing.getUID());
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
-                        "@text/status.migrating-accessory-to-bridge");
+                updateStatus(ThingStatus.UNKNOWN, "@text/status.migrating-accessory-to-bridge");
                 return true;
             } catch (Exception e) {
                 migrating.set(false);
@@ -1326,8 +1345,7 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
             logger.warn("{} while auto-migrating {} to {}; try editing Thing-Type from 'accessory' to 'bridge'.",
                     e.getMessage(), oldThing.getUID(), newBridge.getUID());
             migrating.set(false);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
-                    "@text/status.migrating-accessory-to-bridge-failed");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/status.migrating-accessory-to-bridge-failed");
             return;
         }
         String mac = thing.getProperties().get(Thing.PROPERTY_MAC_ADDRESS);

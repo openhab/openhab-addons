@@ -55,6 +55,18 @@ public class BindingConstants {
     public static final String CONFIG_CHANNEL_INVERTED = "inverted";
     public static final String CONFIG_CHANNEL_FACTOR = "factor";
 
+    // List of static statistics channels
+    public static final String CHANNEL_GROUP_STATISTICS = "statistics";
+    public static final String CHANNEL_STATISTICS_LAST_SEEN = "last-seen";
+    public static final String CHANNEL_STATISTICS_LAST_AWAKE = "last-awake";
+    public static final String CHANNEL_STATISTICS_COMMANDS_TX = "commands-tx";
+    public static final String CHANNEL_STATISTICS_COMMANDS_RX = "commands-rx";
+    public static final String CHANNEL_STATISTICS_COMMANDS_DROPPED_TX = "commands-dropped-tx";
+    public static final String CHANNEL_STATISTICS_COMMANDS_DROPPED_RX = "commands-dropped-rx";
+    public static final String CHANNEL_STATISTICS_TIMEOUT_RESPONSE = "timeout-response";
+    public static final String CHANNEL_STATISTICS_RTT = "rtt";
+    public static final String CHANNEL_STATISTICS_RSSI = "rssi";
+
     // List of all Thing Properties
     public static final String PROPERTY_HOME_ID = "homeId";
     public static final String PROPERTY_DRIVER_VERSION = "driverVersion";

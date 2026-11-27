@@ -12,13 +12,13 @@
  */
 package org.openhab.io.yamlcomposer.internal.processors;
 
-import java.util.Map;
 import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.io.yamlcomposer.internal.BufferedLogger;
 import org.openhab.io.yamlcomposer.internal.StringInterpolator;
+import org.openhab.io.yamlcomposer.internal.core.EvaluationContext;
 import org.openhab.io.yamlcomposer.internal.core.RecursiveTransformer;
 import org.openhab.io.yamlcomposer.internal.placeholders.SubstitutionPlaceholder;
 
@@ -50,8 +50,9 @@ public class SubstitutionProcessor implements PlaceholderProcessor<SubstitutionP
      * @return The processed value with substitutions applied
      */
     @Override
-    public @Nullable Object process(SubstitutionPlaceholder placeholder, RecursiveTransformer recursiveTransformer) {
-        return process(placeholder, recursiveTransformer.getVariables());
+    public @Nullable Object process(SubstitutionPlaceholder placeholder, RecursiveTransformer recursiveTransformer,
+            EvaluationContext context) {
+        return process(placeholder, context);
     }
 
     /**
@@ -65,19 +66,19 @@ public class SubstitutionProcessor implements PlaceholderProcessor<SubstitutionP
      * @param context The variable context for substitutions
      * @return The processed value with substitutions applied
      */
-    public @Nullable Object process(SubstitutionPlaceholder placeholder, Map<String, @Nullable Object> context) {
+    public @Nullable Object process(SubstitutionPlaceholder placeholder, EvaluationContext context) {
         Pattern pattern = resolvePattern(placeholder, context);
         return StringInterpolator.interpolate(placeholder.value(), pattern, context, logger.getLogSession(),
                 placeholder.sourceLocation());
     }
 
-    private Pattern resolvePattern(SubstitutionPlaceholder placeholder, Map<String, @Nullable Object> context) {
+    private Pattern resolvePattern(SubstitutionPlaceholder placeholder, EvaluationContext context) {
         String patternName = placeholder.patternName();
         if (patternName == null || patternName.isBlank()) {
             return StringInterpolator.DEFAULT_SUBSTITUTION_PATTERN;
         }
 
-        Object rawPatternSpec = context.get(patternName);
+        Object rawPatternSpec = context.scope().flatten().get(patternName);
         if (!(rawPatternSpec instanceof String patternSpec) || patternSpec.isBlank()) {
             logger.warn("{} Undefined or invalid pattern variable '{}' for !sub tag; using default pattern.",
                     placeholder.sourceLocation(), patternName);

@@ -127,9 +127,8 @@ public class UnifiAccessDeviceHandler extends UnifiAccessBaseHandler {
     }
 
     protected void updateFromSettings(DeviceAccessMethodSettings settings) {
-        if (getThing().getStatus() != ThingStatus.ONLINE) {
-            updateStatus(ThingStatus.ONLINE);
-        }
+        // No status change here: the bridge poll sets ONLINE/OFFLINE from the device's reported
+        // isOnline, and settings arrive for offline devices too
         updateEnabledChannel(CHANNEL_DEVICE_NFC_ENABLED, settings.nfc);
         updateEnabledChannel(CHANNEL_DEVICE_PIN_ENABLED, settings.pinCode);
         updateEnabledChannel(CHANNEL_DEVICE_FACE_ENABLED, settings.face);

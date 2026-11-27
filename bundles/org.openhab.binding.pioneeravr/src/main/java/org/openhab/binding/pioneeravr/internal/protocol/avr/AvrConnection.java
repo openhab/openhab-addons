@@ -104,6 +104,13 @@ public interface AvrConnection {
     boolean sendMCACCMemoryQuery();
 
     /**
+     * Send a speaker selection query to the AVR
+     *
+     * @return
+     */
+    boolean sendSpeakerSelectionQuery();
+
+    /**
      * Send a power command ot the AVR based on the openHAB command
      *
      * @param command
@@ -155,6 +162,14 @@ public interface AvrConnection {
      * @return
      */
     boolean sendMCACCMemoryCommand(Command command) throws CommandTypeNotSupportedException;
+
+    /**
+     * Send a speaker selection command to the AVR based on the openHAB command
+     *
+     * @param command
+     * @return
+     */
+    boolean sendSpeakerSelectionCommand(Command command) throws CommandTypeNotSupportedException;
 
     /**
      * Return the connection name

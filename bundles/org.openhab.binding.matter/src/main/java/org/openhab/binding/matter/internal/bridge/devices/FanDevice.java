@@ -13,6 +13,7 @@
 package org.openhab.binding.matter.internal.bridge.devices;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -225,6 +226,26 @@ public class FanDevice extends BaseDevice {
             attributeMap.put(attribute, value);
         });
         return new MatterDeviceOptions(attributeMap, primaryMetadata.label);
+    }
+
+    @Override
+    protected List<Item> structureItems() {
+        List<Item> items = new ArrayList<>();
+        items.add(primaryItem);
+        if (primaryItem instanceof GroupItem groupItem) {
+            items.addAll(groupItem.getAllMembers());
+        }
+        return items;
+    }
+
+    @Override
+    protected void sendCurrentState() {
+        itemMap.values().forEach(item -> updateState(item, item.getState()));
+    }
+
+    @Override
+    public Collection<GenericItem> stateItems() {
+        return itemMap.isEmpty() ? super.stateItems() : List.copyOf(itemMap.values());
     }
 
     @Override

@@ -9,8 +9,8 @@
 		<label>Heating Delivery</label>
 		<description>The total amount of heating used in the past period.</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state pattern="%.3f %unit%" readOnly="true"></state>
 	</channel-type>

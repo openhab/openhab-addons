@@ -19,17 +19,22 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 import java.lang.reflect.Field;
+import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.Request;
 import org.eclipse.jetty.http.HttpFields;
 import org.eclipse.jetty.http.HttpMethod;
+import org.eclipse.jetty.io.Content;
 import org.junit.jupiter.api.Test;
+
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 
 /**
  * The {@link CloudTest} tests the methods in the Cloud
@@ -59,7 +64,7 @@ public class CloudTest {
         when(mockHttpClient.newRequest(anyString())).thenReturn(mockRequest);
         when(mockRequest.method(HttpMethod.POST)).thenReturn(mockRequest);
         when(mockRequest.timeout(anyLong(), any(TimeUnit.class))).thenReturn(mockRequest);
-        when(mockRequest.content(any(StringContentProvider.class))).thenReturn(mockRequest);
+        when(mockRequest.body(any())).thenReturn(mockRequest);
         when(mockRequest.getHeaders()).thenReturn(mockHeaders); // Attach mocked headers
         when(mockRequest.send()).thenReturn(mockResponse);
 
@@ -112,9 +117,16 @@ public class CloudTest {
         when(mockHttpClient.newRequest(anyString())).thenReturn(mockRequest);
         when(mockRequest.method(HttpMethod.POST)).thenReturn(mockRequest);
         when(mockRequest.timeout(anyLong(), any(TimeUnit.class))).thenReturn(mockRequest);
-        when(mockRequest.content(any(StringContentProvider.class))).thenReturn(mockRequest);
+        when(mockRequest.body(any())).thenReturn(mockRequest);
         when(mockRequest.getHeaders()).thenReturn(mockHeaders); // Attach mocked headers
         when(mockRequest.send()).thenReturn(mockResponse);
+
+        ByteBuffer requestContent = ByteBuffer.allocate(2048);
+        doAnswer(invocation -> {
+            Request.Content content = invocation.getArgument(0);
+            requestContent.put(Content.Source.asByteBuffer(content));
+            return mockRequest;
+        }).when(mockRequest).body(any(Request.Content.class));
 
         // Define behavior of ContentResponse
         when(mockResponse.getStatus()).thenReturn(200);
@@ -122,7 +134,7 @@ public class CloudTest {
                 "{\"msg\":\"ok\",\"data\":{\"mdata\":{\"accessToken\":\"mock-token\"}},\"errorCode\":\"0\"}");
 
         // Create a CloudProvider instance (replace arguments with appropriate values)
-        CloudProvider provider = new CloudProvider("MSmartHome", "ac21b9f9cbfe4ca5a88562ef25e2b768", "1010",
+        CloudProvider provider = new CloudProvider("SmartHome", "ac21b9f9cbfe4ca5a88562ef25e2b768", "1010",
                 "https://mp-prod.appsmb.com/mas/v5/app/proxy?alias=", "xhdiwjnchekd4d512chdjx5d8e4c394D2D7S",
                 "meicloud", "PROD_VnoClJI9aikS8dyy", "v5");
 
@@ -140,10 +152,66 @@ public class CloudTest {
         // Assert the result
         assertTrue(login);
 
+        verify(mockHttpClient).newRequest("https://mp-prod.appsmb.com/mas/v5/app/proxy?alias=/mj/user/login");
+
+        requestContent.flip();
+        JsonObject payload = Objects.requireNonNull(
+                new Gson().fromJson(StandardCharsets.UTF_8.decode(requestContent).toString(), JsonObject.class));
+        Field deviceIdField = Cloud.class.getDeclaredField("DEVICE_ID");
+        deviceIdField.setAccessible(true);
+        String deviceId = (String) deviceIdField.get(null);
+        assertEquals(2, payload.getAsJsonObject("data").get("platform").getAsInt());
+        assertEquals(deviceId, payload.getAsJsonObject("data").get("deviceId").getAsString());
+        assertEquals("1010", payload.getAsJsonObject("iotData").get("appId").getAsString());
+        assertEquals("1010", payload.getAsJsonObject("iotData").get("src").getAsString());
+        assertEquals("email", payload.getAsJsonObject("iotData").get("loginAccount").getAsString());
+
         // Verify that accessToken is returned
         Field accessTokenField = Cloud.class.getDeclaredField("accessToken");
         accessTokenField.setAccessible(true);
         assertEquals("mock-token", accessTokenField.get(cloud));
+    }
+
+    @Test
+    public void testGetLoginIdProxy() throws Exception {
+        HttpClient mockHttpClient = typedMock(HttpClient.class);
+        Request mockRequest = typedMock(Request.class);
+        ContentResponse mockResponse = typedMock(ContentResponse.class);
+        HttpFields mockHeaders = typedMock(HttpFields.class);
+
+        when(mockHeaders.toString()).thenReturn("Mocked Headers");
+        when(mockHttpClient.newRequest(anyString())).thenReturn(mockRequest);
+        when(mockRequest.method(HttpMethod.POST)).thenReturn(mockRequest);
+        when(mockRequest.timeout(anyLong(), any(TimeUnit.class))).thenReturn(mockRequest);
+        when(mockRequest.body(any(Request.Content.class))).thenReturn(mockRequest);
+        when(mockRequest.getHeaders()).thenReturn(mockHeaders);
+        when(mockRequest.send()).thenReturn(mockResponse);
+        when(mockResponse.getContentAsString())
+                .thenReturn("{\"msg\":\"ok\",\"data\":{\"loginId\":\"mock-loginId\"},\"code\":0}");
+
+        ByteBuffer requestContent = ByteBuffer.allocate(2048);
+        doAnswer(invocation -> {
+            Request.Content content = invocation.getArgument(0);
+            requestContent.put(Content.Source.asByteBuffer(content));
+            return mockRequest;
+        }).when(mockRequest).body(any(Request.Content.class));
+
+        CloudProvider provider = new CloudProvider("SmartHome", "ac21b9f9cbfe4ca5a88562ef25e2b768", "1010",
+                "https://mp-prod.appsmb.com/mas/v5/app/proxy?alias=", "xhdiwjnchekd4d512chdjx5d8e4c394D2D7S",
+                "meicloud", "PROD_VnoClJI9aikS8dyy", "v5");
+        Cloud cloud = new Cloud("email", "password", provider, mockHttpClient);
+
+        assertTrue(cloud.getLoginId());
+        verify(mockHttpClient).newRequest("https://mp-prod.appsmb.com/mas/v5/app/proxy?alias=/v1/user/login/id/get");
+        requestContent.flip();
+        String json = StandardCharsets.UTF_8.decode(requestContent).toString();
+        assertEquals("email",
+                Objects.requireNonNull(new Gson().fromJson(json, JsonObject.class)).get("loginAccount").getAsString());
+        Field deviceIdField = Cloud.class.getDeclaredField("DEVICE_ID");
+        deviceIdField.setAccessible(true);
+        assertEquals(deviceIdField.get(null),
+                Objects.requireNonNull(new Gson().fromJson(json, JsonObject.class)).get("deviceId").getAsString());
+        assertTrue(json.indexOf("\"reqId\"") < json.indexOf("\"loginAccount\""));
     }
 
     @Test
@@ -188,7 +256,7 @@ public class CloudTest {
         when(mockHttpClient.newRequest(any(String.class))).thenReturn(mockRequest);
         when(mockRequest.method(HttpMethod.POST)).thenReturn(mockRequest);
         when(mockRequest.timeout(any(Long.class), any(TimeUnit.class))).thenReturn(mockRequest);
-        when(mockRequest.content(any(StringContentProvider.class))).thenReturn(mockRequest);
+        when(mockRequest.body(any())).thenReturn(mockRequest);
         when(mockRequest.getHeaders()).thenReturn(mockHeaders);
         when(mockRequest.send()).thenReturn(mockResponse);
 

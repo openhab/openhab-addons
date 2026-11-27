@@ -8,4 +8,16 @@
 	<description>Adds GPIO support to openHAB.</description>
 	<connection>local</connection>
 
+	<discovery-methods>
+		<discovery-method>
+			<service-type>process</service-type>
+			<match-properties>
+				<match-property>
+					<name>command</name>
+					<regex>(?i).*[/\\](pigpiod)(\.exe)?$</regex>
+				</match-property>
+			</match-properties>
+		</discovery-method>
+	</discovery-methods>
+
 </addon:addon>

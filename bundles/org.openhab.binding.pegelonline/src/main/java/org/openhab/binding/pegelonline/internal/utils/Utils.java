@@ -14,6 +14,8 @@ package org.openhab.binding.pegelonline.internal.utils;
 
 import static org.openhab.binding.pegelonline.internal.PegelOnlineBindingConstants.UNKNOWN;
 
+import java.util.Locale;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.util.StringUtils;
@@ -64,7 +66,7 @@ public class Utils {
         } else {
             StringBuffer titleCaseString = new StringBuffer();
             for (String string : StringUtils.splitByCharacterType(input)) {
-                String converted = StringUtils.capitalize(string.toLowerCase());
+                String converted = StringUtils.capitalize(string.toLowerCase(Locale.ROOT));
                 titleCaseString.append(converted);
             }
             return titleCaseString.toString();

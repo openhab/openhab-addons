@@ -21,8 +21,8 @@ import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.mecmeter.MecMeterBindingConstants;
@@ -108,7 +108,7 @@ public class MecMeterHandler extends BaseThingHandler {
         String configCheck = config.isValid();
 
         if (configCheck != null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, configCheck);
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, configCheck);
             return;
         }
         updateStatus(ThingStatus.UNKNOWN);
@@ -148,8 +148,8 @@ public class MecMeterHandler extends BaseThingHandler {
             String location = MecMeterBindingConstants.POWERMETER_DATA_URL.replace("%IP%", config.ip.strip());
 
             ContentResponse response = httpClient.newRequest(location).method(HttpMethod.GET)
-                    .header(HttpHeader.AUTHORIZATION, basicAuthentication).timeout(API_TIMEOUT, TimeUnit.MILLISECONDS)
-                    .send();
+                    .headers(h -> h.add(HttpHeader.AUTHORIZATION, basicAuthentication))
+                    .timeout(API_TIMEOUT, TimeUnit.MILLISECONDS).send();
             if (response.getStatus() != 200) {
                 errorMsg = "Reading meter did not succeed: " + response.getReason();
                 logger.error("Request to meter failed: HTTP {}: {}", response.getStatus(), response.getReason());
@@ -182,7 +182,7 @@ public class MecMeterHandler extends BaseThingHandler {
         if (resultOk) {
             updateStatus(ThingStatus.ONLINE);
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, errorMsg);
+            updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, errorMsg);
         }
 
         return resultOk ? result : null;

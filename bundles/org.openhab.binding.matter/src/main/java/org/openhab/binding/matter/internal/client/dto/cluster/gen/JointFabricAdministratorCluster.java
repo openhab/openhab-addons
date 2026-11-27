@@ -38,7 +38,7 @@ public class JointFabricAdministratorCluster extends BaseCluster {
      * Fabrics attribute (i.e. the Fabric Table) which is associated with the JointFabric. This field shall have the
      * value of null if there is no fabric associated with the JointFabric.
      */
-    public Integer administratorFabricIndex; // 0 fabric-idx A
+    public Integer administratorFabricIndex; // 0 fabric-idx R A
 
     // Enums
     /**
@@ -96,17 +96,18 @@ public class JointFabricAdministratorCluster extends BaseCluster {
         }
     }
 
-    public enum StatusCodeEnum implements MatterEnum {
-        BUSY(2, "Busy"),
-        PAKE_PARAMETER_ERROR(3, "Pake Parameter Error"),
-        WINDOW_NOT_OPEN(4, "Window Not Open"),
-        VID_NOT_VERIFIED(5, "Vid Not Verified"),
-        INVALID_ADMINISTRATOR_FABRIC_INDEX(6, "Invalid Administrator Fabric Index");
+    public enum ICACCSRResponseStatusCodeEnum implements MatterEnum {
+        OK(0, "Ok"),
+        BUSY(1, "Busy"),
+        PAKE_PARAMETER_ERROR(2, "Pake Parameter Error"),
+        WINDOW_NOT_OPEN(3, "Window Not Open"),
+        VID_NOT_VERIFIED(4, "Vid Not Verified"),
+        INVALID_ADMINISTRATOR_FABRIC_INDEX(5, "Invalid Administrator Fabric Index");
 
         private final Integer value;
         private final String label;
 
-        private StatusCodeEnum(Integer value, String label) {
+        private ICACCSRResponseStatusCodeEnum(Integer value, String label) {
             this.value = value;
             this.label = label;
         }
@@ -165,7 +166,7 @@ public class JointFabricAdministratorCluster extends BaseCluster {
      * The parameters for OpenJointCommissioningWindow command are as follows:
      */
     public static ClusterCommand openJointCommissioningWindow(Integer commissioningTimeout,
-            OctetString pakePasscodeVerifier, Integer discriminator, Integer iterations, OctetString salt) {
+            OctetString pakePasscodeVerifier, Integer discriminator, Long iterations, OctetString salt) {
         Map<String, Object> map = new LinkedHashMap<>();
         if (commissioningTimeout != null) {
             map.put("commissioningTimeout", commissioningTimeout);

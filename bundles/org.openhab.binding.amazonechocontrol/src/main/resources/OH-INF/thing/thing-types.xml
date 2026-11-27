@@ -45,9 +45,36 @@
 			</parameter>
 			<parameter name="activityRequestDelay" type="integer" min="2" unit="s">
 				<label>Activity Request Delay</label>
-				<description>The number of seconds between a voice command was detected and the received command is requested from
-					the server.</description>
+				<description>The number of seconds the binding waits between the event that indicates a voice command and the voice
+					history request. Amazon needs a few seconds to write a spoken command into the history; a request that comes too
+					early returns nothing and lastVoiceCommand stays empty. Increase this value if voice commands are missed although
+					the connection works.</description>
 				<default>10</default>
+			</parameter>
+			<parameter name="activityRequestWindow" type="integer" min="1" unit="s">
+				<label>Activity Request Window</label>
+				<description>The number of seconds of voice history a request covers, counted backwards from the request time. The
+					default of 120 seconds is sufficient when push events trigger the requests. When polling (via
+					activityPollingInterval or a rule on refreshActivity), the window must be at least as large as the polling
+					interval, otherwise commands spoken between two polls are missed. The recommended minimum is 60 seconds.</description>
+				<default>120</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="activityPollingInterval" type="integer" min="0" unit="s">
+				<label>Activity Polling Interval</label>
+				<description>The number of seconds between automatic voice history requests. 0 (default) disables polling. Polling
+					is meant for accounts that no longer receive push events, where lastVoiceCommand stays empty otherwise. Each poll
+					sends one request to Amazon, so values below 60 seconds risk rate limiting. Commands arrive with a delay of up to
+					one polling interval. Polling never replays commands from before openHAB started; the refreshActivity switch
+					does.</description>
+				<default>0</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="userAgent" type="text">
+				<label>User Agent</label>
+				<description>The User-Agent header sent with requests to the Alexa API. If left empty, the built-in default is used.
+					Set it only if Amazon starts to refuse requests with the default.</description>
+				<advanced>true</advanced>
 			</parameter>
 		</config-description>
 	</bridge-type>
@@ -302,8 +329,8 @@
 		<label>Active</label>
 		<description>Activate this flash briefing configuration</description>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
+			<point>Switch</point>
+			<property>Mode</property>
 		</tags>
 	</channel-type>
 	<channel-type id="playOnDevice" advanced="true">
@@ -379,8 +406,8 @@
 		<label>Loop</label>
 		<description>Loop</description>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
+			<point>Switch</point>
+			<property>Mode</property>
 		</tags>
 	</channel-type>
 	<channel-type id="shuffle">
@@ -388,8 +415,8 @@
 		<label>Shuffle</label>
 		<description>Shuffle play</description>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
+			<point>Switch</point>
+			<property>Mode</property>
 		</tags>
 	</channel-type>
 	<channel-type id="player">
@@ -397,8 +424,8 @@
 		<label>Player</label>
 		<description>Music Player</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>MediaControl</tag>
+			<point>Control</point>
+			<property>MediaControl</property>
 		</tags>
 	</channel-type>
 	<channel-type id="volume">
@@ -406,8 +433,8 @@
 		<label>Volume</label>
 		<description>Volume of the sound</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>SoundVolume</tag>
+			<point>Control</point>
+			<property>SoundVolume</property>
 		</tags>
 	</channel-type>
 	<channel-type id="equalizerTreble">
@@ -447,10 +474,11 @@
 	<channel-type id="refreshActivity">
 		<item-type>Switch</item-type>
 		<label>Refresh Activity</label>
-		<description>A command send to this channel refreshes the customer history activity (write-only)</description>
+		<description>ON requests the customer history activity; the channel answers OFF when the request is
+			done</description>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
+			<point>Switch</point>
+			<property>Mode</property>
 		</tags>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
@@ -496,8 +524,8 @@
 		<label>Media Progress</label>
 		<description>Media progress in percent</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>MediaControl</tag>
+			<point>Control</point>
+			<property>MediaControl</property>
 		</tags>
 	</channel-type>
 	<channel-type id="mediaProgressTime" advanced="true">
@@ -530,8 +558,8 @@
 		<label>Do Not Disturb</label>
 		<description>Do Not Disturb mode enabled</description>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
+			<point>Switch</point>
+			<property>Mode</property>
 		</tags>
 	</channel-type>
 	<channel-type id="nextReminder" advanced="true">
@@ -566,8 +594,8 @@
 		<item-type>Dimmer</item-type>
 		<label>Brightness</label>
 		<tags>
-			<tag>Control</tag>
-			<tag>Brightness</tag>
+			<point>Control</point>
+			<property>Brightness</property>
 		</tags>
 		<state min="0" max="100" step="1"/>
 	</channel-type>
@@ -576,8 +604,8 @@
 		<item-type>Color</item-type>
 		<label>Color</label>
 		<tags>
-			<tag>Control</tag>
-			<tag>Color</tag>
+			<point>Control</point>
+			<property>Color</property>
 		</tags>
 		<config-description>
 			<parameter name="matchColors" type="boolean">
@@ -592,8 +620,8 @@
 		<item-type>String</item-type>
 		<label>Color Name</label>
 		<tags>
-			<tag>Status</tag>
-			<tag>Color</tag>
+			<point>Status</point>
+			<property>Color</property>
 		</tags>
 	</channel-type>
 	<!-- Alexa.ColorTemperatureController -->
@@ -601,8 +629,8 @@
 		<item-type>String</item-type>
 		<label>Color Temperature Name</label>
 		<tags>
-			<tag>Status</tag>
-			<tag>ColorTemperature</tag>
+			<point>Status</point>
+			<property>ColorTemperature</property>
 		</tags>
 	</channel-type>
 	<!-- Alexa.PercentageController -->
@@ -615,8 +643,8 @@
 		<item-type>Switch</item-type>
 		<label>Power State</label>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Power</tag>
+			<point>Switch</point>
+			<property>Power</property>
 		</tags>
 	</channel-type>
 	<!-- Alexa.LockController -->
@@ -624,8 +652,8 @@
 		<item-type>Switch</item-type>
 		<label>Lock State</label>
 		<tags>
-			<tag>Switch</tag>
-			<tag>LockState</tag>
+			<point>Switch</point>
+			<property>LockState</property>
 		</tags>
 	</channel-type>
 	<!-- Alexa.PowerLevelController -->
@@ -633,8 +661,8 @@
 		<item-type>Dimmer</item-type>
 		<label>Power Level</label>
 		<tags>
-			<tag>Control</tag>
-			<tag>Power</tag>
+			<point>Control</point>
+			<property>Power</property>
 		</tags>
 		<state min="0" max="100" step="1"/>
 	</channel-type>
@@ -647,7 +675,7 @@
 		<item-type>Contact</item-type>
 		<label>Burglary Alarm</label>
 		<tags>
-			<tag>Alarm</tag>
+			<point>Alarm</point>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -655,8 +683,8 @@
 		<item-type>Contact</item-type>
 		<label>Carbon Monoxide Alarm</label>
 		<tags>
-			<tag>Alarm</tag>
-			<tag>CO</tag>
+			<point>Alarm</point>
+			<property>CO</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -664,8 +692,8 @@
 		<item-type>Contact</item-type>
 		<label>Fire Alarm</label>
 		<tags>
-			<tag>Alarm</tag>
-			<tag>Smoke</tag>
+			<point>Alarm</point>
+			<property>Smoke</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -673,8 +701,8 @@
 		<item-type>Contact</item-type>
 		<label>Water Alarm</label>
 		<tags>
-			<tag>Alarm</tag>
-			<tag>Water</tag>
+			<point>Alarm</point>
+			<property>Water</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -683,8 +711,8 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Temperature</label>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -693,8 +721,8 @@
 		<item-type>Switch</item-type>
 		<label>Motion Detected</label>
 		<tags>
-			<tag>Status</tag>
-			<tag>Motion</tag>
+			<point>Status</point>
+			<property>Motion</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -715,8 +743,8 @@
 		<item-type>Location</item-type>
 		<label>Location</label>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>GeoLocation</tag>
+			<point>Measurement</point>
+			<property>GeoLocation</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -725,8 +753,8 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Target Setpoint</label>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
@@ -735,8 +763,8 @@
 		<label>Upper Setpoint</label>
 		<category>Temperature</category>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
@@ -745,8 +773,8 @@
 		<label>Lower Setpoint</label>
 		<category>Temperature</category>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
@@ -754,8 +782,8 @@
 		<item-type>String</item-type>
 		<label>Thermostat Mode</label>
 		<tags>
-			<tag>Control</tag>
-			<tag>Mode</tag>
+			<point>Control</point>
+			<property>Mode</property>
 		</tags>
 		<state>
 			<options>
@@ -772,8 +800,8 @@
 		<item-type>Number</item-type>
 		<label>Indoor Air Quality</label>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>AirQuality</tag>
+			<point>Measurement</point>
+			<property>AirQuality</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -782,8 +810,8 @@
 		<label>Humidity</label>
 		<category>Humidity</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern=":.1%"/>
 	</channel-type>
@@ -792,8 +820,8 @@
 		<label>PM2.5</label>
 		<description>Particulate Matter PM2.5 density.</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>ParticulateMatter</tag>
+			<point>Measurement</point>
+			<property>ParticulateMatter</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -801,8 +829,8 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Carbon Monoxide</label>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>CO</tag>
+			<point>Measurement</point>
+			<property>CO</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -815,8 +843,8 @@
 		<item-type>Number</item-type>
 		<label>Fan speed</label>
 		<tags>
-			<tag>Control</tag>
-			<tag>Speed</tag>
+			<point>Control</point>
+			<property>Speed</property>
 		</tags>
 	</channel-type>
 

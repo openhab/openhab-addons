@@ -22,10 +22,12 @@ import java.util.Objects;
 
 import javax.measure.quantity.Time;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.zwavejs.internal.DataUtil;
 import org.openhab.binding.zwavejs.internal.api.dto.Node;
+import org.openhab.binding.zwavejs.internal.api.dto.Value;
 import org.openhab.binding.zwavejs.internal.api.dto.messages.ResultMessage;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
@@ -37,6 +39,12 @@ import org.openhab.core.types.StateDescriptionFragment;
 import org.openhab.core.types.StateDescriptionFragmentBuilder;
 import org.openhab.core.types.UnDefType;
 import org.openhab.core.util.ColorUtil;
+import org.slf4j.LoggerFactory;
+
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.core.read.ListAppender;
 
 /**
  * @author Leo Siepel - Initial contribution
@@ -240,6 +248,37 @@ public class ChannelMetadataTest {
         assertEquals(HSBType.fromRGB(0, 0, 0), details.state);
         assertEquals(false, details.writable);
         assertFalse(details.isAdvanced);
+    }
+
+    @Test
+    public void partialColorRemainsUndefinedUntilAllComponentsAreAvailable() throws IOException {
+        Node node = getNodeFromStore("store_4.json", 44);
+        Value value = node.values.get(11);
+        value.value = Map.of("red", 27, "green", 20);
+        Logger logger = (Logger) LoggerFactory.getLogger(BaseMetadata.class);
+        ListAppender<@NonNull ILoggingEvent> appender = new ListAppender<>();
+        appender.start();
+        logger.addAppender(appender);
+        try {
+            ChannelMetadata details = new ChannelMetadata(44, value);
+            assertEquals("color-switch-color", details.id);
+            assertEquals("Color", details.itemType);
+            assertEquals(UnDefType.UNDEF, details.state);
+            assertEquals(UnDefType.UNDEF, details.setState(Map.of("red", 0), "Color", null, false));
+            assertEquals(UnDefType.UNDEF, details.setState(Map.of("green", 20, "blue", 255), "Color", null, false));
+            assertEquals(UnDefType.UNDEF, details.setState(Map.of("red", 27, "blue", 42), "Color", null, false));
+            assertTrue(appender.list.stream().noneMatch(event -> event.getLevel().isGreaterOrEqual(Level.WARN)));
+
+            assertEquals(HSBType.fromRGB(27, 20, 42),
+                    details.setState(Map.of("red", 27, "green", 20, "blue", 42), "Color", null, false));
+            assertEquals(UnDefType.UNDEF,
+                    details.setState(Map.of("red", "invalid", "green", 20), "Color", null, false));
+            assertTrue(appender.list.stream().anyMatch(event -> event.getLevel().isGreaterOrEqual(Level.WARN)
+                    && event.getFormattedMessage().contains("channel color-switch-color")));
+        } finally {
+            logger.detachAppender(appender);
+            appender.stop();
+        }
     }
 
     @Test

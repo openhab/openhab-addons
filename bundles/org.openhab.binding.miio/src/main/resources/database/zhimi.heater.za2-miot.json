@@ -1,7 +1,8 @@
 {
 	"deviceMapping": {
 		"id": [
-			"zhimi.heater.za2"
+			"zhimi.heater.za2",
+			"zhimi.heater.zb1a"
 		],
 		"propertyMethod": "get_properties",
 		"maxProperties": 1,
@@ -10,7 +11,7 @@
 				"property": "fault",
 				"siid": 2,
 				"piid": 1,
-				"friendlyName": "Heater - Device Fault",
+				"friendlyName": "Fault",
 				"channel": "fault",
 				"type": "Number",
 				"stateDescription": {
@@ -40,13 +41,17 @@
 				},
 				"refresh": true,
 				"actions": [],
+				"category": "error",
+				"tags": [
+					"Status"
+				],
 				"readmeComment": "Value mapping `[\"0\"\u003d\"No Error\",\"1\"\u003d\"NTC Connect Error\",\"2\"\u003d\"High Temperature Alarm\",\"3\"\u003d\"EEPROM Error\",\"4\"\u003d\"Multi Errors\"]`"
 			},
 			{
 				"property": "on",
 				"siid": 2,
 				"piid": 2,
-				"friendlyName": "Heater - Power",
+				"friendlyName": "Power",
 				"channel": "on",
 				"type": "Switch",
 				"refresh": true,
@@ -65,15 +70,15 @@
 				"property": "target-temperature",
 				"siid": 2,
 				"piid": 6,
-				"friendlyName": "Heater - Target Temperature",
-				"channel": "target-temperature",
+				"friendlyName": "Target Temperature",
+				"channel": "target_temperature",
 				"type": "Number:Temperature",
-				"unit": "CELSIUS",
+				"unit": "celsius",
 				"stateDescription": {
 					"minimum": 16,
 					"maximum": 28,
 					"step": 1,
-					"pattern": "%.1f %unit%"
+					"pattern": "%.0f %unit%"
 				},
 				"refresh": true,
 				"actions": [
@@ -92,7 +97,7 @@
 				"property": "alarm",
 				"siid": 3,
 				"piid": 1,
-				"friendlyName": "Alarm - Alarm",
+				"friendlyName": "Notification Sound",
 				"channel": "alarm",
 				"type": "Switch",
 				"refresh": true,
@@ -102,14 +107,18 @@
 						"parameterType": "ONOFFBOOL"
 					}
 				],
-				"category": "alarm"
+				"category": "soundvolume",
+				"tags": [
+					"Switch",
+					"Enabled"
+				]
 			},
 			{
 				"property": "countdown-time",
 				"siid": 4,
 				"piid": 1,
-				"friendlyName": "Countdown - Countdown Time",
-				"channel": "countdown-time",
+				"friendlyName": "Power-Off Timer",
+				"channel": "countdown_time",
 				"type": "Number:Time",
 				"unit": "hours",
 				"stateDescription": {
@@ -122,18 +131,24 @@
 				"actions": [
 					{
 						"command": "set_properties",
-						"parameterType": "STRING"
+						"parameterType": "NUMBER"
 					}
-				]
+				],
+				"category": "time",
+				"tags": [
+					"Setpoint",
+					"Duration"
+				],
+				"readmeComment": "Hours until the heater turns off, 0 \u003d no timer"
 			},
 			{
 				"property": "relative-humidity",
 				"siid": 5,
 				"piid": 7,
-				"friendlyName": "Environment - Relative Humidity",
-				"channel": "relative-humidity",
+				"friendlyName": "Relative Humidity",
+				"channel": "relative_humidity",
 				"type": "Number:Dimensionless",
-				"unit": "PERCENT",
+				"unit": "percentage",
 				"stateDescription": {
 					"minimum": 0,
 					"maximum": 100,
@@ -143,6 +158,7 @@
 				},
 				"refresh": true,
 				"actions": [],
+				"category": "humidity",
 				"tags": [
 					"Measurement",
 					"Humidity"
@@ -152,10 +168,10 @@
 				"property": "temperature",
 				"siid": 5,
 				"piid": 8,
-				"friendlyName": "Environment - Temperature",
+				"friendlyName": "Temperature",
 				"channel": "temperature",
 				"type": "Number:Temperature",
-				"unit": "CELSIUS",
+				"unit": "celsius",
 				"stateDescription": {
 					"minimum": -30,
 					"maximum": 100,
@@ -174,7 +190,7 @@
 				"property": "brightness",
 				"siid": 6,
 				"piid": 1,
-				"friendlyName": "Indicator Light - Brightness",
+				"friendlyName": "Screen Brightness",
 				"channel": "brightness",
 				"type": "Number",
 				"stateDescription": {
@@ -185,11 +201,11 @@
 						},
 						{
 							"value": "1",
-							"label": "Dark"
+							"label": "Dim"
 						},
 						{
 							"value": "2",
-							"label": "Extinguished"
+							"label": "Off"
 						}
 					]
 				},
@@ -200,19 +216,19 @@
 						"parameterType": "NUMBER"
 					}
 				],
-				"category": "light",
+				"category": "screen",
 				"tags": [
 					"Control",
-					"Light"
+					"Brightness"
 				],
-				"readmeComment": "Value mapping `[\"0\"\u003d\"Bright\",\"1\"\u003d\"Dark\",\"2\"\u003d\"Extinguished\"]`"
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Bright\",\"1\"\u003d\"Dim\",\"2\"\u003d\"Off\"]`"
 			},
 			{
 				"property": "physical-controls-locked",
 				"siid": 7,
 				"piid": 1,
-				"friendlyName": "Physical Control Locked - Physical Controls Locked",
-				"channel": "physical-controls-locked",
+				"friendlyName": "Child Lock",
+				"channel": "physical_controls_locked",
 				"type": "Switch",
 				"refresh": true,
 				"actions": [
@@ -220,26 +236,34 @@
 						"command": "set_properties",
 						"parameterType": "ONOFFBOOL"
 					}
+				],
+				"category": "lock",
+				"tags": [
+					"Switch",
+					"Enabled"
 				]
 			},
 			{
 				"property": "use-time",
 				"siid": 8,
 				"piid": 7,
-				"friendlyName": "Private-Service - Use Time",
-				"channel": "use-time",
+				"friendlyName": "Run Time",
+				"channel": "use_time",
 				"type": "Number:Time",
 				"unit": "seconds",
 				"stateDescription": {
 					"minimum": 0,
-					"maximum": -1,
 					"step": 1,
 					"pattern": "%.0f %unit%",
 					"readOnly": true
 				},
 				"refresh": true,
 				"actions": [],
-				"category": "time"
+				"category": "time",
+				"tags": [
+					"Measurement",
+					"Duration"
+				]
 			}
 		],
 		"experimental": true

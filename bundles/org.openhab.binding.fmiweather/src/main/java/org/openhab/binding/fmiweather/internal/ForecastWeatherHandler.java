@@ -97,12 +97,12 @@ public class ForecastWeatherHandler extends AbstractWeatherHandler {
         ForecastConfiguration config = getConfigAs(ForecastConfiguration.class);
         String location = config.location;
         if (location.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "location parameter not set");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "location parameter not set");
             return;
         }
         String[] split = location.split(",");
         if (split.length != 2) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, String.format(
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, String.format(
                     "location parameter should have latitude and longitude separated by comma (LATITUDE,LONGITUDE). Found %d values instead",
                     split.length));
             return;
@@ -147,7 +147,7 @@ public class ForecastWeatherHandler extends AbstractWeatherHandler {
         } catch (FMIUnexpectedResponseException e) {
             // Unexpected (possibly bug) issue with response
             logger.warn("Unexpected response encountered: {}", e.getMessage());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                     String.format("Unexpected API response: %s", e.getMessage()));
         }
     }

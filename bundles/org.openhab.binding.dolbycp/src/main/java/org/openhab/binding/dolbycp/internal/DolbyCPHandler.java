@@ -207,7 +207,7 @@ public class DolbyCPHandler extends BaseThingHandler implements CP750Listener {
      */
     private void releaseAndReconnect(@Nullable String errorMessage) {
         releaseResources();
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, errorMessage);
+        updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, errorMessage);
         DolbyCPConfiguration config = this.config;
         if (config != null && config.reconnectInterval > 0) {
             logger.debug("DolbyCP at {}:{} try to reconnect in {} seconds", config.hostname, config.port,

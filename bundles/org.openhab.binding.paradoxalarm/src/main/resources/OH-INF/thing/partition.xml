@@ -100,7 +100,7 @@
 		<label>Partition In Trouble</label>
 		<description>Partition in Trouble</description>
 		<tags>
-			<tag>Alarm</tag>
+			<point>Alarm</point>
 		</tags>
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
@@ -109,7 +109,7 @@
 		<label>Partition Has Alarm In Memory</label>
 		<description>Partition has Alarm in Memory</description>
 		<tags>
-			<tag>Alarm</tag>
+			<point>Alarm</point>
 		</tags>
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
@@ -124,8 +124,8 @@
 		<label>Partition Has Zone In Tamper Trouble</label>
 		<description>Partition has in Tamper Trouble</description>
 		<tags>
-			<tag>Alarm</tag>
-			<tag>Tampered</tag>
+			<point>Alarm</point>
+			<property>Tampered</property>
 		</tags>
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
@@ -134,8 +134,8 @@
 		<label>Partition Has Zone In Low Battery Trouble</label>
 		<description>Partition has in Low Battery Trouble</description>
 		<tags>
-			<tag>Alarm</tag>
-			<tag>LowBattery</tag>
+			<point>Alarm</point>
+			<property>LowBattery</property>
 		</tags>
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
@@ -144,8 +144,8 @@
 		<label>Partition Has Zone In Fire Loop Trouble</label>
 		<description>Partition has in Fire Loop Trouble</description>
 		<tags>
-			<tag>Alarm</tag>
-			<tag>Smoke</tag>
+			<point>Alarm</point>
+			<property>Smoke</property>
 		</tags>
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
@@ -154,7 +154,7 @@
 		<label>Partition Has Zone In Supervision Trouble</label>
 		<description>Partition has in Supervision Trouble</description>
 		<tags>
-			<tag>Alarm</tag>
+			<point>Alarm</point>
 		</tags>
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
@@ -187,8 +187,8 @@
 		<label>Partition Has All Zones Closed</label>
 		<description>Partition has All Zones closed</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Opening</tag>
+			<point>Status</point>
+			<property>Opening</property>
 		</tags>
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>

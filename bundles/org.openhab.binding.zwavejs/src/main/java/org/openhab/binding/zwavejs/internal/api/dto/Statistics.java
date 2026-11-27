@@ -14,6 +14,8 @@ package org.openhab.binding.zwavejs.internal.api.dto;
 
 import java.time.Instant;
 
+import org.eclipse.jdt.annotation.Nullable;
+
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -36,8 +38,8 @@ public class Statistics {
     public int commandsRX;
     public int commandsDroppedRX;
     public int commandsDroppedTX;
-    public double rtt;
-    public Instant lastSeen;
-    public int rssi;
-    public Lwr lwr;
+    public @Nullable Double rtt;
+    public @Nullable Instant lastSeen;
+    public @Nullable Integer rssi;
+    public @Nullable Lwr lwr;
 }

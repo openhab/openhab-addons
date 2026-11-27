@@ -22,7 +22,6 @@ import java.util.function.Predicate;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
-import org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants;
 import org.openhab.binding.avmfritz.internal.AVMFritzDynamicCommandDescriptionProvider;
 import org.openhab.binding.avmfritz.internal.config.AVMFritzBoxConfiguration;
 import org.openhab.binding.avmfritz.internal.config.AVMFritzDeviceConfiguration;
@@ -122,7 +121,7 @@ public class Powerline546EHandler extends AVMFritzBaseBridgeHandler implements F
             if (device.getPresent() == 1) {
                 updateStatus(ThingStatus.ONLINE);
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Device not present");
+                updateStatus(ThingStatus.OFFLINE, "Device not present");
             }
 
             updateProperties(device);
@@ -227,13 +226,13 @@ public class Powerline546EHandler extends AVMFritzBaseBridgeHandler implements F
     @Override
     public void onDeviceGone(ThingUID thingUID) {
         if (thing.getUID().equals(thingUID)) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.GONE, "Device not present in response");
+            updateStatus(ThingStatusDetail.GONE, "Device not present in response");
         }
     }
 
     /**
      * Builds a {@link ThingUID} from a device model. The UID is build from the
-     * {@link AVMFritzBindingConstants#BINDING_ID} and value of
+     * {@link org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants#BINDING_ID} and value of
      * {@link AVMFritzBaseModel#getProductName()} in which all characters NOT matching
      * the regex [^a-zA-Z0-9_] are replaced by "_".
      *

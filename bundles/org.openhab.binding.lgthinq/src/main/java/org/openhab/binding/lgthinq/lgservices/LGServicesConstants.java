@@ -49,8 +49,8 @@ public class LGServicesConstants {
             + LG_API_GATEWAY_SERVICE_PATH_V2;
     public static final String LG_API_MESSAGE_ID = "wideq";
     public static final String LG_API_OAUTH_CLIENT_KEY = "LGAO722A02";
-    public static final String LG_API_OAUTH_SEARCH_KEY_PATH = "/searchKey";
     public static final String LG_API_OAUTH_SECRET_KEY = "c053c2a6ddeb7ad97cb0eed0dcb31cf8";
+    public static final String LG_API_OAUTH_SIGNATURE_PATH = "/signature";
     public static final String LG_API_PLATFORM_TYPE_V1 = "thinq1";
     public static final String LG_API_PLATFORM_TYPE_V2 = "thinq2";
     public static final String LG_API_PRE_LOGIN_PATH = "/preLogin";
@@ -183,10 +183,15 @@ public class LGServicesConstants {
             entry("@WM_STATE_ANTI_CREASE_W", "Anti Creasing"), entry("@WM_STATE_END_W", "End"),
             entry("@WM_STATE_POWER_OFF_W", "Power Off"), entry("@WM_STATE_INITIAL_W", "Initializing"),
             entry("@WM_STATE_PAUSE_W", "Paused"), entry("@WM_STATE_RESERVE_W", "Reserved"),
-            entry("@WM_STATE_RUNNING_W", "Running"), entry("@WM_STATE_RINSING_W", "Rising"),
-            entry("@WM_STATE_SPINNING_W", "@WM_STATE_DRYING_W"), entry("WM_STATE_COOLDOWN_W", "Cool Down"),
+            entry("@WM_STATE_RUNNING_W", "Running"), entry("@WM_STATE_RINSING_W", "Rinsing"),
+            entry("@WM_STATE_SPINNING_W", "Spinning"), entry("@WM_STATE_COOLDOWN_W", "Cool Down"),
             entry("@WM_STATE_RINSEHOLD_W", "Rinse Hold"), entry("@WM_STATE_WASH_REFRESHING_W", "Refreshing"),
             entry("@WM_STATE_STEAMSOFTENING_W", "Steam Softening"), entry("@WM_STATE_ERROR_W", "Error"));
+    public static final Map<String, String> CAP_WM_OPTION = Map.ofEntries(entry("@CP_OFF_EN_W", "Off"),
+            entry("@CP_ON_EN_W", "On"), entry("@WM_TERM_NO_SELECT_W", "Not Selected"),
+            entry("@WM_TITAN2_OPTION_TURBO_WASH_W", "TurboWash"),
+            entry("@WM_TITAN2_OPTION_WASH_TIMESAVE_W", "Time Save"), entry("@WM_TITAN2_OPTION_WASH_NORMAL_W", "Normal"),
+            entry("@WM_TITAN2_OPTION_WASH_INTENSIVE_W", "Intensive"));
     public static final Map<String, String> CAP_DR_DRY_LEVEL = Map.ofEntries(
             entry("@WM_DRY24_DRY_LEVEL_IRON_W", "Iron"), entry("@WM_DRY24_DRY_LEVEL_CUPBOARD_W", "Cupboard"),
             entry("@WM_DRY24_DRY_LEVEL_EXTRA_W", "Extra"));
@@ -223,11 +228,13 @@ public class LGServicesConstants {
     public static final Map<String, Map<String, String>> CAP_WM_DICT_V2 = Map.of("spin", CAP_WM_SPIN, "rinse",
             CAP_WM_RINSE, "temp", CAP_WMD_TEMPERATURE, "state", CAP_WMD_STATE);
     public static final String WMD_COMMAND_REMOTE_START_V2 = "WMStart";
+    public static final String WMD_STATE_INITIAL = "INITIAL";
     /**
      * ============ Dish Washer's Label/Feature Translation Constants =============
      */
     public static final String DW_SNAPSHOT_WASHER_DRYER_NODE_V2 = "dishwasher";
     public static final String DW_POWER_OFF_VALUE = "POWEROFF";
+    public static final String DW_STATE_POWER_OFF_LABEL = "@DW_STATE_POWER_OFF_W";
     public static final String DW_STATE_COMPLETE = "END";
     public static final Map<String, String> CAP_DW_DOOR_STATE = Map.of("@CP_OFF_EN_W", "Close", "@CP_ON_EN_W",
             "Opened");

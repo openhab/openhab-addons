@@ -161,6 +161,14 @@
       <version>${grpc.version}</version>
       <scope>compile</scope>
     </dependency>
+    <!-- provides the round robin load balancer required by grpc-core and grpc-services; only direct dependencies are
+      embedded -->
+    <dependency>
+      <groupId>io.grpc</groupId>
+      <artifactId>grpc-util</artifactId>
+      <version>${grpc.version}</version>
+      <scope>compile</scope>
+    </dependency>
   </dependencies>
 
 </project>

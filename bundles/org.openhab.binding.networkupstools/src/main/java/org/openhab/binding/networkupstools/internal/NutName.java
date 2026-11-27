@@ -34,7 +34,7 @@ import org.openhab.core.types.UnDefType;
  * Supported NUT variables. Any NUT enum members have a complimentary channel definition in the XML thing definition.
  *
  * @author Hilbrand Bouwkamp - Initial contribution
- * @see https://github.com/networkupstools/nut/blob/master/docs/nut-names.txt
+ * @see <a href="https://github.com/networkupstools/nut/blob/master/docs/nut-names.txt">nut-names.txt</a>
  */
 @NonNullByDefault
 enum NutName {

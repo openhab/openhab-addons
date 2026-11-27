@@ -87,7 +87,7 @@ public class AmbientWeatherBridgeHandler extends BaseBridgeHandler {
                 // Got a response so the keys are good
                 DeviceJson[] stations = gson.fromJson(response, DeviceJson[].class);
                 logger.debug("Bridge: Application and API keys are valid with {} stations", stations.length);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "Connecting to service");
+                updateStatus(ThingStatusDetail.BRIDGE_OFFLINE, "Connecting to service");
                 // Start up the real-time API listener
                 listener.start(applicationKey, apiKey, gson);
             } catch (IOException e) {
@@ -117,7 +117,7 @@ public class AmbientWeatherBridgeHandler extends BaseBridgeHandler {
         updateStatus(ThingStatus.UNKNOWN);
         // If there are keys in the config, schedule the job to validate them
         if (hasApplicationKey() && hasApiKey()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Awaiting key validation");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Awaiting key validation");
             scheduleValidateKeysJob();
         }
     }
@@ -128,7 +128,7 @@ public class AmbientWeatherBridgeHandler extends BaseBridgeHandler {
     private boolean hasApplicationKey() {
         String configApplicationKey = getConfigAs(BridgeConfig.class).applicationKey;
         if (configApplicationKey == null || configApplicationKey.isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Missing application key");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Missing application key");
             return false;
         }
         applicationKey = configApplicationKey;
@@ -141,7 +141,7 @@ public class AmbientWeatherBridgeHandler extends BaseBridgeHandler {
     private boolean hasApiKey() {
         String configApiKey = getConfigAs(BridgeConfig.class).apiKey;
         if (configApiKey == null || configApiKey.isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Missing API key");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Missing API key");
             return false;
         }
         apiKey = configApiKey;
@@ -150,7 +150,7 @@ public class AmbientWeatherBridgeHandler extends BaseBridgeHandler {
 
     public void setThingOfflineWithCommError(@Nullable String errorDetail, @Nullable String statusDescription) {
         String status = statusDescription != null ? statusDescription : "null";
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, status);
+        updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, status);
     }
 
     @Override
@@ -203,12 +203,12 @@ public class AmbientWeatherBridgeHandler extends BaseBridgeHandler {
 
     // Callback used by EventListener to update bridge status
     public void markBridgeOffline(String reason) {
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, reason);
+        updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, reason);
     }
 
     // Callback used by EventListener to update bridge status
     public void markBridgeOnline() {
-        updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
+        updateStatus(ThingStatus.ONLINE);
     }
 
     public String getApplicationKey() {

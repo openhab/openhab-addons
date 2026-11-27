@@ -20,26 +20,21 @@ import static org.mockito.MockitoAnnotations.openMocks;
 import static org.openhab.binding.wundergroundupdatereceiver.internal.WundergroundUpdateReceiverBindingConstants.*;
 
 import java.io.IOException;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletResponse;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jetty.http.HttpFields;
-import org.eclipse.jetty.http.HttpURI;
-import org.eclipse.jetty.http.HttpVersion;
-import org.eclipse.jetty.http.MetaData;
-import org.eclipse.jetty.server.HttpChannel;
-import org.eclipse.jetty.server.Request;
 import org.hamcrest.Matcher;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Answers;
 import org.openhab.core.config.core.Configuration;
+import org.openhab.core.test.storage.VolatileStorageService;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.DefaultSystemChannelTypeProvider;
@@ -54,7 +49,11 @@ import org.openhab.core.thing.type.ChannelKind;
 import org.openhab.core.thing.type.ChannelTypeProvider;
 import org.openhab.core.thing.type.ChannelTypeRegistry;
 import org.openhab.core.thing.type.ChannelTypeUID;
-import org.osgi.service.http.NamespaceException;
+import org.ops4j.pax.web.service.http.NamespaceException;
+
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * @author Daniel Demus - Initial contribution
@@ -86,12 +85,7 @@ class WundergroundUpdateReceiverDiscoveryServiceTest {
                 realtime=1&\
                 rtfreq=5\
                 """;
-        MetaData.Request request = new MetaData.Request("GET",
-                new HttpURI("http://localhost" + WundergroundUpdateReceiverServlet.SERVLET_URL + "?" + queryString),
-                HttpVersion.HTTP_1_1, new HttpFields());
-        HttpChannel httpChannel = mock(HttpChannel.class);
-        Request req = new Request(httpChannel, null);
-        req.setMetaData(request);
+        HttpServletRequest req = mockServletRequest(queryString);
 
         TestChannelTypeRegistry channelTypeRegistry = new TestChannelTypeRegistry();
         WundergroundUpdateReceiverDiscoveryService discoveryService = new WundergroundUpdateReceiverDiscoveryService(
@@ -104,7 +98,9 @@ class WundergroundUpdateReceiverDiscoveryServiceTest {
         ManagedThingProvider managedThingProvider = mock(ManagedThingProvider.class);
         when(managedThingProvider.get(any())).thenReturn(thing);
         WundergroundUpdateReceiverHandler handler = new WundergroundUpdateReceiverHandler(thing, sut, discoveryService,
-                new WundergroundUpdateReceiverUnknownChannelTypeProvider(), channelTypeRegistry, managedThingProvider);
+                new WundergroundUpdateReceiverUnknownChannelTypeProvider(new VolatileStorageService(),
+                        mock(ManagedThingProvider.class)),
+                channelTypeRegistry, managedThingProvider);
         handler.setCallback(mock(ThingHandlerCallback.class));
 
         // When
@@ -175,12 +171,7 @@ class WundergroundUpdateReceiverDiscoveryServiceTest {
         // Then
         assertThat(sut.isActive(), is(true));
 
-        HttpChannel httpChannel = mock(HttpChannel.class);
-        MetaData.Request request = new MetaData.Request("GET",
-                new HttpURI("http://localhost" + WundergroundUpdateReceiverServlet.SERVLET_URL + "?" + queryString),
-                HttpVersion.HTTP_1_1, new HttpFields());
-        Request req = new Request(httpChannel, null);
-        req.setMetaData(request);
+        HttpServletRequest req = mockServletRequest(queryString);
 
         // When
         sut.doGet(req, mock(HttpServletResponse.class, Answers.RETURNS_MOCKS));
@@ -209,12 +200,7 @@ class WundergroundUpdateReceiverDiscoveryServiceTest {
                 realtime=1&\
                 rtfreq=5\
                 """;
-        MetaData.Request request = new MetaData.Request("GET",
-                new HttpURI("http://localhost" + WundergroundUpdateReceiverServlet.SERVLET_URL + "?" + queryString),
-                HttpVersion.HTTP_1_1, new HttpFields());
-        HttpChannel httpChannel = mock(HttpChannel.class);
-        Request req = new Request(httpChannel, null);
-        req.setMetaData(request);
+        HttpServletRequest req = mockServletRequest(queryString);
 
         TestChannelTypeRegistry channelTypeRegistry = new TestChannelTypeRegistry();
         WundergroundUpdateReceiverDiscoveryService discoveryService = new WundergroundUpdateReceiverDiscoveryService(
@@ -227,7 +213,9 @@ class WundergroundUpdateReceiverDiscoveryServiceTest {
         ManagedThingProvider managedThingProvider = mock(ManagedThingProvider.class);
         when(managedThingProvider.get(TEST_THING_UID)).thenReturn(thing);
         WundergroundUpdateReceiverHandler handler = new WundergroundUpdateReceiverHandler(thing, sut, discoveryService,
-                new WundergroundUpdateReceiverUnknownChannelTypeProvider(), channelTypeRegistry, managedThingProvider);
+                new WundergroundUpdateReceiverUnknownChannelTypeProvider(new VolatileStorageService(),
+                        mock(ManagedThingProvider.class)),
+                channelTypeRegistry, managedThingProvider);
         handler.setCallback(mock(ThingHandlerCallback.class));
         handler.initialize();
         sut.addHandler(handler);
@@ -262,12 +250,7 @@ class WundergroundUpdateReceiverDiscoveryServiceTest {
                 realtime=1&\
                 rtfreq=5\
                 """;
-        MetaData.Request request1 = new MetaData.Request("GET", new HttpURI(
-                "http://localhost" + WundergroundUpdateReceiverServlet.SERVLET_URL + "?" + firstDeviceQueryString),
-                HttpVersion.HTTP_1_1, new HttpFields());
-        HttpChannel httpChannel = mock(HttpChannel.class);
-        Request req1 = new Request(httpChannel, null);
-        req1.setMetaData(request1);
+        HttpServletRequest req1 = mockServletRequest(firstDeviceQueryString);
 
         TestChannelTypeRegistry channelTypeRegistry = new TestChannelTypeRegistry();
         WundergroundUpdateReceiverDiscoveryService discoveryService = new WundergroundUpdateReceiverDiscoveryService(
@@ -280,7 +263,9 @@ class WundergroundUpdateReceiverDiscoveryServiceTest {
         ManagedThingProvider managedThingProvider = mock(ManagedThingProvider.class);
         when(managedThingProvider.get(any())).thenReturn(thing);
         WundergroundUpdateReceiverHandler handler = new WundergroundUpdateReceiverHandler(thing, sut, discoveryService,
-                new WundergroundUpdateReceiverUnknownChannelTypeProvider(), channelTypeRegistry, managedThingProvider);
+                new WundergroundUpdateReceiverUnknownChannelTypeProvider(new VolatileStorageService(),
+                        mock(ManagedThingProvider.class)),
+                channelTypeRegistry, managedThingProvider);
         handler.setCallback(mock(ThingHandlerCallback.class));
 
         // When
@@ -310,11 +295,7 @@ class WundergroundUpdateReceiverDiscoveryServiceTest {
                 realtime=1&\
                 rtfreq=5\
                 """;
-        MetaData.Request request = new MetaData.Request("GET", new HttpURI(
-                "http://localhost" + WundergroundUpdateReceiverServlet.SERVLET_URL + "?" + secondDeviceQueryString),
-                HttpVersion.HTTP_1_1, new HttpFields());
-        Request req2 = new Request(httpChannel, null);
-        req2.setMetaData(request);
+        HttpServletRequest req2 = mockServletRequest(secondDeviceQueryString);
         sut.enable();
 
         // Then
@@ -346,12 +327,7 @@ class WundergroundUpdateReceiverDiscoveryServiceTest {
                 realtime=1&\
                 rtfreq=5\
                 """;
-        MetaData.Request request1 = new MetaData.Request("GET", new HttpURI(
-                "http://localhost" + WundergroundUpdateReceiverServlet.SERVLET_URL + "?" + firstDeviceQueryString),
-                HttpVersion.HTTP_1_1, new HttpFields());
-        HttpChannel httpChannel = mock(HttpChannel.class);
-        Request req1 = new Request(httpChannel, null);
-        req1.setMetaData(request1);
+        HttpServletRequest req1 = mockServletRequest(firstDeviceQueryString);
 
         TestChannelTypeRegistry channelTypeRegistry = new TestChannelTypeRegistry();
         WundergroundUpdateReceiverDiscoveryService discoveryService = new WundergroundUpdateReceiverDiscoveryService(
@@ -364,7 +340,9 @@ class WundergroundUpdateReceiverDiscoveryServiceTest {
         ManagedThingProvider managedThingProvider = mock(ManagedThingProvider.class);
         when(managedThingProvider.get(any())).thenReturn(null);
         WundergroundUpdateReceiverHandler handler = new WundergroundUpdateReceiverHandler(thing, sut, discoveryService,
-                new WundergroundUpdateReceiverUnknownChannelTypeProvider(), channelTypeRegistry, managedThingProvider);
+                new WundergroundUpdateReceiverUnknownChannelTypeProvider(new VolatileStorageService(),
+                        mock(ManagedThingProvider.class)),
+                channelTypeRegistry, managedThingProvider);
         handler.setCallback(mock(ThingHandlerCallback.class));
 
         // When
@@ -394,11 +372,7 @@ class WundergroundUpdateReceiverDiscoveryServiceTest {
                 realtime=1&\
                 rtfreq=5\
                 """;
-        MetaData.Request request = new MetaData.Request("GET", new HttpURI(
-                "http://localhost" + WundergroundUpdateReceiverServlet.SERVLET_URL + "?" + secondDeviceQueryString),
-                HttpVersion.HTTP_1_1, new HttpFields());
-        Request req2 = new Request(httpChannel, null);
-        req2.setMetaData(request);
+        HttpServletRequest req2 = mockServletRequest(secondDeviceQueryString);
         sut.enable();
 
         // Then
@@ -427,12 +401,7 @@ class WundergroundUpdateReceiverDiscoveryServiceTest {
                 realtime=1&\
                 rtfreq=5\
                 """;
-        MetaData.Request request1 = new MetaData.Request("GET", new HttpURI(
-                "http://localhost" + WundergroundUpdateReceiverServlet.SERVLET_URL + "?" + firstDeviceQueryString),
-                HttpVersion.HTTP_1_1, new HttpFields());
-        HttpChannel httpChannel = mock(HttpChannel.class);
-        Request req1 = new Request(httpChannel, null);
-        req1.setMetaData(request1);
+        HttpServletRequest req1 = mockServletRequest(firstDeviceQueryString);
 
         UpdatingChannelTypeRegistry channelTypeRegistry = new UpdatingChannelTypeRegistry();
         WundergroundUpdateReceiverDiscoveryService discoveryService = new WundergroundUpdateReceiverDiscoveryService(
@@ -445,7 +414,9 @@ class WundergroundUpdateReceiverDiscoveryServiceTest {
         ManagedThingProvider managedThingProvider = mock(ManagedThingProvider.class);
         when(managedThingProvider.get(any())).thenReturn(null);
         WundergroundUpdateReceiverHandler handler = new WundergroundUpdateReceiverHandler(thing, sut, discoveryService,
-                new WundergroundUpdateReceiverUnknownChannelTypeProvider(), channelTypeRegistry, managedThingProvider);
+                new WundergroundUpdateReceiverUnknownChannelTypeProvider(new VolatileStorageService(),
+                        mock(ManagedThingProvider.class)),
+                channelTypeRegistry, managedThingProvider);
         handler.setCallback(mock(ThingHandlerCallback.class));
 
         // When
@@ -486,11 +457,7 @@ class WundergroundUpdateReceiverDiscoveryServiceTest {
                 realtime=1&\
                 rtfreq=5\
                 """;
-        MetaData.Request request = new MetaData.Request("GET", new HttpURI(
-                "http://localhost" + WundergroundUpdateReceiverServlet.SERVLET_URL + "?" + secondDeviceQueryString),
-                HttpVersion.HTTP_1_1, new HttpFields());
-        Request req2 = new Request(httpChannel, null);
-        req2.setMetaData(request);
+        HttpServletRequest req2 = mockServletRequest(secondDeviceQueryString);
         sut.enable();
 
         // Then
@@ -504,6 +471,23 @@ class WundergroundUpdateReceiverDiscoveryServiceTest {
         assertThat(actual.size(), is(8));
         assertChannel(actual, METADATA_GROUP, LAST_QUERY_TRIGGER, LAST_QUERY_TRIGGER_CHANNELTYPEUID,
                 ChannelKind.TRIGGER, nullValue());
+    }
+
+    private static HttpServletRequest mockServletRequest(String queryString) {
+        HttpServletRequest req = mock(HttpServletRequest.class);
+        Map<String, String[]> params = new HashMap<>();
+        for (String param : queryString.split("&")) {
+            String[] pair = param.split("=", 2);
+            if (pair.length == 2) {
+                params.put(URLDecoder.decode(pair[0], StandardCharsets.UTF_8),
+                        new String[] { URLDecoder.decode(pair[1], StandardCharsets.UTF_8) });
+            }
+        }
+        when(req.getParameterMap()).thenReturn(params);
+        when(req.getParameter("ID")).thenReturn(params.getOrDefault("ID", new String[] { "" })[0]);
+        when(req.getQueryString()).thenReturn(queryString);
+        when(req.getRequestURI()).thenReturn(WundergroundUpdateReceiverServlet.SERVLET_URL);
+        return req;
     }
 
     private void assertChannel(List<Channel> channels, String expectedGroup, String expectedName,
@@ -555,7 +539,8 @@ class WundergroundUpdateReceiverDiscoveryServiceTest {
                     new StateChannelTypeBuilderImpl(LAST_RECEIVED_DATETIME_CHANNELTYPEUID, "Last Received", "DateTime")
                             .build());
             this.addChannelTypeProvider(provider);
-            this.addChannelTypeProvider(new WundergroundUpdateReceiverUnknownChannelTypeProvider());
+            this.addChannelTypeProvider(new WundergroundUpdateReceiverUnknownChannelTypeProvider(
+                    new VolatileStorageService(), mock(ManagedThingProvider.class)));
         }
     }
 

@@ -97,7 +97,7 @@ public class AdvancedMultisensorThingHandler extends OwBaseThingHandler {
                 digitalLastRefresh = 0;
             }
         } catch (IllegalArgumentException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "properties invalid");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "properties invalid");
         }
         scheduler.execute(this::configureThingChannels);
     }
@@ -140,7 +140,7 @@ public class AdvancedMultisensorThingHandler extends OwBaseThingHandler {
             }
         } catch (OwException e) {
             logger.debug("{}: refresh exception '{}'", this.thing.getUID(), e.getMessage());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "refresh exception");
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "refresh exception");
         }
     }
 
@@ -194,12 +194,12 @@ public class AdvancedMultisensorThingHandler extends OwBaseThingHandler {
                 sensor.configureChannels();
             }
         } catch (OwException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
             return;
         }
 
         validConfig = true;
-        updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE);
+        updateStatus(ThingStatus.UNKNOWN);
     }
 
     @Override

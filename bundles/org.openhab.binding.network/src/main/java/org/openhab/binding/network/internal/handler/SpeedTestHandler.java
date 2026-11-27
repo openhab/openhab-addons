@@ -147,12 +147,12 @@ public class SpeedTestHandler extends BaseThingHandler implements ISpeedTestList
     @Override
     public void onError(final @Nullable SpeedTestError testError, final @Nullable String errorMessage) {
         if (SpeedTestError.UNSUPPORTED_PROTOCOL.equals(testError) || SpeedTestError.MALFORMED_URI.equals(testError)) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, errorMessage);
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, errorMessage);
             freeRefreshTask();
         } else if (SpeedTestError.SOCKET_TIMEOUT.equals(testError)) {
             int count = timeouts.decrementAndGet();
             if (count <= 0) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Max timeout count reached");
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "Max timeout count reached");
                 freeRefreshTask();
             } else {
                 logger.warn("Speedtest timed out, {} attempts left. Message '{}'", count, errorMessage);
@@ -160,7 +160,7 @@ public class SpeedTestHandler extends BaseThingHandler implements ISpeedTestList
             }
         } else if (SpeedTestError.SOCKET_ERROR.equals(testError)
                 || SpeedTestError.INVALID_HTTP_RESPONSE.equals(testError)) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, errorMessage);
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, errorMessage);
             freeRefreshTask();
         } else {
             stopSpeedTest();

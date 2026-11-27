@@ -18,8 +18,10 @@
 				<context>network-address</context>
 			</parameter>
 			<parameter name="accessToken" type="text" required="true">
+				<context>password</context>
 				<label>Access Token</label>
-				<description>Authentication token (default is 0).</description>
+				<description>Authentication token of the YIO Dock. The original dock firmware uses 0, docks with an individual token
+					show it on their web page (http://dock-ip/).</description>
 				<default>0</default>
 			</parameter>
 		</config-description>
@@ -48,5 +50,6 @@
 		<label>Status</label>
 		<description>Status of the YIO Dock. If the receiver is on, the recognized IR code is displayed; otherwise the send
 			status of the last IR code is displayed.</description>
+		<state readOnly="true"/>
 	</channel-type>
 </thing:thing-descriptions>

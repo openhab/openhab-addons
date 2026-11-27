@@ -1,0 +1,373 @@
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+package org.openhab.binding.rachio.internal.api;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
+
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.util.Objects;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
+import org.openhab.binding.rachio.internal.api.json.RachioBaseStation;
+import org.openhab.binding.rachio.internal.api.json.RachioBaseStationListResponse;
+import org.openhab.binding.rachio.internal.api.json.RachioValve;
+import org.openhab.binding.rachio.internal.api.json.RachioValveDayRun;
+import org.openhab.binding.rachio.internal.api.json.RachioValveDayViewsResponse;
+import org.openhab.binding.rachio.internal.api.json.RachioValveListResponse;
+import org.openhab.binding.rachio.internal.api.json.RachioValveProgram;
+import org.openhab.binding.rachio.internal.api.json.RachioValveProgramListResponse;
+
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+
+/**
+ * Tests Smart Hose Timer API payload and DTO helpers.
+ *
+ * @author Kovacs Istvan - Initial contribution
+ */
+@NonNullByDefault
+class RachioSmartHoseTimerApiTest {
+    @Test
+    void deviceDtosTolerateExplicitNullStrings() {
+        RachioBaseStation baseStation = RachioBaseStation
+                .fromJson("{\"id\":null,\"name\":null,\"serialNumber\":null,\"status\":null}");
+        RachioValve valve = RachioValve
+                .fromJson("{\"id\":null,\"name\":null,\"status\":null,\"state\":{\"flowDetectedText\":null}}");
+
+        assertThat(baseStation.getThingName(), is("Rachio BaseStation"));
+        assertThat(baseStation.hasOnlineState(), is(false));
+        assertThat(valve.getThingName(), is("Rachio Valve"));
+        assertThat(valve.hasOnlineState(), is(false));
+        assertThat(valve.flowDetected(), is(false));
+    }
+
+    @Test
+    void programDtoToleratesExplicitNullStringsAndLists() {
+        RachioValveProgram program = RachioValveProgram.fromJson(
+                "{\"id\":null,\"name\":null,\"type\":null,\"valveId\":null,\"valveIds\":null,\"resourceId\":{\"valveId\":null}}");
+
+        assertThat(program.getThingName(), is("Rachio Valve Program"));
+        assertThat(program.getProgramType(), is(""));
+        assertThat(program.getValveId(), is(""));
+    }
+
+    @Test
+    void dayViewDtoToleratesExplicitNullRunCollectionsAndFields() {
+        RachioValveDayViewsResponse emptyResponse = RachioValveDayViewsResponse
+                .fromJson("{\"dayViews\":[{\"runs\":null,\"plannedRuns\":null,\"completedRuns\":null}]}");
+        RachioValveDayViewsResponse runResponse = RachioValveDayViewsResponse
+                .fromJson("{\"dayViews\":[{\"runs\":[{\"programId\":null,\"status\":null,\"startTime\":null}]}]}");
+
+        assertThat(emptyResponse.getRuns().isEmpty(), is(true));
+        assertThat(runResponse.getRuns().get(0).getProgramId(), is(""));
+        assertThat(runResponse.getRuns().get(0).getStartInstant(ZoneOffset.UTC), is(nullValue()));
+    }
+
+    @Test
+    void baseStationListResponseParsesWrappedList() {
+        String json = """
+                {
+                  "baseStations": [
+                    {"id":"base-station-id","name":"Hub","serialNumber":"BS123","online":true}
+                  ]
+                }
+                """;
+
+        RachioBaseStationListResponse response = RachioBaseStationListResponse.fromJson(json);
+
+        assertThat(response.baseStations.size(), is(1));
+        assertThat(response.baseStations.get(0).id, is("base-station-id"));
+        assertThat(response.baseStations.get(0).getThingName(), is("Hub"));
+        assertThat(response.baseStations.get(0).isOnline(), is(true));
+    }
+
+    @Test
+    void valveListResponseParsesValveStateMatches() {
+        String json = """
+                {
+                  "valves": [
+                    {
+                      "id":"valve-id",
+                      "baseStationId":"base-station-id",
+                      "name":"Garden",
+                      "serialNumber":"V123",
+                      "defaultRuntimeSeconds":600,
+                      "batteryLevel":87,
+                      "state":{"matches":false,"flowDetected":true}
+                    }
+                  ]
+                }
+                """;
+
+        RachioValveListResponse response = RachioValveListResponse.fromJson(json);
+
+        assertThat(response.valves.size(), is(1));
+        RachioValve valve = response.valves.get(0);
+        assertThat(valve.id, is("valve-id"));
+        assertThat(valve.baseStationId, is("base-station-id"));
+        assertThat(valve.getDefaultRuntimeSeconds(), is(600));
+        assertThat(valve.stateMatches(), is(false));
+        assertThat(valve.flowDetected(), is(true));
+    }
+
+    @Test
+    void getValveResponseParsesNestedValveObject() {
+        String json = """
+                {
+                  "valve": {
+                    "id":"valve-id",
+                    "name":"Front Yard",
+                    "valveState":{"matches":true}
+                  }
+                }
+                """;
+
+        RachioValve valve = RachioValve.fromJson(json);
+
+        assertThat(valve.id, is("valve-id"));
+        assertThat(valve.getThingName(), is("Front Yard"));
+        assertThat(valve.stateMatches(), is(true));
+    }
+
+    @Test
+    void setDefaultRuntimePayloadContainsDocumentedFields() {
+        JsonObject json = JsonParser.parseString(RachioApi.buildValveDefaultRuntimePayload("valve-id", 900))
+                .getAsJsonObject();
+
+        assertThat(json.get("valveId").getAsString(), is("valve-id"));
+        assertThat(json.get("defaultRuntimeSeconds").getAsInt(), is(900));
+    }
+
+    @Test
+    void startWateringPayloadContainsDocumentedFields() {
+        JsonObject json = JsonParser.parseString(RachioApi.buildValveStartWateringPayload("valve-id", 300))
+                .getAsJsonObject();
+
+        assertThat(json.get("valveId").getAsString(), is("valve-id"));
+        assertThat(json.get("durationSeconds").getAsInt(), is(300));
+    }
+
+    @Test
+    void stopWateringPayloadContainsValveId() {
+        JsonObject json = JsonParser.parseString(RachioApi.buildValveStopWateringPayload("valve-id")).getAsJsonObject();
+
+        assertThat(json.get("valveId").getAsString(), is("valve-id"));
+    }
+
+    @Test
+    void valveProgramListResponseParsesV2Programs() {
+        String json = """
+                {
+                  "programs": [
+                    {
+                      "id":"program-id",
+                      "name":"Morning Hose",
+                      "enabled":true,
+                      "programType":"FIXED",
+                      "resourceId":{"valveId":"valve-id","baseStationId":"base-station-id"},
+                      "durationSeconds":900,
+                      "daysOfWeek":["MONDAY","WEDNESDAY"]
+                    }
+                  ]
+                }
+                """;
+
+        RachioValveProgramListResponse response = RachioValveProgramListResponse.fromJson(json);
+
+        assertThat(response.programs.size(), is(1));
+        RachioValveProgram program = response.programs.get(0);
+        assertThat(program.id, is("program-id"));
+        assertThat(program.getThingName(), is("Morning Hose"));
+        assertThat(program.getValveId(), is("valve-id"));
+        assertThat(program.getBaseStationId(), is("base-station-id"));
+        assertThat(program.getDurationSeconds(), is(900));
+        assertThat(program.getDaysOfWeek(), is("[\"MONDAY\",\"WEDNESDAY\"]"));
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = { "{}", "{\"unknownFormat\":{\"valveId\":\"unconfirmed-valve\"}}" })
+    void valveProgramsAcceptObjectPlannedRuns(String plannedRunsJson) {
+        String json = """
+                {
+                  "programs": [
+                    {
+                      "id":"program-id",
+                      "resourceId":{"valveId":"valve-id","baseStationId":"base-station-id"},
+                      "plannedRuns":%s
+                    },
+                    {"id":"another-program-id","valveId":"another-valve-id"}
+                  ]
+                }
+                """.formatted(plannedRunsJson);
+
+        RachioValveProgramListResponse response = RachioValveProgramListResponse.fromJson(json);
+
+        assertThat(response.programs.size(), is(2));
+        assertThat(response.programs.get(0).id, is("program-id"));
+        assertThat(response.programs.get(0).getValveId(), is("valve-id"));
+        assertThat(response.programs.get(0).getBaseStationId(), is("base-station-id"));
+        assertThat(response.programs.get(0).plannedRuns, is(JsonParser.parseString(plannedRunsJson)));
+        assertThat(response.programs.get(1).getValveId(), is("another-valve-id"));
+
+        RachioValveProgram program = RachioValveProgram
+                .fromJson("{\"program\":{\"id\":\"program-id\",\"plannedRuns\":%s}}".formatted(plannedRunsJson));
+
+        assertThat(program.id, is("program-id"));
+        assertThat(program.getValveId(), is(""));
+        assertThat(program.plannedRuns, is(JsonParser.parseString(plannedRunsJson)));
+    }
+
+    @Test
+    void valveProgramsFindValveIdInPlannedRunArray() {
+        String json = """
+                {
+                  "id":"program-id",
+                  "plannedRuns":[
+                    {},
+                    {"resourceId":{"valveId":"valve-id"}}
+                  ]
+                }
+                """;
+
+        RachioValveProgram program = RachioValveProgram.fromJson(json);
+        RachioValveProgramListResponse response = RachioValveProgramListResponse.fromJson("[" + json + "]");
+
+        assertThat(program.getValveId(), is("valve-id"));
+        assertThat(response.programs.get(0).getValveId(), is("valve-id"));
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = { "{\"id\":\"program-id\"}", "{\"id\":\"program-id\",\"plannedRuns\":null}",
+            "{\"id\":\"program-id\",\"plannedRuns\":[]}" })
+    void valveProgramsAcceptMissingNullAndEmptyPlannedRuns(String json) {
+        RachioValveProgram program = RachioValveProgram.fromJson(json);
+        RachioValveProgramListResponse response = RachioValveProgramListResponse.fromJson("[" + json + "]");
+
+        assertThat(program.id, is("program-id"));
+        assertThat(program.getValveId(), is(""));
+        assertThat(response.programs.size(), is(1));
+        assertThat(response.programs.get(0).getValveId(), is(""));
+    }
+
+    @Test
+    void valveDayViewsResponseFindsUpcomingSkippedAndCompletedRuns() {
+        Instant now = Instant.parse("2026-06-20T12:00:00Z");
+        String yesterday = now.minusSeconds(86400).toString();
+        String tomorrow = now.plusSeconds(86400).toString();
+        String nextWeek = now.plusSeconds(604800).toString();
+        String json = """
+                {
+                  "dayViews": [
+                    {
+                      "plannedRuns": [
+                        {
+                          "plannedRunId":"planned-next",
+                          "programId":"program-id",
+                          "valveId":"valve-id",
+                          "plannedRunStartTime":"%s",
+                          "durationSeconds":600,
+                          "skipped":false
+                        },
+                        {
+                          "plannedRunId":"planned-skipped",
+                          "programId":"program-id",
+                          "valveId":"valve-id",
+                          "plannedRunStartTime":"%s",
+                          "durationSeconds":300,
+                          "skipped":true
+                        }
+                      ],
+                      "completedRuns": [
+                        {
+                          "plannedRunId":"completed-run",
+                          "programId":"program-id",
+                          "valveId":"valve-id",
+                          "startTime":"%s",
+                          "durationSeconds":120,
+                          "status":"COMPLETED"
+                        }
+                      ]
+                    }
+                  ]
+                }
+                """.formatted(tomorrow, nextWeek, yesterday);
+
+        RachioValveDayViewsResponse response = RachioValveDayViewsResponse.fromJson(json);
+
+        assertThat(response.dayViews.size(), is(1));
+        assertThat(Objects.requireNonNull(response.findNextPlannedRun(now, ZoneOffset.UTC)).getPlannedRunId(),
+                is("planned-next"));
+        assertThat(Objects.requireNonNull(response.findNextSkippedRun(now, ZoneOffset.UTC)).getPlannedRunId(),
+                is("planned-skipped"));
+        assertThat(Objects.requireNonNull(response.findLastCompletedRun(now, ZoneOffset.UTC)).getPlannedRunId(),
+                is("completed-run"));
+    }
+
+    @Test
+    void dateOnlyValveRunUsesPropertyTimeZoneAtLocalMidnight() {
+        RachioValveDayRun run = new RachioValveDayRun();
+        run.date = "2026-03-29";
+
+        assertThat(run.getStartInstant(ZoneId.of("Europe/Budapest")), is(Instant.parse("2026-03-28T23:00:00Z")));
+        assertThat(run.getStartInstant(ZoneId.of("America/Denver")), is(Instant.parse("2026-03-29T06:00:00Z")));
+    }
+
+    @Test
+    void malformedValveRunIsNotSelectedAsNextRun() {
+        RachioValveDayViewsResponse response = RachioValveDayViewsResponse.fromJson("""
+                {
+                  "dayViews": [{
+                    "plannedRuns": [{
+                      "plannedRunId": "malformed-run",
+                      "plannedRunStartTime": "not-a-timestamp"
+                    }]
+                  }]
+                }
+                """);
+
+        assertThat(response.findNextPlannedRun(Instant.parse("2026-06-20T12:00:00Z"), ZoneOffset.UTC), is(nullValue()));
+    }
+
+    @Test
+    void valveDayViewsPayloadContainsResourceIdAndDateWindow() {
+        JsonObject json = JsonParser.parseString(RachioApi.buildValveDayViewsPayload("valve-id",
+                LocalDate.parse("2026-05-01"), LocalDate.parse("2026-05-08"))).getAsJsonObject();
+
+        assertThat(json.getAsJsonObject("start").get("date").getAsString(), is("2026-05-01"));
+        assertThat(json.getAsJsonObject("end").get("date").getAsString(), is("2026-05-08"));
+        assertThat(json.getAsJsonObject("resourceId").get("valveId").getAsString(), is("valve-id"));
+    }
+
+    @Test
+    void skipOverridePayloadsContainDocumentedIdentifiers() {
+        JsonObject programSkip = JsonParser
+                .parseString(RachioApi.buildProgramSkipOverridePayload("program-id", "2026-05-20T06:00:00Z"))
+                .getAsJsonObject();
+        JsonObject plannedRunSkip = JsonParser
+                .parseString(RachioApi.buildPlannedRunSkipOverridePayload("planned-run-id", "2026-05-20"))
+                .getAsJsonObject();
+
+        assertThat(programSkip.get("programId").getAsString(), is("program-id"));
+        assertThat(programSkip.get("timestamp").getAsString(), is("2026-05-20T06:00:00Z"));
+        assertThat(plannedRunSkip.get("plannedRunId").getAsString(), is("planned-run-id"));
+        assertThat(plannedRunSkip.get("date").getAsString(), is("2026-05-20"));
+    }
+}

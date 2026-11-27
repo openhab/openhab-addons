@@ -41,6 +41,7 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import org.openhab.binding.homeassistant.internal.DiscoverComponents;
 import org.openhab.binding.homeassistant.internal.DiscoverComponents.ComponentDiscovered;
+import org.openhab.binding.homeassistant.internal.DiscoverComponents.ComponentIdentity;
 import org.openhab.binding.homeassistant.internal.HaID;
 import org.openhab.binding.homeassistant.internal.HomeAssistantChannelLinkageChecker;
 import org.openhab.binding.homeassistant.internal.HomeAssistantPythonBridge;
@@ -156,7 +157,7 @@ public class HomeAssistantMQTTImplementationTest extends MqttOSGiTest {
         }
 
         @Override
-        public void componentRemoved(HaID homeAssistantTopicID) {
+        public void componentRemoved(ComponentIdentity identity) {
         }
 
         @Override
@@ -204,7 +205,7 @@ public class HomeAssistantMQTTImplementationTest extends MqttOSGiTest {
         String channelId = Switch.SWITCH_CHANNEL_ID;
 
         State value = haComponents.get(componentId).getChannel(channelId).getState().getCache().getChannelState();
-        assertThat(value, is(UnDefType.UNDEF));
+        assertThat(value, is(UnDefType.NULL));
 
         haComponents.values().stream().map(e -> e.start(haConnection, scheduler, 100))
                 .reduce(CompletableFuture.completedFuture(null), (a, v) -> a.thenCompose(b -> v)).exceptionally(e -> {

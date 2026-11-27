@@ -41,6 +41,8 @@ public class SamsungTvConfiguration {
     public static final String SMARTTHINGS_DEVICEID = "smartThingsDeviceId";
     public static final String SMARTTHINGS_SUBSCRIPTION = "smartThingsSubscription";
     public static final String ORIENTATION_KEY = "orientationKey";
+    public static final String IP_CONTROL = "ipControl";
+    public static final String IP_CONTROL_TOKEN = "ipControlToken";
     public static final int PORT_DEFAULT_LEGACY = 55000;
     public static final int PORT_DEFAULT_WEBSOCKET = 8001;
     public static final int PORT_DEFAULT_SECUREWEBSOCKET = 8002;
@@ -56,6 +58,9 @@ public class SamsungTvConfiguration {
     public boolean subscription;
     public boolean smartThingsSubscription;
     public String orientationKey;
+    public Boolean legacyCipherSuites;
+    public boolean ipControl;
+    public String ipControlToken;
 
     public boolean isWebsocketProtocol() {
         return PROTOCOL_WEBSOCKET.equals(getProtocol()) || PROTOCOL_SECUREWEBSOCKET.equals(getProtocol());
@@ -97,11 +102,23 @@ public class SamsungTvConfiguration {
         return Optional.ofNullable(subscription).orElse(false);
     }
 
+    public boolean getLegacyCipherSuites() {
+        return !Boolean.FALSE.equals(legacyCipherSuites);
+    }
+
     public boolean getSmartThingsSubscription() {
         return Optional.ofNullable(smartThingsSubscription).orElse(false);
     }
 
     public String getOrientationKey() {
         return Optional.ofNullable(orientationKey).orElse("");
+    }
+
+    public boolean getIpControl() {
+        return ipControl;
+    }
+
+    public String getIpControlToken() {
+        return Optional.ofNullable(ipControlToken).orElse("");
     }
 }

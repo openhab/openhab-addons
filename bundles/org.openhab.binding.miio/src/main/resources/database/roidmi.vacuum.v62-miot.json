@@ -1,0 +1,2059 @@
+{
+	"deviceMapping": {
+		"id": [
+			"roidmi.vacuum.v62"
+		],
+		"propertyMethod": "get_properties",
+		"maxProperties": 1,
+		"channels": [
+			{
+				"property": "",
+				"friendlyName": "Robot Cleaner - Actions",
+				"channel": "actions",
+				"type": "String",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "vacuum-start-sweep",
+							"label": "Start"
+						},
+						{
+							"value": "vacuum-pause-sweeping",
+							"label": "Pause"
+						},
+						{
+							"value": "vacuum-direct-stop-sweeping",
+							"label": "Stop"
+						},
+						{
+							"value": "vacuum-start-edge-sweep",
+							"label": "Start Edge Cleaning"
+						},
+						{
+							"value": "vacuum-pause-edge-sweeping",
+							"label": "Pause Edge Cleaning"
+						},
+						{
+							"value": "vacuum-dock",
+							"label": "Return to Dock"
+						},
+						{
+							"value": "vacuum-stop-charging",
+							"label": "Stop Returning to Dock"
+						},
+						{
+							"value": "filter-reset-filter-life",
+							"label": "Reset Filter Life"
+						},
+						{
+							"value": "brush-cleaner-reset-brush-life",
+							"label": "Reset Main Brush Life"
+						},
+						{
+							"value": "brush-cleaner-reset-brush-life1",
+							"label": "Reset Side Brush Life"
+						},
+						{
+							"value": "mop-reset-mop-life",
+							"label": "Reset Mop Life"
+						},
+						{
+							"value": "vacuum-set-calibration",
+							"label": "Calibrate"
+						},
+						{
+							"value": "vacuum-direct-start-sweep",
+							"label": "Start (Direct Command)"
+						},
+						{
+							"value": "vacuum-direct-start-only-sweep",
+							"label": "Start Vacuum Only (Direct Command)"
+						},
+						{
+							"value": "vacuum-direct-start-sweep-mop",
+							"label": "Start Vacuum and Mop (Direct Command)"
+						},
+						{
+							"value": "vacuum-direct-start-only-mop",
+							"label": "Start Mop Only (Direct Command)"
+						},
+						{
+							"value": "battery-direct-start-charge",
+							"label": "Return to Dock (Direct Command)"
+						}
+					]
+				},
+				"refresh": false,
+				"actions": [
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 7,
+						"aiid": 3,
+						"parameters": [
+							{
+								"piid": 24,
+								"value": ""
+							},
+							{
+								"piid": 25,
+								"value": 0
+							},
+							{
+								"piid": 26,
+								"value": 1
+							}
+						],
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "vacuum-start-sweep"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 7,
+						"aiid": 3,
+						"parameters": [
+							{
+								"piid": 24,
+								"value": ""
+							},
+							{
+								"piid": 25,
+								"value": 0
+							},
+							{
+								"piid": 26,
+								"value": 2
+							}
+						],
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "vacuum-pause-sweeping"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 2,
+						"aiid": 2,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "vacuum-direct-stop-sweeping"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 7,
+						"aiid": 3,
+						"parameters": [
+							{
+								"piid": 24,
+								"value": ""
+							},
+							{
+								"piid": 25,
+								"value": 1
+							},
+							{
+								"piid": 26,
+								"value": 1
+							}
+						],
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "vacuum-start-edge-sweep"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 7,
+						"aiid": 3,
+						"parameters": [
+							{
+								"piid": 24,
+								"value": ""
+							},
+							{
+								"piid": 25,
+								"value": 1
+							},
+							{
+								"piid": 26,
+								"value": 2
+							}
+						],
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "vacuum-pause-edge-sweeping"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 7,
+						"aiid": 7,
+						"parameters": [
+							{
+								"piid": 43,
+								"value": 1
+							}
+						],
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "vacuum-dock"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 7,
+						"aiid": 7,
+						"parameters": [
+							{
+								"piid": 43,
+								"value": 0
+							}
+						],
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "vacuum-stop-charging"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 15,
+						"aiid": 1,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "filter-reset-filter-life"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 16,
+						"aiid": 1,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "brush-cleaner-reset-brush-life"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 17,
+						"aiid": 1,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "brush-cleaner-reset-brush-life1"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 18,
+						"aiid": 1,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "mop-reset-mop-life"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 7,
+						"aiid": 2,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "vacuum-set-calibration"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 2,
+						"aiid": 1,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "vacuum-direct-start-sweep"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 2,
+						"aiid": 3,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "vacuum-direct-start-only-sweep"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 2,
+						"aiid": 5,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "vacuum-direct-start-sweep-mop"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 2,
+						"aiid": 6,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "vacuum-direct-start-only-mop"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 3,
+						"aiid": 1,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "battery-direct-start-charge"
+								}
+							]
+						}
+					}
+				],
+				"category": "cleaningrobot",
+				"tags": [],
+				"readmeComment": "Value mapping `[\"vacuum-start-sweep\"\u003d\"Start\",\"vacuum-pause-sweeping\"\u003d\"Pause\",\"vacuum-direct-stop-sweeping\"\u003d\"Stop\",\"vacuum-start-edge-sweep\"\u003d\"Start Edge Cleaning\",\"vacuum-pause-edge-sweeping\"\u003d\"Pause Edge Cleaning\",\"vacuum-dock\"\u003d\"Return to Dock\",\"vacuum-stop-charging\"\u003d\"Stop Returning to Dock\",\"filter-reset-filter-life\"\u003d\"Reset Filter Life\",\"brush-cleaner-reset-brush-life\"\u003d\"Reset Main Brush Life\",\"brush-cleaner-reset-brush-life1\"\u003d\"Reset Side Brush Life\",\"mop-reset-mop-life\"\u003d\"Reset Mop Life\",\"vacuum-set-calibration\"\u003d\"Calibrate\",\"vacuum-direct-start-sweep\"\u003d\"Start (Direct Command)\",\"vacuum-direct-start-only-sweep\"\u003d\"Start Vacuum Only (Direct Command)\",\"vacuum-direct-start-sweep-mop\"\u003d\"Start Vacuum and Mop (Direct Command)\",\"vacuum-direct-start-only-mop\"\u003d\"Start Mop Only (Direct Command)\",\"battery-direct-start-charge\"\u003d\"Return to Dock (Direct Command)\"]`"
+			},
+			{
+				"property": "",
+				"friendlyName": "Robot Cleaner - Clean Rooms",
+				"channel": "clean_rooms",
+				"type": "String",
+				"refresh": false,
+				"actions": [
+					{
+						"command": "action",
+						"parameterType": "STRING",
+						"siid": 7,
+						"aiid": 3,
+						"parameters": [
+							{
+								"piid": 24,
+								"value": "$value$"
+							},
+							{
+								"piid": 25,
+								"value": 0
+							},
+							{
+								"piid": 26,
+								"value": 1
+							}
+						]
+					}
+				],
+				"category": "cleaningrobot",
+				"tags": [
+					"Control"
+				],
+				"readmeComment": "Starts cleaning the rooms with the given comma separated room ids, for example 10,11."
+			},
+			{
+				"property": "status",
+				"siid": 2,
+				"piid": 1,
+				"friendlyName": "Robot Cleaner - Status",
+				"channel": "status",
+				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "0",
+							"label": "Sleeping"
+						},
+						{
+							"value": "1",
+							"label": "Standby"
+						},
+						{
+							"value": "2",
+							"label": "Paused"
+						},
+						{
+							"value": "3",
+							"label": "Returning to Dock"
+						},
+						{
+							"value": "4",
+							"label": "Charging"
+						},
+						{
+							"value": "5",
+							"label": "Cleaning"
+						},
+						{
+							"value": "6",
+							"label": "Vacuuming and Mopping"
+						},
+						{
+							"value": "7",
+							"label": "Mopping"
+						},
+						{
+							"value": "8",
+							"label": "Updating"
+						},
+						{
+							"value": "9",
+							"label": "Washing Mop"
+						},
+						{
+							"value": "10",
+							"label": "Drying Mop"
+						},
+						{
+							"value": "11",
+							"label": "Collecting Dust"
+						},
+						{
+							"value": "12",
+							"label": "Building Map"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "cleaningrobot",
+				"tags": [
+					"Status"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Sleeping\",\"1\"\u003d\"Standby\",\"2\"\u003d\"Paused\",\"3\"\u003d\"Returning to Dock\",\"4\"\u003d\"Charging\",\"5\"\u003d\"Cleaning\",\"6\"\u003d\"Vacuuming and Mopping\",\"7\"\u003d\"Mopping\",\"8\"\u003d\"Updating\",\"9\"\u003d\"Washing Mop\",\"10\"\u003d\"Drying Mop\",\"11\"\u003d\"Collecting Dust\",\"12\"\u003d\"Building Map\"]`"
+			},
+			{
+				"property": "fault",
+				"siid": 2,
+				"piid": 2,
+				"friendlyName": "Robot Cleaner - Device Fault",
+				"channel": "fault",
+				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "0",
+							"label": "No Fault"
+						},
+						{
+							"value": "1",
+							"label": "Dust box removed"
+						},
+						{
+							"value": "2",
+							"label": "Insufficient water, please add water"
+						},
+						{
+							"value": "3",
+							"label": "Please check if the main brush is stuck"
+						},
+						{
+							"value": "4",
+							"label": "Please check if the side brush is stuck"
+						},
+						{
+							"value": "5",
+							"label": "Please check if the main wheel is stuck"
+						},
+						{
+							"value": "6",
+							"label": "Please check if the bumper is stuck"
+						},
+						{
+							"value": "7",
+							"label": "Please check if the top radar cover is stuck"
+						},
+						{
+							"value": "8",
+							"label": "Please check if the radar is blocked or stuck"
+						},
+						{
+							"value": "9",
+							"label": "Please wipe the right side wall sensor"
+						},
+						{
+							"value": "10",
+							"label": "Please wipe the front collision sensor"
+						},
+						{
+							"value": "11",
+							"label": "Please wipe the cliff sensor and activate away from the danger zone"
+						},
+						{
+							"value": "12",
+							"label": "The machine is trapped, please move the location and start it"
+						},
+						{
+							"value": "13",
+							"label": "Start after moving away from the cliff"
+						},
+						{
+							"value": "14",
+							"label": "Off the ground, please put it back on the ground to start"
+						},
+						{
+							"value": "15",
+							"label": "The specified area cannot be reached"
+						},
+						{
+							"value": "16",
+							"label": "Please move out of the restricted area before restarting"
+						},
+						{
+							"value": "17",
+							"label": "Battery error"
+						},
+						{
+							"value": "18",
+							"label": "Fan error"
+						},
+						{
+							"value": "19",
+							"label": "Main brush exception"
+						},
+						{
+							"value": "20",
+							"label": "Side brush exception"
+						},
+						{
+							"value": "21",
+							"label": "Main wheel exception"
+						},
+						{
+							"value": "22",
+							"label": "Pump open abnormal"
+						},
+						{
+							"value": "23",
+							"label": "Abnormal pump current"
+						},
+						{
+							"value": "24",
+							"label": "Radar open circuit exception"
+						},
+						{
+							"value": "25",
+							"label": "Mopping Motor Abnormal"
+						},
+						{
+							"value": "26",
+							"label": "Ultrasonic Sensor Abnormal"
+						},
+						{
+							"value": "27",
+							"label": "Dust bag not in place"
+						},
+						{
+							"value": "28",
+							"label": "Dust station fan is abnormal"
+						},
+						{
+							"value": "29",
+							"label": "Failed to recharge, no charging point found"
+						},
+						{
+							"value": "30",
+							"label": "Please check if the mop component is stuck"
+						},
+						{
+							"value": "31",
+							"label": "Please remove the carpet before restarting"
+						},
+						{
+							"value": "38",
+							"label": "IMU data exception"
+						},
+						{
+							"value": "39",
+							"label": "Please place the machine on the ground to start"
+						},
+						{
+							"value": "40",
+							"label": "Abnormal machine (program and chassis) communication"
+						},
+						{
+							"value": "41",
+							"label": "The mop is not in place"
+						},
+						{
+							"value": "500",
+							"label": "Radar Timeout"
+						},
+						{
+							"value": "501",
+							"label": "Robot Wheels Up"
+						},
+						{
+							"value": "502",
+							"label": "Battery is too low"
+						},
+						{
+							"value": "503",
+							"label": "Please confirm the dust box is installed"
+						},
+						{
+							"value": "507",
+							"label": "Relocation failed"
+						},
+						{
+							"value": "508",
+							"label": "Please place the host on a level ground to start"
+						},
+						{
+							"value": "509",
+							"label": "Please wipe the cliff sensor and move to a new location to start"
+						},
+						{
+							"value": "510",
+							"label": "Please check and remove foreign objects from the collision sensor"
+						},
+						{
+							"value": "511",
+							"label": "Recharge failed"
+						},
+						{
+							"value": "512",
+							"label": "Breakpoint recharge failed"
+						},
+						{
+							"value": "513",
+							"label": "Navigation failed"
+						},
+						{
+							"value": "514",
+							"label": "Failed to escape"
+						},
+						{
+							"value": "517",
+							"label": "Device upgrade"
+						},
+						{
+							"value": "518",
+							"label": "Low battery"
+						},
+						{
+							"value": "521",
+							"label": "The battery is low, please make sure the water tank is installed"
+						},
+						{
+							"value": "522",
+							"label": "Please confirm that the mop is installed"
+						},
+						{
+							"value": "525",
+							"label": "The water tank is empty"
+						},
+						{
+							"value": "527",
+							"label": "Please remove the mop"
+						},
+						{
+							"value": "528",
+							"label": "Please remove the water tank and mop"
+						},
+						{
+							"value": "529",
+							"label": "Please make sure the water tank and mop are installed"
+						},
+						{
+							"value": "530",
+							"label": "Please confirm that the two-in-one water tank and mop have been installed"
+						},
+						{
+							"value": "531",
+							"label": "Please confirm that the water tank is installed"
+						},
+						{
+							"value": "532",
+							"label": "Charging, please remove the mop and water tank"
+						},
+						{
+							"value": "533",
+							"label": "Host standby time is too long, shut down"
+						},
+						{
+							"value": "534",
+							"label": "Host battery is low, shut down"
+						},
+						{
+							"value": "535",
+							"label": "Start Charging"
+						},
+						{
+							"value": "536",
+							"label": "Start Charging (Code 536)"
+						},
+						{
+							"value": "540",
+							"label": "Please confirm that the two-in-one water tank has been installed"
+						},
+						{
+							"value": "541",
+							"label": "Start charging (Code 541)"
+						},
+						{
+							"value": "542",
+							"label": "Start charging (Code 542)"
+						},
+						{
+							"value": "550",
+							"label": "The battery temperature is abnormal"
+						},
+						{
+							"value": "551",
+							"label": "Battery temperature returned to normal"
+						},
+						{
+							"value": "559",
+							"label": "Failed to build a map"
+						},
+						{
+							"value": "560",
+							"label": "The side brush is abnormal"
+						},
+						{
+							"value": "561",
+							"label": "Please confirm that the visual recognition sensor is not blocked"
+						},
+						{
+							"value": "562",
+							"label": "The edge infrared sensor is abnormal"
+						},
+						{
+							"value": "563",
+							"label": "The dust box fell off"
+						},
+						{
+							"value": "564",
+							"label": "The two-in-one water tank has fallen off"
+						},
+						{
+							"value": "565",
+							"label": "Radar Obstruction"
+						},
+						{
+							"value": "566",
+							"label": "The water tank has fallen off"
+						},
+						{
+							"value": "567",
+							"label": "Please move the sweeper out of the restricted area and start it again"
+						},
+						{
+							"value": "568",
+							"label": "The left wheel is abnormal"
+						},
+						{
+							"value": "569",
+							"label": "The right wheel is abnormal"
+						},
+						{
+							"value": "570",
+							"label": "The main brush is abnormal"
+						},
+						{
+							"value": "571",
+							"label": "The cutting blade is abnormal"
+						},
+						{
+							"value": "572",
+							"label": "Please move the sweeper out of the restricted area and start it again (Code 572)"
+						},
+						{
+							"value": "573",
+							"label": "Fan Abnormal"
+						},
+						{
+							"value": "574",
+							"label": "Radar is tangled or stuck"
+						},
+						{
+							"value": "580",
+							"label": "There is no water in the map building mode"
+						},
+						{
+							"value": "581",
+							"label": "Detected that there is no water in the clean water tank"
+						},
+						{
+							"value": "582",
+							"label": "Sewage tank full detected"
+						},
+						{
+							"value": "583",
+							"label": "Clear water tank not installed"
+						},
+						{
+							"value": "584",
+							"label": "No sewage tank installed"
+						},
+						{
+							"value": "585",
+							"label": "Sewage network not installed"
+						},
+						{
+							"value": "586",
+							"label": "The sinkhole is full"
+						},
+						{
+							"value": "587",
+							"label": "The connection between the host and the cleaning station is abnormal"
+						},
+						{
+							"value": "588",
+							"label": "The robot may be on the carpet"
+						},
+						{
+							"value": "589",
+							"label": "Machine positioning failed exception"
+						},
+						{
+							"value": "590",
+							"label": "Please confirm that the top cover of the dust collection seat is closed and the dust bag is installed"
+						},
+						{
+							"value": "591",
+							"label": "The dust bag is full"
+						},
+						{
+							"value": "592",
+							"label": "Dust Collection Abnormal"
+						},
+						{
+							"value": "593",
+							"label": "Dust Collection Abnormal (Code 593)"
+						},
+						{
+							"value": "594",
+							"label": "Dust Collection Abnormal (Code 594)"
+						},
+						{
+							"value": "595",
+							"label": "Dust Collection Abnormal (Code 595)"
+						},
+						{
+							"value": "596",
+							"label": "Dust Collection Abnormal (Code 596)"
+						},
+						{
+							"value": "597",
+							"label": "Air channel switching timed out"
+						},
+						{
+							"value": "598",
+							"label": "Charging Overcurrent"
+						},
+						{
+							"value": "599",
+							"label": "Failed to collect dust"
+						},
+						{
+							"value": "600",
+							"label": "HEPA dust collection failed"
+						},
+						{
+							"value": "601",
+							"label": "Dust Collection Abnormal (Code 601)"
+						},
+						{
+							"value": "602",
+							"label": "Dust Collection Abnormal (Code 602)"
+						},
+						{
+							"value": "603",
+							"label": "Dust Box Abnormal"
+						},
+						{
+							"value": "604",
+							"label": "Dust Collection Abnormal (Code 604)"
+						},
+						{
+							"value": "605",
+							"label": "There is less water in the water tank"
+						},
+						{
+							"value": "611",
+							"label": "Location failed"
+						},
+						{
+							"value": "612",
+							"label": "The map has changed, positioning failed"
+						},
+						{
+							"value": "613",
+							"label": "The base station is powered off, and the sewage collection has not been completed"
+						},
+						{
+							"value": "614",
+							"label": "The base station is powered off and has not finished drying"
+						},
+						{
+							"value": "615",
+							"label": "The base station is powered off and the water change has not been completed"
+						},
+						{
+							"value": "616",
+							"label": "The base station is powered off and the dust collection has not been completed"
+						},
+						{
+							"value": "617",
+							"label": "The sewage tank and clean water tank of the base station are both full, please pour out part of the clean water tank"
+						},
+						{
+							"value": "618",
+							"label": "Please confirm that the cleaning fluid box is installed"
+						},
+						{
+							"value": "619",
+							"label": "The cleaning fluid box has been removed"
+						},
+						{
+							"value": "620",
+							"label": "Please confirm that the cleaning solution is not empty"
+						},
+						{
+							"value": "621",
+							"label": "The communication between the robot and the base station is abnormal, please power off and restart the base station and try again"
+						},
+						{
+							"value": "622",
+							"label": "The communication between the robot and the base station is abnormal, please power off and restart the base station"
+						},
+						{
+							"value": "623",
+							"label": "The communication between the robot and the base station is abnormal. The scheduled task failed to start. Please power off and restart the base station"
+						},
+						{
+							"value": "624",
+							"label": "The stirring motor of the sewage tank is running abnormally, please contact customer service to solve it"
+						},
+						{
+							"value": "625",
+							"label": "Washing bracket not installed"
+						},
+						{
+							"value": "626",
+							"label": "Waiting for the sewage to be converted into clean water"
+						},
+						{
+							"value": "627",
+							"label": "Please move the host back to the base station and try again"
+						},
+						{
+							"value": "628",
+							"label": "The base station has been powered off"
+						},
+						{
+							"value": "629",
+							"label": "The mop fell off"
+						},
+						{
+							"value": "630",
+							"label": "The left and right mops are entangled or stuck"
+						},
+						{
+							"value": "2000",
+							"label": "Dust full reminder"
+						},
+						{
+							"value": "2001",
+							"label": "Left swipe stuck"
+						},
+						{
+							"value": "2002",
+							"label": "Right swipe stuck"
+						},
+						{
+							"value": "2003",
+							"label": "Low battery reservation failed"
+						},
+						{
+							"value": "2004",
+							"label": "No reference"
+						},
+						{
+							"value": "2005",
+							"label": "There is no zone box to start zone cleaning"
+						},
+						{
+							"value": "2006",
+							"label": "Enter Do Not Disturb mode during cleaning"
+						},
+						{
+							"value": "2007",
+							"label": "The target area cannot be reached"
+						},
+						{
+							"value": "2008",
+							"label": "Cleaning complete"
+						},
+						{
+							"value": "2009",
+							"label": "Scheduled cleaning completed"
+						},
+						{
+							"value": "2010",
+							"label": "Sensor Dirty"
+						},
+						{
+							"value": "2011",
+							"label": "Area unreachable"
+						},
+						{
+							"value": "2012",
+							"label": "Some areas are unreachable"
+						},
+						{
+							"value": "2015",
+							"label": "Cleaning"
+						},
+						{
+							"value": "2016",
+							"label": "Child lock protection on"
+						},
+						{
+							"value": "2017",
+							"label": "Failed to build a map (Code 2017)"
+						},
+						{
+							"value": "2018",
+							"label": "Network connection error, upgrade failed"
+						},
+						{
+							"value": "2019",
+							"label": "The base station has been powered off (Code 2019)"
+						},
+						{
+							"value": "2020",
+							"label": "The upgrade failed due to a power failure of the base station"
+						},
+						{
+							"value": "2100",
+							"label": "Insufficient battery"
+						},
+						{
+							"value": "2101",
+							"label": "Start charging (Code 2101)"
+						},
+						{
+							"value": "2102",
+							"label": "Cleaning complete (Code 2102)"
+						},
+						{
+							"value": "2103",
+							"label": "Start Charging (Code 2103)"
+						},
+						{
+							"value": "2104",
+							"label": "Start recharging"
+						},
+						{
+							"value": "2105",
+							"label": "Host charging complete"
+						},
+						{
+							"value": "2106",
+							"label": "Please wait for breakpoint charging to complete"
+						},
+						{
+							"value": "2107",
+							"label": "Scheduled cleaning starts"
+						},
+						{
+							"value": "2108",
+							"label": "Relocating"
+						},
+						{
+							"value": "2109",
+							"label": "Secondary cleaning"
+						},
+						{
+							"value": "2110",
+							"label": "Host self-testing"
+						},
+						{
+							"value": "2111",
+							"label": "Map is being generated"
+						},
+						{
+							"value": "2112",
+							"label": "Building"
+						},
+						{
+							"value": "2113",
+							"label": "Static Object Cleaning"
+						},
+						{
+							"value": "2114",
+							"label": "The host has been cleaning continuously for 15 hours, please clean the dust box in time"
+						},
+						{
+							"value": "2115",
+							"label": "Breakpoint charging"
+						},
+						{
+							"value": "2116",
+							"label": "Building (Code 2116)"
+						},
+						{
+							"value": "2117",
+							"label": "Map is being generated (Code 2117)"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "error",
+				"tags": [
+					"Status"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"No Fault\",\"1\"\u003d\"Dust box removed\",\"2\"\u003d\"Insufficient water, please add water\",\"3\"\u003d\"Please check if the main brush is stuck\",\"4\"\u003d\"Please check if the side brush is stuck\",\"5\"\u003d\"Please check if the main wheel is stuck\",\"6\"\u003d\"Please check if the bumper is stuck\",\"7\"\u003d\"Please check if the top radar cover is stuck\",\"8\"\u003d\"Please check if the radar is blocked or stuck\",\"9\"\u003d\"Please wipe the right side wall sensor\",\"10\"\u003d\"Please wipe the front collision sensor\",\"11\"\u003d\"Please wipe the cliff sensor and activate away from the danger zone\",\"12\"\u003d\"The machine is trapped, please move the location and start it\",\"13\"\u003d\"Start after moving away from the cliff\",\"14\"\u003d\"Off the ground, please put it back on the ground to start\",\"15\"\u003d\"The specified area cannot be reached\",\"16\"\u003d\"Please move out of the restricted area before restarting\",\"17\"\u003d\"Battery error\",\"18\"\u003d\"Fan error\",\"19\"\u003d\"Main brush exception\",\"20\"\u003d\"Side brush exception\",\"21\"\u003d\"Main wheel exception\",\"22\"\u003d\"Pump open abnormal\",\"23\"\u003d\"Abnormal pump current\",\"24\"\u003d\"Radar open circuit exception\",\"25\"\u003d\"Mopping Motor Abnormal\",\"26\"\u003d\"Ultrasonic Sensor Abnormal\",\"27\"\u003d\"Dust bag not in place\",\"28\"\u003d\"Dust station fan is abnormal\",\"29\"\u003d\"Failed to recharge, no charging point found\",\"30\"\u003d\"Please check if the mop component is stuck\",\"31\"\u003d\"Please remove the carpet before restarting\",\"38\"\u003d\"IMU data exception\",\"39\"\u003d\"Please place the machine on the ground to start\",\"40\"\u003d\"Abnormal machine (program and chassis) communication\",\"41\"\u003d\"The mop is not in place\",\"500\"\u003d\"Radar Timeout\",\"501\"\u003d\"Robot Wheels Up\",\"502\"\u003d\"Battery is too low\",\"503\"\u003d\"Please confirm the dust box is installed\",\"507\"\u003d\"Relocation failed\",\"508\"\u003d\"Please place the host on a level ground to start\",\"509\"\u003d\"Please wipe the cliff sensor and move to a new location to start\",\"510\"\u003d\"Please check and remove foreign objects from the collision sensor\",\"511\"\u003d\"Recharge failed\",\"512\"\u003d\"Breakpoint recharge failed\",\"513\"\u003d\"Navigation failed\",\"514\"\u003d\"Failed to escape\",\"517\"\u003d\"Device upgrade\",\"518\"\u003d\"Low battery\",\"521\"\u003d\"The battery is low, please make sure the water tank is installed\",\"522\"\u003d\"Please confirm that the mop is installed\",\"525\"\u003d\"The water tank is empty\",\"527\"\u003d\"Please remove the mop\",\"528\"\u003d\"Please remove the water tank and mop\",\"529\"\u003d\"Please make sure the water tank and mop are installed\",\"530\"\u003d\"Please confirm that the two-in-one water tank and mop have been installed\",\"531\"\u003d\"Please confirm that the water tank is installed\",\"532\"\u003d\"Charging, please remove the mop and water tank\",\"533\"\u003d\"Host standby time is too long, shut down\",\"534\"\u003d\"Host battery is low, shut down\",\"535\"\u003d\"Start Charging\",\"536\"\u003d\"Start Charging (Code 536)\",\"540\"\u003d\"Please confirm that the two-in-one water tank has been installed\",\"541\"\u003d\"Start charging (Code 541)\",\"542\"\u003d\"Start charging (Code 542)\",\"550\"\u003d\"The battery temperature is abnormal\",\"551\"\u003d\"Battery temperature returned to normal\",\"559\"\u003d\"Failed to build a map\",\"560\"\u003d\"The side brush is abnormal\",\"561\"\u003d\"Please confirm that the visual recognition sensor is not blocked\",\"562\"\u003d\"The edge infrared sensor is abnormal\",\"563\"\u003d\"The dust box fell off\",\"564\"\u003d\"The two-in-one water tank has fallen off\",\"565\"\u003d\"Radar Obstruction\",\"566\"\u003d\"The water tank has fallen off\",\"567\"\u003d\"Please move the sweeper out of the restricted area and start it again\",\"568\"\u003d\"The left wheel is abnormal\",\"569\"\u003d\"The right wheel is abnormal\",\"570\"\u003d\"The main brush is abnormal\",\"571\"\u003d\"The cutting blade is abnormal\",\"572\"\u003d\"Please move the sweeper out of the restricted area and start it again (Code 572)\",\"573\"\u003d\"Fan Abnormal\",\"574\"\u003d\"Radar is tangled or stuck\",\"580\"\u003d\"There is no water in the map building mode\",\"581\"\u003d\"Detected that there is no water in the clean water tank\",\"582\"\u003d\"Sewage tank full detected\",\"583\"\u003d\"Clear water tank not installed\",\"584\"\u003d\"No sewage tank installed\",\"585\"\u003d\"Sewage network not installed\",\"586\"\u003d\"The sinkhole is full\",\"587\"\u003d\"The connection between the host and the cleaning station is abnormal\",\"588\"\u003d\"The robot may be on the carpet\",\"589\"\u003d\"Machine positioning failed exception\",\"590\"\u003d\"Please confirm that the top cover of the dust collection seat is closed and the dust bag is installed\",\"591\"\u003d\"The dust bag is full\",\"592\"\u003d\"Dust Collection Abnormal\",\"593\"\u003d\"Dust Collection Abnormal (Code 593)\",\"594\"\u003d\"Dust Collection Abnormal (Code 594)\",\"595\"\u003d\"Dust Collection Abnormal (Code 595)\",\"596\"\u003d\"Dust Collection Abnormal (Code 596)\",\"597\"\u003d\"Air channel switching timed out\",\"598\"\u003d\"Charging Overcurrent\",\"599\"\u003d\"Failed to collect dust\",\"600\"\u003d\"HEPA dust collection failed\",\"601\"\u003d\"Dust Collection Abnormal (Code 601)\",\"602\"\u003d\"Dust Collection Abnormal (Code 602)\",\"603\"\u003d\"Dust Box Abnormal\",\"604\"\u003d\"Dust Collection Abnormal (Code 604)\",\"605\"\u003d\"There is less water in the water tank\",\"611\"\u003d\"Location failed\",\"612\"\u003d\"The map has changed, positioning failed\",\"613\"\u003d\"The base station is powered off, and the sewage collection has not been completed\",\"614\"\u003d\"The base station is powered off and has not finished drying\",\"615\"\u003d\"The base station is powered off and the water change has not been completed\",\"616\"\u003d\"The base station is powered off and the dust collection has not been completed\",\"617\"\u003d\"The sewage tank and clean water tank of the base station are both full, please pour out part of the clean water tank\",\"618\"\u003d\"Please confirm that the cleaning fluid box is installed\",\"619\"\u003d\"The cleaning fluid box has been removed\",\"620\"\u003d\"Please confirm that the cleaning solution is not empty\",\"621\"\u003d\"The communication between the robot and the base station is abnormal, please power off and restart the base station and try again\",\"622\"\u003d\"The communication between the robot and the base station is abnormal, please power off and restart the base station\",\"623\"\u003d\"The communication between the robot and the base station is abnormal. The scheduled task failed to start. Please power off and restart the base station\",\"624\"\u003d\"The stirring motor of the sewage tank is running abnormally, please contact customer service to solve it\",\"625\"\u003d\"Washing bracket not installed\",\"626\"\u003d\"Waiting for the sewage to be converted into clean water\",\"627\"\u003d\"Please move the host back to the base station and try again\",\"628\"\u003d\"The base station has been powered off\",\"629\"\u003d\"The mop fell off\",\"630\"\u003d\"The left and right mops are entangled or stuck\",\"2000\"\u003d\"Dust full reminder\",\"2001\"\u003d\"Left swipe stuck\",\"2002\"\u003d\"Right swipe stuck\",\"2003\"\u003d\"Low battery reservation failed\",\"2004\"\u003d\"No reference\",\"2005\"\u003d\"There is no zone box to start zone cleaning\",\"2006\"\u003d\"Enter Do Not Disturb mode during cleaning\",\"2007\"\u003d\"The target area cannot be reached\",\"2008\"\u003d\"Cleaning complete\",\"2009\"\u003d\"Scheduled cleaning completed\",\"2010\"\u003d\"Sensor Dirty\",\"2011\"\u003d\"Area unreachable\",\"2012\"\u003d\"Some areas are unreachable\",\"2015\"\u003d\"Cleaning\",\"2016\"\u003d\"Child lock protection on\",\"2017\"\u003d\"Failed to build a map (Code 2017)\",\"2018\"\u003d\"Network connection error, upgrade failed\",\"2019\"\u003d\"The base station has been powered off (Code 2019)\",\"2020\"\u003d\"The upgrade failed due to a power failure of the base station\",\"2100\"\u003d\"Insufficient battery\",\"2101\"\u003d\"Start charging (Code 2101)\",\"2102\"\u003d\"Cleaning complete (Code 2102)\",\"2103\"\u003d\"Start Charging (Code 2103)\",\"2104\"\u003d\"Start recharging\",\"2105\"\u003d\"Host charging complete\",\"2106\"\u003d\"Please wait for breakpoint charging to complete\",\"2107\"\u003d\"Scheduled cleaning starts\",\"2108\"\u003d\"Relocating\",\"2109\"\u003d\"Secondary cleaning\",\"2110\"\u003d\"Host self-testing\",\"2111\"\u003d\"Map is being generated\",\"2112\"\u003d\"Building\",\"2113\"\u003d\"Static Object Cleaning\",\"2114\"\u003d\"The host has been cleaning continuously for 15 hours, please clean the dust box in time\",\"2115\"\u003d\"Breakpoint charging\",\"2116\"\u003d\"Building (Code 2116)\",\"2117\"\u003d\"Map is being generated (Code 2117)\"]`"
+			},
+			{
+				"property": "mode",
+				"siid": 2,
+				"piid": 4,
+				"friendlyName": "Robot Cleaner - Cleaning Mode",
+				"channel": "mode",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "Vacuum"
+						},
+						{
+							"value": "1",
+							"label": "Vacuum and Mop"
+						},
+						{
+							"value": "2",
+							"label": "Mop"
+						},
+						{
+							"value": "3",
+							"label": "Vacuum then Mop"
+						}
+					],
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "cleaningrobot",
+				"tags": [
+					"Status",
+					"Mode"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Vacuum\",\"1\"\u003d\"Vacuum and Mop\",\"2\"\u003d\"Mop\",\"3\"\u003d\"Vacuum then Mop\"]`"
+			},
+			{
+				"property": "sweep-type",
+				"siid": 2,
+				"piid": 8,
+				"friendlyName": "Robot Cleaner - Sweep Type",
+				"channel": "sweep_type",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "All Areas"
+						},
+						{
+							"value": "1",
+							"label": "Mop"
+						},
+						{
+							"value": "2",
+							"label": "Along the Edges"
+						},
+						{
+							"value": "3",
+							"label": "Area"
+						},
+						{
+							"value": "4",
+							"label": "Spot"
+						},
+						{
+							"value": "5",
+							"label": "Remote Control"
+						},
+						{
+							"value": "6",
+							"label": "Create Map"
+						},
+						{
+							"value": "7",
+							"label": "Room"
+						},
+						{
+							"value": "8",
+							"label": "Floor Type"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER",
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "0|2"
+								}
+							]
+						}
+					}
+				],
+				"category": "cleaningrobot",
+				"tags": [
+					"Control",
+					"Mode"
+				],
+				"readmeComment": "Only 0 (All Areas) and 2 (Along the Edges) are sent, like the Mi Home app. Value mapping `[\"0\"\u003d\"All Areas\",\"1\"\u003d\"Mop\",\"2\"\u003d\"Along the Edges\",\"3\"\u003d\"Area\",\"4\"\u003d\"Spot\",\"5\"\u003d\"Remote Control\",\"6\"\u003d\"Create Map\",\"7\"\u003d\"Room\",\"8\"\u003d\"Floor Type\"]`"
+			},
+			{
+				"property": "on",
+				"siid": 2,
+				"piid": 9,
+				"friendlyName": "Robot Cleaner - Device Configuration",
+				"channel": "on",
+				"type": "String",
+				"stateDescription": {
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "status",
+				"tags": [
+					"Status"
+				]
+			},
+			{
+				"property": "battery-level",
+				"siid": 3,
+				"piid": 1,
+				"friendlyName": "Battery - Battery Level",
+				"channel": "battery_level",
+				"type": "Number:Dimensionless",
+				"unit": "percentage",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 100,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "battery",
+				"tags": [
+					"Measurement",
+					"StateOfCharge"
+				]
+			},
+			{
+				"property": "alarm",
+				"siid": 4,
+				"piid": 1,
+				"friendlyName": "Alarm - Locate",
+				"channel": "alarm",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "alarm",
+				"tags": [
+					"Switch",
+					"Enabled"
+				]
+			},
+			{
+				"property": "volume",
+				"siid": 4,
+				"piid": 2,
+				"friendlyName": "Alarm - Volume",
+				"channel": "volume",
+				"type": "Number",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 10,
+					"step": 1,
+					"pattern": "%.0f"
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "soundvolume",
+				"tags": [
+					"Control",
+					"SoundVolume"
+				],
+				"readmeComment": "Volume from 0 to 10; the app shows this value multiplied by 10."
+			},
+			{
+				"property": "repeat-state",
+				"siid": 7,
+				"piid": 1,
+				"friendlyName": "Sweep - Clean Twice",
+				"channel": "repeat_state",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFNUMBER"
+					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch",
+					"Enabled"
+				]
+			},
+			{
+				"property": "cloth-state",
+				"siid": 7,
+				"piid": 4,
+				"friendlyName": "Sweep - Mop Attached",
+				"channel": "cloth_state",
+				"type": "Switch",
+				"stateDescription": {
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "water",
+				"tags": [
+					"Status"
+				]
+			},
+			{
+				"property": "suction-state",
+				"siid": 7,
+				"piid": 5,
+				"friendlyName": "Sweep - Suction Level",
+				"channel": "suction_state",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "Quiet"
+						},
+						{
+							"value": "1",
+							"label": "Standard"
+						},
+						{
+							"value": "2",
+							"label": "Medium"
+						},
+						{
+							"value": "3",
+							"label": "Strong"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "fan",
+				"tags": [
+					"Control",
+					"Level"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Quiet\",\"1\"\u003d\"Standard\",\"2\"\u003d\"Medium\",\"3\"\u003d\"Strong\"]`"
+			},
+			{
+				"property": "water-state",
+				"siid": 7,
+				"piid": 6,
+				"friendlyName": "Sweep - Water Level",
+				"channel": "water_state",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "Low"
+						},
+						{
+							"value": "1",
+							"label": "Medium"
+						},
+						{
+							"value": "2",
+							"label": "High"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "water",
+				"tags": [
+					"Control",
+					"Level"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Low\",\"1\"\u003d\"Medium\",\"2\"\u003d\"High\"]`"
+			},
+			{
+				"property": "direction",
+				"siid": 7,
+				"piid": 16,
+				"friendlyName": "Sweep - Remote Control Direction",
+				"channel": "direction",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "1",
+							"label": "Forward"
+						},
+						{
+							"value": "2",
+							"label": "Left"
+						},
+						{
+							"value": "3",
+							"label": "Right"
+						},
+						{
+							"value": "4",
+							"label": "Back"
+						},
+						{
+							"value": "5",
+							"label": "Stop"
+						},
+						{
+							"value": "10",
+							"label": "Exit"
+						}
+					]
+				},
+				"refresh": false,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "settings",
+				"tags": [
+					"Control"
+				],
+				"readmeComment": "Value mapping `[\"1\"\u003d\"Forward\",\"2\"\u003d\"Left\",\"3\"\u003d\"Right\",\"4\"\u003d\"Back\",\"5\"\u003d\"Stop\",\"10\"\u003d\"Exit\"]`"
+			},
+			{
+				"property": "time-zone",
+				"siid": 7,
+				"piid": 20,
+				"friendlyName": "Sweep - Time Zone",
+				"channel": "time_zone",
+				"type": "Number",
+				"stateDescription": {
+					"step": 1,
+					"pattern": "%.0f"
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "time",
+				"tags": [
+					"Setpoint"
+				]
+			},
+			{
+				"property": "cur-lang",
+				"siid": 7,
+				"piid": 21,
+				"friendlyName": "Sweep - Language",
+				"channel": "cur_lang",
+				"type": "String",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "en_US",
+							"label": "English"
+						},
+						{
+							"value": "zh_CN",
+							"label": "Chinese (Simplified)"
+						},
+						{
+							"value": "zh_HK",
+							"label": "Chinese (Hong Kong)"
+						},
+						{
+							"value": "zh_TW",
+							"label": "Chinese (Traditional)"
+						},
+						{
+							"value": "es_ES",
+							"label": "Spanish"
+						},
+						{
+							"value": "de_DE",
+							"label": "German"
+						},
+						{
+							"value": "fr_FR",
+							"label": "French"
+						},
+						{
+							"value": "pl_PL",
+							"label": "Polish"
+						},
+						{
+							"value": "ru_RU",
+							"label": "Russian"
+						},
+						{
+							"value": "tr_TR",
+							"label": "Turkish"
+						},
+						{
+							"value": "it_IT",
+							"label": "Italian"
+						},
+						{
+							"value": "pt_BR",
+							"label": "Portuguese (Brazil)"
+						},
+						{
+							"value": "ko_KR",
+							"label": "Korean"
+						},
+						{
+							"value": "id_ID",
+							"label": "Indonesian"
+						},
+						{
+							"value": "vi_VN",
+							"label": "Vietnamese"
+						},
+						{
+							"value": "nl_NL",
+							"label": "Dutch"
+						},
+						{
+							"value": "ar_SA",
+							"label": "Arabic"
+						},
+						{
+							"value": "he_IL",
+							"label": "Hebrew"
+						},
+						{
+							"value": "th_TH",
+							"label": "Thai"
+						},
+						{
+							"value": "ja_JP",
+							"label": "Japanese"
+						},
+						{
+							"value": "uk_UA",
+							"label": "Ukrainian"
+						}
+					],
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "text",
+				"tags": [
+					"Status"
+				],
+				"readmeComment": "Value mapping `[\"en_US\"\u003d\"English\",\"zh_CN\"\u003d\"Chinese (Simplified)\",\"zh_HK\"\u003d\"Chinese (Hong Kong)\",\"zh_TW\"\u003d\"Chinese (Traditional)\",\"es_ES\"\u003d\"Spanish\",\"de_DE\"\u003d\"German\",\"fr_FR\"\u003d\"French\",\"pl_PL\"\u003d\"Polish\",\"ru_RU\"\u003d\"Russian\",\"tr_TR\"\u003d\"Turkish\",\"it_IT\"\u003d\"Italian\",\"pt_BR\"\u003d\"Portuguese (Brazil)\",\"ko_KR\"\u003d\"Korean\",\"id_ID\"\u003d\"Indonesian\",\"vi_VN\"\u003d\"Vietnamese\",\"nl_NL\"\u003d\"Dutch\",\"ar_SA\"\u003d\"Arabic\",\"he_IL\"\u003d\"Hebrew\",\"th_TH\"\u003d\"Thai\",\"ja_JP\"\u003d\"Japanese\",\"uk_UA\"\u003d\"Ukrainian\"]`"
+			},
+			{
+				"property": "cleaning-time",
+				"siid": 7,
+				"piid": 22,
+				"friendlyName": "Sweep - Cleaning Time",
+				"channel": "cleaning_time",
+				"type": "Number:Time",
+				"unit": "minutes",
+				"stateDescription": {
+					"minimum": 0,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "time",
+				"tags": [
+					"Measurement",
+					"Duration"
+				]
+			},
+			{
+				"property": "cleaning-area",
+				"siid": 7,
+				"piid": 23,
+				"friendlyName": "Sweep - Cleaning Area",
+				"channel": "cleaning_area",
+				"type": "Number:Area",
+				"unit": "square_meter",
+				"stateDescription": {
+					"minimum": 0,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "cleaningrobot",
+				"tags": [
+					"Measurement"
+				]
+			},
+			{
+				"property": "filter-life-level",
+				"siid": 15,
+				"piid": 1,
+				"friendlyName": "Filter - Filter Life Level",
+				"channel": "filter_life_level",
+				"type": "Number:Dimensionless",
+				"unit": "percentage",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 100,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "status",
+				"tags": [
+					"Measurement",
+					"Level"
+				]
+			},
+			{
+				"property": "filter-left-time",
+				"siid": 15,
+				"piid": 2,
+				"friendlyName": "Filter - Filter Left Time",
+				"channel": "filter_left_time",
+				"type": "Number:Time",
+				"unit": "days",
+				"stateDescription": {
+					"minimum": 0,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "time",
+				"tags": [
+					"Measurement",
+					"Duration"
+				]
+			},
+			{
+				"property": "brush-life-level",
+				"siid": 16,
+				"piid": 2,
+				"friendlyName": "Main Brush - Brush Life Level",
+				"channel": "main_brush_life_level",
+				"type": "Number:Dimensionless",
+				"unit": "percentage",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 100,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "status",
+				"tags": [
+					"Measurement",
+					"Level"
+				]
+			},
+			{
+				"property": "brush-left-time",
+				"siid": 16,
+				"piid": 1,
+				"friendlyName": "Main Brush - Brush Left Time",
+				"channel": "main_brush_left_time",
+				"type": "Number:Time",
+				"unit": "days",
+				"stateDescription": {
+					"minimum": 0,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "time",
+				"tags": [
+					"Measurement",
+					"Duration"
+				]
+			},
+			{
+				"property": "brush-life-level1",
+				"siid": 17,
+				"piid": 2,
+				"friendlyName": "Side Brush - Brush Life Level",
+				"channel": "side_brush_life_level",
+				"type": "Number:Dimensionless",
+				"unit": "percentage",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 100,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "status",
+				"tags": [
+					"Measurement",
+					"Level"
+				]
+			},
+			{
+				"property": "brush-left-time1",
+				"siid": 17,
+				"piid": 1,
+				"friendlyName": "Side Brush - Brush Left Time",
+				"channel": "side_brush_left_time",
+				"type": "Number:Time",
+				"unit": "days",
+				"stateDescription": {
+					"minimum": 0,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "time",
+				"tags": [
+					"Measurement",
+					"Duration"
+				]
+			},
+			{
+				"property": "mop-life-level",
+				"siid": 18,
+				"piid": 1,
+				"friendlyName": "Mop - Mop Life Level",
+				"channel": "mop_life_level",
+				"type": "Number:Dimensionless",
+				"unit": "percentage",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 100,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "status",
+				"tags": [
+					"Measurement",
+					"Level"
+				]
+			},
+			{
+				"property": "mop-left-time",
+				"siid": 18,
+				"piid": 2,
+				"friendlyName": "Mop - Mop Left Time",
+				"channel": "mop_left_time",
+				"type": "Number:Time",
+				"unit": "days",
+				"stateDescription": {
+					"minimum": 0,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "time",
+				"tags": [
+					"Measurement",
+					"Duration"
+				]
+			},
+			{
+				"property": "multi-prop-vacuum",
+				"siid": 7,
+				"piid": 45,
+				"friendlyName": "Sweep - Status Data",
+				"channel": "multi_prop_vacuum",
+				"type": "String",
+				"stateDescription": {
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "text",
+				"tags": [
+					"Status"
+				]
+			},
+			{
+				"property": "cur-map-id",
+				"siid": 10,
+				"piid": 2,
+				"friendlyName": "Map - Current Map Id",
+				"channel": "cur_map_id",
+				"type": "Number",
+				"stateDescription": {
+					"minimum": 0,
+					"step": 1,
+					"pattern": "%.0f",
+					"readOnly": true
+				},
+				"refresh": false,
+				"actions": [],
+				"category": "cleaningrobot",
+				"tags": [
+					"Status"
+				]
+			},
+			{
+				"property": "dnd-enable",
+				"siid": 12,
+				"piid": 1,
+				"friendlyName": "Do Not Disturb - Enabled",
+				"channel": "dnd_enable",
+				"type": "Switch",
+				"stateDescription": {
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "switch",
+				"tags": [
+					"Status",
+					"Enabled"
+				]
+			},
+			{
+				"property": "dnd-start-hour",
+				"siid": 12,
+				"piid": 2,
+				"friendlyName": "Do Not Disturb - Start Hour",
+				"channel": "dnd_start_hour",
+				"type": "Number",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 23,
+					"step": 1,
+					"pattern": "%.0f",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "time",
+				"tags": [
+					"Status"
+				]
+			},
+			{
+				"property": "dnd-start-minute",
+				"siid": 12,
+				"piid": 3,
+				"friendlyName": "Do Not Disturb - Start Minute",
+				"channel": "dnd_start_minute",
+				"type": "Number",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 59,
+					"step": 1,
+					"pattern": "%.0f",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "time",
+				"tags": [
+					"Status"
+				]
+			},
+			{
+				"property": "dnd-end-hour",
+				"siid": 12,
+				"piid": 4,
+				"friendlyName": "Do Not Disturb - End Hour",
+				"channel": "dnd_end_hour",
+				"type": "Number",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 23,
+					"step": 1,
+					"pattern": "%.0f",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "time",
+				"tags": [
+					"Status"
+				]
+			},
+			{
+				"property": "dnd-end-minute",
+				"siid": 12,
+				"piid": 5,
+				"friendlyName": "Do Not Disturb - End Minute",
+				"channel": "dnd_end_minute",
+				"type": "Number",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 59,
+					"step": 1,
+					"pattern": "%.0f",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "time",
+				"tags": [
+					"Status"
+				]
+			},
+			{
+				"property": "multi-prop-dnd",
+				"siid": 12,
+				"piid": 7,
+				"friendlyName": "Do Not Disturb - Status Data",
+				"channel": "multi_prop_dnd",
+				"type": "String",
+				"stateDescription": {
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "text",
+				"tags": [
+					"Status"
+				]
+			}
+		],
+		"readmeComment": "Use the `clean_rooms` channel with comma separated room ids to clean specific rooms. Resetting the map deletes the saved map with its rooms and zones, so it is not offered as an action; send `action{\"did\":\"actions\",\"siid\":10,\"aiid\":10,\"in\":[]}` on the `actions#commands` channel to do it.",
+		"experimental": true
+	}
+}

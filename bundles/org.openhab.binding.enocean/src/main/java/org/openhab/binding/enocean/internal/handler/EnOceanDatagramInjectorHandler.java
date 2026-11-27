@@ -51,6 +51,8 @@ import org.openhab.core.util.HexUtils;
 
 /**
  * Send-only handler for profile-based datagram injection.
+ *
+ * @author Sven Schad - Initial contribution
  */
 @NonNullByDefault
 public class EnOceanDatagramInjectorHandler extends EnOceanBaseThingHandler {

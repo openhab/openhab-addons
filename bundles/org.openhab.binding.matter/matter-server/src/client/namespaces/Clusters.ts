@@ -1,7 +1,7 @@
 import { Logger } from "@matter/general";
-import { ClusterId, ValidationError } from "@matter/main/types";
+import { AttributeId, ClusterId, EndpointNumber, ValidationError } from "@matter/main/types";
 import { ClusterModel, MatterModel } from "@matter/model";
-import { SupportedAttributeClient } from "@project-chip/matter.js/cluster";
+import { ClusterBehavior, Endpoint } from "@matter/node";
 import { convertJsonDataWithModel, toJSON } from "../../util/Json";
 import { capitalize } from "../../util/String";
 import { ControllerNode } from "../ControllerNode";
@@ -17,7 +17,7 @@ export class Clusters {
 
     /**
      * Dynamically executes a command on a specified cluster within a device node.
-     * This method retrieves the cluster client for the device at the given node and endpoint, checks the existence
+     * This method retrieves the cluster for the device at the given node and endpoint, checks the existence
      * of the command on the cluster, and calls it with any provided arguments.
      *
      * @param nodeId Identifier for the node containing the target device.
@@ -29,24 +29,10 @@ export class Clusters {
      */
     async command(nodeId: number, endpointId: number, clusterName: string, commandName: string, args: any) {
         logger.debug(`command ${nodeId} ${endpointId} ${clusterName} ${commandName} ${toJSON(args)}`);
-        const device = this.controllerNode.getNode(nodeId).getDeviceById(endpointId);
-        if (device == undefined) {
-            throw new Error(`Endpoint ${endpointId} not found`);
-        }
+        const { endpoint, cluster, type } = this.#resolve(nodeId, endpointId, clusterName);
 
-        const cluster = this.#clusterForName(clusterName);
-        if (cluster.id === undefined) {
-            throw new Error(`Cluster ID for ${clusterName} not found`);
-        }
-
-        const clusterClient = device.getClusterClientById(ClusterId(cluster.id));
-        if (clusterClient === undefined) {
-            throw new Error(`Cluster client for ${clusterName} not found`);
-        }
-
-        const uppercaseName = capitalize(commandName);
-        const command = cluster.commands.find(c => c.name === uppercaseName);
-        if (command == undefined) {
+        const command = cluster.commands.find(c => c.name === capitalize(commandName));
+        if (command === undefined || !endpoint.behaviors.elementsOf(type).commands.has(commandName)) {
             throw new Error(`Cluster Function ${commandName} not found`);
         }
 
@@ -55,7 +41,8 @@ export class Clusters {
             convertedArgs = convertJsonDataWithModel(command, args);
         }
 
-        return clusterClient.commands[commandName](convertedArgs);
+        const commands = endpoint.commandsOf(type) as Record<string, (request?: any) => Promise<any>>;
+        return commands[commandName](convertedArgs);
     }
 
     /**
@@ -84,38 +71,17 @@ export class Clusters {
             }
         }
 
-        const device = this.controllerNode.getNode(nodeId).getDeviceById(endpointId);
-        if (device == undefined) {
-            throw new Error(`Endpoint ${endpointId} not found`);
-        }
-
-        const cluster = this.#clusterForName(clusterName);
-        if (cluster.id === undefined) {
-            throw new Error(`Cluster ID for ${clusterName} not found`);
-        }
-
-        const clusterClient = device.getClusterClientById(ClusterId(cluster.id));
-        if (clusterClient === undefined) {
-            throw new Error(`Cluster client for ${clusterName} not found`);
-        }
-
-        const attributeClient = clusterClient.attributes[attributeName];
-        if (!(attributeClient instanceof SupportedAttributeClient)) {
-            throw new Error(`Attribute ${nodeId}/${endpointId}/${clusterName}/${attributeName} not supported.`);
-        }
-
-        const uppercaseName = capitalize(attributeName);
-        const attribute = cluster.attributes.find(c => c.name === uppercaseName);
-        if (attribute == undefined) {
-            throw new Error(`Attribute ${attributeName} not found`);
+        const { endpoint, cluster, type } = this.#resolve(nodeId, endpointId, clusterName);
+        const attribute = this.#supportedAttribute(endpoint, cluster, type, attributeName);
+        if (!attribute.writable) {
+            throw new Error(`Attribute ${attributeName} is not writable`);
         }
 
         try {
             parsedValue = convertJsonDataWithModel(attribute, parsedValue);
-            await attributeClient.set(parsedValue);
-            console.log(
-                `Attribute ${attributeName} ${nodeId}/${endpointId}/${clusterName}/${attributeName} set to ${toJSON(value)}`,
-            );
+            // Setting state on a device's cluster writes the attribute to the device
+            await endpoint.setStateOf(type, { [attributeName]: parsedValue });
+            logger.debug(`Attribute ${nodeId}/${endpointId}/${clusterName}/${attributeName} set to ${toJSON(value)}`);
         } catch (error) {
             if (error instanceof ValidationError) {
                 throw new Error(
@@ -135,77 +101,83 @@ export class Clusters {
      * @param attributeName
      */
     async readAttribute(nodeId: number, endpointId: number, clusterName: string, attributeName: string) {
-        const device = this.controllerNode.getNode(nodeId).getDeviceById(endpointId);
-        if (device == undefined) {
-            throw new Error(`Endpoint ${endpointId} not found`);
-        }
-
-        const cluster = this.#clusterForName(clusterName);
-        if (cluster.id === undefined) {
-            throw new Error(`Cluster ID for ${clusterName} not found`);
-        }
-
-        const clusterClient = device.getClusterClientById(ClusterId(cluster.id));
-        if (clusterClient === undefined) {
-            throw new Error(`Cluster client for ${clusterName} not found`);
-        }
-
-        const attributeClient = clusterClient.attributes[attributeName];
-        if (!(attributeClient instanceof SupportedAttributeClient)) {
-            throw new Error(`Attribute ${nodeId}/${endpointId}/${clusterName}/${attributeName} not supported.`);
-        }
-
-        const uppercaseName = capitalize(attributeName);
-        const attribute = cluster.attributes.find(c => c.name === uppercaseName);
-        if (attribute == undefined) {
-            throw new Error(`Attribute ${attributeName} not found`);
-        }
-
-        return await attributeClient.get(true);
+        const values = await this.readAttributes(nodeId, endpointId, clusterName, [attributeName]);
+        return values[attributeName];
     }
 
     /**
-     * Requests all attributes data for a single endpoint and its children
+     * Reads several attributes of one cluster from a device in a single read interaction. Devices only have to serve a
+     * few concurrent reads, so separate requests can be rejected as busy.
+     * @param nodeId
+     * @param endpointId
+     * @param clusterName
+     * @param attributeNames
+     * @returns the values by attribute name, attributes the device did not report are left out
+     */
+    async readAttributes(nodeId: number, endpointId: number, clusterName: string, attributeNames: string[]) {
+        const node = this.controllerNode.getNode(nodeId);
+        const { endpoint, cluster, type } = this.#resolve(nodeId, endpointId, clusterName);
+        const clusterId = ClusterId(type.cluster.id);
+
+        const namesByKey = new Map<string, string>();
+        const paths = attributeNames.map(attributeName => {
+            const attribute = this.#supportedAttribute(endpoint, cluster, type, attributeName);
+            const attributeId = AttributeId(attribute.id);
+            namesByKey.set(`${endpointId}/${clusterId}/${attributeId}`, attributeName);
+            return { endpointId: EndpointNumber(endpointId), clusterId, attributeId };
+        });
+
+        const values: Record<string, unknown> = {};
+        for (const [key, value] of await this.controllerNode.readAttributes(node, paths)) {
+            const name = namesByKey.get(key);
+            if (name !== undefined) {
+                values[name] = value;
+            }
+        }
+        return values;
+    }
+
+    /**
+     * Returns the cached attribute values of a cluster
      * @param nodeId
      * @param endpointId
      * @returns
      */
     async readCluster(nodeId: string | number, endpointId: number, clusterNameOrId: string | number) {
-        const device = this.controllerNode.getNode(nodeId).getDeviceById(endpointId);
-        if (device === undefined) {
-            throw new Error(`Endpoint ${endpointId} not found`);
-        }
-
+        const node = this.controllerNode.getNode(nodeId);
+        const endpoint = this.controllerNode.endpointFor(node, endpointId);
         const clusterId =
             typeof clusterNameOrId === "string" ? this.#clusterForName(clusterNameOrId).id : clusterNameOrId;
-        if (clusterId === undefined) {
-            throw new Error(`Cluster ID for ${clusterNameOrId} not found`);
-        }
-
-        const clusterClient = device.getClusterClientById(ClusterId(clusterId));
-        if (clusterClient === undefined) {
+        const type = clusterId !== undefined ? endpoint.behaviors.forCluster(ClusterId(clusterId)) : undefined;
+        if (type === undefined) {
             throw new Error(`Cluster client for ${clusterNameOrId} not found`);
         }
+        return this.controllerNode.serializeCluster(endpoint, type);
+    }
 
-        const clusterData: any = {
-            id: clusterClient.id,
-            name: clusterClient.name,
-        };
-
-        // Serialize attributes
-        for (const attributeName in clusterClient.attributes) {
-            // Skip numeric referenced attributes
-            if (/^\d+$/.test(attributeName)) continue;
-            const attribute = clusterClient.attributes[attributeName];
-            if (!attribute) continue;
-            const attributeValue = await attribute.get();
-            logger.debug(`Attribute ${attributeName} value: ${attributeValue}`);
-            if (attributeValue !== undefined) {
-                clusterData[attributeName] = attributeValue;
-            }
+    #resolve(nodeId: string | number, endpointId: number, clusterName: string) {
+        const node = this.controllerNode.getNode(nodeId);
+        const endpoint = this.controllerNode.endpointFor(node, endpointId);
+        const cluster = this.#clusterForName(clusterName);
+        if (cluster.id === undefined) {
+            throw new Error(`Cluster ID for ${clusterName} not found`);
         }
+        const type = endpoint.behaviors.forCluster(ClusterId(cluster.id));
+        if (type === undefined) {
+            throw new Error(`Cluster client for ${clusterName} not found`);
+        }
+        return { endpoint, cluster, type };
+    }
 
-        return clusterData;
+    #supportedAttribute(endpoint: Endpoint, cluster: ClusterModel, type: ClusterBehavior.Type, attributeName: string) {
+        const attribute = cluster.attributes.find(c => c.name === capitalize(attributeName));
+        if (attribute === undefined) {
+            throw new Error(`Attribute ${attributeName} not found`);
+        }
+        if (!endpoint.behaviors.elementsOf(type).attributes.has(attributeName)) {
+            throw new Error(`Attribute ${endpoint}/${cluster.name}/${attributeName} not supported.`);
+        }
+        return attribute;
     }
 
     #clusterForName(clusterName: string): ClusterModel {

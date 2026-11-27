@@ -21,9 +21,6 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.http.HttpStatus;
@@ -35,6 +32,9 @@ import org.osgi.service.cm.ConfigurationAdmin;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * Context object for request handlers.
@@ -108,6 +108,7 @@ public class RequestHandlerContext {
         response.setContentType(CONTENT_TYPE_HTML_UTF8);
         response.setCharacterEncoding(UTF_8.name());
         response.setHeader(HEADER_X_FRAME_OPTIONS, SAME_ORIGIN);
+        response.setHeader(HEADER_CONTENT_SECURITY_POLICY, CONTENT_SECURITY_POLICY);
 
         try {
             response.getWriter().write(content);

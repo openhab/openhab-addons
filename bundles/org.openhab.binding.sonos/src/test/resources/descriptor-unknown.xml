@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root xmlns="urn:schemas-upnp-org:device-1-0">
+	<device>
+		<deviceType>urn:schemas-upnp-org:device:ZonePlayer:1</deviceType>
+		<manufacturer>Sonos, Inc.</manufacturer>
+		<modelName>Sonos Unknown</modelName>
+	</device>
+</root>

@@ -43,7 +43,6 @@ import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
-import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
@@ -314,8 +313,7 @@ public abstract class VelbusBridgeHandler extends BaseBridgeHandler {
     }
 
     protected void onConnectionLost() {
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                "A network communication error occurred.");
+        updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "A network communication error occurred.");
         disconnect();
         startReconnectionHandler();
     }

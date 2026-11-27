@@ -1,0 +1,26 @@
+{
+  "id": 10,
+  "type": "event",
+  "event": {
+    "a": {
+      "fan.percentage_limited_fan": {
+        "s": "off",
+        "a": {
+          "preset_modes": [
+            "auto",
+            "smart",
+            "sleep",
+            "on"
+          ],
+          "percentage": null,
+          "percentage_step": 33.333333333333336,
+          "preset_mode": null,
+          "friendly_name": "Percentage Limited Fan",
+          "supported_features": 49
+        },
+        "c": "01M3201RG8T2JZ0KJSMDY1HDFE",
+        "lc": 1789994787.3360353
+      }
+    }
+  }
+}

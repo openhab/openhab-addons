@@ -74,8 +74,9 @@
 		</parameter>
 		<parameter name="postCommand" type="boolean">
 			<label>Is Command</label>
-			<description>If the received MQTT value should not only update the state of linked items, but command them, enable
-				this option.</description>
+			<description>Process the received MQTT value as a command instead of a state update. Profiles that react only to
+				state updates, such as timestamp-update and timestamp-change, do not process incoming values when this option is
+				enabled.</description>
 			<default>false</default>
 			<advanced>true</advanced>
 		</parameter>

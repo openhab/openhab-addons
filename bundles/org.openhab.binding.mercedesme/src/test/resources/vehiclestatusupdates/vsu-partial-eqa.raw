@@ -1,0 +1,34 @@
+fin_or_vin: "ANONYMIZED"
+maxrange {
+  value: 348
+  metadata {
+    timestamp {
+      seconds: 1786786679
+      nanos: 919000000
+    }
+  }
+  unit: KILOMETERS
+  display_value: "348.0"
+}
+rangeelectric {
+  value: 345
+  metadata {
+    timestamp {
+      seconds: 1786786679
+      nanos: 919000000
+    }
+  }
+  unit: KILOMETERS
+  display_value: "345"
+}
+overall_range {
+  value: 345.0
+  metadata {
+    timestamp {
+      seconds: 1786786679
+      nanos: 919000000
+    }
+  }
+  unit: KILOMETERS
+  display_value: "345"
+}

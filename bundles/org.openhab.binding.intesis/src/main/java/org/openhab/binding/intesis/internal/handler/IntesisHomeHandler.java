@@ -103,13 +103,13 @@ public class IntesisHomeHandler extends BaseThingHandler {
         updateStatus(ThingStatus.UNKNOWN);
         config = getConfigAs(IntesisHomeConfiguration.class);
         if (config.ipAddress.isEmpty() && config.password.isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "IP-Address and password not set");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "IP-Address and password not set");
             return;
         } else if (config.ipAddress.isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "IP-Address not set");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "IP-Address not set");
             return;
         } else if (config.password.isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Password not set");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Password not set");
             return;
         } else {
             // start background initialization:
@@ -245,7 +245,7 @@ public class IntesisHomeHandler extends BaseThingHandler {
         if (sessionId != null && !sessionId.isEmpty()) {
             updateStatus(ThingStatus.ONLINE);
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "SessionId not received");
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "SessionId not received");
             sessionId = "";
         }
         return sessionId;
@@ -347,8 +347,7 @@ public class IntesisHomeHandler extends BaseThingHandler {
                     if (resp.success) {
                         handler.accept(resp);
                     } else {
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                "Request unsuccessful");
+                        updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "Request unsuccessful");
                         ResponseError respError = gson.fromJson(resp.error, ResponseError.class);
                         if (respError != null) {
                             logger.warn("postRequest failed - respErrorCode: {} / respErrorMessage: {} / retry {}",
@@ -365,10 +364,10 @@ public class IntesisHomeHandler extends BaseThingHandler {
                     }
                 }
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "No Response");
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "No Response");
             }
         } catch (JsonSyntaxException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 
@@ -500,7 +499,7 @@ public class IntesisHomeHandler extends BaseThingHandler {
                 }
             }
         } catch (JsonSyntaxException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
         logger.trace("Start Refresh Job");
         refreshJob = scheduler.scheduleWithFixedDelay(this::getAllUidValues, 0, config.pollingInterval,
@@ -606,7 +605,7 @@ public class IntesisHomeHandler extends BaseThingHandler {
                 }
             }
         } catch (JsonSyntaxException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 }

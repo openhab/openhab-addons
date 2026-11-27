@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
+
+	<config-description uri="thing-type:oppo:oppoconfig">
+		<parameter name="serialPort" type="text" required="false">
+			<context>serial-port</context>
+			<limitToOptions>false</limitToOptions>
+			<label>Serial Port</label>
+			<description>Serial port to use for connecting to the Oppo player.</description>
+		</parameter>
+		<parameter name="host" type="text" required="false">
+			<context>network-address</context>
+			<label>Address</label>
+			<description>Host name or IP address of the Oppo player or machine used for serial over IP.</description>
+		</parameter>
+		<parameter name="port" type="integer" min="1" max="65535" required="false">
+			<label>Port</label>
+			<description>(Optional) Communication port for serial over IP connection. Leave blank if connecting directly to the
+				player.</description>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="verboseMode" type="boolean" required="false">
+			<label>Verbose Mode</label>
+			<description>If true, the player will send time updates every second. If false, the binding polls the player every 10
+				seconds</description>
+			<default>false</default>
+			<advanced>true</advanced>
+		</parameter>
+	</config-description>
+</config-description:config-descriptions>

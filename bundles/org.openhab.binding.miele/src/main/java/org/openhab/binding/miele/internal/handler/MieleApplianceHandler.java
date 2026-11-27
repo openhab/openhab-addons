@@ -52,6 +52,7 @@ import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
+import org.openhab.core.util.HexUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -146,15 +147,14 @@ public abstract class MieleApplianceHandler<E extends Enum<E> & ApplianceChannel
         logger.debug("Initializing handler for thing {}", getThing().getUID());
         final String applianceId = (String) getThing().getConfiguration().getProperties().get(APPLIANCE_ID);
         if (applianceId == null || applianceId.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
+            updateStatus(ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
                     "@text/offline.configuration-error.uid-not-set");
             return;
         }
         this.applianceId = applianceId;
         Bridge bridge = getBridge();
         if (bridge == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
-                    "@text/offline.configuration-error.bridge-missing");
+            logger.debug("Bridge unavailable while initializing Thing: {}", thing.getUID());
             return;
         }
         initializeTranslationProvider(bridge);
@@ -263,8 +263,10 @@ public abstract class MieleApplianceHandler<E extends Enum<E> & ApplianceChannel
             if (EXTENDED_DEVICE_STATE_PROPERTY_NAME.equals(dp.Name)) {
                 if (!dp.Value.isEmpty()) {
                     byte[] extendedStateBytes = DeviceUtil.stringToBytes(dp.Value);
-                    logger.trace("Extended device state for {}: {}", getThing().getUID(),
-                            DeviceUtil.bytesToHex(extendedStateBytes));
+                    if (logger.isTraceEnabled()) {
+                        logger.trace("Extended device state for {}: {}", getThing().getUID(),
+                                HexUtils.bytesToHex(extendedStateBytes));
+                    }
                     if (this instanceof ExtendedDeviceStateListener listener) {
                         listener.onApplianceExtendedStateChanged(extendedStateBytes);
                     }
@@ -402,7 +404,7 @@ public abstract class MieleApplianceHandler<E extends Enum<E> & ApplianceChannel
 
     @Override
     public void onApplianceRemoved() {
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.GONE);
+        updateStatus(ThingStatusDetail.OFFLINE.GONE);
     }
 
     @Override

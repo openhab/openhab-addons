@@ -8,8 +8,8 @@ extensive experience, we accurately identify user needs and introduce products t
 
 ## Supported Things
 
-- **`salus-cloud-bridge`**: This bridge connects to Salus Cloud. Multiple bridges are supported for those with multiple accounts.
-- **`salus-aws-bridge`**: This bridge connects to AWS Salus Cloud. Multiple bridges are supported for those with multiple accounts.
+- **`salus-cloud-bridge`**
+- **`salus-aws-bridge`**
 - **`salus-device`**: A generic Salus device that exposes all properties (as channels) from the Cloud without any modifications.
 - **`salus-it600-device`**: A temperature controller with extended capabilities.
 
@@ -73,12 +73,91 @@ removed.
 
 ### `salus-it600-device` Channels
 
-| Channel                    | Type               | Read/Write | Description                                                                                                                                                                                                                                                                                     |
-|----------------------------|--------------------|------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| temperature                | Number:Temperature | RO         | Current temperature in the room.                                                                                                                                                                                                                                                                |
-| expected-temperature       | Number:Temperature | RW         | Sets the desired temperature in the room.                                                                                                                                                                                                                                                       |
-| work-type                  | String             | RW         | Sets the work type for the device. OFF - device is turned off MANUAL - schedules are turned off, following a manual temperature set, AUTOMATIC - schedules are turned on, following schedule, TEMPORARY_MANUAL - schedules are turned on, following manual temperature until the next schedule. |
-| running-state              | Switch             | RO         | Is the device running.                                                                                                                                                                                                                                                                          |
+| Channel | Type | Read/Write | Description |
+|---------|------|------------|-------------|
+| temperature | Number:Temperature | RO | Current room temperature. |
+| expected-temperature | Number:Temperature | RW | Heating setpoint. |
+| work-type | String | RW | `AUTOMATIC`, `MANUAL`, `TEMPORARY_MANUAL`, or `OFF`. |
+| running-state | Switch | RO | Whether the thermostat is running. |
+| cooling-setpoint | Number:Temperature | RW | Cooling setpoint, where supported. |
+| system-mode | String | RW | `HEAT`, `COOL`, or `OFF`, independently of the hold/schedule mode. |
+| keypad-lock | Switch | RW | `ON` locks the thermostat keypad. |
+| allow-local-unlock | Switch | RW | `ON` allows unlocking from the thermostat. |
+| temperature-offset | Number:Temperature | RW | Calibration offset, -3 to +3 °C in 0.5 °C steps. |
+| frost-temperature | Number:Temperature | RW | Frost-protection setpoint, 5 to 17 °C in 0.5 °C steps. |
+| minimum-setpoint | Number:Temperature | RW | Minimum heating setpoint, 5 to 35 °C in 0.5 °C steps. |
+| maximum-setpoint | Number:Temperature | RW | Maximum heating setpoint, 5 to 35 °C in 0.5 °C steps. |
+| valve-protection | Switch | RW | Enables the thermostat's valve-protection function. |
+| display-off | Switch | RW | `ON` switches the thermostat display off. |
+| display-unit | String | RW | `CELSIUS` or `FAHRENHEIT` on the physical display. |
+| clock-format | String | RW | `12H` or `24H` on the physical display. |
+| active-errors | String | RO | Comma-separated reported error codes, or `NONE` if all reported flags are clear. |
+| rssi | Number:Power | RO | Received signal strength in dBm. |
+| lqi | Number | RO | Radio link quality, normally 0 to 255. |
+
+The additional channels are optional and depend on the thermostat model and reported properties.
+Unsupported or unavailable optional values are reported as `UNDEF`; they do not prevent the Thing from coming online.
+Existing managed IT600 Things receive the additional channels through a Thing type upgrade.
+For Things defined in configuration files, add any desired channels explicitly when needed.
+Settings and diagnostics other than cooling, system mode, and keypad lock are marked as advanced.
+
+### Thermostat Settings
+
+`AUTOMATIC` follows the device schedule, `MANUAL` holds the selected setpoint, and `TEMPORARY_MANUAL` overrides the schedule until its next change.
+
+`expected-temperature` continues to control heating even when the system mode is cooling.
+Use `cooling-setpoint` for the cooling temperature; this channel does not change the system mode.
+Changing `system-mode` also leaves the hold/schedule mode unchanged.
+Cooling requires a compatible thermostat and installation.
+
+Temperature commands accept quantities in Celsius or Fahrenheit; numbers without units mean Celsius.
+Calibration uses a temperature **difference**: for example, an offset command of `1.8 °F` is `1 °C`, not an absolute temperature conversion.
+Keep the `temperature-offset` Item's unit set to `°C` for its reported offset; the physical display unit setting is independent of openHAB Item units.
+Unsupported ranges or increments are rejected rather than rounded to another setting.
+The minimum heating limit cannot be raised above the reported maximum, and the maximum cannot be lowered below the reported minimum.
+Frost and cooling setpoints also respect the corresponding reported limits when available.
+
+`active-errors` preserves the device's error identifiers because their meaning can vary between thermostat models.
+For standard IT600 thermostats, examples include `Error02` (floor sensor overtemperature), `Error03`/`Error04` (open/shorted floor sensor),
+`Error06` (lost connection to the wiring centre), and `Error07` (lost connection to a radiator valve).
+`NONE` describes the flags present in the latest response; it does not imply that an unreported sensor or capability exists.
+
+### AWS Thermostat Control
+
+With `salus-aws-bridge`, an IT600 thermostat supports commands on `expected-temperature` and `work-type`.
+Send a temperature such as `21.5 °C` or `68 °F` to `expected-temperature`; a number without a unit is interpreted as Celsius.
+The binding converts the temperature to the device's hundredths-of-a-degree Celsius representation.
+Use `AUTOMATIC`, `MANUAL`, `TEMPORARY_MANUAL`, or `OFF` on `work-type`.
+The legacy `AUTO` command is also accepted, but the reported state is `AUTOMATIC`.
+A temperature command only sets the setpoint; send a separate mode command when you also want to change the operating mode.
+Actual temperatures and modes are read back during refresh, so a successful command can take until the next refresh to appear.
+
+For a generic `salus-device` connected to AWS, the following IT600 command channels are exposed when the corresponding numeric property is reported:
+
+| Property suffix | Example channel ID | Command |
+|-----------------|--------------------|---------|
+| `SetHeatingSetpoint_x100` | `ep9_sIT600TH_SetHeatingSetpoint` | Temperature in Celsius, e.g. `21.5` |
+| `SetCoolingSetpoint_x100` | `ep9_sIT600TH_SetCoolingSetpoint` | Temperature in Celsius, e.g. `24` |
+| `SetHoldType` | `ep9_sIT600TH_SetHoldType` | `0` = auto, `1` = temporary manual, `2` = manual, `7` = off |
+| `SetLockKey` | `ep9_sIT600TH_SetLockKey` | `0` = unlocked, `1` = locked |
+| `SetAllowUnlockFromDevice` | `ep9_sIT600TH_SetAllowUnlockFromDevice` | `0` = disabled, `1` = enabled |
+| `SetTemperatureOffset` | `ep9_sIT600TH_SetTemperatureOffset` | Raw hundredths of a degree Celsius, -300 to 300 in steps of 50 |
+| `SetFrostSetpoint_x100` | `ep9_sIT600TH_SetFrostSetpoint` | 5 to 17 °C in 0.5 °C steps |
+| `SetMinHeatSetpoint_x100` | `ep9_sIT600TH_SetMinHeatSetpoint` | 5 to 35 °C in 0.5 °C steps |
+| `SetMaxHeatSetpoint_x100` | `ep9_sIT600TH_SetMaxHeatSetpoint` | 5 to 35 °C in 0.5 °C steps |
+| `SetValveProtection` | `ep9_sIT600TH_SetValveProtection` | `0` = disabled, `1` = enabled |
+| `SetShutOffDisplay` | `ep9_sIT600TH_SetShutOffDisplay` | `0` = display on, `1` = display off |
+| `SetTemperatureDisplayMode` | `ep9_sIT600TH_SetTemperatureDisplayMode` | `0` = Celsius, `1` = Fahrenheit |
+| `SetTimeFormat24Hour` | `ep9_sIT600TH_SetTimeFormat24Hour` | `0` = 12-hour, `1` = 24-hour |
+| `SetSystemMode` | `ep9_sIT600TH_SetSystemMode` | `0` = off, `3` = cooling, `4` = heating |
+
+The endpoint prefix can differ between devices.
+Generic channels whose property ends in `x100` accept numbers in Celsius and apply the `x100` conversion automatically.
+`SetTemperatureOffset` has no `x100` suffix, so its generic channel retains raw hundredths; the dedicated `temperature-offset` channel handles units and scaling.
+Validation against the other reported setpoint limits is provided by the dedicated IT600 channels.
+Other AWS properties remain read-only.
+Settings depend on the thermostat model and its reported properties.
+Channel refreshes share the device property cache for `propertiesRefreshInterval` seconds; a successful write invalidates that cache so the next refresh can read the device response.
 
 ## Full Example
 

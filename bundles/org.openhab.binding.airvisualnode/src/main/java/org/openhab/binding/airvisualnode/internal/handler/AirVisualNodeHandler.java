@@ -103,11 +103,11 @@ public class AirVisualNodeHandler extends BaseThingHandler {
         AirVisualNodeConfig config = getConfigAs(AirVisualNodeConfig.class);
 
         if (config.address.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Node address must be set");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Node address must be set");
             return;
         }
         if (config.password.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Node password must be set");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Node password must be set");
             return;
         }
 
@@ -121,7 +121,7 @@ public class AirVisualNodeHandler extends BaseThingHandler {
             var jsonData = gson.fromJson(getNodeJsonData(), Map.class);
             this.isProVersion = jsonData.get("measurements") instanceof ArrayList;
         } catch (IOException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Can't get node json");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Can't get node json");
             return;
         }
 
@@ -191,7 +191,7 @@ public class AirVisualNodeHandler extends BaseThingHandler {
             updateStatus(ThingStatus.ONLINE);
         } catch (IOException e) {
             logger.debug("Could not connect to Node", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 

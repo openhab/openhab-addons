@@ -251,11 +251,11 @@ public class PLCBridgeHandler extends BaseBridgeHandler {
                     final var result = client.Connect(address, localTSAP, remoteTSAP);
                     if (result != 0) {
                         String message = String.format("Can not initialize LOGO!. %s.", S7Client.ErrorText(result));
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message);
+                        updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, message);
                     }
                 } else {
                     String message = "Can not initialize LOGO!. Please, check ip address / TSAP settings.";
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, message);
+                    updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, message);
                 }
             }
         }
@@ -281,7 +281,7 @@ public class PLCBridgeHandler extends BaseBridgeHandler {
         } else {
             if (ThingStatus.OFFLINE != getThing().getStatus()) {
                 String message = "Can not initialize LOGO!. Please, check network connection.";
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message);
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, message);
             }
             this.client = null;
         }

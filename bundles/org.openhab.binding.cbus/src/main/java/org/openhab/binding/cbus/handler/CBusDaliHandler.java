@@ -20,7 +20,6 @@ import org.openhab.core.library.types.PercentType;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
-import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
@@ -60,7 +59,7 @@ public class CBusDaliHandler extends CBusGroupHandler {
                 }
             } catch (CGateException e) {
                 logger.debug("Failed to getLevel for group {}", groupId, e);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Communication Error");
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "Communication Error");
             }
         } else {
             if (channelUID.getId().equals(CBusBindingConstants.CHANNEL_LEVEL)) {
@@ -86,7 +85,7 @@ public class CBusDaliHandler extends CBusGroupHandler {
                     }
                 } catch (CGateException e) {
                     logger.debug("Cannot send command {} to {}", command, group, e);
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Communication Error");
+                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "Communication Error");
                 }
             }
         }

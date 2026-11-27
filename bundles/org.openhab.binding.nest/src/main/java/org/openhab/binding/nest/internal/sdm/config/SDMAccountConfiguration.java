@@ -40,6 +40,9 @@ public class SDMAccountConfiguration {
     public static final String PUBSUB_SUBSCRIPTION_ID = "pubsubSubscriptionId";
     public String pubsubSubscriptionId = "";
 
+    public static final String PUBSUB_TOPIC_NAME = "pubsubTopicName";
+    public String pubsubTopicName = "";
+
     public static final String SDM_AUTHORIZATION_CODE = "sdmAuthorizationCode";
     public String sdmAuthorizationCode = "";
 

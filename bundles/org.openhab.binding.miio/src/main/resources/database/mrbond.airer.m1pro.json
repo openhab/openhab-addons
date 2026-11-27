@@ -1,9 +1,7 @@
 {
 	"deviceMapping": {
 		"id": [
-			"mrbond.airer.m1s",
-			"mrbond.airer.m1pro",
-			"mrbond.airer.m1super"
+			"mrbond.airer.m1pro"
 		],
 		"propertyMethod": "get_prop",
 		"maxProperties": 2,
@@ -14,26 +12,99 @@
 				"channel": "dry",
 				"type": "Switch",
 				"refresh": true,
-				"ChannelGroup": "Status",
 				"actions": [
 					{
 						"command": "set_dry",
-						"parameterType": "NUMBER"
+						"parameterType": "ONOFFNUMBER"
 					}
-				]
+				],
+				"category": "heating",
+				"tags": [
+					"Switch",
+					"Heating"
+				],
+				"readmeComment": "Only available when the airer is at its highest position. ON starts the shortest drying cycle (30 minutes), use the drymode channel to select the drying time. The channel is ON for any running drying cycle."
+			},
+			{
+				"property": "",
+				"friendlyName": "Dry Mode",
+				"channel": "drymode",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "Off"
+						},
+						{
+							"value": "1",
+							"label": "30 minutes"
+						},
+						{
+							"value": "2",
+							"label": "60 minutes"
+						},
+						{
+							"value": "3",
+							"label": "90 minutes"
+						},
+						{
+							"value": "4",
+							"label": "120 minutes"
+						}
+					]
+				},
+				"refresh": false,
+				"actions": [
+					{
+						"command": "set_dry",
+						"parameterType": "NUMBER",
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "[0-3]"
+								}
+							]
+						}
+					},
+					{
+						"command": "set_dryswitch",
+						"parameterType": "NUMBER",
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "4",
+									"returnValue": 1
+								}
+							]
+						}
+					}
+				],
+				"category": "heating",
+				"tags": [
+					"Control",
+					"Mode"
+				],
+				"readmeComment": "Only available when the airer is at its highest position. Write only, the current drying state is shown by the dry channel. Value mapping `[\"0\"\u003d\"Off\",\"1\"\u003d\"30 minutes\",\"2\"\u003d\"60 minutes\",\"3\"\u003d\"90 minutes\",\"4\"\u003d\"120 minutes\"]`. Mode 4 is sent with `set_dryswitch`, like the Mi Home app does."
 			},
 			{
 				"property": "led",
-				"friendlyName": "LED Status",
+				"friendlyName": "Lamp",
 				"channel": "led",
 				"type": "Switch",
 				"refresh": true,
-				"ChannelGroup": "actions",
 				"actions": [
 					{
-						"command": "set_lamp",
-						"parameterType": "NUMBER"
+						"command": "set_led",
+						"parameterType": "ONOFFNUMBER"
 					}
+				],
+				"category": "light",
+				"tags": [
+					"Switch",
+					"Light"
 				]
 			},
 			{
@@ -41,25 +112,50 @@
 				"friendlyName": "Motor",
 				"channel": "motor",
 				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "Pause"
+						},
+						{
+							"value": "1",
+							"label": "Rise"
+						},
+						{
+							"value": "2",
+							"label": "Down"
+						}
+					]
+				},
 				"refresh": true,
 				"actions": [
 					{
 						"command": "set_motor",
 						"parameterType": "NUMBER"
 					}
-				]
+				],
+				"category": "movecontrol",
+				"tags": [
+					"Control"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Pause\",\"1\"\u003d\"Rise\",\"2\"\u003d\"Down\"]`"
 			},
 			{
 				"property": "drytime",
-				"friendlyName": "Dry Time",
+				"friendlyName": "Dry Remaining",
 				"channel": "drytime",
-				"type": "Number",
+				"type": "Number:Time",
+				"unit": "minutes",
+				"stateDescription": {
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
 				"refresh": true,
-				"actions": [
-					{
-						"command": "set_drytime",
-						"parameterType": "NUMBER"
-					}
+				"category": "time",
+				"tags": [
+					"Measurement",
+					"Duration"
 				]
 			},
 			{
@@ -67,39 +163,30 @@
 				"friendlyName": "Airer Location",
 				"channel": "airer_location",
 				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "Normal"
+						},
+						{
+							"value": "1",
+							"label": "Highest"
+						},
+						{
+							"value": "2",
+							"label": "Lowest"
+						}
+					],
+					"readOnly": true
+				},
 				"refresh": true,
-				"actions": [
-					{
-						"command": "set_airer_location",
-						"parameterType": "NUMBER"
-					}
-				]
-			},
-			{
-				"property": "disinfect",
-				"friendlyName": "disinfect",
-				"channel": "disinfect",
-				"type": "Switch",
-				"refresh": true,
-				"actions": [
-					{
-						"command": "set_disinfect",
-						"parameterType": "NUMBER"
-					}
-				]
-			},
-			{
-				"property": "distime",
-				"friendlyName": "Disinfect Time",
-				"channel": "distime",
-				"type": "Number",
-				"refresh": true,
-				"actions": [
-					{
-						"command": "set_distime",
-						"parameterType": "NUMBER"
-					}
-				]
+				"category": "status",
+				"tags": [
+					"Status",
+					"Position"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Normal\",\"1\"\u003d\"Highest\",\"2\"\u003d\"Lowest\"]`"
 			}
 		],
 		"experimental": true

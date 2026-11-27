@@ -38,7 +38,7 @@ abstract class NikobusBaseThingHandler extends BaseThingHandler {
     public void initialize() {
         address = (String) getConfig().get(NikobusBindingConstants.CONFIG_ADDRESS);
         if (address == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, "Address must be set!");
+            updateStatus(ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, "Address must be set!");
             return;
         }
 

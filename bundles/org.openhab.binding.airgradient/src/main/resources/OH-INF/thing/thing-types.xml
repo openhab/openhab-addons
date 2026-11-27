@@ -34,6 +34,7 @@
 	</bridge-type>
 
 	<!-- A sensor you communicate directly to over the local network -->
+	<!-- See also: https://github.com/airgradienthq/arduino/blob/master/docs/local-server.md -->
 	<thing-type id="airgradient-local">
 		<label>AirGradient Local Sensor</label>
 		<description>Direct network connection to a local AirGradient Sensor</description>
@@ -66,6 +67,19 @@
 				<channel id="display-brightness" typeId="display-brightness"/>
 				<channel id="model" typeId="model"/>
 				<channel id="led-bar-test" typeId="led-bar-test"/>
+				<channel id="pm01-standard" typeId="pm1"/>
+				<channel id="pm02-standard" typeId="pm2"/>
+				<channel id="pm10-standard" typeId="pm10"/>
+				<channel id="pm005-count" typeId="particle-count"/>
+				<channel id="pm01-count" typeId="particle-count"/>
+				<channel id="pm02-count" typeId="particle-count"/>
+				<channel id="pm50-count" typeId="particle-count"/>
+				<channel id="pm10-count" typeId="particle-count"/>
+				<channel id="pm02-compensated" typeId="pm2"/>
+				<channel id="tvoc-index" typeId="tvoc"/>
+				<channel id="tvoc-raw" typeId="tvoc"/>
+				<channel id="nox-index" typeId="nox"/>
+				<channel id="nox-raw" typeId="nox"/>
 			-->
 		</channels>
 
@@ -141,19 +155,19 @@
 		<label>PM1</label>
 		<description>Particulate Matter 1 (0.001mm)</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>ParticulateMatter</tag>
+			<point>Measurement</point>
+			<property>ParticulateMatter</property>
 		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="pm2">
 		<item-type>Number:Density</item-type>
-		<label>PM2</label>
-		<description>Particulate Matter 2 (0.002mm)</description>
+		<label>PM2.5</label>
+		<description>Particulate Matter 2.5 (0.0025mm)</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>ParticulateMatter</tag>
+			<point>Measurement</point>
+			<property>ParticulateMatter</property>
 		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
@@ -163,8 +177,8 @@
 		<label>PM10</label>
 		<description>Particulate Matter 10 (0.01mm)</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>ParticulateMatter</tag>
+			<point>Measurement</point>
+			<property>ParticulateMatter</property>
 		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
@@ -174,8 +188,8 @@
 		<label>Particle Count</label>
 		<description>Count of particles in 1 decilitre of air</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>ParticulateMatter</tag>
+			<point>Measurement</point>
+			<property>ParticulateMatter</property>
 		</tags>
 		<state readOnly="true" pattern="%d"/>
 	</channel-type>
@@ -186,8 +200,8 @@
 		<description>Received signal strength indicator</description>
 		<category>QualityOfService</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>RSSI</tag>
+			<point>Measurement</point>
+			<property>RSSI</property>
 		</tags>
 		<state readOnly="true" pattern="%d dBm"/>
 	</channel-type>
@@ -197,8 +211,8 @@
 		<label>CO2</label>
 		<description>CarbonDioxide</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>CO2</tag>
+			<point>Measurement</point>
+			<property>CO2</property>
 		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
@@ -208,9 +222,16 @@
 		<label>TVOC</label>
 		<description>Total Volatile Organic Compounds</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>VOC</tag>
+			<point>Measurement</point>
+			<property>VOC</property>
 		</tags>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="nox">
+		<item-type>Number:Dimensionless</item-type>
+		<label>NOx</label>
+		<description>Nitrogen Oxide</description>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
@@ -332,8 +353,8 @@
 		<label>Led bar brightness</label>
 		<description>Brightness of the LED bar.</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Brightness</tag>
+			<point>Control</point>
+			<property>Brightness</property>
 		</tags>
 		<state min="0" max="100" step="1" readOnly="false" pattern="%d"/>
 	</channel-type>
@@ -343,8 +364,8 @@
 		<label>Display brightness</label>
 		<description>Brightness of the display.</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Brightness</tag>
+			<point>Control</point>
+			<property>Brightness</property>
 		</tags>
 		<state min="0" max="100" step="1" readOnly="false" pattern="%d"/>
 	</channel-type>

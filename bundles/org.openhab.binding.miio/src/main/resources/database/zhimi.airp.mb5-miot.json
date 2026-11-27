@@ -1,7 +1,8 @@
 {
 	"deviceMapping": {
 		"id": [
-			"zhimi.airp.mb5"
+			"zhimi.airp.mb5",
+			"zhimi.airp.mb5a"
 		],
 		"propertyMethod": "get_properties",
 		"maxProperties": 1,
@@ -15,19 +16,19 @@
 					"options": [
 						{
 							"value": "air-purifier-toggle",
-							"label": "Air Purifier Toggle"
+							"label": "Toggle Power"
 						},
 						{
 							"value": "filter-reset-filter-life",
-							"label": "Filter Reset Filter Life"
+							"label": "Reset Filter Life"
 						},
 						{
 							"value": "custom-service-toggle-mode",
-							"label": "Custom Service Toggle Mode"
+							"label": "Toggle Mode"
 						},
 						{
 							"value": "custom-service-toggle-fan-level",
-							"label": "Custom Service Toggle Fan Level"
+							"label": "Toggle Fan Level"
 						}
 					]
 				},
@@ -49,10 +50,7 @@
 					},
 					{
 						"command": "action",
-						"parameterType": "UNKNOWN",
-						"parameters": [
-							3.0
-						],
+						"parameterType": "EMPTY",
 						"siid": 4,
 						"aiid": 1,
 						"condition": {
@@ -93,13 +91,14 @@
 						}
 					}
 				],
-				"readmeComment": "Value mapping `[\"air-purifier-toggle\"\u003d\"Air Purifier Toggle\",\"filter-reset-filter-life\"\u003d\"Filter Reset Filter Life\",\"custom-service-toggle-mode\"\u003d\"Custom Service Toggle Mode\",\"custom-service-toggle-fan-level\"\u003d\"Custom Service Toggle Fan Level\"]`"
+				"category": "settings",
+				"readmeComment": "Value mapping `[\"air-purifier-toggle\"\u003d\"Toggle Power\",\"filter-reset-filter-life\"\u003d\"Reset Filter Life\",\"custom-service-toggle-mode\"\u003d\"Toggle Mode\",\"custom-service-toggle-fan-level\"\u003d\"Toggle Fan Level\"]`"
 			},
 			{
 				"property": "on",
 				"siid": 2,
 				"piid": 1,
-				"friendlyName": "Air Purifier - Switch Status",
+				"friendlyName": "Power",
 				"channel": "on",
 				"type": "Switch",
 				"refresh": true,
@@ -118,7 +117,7 @@
 				"property": "fault",
 				"siid": 2,
 				"piid": 2,
-				"friendlyName": "Air Purifier - Device Fault",
+				"friendlyName": "Fault",
 				"channel": "fault",
 				"type": "Number",
 				"stateDescription": {
@@ -130,25 +129,29 @@
 						},
 						{
 							"value": "1",
-							"label": "Sensor PM Error"
+							"label": "Particle Sensor Error"
 						},
 						{
 							"value": "2",
-							"label": "Temp Error"
+							"label": "Temperature Sensor Error"
 						},
 						{
 							"value": "3",
-							"label": "Hum Error"
+							"label": "Humidity Sensor Error"
 						},
 						{
 							"value": "4",
-							"label": "No Filter"
+							"label": "No Filter Installed"
 						}
 					]
 				},
 				"refresh": true,
 				"actions": [],
-				"readmeComment": "Value mapping `[\"0\"\u003d\"No Faults\",\"1\"\u003d\"Sensor PM Error\",\"2\"\u003d\"Temp Error\",\"3\"\u003d\"Hum Error\",\"4\"\u003d\"No Filter\"]`"
+				"category": "error",
+				"tags": [
+					"Status"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"No Faults\",\"1\"\u003d\"Particle Sensor Error\",\"2\"\u003d\"Temperature Sensor Error\",\"3\"\u003d\"Humidity Sensor Error\",\"4\"\u003d\"No Filter Installed\"]`"
 			},
 			{
 				"property": "mode",
@@ -184,28 +187,33 @@
 						"parameterType": "NUMBER"
 					}
 				],
+				"category": "fan",
+				"tags": [
+					"Control",
+					"Mode"
+				],
 				"readmeComment": "Value mapping `[\"0\"\u003d\"Auto\",\"1\"\u003d\"Sleep\",\"2\"\u003d\"Favorite\",\"3\"\u003d\"Manual\"]`"
 			},
 			{
 				"property": "fan-level",
 				"siid": 2,
 				"piid": 5,
-				"friendlyName": "Air Purifier - Fan Level",
+				"friendlyName": "Fan Level",
 				"channel": "fan_level",
 				"type": "Number",
 				"stateDescription": {
 					"options": [
 						{
 							"value": "1",
-							"label": "Level1"
+							"label": "Level 1"
 						},
 						{
 							"value": "2",
-							"label": "Level2"
+							"label": "Level 2"
 						},
 						{
 							"value": "3",
-							"label": "Level3"
+							"label": "Level 3"
 						}
 					]
 				},
@@ -216,13 +224,18 @@
 						"parameterType": "NUMBER"
 					}
 				],
-				"readmeComment": "Value mapping `[\"1\"\u003d\"Level1\",\"2\"\u003d\"Level2\",\"3\"\u003d\"Level3\"]`"
+				"category": "fan",
+				"tags": [
+					"Control",
+					"Level"
+				],
+				"readmeComment": "Value mapping `[\"1\"\u003d\"Level 1\",\"2\"\u003d\"Level 2\",\"3\"\u003d\"Level 3\"]`"
 			},
 			{
 				"property": "anion",
 				"siid": 2,
 				"piid": 6,
-				"friendlyName": "Air Purifier - Anion",
+				"friendlyName": "Anion (Negative Ion)",
 				"channel": "anion",
 				"type": "Switch",
 				"refresh": true,
@@ -231,13 +244,17 @@
 						"command": "set_properties",
 						"parameterType": "ONOFFBOOL"
 					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch"
 				]
 			},
 			{
 				"property": "humidity",
 				"siid": 3,
 				"piid": 1,
-				"friendlyName": "Environment - Relative Humidity",
+				"friendlyName": "Relative Humidity",
 				"channel": "relative_humidity",
 				"type": "Number:Dimensionless",
 				"unit": "percentage",
@@ -249,25 +266,35 @@
 					"readOnly": true
 				},
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"category": "humidity",
+				"tags": [
+					"Measurement",
+					"Humidity"
+				]
 			},
 			{
 				"property": "pm2.5-density",
 				"siid": 3,
 				"piid": 4,
-				"friendlyName": "Environment - PM2 5 Density",
+				"friendlyName": "PM2.5 Density",
 				"channel": "pm2_5_density",
-				"type": "Number",
+				"type": "Number:Density",
 				"unit": "μg/m3",
 				"stateDescription": {
 					"minimum": 0,
 					"maximum": 1000,
 					"step": 1,
-					"pattern": "%.0f",
+					"pattern": "%.0f %unit%",
 					"readOnly": true
 				},
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"category": "smoke",
+				"tags": [
+					"Measurement",
+					"ParticulateMatter"
+				]
 			},
 			{
 				"property": "temperature",
@@ -280,17 +307,23 @@
 				"stateDescription": {
 					"minimum": -30,
 					"maximum": 100,
+					"step": 0.1,
 					"pattern": "%.1f %unit%",
 					"readOnly": true
 				},
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"category": "temperature",
+				"tags": [
+					"Measurement",
+					"Temperature"
+				]
 			},
 			{
 				"property": "filter-life-level",
 				"siid": 4,
 				"piid": 1,
-				"friendlyName": "Filter - Filter Life Level",
+				"friendlyName": "Filter Life Level",
 				"channel": "filter_life_level",
 				"type": "Number:Dimensionless",
 				"unit": "percentage",
@@ -302,13 +335,18 @@
 					"readOnly": true
 				},
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"category": "status",
+				"tags": [
+					"Measurement",
+					"Level"
+				]
 			},
 			{
 				"property": "filter-used-time",
 				"siid": 4,
 				"piid": 3,
-				"friendlyName": "Filter - Filter Used Time",
+				"friendlyName": "Filter Used Time",
 				"channel": "filter_used_time",
 				"type": "Number:Time",
 				"unit": "hours",
@@ -320,13 +358,18 @@
 					"readOnly": true
 				},
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"category": "time",
+				"tags": [
+					"Measurement",
+					"Duration"
+				]
 			},
 			{
 				"property": "filter-left-time",
 				"siid": 4,
 				"piid": 4,
-				"friendlyName": "Filter - Filter Left Time",
+				"friendlyName": "Filter Remaining Time",
 				"channel": "filter_left_time",
 				"type": "Number:Time",
 				"unit": "days",
@@ -338,13 +381,18 @@
 					"readOnly": true
 				},
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"category": "time",
+				"tags": [
+					"Measurement",
+					"Duration"
+				]
 			},
 			{
 				"property": "alarm",
 				"siid": 6,
 				"piid": 1,
-				"friendlyName": "Alarm - Alarm",
+				"friendlyName": "Notification Sound",
 				"channel": "alarm",
 				"type": "Switch",
 				"refresh": true,
@@ -353,13 +401,18 @@
 						"command": "set_properties",
 						"parameterType": "ONOFFBOOL"
 					}
+				],
+				"category": "soundvolume",
+				"tags": [
+					"Switch",
+					"Enabled"
 				]
 			},
 			{
 				"property": "physical-controls-locked",
 				"siid": 8,
 				"piid": 1,
-				"friendlyName": "Physical Control Locked - Physical Control Locked",
+				"friendlyName": "Child Lock",
 				"channel": "physical_controls_locked",
 				"type": "Switch",
 				"refresh": true,
@@ -368,28 +421,33 @@
 						"command": "set_properties",
 						"parameterType": "ONOFFBOOL"
 					}
+				],
+				"category": "lock",
+				"tags": [
+					"Switch",
+					"Enabled"
 				]
 			},
 			{
 				"property": "brightness",
 				"siid": 13,
 				"piid": 2,
-				"friendlyName": "Screen - Brightness",
+				"friendlyName": "Screen Brightness",
 				"channel": "brightness",
 				"type": "Number",
 				"stateDescription": {
 					"options": [
 						{
 							"value": "0",
-							"label": "Close"
+							"label": "Off"
 						},
 						{
 							"value": "1",
-							"label": "Bright"
+							"label": "Dim"
 						},
 						{
 							"value": "2",
-							"label": "Brightest"
+							"label": "Bright"
 						}
 					]
 				},
@@ -400,13 +458,18 @@
 						"parameterType": "NUMBER"
 					}
 				],
-				"readmeComment": "Value mapping `[\"0\"\u003d\"Close\",\"1\"\u003d\"Bright\",\"2\"\u003d\"Brightest\"]`"
+				"category": "screen",
+				"tags": [
+					"Control",
+					"Brightness"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Off\",\"1\"\u003d\"Dim\",\"2\"\u003d\"Bright\"]`"
 			},
 			{
 				"property": "temperature-display-unit",
 				"siid": 14,
 				"piid": 1,
-				"friendlyName": "Device Display Unit - Temperature Display Unit",
+				"friendlyName": "Temperature Display Unit",
 				"channel": "temperature_display_unit",
 				"type": "Number",
 				"stateDescription": {
@@ -428,68 +491,87 @@
 						"parameterType": "NUMBER"
 					}
 				],
+				"category": "temperature",
+				"tags": [
+					"Control"
+				],
 				"readmeComment": "Value mapping `[\"1\"\u003d\"Celsius\",\"2\"\u003d\"Fahrenheit\"]`"
 			},
 			{
 				"property": "motor-speed-rpm",
 				"siid": 9,
 				"piid": 1,
-				"friendlyName": "Custom Service - Motor Speed Rpm",
+				"friendlyName": "Motor Speed",
 				"channel": "motor_speed_rpm",
 				"type": "Number",
 				"stateDescription": {
 					"minimum": 0,
 					"maximum": 65535,
 					"step": 1,
-					"pattern": "%.0f",
+					"pattern": "%.0f rpm",
 					"readOnly": true
 				},
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"category": "fan",
+				"tags": [
+					"Measurement",
+					"Speed"
+				]
 			},
 			{
 				"property": "favorite-speed",
 				"siid": 9,
 				"piid": 2,
-				"friendlyName": "Custom Service - Favorite Speed",
+				"friendlyName": "Favorite Mode Motor Speed",
 				"channel": "favorite_speed",
 				"type": "Number",
 				"stateDescription": {
 					"minimum": 200,
 					"maximum": 2300,
 					"step": 1,
-					"pattern": "%.0f"
+					"pattern": "%.0f rpm"
 				},
 				"refresh": true,
 				"actions": [
 					{
 						"command": "set_properties",
-						"parameterType": "STRING"
+						"parameterType": "NUMBER"
 					}
+				],
+				"category": "fan",
+				"tags": [
+					"Control",
+					"Speed"
 				]
 			},
 			{
 				"property": "motor-set-speed",
 				"siid": 9,
 				"piid": 4,
-				"friendlyName": "Custom Service - Motor Set Speed",
+				"friendlyName": "Motor Target Speed",
 				"channel": "motor_set_speed",
 				"type": "Number",
 				"stateDescription": {
 					"minimum": 0,
 					"maximum": 2000,
 					"step": 1,
-					"pattern": "%.0f",
+					"pattern": "%.0f rpm",
 					"readOnly": true
 				},
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"category": "fan",
+				"tags": [
+					"Measurement",
+					"Speed"
+				]
 			},
 			{
 				"property": "favorite-level",
 				"siid": 9,
 				"piid": 5,
-				"friendlyName": "Custom Service - Favorite Level",
+				"friendlyName": "Favorite Mode Level",
 				"channel": "favorite_level",
 				"type": "Number",
 				"stateDescription": {
@@ -502,28 +584,38 @@
 				"actions": [
 					{
 						"command": "set_properties",
-						"parameterType": "STRING"
+						"parameterType": "NUMBER"
 					}
-				]
+				],
+				"category": "fan",
+				"tags": [
+					"Control",
+					"Level"
+				],
+				"readmeComment": "Favorite mode speed level 0-11; the Mi Home app shows the recommended room coverage from 5-9 m2 (level 0) to 28-48 m2 (level 11)"
 			},
 			{
 				"property": "bottom-door",
 				"siid": 9,
 				"piid": 6,
-				"friendlyName": "Custom Service - Bottom Door",
+				"friendlyName": "Bottom Door",
 				"channel": "bottom_door",
 				"type": "Switch",
 				"stateDescription": {
 					"readOnly": true
 				},
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"category": "door",
+				"tags": [
+					"Status"
+				]
 			},
 			{
 				"property": "reboot-cause",
 				"siid": 9,
 				"piid": 8,
-				"friendlyName": "Custom Service - Reboot Cause",
+				"friendlyName": "Reboot Cause",
 				"channel": "reboot_cause",
 				"type": "Number",
 				"stateDescription": {
@@ -531,46 +623,50 @@
 					"options": [
 						{
 							"value": "0",
-							"label": "REASON-HW-BOOT"
+							"label": "Hardware Boot"
 						},
 						{
 							"value": "1",
-							"label": "REASON-USER-REBOOT"
+							"label": "User Reboot"
 						},
 						{
 							"value": "2",
-							"label": "REASON-UPDATE"
+							"label": "Update"
 						},
 						{
 							"value": "3",
-							"label": "REASON-WDT"
+							"label": "Watchdog Timer"
 						}
 					]
 				},
 				"refresh": true,
 				"actions": [],
-				"readmeComment": "Value mapping `[\"0\"\u003d\"REASON-HW-BOOT\",\"1\"\u003d\"REASON-USER-REBOOT\",\"2\"\u003d\"REASON-UPDATE\",\"3\"\u003d\"REASON-WDT\"]`"
+				"category": "status",
+				"tags": [
+					"Status"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Hardware Boot\",\"1\"\u003d\"User Reboot\",\"2\"\u003d\"Update\",\"3\"\u003d\"Watchdog Timer\"]`"
 			},
 			{
 				"property": "manual-level",
 				"siid": 9,
 				"piid": 9,
-				"friendlyName": "Custom Service - Manual Level",
+				"friendlyName": "Manual Mode Level",
 				"channel": "manual_level",
 				"type": "Number",
 				"stateDescription": {
 					"options": [
 						{
 							"value": "1",
-							"label": "Level1"
+							"label": "Level 1"
 						},
 						{
 							"value": "2",
-							"label": "Level2"
+							"label": "Level 2"
 						},
 						{
 							"value": "3",
-							"label": "Level3"
+							"label": "Level 3"
 						}
 					]
 				},
@@ -578,19 +674,25 @@
 				"actions": [
 					{
 						"command": "set_properties",
-						"parameterType": "STRING"
+						"parameterType": "NUMBER"
 					}
 				],
-				"readmeComment": "Value mapping `[\"1\"\u003d\"Level1\",\"2\"\u003d\"Level2\",\"3\"\u003d\"Level3\"]`"
+				"category": "fan",
+				"tags": [
+					"Control",
+					"Level"
+				],
+				"readmeComment": "Value mapping `[\"1\"\u003d\"Level 1\",\"2\"\u003d\"Level 2\",\"3\"\u003d\"Level 3\"]`"
 			},
 			{
 				"property": "country-code",
 				"siid": 9,
 				"piid": 10,
-				"friendlyName": "Custom Service - Country Code",
+				"friendlyName": "Country Code",
 				"channel": "country_code",
 				"type": "Number",
 				"stateDescription": {
+					"readOnly": true,
 					"options": [
 						{
 							"value": "2",
@@ -623,11 +725,10 @@
 					]
 				},
 				"refresh": true,
-				"actions": [
-					{
-						"command": "set_properties",
-						"parameterType": "NUMBER"
-					}
+				"actions": [],
+				"category": "settings",
+				"tags": [
+					"Status"
 				],
 				"readmeComment": "Value mapping `[\"2\"\u003d\"EU\",\"1\"\u003d\"US\",\"82\"\u003d\"KR\",\"886\"\u003d\"TW\",\"66\"\u003d\"TH\",\"44\"\u003d\"UK\",\"91\"\u003d\"IN\"]`"
 			},
@@ -635,7 +736,7 @@
 				"property": "iic-error-count",
 				"siid": 9,
 				"piid": 11,
-				"friendlyName": "Custom Service - Iic Error Count",
+				"friendlyName": "I2C Error Count",
 				"channel": "iic_error_count",
 				"type": "Number",
 				"stateDescription": {
@@ -646,49 +747,36 @@
 					"readOnly": true
 				},
 				"refresh": true,
-				"actions": []
-			},
-			{
-				"property": "filter-used-debug",
-				"siid": 10,
-				"piid": 1,
-				"friendlyName": "Filter Time - Filter Used Debug",
-				"channel": "filter_used_debug",
-				"type": "Number:Time",
-				"unit": "hours",
-				"stateDescription": {
-					"minimum": 0,
-					"maximum": 7000,
-					"step": 1,
-					"pattern": "%.0f %unit%"
-				},
-				"refresh": false,
-				"actions": [
-					{
-						"command": "set_properties",
-						"parameterType": "STRING"
-					}
+				"actions": [],
+				"category": "error",
+				"tags": [
+					"Status"
 				]
 			},
 			{
 				"property": "purify-volume",
 				"siid": 11,
 				"piid": 1,
-				"friendlyName": "Aqi - Purify Volume",
+				"friendlyName": "Purify Volume",
 				"channel": "purify_volume",
-				"type": "Number",
+				"type": "Number:Volume",
+				"unit": "cubic_meter",
 				"stateDescription": {
-					"pattern": "%.0f",
+					"pattern": "%.0f %unit%",
 					"readOnly": true
 				},
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"category": "status",
+				"tags": [
+					"Measurement"
+				]
 			},
 			{
 				"property": "average-aqi",
 				"siid": 11,
 				"piid": 2,
-				"friendlyName": "Aqi - Average Aqi",
+				"friendlyName": "Average AQI",
 				"channel": "average_aqi",
 				"type": "Number",
 				"stateDescription": {
@@ -699,13 +787,18 @@
 					"readOnly": true
 				},
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"category": "smoke",
+				"tags": [
+					"Measurement",
+					"AQI"
+				]
 			},
 			{
 				"property": "aqi-state",
 				"siid": 11,
 				"piid": 3,
-				"friendlyName": "Aqi - Aqi State",
+				"friendlyName": "AQI State",
 				"channel": "aqi_state",
 				"type": "Number",
 				"stateDescription": {
@@ -713,33 +806,37 @@
 					"options": [
 						{
 							"value": "0",
-							"label": "AQI-GOOD-L"
+							"label": "Good (Low)"
 						},
 						{
 							"value": "1",
-							"label": "AQI-GOOD-H"
+							"label": "Good (High)"
 						},
 						{
 							"value": "2",
-							"label": "AQI-MID-L"
+							"label": "Medium (Low)"
 						},
 						{
 							"value": "3",
-							"label": "AQI-MID-H"
+							"label": "Medium (High)"
 						},
 						{
 							"value": "4",
-							"label": "AQI-BAD-L"
+							"label": "Bad (Low)"
 						},
 						{
 							"value": "5",
-							"label": "AQI-BAD-H"
+							"label": "Bad (High)"
 						}
 					]
 				},
 				"refresh": true,
 				"actions": [],
-				"readmeComment": "Value mapping `[\"0\"\u003d\"AQI-GOOD-L\",\"1\"\u003d\"AQI-GOOD-H\",\"2\"\u003d\"AQI-MID-L\",\"3\"\u003d\"AQI-MID-H\",\"4\"\u003d\"AQI-BAD-L\",\"5\"\u003d\"AQI-BAD-H\"]`"
+				"category": "smoke",
+				"tags": [
+					"Status"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Good (Low)\",\"1\"\u003d\"Good (High)\",\"2\"\u003d\"Medium (Low)\",\"3\"\u003d\"Medium (High)\",\"4\"\u003d\"Bad (Low)\",\"5\"\u003d\"Bad (High)\"]`"
 			}
 		],
 		"experimental": true

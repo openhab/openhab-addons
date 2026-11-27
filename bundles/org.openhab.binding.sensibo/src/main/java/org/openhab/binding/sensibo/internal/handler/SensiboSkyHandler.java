@@ -175,8 +175,7 @@ public class SensiboSkyHandler extends SensiboBaseThingHandler implements Channe
                         logger.debug("Received command on unknown channel {}, ignoring", channelUID.getId());
                 }
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "Unreachable by Sensibo servers");
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "Unreachable by Sensibo servers");
             }
         });
     }
@@ -304,11 +303,10 @@ public class SensiboSkyHandler extends SensiboBaseThingHandler implements Channe
                 addDynamicChannelsAndProperties(pod);
                 updateStatus(ThingStatus.ONLINE);
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "Unreachable by Sensibo servers");
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "Unreachable by Sensibo servers");
             }
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                     String.format("Device with mac address %s not found", getMacAddress()));
         }
     }

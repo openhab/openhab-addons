@@ -33,6 +33,7 @@ public class ClusterRegistry {
         CLUSTER_IDS.put(114, ActivatedCarbonFilterMonitoringCluster.class);
         CLUSTER_IDS.put(60, AdministratorCommissioningCluster.class);
         CLUSTER_IDS.put(91, AirQualityCluster.class);
+        CLUSTER_IDS.put(1073, AmbientContextSensingCluster.class);
         CLUSTER_IDS.put(1293, ApplicationBasicCluster.class);
         CLUSTER_IDS.put(1292, ApplicationLauncherCluster.class);
         CLUSTER_IDS.put(1291, AudioOutputCluster.class);
@@ -79,6 +80,7 @@ public class ClusterRegistry {
         CLUSTER_IDS.put(48, GeneralCommissioningCluster.class);
         CLUSTER_IDS.put(51, GeneralDiagnosticsCluster.class);
         CLUSTER_IDS.put(63, GroupKeyManagementCluster.class);
+        CLUSTER_IDS.put(101, GroupcastCluster.class);
         CLUSTER_IDS.put(4, GroupsCluster.class);
         CLUSTER_IDS.put(113, HepaFilterMonitoringCluster.class);
         CLUSTER_IDS.put(70, IcdManagementCluster.class);
@@ -133,6 +135,7 @@ public class ClusterRegistry {
         CLUSTER_IDS.put(1072, SoilMeasurementCluster.class);
         CLUSTER_IDS.put(59, SwitchCluster.class);
         CLUSTER_IDS.put(1285, TargetNavigatorCluster.class);
+        CLUSTER_IDS.put(100, TemperatureAlarmCluster.class);
         CLUSTER_IDS.put(86, TemperatureControlCluster.class);
         CLUSTER_IDS.put(1026, TemperatureMeasurementCluster.class);
         CLUSTER_IDS.put(513, ThermostatCluster.class);

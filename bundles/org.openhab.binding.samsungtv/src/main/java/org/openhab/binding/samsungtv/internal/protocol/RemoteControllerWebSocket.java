@@ -178,15 +178,29 @@ public class RemoteControllerWebSocket extends RemoteController implements Liste
 
         this.samsungTvAppWatchService = new SamsungTvAppWatchService(host, this);
 
-        SslContextFactory sslContextFactory = new SslContextFactory.Client( /* trustall= */ true);
-        /* remove extra filters added by jetty on cipher suites */
-        sslContextFactory.setExcludeCipherSuites();
-        client = webSocketFactory.createWebSocketClient("samsungtv", sslContextFactory);
-        client.addLifeCycleListener(this);
+        client = callback.getLegacyCipherSuites()
+                ? webSocketFactory.createWebSocketClient("samsungtv", legacyCipherSuiteFactory())
+                : webSocketFactory.createWebSocketClient("samsungtv");
+        client.addEventListener(this);
 
         webSocketRemote = new WebSocketRemote(this);
         webSocketArt = new WebSocketArt(this);
         webSocketV2 = new WebSocketV2(this);
+    }
+
+    private static SslContextFactory.Client legacyCipherSuiteFactory() {
+        SslContextFactory.Client sslContextFactory = new SslContextFactory.Client( /* trustall= */ true);
+        sslContextFactory.setExcludeCipherSuites();
+        return sslContextFactory;
+    }
+
+    /**
+     * Ping all websockets, so sessions left half-open by a TV restart are detected and reconnected
+     */
+    public void ping() {
+        webSocketRemote.ping();
+        webSocketArt.ping();
+        webSocketV2.ping();
     }
 
     public boolean isConnected() {
@@ -203,7 +217,6 @@ public class RemoteControllerWebSocket extends RemoteController implements Liste
             logger.debug("{}: RemoteControllerWebSocket start Client", host);
             try {
                 client.start();
-                client.setMaxBinaryMessageBufferSize(1024 * 1024);
                 // websocket connect will be done in lifetime handler
                 return;
             } catch (Exception e) {
@@ -295,8 +308,8 @@ public class RemoteControllerWebSocket extends RemoteController implements Liste
             return;
         }
         previousUpdateCurrentApp = Instant.now();
-        if (webSocketV2.isNotConnected()) {
-            logger.warn("{}: Cannot retrieve current app webSocketV2 is not connected", host);
+        if (!webSocketV2.isConnected()) {
+            logger.debug("{}: Cannot retrieve current app webSocketV2 is not connected", host);
             return;
         }
         // if noapps by this point, start file app service

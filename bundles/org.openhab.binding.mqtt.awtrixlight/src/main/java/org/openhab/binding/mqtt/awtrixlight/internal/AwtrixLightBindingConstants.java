@@ -58,6 +58,7 @@ public class AwtrixLightBindingConstants {
     public static final String TOPIC_INDICATOR3 = "/indicator3";
     public static final String TOPIC_LWT = "/stats/device";
     public static final String TOPIC_NOTIFY = "/notify";
+    public static final String TOPIC_NOTIFY_DISMISS = "/notify/dismiss";
     public static final String TOPIC_POWER = "/power";
     public static final String TOPIC_REBOOT = "/reboot";
     public static final String TOPIC_RTTTL = "/rtttl";

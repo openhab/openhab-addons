@@ -74,8 +74,7 @@ public class UniFiPoePortThingHandler extends UniFiBaseThingHandler<UniFiSwitchP
     protected boolean initialize(final UniFiPoePortThingConfig config) {
         this.config = config;
         if (!config.isValid()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/error.thing.poe.offline.configuration_error");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.thing.poe.offline.configuration_error");
             return false;
         }
         return initPoeEnableMode();
@@ -151,8 +150,7 @@ public class UniFiPoePortThingHandler extends UniFiBaseThingHandler<UniFiSwitchP
 
     private State setOfflineOnNoPoEPortData() {
         if (getThing().getStatus() != ThingStatus.OFFLINE) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/error.thing.poe.offline.nodata_error");
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/error.thing.poe.offline.nodata_error");
         }
         return UnDefType.NULL;
     }

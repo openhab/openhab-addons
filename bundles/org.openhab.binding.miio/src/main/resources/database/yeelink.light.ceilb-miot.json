@@ -72,13 +72,18 @@
 						}
 					}
 				],
+				"category": "light",
+				"tags": [
+					"Control",
+					"Light"
+				],
 				"readmeComment": "Value mapping `[\"light-toggle\"\u003d\"Light Toggle\",\"light-brightness-up\"\u003d\"Light Brightness Up\",\"light-brightness-down\"\u003d\"Light Brightness Down\"]`"
 			},
 			{
 				"property": "on",
 				"siid": 2,
 				"piid": 1,
-				"friendlyName": "Light - Switch Status",
+				"friendlyName": "Light - Power",
 				"channel": "on",
 				"type": "Switch",
 				"refresh": true,
@@ -88,10 +93,7 @@
 						"parameterType": "ONOFFBOOL"
 					}
 				],
-				"category": "switch",
-				"tags": [
-					"Switch"
-				]
+				"category": "switch"
 			},
 			{
 				"property": "mode",
@@ -108,7 +110,7 @@
 						},
 						{
 							"value": "1",
-							"label": "Night"
+							"label": "Night Light"
 						}
 					]
 				},
@@ -119,7 +121,12 @@
 						"parameterType": "NUMBER"
 					}
 				],
-				"readmeComment": "Value mapping `[\"0\"\u003d\"Day\",\"1\"\u003d\"Night\"]`"
+				"category": "light",
+				"tags": [
+					"Control",
+					"Mode"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Day\",\"1\"\u003d\"Night Light\"]`"
 			},
 			{
 				"property": "brightness",
@@ -127,20 +134,46 @@
 				"piid": 3,
 				"friendlyName": "Light - Brightness",
 				"channel": "brightness",
-				"type": "Number:Dimensionless",
-				"unit": "percentage",
-				"stateDescription": {
-					"minimum": 1,
-					"maximum": 100,
-					"step": 1,
-					"pattern": "%.0f %unit%"
-				},
+				"type": "Dimmer",
 				"refresh": true,
 				"actions": [
 					{
 						"command": "set_properties",
-						"parameterType": "NUMBER"
+						"parameterType": "NUMBER",
+						"condition": {
+							"name": "BrightnessExisting"
+						}
+					},
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL",
+						"parameters": [
+							{
+								"did": "on",
+								"siid": 2,
+								"piid": 1,
+								"value": "$value$"
+							}
+						],
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "OFF|(.*,)?0(\\.0*)?",
+									"returnValue": false
+								},
+								{
+									"matchValue": "ON|[0-9.,]+",
+									"returnValue": true
+								}
+							]
+						}
 					}
+				],
+				"category": "light",
+				"tags": [
+					"Control",
+					"Brightness"
 				]
 			},
 			{
@@ -155,21 +188,22 @@
 					"minimum": 2700,
 					"maximum": 6500,
 					"step": 1,
-					"pattern": "%.0f %unit%"
+					"pattern": "%.0f K"
 				},
 				"refresh": true,
 				"actions": [
 					{
 						"command": "set_properties",
-						"parameterType": "STRING"
+						"parameterType": "NUMBER"
 					}
-				]
+				],
+				"category": "colorlight"
 			},
 			{
 				"property": "on1",
 				"siid": 3,
 				"piid": 1,
-				"friendlyName": "Ambient Light - Switch Status",
+				"friendlyName": "Ambient Light - Power",
 				"channel": "on1",
 				"type": "Switch",
 				"refresh": true,
@@ -178,7 +212,8 @@
 						"command": "set_properties",
 						"parameterType": "ONOFFBOOL"
 					}
-				]
+				],
+				"category": "switch"
 			},
 			{
 				"property": "mode1",
@@ -191,7 +226,7 @@
 					"options": [
 						{
 							"value": "1",
-							"label": "RGB"
+							"label": "Color"
 						},
 						{
 							"value": "3",
@@ -206,7 +241,12 @@
 						"parameterType": "NUMBER"
 					}
 				],
-				"readmeComment": "Value mapping `[\"1\"\u003d\"RGB\",\"3\"\u003d\"HSV\"]`"
+				"category": "light",
+				"tags": [
+					"Control",
+					"Mode"
+				],
+				"readmeComment": "Value mapping `[\"1\"\u003d\"Color\",\"3\"\u003d\"HSV\"]`"
 			},
 			{
 				"property": "brightness1",
@@ -214,20 +254,46 @@
 				"piid": 3,
 				"friendlyName": "Ambient Light - Brightness",
 				"channel": "brightness1",
-				"type": "Number:Dimensionless",
-				"unit": "percentage",
-				"stateDescription": {
-					"minimum": 1,
-					"maximum": 100,
-					"step": 1,
-					"pattern": "%.0f %unit%"
-				},
+				"type": "Dimmer",
 				"refresh": true,
 				"actions": [
 					{
 						"command": "set_properties",
-						"parameterType": "NUMBER"
+						"parameterType": "NUMBER",
+						"condition": {
+							"name": "BrightnessExisting"
+						}
+					},
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL",
+						"parameters": [
+							{
+								"did": "on1",
+								"siid": 3,
+								"piid": 1,
+								"value": "$value$"
+							}
+						],
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "OFF|(.*,)?0(\\.0*)?",
+									"returnValue": false
+								},
+								{
+									"matchValue": "ON|[0-9.,]+",
+									"returnValue": true
+								}
+							]
+						}
 					}
+				],
+				"category": "light",
+				"tags": [
+					"Control",
+					"Brightness"
 				]
 			},
 			{
@@ -242,15 +308,16 @@
 					"minimum": 1700,
 					"maximum": 6500,
 					"step": 1,
-					"pattern": "%.0f %unit%"
+					"pattern": "%.0f K"
 				},
 				"refresh": true,
 				"actions": [
 					{
 						"command": "set_properties",
-						"parameterType": "STRING"
+						"parameterType": "NUMBER"
 					}
-				]
+				],
+				"category": "colorlight"
 			},
 			{
 				"property": "color",
@@ -258,21 +325,68 @@
 				"piid": 5,
 				"friendlyName": "Ambient Light - Color",
 				"channel": "color",
-				"type": "Number",
-				"unit": "rgb",
+				"type": "Color",
 				"refresh": true,
 				"actions": [
 					{
 						"command": "set_properties",
-						"parameterType": "STRING"
+						"parameterType": "COLOR",
+						"condition": {
+							"name": "HSBOnly"
+						}
+					},
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER",
+						"parameters": [
+							{
+								"did": "brightness1",
+								"siid": 3,
+								"piid": 3,
+								"value": "$value$"
+							}
+						],
+						"condition": {
+							"name": "BrightnessExisting"
+						}
+					},
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL",
+						"parameters": [
+							{
+								"did": "on1",
+								"siid": 3,
+								"piid": 1,
+								"value": "$value$"
+							}
+						],
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "OFF|(.*,)?0(\\.0*)?",
+									"returnValue": false
+								},
+								{
+									"matchValue": "ON|[0-9.,]+",
+									"returnValue": true
+								}
+							]
+						}
 					}
+				],
+				"category": "colorlight",
+				"tags": [
+					"Control",
+					"Color"
 				]
 			},
 			{
 				"property": "saturability",
 				"siid": 3,
 				"piid": 6,
-				"friendlyName": "Ambient Light - Saturability",
+				"friendlyName": "Ambient Light - Saturation",
 				"channel": "saturability",
 				"type": "Number:Dimensionless",
 				"unit": "percentage",
@@ -288,36 +402,31 @@
 						"command": "set_properties",
 						"parameterType": "NUMBER"
 					}
+				],
+				"category": "colorlight",
+				"tags": [
+					"Control",
+					"Color"
 				]
 			},
 			{
 				"property": "flow",
 				"siid": 3,
 				"piid": 7,
-				"friendlyName": "Ambient Light - Flow",
+				"friendlyName": "Ambient Light - Color Flow",
 				"channel": "flow",
-				"type": "Number",
+				"type": "Switch",
 				"stateDescription": {
-					"options": [
-						{
-							"value": "0",
-							"label": "NOFLOW"
-						},
-						{
-							"value": "1",
-							"label": "FLOWING"
-						}
-					]
+					"readOnly": true
 				},
 				"refresh": true,
-				"actions": [
-					{
-						"command": "set_properties",
-						"parameterType": "NUMBER"
-					}
-				],
-				"readmeComment": "Value mapping `[\"0\"\u003d\"NOFLOW\",\"1\"\u003d\"FLOWING\"]`"
+				"actions": [],
+				"category": "colorlight",
+				"tags": [
+					"Status"
+				]
 			}
-		]
+		],
+		"experimental": false
 	}
 }

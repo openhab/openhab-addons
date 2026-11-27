@@ -106,7 +106,7 @@ public class HeosGroupHandler extends HeosThingBaseHandler {
     public synchronized void initialize() {
         super.initialize();
 
-        configuration = thing.getConfiguration().as(GroupConfiguration.class);
+        configuration = getConfigAs(GroupConfiguration.class);
 
         // Prevents that initialize() is called multiple times if group goes online
         blockInitialization = true;
@@ -210,7 +210,7 @@ public class HeosGroupHandler extends HeosThingBaseHandler {
         }
         updateState(CH_ID_UNGROUP, OnOffType.OFF);
         updateState(CH_ID_CONTROL, PlayPauseType.PAUSE);
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.DISABLED, "Group is not available on HEOS system");
+        updateStatus(ThingStatusDetail.GONE, "Group is not available on HEOS system");
     }
 
     @Override

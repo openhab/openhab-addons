@@ -215,7 +215,7 @@ During the start of the binding the exact path used in your system will be print
 Watch for a line containing `Started miio basic devices local databases watch service. Watching for database files at path: …` (
 If this folder is created after the start of the binding, you may need to restart the binding (or openHAB) to be able to use the local files.
 Note that local database files take preference over build-in ones, hence if a json file is local and in the database the local file will be used.
-For format, please check the current database files in openHAB GitHub.
+For the format and all supported options, see the [database file format documentation](https://github.com/openhab/openhab-addons/blob/main/bundles/org.openhab.binding.miio/doc/DATABASE.md), and check the current database files in openHAB GitHub for examples.
 
 # FAQ: What to Do in Case of Problems
 
@@ -320,6 +320,7 @@ Additionally depending on the capabilities of your robot vacuum other channels m
 | Switch  | status#mop_forbidden_enable       | Mop Forbidden              |
 | Switch  | status#is_locating                | Robot is locating          |
 | Number  | actions#segment                   | Room Clean  (enter room #) |
+| Number  | actions#current_map               | Current map, select to load a map. Only when multi-floor maps are enabled in the app |
 | Switch  | actions#collect_dust              | Start collecting dust      |
 | Switch  | actions#clean_mop_start           | Start mop wash             |
 | Switch  | actions#clean_mop_stop            | Stop mop wash              |

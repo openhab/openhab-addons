@@ -37,8 +37,8 @@ import javax.xml.xpath.XPathFactory;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
 import org.openhab.binding.denonmarantz.internal.DenonMarantzState;
 import org.openhab.binding.denonmarantz.internal.DenonMarantzStateChangedListener;
 import org.openhab.binding.denonmarantz.internal.UnsupportedCommandTypeException;
@@ -190,13 +190,12 @@ public class DenonMarantzHandler extends BaseThingHandler implements DenonMarant
     public boolean checkConfiguration() {
         // prevent too low values for polling interval
         if (config.httpPollingInterval < 5) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "The polling interval should be at least 5 seconds!");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "The polling interval should be at least 5 seconds!");
             return false;
         }
         // Check zone count is within supported range
         if (config.getZoneCount() < 1 || config.getZoneCount() > 4) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                     "This binding supports 1 to 4 zones. Please update the zone count.");
             return false;
         }
@@ -473,7 +472,7 @@ public class DenonMarantzHandler extends BaseThingHandler implements DenonMarant
     public void connectionError(String errorMessage) {
         if (this.getThing().getStatus() != ThingStatus.OFFLINE) {
             // Don't flood the log with thing 'updated: OFFLINE' when already offline
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, errorMessage);
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, errorMessage);
         }
 
         DenonMarantzConnector connector = this.connector;

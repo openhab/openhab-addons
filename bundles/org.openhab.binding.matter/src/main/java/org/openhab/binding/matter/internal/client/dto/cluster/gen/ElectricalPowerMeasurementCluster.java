@@ -306,25 +306,25 @@ public class ElectricalPowerMeasurementCluster extends BaseCluster {
          * If the server had not yet determined the time in UTC at or before the beginning of the measurement period, or
          * does not have the capability of determining the time in UTC, this field shall be omitted.
          */
-        public Integer startTimestamp; // epoch-s
+        public Long startTimestamp; // epoch-s
         /**
          * This field shall be the timestamp in UTC of the end of the measurement period.
          * If the server had not yet determined the time in UTC at or before the beginning of the measurement period, or
          * does not have the capability of determining the time in UTC, this field shall be omitted.
          */
-        public Integer endTimestamp; // epoch-s
+        public Long endTimestamp; // epoch-s
         /**
          * This field shall be the most recent timestamp in UTC that the value in the Min field was measured.
          * This field shall be greater than or equal to the value of the StartTimestamp field.
          * This field shall be less than or equal to the value of the EndTimestamp field.
          */
-        public Integer minTimestamp; // epoch-s
+        public Long minTimestamp; // epoch-s
         /**
          * This field shall be the most recent timestamp in UTC of the value in the Max field.
          * This field shall be greater than or equal to the value of the StartTimestamp field.
          * This field shall be less than or equal to the value of the EndTimestamp field.
          */
-        public Integer maxTimestamp; // epoch-s
+        public Long maxTimestamp; // epoch-s
         /**
          * This field shall be the time since boot of the beginning of the measurement period.
          * If the server had determined the time in UTC at or before the start of the measurement period, this field may
@@ -351,8 +351,8 @@ public class ElectricalPowerMeasurementCluster extends BaseCluster {
         public BigInteger maxSystime; // systime-ms
 
         public MeasurementRangeStruct(MeasurementTypeEnum measurementType, BigInteger min, BigInteger max,
-                Integer startTimestamp, Integer endTimestamp, Integer minTimestamp, Integer maxTimestamp,
-                BigInteger startSystime, BigInteger endSystime, BigInteger minSystime, BigInteger maxSystime) {
+                Long startTimestamp, Long endTimestamp, Long minTimestamp, Long maxTimestamp, BigInteger startSystime,
+                BigInteger endSystime, BigInteger minSystime, BigInteger maxSystime) {
             this.measurementType = measurementType;
             this.min = min;
             this.max = max;

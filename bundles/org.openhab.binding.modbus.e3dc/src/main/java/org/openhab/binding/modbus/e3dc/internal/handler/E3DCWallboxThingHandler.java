@@ -236,7 +236,7 @@ public class E3DCWallboxThingHandler extends BaseThingHandler {
             if (dataRead == ReadWriteSuccess.SUCCESS) {
                 updateStatus(ThingStatus.ONLINE);
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, READ_ERROR);
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, READ_ERROR);
             }
         } else {
             if (dataRead == dataWrite) {
@@ -244,14 +244,14 @@ public class E3DCWallboxThingHandler extends BaseThingHandler {
                 if (dataRead == ReadWriteSuccess.SUCCESS) {
                     updateStatus(ThingStatus.ONLINE);
                 } else {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, READ_WRITE_ERROR);
+                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, READ_WRITE_ERROR);
                 }
             } else {
                 // either read or write failed - go offline with detailed status
                 if (dataRead == ReadWriteSuccess.SUCCESS) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, WRITE_ERROR);
+                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, WRITE_ERROR);
                 } else {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, READ_ERROR);
+                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, READ_ERROR);
                 }
             }
         }

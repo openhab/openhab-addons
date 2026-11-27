@@ -91,8 +91,7 @@ public class VigilanceHandler extends BaseThingHandler implements MeteoFranceChi
 
         domain = Domain.getByApiId(config.department);
         if (Domain.UNKNOWN.equals(domain)) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Wrong department: %s".formatted((config.department)));
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Wrong department: %s".formatted((config.department)));
             return;
         }
         logger.debug("config department= {}", config.department);
@@ -154,7 +153,7 @@ public class VigilanceHandler extends BaseThingHandler implements MeteoFranceChi
                 }
                 updateStatus(ThingStatus.ONLINE);
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "No data available for the department");
+                updateStatus(ThingStatus.OFFLINE, "No data available for the department");
             }
         }, () -> logger.warn("No viable bridge"));
     }

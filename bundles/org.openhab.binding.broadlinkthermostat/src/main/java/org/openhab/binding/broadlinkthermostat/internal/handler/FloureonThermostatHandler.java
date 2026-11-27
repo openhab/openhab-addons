@@ -85,12 +85,11 @@ public class FloureonThermostatHandler extends BroadlinkBaseHandler {
                 this.floureonDevice = (FloureonDevice) blDevice;
                 updateStatus(ThingStatus.ONLINE);
             } catch (IOException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "Could not find broadlink device at host " + host + " with MAC " + macAddress + ": "
-                                + e.getMessage());
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "Could not find broadlink device at host " + host
+                        + " with MAC " + macAddress + ": " + e.getMessage());
             }
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Missing device configuration");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Missing device configuration");
         }
     }
 
@@ -242,12 +241,12 @@ public class FloureonThermostatHandler extends BroadlinkBaseHandler {
                     advancedStatusInfo = floureonDevice.getAdvancedStatus();
                 }
                 if (advancedStatusInfo == null) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Device not responding.");
+                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "Device not responding.");
                     return null;
                 }
                 return advancedStatusInfo;
             } catch (Exception e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                         "Error while retrieving data for " + thing.getUID() + ":  " + e.getMessage());
             }
         }

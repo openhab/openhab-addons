@@ -3,6 +3,7 @@
 		"id": [
 			"chuangmi.plug.v1"
 		],
+		"experimental": false,
 		"channels": [
 			{
 				"property": "on",
@@ -16,9 +17,10 @@
 						"parameterType": "ONOFFPARA"
 					}
 				],
-				"category": "switch",
+				"category": "poweroutlet",
 				"tags": [
-					"Switch"
+					"Switch",
+					"Power"
 				]
 			},
 			{
@@ -27,12 +29,16 @@
 				"channel": "usb",
 				"type": "Switch",
 				"refresh": true,
-				"ChannelGroup": "actions",
 				"actions": [
 					{
 						"command": "set_usb_*",
 						"parameterType": "ONOFFPARA"
 					}
+				],
+				"category": "poweroutlet",
+				"tags": [
+					"Switch",
+					"Power"
 				]
 			},
 			{
@@ -41,6 +47,10 @@
 				"channel": "temperature",
 				"type": "Number:Temperature",
 				"unit": "CELSIUS",
+				"stateDescription": {
+					"pattern": "%.1f %unit%",
+					"readOnly": true
+				},
 				"refresh": true,
 				"actions": [],
 				"category": "temperature",

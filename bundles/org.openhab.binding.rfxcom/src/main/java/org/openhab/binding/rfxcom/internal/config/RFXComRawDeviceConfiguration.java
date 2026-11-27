@@ -35,23 +35,12 @@ public class RFXComRawDeviceConfiguration extends RFXComGenericDeviceConfigurati
     public short @Nullable [] onPulsesArray;
     public short @Nullable [] offPulsesArray;
 
-    public static final String OPEN_PULSES_LABEL = "openPulses";
-    public static final String CLOSED_PULSES_LABEL = "closedPulses";
-    @Nullable
-    public String openPulses;
-    @Nullable
-    public String closedPulses;
-    public short @Nullable [] openPulsesArray;
-    public short @Nullable [] closedPulsesArray;
-
     @Override
     public void parseAndValidate() throws RFXComInvalidParameterException {
         super.parseAndValidate();
 
         onPulsesArray = parseAndValidatePulses("onPulses", onPulses);
         offPulsesArray = parseAndValidatePulses("offPulses", offPulses);
-        openPulsesArray = parseAndValidatePulses("openPulses", openPulses);
-        closedPulsesArray = parseAndValidatePulses("closedPulses", closedPulses);
     }
 
     private static short @Nullable [] parseAndValidatePulses(String parameter, @Nullable String pulses)

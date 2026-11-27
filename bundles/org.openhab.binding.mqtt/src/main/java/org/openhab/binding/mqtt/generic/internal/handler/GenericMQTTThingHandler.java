@@ -43,6 +43,7 @@ import org.openhab.core.thing.binding.ThingHandlerCallback;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.thing.binding.generic.ChannelTransformation;
+import org.openhab.core.thing.type.ChannelKind;
 import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.StateDescription;
 import org.openhab.core.types.util.UnitUtils;
@@ -135,7 +136,7 @@ public class GenericMQTTThingHandler extends AbstractMQTTThingHandler implements
 
         ThingHandlerCallback callback = getCallback();
         if (callback == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Framework failure: callback must not be null");
+            updateStatus(ThingStatus.OFFLINE, "Framework failure: callback must not be null");
             return;
         }
 
@@ -150,6 +151,18 @@ public class GenericMQTTThingHandler extends AbstractMQTTThingHandler implements
                 continue;
             }
             final ChannelConfig channelConfig = channel.getConfiguration().as(ChannelConfig.class);
+            ChannelBuilder channelBuilder = null;
+
+            String channelTypeId = channelTypeUID.getId();
+            boolean contactChannel = MqttBindingConstants.CONTACT.equals(channelTypeId);
+            boolean triggerChannel = channelConfig.trigger || MqttBindingConstants.TRIGGER.equals(channelTypeId);
+            if (channelConfig.stateTopic.isBlank()
+                    && (triggerChannel || contactChannel || channelConfig.commandTopic.isBlank())) {
+                String requiredTopics = triggerChannel || contactChannel ? "stateTopic" : "stateTopic or commandTopic";
+                logger.warn("Channel '{}' must define {}", channel.getUID(), requiredTopics);
+                configErrors.add(channel.getUID());
+                continue;
+            }
 
             if (channelTypeUID
                     .equals(new ChannelTypeUID(MqttBindingConstants.BINDING_ID, MqttBindingConstants.NUMBER))) {
@@ -159,7 +172,7 @@ public class GenericMQTTThingHandler extends AbstractMQTTThingHandler implements
                 // Number
                 String actualItemType = channel.getAcceptedItemType();
                 if (!expectedItemType.equals(actualItemType)) {
-                    ChannelBuilder channelBuilder = callback.createChannelBuilder(channel.getUID(), channelTypeUID)
+                    channelBuilder = callback.createChannelBuilder(channel.getUID(), channelTypeUID)
                             .withAcceptedItemType(expectedItemType).withConfiguration(channel.getConfiguration());
                     String label = channel.getLabel();
                     if (label != null) {
@@ -169,18 +182,29 @@ public class GenericMQTTThingHandler extends AbstractMQTTThingHandler implements
                     if (description != null) {
                         channelBuilder.withDescription(description);
                     }
-                    thingBuilder.withoutChannel(channel.getUID());
-                    thingBuilder.withChannel(channelBuilder.build());
-                    modified = true;
                 }
+            }
+
+            boolean shouldBeTrigger = MqttBindingConstants.TRIGGER.equals(channelTypeId)
+                    || (channelConfig.trigger && (contactChannel || channelConfig.commandTopic.isBlank())
+                            && !MqttBindingConstants.IMAGE.equals(channelTypeId));
+            ChannelKind expectedKind = shouldBeTrigger ? ChannelKind.TRIGGER : ChannelKind.STATE;
+            if (channelBuilder == null && channel.getKind() != expectedKind) {
+                channelBuilder = ChannelBuilder.create(channel);
+            }
+            if (channelBuilder != null) {
+                channelBuilder.withKind(expectedKind);
+                thingBuilder.withoutChannel(channel.getUID());
+                thingBuilder.withChannel(channelBuilder.build());
+                modified = true;
             }
 
             try {
                 Value value = ValueFactory.createValueState(channelConfig, channelTypeUID.getId());
                 ChannelState channelState = createChannelState(channelConfig, channel.getUID(), value);
                 channelStateByChannelUID.put(channel.getUID(), channelState);
-                StateDescription description = value.createStateDescription(channelConfig.commandTopic.isBlank())
-                        .build().toStateDescription();
+                StateDescription description = value.createStateDescription(channelState.isReadOnly()).build()
+                        .toStateDescription();
                 if (description != null) {
                     stateDescProvider.setDescription(channel.getUID(), description);
                 }
@@ -197,7 +221,7 @@ public class GenericMQTTThingHandler extends AbstractMQTTThingHandler implements
         // If some channels could not start up, put the entire thing offline and display the channels
         // in question to the user.
         if (!configErrors.isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Remove and recreate: "
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Invalid channel configuration: "
                     + configErrors.stream().map(ChannelUID::getAsString).collect(Collectors.joining(",")));
             return;
         }
@@ -207,9 +231,9 @@ public class GenericMQTTThingHandler extends AbstractMQTTThingHandler implements
     @Override
     protected void updateThingStatus(boolean messageReceived, Optional<Boolean> availibilityTopicsSeen) {
         if (availibilityTopicsSeen.orElse(true)) {
-            updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
+            updateStatus(ThingStatus.ONLINE);
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE);
+            updateStatus(ThingStatus.OFFLINE);
         }
     }
 

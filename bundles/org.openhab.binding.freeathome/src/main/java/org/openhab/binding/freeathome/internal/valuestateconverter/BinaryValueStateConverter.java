@@ -13,6 +13,7 @@
 package org.openhab.binding.freeathome.internal.valuestateconverter;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.types.State;
 
@@ -33,7 +34,7 @@ public class BinaryValueStateConverter implements ValueStateConverter {
 
     @Override
     public State convertToState(String value) {
-        int intValue = Integer.decode(value);
+        int intValue = new DecimalType(value).intValue();
         int result;
 
         result = intValue & maskValue;

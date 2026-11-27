@@ -19,7 +19,15 @@
 				<label>Consumption</label>
 				<description>Consumption data from the solar panels</description>
 			</channel-group>
+			<channel-group id="storage" typeId="envoy-storage">
+				<label>Storage</label>
+				<description>Aggregated data of the IQ Batteries</description>
+			</channel-group>
 		</channel-groups>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 
 		<representation-property>serialNumber</representation-property>
 
@@ -84,6 +92,10 @@
 			<channel id="lastReportWatts" typeId="last-report-watts"/>
 			<channel id="maxReportWatts" typeId="max-report-watts"/>
 			<channel id="lastReportDate" typeId="last-report-date"/>
+			<channel id="wattHoursToday" typeId="watt-hours-today"/>
+			<channel id="wattHoursSevenDays" typeId="watt-hours-seven-days"/>
+			<channel id="wattHoursLifetime" typeId="watt-hours-lifetime"/>
+			<channel id="wattsNow" typeId="watts-now"/>
 			<channel id="status" typeId="status"/>
 			<channel id="producing" typeId="producing"/>
 			<channel id="communicating" typeId="communicating"/>
@@ -146,6 +158,42 @@
 		</config-description>
 	</thing-type>
 
+	<thing-type id="battery">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="envoy"/>
+		</supported-bridge-type-refs>
+
+		<label>IQ Battery</label>
+		<description>Enphase IQ Battery (Encharge)</description>
+		<semantic-equipment-tag>Battery</semantic-equipment-tag>
+
+		<channels>
+			<channel id="stateOfCharge" typeId="state-of-charge"/>
+			<channel id="temperature" typeId="battery-temperature"/>
+			<channel id="maxCellTemperature" typeId="battery-temperature">
+				<label>Max Cell Temperature</label>
+				<description>Highest temperature of the battery cells</description>
+			</channel>
+			<channel id="capacity" typeId="battery-capacity"/>
+			<channel id="sleepEnabled" typeId="sleep-enabled"/>
+			<channel id="status" typeId="status"/>
+			<channel id="communicating" typeId="communicating"/>
+		</channels>
+
+		<properties>
+			<property name="partNumber"/>
+		</properties>
+
+		<representation-property>serialNumber</representation-property>
+
+		<config-description>
+			<parameter name="serialNumber" type="text" pattern="[0-9]{12}" required="true">
+				<label>Serial Number</label>
+				<description>The serial number of the battery</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
 	<!-- Envoy gateway channels -->
 	<channel-group-type id="envoy-production">
 		<label>Envoy Data</label>
@@ -187,13 +235,24 @@
 		</channels>
 	</channel-group-type>
 
+	<channel-group-type id="envoy-storage">
+		<label>Envoy Storage Data</label>
+		<channels>
+			<channel id="wattsNow" typeId="storage-watts-now"/>
+			<channel id="stateOfCharge" typeId="state-of-charge">
+				<description>State of charge of all IQ Batteries combined</description>
+			</channel>
+			<channel id="availableEnergy" typeId="available-energy"/>
+		</channels>
+	</channel-group-type>
+
 	<channel-type id="watt-hours-today">
 		<item-type>Number:Energy</item-type>
 		<label>Produced Today</label>
 		<category>energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
@@ -202,8 +261,8 @@
 		<label>Produced 7 Days</label>
 		<category>energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
@@ -212,8 +271,8 @@
 		<label>Produced Lifetime</label>
 		<category>energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
@@ -223,8 +282,8 @@
 		<description>Latest watts produced</description>
 		<category>energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point>Measurement</point>
+			<property>Power</property>
 		</tags>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
@@ -236,8 +295,8 @@
 		<description>Last reported power delivery</description>
 		<category>energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point>Measurement</point>
+			<property>Power</property>
 		</tags>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
@@ -247,8 +306,8 @@
 		<description>Maximum reported power</description>
 		<category>energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point>Measurement</point>
+			<property>Power</property>
 		</tags>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
@@ -265,8 +324,8 @@
 		<item-type>Contact</item-type>
 		<label>Relay Status</label>
 		<tags>
-			<tag>Status</tag>
-			<tag>OpenState</tag>
+			<point>Status</point>
+			<property>OpenState</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -274,6 +333,69 @@
 		<item-type>Contact</item-type>
 		<label>Line Connection Status</label>
 		<description>When closed power line is connected</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<!-- Battery channels -->
+	<channel-type id="storage-watts-now">
+		<item-type>Number:Power</item-type>
+		<label>Battery Power</label>
+		<description>Latest battery power. Positive when discharging, negative when charging</description>
+		<category>energy</category>
+		<tags>
+			<point>Measurement</point>
+			<property>Power</property>
+		</tags>
+		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="state-of-charge">
+		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<label>State of Charge</label>
+		<description>State of charge of the battery</description>
+		<category>BatteryLevel</category>
+		<tags>
+			<point>Measurement</point>
+			<property>Energy</property>
+		</tags>
+		<state min="0" max="100" pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="available-energy">
+		<item-type>Number:Energy</item-type>
+		<label>Available Energy</label>
+		<description>Energy currently stored in the batteries</description>
+		<category>energy</category>
+		<tags>
+			<point>Measurement</point>
+			<property>Energy</property>
+		</tags>
+		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="battery-capacity" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Capacity</label>
+		<description>Capacity of the battery</description>
+		<category>energy</category>
+		<tags>
+			<point>Measurement</point>
+			<property>Energy</property>
+		</tags>
+		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="battery-temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature</label>
+		<description>Temperature of the battery</description>
+		<category>Temperature</category>
+		<tags>
+			<point>Measurement</point>
+			<property>Temperature</property>
+		</tags>
+		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="sleep-enabled" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Sleep Enabled</label>
+		<description>If the battery sleep mode is enabled</description>
 		<state readOnly="true"/>
 	</channel-type>
 

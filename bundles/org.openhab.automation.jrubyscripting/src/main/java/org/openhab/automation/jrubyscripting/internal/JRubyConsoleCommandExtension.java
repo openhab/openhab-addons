@@ -54,6 +54,7 @@ import org.slf4j.LoggerFactory;
  * The {@link JRubyConsoleCommandExtension} class
  *
  * @author Jimmy Tanagra - Initial contribution
+ * @author Cody Cutrer - Support consoles with a clean environment
  */
 @NonNullByDefault
 @Component(service = ConsoleCommandExtension.class)
@@ -101,7 +102,8 @@ public class JRubyConsoleCommandExtension extends AbstractConsoleCommandExtensio
     public List<String> getUsages() {
         return List.of( //
                 buildCommandUsage(INFO, "displays information about JRuby Scripting add-on"), //
-                buildCommandUsage(CONSOLE + " [--list|-l|--help|-h] | [script] [options]",
+                buildCommandUsage(CONSOLE
+                        + " [--list|-l|--help|-h] | [--no-bundle] [script] [options] | [--no-bundle] -- <ruby code>",
                         "starts an interactive JRuby console"), //
                 buildCommandUsage(BUNDLE + " [arguments]", "runs Ruby bundler against your Gemfile"), //
                 buildCommandUsage(GEM + " [arguments]", "manages JRuby Scripting add-on's RubyGems"), //
@@ -243,15 +245,32 @@ public class JRubyConsoleCommandExtension extends AbstractConsoleCommandExtensio
     private void startConsole(Console console, String[] args) {
         final String defaultConsole = jRubyScriptEngineFactory.getConfiguration().getConsole();
         String script = defaultConsole;
+        boolean withoutBundle = args.length > 0 && "--no-bundle".equals(args[0]);
+        if (withoutBundle) {
+            args = Arrays.copyOfRange(args, 1, args.length);
+        }
+
+        if (args.length > 0 && "--".equals(args[0])) {
+            String code = String.join(" ", Arrays.copyOfRange(args, 1, args.length));
+            executeWithFullJRuby(console, withoutBundle, engine -> {
+                engine.put("$console", console);
+                engine.put(ScriptEngine.ARGV, new String[0]);
+                return engine.eval(code);
+            });
+            return;
+        }
 
         if (args.length > 0) {
             switch (args[0]) {
                 case "--help":
                 case "-h":
-                    console.printUsage("jrubyscripting console [--list|-l|--help|-h] | [script] [options]");
+                    console.printUsage(
+                            "jrubyscripting console [--list|-l|--help|-h] | [--no-bundle] [script] [options] | [--no-bundle] -- <ruby code>");
                     console.println("");
                     console.println("  --list, -l: list available console scripts");
                     console.println("  --help, -h: show this help");
+                    console.println("  --no-bundle: skip Bundler setup and configured requires for this console");
+                    console.println("  --: execute the remaining arguments as Ruby code instead of a console script");
                     console.println("  script: name of the console script to run");
                     console.println("  options: arguments to pass to the console script");
                     console.println("");
@@ -303,7 +322,7 @@ public class JRubyConsoleCommandExtension extends AbstractConsoleCommandExtensio
 
         logger.debug("Starting JRuby console with script: {}", consoleScript);
 
-        executeWithFullJRuby(console, engine -> {
+        executeWithFullJRuby(console, withoutBundle, engine -> {
             // Resolve console.getSession().getTerminal() in Ruby to avoid having to add
             // org.apache.karaf.shell.core as a dependency in pom.xml
             engine.put("$console", console);
@@ -505,13 +524,40 @@ public class JRubyConsoleCommandExtension extends AbstractConsoleCommandExtensio
      * Configure the engine to redirect output to the provided console.
      */
     private void configureEngineConsoleOutput(ScriptEngine engine, @Nullable Console console) {
-        if (console != null) {
-            ScriptContext context = engine.getContext();
-            Writer errorWriter = context.getErrorWriter();
-            if (errorWriter != null) {
-                context.setErrorWriter(new ConsoleWriter(errorWriter));
-            }
+        if (console == null) {
+            return;
         }
+
+        ScriptContext context = engine.getContext();
+
+        // Adapter that forwards characters to the openHAB Console
+        Writer consoleAdapter = new Writer() {
+            @Override
+            public void write(char @Nullable [] cbuf, int off, int len) {
+                if (cbuf != null && len > 0) {
+                    char[] buf = cbuf;
+                    console.print(new String(buf, off, len));
+                }
+            }
+
+            @Override
+            public void flush() {
+            }
+
+            @Override
+            public void close() {
+            }
+        };
+
+        // Fall back to consoleAdapter if JSR-223 writers are null
+        Writer baseWriter = context.getWriter();
+        Writer effectiveWriter = (baseWriter != null) ? baseWriter : consoleAdapter;
+
+        Writer baseErrorWriter = context.getErrorWriter();
+        Writer effectiveErrorWriter = (baseErrorWriter != null) ? baseErrorWriter : effectiveWriter;
+
+        context.setWriter(new ConsoleWriter(effectiveWriter));
+        context.setErrorWriter(new ConsoleWriter(effectiveErrorWriter));
     }
 
     /*
@@ -521,10 +567,17 @@ public class JRubyConsoleCommandExtension extends AbstractConsoleCommandExtensio
      * This will run the script with the helper library if configured.
      */
     private @Nullable Object executeWithFullJRuby(Console console, EngineEvalFunction process) {
+        return executeWithFullJRuby(console, false, process);
+    }
+
+    private @Nullable Object executeWithFullJRuby(Console console, boolean withoutBundle, EngineEvalFunction process) {
         final String scriptIdentifier = "jruby-console-" + UUID.randomUUID().toString();
 
         printLoadingMessage(console, true);
-        ScriptEngineContainer container = scriptEngineManager.createScriptEngine(scriptType, scriptIdentifier);
+        ScriptEngineContainer container = withoutBundle
+                ? jRubyScriptEngineFactory
+                        .withoutBundle(() -> scriptEngineManager.createScriptEngine(scriptType, scriptIdentifier))
+                : scriptEngineManager.createScriptEngine(scriptType, scriptIdentifier);
         if (container == null) {
             console.println("Error: Unable to create JRuby script engine.");
             return null;
@@ -576,54 +629,60 @@ public class JRubyConsoleCommandExtension extends AbstractConsoleCommandExtensio
         private boolean closed = false;
 
         ConsoleWriter(Writer delegate) {
+            super(delegate);
             this.delegate = delegate;
         }
 
         @Override
         public void write(char @Nullable [] c, int off, int len) throws IOException {
-            if (closed) {
-                throw new IOException("Writer is closed");
-            }
-            if (c != null) {
-                for (int index = off; index < off + len; index++) {
-                    char ch = c[index];
-                    if (previousWasCarriageReturn) {
-                        if (ch == '\n') {
-                            delegate.write('\r');
-                            delegate.write('\n');
-                            previousWasCarriageReturn = false;
-                            continue;
-                        }
-                        delegate.write('\r');
-                        previousWasCarriageReturn = false;
-                    }
+            synchronized (lock) {
+                if (closed) {
+                    throw new IOException("Writer is closed");
+                }
+                if (c == null || len <= 0) {
+                    return;
+                }
 
+                StringBuilder buffer = new StringBuilder(len + 16);
+
+                for (int i = off; i < off + len; i++) {
+                    char ch = c[i];
                     if (ch == '\r') {
+                        buffer.append('\r');
                         previousWasCarriageReturn = true;
                     } else if (ch == '\n') {
-                        delegate.write('\r');
-                        delegate.write('\n');
+                        if (!previousWasCarriageReturn) {
+                            buffer.append('\r');
+                        }
+                        buffer.append('\n');
+                        previousWasCarriageReturn = false;
                     } else {
-                        delegate.write(ch);
+                        buffer.append(ch);
+                        previousWasCarriageReturn = false;
                     }
                 }
+
+                char[] output = new char[buffer.length()];
+                buffer.getChars(0, buffer.length(), output, 0);
+                delegate.write(output, 0, output.length);
             }
         }
 
         @Override
         public void flush() throws IOException {
-            if (previousWasCarriageReturn) {
-                delegate.write('\r');
-                previousWasCarriageReturn = false;
+            synchronized (lock) {
+                delegate.flush();
             }
-            delegate.flush();
         }
 
         @Override
         public void close() throws IOException {
-            flush();
-            closed = true;
-            delegate.close();
+            synchronized (lock) {
+                if (!closed) {
+                    closed = true;
+                    delegate.close();
+                }
+            }
         }
     }
 

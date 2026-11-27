@@ -642,7 +642,7 @@ then
     logInfo("protect", "Driveway PIR motion")
     // Optionally turn on the light for a bit
     sendCommand(Light_Driveway_OnOff, ON)
-    createTimer(now.plusSeconds(30), [ | sendCommand(Light_Driveway_OnOff, OFF) ])
+    createTimer(now.plusSeconds(30), [ sendCommand(Light_Driveway_OnOff, OFF) ])
 end
 
 // Sensor opened/closed with payload

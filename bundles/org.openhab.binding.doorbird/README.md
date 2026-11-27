@@ -23,6 +23,7 @@ The following configuration parameters are available on the Doorbird D101/D201/D
 | Hostname                 | doorbirdHost       | Required          | The hostname or IP address of the Doorbird device.                                                                                                      |
 | User ID                  | userId             | Required          | User Id of a Doorbird user that has permissions to access the API. The User ID and Password must be created using the Doorbird smart phone application. |
 | Password                 | userPassword       | Required          | Password of a Doorbird user.                                                                                                                            |
+| Webhook IP Whitelist     | webhookIpWhitelist | Optional          | Whitelist of IP addresses allowed to trigger webhooks. By default includes IP address of the Doorbird device.                                           |
 | Image Refresh Rate       | imageRefreshRate   | Optional          | Rate at which image channel should be automatically updated. Leave field blank (default) to disable refresh.                                            |
 | Doorbell Off Delay       | doorbellOffDelay   | Optional          | Number of seconds to wait before setting doorbell channel OFF after a doorbell event. Leave field blank to disable.                                     |
 | Motion Off Delay         | motionOffDelay     | Optional          | Number of seconds to wait before setting motion channel OFF after a motion event. Leave field blank to disable.                                         |
@@ -139,8 +140,11 @@ Either put the Doorbird and openHAB on the same subnet/VLAN, or set up your netw
 
 Alternatively to UDP broadcast, you can configure the following webhooks in your doorbell:
 
-- Doorbell (pressed) wbehook: `http[s]://<openhab-ip>:<openhab-port>/doorbird/<thing-uid>/doorbell`
-- Motion Webhook: `http[s]://<openhab-ip>:<openhab-port>/doorbird/<thing-uid>/motion`
+- Doorbell webhook (when pressed): `http[s]://<openhab-ip>:<openhab-port>/doorbird/<thing-uid>/doorbell`
+- Motion webhook: `http[s]://<openhab-ip>:<openhab-port>/doorbird/<thing-uid>/motion`
+
+For security reasons, you have to specify a whitelist of allowed IP addresses in the thing configuration (`webhookIpWhitelist`) to restrict which devices can trigger these webhooks.
+The whitelist by default includes the IP address of the Doorbird device.
 
 ## Example
 

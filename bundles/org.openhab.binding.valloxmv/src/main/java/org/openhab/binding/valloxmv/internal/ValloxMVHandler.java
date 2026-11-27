@@ -198,12 +198,12 @@ public class ValloxMVHandler extends BaseThingHandler {
     }
 
     @Override
-    protected void updateStatus(ThingStatus ts, ThingStatusDetail statusDetail) {
-        super.updateStatus(ts, statusDetail);
+    protected void updateStatus(ThingStatus ts) {
+        super.updateStatus(ts);
     }
 
     @Override
-    protected void updateStatus(ThingStatus ts) {
-        super.updateStatus(ts);
+    protected void updateStatus(ThingStatusDetail detail) {
+        super.updateStatus(detail);
     }
 }

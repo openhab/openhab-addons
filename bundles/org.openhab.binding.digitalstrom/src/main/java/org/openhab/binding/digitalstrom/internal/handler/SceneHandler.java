@@ -132,32 +132,29 @@ public class SceneHandler extends BaseThingHandler implements SceneStatusListene
                     String sceneID = getSceneID(getConfig(), bridgeHandler);
                     switch (sceneID) {
                         case SCENE_WRONG:
-                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                                     "Configured scene '" + getConfig().get(DigitalSTROMBindingConstants.SCENE_ID)
                                             + "' does not exist or cannot be used, please check the configuration.");
                             break;
                         case ZONE_WRONG:
-                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                                     "Configured zone '" + getConfig().get(DigitalSTROMBindingConstants.ZONE_ID)
                                             + "' does not exist, please check the configuration.");
                             break;
                         case GROUP_WRONG:
-                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                                     "Configured group '" + getConfig().get(DigitalSTROMBindingConstants.GROUP_ID)
                                             + "' does not exist, please check the configuration.");
                             break;
                         case NO_STRUC_MAN:
-                            updateStatus(ThingStatus.ONLINE, ThingStatusDetail.CONFIGURATION_PENDING,
-                                    "Waiting for building digitalSTROM model.");
+                            updateStatus(ThingStatus.UNKNOWN);
                             break;
                         case NO_SCENE:
-                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                                    "No Scene-ID is set!");
+                            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "No Scene-ID is set!");
                             break;
                         default:
                             this.sceneThingID = sceneID;
-                            updateStatus(ThingStatus.ONLINE, ThingStatusDetail.CONFIGURATION_PENDING,
-                                    "Waiting for listener registration");
+                            updateStatus(ThingStatus.UNKNOWN);
                             logger.debug("Set status on {}", getThing().getStatus());
                             this.bridgeHandler.registerSceneStatusListener(this);
                     }
@@ -169,7 +166,7 @@ public class SceneHandler extends BaseThingHandler implements SceneStatusListene
             }
         }
         if (bridgeStatusInfo.getStatus().equals(ThingStatus.OFFLINE)) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
         }
         logger.debug("Set status to {}", getThing().getStatusInfo());
     }
@@ -350,7 +347,13 @@ public class SceneHandler extends BaseThingHandler implements SceneStatusListene
         logger.debug("Scene {} added", scene.getID());
         if (this.bridgeHandler != null) {
             ThingStatusInfo statusInfo = this.bridgeHandler.getThing().getStatusInfo();
-            updateStatus(statusInfo.getStatus(), statusInfo.getStatusDetail(), statusInfo.getDescription());
+            if (statusInfo.getStatus() != ThingStatus.ONLINE && statusInfo.getStatus() != ThingStatus.OFFLINE) {
+                updateStatus(ThingStatus.UNKNOWN);
+            } else if (statusInfo.getStatusDetail() == ThingStatusDetail.NONE) {
+                updateStatus(statusInfo.getStatus(), statusInfo.getDescription());
+            } else {
+                updateStatus(statusInfo.getStatusDetail(), statusInfo.getDescription());
+            }
             logger.debug("Set status on {}", getThing().getStatus());
         }
         this.scene = scene;

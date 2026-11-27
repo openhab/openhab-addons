@@ -83,7 +83,6 @@ public class PythonScriptEngineFactory implements ScriptEngineFactory, ScriptEng
 
         this.pythonDependencyTracker = pythonDependencyTracker;
         this.configuration = new PythonScriptEngineConfiguration(config);
-        this.configuration.init(this);
 
         Engine.Builder engineBuilder = createEngineBuilder();
         if (configuration.isDebuggerEnabled()) {
@@ -109,6 +108,8 @@ public class PythonScriptEngineFactory implements ScriptEngineFactory, ScriptEng
         } else {
             this.engine = createEngineBuilder().build();
         }
+
+        this.configuration.init(this);
 
         if (getLanguage() == null) {
             logger.error(

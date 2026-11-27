@@ -135,6 +135,8 @@ public class ThingDiscoveryService extends AbstractThingHandlerDiscoveryService<
             case HOB_INDUCTION:
             case HOB_HIGHLIGHT:
                 return Optional.of(THING_TYPE_HOB);
+            case HOB_WITH_VAPOR_EXTRACTION:
+                return Optional.of(THING_TYPE_HOB_WITH_VAPOR_EXTRACTION);
             case DISHWASHER:
                 return Optional.of(THING_TYPE_DISHWASHER);
             case OVEN:

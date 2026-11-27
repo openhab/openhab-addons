@@ -34,6 +34,9 @@ Using your favorite configuration UI to edit **Settings / Other Services - Googl
   After initial authorization, this code is not needed anymore.
   It is recommended to clear this configuration parameter afterwards.
 
+To remove the saved OAuth tokens, clear both **Client Id** and **Client Secret** in the service configuration.
+The service stops until credentials are entered and authorized again.
+
 ### Speech to Text Configuration
 
 Using your favorite configuration UI to edit **Settings / Other Services - Google Cloud Speech-to-Text**:

@@ -21,7 +21,6 @@ import java.util.concurrent.ScheduledExecutorService;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.homematic.internal.common.HomematicConfig;
 import org.openhab.binding.homematic.internal.communicator.HomematicGateway;
 import org.openhab.binding.homematic.internal.handler.HomematicBridgeHandler;
 import org.openhab.binding.homematic.internal.model.HmDevice;
@@ -104,7 +103,7 @@ public class HomematicDeviceDiscoveryService extends AbstractThingHandlerDiscove
     }
 
     private int getInstallModeDuration() {
-        return thingHandler.getThing().getConfiguration().as(HomematicConfig.class).getInstallModeDuration();
+        return thingHandler.getHomematicConfig().getInstallModeDuration();
     }
 
     @Override
@@ -222,7 +221,7 @@ public class HomematicDeviceDiscoveryService extends AbstractThingHandlerDiscove
         ThingTypeUID typeUid = UidUtils.generateThingTypeUID(device);
         ThingUID thingUID = new ThingUID(typeUid, bridgeUID, device.getAddress());
         String label = device.getName().isEmpty() ? device.getAddress() : device.getName();
-        long timeToLive = thingHandler.getThing().getConfiguration().as(HomematicConfig.class).getDiscoveryTimeToLive();
+        long timeToLive = thingHandler.getHomematicConfig().getDiscoveryTimeToLive();
 
         DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withBridge(bridgeUID).withLabel(label)
                 .withProperty(Thing.PROPERTY_SERIAL_NUMBER, device.getAddress())

@@ -14,23 +14,20 @@ package org.openhab.io.homekit.internal.accessories;
 
 import static org.openhab.io.homekit.internal.HomekitCharacteristicType.ACTIVE_STATUS;
 import static org.openhab.io.homekit.internal.HomekitCharacteristicType.INUSE_STATUS;
-import static org.openhab.io.homekit.internal.HomekitCharacteristicType.REMAINING_DURATION;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.core.items.GenericItem;
+import org.openhab.core.common.ThreadPoolManager;
 import org.openhab.core.library.items.SwitchItem;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
-import org.openhab.core.types.RefreshType;
 import org.openhab.io.homekit.internal.HomekitAccessoryUpdater;
 import org.openhab.io.homekit.internal.HomekitCharacteristicType;
 import org.openhab.io.homekit.internal.HomekitException;
@@ -53,6 +50,7 @@ import io.github.hapjava.services.impl.ValveService;
  *
  * @author Tim Harper - Initial contribution
  * @author Eugen Freiter - timer implementation
+ * @author Leo Siepel - Notify HomeKit of internal timer changes
  */
 public class HomekitValveImpl extends AbstractHomekitAccessoryImpl implements ValveAccessory {
     private final Logger logger = LoggerFactory.getLogger(HomekitValveImpl.class);
@@ -71,15 +69,24 @@ public class HomekitValveImpl extends AbstractHomekitAccessoryImpl implements Va
     };
     private final BooleanItemReader inUseReader;
     private final BooleanItemReader activeReader;
-    private final ScheduledExecutorService timerService = Executors.newSingleThreadScheduledExecutor();
-    private ScheduledFuture<?> valveTimer;
+    private final ScheduledExecutorService timerService;
+    private volatile @Nullable ScheduledFuture<?> valveTimer;
+    private volatile @Nullable HomekitCharacteristicChangeCallback remainingDurationCallback;
     private final boolean homekitTimer;
     private ValveTypeEnum valveType;
 
     public HomekitValveImpl(HomekitTaggedItem taggedItem, List<HomekitTaggedItem> mandatoryCharacteristics,
             List<Characteristic> mandatoryRawCharacteristics, HomekitAccessoryUpdater updater, HomekitSettings settings)
             throws IncompleteAccessoryException {
+        this(taggedItem, mandatoryCharacteristics, mandatoryRawCharacteristics, updater, settings,
+                ThreadPoolManager.getScheduledPool(ThreadPoolManager.THREAD_POOL_NAME_COMMON));
+    }
+
+    HomekitValveImpl(HomekitTaggedItem taggedItem, List<HomekitTaggedItem> mandatoryCharacteristics,
+            List<Characteristic> mandatoryRawCharacteristics, HomekitAccessoryUpdater updater, HomekitSettings settings,
+            ScheduledExecutorService timerService) throws IncompleteAccessoryException {
         super(taggedItem, mandatoryCharacteristics, mandatoryRawCharacteristics, updater, settings);
+        this.timerService = timerService;
         inUseReader = createBooleanReader(INUSE_STATUS);
         activeReader = createBooleanReader(ACTIVE_STATUS);
         homekitTimer = getAccessoryConfigurationAsBoolean(CONFIG_TIMER, false);
@@ -94,7 +101,7 @@ public class HomekitValveImpl extends AbstractHomekitAccessoryImpl implements Va
         var remainingDurationCharacteristic = getCharacteristic(RemainingDurationCharacteristic.class);
 
         if (homekitTimer && remainingDurationCharacteristic.isEmpty()) {
-            addRemainingDurationCharacteristic(getRootAccessory(), getUpdater(), service);
+            addRemainingDurationCharacteristic(service);
         }
         String valveTypeConfig = getAccessoryConfiguration(CONFIG_VALVE_TYPE, "GENERIC");
         valveTypeConfig = getAccessoryConfiguration(CONFIG_VALVE_TYPE_DEPRECATED, valveTypeConfig);
@@ -102,18 +109,23 @@ public class HomekitValveImpl extends AbstractHomekitAccessoryImpl implements Va
         this.valveType = valveType != null ? valveType : ValveTypeEnum.GENERIC;
     }
 
-    private void addRemainingDurationCharacteristic(HomekitTaggedItem taggedItem, HomekitAccessoryUpdater updater,
-            ValveService service) {
-        logger.trace("addRemainingDurationCharacteristic for {}", taggedItem);
+    private void addRemainingDurationCharacteristic(ValveService service) {
+        logger.trace("addRemainingDurationCharacteristic for {}", getRootAccessory());
         service.addOptionalCharacteristic(new RemainingDurationCharacteristic(() -> {
             int remainingTime = 0;
             ScheduledFuture<?> future = valveTimer;
             if (future != null && !future.isDone()) {
-                remainingTime = Math.toIntExact(future.getDelay(TimeUnit.SECONDS));
+                remainingTime = Math.toIntExact(Math.max(0, future.getDelay(TimeUnit.SECONDS)));
             }
             return CompletableFuture.completedFuture(remainingTime);
-        }, HomekitCharacteristicFactory.getSubscriber(taggedItem, REMAINING_DURATION, updater),
-                HomekitCharacteristicFactory.getUnsubscriber(taggedItem, REMAINING_DURATION, updater)));
+        }, callback -> remainingDurationCallback = callback, () -> remainingDurationCallback = null));
+    }
+
+    private void notifyRemainingDurationChanged() {
+        HomekitCharacteristicChangeCallback callback = remainingDurationCallback;
+        if (callback != null) {
+            callback.changed();
+        }
     }
 
     /**
@@ -131,7 +143,7 @@ public class HomekitValveImpl extends AbstractHomekitAccessoryImpl implements Va
         return duration;
     }
 
-    private void startTimer() {
+    private boolean startTimer() {
         int duration = getDuration();
         logger.trace("start timer for duration {}", duration);
         if (duration > 0) {
@@ -139,20 +151,22 @@ public class HomekitValveImpl extends AbstractHomekitAccessoryImpl implements Va
             valveTimer = timerService.schedule(() -> {
                 logger.trace("valve timer is over. switching off the valve");
                 switchOffValve();
-                // let home app refresh the remaining duration, which is 0
-                ((GenericItem) getRootAccessory().getItem()).send(RefreshType.REFRESH);
+                notifyRemainingDurationChanged();
             }, duration, TimeUnit.SECONDS);
             logger.trace("started valve timer for {} seconds.", duration);
+            return true;
         } else {
             logger.debug("valve timer not started as duration = 0");
+            return false;
         }
     }
 
-    private void stopTimer() {
+    private boolean stopTimer() {
         ScheduledFuture<?> future = valveTimer;
         if (future != null && !future.isDone()) {
-            future.cancel(true);
+            return future.cancel(true);
         }
+        return false;
     }
 
     @Override
@@ -166,13 +180,10 @@ public class HomekitValveImpl extends AbstractHomekitAccessoryImpl implements Va
         getItem(ACTIVE_STATUS, SwitchItem.class).ifPresent(item -> {
             item.send(OnOffType.from(state == ActiveEnum.ACTIVE));
             if (homekitTimer) {
-                if ((state == ActiveEnum.ACTIVE)) {
-                    startTimer();
-                } else {
-                    stopTimer();
+                boolean changed = state == ActiveEnum.ACTIVE ? startTimer() : stopTimer();
+                if (changed) {
+                    notifyRemainingDurationChanged();
                 }
-                // let home app refresh the remaining duration
-                ((GenericItem) getRootAccessory().getItem()).send(RefreshType.REFRESH);
             }
         });
         return CompletableFuture.completedFuture(null);

@@ -27,8 +27,8 @@ import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.http.HttpHeader;
 import org.openhab.binding.sncf.internal.SncfException;
 import org.openhab.binding.sncf.internal.discovery.SncfDiscoveryService;
@@ -86,7 +86,7 @@ public class SncfBridgeHandler extends BaseBridgeHandler {
         if (apiId != null && !apiId.isBlank()) {
             updateStatus(ThingStatus.ONLINE);
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/null-or-empty-api-key");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/null-or-empty-api-key");
         }
     }
 
@@ -119,8 +119,9 @@ public class SncfBridgeHandler extends BaseBridgeHandler {
     private @Nullable String getResponse(String url) {
         try {
             logger.debug("SNCF Api request: url = '{}'", url);
+            final String apiIdVal = apiId;
             ContentResponse contentResponse = httpClient.newRequest(url).method(GET).timeout(10, TimeUnit.SECONDS)
-                    .header(HttpHeader.AUTHORIZATION, apiId).send();
+                    .headers(h -> h.add(HttpHeader.AUTHORIZATION, apiIdVal)).send();
             int httpStatus = contentResponse.getStatus();
             String content = contentResponse.getContentAsString();
             logger.debug("SNCF Api response: status = {}, content = '{}'", httpStatus, content);

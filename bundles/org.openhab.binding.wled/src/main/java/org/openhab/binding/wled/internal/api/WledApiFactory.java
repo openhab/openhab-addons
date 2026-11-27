@@ -43,7 +43,9 @@ public class WledApiFactory {
         WledApi lowestSupportedApi = new WledApiV084(handler, httpClient);
         int version = lowestSupportedApi.getFirmwareVersion();
         logger.debug("Treating firmware as int:{}", version);
-        if (version >= 130) {
+        if (version >= 140) {
+            return new WledApiV0140(handler, httpClient);
+        } else if (version >= 130) {
             return new WledApiV0130(handler, httpClient);
         } else if (version >= 110) {
             return new WledApiV0110(handler, httpClient);

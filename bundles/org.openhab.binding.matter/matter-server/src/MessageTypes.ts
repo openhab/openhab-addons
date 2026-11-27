@@ -1,4 +1,3 @@
-import { OtaSoftwareUpdateRequestor } from "@matter/main/clusters";
 import { SoftwareUpdateInfo } from "@matter/node";
 
 export interface Request {
@@ -27,6 +26,23 @@ export enum EventType {
     NodeData = "nodeData",
     BridgeEvent = "bridgeEvent",
     UpdateAvailable = "updateAvailable",
+    OtaUpdateStatus = "otaUpdateStatus",
+    IcdState = "icdState",
+}
+
+export enum IcdEvent {
+    Registered = "registered",
+    Unregistered = "unregistered",
+    CheckedIn = "checkedIn",
+    /** The device did not check in when expected */
+    CheckInMissed = "checkInMissed",
+}
+
+export enum OtaUpdateStatus {
+    /** The device downloaded the update and is installing it, it restarts when done */
+    Applying = "applying",
+    /** The update failed or was cancelled */
+    Failed = "failed",
 }
 
 export interface Message {

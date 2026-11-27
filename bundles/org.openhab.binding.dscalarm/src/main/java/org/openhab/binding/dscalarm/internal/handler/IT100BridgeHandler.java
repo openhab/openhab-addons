@@ -29,7 +29,6 @@ import org.openhab.core.io.transport.serial.SerialPortIdentifier;
 import org.openhab.core.io.transport.serial.SerialPortManager;
 import org.openhab.core.io.transport.serial.UnsupportedCommOperationException;
 import org.openhab.core.thing.Bridge;
-import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,8 +62,7 @@ public class IT100BridgeHandler extends DSCAlarmBaseBridgeHandler implements Ser
         IT100BridgeConfiguration configuration = getConfigAs(IT100BridgeConfiguration.class);
 
         if (configuration.serialPort == null || configuration.serialPort.trim().isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Set a serial port in the thing configuration.");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Set a serial port in the thing configuration.");
         } else {
             serialPortName = configuration.serialPort.trim();
             baudRate = configuration.baud.intValue();

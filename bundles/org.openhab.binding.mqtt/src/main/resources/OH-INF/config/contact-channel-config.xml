@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
+
+	<config-description uri="thing-type:mqtt:contact_channel">
+		<parameter-group name="transformations">
+			<label>Transform Values</label>
+			<description>These configuration parameters alter a received value before it is assigned to an item.</description>
+			<advanced>true</advanced>
+		</parameter-group>
+
+		<parameter name="stateTopic" type="text" required="true">
+			<label>MQTT State Topic</label>
+			<description>An MQTT topic that this channel subscribes to for Contact state updates.</description>
+		</parameter>
+		<parameter name="transformationPattern" type="text" groupName="transformations" multiple="true">
+			<label>Incoming Value Transformations</label>
+			<description>Applies transformations to an incoming MQTT topic value.</description>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="nullValue" type="text">
+			<label>NULL Value</label>
+			<description>If the received MQTT value matches this, treat it as NULL.</description>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="ignoreValue" type="text">
+			<label>Ignore Value</label>
+			<description>If the received MQTT value matches this, ignore the update.</description>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="on" type="text">
+			<label>Custom Open Value</label>
+			<description>An additional value that is recognized as OPEN.</description>
+		</parameter>
+		<parameter name="off" type="text">
+			<label>Custom Closed Value</label>
+			<description>An additional value that is recognized as CLOSED.</description>
+		</parameter>
+	</config-description>
+</config-description:config-descriptions>

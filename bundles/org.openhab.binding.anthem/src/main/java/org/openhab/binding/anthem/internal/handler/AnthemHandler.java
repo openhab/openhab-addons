@@ -94,13 +94,12 @@ public class AnthemHandler extends BaseThingHandler {
 
         if (!configuration.isValid()) {
             logger.debug("AnthemHandler: Config of thing '{}' is invalid", thing.getUID().getId());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/thing-status-detail-invalidconfig");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/thing-status-detail-invalidconfig");
             return;
         }
         reconnectIntervalMinutes = configuration.reconnectIntervalMinutes;
         commandDelayMsec = configuration.commandDelayMsec;
-        updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "@text/thing-status-detail-connecting");
+        updateStatus(ThingStatus.UNKNOWN, "@text/thing-status-detail-connecting");
         asyncInitializeTask = scheduler.submit(this::connect);
     }
 
@@ -223,20 +222,17 @@ public class AnthemHandler extends BaseThingHandler {
             reader = new BufferedReader(new InputStreamReader(socket.getInputStream(), StandardCharsets.ISO_8859_1));
             this.socket = socket;
         } catch (UnknownHostException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/thing-status-detail-unknownhost");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/thing-status-detail-unknownhost");
             return;
         } catch (IllegalArgumentException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/thing-status-detail-invalidport");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/thing-status-detail-invalidport");
             return;
         } catch (InterruptedIOException e) {
             logger.debug("Interrupted while establishing Anthem connection");
             Thread.currentThread().interrupt();
             return;
         } catch (IOException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/thing-status-detail-openerror");
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/thing-status-detail-openerror");
             logger.debug("Error opening Anthem connection: {}", e.getMessage());
             disconnect();
             scheduleConnectRetry(reconnectIntervalMinutes);
@@ -345,12 +341,11 @@ public class AnthemHandler extends BaseThingHandler {
                     }
                 } catch (InterruptedIOException e) {
                     logger.debug("Interrupted while sending command");
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "@text/thing-status-detail-interrupted");
+                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/thing-status-detail-interrupted");
                     break;
                 } catch (IOException e) {
                     logger.debug("Communication error, will try to reconnect. Error: {}", e.getMessage());
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR);
                     // Requeue the command and try to reconnect
                     sendQueue.add(command);
                     reconnect();
@@ -390,12 +385,10 @@ public class AnthemHandler extends BaseThingHandler {
             }
         } catch (InterruptedIOException e) {
             logger.debug("Interrupted while reading");
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/thing-status-detail-interrupted");
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/thing-status-detail-interrupted");
         } catch (IOException e) {
             logger.debug("I/O error while reading from socket: {}", e.getMessage());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/thing-status-detail-ioexception");
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/thing-status-detail-ioexception");
         } finally {
             logger.debug("Reader thread exiting");
         }

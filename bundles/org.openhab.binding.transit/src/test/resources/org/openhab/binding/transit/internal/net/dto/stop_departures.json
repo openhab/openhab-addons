@@ -1,0 +1,198 @@
+{
+  "route_departures": [
+    {
+      "alerts": [],
+      "compact_display_short_name": {
+        "boxed_text": "",
+        "elements": [
+          null,
+          "43",
+          null
+        ],
+        "route_name_redundancy": false
+      },
+      "fares": [],
+      "global_route_id": "VVSDE:247174",
+      "global_stop_id": "VVSDE:2298",
+      "merged_itineraries": [
+        {
+          "closest_stop": {
+            "city_name": "Stuttgart",
+            "global_stop_id": "VVSDE:2298",
+            "location_type": 0,
+            "parent_station": null,
+            "raw_stop_id": "de:08111:6075:7:3",
+            "route_type": 3,
+            "rt_stop_id": "de:08111:6075:7:3",
+            "stop_code": "",
+            "stop_lat": 48.77539382453879,
+            "stop_lon": 9.182816054464238,
+            "stop_name": "Charlottenplatz",
+            "wheelchair_boarding": 0
+          },
+          "direction_id": 0,
+          "itineraries": [
+            {
+              "branch_code": "",
+              "canonical_itinerary": true,
+              "direction_headsign": "Feuersee",
+              "direction_id": 0,
+              "headsign": "Feuersee",
+              "internal_itinerary_id": "44",
+              "is_active": true,
+              "merged_headsign": "Feuersee"
+            }
+          ],
+          "schedule_items": [
+            {
+              "arrival_time": 1792919064,
+              "departure_time": 1792919064,
+              "internal_itinerary_id": "44",
+              "is_cancelled": false,
+              "is_last": false,
+              "is_real_time": true,
+              "rt_trip_id": "de:vvs:30043_:.vvs-30-43.1.T3.12.j26",
+              "scheduled_arrival_time": 1792919040,
+              "scheduled_departure_time": 1792919040,
+              "trip_search_key": "VVSDE:53038040:44:4:11",
+              "wheelchair_accessible": 0
+            },
+            {
+              "arrival_time": 1792919958,
+              "departure_time": 1792919958,
+              "internal_itinerary_id": "44",
+              "is_cancelled": false,
+              "is_last": false,
+              "is_real_time": true,
+              "rt_trip_id": "de:vvs:30043_:.vvs-30-43.1.T3.13.j26",
+              "scheduled_arrival_time": 1792919940,
+              "scheduled_departure_time": 1792919940,
+              "trip_search_key": "VVSDE:53038040:44:4:12",
+              "wheelchair_accessible": 0
+            },
+            {
+              "arrival_time": 1792920840,
+              "departure_time": 1792920840,
+              "internal_itinerary_id": "44",
+              "is_cancelled": false,
+              "is_last": false,
+              "is_real_time": true,
+              "rt_trip_id": "de:vvs:30043_:.vvs-30-43.1.T3.14.j26",
+              "scheduled_arrival_time": 1792920840,
+              "scheduled_departure_time": 1792920840,
+              "trip_search_key": "VVSDE:53038040:44:4:13",
+              "wheelchair_accessible": 0
+            },
+            {
+              "arrival_time": 1792921740,
+              "departure_time": 1792921740,
+              "internal_itinerary_id": "44",
+              "is_cancelled": false,
+              "is_last": false,
+              "is_real_time": true,
+              "rt_trip_id": "de:vvs:30043_:.vvs-30-43.1.T3.15.j26",
+              "scheduled_arrival_time": 1792921740,
+              "scheduled_departure_time": 1792921740,
+              "trip_search_key": "VVSDE:53038040:44:4:14",
+              "wheelchair_accessible": 0
+            },
+            {
+              "arrival_time": 1792922640,
+              "departure_time": 1792922640,
+              "internal_itinerary_id": "44",
+              "is_cancelled": false,
+              "is_last": false,
+              "is_real_time": true,
+              "rt_trip_id": "de:vvs:30043_:.vvs-30-43.1.T3.16.j26",
+              "scheduled_arrival_time": 1792922640,
+              "scheduled_departure_time": 1792922640,
+              "trip_search_key": "VVSDE:53038040:44:4:15",
+              "wheelchair_accessible": 0
+            },
+            {
+              "arrival_time": 1792923540,
+              "departure_time": 1792923540,
+              "internal_itinerary_id": "44",
+              "is_cancelled": false,
+              "is_last": false,
+              "is_real_time": true,
+              "rt_trip_id": "de:vvs:30043_:.vvs-30-43.1.T3.17.j26",
+              "scheduled_arrival_time": 1792923540,
+              "scheduled_departure_time": 1792923540,
+              "trip_search_key": "VVSDE:53038040:44:4:16",
+              "wheelchair_accessible": 0
+            },
+            {
+              "arrival_time": 1792924440,
+              "departure_time": 1792924440,
+              "internal_itinerary_id": "44",
+              "is_cancelled": false,
+              "is_last": false,
+              "is_real_time": false,
+              "rt_trip_id": "de:vvs:30043_:.vvs-30-43.1.T3.18.j26",
+              "scheduled_arrival_time": 1792924440,
+              "scheduled_departure_time": 1792924440,
+              "trip_search_key": "VVSDE:53038040:44:4:17",
+              "wheelchair_accessible": 0
+            },
+            {
+              "arrival_time": 1792925340,
+              "departure_time": 1792925340,
+              "internal_itinerary_id": "44",
+              "is_cancelled": false,
+              "is_last": false,
+              "is_real_time": false,
+              "rt_trip_id": "de:vvs:30043_:.vvs-30-43.1.T3.19.j26",
+              "scheduled_arrival_time": 1792925340,
+              "scheduled_departure_time": 1792925340,
+              "trip_search_key": "VVSDE:53038040:44:4:18",
+              "wheelchair_accessible": 0
+            },
+            {
+              "arrival_time": 1792926240,
+              "departure_time": 1792926240,
+              "internal_itinerary_id": "44",
+              "is_cancelled": false,
+              "is_last": true,
+              "is_real_time": false,
+              "rt_trip_id": "de:vvs:30043_:.vvs-30-43.1.T3.20.j26",
+              "scheduled_arrival_time": 1792926240,
+              "scheduled_departure_time": 1792926240,
+              "trip_search_key": "VVSDE:53038040:44:4:19",
+              "wheelchair_accessible": 0
+            }
+          ]
+        }
+      ],
+      "mode_key": "Bus",
+      "mode_name": "Raftaxi",
+      "real_time_route_id": "de:vvs:30043_:",
+      "route_color": "c31924",
+      "route_display_short_name": {
+        "boxed_text": "",
+        "elements": [
+          null,
+          "43",
+          null
+        ],
+        "route_name_redundancy": false
+      },
+      "route_image": "",
+      "route_long_name": "Pragsattel - Rotebühlplatz (Stadtmitte) - Feuersee",
+      "route_network_id": "VVS|Stuttgart",
+      "route_network_name": "VVS",
+      "route_short_name": "43",
+      "route_text_color": "ffffff",
+      "route_timezone": "Europe/Berlin",
+      "route_type": 3,
+      "sorting_key": "43",
+      "tts_long_name": "Pragsattel - Rotebühlplatz (Stadtmitte) - Feuersee",
+      "tts_short_name": "43",
+      "vehicle": {
+        "image": "bus-new",
+        "name": "Bus",
+        "name_inflection": "m"
+      }
+    }
+  ]
+}

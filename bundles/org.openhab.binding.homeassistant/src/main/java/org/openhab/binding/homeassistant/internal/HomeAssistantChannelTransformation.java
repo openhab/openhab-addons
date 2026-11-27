@@ -102,7 +102,7 @@ public class HomeAssistantChannelTransformation extends ChannelTransformation {
                     : python.renderValueTemplate(template, value, defaultValue);
         } catch (PolyglotException e) {
             logger.warn("Applying template for component {} failed: {}", component.getHaID().toShortTopic(),
-                    e.getMessage(), e);
+                    e.getMessage());
             return null;
         }
     }
@@ -113,7 +113,7 @@ public class HomeAssistantChannelTransformation extends ChannelTransformation {
                     : python.renderValueTemplate(template, value, defaultValue, variables);
         } catch (PolyglotException e) {
             logger.warn("Applying template for component {} failed: {}", component.getHaID().toShortTopic(),
-                    e.getMessage(), e);
+                    e.getMessage());
             return null;
         }
     }

@@ -11,9 +11,9 @@
 		<parameter name="allowSystemPings" type="boolean">
 			<default>true</default>
 			<label>Allow System Pings</label>
-			<description>Allows or disallows to use system pings next to the java integrated ping functionality.
-				On windows the
-				system ping works more reliable most of the time.</description>
+			<description>Allows or disallows to use system pings instead of the Java integrated ping functionality.
+				On Windows the
+				system ping works more reliably most of the time.</description>
 		</parameter>
 		<parameter name="allowDHCPlisten" type="boolean">
 			<default>true</default>

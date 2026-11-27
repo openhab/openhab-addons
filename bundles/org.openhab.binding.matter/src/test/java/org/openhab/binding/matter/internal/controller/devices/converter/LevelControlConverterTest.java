@@ -32,6 +32,7 @@ import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelGroupUID;
+import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.types.StateDescription;
 
 /**
@@ -52,7 +53,21 @@ class LevelControlConverterTest extends BaseMatterConverterTest {
     @BeforeEach
     void setUp() {
         super.setUp();
+        mockCluster.featureMap = new LevelControlCluster.FeatureMap(true, true, false);
         converter = new LevelControlConverter(mockCluster, mockHandler, 1, "TestLabel");
+    }
+
+    private LevelControlConverter nonLightingConverter() {
+        mockCluster.featureMap = new LevelControlCluster.FeatureMap(true, false, false);
+        return new LevelControlConverter(mockCluster, mockHandler, 1, "TestLabel");
+    }
+
+    private void sendLevel(LevelControlConverter converter, int level) {
+        AttributeChangedMessage message = new AttributeChangedMessage();
+        message.path = new Path();
+        message.path.attributeName = LevelControlCluster.ATTRIBUTE_CURRENT_LEVEL;
+        message.value = level;
+        converter.onEvent(message);
     }
 
     @Test
@@ -106,5 +121,37 @@ class LevelControlConverterTest extends BaseMatterConverterTest {
         mockCluster.currentLevel = 254;
         converter.initState(false);
         verify(mockHandler, times(1)).updateState(eq(1), eq("levelcontrol-level"), eq(OnOffType.OFF));
+    }
+
+    @Test
+    void testLitLightAtItsDimmestIsNotReportedAsOff() {
+        mockCluster.currentLevel = 254;
+        converter.initState(true);
+        sendLevel(converter, 1);
+        verify(mockHandler, times(1)).updateState(eq(1), eq("levelcontrol-level"), eq(new PercentType(1)));
+    }
+
+    @Test
+    void testZeroPercentTurnsOffALight() {
+        converter.handleCommand(new ChannelUID("matter:node:test:12345:1#levelcontrol-level"), PercentType.ZERO);
+        verify(mockHandler, times(1)).sendClusterCommand(eq(1), eq(OnOffCluster.CLUSTER_NAME), eq(OnOffCluster.off()));
+    }
+
+    @Test
+    void testZeroPercentMovesANonLightingDeviceToLevelZero() {
+        // Without the Lighting feature level 0 is valid, and is how the device is turned off
+        LevelControlConverter converter = nonLightingConverter();
+        converter.handleCommand(new ChannelUID("matter:node:test:12345:1#levelcontrol-level"), PercentType.ZERO);
+        verify(mockHandler, times(1)).sendClusterCommand(eq(1), eq(LevelControlCluster.CLUSTER_NAME),
+                eq(LevelControlCluster.moveToLevelWithOnOff(0, 0, null, null)));
+    }
+
+    @Test
+    void testNonLightingLevelZeroIsReportedAsZeroPercent() {
+        LevelControlConverter converter = nonLightingConverter();
+        mockCluster.currentLevel = 254;
+        converter.initState(true);
+        sendLevel(converter, 0);
+        verify(mockHandler, times(1)).updateState(eq(1), eq("levelcontrol-level"), eq(PercentType.ZERO));
     }
 }

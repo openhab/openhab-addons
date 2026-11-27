@@ -23,9 +23,9 @@ import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.Request;
 import org.json.JSONArray;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -79,6 +79,11 @@ public class MSpaBaseAccountTest {
         @Override
         public void updateStatus(ThingStatus status) {
             updateStatus(status, ThingStatusDetail.NONE, null);
+        }
+
+        @Override
+        protected void updateStatus(ThingStatusDetail statusDetail, @Nullable String message) {
+            updateStatus(ThingStatus.OFFLINE, statusDetail, message);
         }
 
         @Override

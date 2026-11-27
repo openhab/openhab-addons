@@ -1,0 +1,54 @@
+[
+    {
+        "id": 2,
+        "type": 5,
+        "name": "TGl2aW5nIExlZnQ=",
+        "ptName": "Living Left",
+        "motion": null,
+        "capabilities": 0,
+        "powerType": 11,
+        "batteryStatus": 3,
+        "roomId": 1,
+        "firmware": {
+            "revision": 3,
+            "subRevision": 0,
+            "build": 428
+        },
+        "positions": {
+            "primary": 0,
+            "secondary": 0,
+            "tilt": 0,
+            "velocity": 0
+        },
+        "signalStrength": -34,
+        "bleName": "ROL:1A2B",
+        "shadeGroupIds": [
+        ]
+    },
+    {
+        "id": 7,
+        "type": 5,
+        "name": "TGl2aW5nIFJpZ2h0",
+        "ptName": "Living Right",
+        "motion": null,
+        "capabilities": 0,
+        "powerType": 12,
+        "batteryStatus": 3,
+        "roomId": 1,
+        "firmware": {
+            "revision": 3,
+            "subRevision": 0,
+            "build": 428
+        },
+        "positions": {
+            "primary": 0,
+            "secondary": 0,
+            "tilt": 0,
+            "velocity": 0
+        },
+        "signalStrength": -41,
+        "bleName": "ROL:3C4D",
+        "shadeGroupIds": [
+        ]
+    }
+]

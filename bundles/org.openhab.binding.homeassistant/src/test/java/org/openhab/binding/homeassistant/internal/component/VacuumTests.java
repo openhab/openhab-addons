@@ -77,10 +77,10 @@ public class VacuumTests extends AbstractComponentTests {
 
         linkAllChannels(component);
 
-        assertState(component, Vacuum.STATE_CH_ID, UnDefType.UNDEF);
-        assertState(component, Vacuum.FAN_SPEED_CH_ID, UnDefType.UNDEF);
-        assertState(component, Vacuum.BATTERY_LEVEL_CH_ID, UnDefType.UNDEF);
-        assertState(component, Vacuum.JSON_ATTRIBUTES_CH_ID, UnDefType.UNDEF);
+        assertState(component, Vacuum.STATE_CH_ID, UnDefType.NULL);
+        assertState(component, Vacuum.FAN_SPEED_CH_ID, UnDefType.NULL);
+        assertState(component, Vacuum.BATTERY_LEVEL_CH_ID, UnDefType.NULL);
+        assertState(component, Vacuum.JSON_ATTRIBUTES_CH_ID, UnDefType.NULL);
 
         // @formatter:off
         String jsonValue;

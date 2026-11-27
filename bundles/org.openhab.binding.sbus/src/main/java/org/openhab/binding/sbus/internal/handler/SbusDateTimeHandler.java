@@ -55,8 +55,7 @@ public class SbusDateTimeHandler extends AbstractSbusHandler {
     protected void pollDevice() {
         final SbusService adapter = super.sbusAdapter;
         if (adapter == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/error.device.adapter-not-initialized");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.device.adapter-not-initialized");
             return;
         }
 
@@ -66,8 +65,7 @@ public class SbusDateTimeHandler extends AbstractSbusHandler {
             updateState(new ChannelUID(getThing().getUID(), CHANNEL_DATETIME), new DateTimeType(deviceTime));
             updateStatus(ThingStatus.ONLINE);
         } catch (IllegalStateException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/error.device.communication");
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/error.device.communication");
             logger.warn("Error polling date/time from device {}: {}", getThing().getUID(), e.getMessage());
         }
     }
@@ -80,8 +78,7 @@ public class SbusDateTimeHandler extends AbstractSbusHandler {
 
         final SbusService adapter = super.sbusAdapter;
         if (adapter == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/error.device.adapter-not-initialized");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.device.adapter-not-initialized");
             return;
         }
 
@@ -93,8 +90,7 @@ public class SbusDateTimeHandler extends AbstractSbusHandler {
                 updateState(channelUID, dateTimeCommand);
                 updateStatus(ThingStatus.ONLINE);
             } catch (IllegalStateException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "@text/error.device.send-command");
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/error.device.send-command");
                 logger.warn("Error writing date/time to device {}: {}", getThing().getUID(), e.getMessage());
             }
         }

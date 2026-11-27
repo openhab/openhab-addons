@@ -212,6 +212,12 @@ public class MiIoBasicChannel {
         this.refresh = refresh;
     }
 
+    /**
+     * Interval for reading the channel, as number of polling cycles. 1 (default) is every cycle. A negative value
+     * means the channel is read only once: after the thing is initialized or a refresh of the channel is requested.
+     *
+     * @return the refresh interval
+     */
     public Integer getRefreshInterval() {
         Integer refreshInterval = this.refreshInterval;
         if (refreshInterval != null) {

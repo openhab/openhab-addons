@@ -104,7 +104,7 @@ public class ChromecastCommander {
             }
         } catch (IOException ex) {
             logger.debug("Failed to request status: {}", ex.getMessage());
-            statusUpdater.updateStatus(ThingStatus.OFFLINE, COMMUNICATION_ERROR, ex.getMessage());
+            statusUpdater.updateStatus(COMMUNICATION_ERROR, ex.getMessage());
             scheduler.cancelRefresh();
             return;
         }
@@ -133,7 +133,7 @@ public class ChromecastCommander {
                 app = chromeCast.getRunningApp();
             } catch (final IOException e) {
                 logger.info("{} command failed: {}", command, e.getMessage());
-                statusUpdater.updateStatus(ThingStatus.OFFLINE, COMMUNICATION_ERROR, e.getMessage());
+                statusUpdater.updateStatus(COMMUNICATION_ERROR, e.getMessage());
                 return;
             }
 
@@ -192,7 +192,7 @@ public class ChromecastCommander {
 
         } catch (final IOException e) {
             logger.debug("{} command failed: {}", command, e.getMessage());
-            statusUpdater.updateStatus(ThingStatus.OFFLINE, COMMUNICATION_ERROR, e.getMessage());
+            statusUpdater.updateStatus(COMMUNICATION_ERROR, e.getMessage());
         }
     }
 
@@ -214,7 +214,7 @@ public class ChromecastCommander {
             statusUpdater.updateStatus(ThingStatus.ONLINE);
         } catch (final IOException ex) {
             logger.debug("Set volume failed: {}", ex.getMessage());
-            statusUpdater.updateStatus(ThingStatus.OFFLINE, COMMUNICATION_ERROR, ex.getMessage());
+            statusUpdater.updateStatus(COMMUNICATION_ERROR, ex.getMessage());
         }
     }
 
@@ -226,7 +226,7 @@ public class ChromecastCommander {
                 statusUpdater.updateStatus(ThingStatus.ONLINE);
             } catch (final IOException ex) {
                 logger.debug("Mute/unmute volume failed: {}", ex.getMessage());
-                statusUpdater.updateStatus(ThingStatus.OFFLINE, COMMUNICATION_ERROR, ex.getMessage());
+                statusUpdater.updateStatus(COMMUNICATION_ERROR, ex.getMessage());
             }
         }
     }
@@ -291,7 +291,7 @@ public class ChromecastCommander {
                 logger.warn("Unable to load media: {}", url);
             } else {
                 logger.debug("Failed playing media: {}", e.getMessage());
-                statusUpdater.updateStatus(ThingStatus.OFFLINE, COMMUNICATION_ERROR,
+                statusUpdater.updateStatus(COMMUNICATION_ERROR,
                         "IOException while trying to play media: " + e.getMessage());
             }
         }

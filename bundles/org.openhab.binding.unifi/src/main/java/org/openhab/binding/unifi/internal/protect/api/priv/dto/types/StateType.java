@@ -23,6 +23,9 @@ public enum StateType {
     @SerializedName("CONNECTED")
     CONNECTED,
 
+    @SerializedName("CONNECTING")
+    CONNECTING,
+
     @SerializedName("DISCONNECTED")
     DISCONNECTED,
 

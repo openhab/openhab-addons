@@ -14,12 +14,14 @@ package org.openhab.binding.solarman.internal;
 
 import static org.openhab.binding.solarman.internal.SolarmanBindingConstants.DYNAMIC_CHANNEL;
 
+import java.time.Duration;
 import java.util.AbstractMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -39,6 +41,7 @@ import org.openhab.binding.solarman.internal.modbus.SolarmanProtocolFactory;
 import org.openhab.binding.solarman.internal.updater.SolarmanChannelUpdater;
 import org.openhab.binding.solarman.internal.updater.SolarmanProcessResult;
 import org.openhab.binding.solarman.internal.updater.SolarmanRegisterUpdater;
+import org.openhab.binding.solarman.internal.util.DebouncedTask;
 import org.openhab.binding.solarman.internal.util.ParserUtils;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -48,6 +51,7 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.types.Command;
+import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -59,7 +63,11 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class SolarmanLoggerHandler extends BaseThingHandler {
+    private static final Duration WRITE_REFRESH_DELAY = Duration.ofSeconds(2);
+
     private final Logger logger = LoggerFactory.getLogger(SolarmanLoggerHandler.class);
+    // Incremented on initialize() and dispose(); polls of an earlier lifecycle must not touch the logger or the thing
+    private final AtomicInteger lifecycleGeneration = new AtomicInteger();
 
     private final DefinitionParser definitionParser;
     private final SolarmanChannelManager solarmanChannelManager;
@@ -67,6 +75,8 @@ public class SolarmanLoggerHandler extends BaseThingHandler {
     private volatile ScheduledFuture<?> scheduledFuture;
     @Nullable
     private SolarmanRegisterUpdater solarmanRegisterUpdater;
+    @Nullable
+    private volatile DebouncedTask writeRefresh;
 
     public SolarmanLoggerHandler(Thing thing) {
         super(thing);
@@ -82,11 +92,18 @@ public class SolarmanLoggerHandler extends BaseThingHandler {
             solarmanRegisterUpdater.updateLoggerRegisters(channelUID, command);
         } else {
             logger.error("SolarmanRegisterUpdater is not initialized yet");
+            return;
+        }
+
+        DebouncedTask writeRefresh = this.writeRefresh;
+        if (!(command instanceof RefreshType) && writeRefresh != null) {
+            writeRefresh.trigger();
         }
     }
 
     @Override
     public void initialize() {
+        final int generation = lifecycleGeneration.incrementAndGet();
         updateStatus(ThingStatus.UNKNOWN);
 
         SolarmanLoggerConfiguration config = getConfigAs(SolarmanLoggerConfiguration.class);
@@ -98,7 +115,7 @@ public class SolarmanLoggerHandler extends BaseThingHandler {
         InverterDefinition inverterDefinition = definitionParser.parseDefinition(config.inverterType);
 
         if (inverterDefinition == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                     "Unable to find a definition for the provided inverter type");
             return;
         } else {
@@ -123,31 +140,47 @@ public class SolarmanLoggerHandler extends BaseThingHandler {
 
         solarmanRegisterUpdater = new SolarmanRegisterUpdater(paramToChannelMapping, solarmanLoggerConnector,
                 solarmanProtocol);
-        SolarmanChannelUpdater solarmanChannelUpdater = new SolarmanChannelUpdater(this::updateState);
+        SolarmanChannelUpdater solarmanChannelUpdater = new SolarmanChannelUpdater((channelUID, state) -> {
+            if (isCurrent(generation)) {
+                updateState(channelUID, state);
+            }
+        });
 
-        scheduledFuture = scheduler
-                .scheduleWithFixedDelay(
-                        () -> queryLoggerAndUpdateState(solarmanLoggerConnector, solarmanProtocol, mergedRequests,
-                                paramToChannelMapping, solarmanChannelUpdater),
-                        0, config.refreshInterval, TimeUnit.SECONDS);
+        Runnable poll = () -> queryLogger(generation, solarmanLoggerConnector, solarmanProtocol, mergedRequests,
+                paramToChannelMapping, solarmanChannelUpdater);
+        writeRefresh = new DebouncedTask(scheduler, poll, WRITE_REFRESH_DELAY);
+        scheduledFuture = scheduler.scheduleWithFixedDelay(poll, 0, config.refreshInterval, TimeUnit.SECONDS);
     }
 
-    private void queryLoggerAndUpdateState(SolarmanLoggerConnector solarmanLoggerConnector,
+    private synchronized void queryLogger(int generation, SolarmanLoggerConnector solarmanLoggerConnector,
             SolarmanProtocol solarmanProtocol, List<Request> mergedRequests,
             Map<ParameterItem, ChannelUID> paramToChannelMapping, SolarmanChannelUpdater solarmanChannelUpdater) {
+        // A poll that was already running or waiting for the monitor when the handler was disposed
+        if (!isCurrent(generation)) {
+            return;
+        }
+
         try {
             SolarmanProcessResult solarmanProcessResult = solarmanChannelUpdater.fetchDataFromLogger(mergedRequests,
                     solarmanLoggerConnector, solarmanProtocol, paramToChannelMapping);
 
+            if (!isCurrent(generation)) {
+                return;
+            }
             if (solarmanProcessResult.hasSuccessfulResponses()) {
                 updateStatus(ThingStatus.ONLINE);
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        solarmanProcessResult.toString());
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, solarmanProcessResult.toString());
             }
         } catch (Exception e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            if (isCurrent(generation)) {
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            }
         }
+    }
+
+    private boolean isCurrent(int generation) {
+        return generation == lifecycleGeneration.get();
     }
 
     private <K, V> Map<K, V> mergeMaps(Map<K, V> map1, Map<K, V> map2) {
@@ -221,7 +254,14 @@ public class SolarmanLoggerHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
+        lifecycleGeneration.incrementAndGet();
         super.dispose();
+
+        DebouncedTask writeRefresh = this.writeRefresh;
+        if (writeRefresh != null) {
+            writeRefresh.cancel();
+            this.writeRefresh = null;
+        }
 
         ScheduledFuture<?> scheduledFuture = this.scheduledFuture;
         if (scheduledFuture != null) {

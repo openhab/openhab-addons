@@ -14,6 +14,7 @@ package org.openhab.binding.melcloud.internal.config;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.melcloud.internal.logging.SensitiveDataMasker;
 
 /**
  * Config class for an A.C. device.
@@ -30,6 +31,9 @@ public class AcDeviceConfig {
 
     @Override
     public String toString() {
-        return "[deviceID=" + deviceID + ", buildingID=" + buildingID + ", pollingInterval=" + pollingInterval + "]";
+        Integer building = buildingID;
+        return "[deviceID=" + SensitiveDataMasker.maskId(deviceID.toString()) + ", buildingID="
+                + (building == null ? "null" : SensitiveDataMasker.maskId(building.toString())) + ", pollingInterval="
+                + pollingInterval + "]";
     }
 }

@@ -457,7 +457,7 @@ public class LinkTapHandler extends PollingDeviceHandler {
                 final LinkTapBridgeHandler bridge = (LinkTapBridgeHandler) getBridgeHandler();
                 if (bridge != null) {
                     if (bridge.getThing().getStatus().equals(ThingStatus.OFFLINE)) {
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+                        updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
                         return;
                     }
                     initAfterBridge(bridge);

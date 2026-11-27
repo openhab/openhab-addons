@@ -59,10 +59,10 @@ public class FineOffsetGatewayQueryService extends TcpGatewayQueryService {
     }
 
     @Override
-    public Map<SensorGatewayBinding, SensorDevice> getRegisteredSensors() {
+    public @Nullable Map<SensorGatewayBinding, SensorDevice> getRegisteredSensors() {
         var data = executeCommand(Command.CMD_READ_SENSOR_ID_NEW);
         if (null == data) {
-            return Map.of();
+            return null;
         }
         return fineOffsetDataParser.getRegisteredSensors(data, () -> {
             @Nullable
@@ -85,22 +85,25 @@ public class FineOffsetGatewayQueryService extends TcpGatewayQueryService {
     }
 
     @Override
-    public Collection<MeasuredValue> getMeasuredValues() {
+    public @Nullable Collection<MeasuredValue> getMeasuredValues() {
         Map<String, MeasuredValue> valuePerChannel = new LinkedHashMap<>();
 
         byte[] data = executeCommand(Command.CMD_GW1000_LIVEDATA);
-        if (data != null) {
-            DebugDetails debugDetails = new DebugDetails(data, Command.CMD_GW1000_LIVEDATA, PROTOCOL);
-            List<MeasuredValue> measuredValues = fineOffsetDataParser.getMeasuredValues(data, debugDetails);
-            for (MeasuredValue measuredValue : measuredValues) {
-                valuePerChannel.put(measuredValue.getChannelId(), measuredValue);
-            }
-            logger.trace("{}", debugDetails);
+        // Live data carries nearly all measurands: without it the poll counts as failed. A failed rain read alone is
+        // tolerated, as not every gateway supports it.
+        if (data == null) {
+            return null;
         }
+        DebugDetails debugDetails = new DebugDetails(data, Command.CMD_GW1000_LIVEDATA, PROTOCOL);
+        List<MeasuredValue> measuredValues = fineOffsetDataParser.getMeasuredValues(data, debugDetails);
+        for (MeasuredValue measuredValue : measuredValues) {
+            valuePerChannel.put(measuredValue.getChannelId(), measuredValue);
+        }
+        logger.trace("{}", debugDetails);
 
         data = executeCommand(Command.CMD_READ_RAIN);
         if (data != null) {
-            DebugDetails debugDetails = new DebugDetails(data, Command.CMD_READ_RAIN, PROTOCOL);
+            debugDetails = new DebugDetails(data, Command.CMD_READ_RAIN, PROTOCOL);
             List<MeasuredValue> measuredRainValues = fineOffsetDataParser.getRainData(data, debugDetails);
             for (MeasuredValue measuredValue : measuredRainValues) {
                 valuePerChannel.put(measuredValue.getChannelId(), measuredValue);
@@ -112,6 +115,6 @@ public class FineOffsetGatewayQueryService extends TcpGatewayQueryService {
     }
 
     protected byte @Nullable [] executeCommand(Command command) {
-        return executeCommand(command.name(), command.getPayload(), command::isResponseValid);
+        return executeCommand(command.name(), command.getPayload(), command.getSizeBytes(), command::isResponseValid);
     }
 }

@@ -58,13 +58,13 @@ public class It4WifiConnector extends Thread {
                     if (data == STX) {
                         buffer = "";
                     } else if (data == ETX) {
-                        handler.received(buffer);
+                        handler.received(this, buffer);
                     } else {
                         buffer += (char) data;
                     }
                 }
             } catch (IOException e) {
-                handler.communicationError(e.toString());
+                handler.communicationError(this, e.toString());
                 interrupt();
             }
         }
@@ -85,7 +85,7 @@ public class It4WifiConnector extends Thread {
             out.write(STX + command + ETX);
             out.flush();
         } catch (IOException e) {
-            handler.communicationError(e.toString());
+            handler.communicationError(this, e.toString());
         }
     }
 

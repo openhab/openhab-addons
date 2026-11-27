@@ -16,7 +16,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * Holding configuration data for {@link AbstractArithmeticMathTransformationProfile).
+ * Holding configuration data for {@link AbstractArithmeticMathTransformationProfile}.
  *
  * @author Christoph Weitkamp - Initial contribution
  */

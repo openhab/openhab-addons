@@ -232,8 +232,8 @@ public class CloudConnector {
         }
     }
 
-    public @Nullable RawType getMap(String mapId, String country) throws MiCloudException {
-        logger.debug("Getting vacuum map {} from Xiaomi cloud server: '{}'", mapId, country);
+    public @Nullable RawType getMap(String mapId, String model, String country) throws MiCloudException {
+        logger.debug("Getting vacuum map {} ({}) from Xiaomi cloud server: '{}'", mapId, model, country);
         String mapCountry = "";
         Optional<String> mapUrl = Optional.empty();
         final @Nullable MiCloudConnector cl = this.cloudConnector;
@@ -245,7 +245,7 @@ public class CloudConnector {
             for (String mapCountryServer : this.country.split(",")) {
                 try {
                     mapCountry = mapCountryServer.trim().toLowerCase();
-                    mapUrl = cl.getMapUrl(mapId, mapCountry);
+                    mapUrl = cl.getMapUrl(mapId, model, mapCountry);
                     logger.debug("Map download from server {} returned {}", mapCountry, mapUrl);
                 } catch (MiCloudException e) {
                     logger.debug("Failed to get map from server '{}': {}", mapCountry, e.getMessage());
@@ -257,7 +257,7 @@ public class CloudConnector {
             }
         } else {
             mapCountry = country.trim().toLowerCase();
-            mapUrl = cl.getMapUrl(mapId, mapCountry);
+            mapUrl = cl.getMapUrl(mapId, model, mapCountry);
         }
         if (!mapUrl.isPresent() || mapUrl.get().isEmpty()) {
             logger.debug("Cannot download map data: Returned map URL is empty");

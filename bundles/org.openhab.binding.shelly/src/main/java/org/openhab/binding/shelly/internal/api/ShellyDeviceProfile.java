@@ -14,11 +14,14 @@ package org.openhab.binding.shelly.internal.api;
 
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
 import static org.openhab.binding.shelly.internal.ShellyDevices.*;
+import static org.openhab.binding.shelly.internal.api.ShellyApiLightUtil.*;
 import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.*;
+import static org.openhab.binding.shelly.internal.api2.dto.ShellyPresenceJsonDTO.*;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -27,6 +30,7 @@ import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.shelly.internal.api.ShellyApiLightUtil.ShellyLightApiComponent;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyInputState;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsDevice;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsDimmer;
@@ -73,12 +77,14 @@ public class ShellyDeviceProfile {
     public boolean alwaysOn = true;
     public boolean isGen2;
     public boolean isBlu;
+    public boolean capDebugLog; // true if the device's debug log can be streamed (Gen2+, reachable all the time)
     public String gateway = "";
 
     public String hwRev = "";
     public String hwBatchId = "";
     public String fwVersion = "";
     public String fwDate = "";
+    public String addOnFw = "";
 
     public boolean hasRelays; // true if it has at least 1 power meter
     public int numRelays = 0; // number of relays/outputs
@@ -94,8 +100,14 @@ public class ShellyDeviceProfile {
     public boolean isLight; // true if it is a Shelly Bulb/RGBW2
     public boolean isBulb; // true only if it is a Bulb
     public boolean isDuo; // true only if it is a Duo
+    public boolean isVintage; // true only for Shelly Vintage (isDuo, but fixed warm-white, no CCT)
     public boolean isRGBW2; // true only if it a RGBW2
+    public boolean isProRgbwwPm; // true only for a Shelly Pro RGBWW PM (device.profile alone can't tell it apart
+                                 // from a Plus RGBW PM running the same rgb/rgbw/light profile)
+    public boolean isPlusRgbwPm; // true only for a Shelly Plus RGBW PM
+    public boolean isRGBCCT; // true for Gen3 Multicolor Bulb with rgbcct:0 component (RGB + CCT mode switching)
     public boolean inColor; // true if bulb/rgbw2 is in color mode
+    public boolean hasLegacyLightChannels; // true if Thing already has deprecated Gen1 RGBW2 channel1..n groups
 
     public boolean isSensor; // true for HT & Smoke
     public boolean hasBattery; // true if battery device
@@ -112,6 +124,8 @@ public class ShellyDeviceProfile {
     public boolean isSmoke; // true for Shelly Smoke
     public boolean isFlood; // true for Shelly Flood (any generation)
     public boolean isWall; // true: Shelly Wall Display
+    public boolean isPresence; // true: Shelly Presence Gen4 (mmWave radar)
+    public String presenceMainZoneKey = SHELLY2_PRESENCE_ZONE_PREFIX + SHELLY2_PRESENCE_DEFAULT_ZONE_ID;
     public boolean is3EM; // true for Shelly 3EM and Pro 3EM
     public String floodAlarmMode = ""; // Flood Gen4: alarm mode from Flood.GetConfig
     public int reportHoldoff = 0; // Flood Gen4: report holdoff in seconds
@@ -122,11 +136,18 @@ public class ShellyDeviceProfile {
     public int minTemp = 0; // Bulb/Duo: Min Light Temp
     public int maxTemp = 0; // Bulb/Duo: Max Light Temp
 
+    public static final int MAX_WAKEUP_PERIOD_SECONDS = 24 * 3600; // longest configurable sleep period of a device
+    public int wakeupPeriod = 0; // wakeup period configured on the device in seconds, 0 if it has none
+    public boolean wakeupPeriodAssumed = false; // true while the period is a default the device did not report
+    public int learnedWakeupPeriod = 0; // longest wakeup period observed to exceed the configured one, in seconds
+    private int reportedWakeupPeriod = 0; // last wakeup period reported in a status update, in minutes
     public int updatePeriod = 2 * UPDATE_SETTINGS_INTERVAL_SECONDS + 10;
 
     public String coiotEndpoint = "";
 
     public Map<String, String> irCodes = new HashMap<>(); // Sense: list of stored IR codes
+    public Map<Integer, String> thermostatProfiles = new LinkedHashMap<>(); // Wall Display: schedule profile id -> name
+    public boolean thermostatProfilesLoaded; // Wall Display: thermostatProfiles was read from the device
 
     public ShellyDeviceProfile(ThingTypeUID thingTypeUID) {
         initFromThingType(thingTypeUID);
@@ -208,11 +229,16 @@ public class ShellyDeviceProfile {
     public void initFromThingType(ThingTypeUID thingTypeUID) {
         isBlu = isBluSeries(thingTypeUID); // e.g. SBBT for BLU Button
         isGen2 = isGeneration2(thingTypeUID);
+        thermostatProfilesLoaded = false;
 
         isDimmer = GROUP_DIMMER_THING_TYPES.contains(thingTypeUID);
         isBulb = THING_TYPE_SHELLYBULB.equals(thingTypeUID);
         isDuo = GROUP_DUO_THING_TYPES.contains(thingTypeUID);
+        isVintage = THING_TYPE_SHELLYVINTAGE.equals(thingTypeUID);
+        isRGBCCT = THING_TYPE_SHELLYPLUSCOLORBULB.equals(thingTypeUID);
         isRGBW2 = GROUP_RGBW2_THING_TYPES.contains(thingTypeUID);
+        isProRgbwwPm = THING_TYPE_SHELLYPRORGBWWPM.equals(thingTypeUID);
+        isPlusRgbwPm = THING_TYPE_SHELLYPLUSRGBWPM.equals(thingTypeUID);
         isLight = GROUP_LIGHT_THING_TYPES.contains(thingTypeUID);
         if (isLight) {
             minTemp = isBulb ? MIN_COLOR_TEMP_BULB : MIN_COLOR_TEMP_DUO;
@@ -234,16 +260,18 @@ public class ShellyDeviceProfile {
         isMultiButton = GROUP_MULTIBUTTON_THING_TYPES.contains(thingTypeUID);
         isTRV = THING_TYPE_SHELLYTRV.equals(thingTypeUID);
         isWall = GROUP_WALLDISPLAY_THING_TYPES.contains(thingTypeUID);
+        isPresence = GROUP_PRESENCE_THING_TYPES.contains(thingTypeUID);
         is3EM = GROUP_3EM_THING_TYPES.contains(thingTypeUID);
         isEM50 = THING_TYPE_SHELLYPROEM50.equals(thingTypeUID);
         isEM1 = GROUP_EM1_THING_TYPES.contains(thingTypeUID);
         isWS90 = THING_TYPE_SHELLYBLUWS90.equals(thingTypeUID);
 
         isSensor = isHT || isFlood || isDW || isSmoke || isGas || isButton || isMultiButton || isUNI || isMotion
-                || isSense || isTRV || isWall || isWS90;
+                || isSense || isTRV || isWall || isWS90 || isPresence;
         hasBattery = isHT || isFlood || isDW || isSmoke || isButton || isMotion || isTRV || isBlu;
         alwaysOn = !hasBattery || (isMotion && !isBlu) || isSense; // true means: device is reachable all the time (no
                                                                    // sleep mode)
+        capDebugLog = isGen2 && alwaysOn;
     }
 
     public void initializeInputs(ThingTypeUID thingTypeUID, String btnType) {
@@ -309,6 +337,77 @@ public class ShellyDeviceProfile {
         }
     }
 
+    /**
+     * Derive the watchdog timeout ({@link #updatePeriod}) from the wakeup period in the device settings. The wakeup
+     * period of a sleeping device can't be read on demand and Gen1 doesn't report it in status updates, so if unknown
+     * the longest period a device can be configured to is assumed.
+     */
+    public void updateWatchdogPeriod() {
+        wakeupPeriod = 0;
+        if (settings.sleepMode != null && !isTRV) {
+            // Sensor, usually 12h, H&T in USB mode 10min
+            int period = "m".equalsIgnoreCase(getString(settings.sleepMode.unit)) //
+                    ? settings.sleepMode.period * 60 // minutes
+                    : settings.sleepMode.period * 3600; // hours
+            wakeupPeriod = wakeupPeriodAssumed ? 0 : period;
+            applyWakeupPeriod(period);
+        } else if (!alwaysOn && !isTRV) {
+            // Sleeping device with unknown wakeup period
+            applyWakeupPeriod(MAX_WAKEUP_PERIOD_SECONDS);
+        } else if (settings.coiot != null && settings.coiot.updatePeriod != null) {
+            // Derive from CoAP update interval, usually 2*15+10s=40sec -> 70sec
+            updatePeriod = 2 * Math.max(UPDATE_SETTINGS_INTERVAL_SECONDS, getInteger(settings.coiot.updatePeriod)) + 10;
+        } else {
+            updatePeriod = 2 * UPDATE_SETTINGS_INTERVAL_SECONDS + 10;
+        }
+    }
+
+    private void applyWakeupPeriod(int period) {
+        // Proportional margin absorbs wakeup jitter that grows with the sleep interval, plus a fixed
+        // margin for the report round-trip itself
+        updatePeriod = (int) Math.round(Math.max(period, learnedWakeupPeriod) * 1.1) + 60;
+        if (isSmoke) {
+            // Smoke sensors wake up far less predictably than other sensors, grant an extra 30min
+            updatePeriod += 1800;
+        }
+    }
+
+    /**
+     * A sleeping device reported after a longer silence than the watchdog allows, so its real wakeup period is longer
+     * than assumed (e.g. changed on the device after the thing was initialized). Extend the watchdog accordingly.
+     *
+     * @param silenceSeconds time since the previous report of the device
+     * @return true if the watchdog period was extended
+     */
+    public boolean learnWakeupInterval(double silenceSeconds) {
+        if (alwaysOn || isTRV || silenceSeconds <= updatePeriod || silenceSeconds > MAX_WAKEUP_PERIOD_SECONDS) {
+            return false;
+        }
+        learnedWakeupPeriod = (int) Math.ceil(silenceSeconds);
+        updateWatchdogPeriod();
+        return true;
+    }
+
+    /**
+     * Apply the wakeup period a device reported in a status update. A learned period is only discarded when the
+     * reported period changed, a settings refresh or a report of the same period keeps it.
+     *
+     * @param periodMinutes wakeup period reported by the device
+     */
+    public void updateWakeupPeriod(int periodMinutes) {
+        ShellySensorSleepMode sleepMode = settings.sleepMode;
+        if (sleepMode == null) {
+            return;
+        }
+        if (periodMinutes != reportedWakeupPeriod) {
+            reportedWakeupPeriod = periodMinutes;
+            learnedWakeupPeriod = 0;
+        }
+        sleepMode.period = periodMinutes;
+        wakeupPeriodAssumed = false;
+        updateWatchdogPeriod();
+    }
+
     public String getControlGroup(int i) {
         if (i < 0) {
             logger.debug("{}: Invalid index {} for getControlGroup()", thingName, i);
@@ -325,8 +424,13 @@ public class ShellyDeviceProfile {
             return numRelays <= 1 ? CHANNEL_GROUP_RELAY_CONTROL : CHANNEL_GROUP_RELAY_CONTROL + idx;
         } else if (isRGBW2) {
             List<ShellySettingsRgbwLight> lights = settings.lights;
-            return lights == null || lights.size() <= 1 ? CHANNEL_GROUP_LIGHT_CONTROL
-                    : CHANNEL_GROUP_LIGHT_CHANNEL + idx;
+            int count = lights == null ? 0 : lights.size();
+            if (count <= 1 || (inColor && i == 0)) {
+                // count<=1: the single light/color component always lives in the bare "control" group.
+                // inColor && i==0: hybrid profile (color + secondary CCT/Light) - index 0 is the color slot.
+                return CHANNEL_GROUP_LIGHT_CONTROL;
+            }
+            return lightChannelGroupPrefix(this) + (idx - getColorComponentCount());
         } else if (isLight) {
             return CHANNEL_GROUP_LIGHT_CONTROL;
         } else if (isButton) {
@@ -345,6 +449,85 @@ public class ShellyDeviceProfile {
         return numMeters > 1 ? CHANNEL_GROUP_METER + (idx + 1) : CHANNEL_GROUP_METER;
     }
 
+    /**
+     * Inverse of {@link #getMeterGroup(int)}: "meter" is index 0, "meterN" is index N-1.
+     */
+    public static int getMeterIndex(String group) {
+        String suffix = group.startsWith(CHANNEL_GROUP_METER) ? group.substring(CHANNEL_GROUP_METER.length()) : "";
+        return !suffix.isEmpty() && suffix.chars().allMatch(Character::isDigit) ? Integer.parseInt(suffix) - 1 : 0;
+    }
+
+    /**
+     * Number of leading color-component slots in settings.lights (0 or 1 - no profile has more than one).
+     * Used to convert a device-local component id (as reported by the device, 0-based per component type,
+     * e.g. CCT:0/CCT:1 or Light:0/Light:1) into its index in the flat settings.lights list, where slot 0 is
+     * reserved for the color component (rgb0/rgbw0) whenever one is present.
+     */
+    public int getColorComponentCount() {
+        return inColor ? 1 : 0;
+    }
+
+    /**
+     * True when settings.lights[idx] is an RGB/RGBW color component, as opposed to a CCT/Light one - needed
+     * because a hybrid profile's (rgbcct, rgbx2light) secondary component(s) are not color even though the
+     * whole-profile inColor flag is true. Untagged (Gen1 RGBW2) entries fall back to that whole-profile flag.
+     */
+    public boolean hasColorTag(int idx) {
+        ShellyLightApiComponent tag = tagAt(settings.lights, idx);
+        return tag == ShellyLightApiComponent.NONE ? inColor : ShellyApiLightUtil.isColorComponent(tag);
+    }
+
+    /**
+     * Meter reset is only offered where the meter's component has a ResetCounters RPC: the Gen3 bulbs' CCT/RGBCCT
+     * and the RGB/RGBW/CCT components of the Plus/Pro RGBW PM have none, only the plain Light component does.
+     * On Gen2 RGBW2 devices each settings.lights entry is its own meter, so meterIdx is that list index.
+     */
+    public boolean supportsMeterReset(int meterIdx) {
+        if (isDuo) {
+            return false;
+        }
+        return !isGen2 || !isRGBW2 || tagAt(settings.lights, meterIdx) == ShellyLightApiComponent.LIGHT;
+    }
+
+    /**
+     * True when settings.lights[idx] is a CCT (color temperature) component - Gen2 only, untagged Gen1 entries are
+     * never CCT.
+     */
+    public boolean isCctComponent(int idx) {
+        return ShellyApiLightUtil.isCctComponent(tagAt(settings.lights, idx));
+    }
+
+    /**
+     * Converts a settings.lights index into the actual Shelly RPC component id - non-color components are
+     * shifted down by the leading color slot(s) (e.g. rgbcct's CCT:0 is at settings.lights index 1).
+     */
+    public int getLightComponentId(int idx) {
+        return hasColorTag(idx) ? idx : idx - getColorComponentCount();
+    }
+
+    /**
+     * The color-temperature range to use for settings.lights[idx]: a CCT component's own ct_range when the
+     * device reported one, otherwise the profile-wide default (see initFromThingType()).
+     */
+    public int getMinTemp(int idx) {
+        Integer componentMin = componentTemp(idx, true);
+        return componentMin != null ? componentMin : minTemp;
+    }
+
+    public int getMaxTemp(int idx) {
+        Integer componentMax = componentTemp(idx, false);
+        return componentMax != null ? componentMax : maxTemp;
+    }
+
+    private @Nullable Integer componentTemp(int idx, boolean min) {
+        List<ShellySettingsRgbwLight> lights = settings.lights;
+        if (lights == null || idx < 0 || idx >= lights.size()) {
+            return null;
+        }
+        ShellySettingsRgbwLight light = lights.get(idx);
+        return min ? light.minTemp : light.maxTemp;
+    }
+
     public String getInputGroup(int i) {
         int idx = i + 1; // group names are 1-based
         if (isRGBW2) {
@@ -355,19 +538,45 @@ public class ShellyDeviceProfile {
             return CHANNEL_GROUP_STATUS;
         } else if (isRoller) {
             return numRelays <= 2 ? CHANNEL_GROUP_ROL_CONTROL : CHANNEL_GROUP_ROL_CONTROL + idx;
-        } else {
-            // Device has 1 input per relay: 0=off, 1+2 depend on switch mode
-            return numRelays <= 1 ? CHANNEL_GROUP_RELAY_CONTROL : CHANNEL_GROUP_RELAY_CONTROL + idx;
+        } else if (isDimmer) {
+            List<ShellySettingsDimmer> dimmers = settings.dimmers;
+            if (dimmers != null) {
+                int numDimmer = dimmers.size();
+                if (numDimmer <= 1) {
+                    return CHANNEL_GROUP_RELAY_CONTROL;
+                }
+                int numChannels = numInputs / numDimmer; // Device has more than 1 dimmer
+                if (numChannels == 0) {
+                    return CHANNEL_GROUP_RELAY_CONTROL;
+                }
+                // Inputs might not divide evenly across dimmer channels (e.g. one channel configured
+                // with 2 buttons, another with 1); clamp so the extra inputs route to the last channel
+                // instead of computing an out-of-range group.
+                return CHANNEL_GROUP_RELAY_CONTROL + Math.min(numDimmer, 1 + (i / numChannels));
+            }
         }
+        // Device has 1 input per relay: 0=off, 1+2 depend on switch mode
+        return numRelays <= 1 ? CHANNEL_GROUP_RELAY_CONTROL : CHANNEL_GROUP_RELAY_CONTROL + idx;
     }
 
     public String getInputSuffix(int i) {
         int idx = i + 1; // channel names are 1-based
         if (isRGBW2 || isIX || isMultiButton) {
             return ""; // RGBW2 has only 1 channel
-        } else if (isRoller || isDimmer) {
+        } else if (isRoller) {
             // Roller has 2 relays, but it will be mapped to 1 roller with 2 inputs
-            // Dimmer has up to 2 inputs to control light
+            return String.valueOf(idx);
+        } else if (isDimmer) {
+            List<ShellySettingsDimmer> dimmers = settings.dimmers;
+            if (dimmers != null) {
+                int numDimmer = dimmers.size();
+                if (numDimmer <= 1) {
+                    return String.valueOf(idx);
+                }
+                int numChannels = numInputs / numDimmer; // inputs per dimmer channel, same as getInputGroup()
+                return String.valueOf(numChannels == 0 ? idx : (i % numChannels) + 1);
+            }
+            // Dimmer has up to 2 inputs to control light (Gen1 fallback, no dimmers list)
             return String.valueOf(idx);
         } else if (hasRelays) {
             return numRelays == 1 && numInputs >= 2 ? String.valueOf(idx) : "";
@@ -375,25 +584,46 @@ public class ShellyDeviceProfile {
         return "";
     }
 
-    public boolean inButtonMode(int idx) {
+    /**
+     * Resolves the button type (SHELLY_BTNT_xxx) of the given input index for all device categories carrying an
+     * input mode (IX/BLU inputs, dimmers, relays, RGBW2/CCT lights).
+     *
+     * @param idx input index (0-based)
+     * @return the resolved button type or an empty string if unknown
+     */
+    public String getButtonType(int idx) {
         if (idx < 0) {
-            logger.debug("{}: Invalid index {} for inButtonMode()", thingName, idx);
-            return false;
+            logger.debug("{}: Invalid index {} for getButtonType()", thingName, idx);
+            return "";
         }
         String btnType = "";
         List<ShellySettingsInput> inputs = settings.inputs;
         List<ShellySettingsDimmer> dimmers = settings.dimmers;
         List<ShellySettingsRelay> relays = settings.relays;
         List<ShellySettingsRgbwLight> lights = settings.lights;
-        if (isButton || isMultiButton) {
-            return true;
-        } else if ((isIX || isBlu) && inputs != null && idx < inputs.size()) {
+        if ((isIX || isBlu) && inputs != null && idx < inputs.size()) {
             ShellySettingsInput input = inputs.get(idx);
             btnType = getString(input.btnType);
         } else if (isDimmer) {
-            if (dimmers != null) {
+            if (isGen2 && dimmers != null && !dimmers.isEmpty()) {
+                // Gen2+: inputs can be spread across multiple dimmer/light channels (e.g. Pro Dimmer 2PM:
+                // 4 inputs, 2 lights); map the input index to its channel the same way as getInputSuffix()
+                int numDimmer = dimmers.size();
+                int numChannels = numInputs / numDimmer; // inputs per dimmer channel
+                int dimmerIdx = numChannels == 0 ? idx : idx / numChannels;
+                if (dimmerIdx < numDimmer) {
+                    // btnType derived from the Light component's in_mode
+                    btnType = getString(dimmers.get(dimmerIdx).btnType);
+                }
+            }
+            if (btnType.isEmpty() && isGen2 && inputs != null && idx < inputs.size()) {
+                // in_mode not reported: fall back to button-vs-switch derived from the Input component type
+                btnType = getString(inputs.get(idx).btnType);
+            }
+            if (btnType.isEmpty() && dimmers != null && !dimmers.isEmpty()) {
+                // Gen1 Dimmer: single dimmer channel with 2 physical button inputs
                 ShellySettingsDimmer dimmer = dimmers.get(0);
-                btnType = getString(dimmer.btnType);
+                btnType = idx == 0 ? getString(dimmer.btnType1) : getString(dimmer.btnType2);
             }
         } else if (relays != null) {
             if (numRelays == 1) {
@@ -413,10 +643,29 @@ public class ShellyDeviceProfile {
             ShellySettingsRgbwLight light = lights.get(idx);
             btnType = getString(light.btnType);
         }
+        return btnType;
+    }
 
+    public boolean inButtonMode(int idx) {
+        if (idx < 0) {
+            logger.debug("{}: Invalid index {} for inButtonMode()", thingName, idx);
+            return false;
+        }
+        if (isButton || isMultiButton) {
+            return true;
+        }
+        String btnType = getButtonType(idx);
+        if (btnType.equalsIgnoreCase(SHELLY_BTNT_ACTIVATE)) {
+            // Switch.in_mode=activate alone doesn't imply a button input (Shelly also uses it for stateful
+            // switch/PIR inputs); only the paired Input component (settings.inputs) reveals the real input type
+            List<ShellySettingsInput> inputs = settings.inputs;
+            return inputs != null && idx < inputs.size()
+                    && SHELLY_BTNT_MOMENTARY.equalsIgnoreCase(getString(inputs.get(idx).btnType));
+        }
         return btnType.equalsIgnoreCase(SHELLY_BTNT_MOMENTARY) || btnType.equalsIgnoreCase(SHELLY_BTNT_MOM_ON_RELEASE)
                 || btnType.equalsIgnoreCase(SHELLY_BTNT_ONE_BUTTON) || btnType.equalsIgnoreCase(SHELLY_BTNT_TWO_BUTTON)
-                || btnType.equalsIgnoreCase(SHELLY_BTNT_DETACHED);
+                || btnType.equalsIgnoreCase(SHELLY_BTNT_DETACHED) || btnType.equalsIgnoreCase(SHELLY_BTNT_CYCLE)
+                || btnType.equalsIgnoreCase(SHELLY_BTNT_DIM) || btnType.equalsIgnoreCase(SHELLY_BTNT_DUAL_DIM);
     }
 
     public int getRollerFav(int id) {
@@ -493,6 +742,15 @@ public class ShellyDeviceProfile {
                 || thingTypeID.startsWith(THING_TYPE_SHELLYPRO_PREFIX) || GROUP_MINI_THING_TYPES.contains(thingTypeUID)
                 || GROUP_WALLDISPLAY_THING_TYPES.contains(thingTypeUID) || isBluSeries(thingTypeUID)
                 || THING_TYPE_SHELLYPLUSBLUGW.equals(thingTypeUID);
+    }
+
+    /**
+     * Buttons and remotes only report on button events and don't wake up periodically, so the watchdog can't police a
+     * "missed wakeup" for them. The BLU Distance sensor is excluded, it broadcasts periodically.
+     */
+    public static boolean isEventDriven(ThingTypeUID thingTypeUID) {
+        return (GROUP_BUTTON_THING_TYPES.contains(thingTypeUID) || GROUP_MULTIBUTTON_THING_TYPES.contains(thingTypeUID))
+                && !THING_TYPE_SHELLYBLUDISTANCE.equals(thingTypeUID);
     }
 
     public static boolean isBluSeries(ThingTypeUID thingTypeUID) {

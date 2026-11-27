@@ -83,7 +83,7 @@ public class RainForecastHandler extends BaseThingHandler implements MeteoFrance
         try {
             this.location = new PointType(config.location);
         } catch (IllegalArgumentException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Incorrect 'location' value.");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Incorrect 'location' value.");
             return;
         }
 

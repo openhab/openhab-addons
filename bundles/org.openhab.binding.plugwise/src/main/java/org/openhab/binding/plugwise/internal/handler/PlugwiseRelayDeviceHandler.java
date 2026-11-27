@@ -58,7 +58,6 @@ import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
-import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
@@ -584,10 +583,10 @@ public class PlugwiseRelayDeviceHandler extends AbstractPlugwiseThingHandler {
     }
 
     @Override
-    protected void updateStatus(ThingStatus status, ThingStatusDetail statusDetail, @Nullable String description) {
-        super.updateStatus(status, statusDetail, description);
+    protected void statusChanged(ThingStatus oldStatus) {
+        super.statusChanged(oldStatus);
 
-        if (status == ONLINE) {
+        if (thing.getStatus() == ONLINE) {
             if (!isCalibrated()) {
                 calibrate();
             }

@@ -15,6 +15,7 @@ package org.openhab.binding.fineoffsetweatherstation.internal.domain.response;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.fineoffsetweatherstation.internal.domain.MeasureType;
+import org.openhab.binding.fineoffsetweatherstation.internal.domain.Sensor;
 import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.State;
 
@@ -31,15 +32,21 @@ public class MeasuredValue {
     private final @Nullable ChannelTypeUID channelTypeUID;
     private final State state;
     private final String debugName;
+    private final @Nullable Sensor sensor;
 
     public MeasuredValue(MeasureType measureType, String channelPrefix, @Nullable Integer channelNumber,
-            @Nullable ChannelTypeUID channelTypeUID, State state, String debugName) {
+            @Nullable ChannelTypeUID channelTypeUID, State state, String debugName, @Nullable Sensor sensor) {
         this.measureType = measureType;
         this.channelPrefix = channelPrefix;
         this.channelNumber = channelNumber;
         this.channelTypeUID = channelTypeUID;
         this.state = state;
         this.debugName = debugName;
+        this.sensor = sensor;
+    }
+
+    public @Nullable Sensor getSensor() {
+        return sensor;
     }
 
     public String getChannelId() {

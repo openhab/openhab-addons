@@ -49,7 +49,7 @@ public interface ThingHandlerHelper {
 
     public void updateState(ChannelUID channelUID, State state);
 
-    void updateStatus(ThingStatus status, ThingStatusDetail statusDetail, @Nullable String description);
+    void updateStatus(ThingStatusDetail statusDetail, @Nullable String description);
 
     default @Nullable <T extends BridgeHandler> T getBridgeHandler(@Nullable Bridge bridge, Class<T> clazz) {
         if (bridge != null && bridge.getStatus() == ThingStatus.ONLINE) {
@@ -58,9 +58,9 @@ public interface ThingHandlerHelper {
                     return clazz.cast(bridgeHandler);
                 }
             }
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/incorrect-bridge");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/incorrect-bridge");
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "");
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE, "");
         }
         return null;
     }

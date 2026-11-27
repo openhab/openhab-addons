@@ -27,12 +27,11 @@ import java.security.SecureRandom;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
@@ -59,8 +58,10 @@ import org.openhab.binding.roborock.internal.api.enums.RobotCapabilities;
 import org.openhab.binding.roborock.internal.api.enums.StatusType;
 import org.openhab.binding.roborock.internal.api.enums.VacuumErrorType;
 import org.openhab.binding.roborock.internal.map.RRMapData;
+import org.openhab.binding.roborock.internal.map.RRMapData.MapPoint;
 import org.openhab.binding.roborock.internal.map.RRMapParser;
 import org.openhab.binding.roborock.internal.map.RRMapRenderer;
+import org.openhab.binding.roborock.internal.map.RoomAtRobotResolver;
 import org.openhab.binding.roborock.internal.transport.CloudMqttTransport;
 import org.openhab.binding.roborock.internal.transport.LocalDirectTransport;
 import org.openhab.binding.roborock.internal.transport.RoborockCommandTransport;
@@ -103,7 +104,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSyntaxException;
 
 /**
@@ -128,6 +128,8 @@ public class RoborockVacuumHandler extends BaseThingHandler {
     private final RoborockStateDescriptionOptionProvider stateDescriptionProvider;
     private String token = "";
     private Rooms[] homeRooms = new Rooms[0];
+    private Map<Integer, String> segmentRoomNames = Map.of();
+    private final Object currentRoomLock = new Object();
     private String rrHomeId = "";
     private String localKey = "";
     private String localIP = "";
@@ -149,7 +151,9 @@ public class RoborockVacuumHandler extends BaseThingHandler {
     private boolean cloudMapRefreshDisabledLogged;
     private boolean cloudMetadataRefreshDisabledLogged;
     private volatile boolean vacuumChannelOn;
-    private @Nullable Integer lastKnownStateId;
+    private volatile @Nullable Integer lastKnownStateId;
+    private volatile @Nullable RRMapData lastParsedMapData;
+    private final Set<Integer> reportedUnknownStateIds = ConcurrentHashMap.newKeySet();
     private final Gson gson = new Gson();
     private final SecureRandom secureRandom = new SecureRandom();
     protected RoborockVacuumConfiguration config = new RoborockVacuumConfiguration();
@@ -161,14 +165,6 @@ public class RoborockVacuumHandler extends BaseThingHandler {
     private final RRMapRenderer rrMapRenderer = new RRMapRenderer();
     private final MapUpdateDeduplicator mapUpdateDeduplicator = new MapUpdateDeduplicator();
     private final Map<Integer, CompletableFuture<byte[]>> pendingRrMapDownloads = new ConcurrentHashMap<>();
-
-    private static final Set<RobotCapabilities> FEATURES_CHANNELS = Collections.unmodifiableSet(
-            EnumSet.of(RobotCapabilities.SEGMENT_STATUS, RobotCapabilities.MAP_STATUS, RobotCapabilities.LED_STATUS,
-                    RobotCapabilities.CARPET_MODE, RobotCapabilities.FW_FEATURES, RobotCapabilities.ROOM_MAPPING,
-                    RobotCapabilities.MULTI_MAP_LIST, RobotCapabilities.CUSTOMIZE_CLEAN_MODE,
-                    RobotCapabilities.COLLECT_DUST, RobotCapabilities.CLEAN_MOP_START, RobotCapabilities.CLEAN_MOP_STOP,
-                    RobotCapabilities.MOP_DRYING, RobotCapabilities.MOP_DRYING_REMAINING_TIME,
-                    RobotCapabilities.DOCK_STATE_ID, RobotCapabilities.CLEAN_PERCENT));
 
     public RoborockVacuumHandler(Thing thing, ChannelTypeRegistry channelTypeRegistry,
             RoborockStateDescriptionOptionProvider stateDescriptionProvider) {
@@ -189,7 +185,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
         try {
             return localBridge.getToken();
         } catch (IllegalStateException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, e.getMessage());
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE, e.getMessage());
             return "";
         }
     }
@@ -342,7 +338,11 @@ public class RoborockVacuumHandler extends BaseThingHandler {
                 return;
             }
             if (channelUID.getId().equals(CHANNEL_CONSUMABLE_RESET)) {
-                sendRPCCommand(COMMAND_CONSUMABLES_RESET, "[" + command.toString() + "]");
+                String consumable = command.toString();
+                if (!"none".equals(consumable)) {
+                    consumable = consumable.replace('-', '_');
+                    sendRPCCommand(COMMAND_CONSUMABLES_RESET, gson.toJson(List.of(consumable)));
+                }
                 updateState(CHANNEL_CONSUMABLE_RESET, new StringType("none"));
             }
 
@@ -385,13 +385,19 @@ public class RoborockVacuumHandler extends BaseThingHandler {
         lastMapPollTimestamp = 0;
         vacuumChannelOn = false;
         lastKnownStateId = null;
+        lastParsedMapData = null;
+        clearSegmentRoomNames();
         cloudMapRefreshDisabledLogged = false;
         cloudMetadataRefreshDisabledLogged = false;
         mapUpdateDeduplicator.reset();
 
-        if (!(getBridge() instanceof Bridge bridge
-                && bridge.getHandler() instanceof RoborockAccountHandler accountHandler)) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "@text/offline.conf-error.no-bridge");
+        Bridge bridge = getBridge();
+        if (bridge == null) {
+            logger.debug("Bridge unavailable while initializing Thing: {}", thing.getUID());
+            return;
+        }
+        if (!(bridge.getHandler() instanceof RoborockAccountHandler accountHandler)) {
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE, "@text/offline.conf-error.no-bridge");
             return;
         }
         bridgeHandler = accountHandler;
@@ -475,8 +481,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
                         }
                     }
                 } else {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
-                            "@text/offline.conf-error.no-token");
+                    updateStatus(ThingStatusDetail.BRIDGE_OFFLINE, "@text/offline.conf-error.no-token");
                     return;
                 }
             }
@@ -484,7 +489,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
             scheduleNextPoll(-1);
             updateStatus(ThingStatus.ONLINE);
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "@text/offline.conf-error.no-token");
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE, "@text/offline.conf-error.no-token");
         }
     }
 
@@ -515,7 +520,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
             initTask.submit();
         } else if (bridgeStatusInfo.getStatus() == ThingStatus.OFFLINE) {
             teardown(false);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
         }
     }
 
@@ -535,68 +540,99 @@ public class RoborockVacuumHandler extends BaseThingHandler {
                         sendAllMqttCommands();
                     }
                 } else {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "@text/offline.comm-error.vac-offline");
+                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/offline.comm-error.vac-offline");
                 }
             }
         }
     }
 
+    /**
+     * Helper to check whether the parent bridge handler exists and is currently ONLINE.
+     */
+    private boolean isBridgeSessionValid() {
+        RoborockAccountHandler localBridgeHandler = bridgeHandler;
+        return localBridgeHandler != null && localBridgeHandler.getThing().getStatus() == ThingStatus.ONLINE;
+    }
+
     private void pollData() {
         RoborockAccountHandler localBridgeHandler = bridgeHandler;
-        if (localBridgeHandler != null) {
-            applyCloudOnlyCapabilityPolicies();
-            boolean cloudOnlyRefreshDue = isCloudOnlyRefreshDue();
-            HomeData homeData = localBridgeHandler.getHomeData();
-            if (homeData != null && homeData.result != null) {
-                homeRooms = homeData.result.rooms;
-                Devices devices[] = homeData.result.devices;
-                updateDevice(devices);
-                Devices receivedDevices[] = homeData.result.receivedDevices;
-                updateDevice(receivedDevices);
-            }
-
-            if (supportsRoutines && isCloudMetadataRefreshAllowed() && cloudOnlyRefreshDue) {
-                String routinesResponse = localBridgeHandler.getRoutines(config.duid);
-                List<StateOption> options = new ArrayList<>();
-                JsonObject parsedRoutines = routinesResponse != null && !routinesResponse.isEmpty()
-                        ? JsonParser.parseString(routinesResponse).getAsJsonObject()
-                        : null;
-                if (parsedRoutines != null && parsedRoutines.get("result").isJsonArray()
-                        && parsedRoutines.get("result").getAsJsonArray().size() > 0
-                        && parsedRoutines.get("result").getAsJsonArray().get(0).isJsonObject()) {
-                    JsonArray routinesArray = parsedRoutines.get("result").getAsJsonArray();
-                    Map<String, Object> routines = new HashMap<>();
-                    for (int i = 0; i < routinesArray.size(); ++i) {
-                        JsonObject routinesJsonObject = routinesArray.get(i).getAsJsonObject();
-                        routines.put(routinesJsonObject.get("id").getAsString(),
-                                routinesJsonObject.get("name").getAsString());
-                        options.add(new StateOption(routinesJsonObject.get("id").getAsString(),
-                                routinesJsonObject.get("name").getAsString()));
-                    }
-                    updateState(CHANNEL_ROUTINES, new StringType(gson.toJson(routines)));
-                    stateDescriptionProvider.setStateOptions(new ChannelUID(getThing().getUID(), CHANNEL_ROUTINE),
-                            options);
-                } else {
-                    logger.debug("Routines not supported for device {}", config.duid);
-                    supportsRoutines = false;
-                }
-            } else if (supportsRoutines && !isCloudMetadataRefreshAllowed()) {
-                disableRoutinesState("cloudMetadataRefresh=off in direct communication mode");
-            }
-
-            if (cloudOnlyRefreshDue) {
-                lastCloudOnlyPollTimestamp = System.currentTimeMillis();
-            }
-
-            lastSuccessfulPollTimestamp = System.currentTimeMillis();
-            scheduleNextPoll(-1);
-
-            updateStatus(ThingStatus.ONLINE);
-        } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "@text/offline.conf-error.no-bridge");
+        if (localBridgeHandler == null || !isBridgeSessionValid()) {
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE, "@text/offline.conf-error.no-bridge");
             return;
         }
+
+        applyCloudOnlyCapabilityPolicies();
+        boolean cloudOnlyRefreshDue = isCloudOnlyRefreshDue();
+
+        @Nullable
+        HomeData homeData = localBridgeHandler.getHomeData();
+
+        if (homeData == null) {
+            logger.debug("pollData() received null homeData for {}. API fetch failed or token expired.", config.duid);
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "API fetch failed");
+
+            if (isBridgeSessionValid()) {
+                scheduleNextPoll(config.getRefreshIntervalSeconds());
+            }
+            return;
+        }
+
+        if (!isBridgeSessionValid()) {
+            return;
+        }
+
+        if (homeData.result != null) {
+            homeRooms = homeData.result.rooms != null ? homeData.result.rooms : new Rooms[0];
+
+            Devices[] devices = homeData.result.devices;
+            if (devices != null) {
+                updateDevice(devices);
+            }
+
+            Devices[] receivedDevices = homeData.result.receivedDevices;
+            if (receivedDevices != null) {
+                updateDevice(receivedDevices);
+            }
+        }
+
+        if (supportsRoutines && isCloudMetadataRefreshAllowed() && cloudOnlyRefreshDue) {
+            String routinesResponse = localBridgeHandler.getRoutines(config.duid);
+
+            if (!isBridgeSessionValid()) {
+                return;
+            }
+
+            List<StateOption> options = new ArrayList<>();
+            JsonObject parsedRoutines = (routinesResponse != null && !routinesResponse.isEmpty())
+                    ? JsonParser.parseString(routinesResponse).getAsJsonObject()
+                    : null;
+
+            if (parsedRoutines != null && parsedRoutines.has("result") && parsedRoutines.get("result").isJsonArray()
+                    && !parsedRoutines.get("result").getAsJsonArray().isEmpty()
+                    && parsedRoutines.get("result").getAsJsonArray().get(0).isJsonObject()) {
+
+                JsonArray routinesArray = parsedRoutines.get("result").getAsJsonArray();
+                for (int i = 0; i < routinesArray.size(); ++i) {
+                    JsonObject routinesJsonObject = routinesArray.get(i).getAsJsonObject();
+                    options.add(new StateOption(routinesJsonObject.get("id").getAsString(),
+                            routinesJsonObject.get("name").getAsString()));
+                }
+                stateDescriptionProvider.setStateOptions(routineChannelUID(), options);
+            } else {
+                logger.debug("Routines not supported for device {}", config.duid);
+                supportsRoutines = false;
+            }
+        } else if (supportsRoutines && !isCloudMetadataRefreshAllowed()) {
+            disableRoutinesState("cloudMetadataRefresh=off in direct communication mode");
+        }
+
+        if (cloudOnlyRefreshDue) {
+            lastCloudOnlyPollTimestamp = System.currentTimeMillis();
+        }
+
+        lastSuccessfulPollTimestamp = System.currentTimeMillis();
+        scheduleNextPoll(-1);
+        updateStatus(ThingStatus.ONLINE);
     }
 
     private void pollStatusOnly() {
@@ -731,6 +767,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
             updateStateIdAndRequestStatusIfChanged(getStatus.result[0].state, false);
 
             StatusType state = StatusType.getType(getStatus.result[0].state);
+            warnOnceAboutUnknownState(getStatus.result[0].state, state);
 
             OnOffType vacuum = switch (state) {
                 case ZONE, ROOM, CLEANING, RETURNING, SPOTCLEAN -> OnOffType.ON;
@@ -827,31 +864,66 @@ public class RoborockVacuumHandler extends BaseThingHandler {
     }
 
     private void handleGetRoomMapping(String response) {
-        for (RobotCapabilities cmd : FEATURES_CHANNELS) {
-            if (COMMAND_GET_ROOM_MAPPING.equals(cmd.getCommand())) {
-                JsonArray rooms = JsonParser.parseString(response).getAsJsonObject().get("result").getAsJsonArray();
-                if (rooms.size() > 0) {
-                    JsonArray mappedRoom = new JsonArray();
-                    String name = "Not found";
-                    for (JsonElement roomE : rooms) {
-                        JsonArray room = roomE.getAsJsonArray();
-                        for (int i = 0; i < homeRooms.length; i++) {
-                            if (room.get(1).getAsString().equals(Integer.toString(homeRooms[i].id))) {
-                                name = homeRooms[i].name;
-                                break;
-                            }
-                        }
-                        room.set(1, new JsonPrimitive(name));
-                        if (room.size() == 3) {
-                            room.remove(2);
-                        }
-                        mappedRoom.add(room);
-                    }
-                    updateState(cmd.getChannel(), new StringType(mappedRoom.toString()));
-                } else {
-                    updateState(cmd.getChannel(), new StringType(response));
+        JsonArray rooms = JsonParser.parseString(response).getAsJsonObject().get("result").getAsJsonArray();
+        Map<Integer, String> resolvedSegmentNames = new HashMap<>();
+        List<StateOption> options = buildSegmentOptions(rooms, homeRooms, resolvedSegmentNames);
+        if (options.isEmpty()) {
+            clearSegmentRoomNames();
+        } else {
+            installSegmentRoomNames(resolvedSegmentNames);
+        }
+        stateDescriptionProvider.setStateOptions(segmentChannelUID(), options);
+    }
+
+    /**
+     * Builds the room selection options of {@code actions#segment} from a {@code get_room_mapping} result,
+     * whose entries are {@code [segmentId, homeRoomId, ...]}. Segments whose home room is unknown stay
+     * selectable under a generic label but are not added to {@code resolvedSegmentNames}, so that
+     * {@code status#current-room} reports UNDEF rather than a placeholder name for them.
+     */
+    static List<StateOption> buildSegmentOptions(JsonArray rooms, Rooms[] homeRooms,
+            Map<Integer, String> resolvedSegmentNames) {
+        List<StateOption> options = new ArrayList<>();
+        for (JsonElement entry : rooms) {
+            int segmentId;
+            String homeRoomId;
+            try {
+                JsonArray room = entry.getAsJsonArray();
+                segmentId = room.get(0).getAsInt();
+                homeRoomId = room.get(1).getAsString();
+            } catch (IllegalStateException | IndexOutOfBoundsException | UnsupportedOperationException
+                    | NumberFormatException e) {
+                continue;
+            }
+            String name = null;
+            for (Rooms homeRoom : homeRooms) {
+                if (homeRoomId.equals(Integer.toString(homeRoom.id)) && !homeRoom.name.isBlank()) {
+                    name = homeRoom.name;
+                    break;
                 }
-                break;
+            }
+            if (name != null) {
+                resolvedSegmentNames.put(segmentId, name);
+            }
+            options.add(new StateOption(Integer.toString(segmentId), name != null ? name : "Room " + segmentId));
+        }
+        return options;
+    }
+
+    private ChannelUID segmentChannelUID() {
+        return new ChannelUID(getThing().getUID(), RobotCapabilities.SEGMENT_CLEAN.getChannel());
+    }
+
+    private ChannelUID routineChannelUID() {
+        return new ChannelUID(getThing().getUID(), CHANNEL_ROUTINE);
+    }
+
+    void installSegmentRoomNames(Map<Integer, String> resolvedSegmentNames) {
+        synchronized (currentRoomLock) {
+            segmentRoomNames = Map.copyOf(resolvedSegmentNames);
+            RRMapData mapData = lastParsedMapData;
+            if (mapData != null) {
+                updateCurrentRoomState(mapData);
             }
         }
     }
@@ -870,7 +942,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
     }
 
     private void handleGetCleanRecord(String response) {
-        if (response != null && !response.isEmpty()) {
+        if (!response.isEmpty()) {
             String safeResponse = response;
             JsonObject responseObj = JsonParser.parseString(safeResponse).getAsJsonObject();
             if (responseObj.get("result").isJsonArray()
@@ -953,7 +1025,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
     }
 
     private void handleGetCleanSummary(String response) {
-        if (response != null && !response.isEmpty()) {
+        if (!response.isEmpty()) {
             String safeResponse = response;
             JsonObject responseObj = JsonParser.parseString(safeResponse).getAsJsonObject();
             if (responseObj.get("result").isJsonArray()) {
@@ -1013,7 +1085,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
     }
 
     private void handleGetSegmentStatus(String response) {
-        if (response != null && !response.isEmpty()) {
+        if (!response.isEmpty()) {
             String safeResponse = response;
             JsonObject responseObj = JsonParser.parseString(safeResponse).getAsJsonObject();
             if (responseObj.get("result").isJsonArray()
@@ -1029,7 +1101,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
     }
 
     private void handleGetMapStatus(String response) {
-        if (response != null && !response.isEmpty()) {
+        if (!response.isEmpty()) {
             String safeResponse = response;
             JsonObject responseObj = JsonParser.parseString(safeResponse).getAsJsonObject();
             if (responseObj.get("result").isJsonArray()
@@ -1050,7 +1122,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
     }
 
     private void handleGetLedStatus(String response) {
-        if (response != null && !response.isEmpty()) {
+        if (!response.isEmpty()) {
             String safeResponse = response;
             JsonObject responseObj = JsonParser.parseString(safeResponse).getAsJsonObject();
             if (responseObj.get("result").isJsonArray()
@@ -1103,7 +1175,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
         }
     }
 
-    private void handleGetMap(int requestId, byte[] mapPayload) {
+    void handleGetMap(int requestId, byte[] mapPayload) {
         String methodName = requestCorrelationTracker.findMethodByRequestId(requestId);
         CompletableFuture<byte[]> pendingDownload = pendingRrMapDownloads.remove(Integer.valueOf(requestId));
         if (pendingDownload != null) {
@@ -1116,18 +1188,97 @@ public class RoborockVacuumHandler extends BaseThingHandler {
         }
 
         try {
-            RRMapData mapData = rrMapParser.parse(mapPayload);
-            byte[] pngBytes = rrMapRenderer.renderAsPng(mapData);
-            if (mapUpdateDeduplicator.shouldPublish(pngBytes)) {
-                updateState(CHANNEL_VACUUM_MAP, new RawType(pngBytes, "image/png"));
-            } else {
-                logger.trace("Suppressing duplicate map image update for request id {}", requestId);
+            RRMapData mapData;
+            try {
+                mapData = rrMapParser.parse(mapPayload);
+            } catch (RoborockException e) {
+                logger.debug("Failed to parse map payload for request id {}: {}", requestId, e.getMessage());
+                invalidateMapDerivedState();
+                return;
             }
-        } catch (RoborockException e) {
-            logger.debug("Failed to parse map payload for request id {}: {}", requestId, e.getMessage());
+            synchronized (currentRoomLock) {
+                lastParsedMapData = mapData;
+                updateCurrentRoomState(mapData);
+            }
+            try {
+                byte[] pngBytes = rrMapRenderer.renderAsPng(mapData);
+                if (mapUpdateDeduplicator.shouldPublish(pngBytes)) {
+                    updateState(CHANNEL_VACUUM_MAP, new RawType(pngBytes, "image/png"));
+                } else {
+                    logger.trace("Suppressing duplicate map image update for request id {}", requestId);
+                }
+            } catch (RoborockException e) {
+                logger.debug("Failed to render map image for request id {}: {}", requestId, e.getMessage());
+            }
         } finally {
             requestCorrelationTracker.removeByRequestId(requestId);
         }
+    }
+
+    /** Caller must hold {@link #currentRoomLock}: the segment table is read unguarded here. */
+    private void updateCurrentRoomState(RRMapData mapData) {
+        State roomState = resolveRoomStateFromMap(mapData, isAtDock(), segmentRoomNames);
+        if (roomState != null) {
+            updateChannelStateIfExists(RobotCapabilities.CURRENT_ROOM.getChannel(), roomState);
+        }
+    }
+
+    /** Caller must hold {@link #currentRoomLock}: cached map and segment table are read as a pair. */
+    private void updateCurrentRoomStateFromDock() {
+        updateChannelStateIfExists(RobotCapabilities.CURRENT_ROOM.getChannel(),
+                resolveDockRoomState(lastParsedMapData, segmentRoomNames));
+    }
+
+    static @Nullable State resolveRoomStateFromMap(RRMapData mapData, boolean atDock,
+            Map<Integer, String> segmentRoomNames) {
+        if (atDock) {
+            return resolveDockRoomState(mapData, segmentRoomNames);
+        }
+        MapPoint position = robotPosition(mapData);
+        return position == null ? UnDefType.UNDEF : roomStateAt(mapData, position, segmentRoomNames);
+    }
+
+    static State resolveDockRoomState(@Nullable RRMapData mapData, Map<Integer, String> segmentRoomNames) {
+        if (mapData == null) {
+            return UnDefType.UNDEF;
+        }
+        MapPoint dockPosition = dockPosition(mapData);
+        State dockRoomState = dockPosition == null ? null : roomStateAt(mapData, dockPosition, segmentRoomNames);
+        return dockRoomState == null ? UnDefType.UNDEF : dockRoomState;
+    }
+
+    static boolean hasJustDocked(@Nullable Integer previousStateId, int newStateId) {
+        if (!StatusType.getType(newStateId).isAtDock()) {
+            return false;
+        }
+        return previousStateId == null || !StatusType.getType(previousStateId.intValue()).isAtDock();
+    }
+
+    private static @Nullable State roomStateAt(RRMapData mapData, MapPoint position,
+            Map<Integer, String> segmentRoomNames) {
+        Optional<Integer> segmentId = RoomAtRobotResolver.resolveSegmentId(mapData, position.x(), position.y());
+        if (segmentId.isEmpty()) {
+            return null;
+        }
+        String roomName = segmentRoomNames.get(segmentId.get());
+        return roomName != null ? new StringType(roomName) : UnDefType.UNDEF;
+    }
+
+    private static @Nullable MapPoint dockPosition(RRMapData mapData) {
+        Integer chargerX = mapData.chargerX();
+        Integer chargerY = mapData.chargerY();
+        return chargerX == null || chargerY == null ? null : new MapPoint(chargerX.intValue(), chargerY.intValue());
+    }
+
+    private static @Nullable MapPoint robotPosition(RRMapData mapData) {
+        Integer robotX = mapData.robotX();
+        Integer robotY = mapData.robotY();
+        return robotX == null || robotY == null ? null : new MapPoint(robotX.intValue(), robotY.intValue());
+    }
+
+    private boolean isAtDock() {
+        Integer stateId = lastKnownStateId;
+        return stateId != null && StatusType.getType(stateId.intValue()).isAtDock();
     }
 
     public @Nullable String downloadRrMap(@Nullable String requestedDirectory) {
@@ -1251,7 +1402,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
         }
     }
 
-    private void registerRequest(String methodName, int requestId) {
+    void registerRequest(String methodName, int requestId) {
         if (requestId == REQUEST_ID_SYNC_DIRECT_COMPLETED) {
             if (logger.isTraceEnabled()) {
                 logger.trace(
@@ -1267,7 +1418,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
                         methodName);
             }
             if ("getMap".equals(methodName)) {
-                setMapStateUndefinedAndResetDeduplicator();
+                invalidateMapDerivedState();
             }
             return;
         }
@@ -1275,7 +1426,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
             logger.debug("Skipping request registration for method '{}' due to invalid request id {}", methodName,
                     requestId);
             if ("getMap".equals(methodName)) {
-                setMapStateUndefinedAndResetDeduplicator();
+                invalidateMapDerivedState();
             }
             return;
         }
@@ -1391,7 +1542,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
             }
             return requestId;
         } catch (IllegalStateException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, e.getMessage());
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE, e.getMessage());
             return 0;
         }
     }
@@ -1508,12 +1659,8 @@ public class RoborockVacuumHandler extends BaseThingHandler {
         // DP 121 — vacuum state ID
         if (dpsRoot.has("121")) {
             int stateInt = dpsRoot.get("121").getAsInt();
-            // On the Q10, status updates are provided automatically, so just update the channel.
-            if (q10) {
-                updateState(CHANNEL_STATE_ID, new DecimalType(stateInt));
-            } else {
-                updateStateIdAndRequestStatusIfChanged(stateInt, true);
-            }
+            boolean statusArrivesUnrequested = q10;
+            updateStateIdAndRequestStatusIfChanged(stateInt, !statusArrivesUnrequested);
         }
 
         // DP 122 — battery %
@@ -2017,10 +2164,15 @@ public class RoborockVacuumHandler extends BaseThingHandler {
     }
 
     private void updateStateIdAndRequestStatusIfChanged(int stateId, boolean triggerImmediateStatusQuery) {
-        @Nullable
-        Integer previousStateId = lastKnownStateId;
         updateState(CHANNEL_STATE_ID, new DecimalType(stateId));
-        lastKnownStateId = stateId;
+        Integer previousStateId;
+        synchronized (currentRoomLock) {
+            previousStateId = lastKnownStateId;
+            lastKnownStateId = stateId;
+            if (hasJustDocked(previousStateId, stateId)) {
+                updateCurrentRoomStateFromDock();
+            }
+        }
         if (triggerImmediateStatusQuery && VacuumRefreshPolicy.shouldRequestImmediateStatus(previousStateId, stateId)) {
             requestImmediateStatusUpdate("state-id changed from " + previousStateId + " to " + stateId);
         }
@@ -2032,6 +2184,16 @@ public class RoborockVacuumHandler extends BaseThingHandler {
             registerRequest("getStatus", sendRPCCommand(COMMAND_GET_STATUS));
         } catch (UnsupportedEncodingException e) {
             logger.debug("UnsupportedEncodingException while requesting immediate status, {}", e.getMessage());
+        }
+    }
+
+    private void warnOnceAboutUnknownState(int rawStateId, StatusType resolved) {
+        if (resolved != StatusType.UNKNOWN || rawStateId == StatusType.UNKNOWN.getId()) {
+            return;
+        }
+        if (reportedUnknownStateIds.add(Integer.valueOf(rawStateId))) {
+            logger.warn("{}: Unknown robot status id {}, leaving channel '{}' unresolved. Please report this id.",
+                    config.duid, rawStateId, RobotCapabilities.CURRENT_ROOM.getChannel());
         }
     }
 
@@ -2103,9 +2265,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
     }
 
     private void disableMapState(String reason) {
-        if (thing.getChannel(CHANNEL_VACUUM_MAP) != null) {
-            setMapStateUndefinedAndResetDeduplicator();
-        }
+        invalidateMapDerivedState();
         if (!cloudMapRefreshDisabledLogged) {
             logger.info("Cloud map refresh disabled for {}: {}. Channel '{}' is set to UNDEF.", config.duid, reason,
                     CHANNEL_VACUUM_MAP);
@@ -2114,21 +2274,20 @@ public class RoborockVacuumHandler extends BaseThingHandler {
     }
 
     private void disableRoutinesState(String reason) {
-        updateChannelStateIfExists(CHANNEL_ROUTINES, UnDefType.UNDEF);
-        if (!cloudMetadataRefreshDisabledLogged) {
-            logger.info(
-                    "Cloud metadata refresh disabled for {}: {}. Channels '{}' and '{}' are set to UNDEF when available.",
-                    config.duid, reason, CHANNEL_ROUTINES, RobotCapabilities.ROOM_MAPPING.getChannel());
-            cloudMetadataRefreshDisabledLogged = true;
-        }
+        stateDescriptionProvider.setStateOptions(routineChannelUID(), List.of());
+        logCloudMetadataRefreshDisabled(reason);
     }
 
     private void disableRoomMappingState(String reason) {
-        updateChannelStateIfExists(RobotCapabilities.ROOM_MAPPING.getChannel(), UnDefType.UNDEF);
+        stateDescriptionProvider.setStateOptions(segmentChannelUID(), List.of());
+        clearSegmentRoomNames();
+        logCloudMetadataRefreshDisabled(reason);
+    }
+
+    private void logCloudMetadataRefreshDisabled(String reason) {
         if (!cloudMetadataRefreshDisabledLogged) {
-            logger.info(
-                    "Cloud metadata refresh disabled for {}: {}. Channels '{}' and '{}' are set to UNDEF when available.",
-                    config.duid, reason, CHANNEL_ROUTINES, RobotCapabilities.ROOM_MAPPING.getChannel());
+            logger.info("Cloud metadata refresh disabled for {}: {}. Options of channels '{}' and '{}' are cleared.",
+                    config.duid, reason, CHANNEL_ROUTINE, RobotCapabilities.SEGMENT_CLEAN.getChannel());
             cloudMetadataRefreshDisabledLogged = true;
         }
     }
@@ -2139,9 +2298,20 @@ public class RoborockVacuumHandler extends BaseThingHandler {
         }
     }
 
-    private void setMapStateUndefinedAndResetDeduplicator() {
-        updateState(CHANNEL_VACUUM_MAP, UnDefType.UNDEF);
+    private void invalidateMapDerivedState() {
+        updateChannelStateIfExists(CHANNEL_VACUUM_MAP, UnDefType.UNDEF);
         mapUpdateDeduplicator.reset();
+        synchronized (currentRoomLock) {
+            updateChannelStateIfExists(RobotCapabilities.CURRENT_ROOM.getChannel(), UnDefType.UNDEF);
+            lastParsedMapData = null;
+        }
+    }
+
+    private void clearSegmentRoomNames() {
+        synchronized (currentRoomLock) {
+            segmentRoomNames = Map.of();
+            updateChannelStateIfExists(RobotCapabilities.CURRENT_ROOM.getChannel(), UnDefType.UNDEF);
+        }
     }
 
     private void refreshTransportContext() {

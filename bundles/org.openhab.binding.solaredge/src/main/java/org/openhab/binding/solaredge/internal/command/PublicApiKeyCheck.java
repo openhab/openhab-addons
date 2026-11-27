@@ -16,8 +16,8 @@ import static org.openhab.binding.solaredge.internal.SolarEdgeBindingConstants.*
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.api.Result;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.Result;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.solaredge.internal.connector.StatusUpdateListener;
 import org.openhab.binding.solaredge.internal.handler.SolarEdgeHandler;
@@ -50,7 +50,7 @@ public class PublicApiKeyCheck extends AbstractCommand implements SolarEdgeComma
     }
 
     @Override
-    public void onComplete(@Nullable Result result) {
+    protected void handleResponse(@Nullable Result result) {
         updateListenerStatus();
     }
 }

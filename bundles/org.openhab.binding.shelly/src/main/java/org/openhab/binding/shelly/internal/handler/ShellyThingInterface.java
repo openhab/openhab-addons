@@ -14,6 +14,7 @@ package org.openhab.binding.shelly.internal.handler;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -45,6 +46,11 @@ public interface ShellyThingInterface {
     @Nullable
     List<StateOption> getStateOptions(ChannelTypeUID uid);
 
+    /**
+     * Replace the state options (value to label) offered by a channel and tell the framework about the change.
+     */
+    void updateStateOptions(String group, String channel, Map<String, String> options);
+
     double getChannelDouble(String group, String channel);
 
     boolean updateChannel(String group, String channel, State value);
@@ -55,7 +61,7 @@ public interface ShellyThingInterface {
 
     void setThingOfflineAndDisconnect(ThingStatusDetail detail, String messageKey, Object... arguments);
 
-    void setThingStatus(ThingStatus status, ThingStatusDetail detail, String messageKey, Object... arguments);
+    void setThingStatus(ThingStatusDetail detail, String messageKey, Object... arguments);
 
     boolean isStopping();
 
@@ -68,6 +74,8 @@ public interface ShellyThingInterface {
     boolean isThingOnline();
 
     boolean requestUpdates(int requestCount, boolean refreshSettings);
+
+    void onDeviceWakeup();
 
     void triggerUpdateFromCoap();
 
@@ -86,6 +94,8 @@ public interface ShellyThingInterface {
     void updateChannelDefinitions(Map<String, Channel> dynChannels);
 
     boolean updateThingChannels(Map<String, Channel> channelUpdates, Map<String, Channel> newChannels);
+
+    boolean removeChannels(Set<String> channelIds);
 
     void postEvent(String event, boolean force);
 
@@ -111,6 +121,8 @@ public interface ShellyThingInterface {
 
     void updateProperties(String key, String value);
 
+    void removeProperty(String key);
+
     boolean updateWakeupReason(@Nullable List<Object> valueArray);
 
     ShellyApiInterface getApi();
@@ -121,7 +133,11 @@ public interface ShellyThingInterface {
 
     void fillDeviceStatus(ShellySettingsStatus status, boolean updated);
 
-    boolean checkRepresentation(String key);
+    /**
+     * Check whether the key identifies this Thing: its UID, Thing name, service name (realm), configured IP address
+     * or host, or Bluetooth address.
+     */
+    boolean isIdentifiedBy(String key);
 
     void incProtMessages();
 

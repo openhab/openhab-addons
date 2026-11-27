@@ -34,7 +34,7 @@ import com.google.gson.JsonSyntaxException;
  * @author Nick Waterton - changes to sendKey(), some refactoring
  */
 @NonNullByDefault
-class WebSocketRemote extends WebSocketBase {
+public class WebSocketRemote extends WebSocketBase {
     private final Logger logger = LoggerFactory.getLogger(WebSocketRemote.class);
 
     private static Gson gson = new Gson();
@@ -146,7 +146,8 @@ class WebSocketRemote extends WebSocketBase {
             }
             switch (jsonMsg.getEvent()) {
                 case "ms.channel.connect":
-                    logger.debug("{}: Remote channel connected. Token = {}", host, jsonMsg.getToken());
+                    logger.debug("{}: Remote channel connected, token {}", host,
+                            jsonMsg.getToken().isBlank() ? "not received" : "received");
                     if (!jsonMsg.getToken().isBlank()) {
                         this.remoteControllerWebSocket.callback.putConfig(WEBSOCKET_TOKEN, jsonMsg.getToken());
                         // try opening additional websockets

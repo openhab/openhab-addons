@@ -31,8 +31,6 @@ import org.openhab.core.io.transport.mqtt.MqttConnectionObserver;
 import org.openhab.core.io.transport.mqtt.MqttConnectionState;
 import org.openhab.core.io.transport.mqtt.MqttException;
 import org.openhab.core.io.transport.mqtt.MqttMessageSubscriber;
-import org.openhab.core.thing.ThingStatus;
-import org.openhab.core.thing.ThingStatusDetail;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -265,7 +263,7 @@ public class MerossMqttConnector implements MqttConnectionObserver {
                     disconnectFuture.cancel(true);
                     this.disconnectFuture = null;
                 }
-                callback.updateBridgeStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
+                callback.bridgeOnline();
                 connected.complete(true);
                 break;
             case DISCONNECTED:
@@ -277,7 +275,7 @@ public class MerossMqttConnector implements MqttConnectionObserver {
                 logger.debug("Disconnected", error);
                 if (this.disconnectFuture == null) {
                     this.disconnectFuture = scheduler.schedule(() -> {
-                        callback.updateBridgeStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                        callback.bridgeOffline();
                     }, MQTT_DISCONNECT_DELAY_SECONDS, TimeUnit.SECONDS);
                 }
                 break;

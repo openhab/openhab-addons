@@ -44,11 +44,11 @@ public abstract class NhcThermostat {
     protected String name;
     protected @Nullable String location;
 
-    protected volatile int measured;
-    protected volatile int setpoint;
+    protected volatile long measured;
+    protected volatile long setpoint;
     protected volatile int mode;
-    protected volatile int overrule;
-    protected volatile int overruletime;
+    protected volatile long overrule;
+    protected volatile long overruletime;
     protected volatile int ecosave;
     protected volatile int demand;
 
@@ -76,7 +76,7 @@ public abstract class NhcThermostat {
      * @param ecosave
      * @param demand 0 if no demand, > 0 if heating, &lt; 0 if cooling
      */
-    public void setState(int measured, int setpoint, int mode, int overrule, int overruletime, int ecosave,
+    public void setState(long measured, long setpoint, int mode, long overrule, long overruletime, int ecosave,
             int demand) {
         setMeasured(measured);
         setSetpoint(setpoint);
@@ -179,22 +179,22 @@ public abstract class NhcThermostat {
      *
      * @return measured temperature in 0.1°C multiples
      */
-    public int getMeasured() {
+    public long getMeasured() {
         return measured;
     }
 
-    private void setMeasured(int measured) {
+    private void setMeasured(long measured) {
         this.measured = measured;
     }
 
     /**
      * @return the setpoint temperature in 0.1°C multiples
      */
-    public int getSetpoint() {
+    public long getSetpoint() {
         return setpoint;
     }
 
-    private void setSetpoint(int setpoint) {
+    private void setSetpoint(long setpoint) {
         this.setpoint = setpoint;
     }
 
@@ -217,7 +217,7 @@ public abstract class NhcThermostat {
      *
      * @return the overrule temperature in 0.1°C multiples
      */
-    public int getOverrule() {
+    public long getOverrule() {
         if (overrule > 0) {
             return overrule;
         } else {
@@ -225,7 +225,7 @@ public abstract class NhcThermostat {
         }
     }
 
-    private void setOverrule(int overrule) {
+    private void setOverrule(long overrule) {
         this.overrule = overrule;
         if (overrule <= 0) {
             stopOverrule();
@@ -237,7 +237,7 @@ public abstract class NhcThermostat {
      *
      * @return the overruletime in minutes
      */
-    public int getOverruletime() {
+    public long getOverruletime() {
         return overruletime;
     }
 
@@ -246,7 +246,7 @@ public abstract class NhcThermostat {
      *
      * @param overruletime the overruletime in minutes
      */
-    private void setOverruletime(int overruletime) {
+    private void setOverruletime(long overruletime) {
         if (overruletime != this.overruletime) {
             if (overruletime <= 0) {
                 stopOverrule();
@@ -316,17 +316,16 @@ public abstract class NhcThermostat {
      * @param overrule temperature to overrule the setpoint in 0.1°C multiples
      * @param overruletime time duration in min for overrule
      */
-    public abstract void executeOverrule(int overrule, int overruletime);
+    public abstract void executeOverrule(long overrule, long overruletime);
 
     /**
      * @return remaining overrule time in minutes, 0 or positive
      */
-    public int getRemainingOverruletime() {
-        int remainingTime = 0;
+    public long getRemainingOverruletime() {
+        long remainingTime = 0;
         if (overruleStart != null) {
-            // overruletime time max 23h59min, therefore can safely cast to int
-            remainingTime = Math.max(0, overruletime - (int) ChronoUnit.MINUTES.between(overruleStart,
-                    LocalDateTime.now().atZone(nhcComm.getTimeZone())));
+            remainingTime = Math.max(0, overruletime
+                    - ChronoUnit.MINUTES.between(overruleStart, LocalDateTime.now().atZone(nhcComm.getTimeZone())));
         }
         logger.trace("Getting remaining overrule time, remaining: {}", remainingTime);
         return remainingTime;

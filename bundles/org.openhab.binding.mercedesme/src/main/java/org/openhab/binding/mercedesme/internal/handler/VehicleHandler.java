@@ -103,7 +103,6 @@ import com.daimler.mbcarkit.proto.VehicleEvents.ChargeProgram;
 import com.daimler.mbcarkit.proto.VehicleEvents.ChargeProgramParameters;
 import com.daimler.mbcarkit.proto.VehicleEvents.ChargeProgramsValue;
 import com.daimler.mbcarkit.proto.VehicleEvents.TemperaturePointsValue;
-import com.daimler.mbcarkit.proto.VehicleEvents.VEPUpdate;
 import com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus;
 import com.daimler.mbcarkit.proto.Vehicleapi.AppTwinCommandStatus;
 import com.daimler.mbcarkit.proto.Vehicleapi.AppTwinCommandStatusUpdatesByPID;
@@ -140,7 +139,7 @@ public class VehicleHandler extends BaseThingHandler {
     private JSONObject chargeGroupValueStorage = new JSONObject();
     private Map<String, State> hvacGroupValueStorage = new HashMap<>();
     private String vehicleType = NOT_SET;
-    private List<VEPUpdate> eventQueue = new ArrayList<>();
+    private List<VehicleStatusAttributes> eventQueue = new ArrayList<>();
     private boolean updateRunning = false;
 
     Map<String, ChannelStateMap> eventStorage = new HashMap<>();
@@ -172,7 +171,7 @@ public class VehicleHandler extends BaseThingHandler {
                 throw new IllegalStateException("BridgeHandler is null");
             }
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, STATUS_BRIDGE_MISSING);
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, STATUS_BRIDGE_MISSING);
         }
     }
 
@@ -614,13 +613,14 @@ public class VehicleHandler extends BaseThingHandler {
                         observer);
                 updateChannel(csmUpdated);
             } catch (IllegalArgumentException iae) {
-                logger.trace("Cannot decode command {} {}", value.getAllFields().toString(), iae.getMessage());
+                logger.trace("Cannot decode command {} {}", Utils.maskVinsIn(value.getAllFields().toString()),
+                        iae.getMessage());
                 // silent ignore update
             }
         });
     }
 
-    public void enqueueUpdate(VEPUpdate update) {
+    public void enqueueUpdate(VehicleStatusAttributes update) {
         synchronized (eventQueue) {
             eventQueue.add(update);
             scheduler.execute(this::scheduleUpdate);
@@ -628,7 +628,7 @@ public class VehicleHandler extends BaseThingHandler {
     }
 
     private void scheduleUpdate() {
-        VEPUpdate data;
+        VehicleStatusAttributes data;
         synchronized (eventQueue) {
             while (updateRunning) {
                 try {
@@ -656,13 +656,15 @@ public class VehicleHandler extends BaseThingHandler {
         }
     }
 
-    public void handleUpdate(VEPUpdate update) {
+    public void handleUpdate(VehicleStatusAttributes update) {
+        boolean fullUpdate = update.fullUpdate();
+        logger.trace("{} received {} attributes - full update? {}", Utils.maskVin(config.vin),
+                update.attributes().size(), fullUpdate);
         updateStatus(ThingStatus.ONLINE);
-        boolean fullUpdate = update.getFullUpdate();
         /**
          * Deliver proto update
          */
-        String newProto = Utils.proto2Json(update, thing.getThingTypeUID());
+        String newProto = Utils.proto2Json(update.attributes(), thing.getThingTypeUID());
         String combinedProto = newProto;
         ChannelUID protoUpdateChannelUID = new ChannelUID(thing.getUID(), GROUP_VEHICLE, OH_CHANNEL_PROTO_UPDATE);
         ChannelStateMap oldProtoMap = eventStorage.get(protoUpdateChannelUID.getId());
@@ -680,12 +682,12 @@ public class VehicleHandler extends BaseThingHandler {
 
         // check if soc or soc-max value changed
         final AtomicBoolean socChanged = new AtomicBoolean(false);
-        Map<String, VehicleAttributeStatus> atts = update.getAttributesMap();
+        Map<String, VehicleAttributeStatus> atts = update.attributes();
         /**
          * handle "simple" values
          */
         atts.forEach((key, value) -> {
-            ChannelStateMap csm = Mapper.getChannelStateMap(key, value);
+            ChannelStateMap csm = Mapper.getChannelStateMap(key, value, fullUpdate);
             if (csm.isValid()) {
                 /**
                  * Store some values and UOM Observer
@@ -738,18 +740,21 @@ public class VehicleHandler extends BaseThingHandler {
                     case OH_CHANNEL_FUEL_LEVEL:
                         if (!Constants.BEV.equals(vehicleType)) {
                             if (config.fuelCapacity > 0) {
-                                float fuelLevelValue = ((QuantityType<?>) csm.getState()).floatValue();
-                                float fuelCapacity = config.fuelCapacity;
-                                float litersInTank = Math.round(fuelLevelValue * 1000 * fuelCapacity / 1000)
-                                        / (float) 100;
-                                ChannelStateMap tankFilled = new ChannelStateMap(OH_CHANNEL_TANK_REMAIN, GROUP_RANGE,
-                                        QuantityType.valueOf(litersInTank, Mapper.defaultVolumeUnit));
-                                updateChannel(tankFilled);
-                                float litersFree = Math.round((100 - fuelLevelValue) * 1000 * fuelCapacity / 1000)
-                                        / (float) 100;
-                                ChannelStateMap tankOpen = new ChannelStateMap(OH_CHANNEL_TANK_OPEN, GROUP_RANGE,
-                                        QuantityType.valueOf(litersFree, Mapper.defaultVolumeUnit));
-                                updateChannel(tankOpen);
+                                // fuel level may be UNDEF (see Utils.isNil()) - keep the last known tank values
+                                if (csm.getState() instanceof QuantityType<?> fuelLevelQuantity) {
+                                    float fuelLevelValue = fuelLevelQuantity.floatValue();
+                                    float fuelCapacity = config.fuelCapacity;
+                                    float litersInTank = Math.round(fuelLevelValue * 1000 * fuelCapacity / 1000)
+                                            / (float) 100;
+                                    ChannelStateMap tankFilled = new ChannelStateMap(OH_CHANNEL_TANK_REMAIN,
+                                            GROUP_RANGE, QuantityType.valueOf(litersInTank, Mapper.defaultVolumeUnit));
+                                    updateChannel(tankFilled);
+                                    float litersFree = Math.round((100 - fuelLevelValue) * 1000 * fuelCapacity / 1000)
+                                            / (float) 100;
+                                    ChannelStateMap tankOpen = new ChannelStateMap(OH_CHANNEL_TANK_OPEN, GROUP_RANGE,
+                                            QuantityType.valueOf(litersFree, Mapper.defaultVolumeUnit));
+                                    updateChannel(tankOpen);
+                                }
                             } else {
                                 ChannelStateMap tankFilled = new ChannelStateMap(OH_CHANNEL_TANK_REMAIN, GROUP_RANGE,
                                         QuantityType.valueOf(0, Mapper.defaultVolumeUnit));
@@ -1078,8 +1083,9 @@ public class VehicleHandler extends BaseThingHandler {
     private void energyUpdate() {
         ChannelStateMap socMap = eventStorage.get(GROUP_RANGE + "#" + OH_CHANNEL_SOC);
         ChannelStateMap socMaxMap = eventStorage.get(GROUP_CHARGE + "#" + OH_CHANNEL_MAX_SOC);
-        if (config.batteryCapacity > 0 && socMap != null) {
-            float socValue = ((QuantityType<?>) socMap.getState()).floatValue();
+        // socMap/socMaxMap may hold UNDEF instead of a QuantityType - fall through to the "no data" branch
+        if (config.batteryCapacity > 0 && socMap != null && socMap.getState() instanceof QuantityType<?> socQuantity) {
+            float socValue = socQuantity.floatValue();
             float batteryCapacity = config.batteryCapacity;
             float chargedValue = Math.round(socValue * batteryCapacity) / 100f;
             ChannelStateMap charged = new ChannelStateMap(OH_CHANNEL_CHARGED, GROUP_RANGE,
@@ -1089,8 +1095,8 @@ public class VehicleHandler extends BaseThingHandler {
             ChannelStateMap uncharged = new ChannelStateMap(OH_CHANNEL_UNCHARGED, GROUP_RANGE,
                     QuantityType.valueOf(unchargedValue, Units.KILOWATT_HOUR));
             updateChannel(uncharged);
-            if (socMaxMap != null) {
-                float socMaxValue = ((QuantityType<?>) socMaxMap.getState()).floatValue();
+            if (socMaxMap != null && socMaxMap.getState() instanceof QuantityType<?> socMaxQuantity) {
+                float socMaxValue = socMaxQuantity.floatValue();
                 float percentToMax = socMaxValue > socValue ? socMaxValue - socValue : 0;
                 float energyToMaxValue = Math.round(percentToMax * batteryCapacity) / 100f;
                 ChannelStateMap energyToMax = new ChannelStateMap(OH_CHANNEL_ENERGY_TO_MAX_SOC, GROUP_RANGE,
@@ -1246,5 +1252,17 @@ public class VehicleHandler extends BaseThingHandler {
             return;
         }
         localAccountHandler.sendPoi(config.vin, poi);
+    }
+
+    /**
+     * Triggers an immediate update for this vehicle, outside the regular refresh interval
+     */
+    public void forceUpdate() {
+        AccountHandler localAccountHandler = accountHandler;
+        if (localAccountHandler == null) {
+            logger.trace("Force update not possible without active account");
+            return;
+        }
+        localAccountHandler.forceUpdate(config.vin);
     }
 }

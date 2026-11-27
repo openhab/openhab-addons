@@ -1,3 +1,4 @@
+import { Observable } from "@matter/general";
 import { ActionContext } from "@matter/node";
 import { BridgeEvent, BridgeEventType, EventType } from "../MessageTypes";
 import { BridgeController } from "./BridgeController";
@@ -15,6 +16,9 @@ export class DeviceFunctions {
         resolve: (value: any) => void;
         timer: NodeJS.Timeout;
     }[] = [];
+
+    // Emitted when the bridge opens its own commissioning window
+    readonly commissionable = Observable();
 
     constructor(private bridgeController: BridgeController) {}
 

@@ -50,6 +50,14 @@ Commands protected by PIN
 - Open / Ventilate Windows
 - Open / Lift Sunroof
 
+Every `refreshInterval` all values get updated.
+
+If the vehicle is driving or charging during the refresh from `refreshInterval` the bridge provides live updates.
+That means that a subset of values get updated much quicker outside the `refreshInterval` from then on.
+These live updates are only available as long as the vehicle is driving or charging.
+
+A small `refreshInterval` is very likely to result in a temporarily ban - the default is a reasonable choice.
+
 ## Thing Configuration
 
 | Name            | Type    | Description                                         | Default | Required | Advanced |
@@ -366,6 +374,12 @@ States and controls are depending on your vehicle capabilities.
 | engine              | Switch               |  Engine Warning                 |     | X      | X          |
 | tires-rdk           | Number               |  Tire Pressure Warnings         | X   | X      | X          |
 | service-days        | Number               |  Next Service in _x_ days       | X   | X      | X          |
+| service-distance    | Number:Length        |  Next Service in _x_ km         | X   | X      | X          |
+
+**Note:** Vehicles report the service interval either in days or in kilometres, never both. The attribute
+the vehicle does not use is flagged as not available, so only one of the two channels carries a value while
+the other stays `UNDEF`. Check which channel is populated for your vehicle and use that one - or evaluate
+both in a rule.
 
 #### Starter Battery Mapping
 
@@ -729,6 +743,20 @@ val mercedesmeActions = getActions("mercedesme","mercedesme:bev:4711:eqa")
 mercedesmeActions.sendPOI("Eiffel Tower",48.85957476434348,2.2939068084684853,"Paris","Av. Gustave Eiffel", "75007")
 ```
 
+### `forceUpdate`
+
+Requests vehicle data immediately, outside the configured `refreshInterval`.
+The refresh interval restarts afterwards, so the next regular update happens again `refreshInterval` minutes later.
+Vehicle data is requested for the whole account.
+A force update is logged with `TRACE` level.
+
+**Be careful using this action in rules.** Frequent use can force the server to reject updates with a HTTP 429 response and can lock the access for several hours!
+
+```java
+val mercedesmeActions = getActions("mercedesme","mercedesme:bev:4711:eqa")
+mercedesmeActions.forceUpdate()
+```
+
 ## Discover your Vehicle
 
 There's a big variety of vehicles with different features and different command capabilities.
@@ -765,6 +793,8 @@ During development the `proto-update` contains an entry with binding version inf
 ```
 
 Keep these 3 channels disconnected during normal operation.
+
+Log output is anonymized as well: a VIN is printed with its last 4 characters only and GPS positions are replaced by placeholders.
 
 ## Full Example
 
@@ -814,6 +844,7 @@ Switch                  EQA_BrakeLiningWear         {channel="mercedesme:bev:471
 Switch                  EQA_WashWater               {channel="mercedesme:bev:4711:eqa:service#wash-water" }
 Number                  EQA_TirePressureWarn        {channel="mercedesme:bev:4711:eqa:service#tires-rdk" }
 Number                  EQA_ServiceInDays           {channel="mercedesme:bev:4711:eqa:service#service-days" }
+Number:Length           EQA_ServiceInDistance       {channel="mercedesme:bev:4711:eqa:service#service-distance", stateDescription=" " [pattern="%d %unit%", readOnly=true], unit="km"}
 
 Number:Length           EQA_Mileage                 {channel="mercedesme:bev:4711:eqa:range#mileage", stateDescription=" " [pattern="%d %unit%", readOnly=true], unit="km"}
 Number:Length           EQA_Range                   {channel="mercedesme:bev:4711:eqa:range#range-electric", stateDescription=" " [pattern="%d %unit%", readOnly=true], unit="km"}

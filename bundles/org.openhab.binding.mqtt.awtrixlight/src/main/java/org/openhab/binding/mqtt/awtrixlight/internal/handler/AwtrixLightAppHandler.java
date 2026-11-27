@@ -13,6 +13,8 @@
 package org.openhab.binding.mqtt.awtrixlight.internal.handler;
 
 import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.*;
+import static org.openhab.binding.mqtt.awtrixlight.internal.ng.AwtrixNgBindingConstants.THING_TYPE_NG_APP;
+import static org.openhab.binding.mqtt.awtrixlight.internal.ng.AwtrixNgBindingConstants.THING_TYPE_NG_CLOCK;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
@@ -25,6 +27,7 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mqtt.awtrixlight.internal.AppConfigOptions;
+import org.openhab.binding.mqtt.awtrixlight.internal.FirmwareSwitchConfiguration;
 import org.openhab.binding.mqtt.awtrixlight.internal.Helper;
 import org.openhab.binding.mqtt.awtrixlight.internal.app.AwtrixApp;
 import org.openhab.core.io.transport.mqtt.MqttMessageSubscriber;
@@ -420,6 +423,12 @@ public class AwtrixLightAppHandler extends BaseThingHandler implements MqttMessa
 
     @Override
     public void initialize() {
+        Bridge clock = getBridge();
+        if (clock != null && THING_TYPE_NG_CLOCK.equals(clock.getThingTypeUID())) {
+            logger.info("The clock of {} runs AWTRIX NG, changing the app to an AWTRIX NG app", getThing().getUID());
+            changeThingType(THING_TYPE_NG_APP, FirmwareSwitchConfiguration.forApp(getConfig()));
+            return;
+        }
         this.synchronizationRequired = true;
         AppConfigOptions config = getConfigAs(AppConfigOptions.class);
         if (!this.appName.isBlank() && !this.appName.equals(config.appname)) {
@@ -446,17 +455,17 @@ public class AwtrixLightAppHandler extends BaseThingHandler implements MqttMessa
     @Override
     public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
         if (bridgeStatusInfo.getStatus() == ThingStatus.OFFLINE) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
             return;
         }
         if (bridgeStatusInfo.getStatus() != ThingStatus.ONLINE) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR);
             return;
         }
 
         Bridge localBridge = this.getBridge();
         if (localBridge == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED, "Bridge is missing or offline.");
+            logger.debug("Bridge unavailable for Thing {}", getThing().getUID());
             return;
         }
         ThingHandler handler = localBridge.getHandler();
@@ -468,7 +477,7 @@ public class AwtrixLightAppHandler extends BaseThingHandler implements MqttMessa
                 thing.setProperty(PROP_APPID, bridgeHardwareId + "-" + this.appName);
             }
             if (this.synchronizationRequired) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NOT_YET_READY, "Synchronizing...");
+                updateStatus(ThingStatusDetail.CONFIGURATION_PENDING, "Synchronizing...");
                 this.finishInitJob = scheduler.schedule(this::finishInit, 15, TimeUnit.SECONDS);
             } else {
                 finishInit();
@@ -634,9 +643,9 @@ public class AwtrixLightAppHandler extends BaseThingHandler implements MqttMessa
         if (ThingStatus.ONLINE == bridgeStatus) {
             updateStatus(ThingStatus.ONLINE);
         } else if (ThingStatus.OFFLINE == bridgeStatus) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
         } else {
-            updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.BRIDGE_UNINITIALIZED);
+            updateStatus(ThingStatus.UNKNOWN);
         }
         Future<?> localJob = this.finishInitJob;
         if (localJob != null) {

@@ -96,7 +96,7 @@ public class RadioBrowserHandler extends BaseThingHandler {
                 }
             }
         } catch (ApiException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             Future<?> future = reconnectFuture;
             if (future == null) {
                 // reconnect every 3 mins, but try in 30 seconds time in case its only 1 of 5 servers down.
@@ -130,14 +130,14 @@ public class RadioBrowserHandler extends BaseThingHandler {
                 reconnectFuture = null;
             }
         } catch (ApiException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 
     private boolean buildFilters() {
         if (!config.filters.contains("=") || config.filters.startsWith("?") || config.filters.contains(" ")
                 || config.filters.startsWith(" ")) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                     "Please update your filters config to the correct key=value,key2=value2 format");
             return false;
         }

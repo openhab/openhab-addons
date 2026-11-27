@@ -85,6 +85,12 @@
 				<default>openHAB</default>
 				<advanced>true</advanced>
 			</parameter>
+			<parameter name="instances" type="text" required="false">
+				<label>Instance IDs</label>
+				<description>Comma separated list of Hyperion instance indices to apply commands to (e.g. "0,1"). Leave empty to
+					apply to all instances.</description>
+				<advanced>true</advanced>
+			</parameter>
 		</config-description>
 
 	</thing-type>
@@ -94,8 +100,8 @@
 		<label>Brightness</label>
 		<description>Sets the brightness of the LEDs</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Brightness</tag>
+			<point>Control</point>
+			<property>Brightness</property>
 		</tags>
 	</channel-type>
 	<channel-type id="color">
@@ -103,8 +109,8 @@
 		<label>Color</label>
 		<description>Sets the color effect of the LEDs</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Color</tag>
+			<point>Control</point>
+			<property>Color</property>
 		</tags>
 	</channel-type>
 
@@ -125,8 +131,8 @@
 		<label>Enabled</label>
 		<description>Shows whether Hyperion is currently enabled or not and allows enabling or disabling of Hyperion</description>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
+			<point>Switch</point>
+			<property>Mode</property>
 		</tags>
 	</channel-type>
 

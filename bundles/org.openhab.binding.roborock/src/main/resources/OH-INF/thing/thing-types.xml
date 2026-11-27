@@ -41,6 +41,10 @@
 			<channel-group id="info" typeId="info"/>
 		</channel-groups>
 
+		<properties>
+			<property name="thingTypeVersion">2</property>
+		</properties>
+
 		<representation-property>duid</representation-property>
 
 		<config-description>
@@ -158,6 +162,7 @@
 			<channel id="segment-status" typeId="segment-status"/>
 			<channel id="map-status" typeId="map-status"/>
 			<channel id="led-status" typeId="led-status"/>
+			<channel id="current-room" typeId="current-room"/>
 		</channels>
 	</channel-group-type>
 	<channel-group-type id="consumables">
@@ -209,8 +214,6 @@
 		<label>Info</label>
 		<channels>
 			<channel id="multi-maps-list" typeId="multi-maps-list"/>
-			<channel id="room-mapping" typeId="room-mapping"/>
-			<channel id="routine-mapping" typeId="routine-mapping"/>
 			<channel id="customize-clean-mode" typeId="customize-clean-mode"/>
 			<channel id="carpet-mode" typeId="carpet-mode"/>
 		</channels>
@@ -229,8 +232,8 @@
 		<item-type>Number:Area</item-type>
 		<label>Cleaning Area</label>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
@@ -238,8 +241,8 @@
 		<item-type>Number:Time</item-type>
 		<label>Cleaning Time</label>
 		<tags>
-			<tag>Status</tag>
-			<tag>Duration</tag>
+			<point>Status</point>
+			<property>Duration</property>
 		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
@@ -247,16 +250,16 @@
 		<item-type>Switch</item-type>
 		<label>Do Not Disturb</label>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
+			<point>Switch</point>
+			<property>Mode</property>
 		</tags>
 	</channel-type>
 	<channel-type id="error-code">
 		<item-type>String</item-type>
 		<label>Error Code</label>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -264,8 +267,8 @@
 		<item-type>Number</item-type>
 		<label>Error ID</label>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -273,8 +276,8 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Fan Power</label>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Speed</tag>
+			<point>Setpoint</point>
+			<property>Speed</property>
 		</tags>
 		<state min="1" max="99" step="1" pattern="%.0f%%" readOnly="false"/>
 	</channel-type>
@@ -283,8 +286,8 @@
 		<label>In Cleaning?</label>
 		<description>On = Cleaning, Off = Not cleaning</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state pattern="%.0f" readOnly="true"/>
 	</channel-type>
@@ -294,8 +297,8 @@
 		<description>On = Map present, Off = Map not present</description>
 		<category>Energy</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state pattern="%.0f" readOnly="true"/>
 	</channel-type>
@@ -303,8 +306,8 @@
 		<item-type>Number</item-type>
 		<label>State ID</label>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -358,8 +361,8 @@
 		<item-type>Switch</item-type>
 		<label>Segment Status</label>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state pattern="%.0f" readOnly="true"/>
 	</channel-type>
@@ -367,8 +370,8 @@
 		<item-type>Switch</item-type>
 		<label>Map Status</label>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state pattern="%.0f" readOnly="true"/>
 	</channel-type>
@@ -377,10 +380,21 @@
 		<label>Led Status</label>
 		<description>On = LEDs on, Off = LEDs off</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state pattern="%.0f" readOnly="true"/>
+	</channel-type>
+	<channel-type id="current-room">
+		<item-type>String</item-type>
+		<label>Current Room</label>
+		<description>Name of the room the robot is currently in, resolved from the live map segment at the robot's position.
+			While the robot is docked, the channel reflects the room of the charging dock.</description>
+		<tags>
+			<point>Status</point>
+			<property>Info</property>
+		</tags>
+		<state readOnly="true"/>
 	</channel-type>
 
 	<!-- Dynamic Status Channels -->
@@ -388,8 +402,8 @@
 		<item-type>Number</item-type>
 		<label>Water Box Mode</label>
 		<tags>
-			<tag>Control</tag>
-			<tag>Mode</tag>
+			<point>Control</point>
+			<property>Mode</property>
 		</tags>
 		<state min="200" max="204" step="1" pattern="%.0f%%" readOnly="false">
 			<options>
@@ -405,8 +419,8 @@
 		<item-type>Number</item-type>
 		<label>Mop Mode</label>
 		<tags>
-			<tag>Control</tag>
-			<tag>Mode</tag>
+			<point>Control</point>
+			<property>Mode</property>
 		</tags>
 		<state min="300" max="303" step="1" pattern="%.0f%%" readOnly="false">
 			<options>
@@ -420,8 +434,8 @@
 		<item-type>Switch</item-type>
 		<label>Water Box State</label>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -429,8 +443,8 @@
 		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Cleaning % Complete</label>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -438,8 +452,8 @@
 		<item-type>Switch</item-type>
 		<label>Water Box Carriage State</label>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -447,8 +461,8 @@
 		<item-type>Switch</item-type>
 		<label>Lock Status</label>
 		<tags>
-			<tag>Status</tag>
-			<tag>LockState</tag>
+			<point>Status</point>
+			<property>LockState</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -456,8 +470,8 @@
 		<item-type>Switch</item-type>
 		<label>Mop Forbidden</label>
 		<tags>
-			<tag>Status</tag>
-			<tag>Enabled</tag>
+			<point>Status</point>
+			<property>Enabled</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -466,8 +480,8 @@
 		<label>Robot Locating</label>
 		<description>1 = Robot is locating it's position, 0 = robot is not locating it's position</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -475,8 +489,8 @@
 		<item-type>Number</item-type>
 		<label>Dock State ID</label>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -495,8 +509,8 @@
 		<item-type>Number:Time</item-type>
 		<label>Mop Drying Time</label>
 		<tags>
-			<tag>Status</tag>
-			<tag>Duration</tag>
+			<point>Status</point>
+			<property>Duration</property>
 		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
@@ -504,8 +518,8 @@
 		<item-type>Switch</item-type>
 		<label>Mop Cleaning Active</label>
 		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
+			<point>Status</point>
+			<property>Mode</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -514,8 +528,8 @@
 		<label>Start Collecting Dust</label>
 		<description>Once the vacuum cleaner is back in place, you can start collecting the dust</description>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
+			<point>Switch</point>
+			<property>Mode</property>
 		</tags>
 	</channel-type>
 	<channel-type id="clean-mop-start">
@@ -523,8 +537,8 @@
 		<label>Start Mop Wash</label>
 		<description>Once the vacuum cleaner is back in place, you can start cleaning the mop</description>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
+			<point>Switch</point>
+			<property>Mode</property>
 		</tags>
 	</channel-type>
 	<channel-type id="clean-mop-stop">
@@ -537,8 +551,8 @@
 		<item-type>Number</item-type>
 		<label>Main Brush Remaining</label>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state pattern="%.0f%%" readOnly="true"/>
 	</channel-type>
@@ -546,8 +560,8 @@
 		<item-type>Number</item-type>
 		<label>Side Brush Remaining</label>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state pattern="%.0f%%" readOnly="true"/>
 	</channel-type>
@@ -555,8 +569,8 @@
 		<item-type>Number</item-type>
 		<label>Filter Usage Remaining</label>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state pattern="%.0f%%" readOnly="true"/>
 	</channel-type>
@@ -564,8 +578,8 @@
 		<item-type>Number</item-type>
 		<label>Sensor Dirt Remaining</label>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state pattern="%.0f%%" readOnly="true"/>
 	</channel-type>
@@ -573,8 +587,8 @@
 		<item-type>Number:Time</item-type>
 		<label>Main Brush Time till Replacement</label>
 		<tags>
-			<tag>Status</tag>
-			<tag>Duration</tag>
+			<point>Status</point>
+			<property>Duration</property>
 		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
@@ -582,8 +596,8 @@
 		<item-type>Number:Time</item-type>
 		<label>Side Brush Time till Replacement</label>
 		<tags>
-			<tag>Status</tag>
-			<tag>Duration</tag>
+			<point>Status</point>
+			<property>Duration</property>
 		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
@@ -591,8 +605,8 @@
 		<item-type>Number:Time</item-type>
 		<label>Filter Time till Replacement</label>
 		<tags>
-			<tag>Status</tag>
-			<tag>Duration</tag>
+			<point>Status</point>
+			<property>Duration</property>
 		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
@@ -600,8 +614,8 @@
 		<item-type>Number:Time</item-type>
 		<label>Sensor Dirt Time till Cleaning</label>
 		<tags>
-			<tag>Status</tag>
-			<tag>Duration</tag>
+			<point>Status</point>
+			<property>Duration</property>
 		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
@@ -611,8 +625,8 @@
 		<item-type>String</item-type>
 		<label>Control Vacuum</label>
 		<tags>
-			<tag>Control</tag>
-			<tag>Mode</tag>
+			<point>Control</point>
+			<property>Mode</property>
 		</tags>
 		<state>
 			<options>
@@ -627,8 +641,8 @@
 		<item-type>Number</item-type>
 		<label>Control Fan Level</label>
 		<tags>
-			<tag>Control</tag>
-			<tag>Speed</tag>
+			<point>Control</point>
+			<property>Speed</property>
 		</tags>
 		<state min="-1" max="105" step="1" readOnly="false">
 			<options>
@@ -651,24 +665,26 @@
 		<item-type>Switch</item-type>
 		<label>Vacuum On/Off</label>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Power</tag>
+			<point>Switch</point>
+			<property>Power</property>
 		</tags>
 	</channel-type>
-	<channel-type id="segment" advanced="true">
+	<channel-type id="segment">
 		<item-type>String</item-type>
-		<label>Vacuum Specific Room(s) [room#]</label>
+		<label>Clean Room</label>
+		<description>Select a room to clean. A comma-separated list of room segment ids is also accepted.</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 	</channel-type>
-	<channel-type id="routine" advanced="true">
+	<channel-type id="routine">
 		<item-type>String</item-type>
-		<label>Start Vacuum Routine [routine#]</label>
+		<label>Start Routine</label>
+		<description>Select a routine to start.</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 	</channel-type>
 
@@ -676,16 +692,16 @@
 		<item-type>String</item-type>
 		<label>Reset Consumable</label>
 		<tags>
-			<tag>Control</tag>
-			<tag>Mode</tag>
+			<point>Control</point>
+			<property>Mode</property>
 		</tags>
 		<state>
 			<options>
 				<option value="none">Select Consumable</option>
-				<option value="main-brush-work-time">Reset Mainbrush</option>
-				<option value="side-brush-work-time">Reset Sidebrush</option>
-				<option value="filter-work-time">Reset Filter</option>
-				<option value="sensor-dirty-time">Reset Sensors</option>
+				<option value="main_brush_work_time">Reset Mainbrush</option>
+				<option value="side_brush_work_time">Reset Sidebrush</option>
+				<option value="filter_work_time">Reset Filter</option>
+				<option value="sensor_dirty_time">Reset Sensors</option>
 			</options>
 		</state>
 	</channel-type>
@@ -694,24 +710,24 @@
 		<item-type>Switch</item-type>
 		<label>Do Not Disturb Functionality</label>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Enabled</tag>
+			<point>Switch</point>
+			<property>Enabled</property>
 		</tags>
 	</channel-type>
 	<channel-type id="dnd-start">
 		<item-type>String</item-type>
 		<label>Start Time DND</label>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 	</channel-type>
 	<channel-type id="dnd-end">
 		<item-type>String</item-type>
 		<label>End Time DND</label>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 	</channel-type>
 
@@ -720,8 +736,8 @@
 		<item-type>Number:Time</item-type>
 		<label>Total Cleaning Time</label>
 		<tags>
-			<tag>Status</tag>
-			<tag>Duration</tag>
+			<point>Status</point>
+			<property>Duration</property>
 		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
@@ -729,8 +745,8 @@
 		<item-type>Number:Area</item-type>
 		<label>Total Cleaning Area</label>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -738,8 +754,8 @@
 		<item-type>Number</item-type>
 		<label>Total Cleanings</label>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state pattern="%.0f" readOnly="true"/>
 	</channel-type>
@@ -751,8 +767,8 @@
 		<description>Last Cleaning Start Time</description>
 		<category>Time</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
+			<point>Status</point>
+			<property>Timestamp</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -762,8 +778,8 @@
 		<description>Last Cleaning End Time</description>
 		<category>Time</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
+			<point>Status</point>
+			<property>Timestamp</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -771,8 +787,8 @@
 		<item-type>Number:Time</item-type>
 		<label>Cleaning Duration</label>
 		<tags>
-			<tag>Status</tag>
-			<tag>Duration</tag>
+			<point>Status</point>
+			<property>Duration</property>
 		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
@@ -780,8 +796,8 @@
 		<item-type>Number:Area</item-type>
 		<label>Cleaning Area</label>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -789,8 +805,8 @@
 		<item-type>Number</item-type>
 		<label>Error</label>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state pattern="%.0f" readOnly="true"/>
 	</channel-type>
@@ -798,8 +814,8 @@
 		<item-type>Number</item-type>
 		<label>Cleaning Finished</label>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -807,8 +823,8 @@
 		<item-type>Number</item-type>
 		<label>Cleaning Finished Reason</label>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -860,8 +876,8 @@
 		<item-type>Number</item-type>
 		<label>Dust Collection Status</label>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -869,8 +885,8 @@
 		<item-type>String</item-type>
 		<label>Cleaning Record</label>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -878,37 +894,19 @@
 		<item-type>Image</item-type>
 		<label>Cleaning Map</label>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<!-- Info channels -->
-	<channel-type id="room-mapping" advanced="true">
-		<item-type>String</item-type>
-		<label>Room Mapping</label>
-		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
-		</tags>
-		<state readOnly="true"/>
-	</channel-type>
-	<channel-type id="routine-mapping" advanced="true">
-		<item-type>String</item-type>
-		<label>Routine Mapping</label>
-		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
-		</tags>
-		<state readOnly="true"/>
-	</channel-type>
 	<channel-type id="multi-maps-list" advanced="true">
 		<item-type>String</item-type>
 		<label>Multi Map List</label>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -916,16 +914,16 @@
 		<item-type>String</item-type>
 		<label>Carpet Mode</label>
 		<tags>
-			<tag>Control</tag>
-			<tag>Mode</tag>
+			<point>Control</point>
+			<property>Mode</property>
 		</tags>
 	</channel-type>
 	<channel-type id="customize-clean-mode" advanced="true">
 		<item-type>String</item-type>
 		<label>Customized Clean Mode</label>
 		<tags>
-			<tag>Control</tag>
-			<tag>Mode</tag>
+			<point>Control</point>
+			<property>Mode</property>
 		</tags>
 	</channel-type>
 
@@ -934,8 +932,8 @@
 		<item-type>String</item-type>
 		<label>SSID</label>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -943,8 +941,8 @@
 		<item-type>String</item-type>
 		<label>BSSID</label>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -952,8 +950,8 @@
 		<item-type>Number</item-type>
 		<label>RSSI</label>
 		<tags>
-			<tag>Status</tag>
-			<tag>RSSI</tag>
+			<point>Status</point>
+			<property>RSSI</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -963,16 +961,16 @@
 		<item-type>String</item-type>
 		<label>Execute Command</label>
 		<tags>
-			<tag>Control</tag>
-			<tag>Mode</tag>
+			<point>Control</point>
+			<property>Mode</property>
 		</tags>
 	</channel-type>
 	<channel-type id="rpc" advanced="true">
 		<item-type>String</item-type>
 		<label>Execute RPC (cloud) Command</label>
 		<tags>
-			<tag>Control</tag>
-			<tag>Mode</tag>
+			<point>Control</point>
+			<property>Mode</property>
 		</tags>
 	</channel-type>
 	<channel-type id="dpcommand" advanced="true">
@@ -980,16 +978,16 @@
 		<label>Execute DP (cloud) Command</label>
 		<description>Execute a raw flat data-point payload to B01/Q10 devices. (Example payload: {"201": {"cmd": 1}})</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Mode</tag>
+			<point>Control</point>
+			<property>Mode</property>
 		</tags>
 	</channel-type>
 	<channel-type id="power">
 		<item-type>Switch</item-type>
 		<label>Power On/Off</label>
 		<tags>
-			<tag>Control</tag>
-			<tag>Power</tag>
+			<point>Control</point>
+			<property>Power</property>
 		</tags>
 	</channel-type>
 </thing:thing-descriptions>

@@ -19,6 +19,8 @@ import org.openhab.binding.unifi.internal.protect.api.priv.dto.base.UniFiProtect
 import org.openhab.binding.unifi.internal.protect.api.priv.dto.types.EventType;
 import org.openhab.binding.unifi.internal.protect.api.priv.dto.types.SmartDetectObjectType;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * Event model for UniFi Protect
  *
@@ -30,10 +32,13 @@ public class Event extends UniFiProtectModel {
     public Instant start;
     public Instant end;
     public Integer score;
+    @SerializedName(value = "heatmap", alternate = { "heatmapId" })
     public String heatmapId;
+    @SerializedName(value = "camera", alternate = { "cameraId" })
     public String cameraId;
     public List<SmartDetectObjectType> smartDetectTypes;
     public List<String> smartDetectEventIds;
+    @SerializedName(value = "thumbnail", alternate = { "thumbnailId" })
     public String thumbnailId;
     public String userId;
     public Instant timestamp;

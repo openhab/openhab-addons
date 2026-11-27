@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.doorbird.internal.config;
 
+import java.util.List;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
@@ -62,4 +64,9 @@ public class DoorbellConfiguration {
      * Scale factor for montages
      */
     public @Nullable Integer montageScaleFactor;
+
+    /**
+     * List of IPs that are allowed to trigger webhooks.
+     */
+    public List<String> webhookIpWhitelist = List.of();
 }

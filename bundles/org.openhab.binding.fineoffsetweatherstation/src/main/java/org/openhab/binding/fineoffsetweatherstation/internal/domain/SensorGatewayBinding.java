@@ -109,6 +109,8 @@ public enum SensorGatewayBinding {
 
     private static final Map<Byte, List<SensorGatewayBinding>> SENSOR_LOOKUP = new HashMap<>();
 
+    private static final Map<Sensor, Map<@Nullable Integer, SensorGatewayBinding>> SENSOR_CHANNEL_LOOKUP = new HashMap<>();
+
     static {
         for (SensorGatewayBinding sensorGatewayBinding : values()) {
             List<SensorGatewayBinding> bindings = SENSOR_LOOKUP.computeIfAbsent(sensorGatewayBinding.id,
@@ -117,6 +119,8 @@ public enum SensorGatewayBinding {
             if (bindings != null) {
                 bindings.add(sensorGatewayBinding);
             }
+            SENSOR_CHANNEL_LOOKUP.computeIfAbsent(sensorGatewayBinding.sensor, s -> new HashMap<>())
+                    .put(sensorGatewayBinding.channel, sensorGatewayBinding);
         }
     }
 
@@ -132,6 +136,19 @@ public enum SensorGatewayBinding {
 
     public static @Nullable List<SensorGatewayBinding> forIndex(byte idx) {
         return SENSOR_LOOKUP.get(idx);
+    }
+
+    /**
+     * Reverse lookup of the binding for a measured value's producing {@link Sensor} and channel index. Several
+     * measurands may share the same {@code (sensor, channel)} (e.g. WH51 soil moisture and soil temperature of the
+     * same physical sensor), so they all resolve to the one binding - and thus to one sensor Thing.
+     *
+     * @param channel the 1-based channel index, or {@code null} for single-instance sensors (e.g. WH57, WH45)
+     * @return the matching binding, or {@code null} if no sensor uses that {@code (sensor, channel)} combination
+     */
+    public static @Nullable SensorGatewayBinding forSensorAndChannel(Sensor sensor, @Nullable Integer channel) {
+        Map<@Nullable Integer, SensorGatewayBinding> byChannel = SENSOR_CHANNEL_LOOKUP.get(sensor);
+        return byChannel == null ? null : byChannel.get(channel);
     }
 
     public BatteryStatus getBatteryStatus(byte data) {

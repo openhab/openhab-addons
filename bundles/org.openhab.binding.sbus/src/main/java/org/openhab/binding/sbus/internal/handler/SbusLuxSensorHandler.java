@@ -65,8 +65,7 @@ public class SbusLuxSensorHandler extends AbstractSbusHandler {
     protected void pollDevice() {
         final SbusService adapter = super.sbusAdapter;
         if (adapter == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/error.device.adapter-not-initialized");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.device.adapter-not-initialized");
             return;
         }
 
@@ -78,8 +77,7 @@ public class SbusLuxSensorHandler extends AbstractSbusHandler {
             updateChannelStatesFromResponse(response);
             updateStatus(ThingStatus.ONLINE);
         } catch (IllegalStateException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/error.device.communication");
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/error.device.communication");
             logger.warn("Error polling lux sensor device {}: {}", getThing().getUID(), e.getMessage());
         }
     }

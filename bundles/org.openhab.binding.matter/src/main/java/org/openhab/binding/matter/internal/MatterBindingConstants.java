@@ -187,6 +187,27 @@ public class MatterBindingConstants {
     public static final String CHANNEL_ID_THERMOSTAT_RUNNINGMODE = "thermostat-runningmode";
     public static final ChannelTypeUID CHANNEL_THERMOSTAT_RUNNINGMODE = new ChannelTypeUID(BINDING_ID,
             CHANNEL_ID_THERMOSTAT_RUNNINGMODE);
+    public static final String CHANNEL_ID_THERMOSTAT_RUNNINGSTATE_HEAT = "thermostat-runningstate-heat";
+    public static final ChannelTypeUID CHANNEL_THERMOSTAT_RUNNINGSTATE_HEAT = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_ID_THERMOSTAT_RUNNINGSTATE_HEAT);
+    public static final String CHANNEL_ID_THERMOSTAT_RUNNINGSTATE_COOL = "thermostat-runningstate-cool";
+    public static final ChannelTypeUID CHANNEL_THERMOSTAT_RUNNINGSTATE_COOL = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_ID_THERMOSTAT_RUNNINGSTATE_COOL);
+    public static final String CHANNEL_ID_THERMOSTAT_RUNNINGSTATE_FAN = "thermostat-runningstate-fan";
+    public static final ChannelTypeUID CHANNEL_THERMOSTAT_RUNNINGSTATE_FAN = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_ID_THERMOSTAT_RUNNINGSTATE_FAN);
+    public static final String CHANNEL_ID_THERMOSTAT_RUNNINGSTATE_HEATSTAGE2 = "thermostat-runningstate-heatstage2";
+    public static final ChannelTypeUID CHANNEL_THERMOSTAT_RUNNINGSTATE_HEATSTAGE2 = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_ID_THERMOSTAT_RUNNINGSTATE_HEATSTAGE2);
+    public static final String CHANNEL_ID_THERMOSTAT_RUNNINGSTATE_COOLSTAGE2 = "thermostat-runningstate-coolstage2";
+    public static final ChannelTypeUID CHANNEL_THERMOSTAT_RUNNINGSTATE_COOLSTAGE2 = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_ID_THERMOSTAT_RUNNINGSTATE_COOLSTAGE2);
+    public static final String CHANNEL_ID_THERMOSTAT_RUNNINGSTATE_FANSTAGE2 = "thermostat-runningstate-fanstage2";
+    public static final ChannelTypeUID CHANNEL_THERMOSTAT_RUNNINGSTATE_FANSTAGE2 = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_ID_THERMOSTAT_RUNNINGSTATE_FANSTAGE2);
+    public static final String CHANNEL_ID_THERMOSTAT_RUNNINGSTATE_FANSTAGE3 = "thermostat-runningstate-fanstage3";
+    public static final ChannelTypeUID CHANNEL_THERMOSTAT_RUNNINGSTATE_FANSTAGE3 = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_ID_THERMOSTAT_RUNNINGSTATE_FANSTAGE3);
     public static final String CHANNEL_ID_THERMOSTAT_HEATING_DEMAND = "thermostat-heatingdemand";
     public static final ChannelTypeUID CHANNEL_THERMOSTAT_HEATING_DEMAND = new ChannelTypeUID(BINDING_ID,
             CHANNEL_ID_THERMOSTAT_HEATING_DEMAND);
@@ -208,9 +229,30 @@ public class MatterBindingConstants {
     public static final String CHANNEL_ID_DOORLOCK_LOCKOPERATIONERROR = "doorlock-lockoperationerror";
     public static final ChannelTypeUID CHANNEL_DOORLOCK_LOCKOPERATIONERROR = new ChannelTypeUID(BINDING_ID,
             CHANNEL_ID_DOORLOCK_LOCKOPERATIONERROR);
+    public static final String CHANNEL_ID_DOORLOCK_SOUNDVOLUME = "doorlock-soundvolume";
+    public static final ChannelTypeUID CHANNEL_DOORLOCK_SOUNDVOLUME = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_ID_DOORLOCK_SOUNDVOLUME);
     public static final String CHANNEL_ID_WINDOWCOVERING_LIFT = "windowcovering-lift";
     public static final ChannelTypeUID CHANNEL_WINDOWCOVERING_LIFT = new ChannelTypeUID(BINDING_ID,
             CHANNEL_ID_WINDOWCOVERING_LIFT);
+    public static final String CHANNEL_ID_VALVE_STATE = "valve-state";
+    public static final ChannelTypeUID CHANNEL_VALVE_STATE = new ChannelTypeUID(BINDING_ID, CHANNEL_ID_VALVE_STATE);
+    public static final String CHANNEL_ID_VALVE_CURRENT_STATE = "valve-current-state";
+    public static final ChannelTypeUID CHANNEL_VALVE_CURRENT_STATE = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_ID_VALVE_CURRENT_STATE);
+    public static final String CHANNEL_ID_VALVE_TARGET_STATE = "valve-target-state";
+    public static final ChannelTypeUID CHANNEL_VALVE_TARGET_STATE = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_ID_VALVE_TARGET_STATE);
+    public static final String CHANNEL_ID_VALVE_LEVEL = "valve-level";
+    public static final ChannelTypeUID CHANNEL_VALVE_LEVEL = new ChannelTypeUID(BINDING_ID, CHANNEL_ID_VALVE_LEVEL);
+    public static final String CHANNEL_ID_VALVE_DURATION = "valve-duration";
+    public static final ChannelTypeUID CHANNEL_VALVE_DURATION = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_ID_VALVE_DURATION);
+    public static final String CHANNEL_ID_VALVE_CLOSE_TIME = "valve-close-time";
+    public static final ChannelTypeUID CHANNEL_VALVE_CLOSE_TIME = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_ID_VALVE_CLOSE_TIME);
+    public static final String CHANNEL_ID_VALVE_FAULT = "valve-fault";
+    public static final ChannelTypeUID CHANNEL_VALVE_FAULT = new ChannelTypeUID(BINDING_ID, CHANNEL_ID_VALVE_FAULT);
     public static final String CHANNEL_ID_FANCONTROL_PERCENT = "fancontrol-percent";
     public static final ChannelTypeUID CHANNEL_FANCONTROL_PERCENT = new ChannelTypeUID(BINDING_ID,
             CHANNEL_ID_FANCONTROL_PERCENT);
@@ -241,6 +283,12 @@ public class MatterBindingConstants {
     public static final String CHANNEL_ID_OTASOFTWAREUPDATEREQUESTOR_UPDATEAVAILABLE = "otasoftwareupdaterequestor-updateavailable";
     public static final ChannelTypeUID CHANNEL_OTASOFTWAREUPDATEREQUESTOR_UPDATEAVAILABLE = new ChannelTypeUID(
             BINDING_ID, CHANNEL_ID_OTASOFTWAREUPDATEREQUESTOR_UPDATEAVAILABLE);
+    public static final String CHANNEL_ID_ICDMANAGEMENT_CHECKINREGISTERED = "icdmanagement-checkinregistered";
+    public static final ChannelTypeUID CHANNEL_ICDMANAGEMENT_CHECKINREGISTERED = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_ID_ICDMANAGEMENT_CHECKINREGISTERED);
+    public static final String CHANNEL_ID_ICDMANAGEMENT_LASTCHECKIN = "icdmanagement-lastcheckin";
+    public static final ChannelTypeUID CHANNEL_ICDMANAGEMENT_LASTCHECKIN = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_ID_ICDMANAGEMENT_LASTCHECKIN);
     public static final String CHANNEL_ID_WIFINETWORKDIAGNOSTICS_RSSI = "wifinetworkdiagnostics-rssi";
     public static final ChannelTypeUID CHANNEL_WIFINETWORKDIAGNOSTICS_RSSI = new ChannelTypeUID(BINDING_ID,
             CHANNEL_ID_WIFINETWORKDIAGNOSTICS_RSSI);
@@ -419,6 +467,8 @@ public class MatterBindingConstants {
     public static final String THING_ACTION_DESC_NODE_GENERATE_NEW_PAIRING_CODE = "@text/thing-action.node.generateNewPairingCode.description";
     public static final String THING_ACTION_LABEL_NODE_GENERATE_NEW_PAIRING_CODE_MANUAL_PAIRING_CODE = "@text/thing-action.node.generateNewPairingCode.manual-pairing-code.label";
     public static final String THING_ACTION_LABEL_NODE_GENERATE_NEW_PAIRING_CODE_QR_PAIRING_CODE = "@text/thing-action.node.generateNewPairingCode.qr-pairing-code.label";
+    public static final String THING_ACTION_LABEL_NODE_GENERATE_NEW_PAIRING_CODE_VALID_UNTIL = "@text/thing-action.node.generateNewPairingCode.valid-until.label";
+    public static final String THING_ACTION_LABEL_NODE_GENERATE_NEW_PAIRING_CODE_RESULT = "@text/thing-action.node.generateNewPairingCode.result.label";
     public static final String THING_ACTION_LABEL_NODE_DECOMMISSION = "@text/thing-action.node.decommission.label";
     public static final String THING_ACTION_DESC_NODE_DECOMMISSION = "@text/thing-action.node.decommission.description";
     public static final String THING_ACTION_LABEL_NODE_DECOMMISSION_RESULT = "@text/thing-action.node.decommission.result.label";
@@ -439,6 +489,11 @@ public class MatterBindingConstants {
     public static final String THING_ACTION_LABEL_NODE_CANCEL_FIRMWARE_UPDATE = "@text/thing-action.node.cancelFirmwareUpdate.label";
     public static final String THING_ACTION_DESC_NODE_CANCEL_FIRMWARE_UPDATE = "@text/thing-action.node.cancelFirmwareUpdate.description";
     public static final String THING_ACTION_LABEL_NODE_CANCEL_FIRMWARE_UPDATE_RESULT = "@text/thing-action.node.cancelFirmwareUpdate.result.label";
+    public static final String THING_ACTION_LABEL_NODE_ICD_STAY_ACTIVE = "@text/thing-action.node.icdStayActive.label";
+    public static final String THING_ACTION_DESC_NODE_ICD_STAY_ACTIVE = "@text/thing-action.node.icdStayActive.description";
+    public static final String THING_ACTION_LABEL_NODE_ICD_STAY_ACTIVE_DURATION = "@text/thing-action.node.icdStayActive.duration.label";
+    public static final String THING_ACTION_DESC_NODE_ICD_STAY_ACTIVE_DURATION = "@text/thing-action.node.icdStayActive.duration.description";
+    public static final String THING_ACTION_LABEL_NODE_ICD_STAY_ACTIVE_RESULT = "@text/thing-action.node.icdStayActive.result.label";
 
     // Action Result Messages
     public static final String THING_ACTION_RESULT_SUCCESS = "@text/thing-action.result.success";
@@ -448,6 +503,9 @@ public class MatterBindingConstants {
     public static final String THING_ACTION_RESULT_FIRMWARE_UPDATE_AVAILABLE = "@text/thing-action.result.firmware-update-available";
     public static final String THING_ACTION_RESULT_FIRMWARE_UPDATE_STARTED = "@text/thing-action.result.firmware-update-started";
     public static final String THING_ACTION_RESULT_FIRMWARE_UPDATE_CANCELLED = "@text/thing-action.result.firmware-update-cancelled";
+    public static final String THING_ACTION_RESULT_ICD_STAY_ACTIVE = "@text/thing-action.result.icd-stay-active";
+    public static final String THING_ACTION_RESULT_INVALID_DURATION = "@text/thing-action.result.invalid-duration";
+    public static final String THING_ACTION_RESULT_PAIRING_CODE_VALID_UNTIL = "@text/thing-action.result.pairing-code-valid-until";
 
     // Matter OTBR Actions
     public static final String THING_ACTION_LABEL_OTBR_LOAD_EXTERNAL_DATASET = "@text/thing-action.otbr.loadExternalDataset.label";
@@ -534,6 +592,7 @@ public class MatterBindingConstants {
     public static final String THING_ACTION_DESC_CONTROLLER_PAIR_DEVICE_CODE = "@text/thing-action.controller.pairDevice.code.description";
     public static final String THING_ACTION_LABEL_CONTROLLER_PAIR_DEVICE_RESULT = "@text/thing-action.controller.pairDevice.result.label";
     public static final String THING_ACTION_RESULT_DEVICE_ADDED = "@text/thing-action.result.device-added";
+    public static final String THING_ACTION_RESULT_DEVICE_ADDED_WITH_WARNINGS = "@text/thing-action.result.device-added-with-warnings";
     public static final String THING_ACTION_RESULT_PAIRING_FAILED = "@text/thing-action.result.pairing-failed";
     public static final String THING_ACTION_LABEL_CONTROLLER_GET_DEBUG_NODE_DATA = "@text/thing-action.controller.getDebugNodeData.label";
     public static final String THING_ACTION_DESC_CONTROLLER_GET_DEBUG_NODE_DATA = "@text/thing-action.controller.getDebugNodeData.description";
@@ -550,6 +609,12 @@ public class MatterBindingConstants {
     public static final String THING_STATUS_DETAIL_FIRMWARE_DELAYED_ON_APPLY = "@text/thing-status.detail.node.firmwareDelayedOnApply";
     public static final String THING_STATUS_DETAIL_FIRMWARE_ROLLING_BACK = "@text/thing-status.detail.node.firmwareRollingBack";
     public static final String THING_STATUS_DETAIL_FIRMWARE_DELAYED_ON_USER_CONSENT = "@text/thing-status.detail.node.firmwareDelayedOnUserConsent";
+    public static final String THING_STATUS_DETAIL_NODE_NOT_FOUND = "@text/thing-status.detail.node.notFound";
+    public static final String THING_STATUS_DETAIL_NODE_RECONNECTING = "@text/thing-status.detail.node.reconnecting";
+    public static final String THING_STATUS_DETAIL_NODE_DISCONNECTED = "@text/thing-status.detail.node.disconnected";
+    public static final String THING_STATUS_DETAIL_NODE_CONNECTING = "@text/thing-status.detail.node.connecting";
+    public static final String THING_STATUS_DETAIL_NODE_DECOMMISSIONED = "@text/thing-status.detail.node.decommissioned";
+    public static final String THING_STATUS_DETAIL_NODE_CHECK_IN_MISSED = "@text/thing-status.detail.node.checkInMissed";
 
     // Discovery
     public static final String DISCOVERY_MATTER_BRIDGE_ENDPOINT_LABEL = "@text/discovery.matter.bridge-endpoint.label";

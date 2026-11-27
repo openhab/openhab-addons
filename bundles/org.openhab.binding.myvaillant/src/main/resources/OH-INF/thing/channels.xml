@@ -1,0 +1,348 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="myvaillant"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-type id="temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature</label>
+		<category>Temperature</category>
+		<tags>
+			<point>Measurement</point>
+			<property>Temperature</property>
+		</tags>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="temperature-setpoint">
+		<item-type>Number:Temperature</item-type>
+		<label>Target Temperature</label>
+		<category>Temperature</category>
+		<tags>
+			<point>Setpoint</point>
+			<property>Temperature</property>
+		</tags>
+		<state min="5" max="30" step="0.5" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="flow-temperature-setpoint">
+		<item-type>Number:Temperature</item-type>
+		<label>Flow Temperature</label>
+		<category>Temperature</category>
+		<tags>
+			<point>Setpoint</point>
+			<property>Temperature</property>
+		</tags>
+		<state min="15" max="80" step="1" pattern="%.0f %unit%"/>
+	</channel-type>
+
+	<channel-type id="outside-temperature-limit">
+		<item-type>Number:Temperature</item-type>
+		<label>Heating Limit Outdoor Temperature</label>
+		<description>No heat demand above this outdoor temperature (heat demand limited by outside temperature)</description>
+		<category>Temperature</category>
+		<tags>
+			<point>Setpoint</point>
+			<property>Temperature</property>
+		</tags>
+		<state min="10" max="25" step="1" pattern="%.0f %unit%"/>
+	</channel-type>
+
+	<channel-type id="dhw-setpoint">
+		<item-type>Number:Temperature</item-type>
+		<label>Target Temperature</label>
+		<description>Target temperature of the hot water, whole degrees</description>
+		<category>Temperature</category>
+		<tags>
+			<point>Setpoint</point>
+			<property>Temperature</property>
+		</tags>
+		<state min="35" max="70" step="1" pattern="%.0f %unit%"/>
+	</channel-type>
+
+	<channel-type id="heating-curve">
+		<item-type>Number</item-type>
+		<label>Heating Curve</label>
+		<description>Slope of the heating curve</description>
+		<tags>
+			<point>Setpoint</point>
+		</tags>
+		<state min="0.1" max="4" step="0.05" pattern="%.2f"/>
+	</channel-type>
+
+	<channel-type id="humidity">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Humidity</label>
+		<category>Humidity</category>
+		<tags>
+			<point>Measurement</point>
+			<property>Humidity</property>
+		</tags>
+		<state readOnly="true" pattern="%.0f %%"/>
+	</channel-type>
+
+	<channel-type id="pressure">
+		<item-type>Number:Pressure</item-type>
+		<label>Pressure</label>
+		<category>Pressure</category>
+		<tags>
+			<point>Measurement</point>
+			<property>Pressure</property>
+		</tags>
+		<state readOnly="true" pattern="%.1f bar"/>
+	</channel-type>
+
+	<channel-type id="power">
+		<item-type>Number:Power</item-type>
+		<label>Current Power</label>
+		<description>Current electrical power (needs "Fetch Current Power")</description>
+		<category>Energy</category>
+		<tags>
+			<point>Measurement</point>
+			<property>Power</property>
+		</tags>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+
+	<channel-type id="energy-today">
+		<item-type>Number:Energy</item-type>
+		<label>Energy Today</label>
+		<description>Energy since midnight in the time zone of the system</description>
+		<category>Energy</category>
+		<tags>
+			<point>Measurement</point>
+			<property>Energy</property>
+		</tags>
+		<state readOnly="true" pattern="%.2f kWh"/>
+	</channel-type>
+
+	<channel-type id="efficiency">
+		<item-type>Number</item-type>
+		<label>Efficiency</label>
+		<tags>
+			<point>Calculation</point>
+		</tags>
+		<state readOnly="true" pattern="%.2f"/>
+	</channel-type>
+
+	<channel-type id="operation-time">
+		<item-type>Number:Time</item-type>
+		<label>Operation Time</label>
+		<description>Total operation time (needs "Fetch Operation Time and Cycles")</description>
+		<tags>
+			<point>Measurement</point>
+			<property>Duration</property>
+		</tags>
+		<state readOnly="true" pattern="%.1f h"/>
+	</channel-type>
+
+	<channel-type id="on-off-cycles">
+		<item-type>Number</item-type>
+		<label>On/Off Cycles</label>
+		<description>Total number of starts (needs "Fetch Operation Time and Cycles")</description>
+		<tags>
+			<point>Measurement</point>
+		</tags>
+		<state readOnly="true" pattern="%d"/>
+	</channel-type>
+
+	<channel-type id="duration">
+		<item-type>Number:Time</item-type>
+		<label>Duration</label>
+		<tags>
+			<point>Setpoint</point>
+			<property>Duration</property>
+		</tags>
+		<state min="0.5" max="24" step="0.5" pattern="%.1f h"/>
+	</channel-type>
+
+	<channel-type id="operation-mode">
+		<item-type>String</item-type>
+		<label>Operation Mode</label>
+		<tags>
+			<point>Control</point>
+			<property>Mode</property>
+		</tags>
+		<state>
+			<options>
+				<option value="TIME_CONTROLLED">Time controlled</option>
+				<option value="MANUAL">Manual</option>
+				<option value="OFF">Off</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="zone-special-function">
+		<item-type>String</item-type>
+		<label>Special Function</label>
+		<tags>
+			<point>Status</point>
+			<property>Mode</property>
+		</tags>
+		<state readOnly="true">
+			<options>
+				<option value="NONE">None</option>
+				<option value="QUICK_VETO">Quick veto</option>
+				<option value="HOLIDAY">Holiday</option>
+				<option value="SYSTEM_OFF">System off</option>
+				<option value="VENTILATION_BOOST">Ventilation boost</option>
+				<option value="ONE_DAY_BANK_HOLIDAY">Bank holiday</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="dhw-special-function">
+		<item-type>String</item-type>
+		<label>Special Function</label>
+		<tags>
+			<point>Status</point>
+			<property>Mode</property>
+		</tags>
+		<state readOnly="true">
+			<options>
+				<option value="REGULAR">Regular</option>
+				<option value="CYLINDER_BOOST">Boost</option>
+				<option value="HOLIDAY">Holiday</option>
+				<option value="SYSTEM_OFF">System off</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="heating-state">
+		<item-type>String</item-type>
+		<label>Heating State</label>
+		<tags>
+			<point>Status</point>
+		</tags>
+		<state readOnly="true">
+			<options>
+				<option value="IDLE">Idle</option>
+				<option value="HEATING_UP">Heating up</option>
+				<option value="COOLING_DOWN">Cooling down</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="hvac-action">
+		<item-type>String</item-type>
+		<label>HVAC Action</label>
+		<description>What the circuit of the zone currently does</description>
+		<tags>
+			<point>Status</point>
+		</tags>
+		<state readOnly="true">
+			<options>
+				<option value="idle">Idle</option>
+				<option value="heating">Heating</option>
+				<option value="cooling">Cooling</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="circuit-state">
+		<item-type>String</item-type>
+		<label>Circuit State</label>
+		<tags>
+			<point>Status</point>
+		</tags>
+		<state readOnly="true">
+			<options>
+				<option value="HEATING">Heating</option>
+				<option value="COOLING">Cooling</option>
+				<option value="STANDBY">Standby</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="energy-manager-state">
+		<item-type>String</item-type>
+		<label>Energy Manager State</label>
+		<tags>
+			<point>Status</point>
+		</tags>
+		<state readOnly="true">
+			<options>
+				<option value="STANDBY">Standby</option>
+				<option value="HEATING">Heating</option>
+				<option value="DHW">Hot water</option>
+				<option value="COOLING">Cooling</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="text" advanced="true">
+		<item-type>String</item-type>
+		<label>Text</label>
+		<tags>
+			<point>Status</point>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="switch">
+		<item-type>Switch</item-type>
+		<label>Switch</label>
+		<tags>
+			<point>Switch</point>
+		</tags>
+	</channel-type>
+
+	<channel-type id="status">
+		<item-type>Switch</item-type>
+		<label>Status</label>
+		<tags>
+			<point>Status</point>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="problem">
+		<item-type>Switch</item-type>
+		<label>Problem</label>
+		<tags>
+			<point>Alarm</point>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="datetime">
+		<item-type>DateTime</item-type>
+		<label>Date</label>
+		<tags>
+			<point>Status</point>
+			<property>Timestamp</property>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="datetime-setting">
+		<item-type>DateTime</item-type>
+		<label>Date</label>
+		<tags>
+			<point>Setpoint</point>
+			<property>Timestamp</property>
+		</tags>
+	</channel-type>
+
+	<channel-type id="last-update" advanced="true">
+		<item-type>DateTime</item-type>
+		<label>Last Update</label>
+		<description>Time of the last successful update of the system</description>
+		<tags>
+			<point>Status</point>
+			<property>Timestamp</property>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="api-requests" advanced="true">
+		<item-type>Number</item-type>
+		<label>API Requests Today</label>
+		<description>Requests sent to Vaillant today, Vaillant limits the call volume per account</description>
+		<tags>
+			<point>Status</point>
+		</tags>
+		<state readOnly="true" pattern="%d"/>
+	</channel-type>
+</thing:thing-descriptions>

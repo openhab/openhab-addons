@@ -19,8 +19,8 @@ import java.util.concurrent.ScheduledFuture;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.nanoleaf.internal.NanoleafException;
 import org.openhab.binding.nanoleaf.internal.NanoleafUnauthorizedException;
@@ -85,7 +85,8 @@ public class NanoleafPanelHandler extends BaseThingHandler implements NanoleafPa
         logger.debug("Initializing handler for panel {}", getThing().getUID());
         Bridge controller = getBridge();
         if (controller == null) {
-            initializePanel(new ThingStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED, ""));
+            logger.debug("Bridge unavailable while initializing Thing: {}", thing.getUID());
+            return;
         } else if (ThingStatus.OFFLINE.equals(controller.getStatus())) {
             initializePanel(new ThingStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
                     "@text/error.nanoleaf.panel.controllerOffline"));
@@ -122,12 +123,10 @@ public class NanoleafPanelHandler extends BaseThingHandler implements NanoleafPa
         } catch (NanoleafUnauthorizedException nae) {
             logger.warn("Authorization for command {} for channelUID {} failed: {}", command, channelUID,
                     nae.getMessage());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/error.nanoleaf.controller.invalidToken");
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/error.nanoleaf.controller.invalidToken");
         } catch (NanoleafException ne) {
             logger.warn("Handling command {} for channelUID {} failed: {}", command, channelUID, ne.getMessage());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/error.nanoleaf.controller.communication");
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/error.nanoleaf.controller.communication");
         }
     }
 
@@ -166,7 +165,12 @@ public class NanoleafPanelHandler extends BaseThingHandler implements NanoleafPa
     }
 
     private void initializePanel(ThingStatusInfo panelStatus) {
-        updateStatus(panelStatus.getStatus(), panelStatus.getStatusDetail());
+        ThingStatus status = panelStatus.getStatus();
+        if (status == ThingStatus.ONLINE || status == ThingStatus.OFFLINE) {
+            updateStatus(status, panelStatus.getStatusDetail());
+        } else {
+            updateStatus(ThingStatus.UNKNOWN);
+        }
         updateState(CHANNEL_PANEL_COLOR, currentPanelColor);
         logger.debug("Panel {} status changed to {}-{}", this.getThing().getUID(), panelStatus.getStatus(),
                 panelStatus.getStatusDetail());
@@ -249,7 +253,7 @@ public class NanoleafPanelHandler extends BaseThingHandler implements NanoleafPa
                         HttpMethod.PUT);
                 String content = gson.toJson(effects);
                 logger.debug("sending effect command from panel {}: {}", getThing().getUID(), content);
-                setNewRenderedEffectRequest.content(new StringContentProvider(content), "application/json");
+                setNewRenderedEffectRequest.body(new StringRequestContent("application/json", content));
                 OpenAPIUtils.sendOpenAPIRequest(setNewRenderedEffectRequest);
             } else {
                 logger.warn("Couldn't set rendering effect as Bridge-Handler {} is null", bridge.getUID());

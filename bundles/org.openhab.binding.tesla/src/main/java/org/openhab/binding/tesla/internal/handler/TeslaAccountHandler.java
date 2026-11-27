@@ -14,9 +14,11 @@ package org.openhab.binding.tesla.internal.handler;
 
 import static org.openhab.binding.tesla.internal.TeslaBindingConstants.*;
 
+import java.io.IOException;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -24,12 +26,6 @@ import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
-
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -56,6 +52,12 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.client.WebTarget;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 
 /**
  * The {@link TeslaAccountHandler} is responsible for handling commands, which are sent
@@ -102,8 +104,9 @@ public class TeslaAccountHandler extends BaseBridgeHandler {
 
     private final Gson gson = new Gson();
 
+    // written while holding lock, read by the vehicle handlers without it
     @Nullable
-    private TokenResponse logonToken;
+    private volatile TokenResponse logonToken;
     private final Set<VehicleListener> vehicleListeners = new HashSet<>();
 
     public TeslaAccountHandler(Bridge bridge, Client teslaClient, HttpClientFactory httpClientFactory,
@@ -182,9 +185,7 @@ public class TeslaAccountHandler extends BaseBridgeHandler {
             return true;
         } else if (response != null && response.getStatus() == 401) {
             logger.debug("The access token has expired, trying to get a new one.");
-            ThingStatusInfo authenticationResult = authenticate();
-            updateStatus(authenticationResult.getStatus(), authenticationResult.getStatusDetail(),
-                    authenticationResult.getDescription());
+            reauthenticate();
         } else {
             apiIntervalErrors++;
             if (immediatelyFail || apiIntervalErrors >= API_MAXIMUM_ERRORS_IN_INTERVAL) {
@@ -195,7 +196,7 @@ public class TeslaAccountHandler extends BaseBridgeHandler {
                             API_MAXIMUM_ERRORS_IN_INTERVAL, API_ERROR_INTERVAL_SECONDS);
                     apiIntervalErrors = 0;
                 }
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR);
             } else if ((System.currentTimeMillis() - apiIntervalTimestamp) > 1000 * API_ERROR_INTERVAL_SECONDS) {
                 logger.trace("Resetting the error counter. ({} errors in the last interval)", apiIntervalErrors);
                 apiIntervalTimestamp = System.currentTimeMillis();
@@ -223,10 +224,16 @@ public class TeslaAccountHandler extends BaseBridgeHandler {
             }
 
             JsonObject jsonObject = JsonParser.parseString(response.readEntity(String.class)).getAsJsonObject();
-            Vehicle[] vehicleArray = gson.fromJson(jsonObject.getAsJsonArray("response"), Vehicle[].class);
-            if (vehicleArray == null) {
+            Vehicle[] productArray = gson.fromJson(jsonObject.getAsJsonArray("response"), Vehicle[].class);
+            if (productArray == null) {
                 logger.debug("Response resulted in unexpected null array");
                 return new Vehicle[0];
+            }
+            // The products endpoint also returns energy products (e.g. Wall Connector, Powerwall), which have no VIN
+            Vehicle[] vehicleArray = Arrays.stream(productArray).filter(v -> v.vin != null && !v.vin.isBlank())
+                    .toArray(Vehicle[]::new);
+            if (vehicleArray.length < productArray.length) {
+                logger.debug("Ignoring {} product(s) without a VIN", productArray.length - vehicleArray.length);
             }
             for (Vehicle vehicle : vehicleArray) {
                 String responseString = invokeAndParse(vehicle.id, null, null, dataRequestTarget, 0);
@@ -271,6 +278,9 @@ public class TeslaAccountHandler extends BaseBridgeHandler {
         return this.getThing().getUID().getId();
     }
 
+    /**
+     * Callers must hold {@link #lock}, so that the token and the status that results from it stay consistent.
+     */
     ThingStatusInfo authenticate() {
         TokenResponse token = logonToken;
 
@@ -300,7 +310,14 @@ public class TeslaAccountHandler extends BaseBridgeHandler {
                         "No refresh token is provided.");
             }
 
-            this.logonToken = ssoHandler.getAccessToken(refreshToken);
+            try {
+                this.logonToken = ssoHandler.getAccessToken(refreshToken);
+            } catch (IOException e) {
+                logger.debug("Failed to obtain an access token, will try again: {}", e.getMessage());
+                this.logonToken = null;
+                return new ThingStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "Failed to obtain access token for API: " + e.getMessage());
+            }
             if (this.logonToken == null) {
                 return new ThingStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "Failed to obtain access token for API - the refresh token might be invalid.");
@@ -308,6 +325,33 @@ public class TeslaAccountHandler extends BaseBridgeHandler {
         }
 
         return new ThingStatusInfo(ThingStatus.ONLINE, ThingStatusDetail.NONE, null);
+    }
+
+    /**
+     * Obtains a new access token and applies the result to the account status. Without an access token no request
+     * is sent, so the status is the only way back: the connect job retries after a communication error, whereas a
+     * rejected refresh token needs to be fixed by the user.
+     * <p>
+     * Several vehicles or requests can get a 401 at the same time. The lock makes the renewal and the status update a
+     * single step, so that a failed renewal cannot clear the token between a successful renewal and its ONLINE status.
+     */
+    void reauthenticate() {
+        lock.lock();
+        try {
+            ThingStatusInfo authenticationResult = authenticate();
+            updateAuthenticationStatus(authenticationResult);
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    private void updateAuthenticationStatus(ThingStatusInfo authenticationResult) {
+        ThingStatusDetail detail = authenticationResult.getStatusDetail();
+        if (detail == ThingStatusDetail.NONE) {
+            updateStatus(authenticationResult.getStatus(), authenticationResult.getDescription());
+        } else {
+            updateStatus(detail, authenticationResult.getDescription());
+        }
     }
 
     protected @Nullable String invokeAndParse(@Nullable String vehicleId, @Nullable String command,
@@ -378,8 +422,7 @@ public class TeslaAccountHandler extends BaseBridgeHandler {
                 logger.debug("Setting up an authenticated connection to the Tesla back-end");
 
                 ThingStatusInfo authenticationResult = authenticate();
-                updateStatus(authenticationResult.getStatus(), authenticationResult.getStatusDetail(),
-                        authenticationResult.getDescription());
+                updateAuthenticationStatus(authenticationResult);
 
                 if (authenticationResult.getStatus() == ThingStatus.ONLINE) {
                     // get a list of vehicles
@@ -406,8 +449,7 @@ public class TeslaAccountHandler extends BaseBridgeHandler {
                                             logger.warn(
                                                     "Unable to find the vehicle with VIN '{}' in the list of vehicles you own",
                                                     getConfig().get(VIN));
-                                            handler.updateStatus(ThingStatus.OFFLINE,
-                                                    ThingStatusDetail.CONFIGURATION_ERROR,
+                                            handler.updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                                                     "Vin is not available through this account.");
                                         }
                                     }
@@ -422,8 +464,7 @@ public class TeslaAccountHandler extends BaseBridgeHandler {
                 } else if (authenticationResult.getStatusDetail() == ThingStatusDetail.CONFIGURATION_ERROR) {
                     // make sure to set thing to CONFIGURATION_ERROR in case of failed authentication in order not to
                     // hit request limit on retries on the Tesla SSO endpoints.
-                    updateStatus(ThingStatus.OFFLINE, authenticationResult.getStatusDetail(),
-                            authenticationResult.getDescription());
+                    updateStatus(authenticationResult.getStatusDetail(), authenticationResult.getDescription());
                 }
             }
         } catch (Exception e) {

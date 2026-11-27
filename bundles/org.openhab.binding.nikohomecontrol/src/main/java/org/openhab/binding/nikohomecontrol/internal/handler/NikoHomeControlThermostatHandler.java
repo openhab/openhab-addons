@@ -97,7 +97,7 @@ public class NikoHomeControlThermostatHandler extends NikoHomeControlBaseHandler
             case CHANNEL_SETPOINT:
                 // Always set the new setpoint temperature as an overrule
                 // If no overrule time is given yet, set the overrule time to the configuration parameter
-                int time = nhcThermostat.getOverruletime();
+                long time = nhcThermostat.getOverruletime();
                 if (time <= 0) {
                     time = overruleTime;
                 }
@@ -113,8 +113,8 @@ public class NikoHomeControlThermostatHandler extends NikoHomeControlBaseHandler
                 break;
             case CHANNEL_OVERRULETIME:
                 if (command instanceof DecimalType decimalCommand) {
-                    int overruletime = decimalCommand.intValue();
-                    int overrule = nhcThermostat.getOverrule();
+                    long overruletime = decimalCommand.longValue();
+                    long overrule = nhcThermostat.getOverrule();
                     if (overruletime <= 0) {
                         overruletime = 0;
                         overrule = 0;
@@ -136,17 +136,21 @@ public class NikoHomeControlThermostatHandler extends NikoHomeControlBaseHandler
         deviceId = config.thermostatId;
         overruleTime = config.overruleTime;
 
-        NikoHomeControlBridgeHandler bridgeHandler = getBridgeHandler();
+        Bridge bridge = getBridge();
+        if (bridge == null) {
+            logger.debug("Bridge unavailable while initializing Thing: {}", thing.getUID());
+            return;
+        }
+        NikoHomeControlBridgeHandler bridgeHandler = (NikoHomeControlBridgeHandler) bridge.getHandler();
         if (bridgeHandler == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.configuration-error.invalid-bridge-handler");
             return;
         }
 
         updateStatus(ThingStatus.UNKNOWN);
 
-        Bridge bridge = getBridge();
-        if ((bridge != null) && ThingStatus.ONLINE.equals(bridge.getStatus())) {
+        if (ThingStatus.ONLINE.equals(bridge.getStatus())) {
             // We need to do this in a separate thread because we may have to wait for the
             // communication to become active
             commStartThread = scheduler.submit(this::startCommunication);
@@ -162,15 +166,13 @@ public class NikoHomeControlThermostatHandler extends NikoHomeControlBaseHandler
         }
 
         if (!nhcComm.communicationActive()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/offline.communication-error");
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/offline.communication-error");
             return;
         }
 
         NhcThermostat nhcThermostat = nhcComm.getThermostats().get(deviceId);
         if (nhcThermostat == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.configuration-error.deviceId");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.configuration-error.deviceId");
             return;
         }
 
@@ -224,7 +226,7 @@ public class NikoHomeControlThermostatHandler extends NikoHomeControlBaseHandler
     }
 
     @Override
-    public void thermostatEvent(int measured, int setpoint, int mode, int overrule, int demand) {
+    public void thermostatEvent(long measured, long setpoint, int mode, long overrule, int demand) {
         NhcThermostat nhcThermostat = this.nhcThermostat;
         if (nhcThermostat == null) {
             logger.debug("thermostat with ID {} not initialized", deviceId);
@@ -233,7 +235,7 @@ public class NikoHomeControlThermostatHandler extends NikoHomeControlBaseHandler
 
         updateState(CHANNEL_MEASURED, new QuantityType<>(measured / 10.0, CELSIUS));
 
-        int overruletime = nhcThermostat.getRemainingOverruletime();
+        long overruletime = nhcThermostat.getRemainingOverruletime();
         updateState(CHANNEL_OVERRULETIME, new DecimalType(overruletime));
         // refresh the remaining time every minute
         scheduleRefreshOverruletime(nhcThermostat);
@@ -268,7 +270,7 @@ public class NikoHomeControlThermostatHandler extends NikoHomeControlBaseHandler
         }
 
         refreshTimer = scheduler.scheduleWithFixedDelay(() -> {
-            int remainingTime = nhcThermostat.getRemainingOverruletime();
+            long remainingTime = nhcThermostat.getRemainingOverruletime();
             updateState(CHANNEL_OVERRULETIME, new DecimalType(remainingTime));
             if (remainingTime == 0) {
                 cancelRefreshTimer();

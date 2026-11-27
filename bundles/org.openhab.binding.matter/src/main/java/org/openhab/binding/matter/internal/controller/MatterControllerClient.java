@@ -26,10 +26,12 @@ import org.openhab.binding.matter.internal.client.MatterRequestException;
 import org.openhab.binding.matter.internal.client.MatterWebsocketClient;
 import org.openhab.binding.matter.internal.client.MatterWebsocketService;
 import org.openhab.binding.matter.internal.client.dto.PairingCodes;
+import org.openhab.binding.matter.internal.client.dto.PairingResult;
 import org.openhab.binding.matter.internal.client.dto.cluster.ClusterCommand;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.BaseCluster;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.OperationalCredentialsCluster;
 import org.openhab.binding.matter.internal.client.dto.ws.ActiveSessionInformation;
+import org.openhab.binding.matter.internal.client.dto.ws.IcdState;
 import org.openhab.binding.matter.internal.client.dto.ws.OtaUpdateInfo;
 
 import com.google.gson.Gson;
@@ -135,10 +137,10 @@ public class MatterControllerClient extends MatterWebsocketClient {
      * Pair a node using a pairing code, either a manual pairing code or a matter QR code (starts with MT:)
      * 
      * @param code the pairing code to pair with
-     * @return a future that completes when the node is paired (or fails)
+     * @return a future that completes with the node ID and any certificate warnings when the node is paired
      * @throws MatterRequestException if the request fails
      */
-    public CompletableFuture<BigInteger> pairNode(String code) {
+    public CompletableFuture<PairingResult> pairNode(String code) {
         String[] parts = code.trim().split(" ");
         CompletableFuture<JsonElement> future = null;
         if (parts.length == 2) {
@@ -150,7 +152,11 @@ public class MatterControllerClient extends MatterWebsocketClient {
             future = sendMessage("nodes", "pairNode", new Object[] { pairCode }, PAIRING_TIMEOUT_SECONDS);
         }
         return future.thenApply(obj -> {
-            return new BigInteger(obj.getAsString());
+            PairingResult result = gson.fromJson(obj, PairingResult.class);
+            if (result == null || result.nodeId == null) {
+                throw new JsonParseException("Could not deserialize pairing result");
+            }
+            return result;
         });
     }
 
@@ -336,6 +342,31 @@ public class MatterControllerClient extends MatterWebsocketClient {
     }
 
     /**
+     * Read several attributes of a cluster from the device in a single read interaction
+     *
+     * @param type the cluster class to deserialize the attributes into, only the requested attributes are set
+     * @param nodeId the node ID to read the attributes from
+     * @param endpointId the endpoint ID to read the attributes from
+     * @param clusterName the cluster name to read the attributes from
+     * @param attributeNames the attribute names to read
+     * @return a future that completes with the cluster, or exceptionally with a {@link MatterRequestException} if
+     *         the request fails or a {@link JsonParseException} if the result cannot be deserialized
+     */
+    public <T extends BaseCluster> CompletableFuture<T> clusterReadAttributes(Class<T> type, BigInteger nodeId,
+            Integer endpointId, String clusterName, List<String> attributeNames) {
+        Object[] clusterArgs = { String.valueOf(nodeId), endpointId, clusterName, attributeNames };
+        CompletableFuture<JsonElement> future = sendMessage("clusters", "readAttributes", clusterArgs);
+        return future.thenApply(obj -> {
+            @Nullable
+            T result = gson.fromJson(obj, type);
+            if (result == null) {
+                throw new JsonParseException("Could not deserialize attributes of " + clusterName);
+            }
+            return result;
+        });
+    }
+
+    /**
      * Get the session information for the controller
      * 
      * @return a future that completes when the session information is retrieved
@@ -402,5 +433,38 @@ public class MatterControllerClient extends MatterWebsocketClient {
         return future.thenAccept(obj -> {
             // Do nothing, just to complete the future
         });
+    }
+
+    /**
+     * Get the check-in state of an intermittently connected (sleepy) device
+     *
+     * @param nodeId the node ID of the device
+     * @return a future that completes with the check-in state
+     * @throws MatterRequestException if the request fails, for example when the node is not a sleepy device
+     */
+    public CompletableFuture<IcdState> icdState(BigInteger nodeId) {
+        CompletableFuture<JsonElement> future = sendMessage("nodes", "icdState", new Object[] { nodeId });
+        return future.thenApply(obj -> {
+            IcdState state = gson.fromJson(obj, IcdState.class);
+            if (state == null) {
+                throw new JsonParseException("Could not deserialize ICD state");
+            }
+            return state;
+        });
+    }
+
+    /**
+     * Ask an intermittently connected (sleepy) device to stay awake. Only devices that support long idle times
+     * accept this.
+     *
+     * @param nodeId the node ID of the device
+     * @param durationMilliseconds how long the device should stay awake
+     * @return a future that completes with the time in milliseconds the device promised to stay awake
+     * @throws MatterRequestException if the request fails
+     */
+    public CompletableFuture<Long> icdStayActive(BigInteger nodeId, long durationMilliseconds) {
+        CompletableFuture<JsonElement> future = sendMessage("nodes", "icdStayActive",
+                new Object[] { nodeId, durationMilliseconds });
+        return future.thenApply(JsonElement::getAsLong);
     }
 }

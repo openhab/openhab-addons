@@ -15,7 +15,9 @@ package org.openhab.binding.ondilo.internal;
 import static org.openhab.binding.ondilo.internal.OndiloBindingConstants.*;
 
 import java.util.Hashtable;
+import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -26,10 +28,12 @@ import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
+import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
 import org.osgi.framework.ServiceRegistration;
+import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -40,7 +44,7 @@ import org.slf4j.LoggerFactory;
  * The {@link OndiloHandlerFactory} is responsible for creating things and thing
  * handlers.
  *
- * @author MikeTheTux - Initial contribution
+ * @author Michael Weger - Initial contribution
  */
 @NonNullByDefault
 @Component(configurationPid = "binding.ondilo", service = ThingHandlerFactory.class)
@@ -49,11 +53,12 @@ public class OndiloHandlerFactory extends BaseThingHandlerFactory {
     private final OAuthFactory oAuthFactory;
     private final LocaleProvider localeProvider;
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_BRIDGE, THING_TYPE_ONDILO);
-    private @Nullable ServiceRegistration<?> ondiloDiscoveryServiceRegistration;
-    private @Nullable OndiloDiscoveryService discoveryService;
+    private final Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegistrations = new ConcurrentHashMap<>();
 
     @Activate
-    public OndiloHandlerFactory(@Reference OAuthFactory oAuthFactory, @Reference LocaleProvider localeProvider) {
+    public OndiloHandlerFactory(ComponentContext componentContext, @Reference OAuthFactory oAuthFactory,
+            @Reference LocaleProvider localeProvider) {
+        super.activate(componentContext);
         this.oAuthFactory = oAuthFactory;
         this.localeProvider = localeProvider;
     }
@@ -79,31 +84,29 @@ public class OndiloHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     protected synchronized void removeHandler(ThingHandler thingHandler) {
-        if (thingHandler instanceof OndiloBridgeHandler) {
-            unregisterOndiloDiscoveryService();
+        if (thingHandler instanceof OndiloBridgeHandler bridgeHandler) {
+            unregisterOndiloDiscoveryService(bridgeHandler);
         }
     }
 
     private void registerOndiloDiscoveryService(OndiloBridgeHandler handler) {
         logger.trace("Registering OndiloDiscoveryService for {}", handler.getThing().getUID());
         OndiloDiscoveryService discoveryService = new OndiloDiscoveryService(handler);
-        this.ondiloDiscoveryServiceRegistration = bundleContext.registerService(DiscoveryService.class.getName(),
+        ServiceRegistration<?> registration = bundleContext.registerService(DiscoveryService.class.getName(),
                 discoveryService, new Hashtable<>());
         discoveryService.startBackgroundDiscovery();
-        this.discoveryService = discoveryService;
+        discoveryServiceRegistrations.put(handler.getThing().getUID(), registration);
     }
 
-    private void unregisterOndiloDiscoveryService() {
-        logger.trace("Unregistering OndiloDiscoveryService");
-        OndiloDiscoveryService discoveryService = this.discoveryService;
-        if (discoveryService != null) {
-            discoveryService.stopBackgroundDiscovery();
-            this.discoveryService = null;
-        }
-        ServiceRegistration<?> ondiloDiscoveryServiceRegistration = this.ondiloDiscoveryServiceRegistration;
-        if (ondiloDiscoveryServiceRegistration != null) {
-            ondiloDiscoveryServiceRegistration.unregister();
-            this.ondiloDiscoveryServiceRegistration = null;
+    private void unregisterOndiloDiscoveryService(OndiloBridgeHandler handler) {
+        logger.trace("Unregistering OndiloDiscoveryService for {}", handler.getThing().getUID());
+        ServiceRegistration<?> registration = discoveryServiceRegistrations.remove(handler.getThing().getUID());
+        if (registration != null) {
+            if (bundleContext
+                    .getService(registration.getReference()) instanceof OndiloDiscoveryService discoveryService) {
+                discoveryService.stopBackgroundDiscovery();
+            }
+            registration.unregister();
         }
     }
 }

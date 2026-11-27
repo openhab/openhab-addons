@@ -1,0 +1,624 @@
+{
+  "results": [
+    {
+      "accessibility": "WheelchairTripsWithUnknownStops",
+      "duration": 445,
+      "end_time": 1792919353,
+      "fare": null,
+      "legs": [
+        {
+          "distance": 150.99159756993973,
+          "duration": 132,
+          "end_time": 1792919040,
+          "leg_mode": "walk",
+          "start_time": 1792918908
+        },
+        {
+          "departures": [
+            {
+              "arrival_time": 1792919040,
+              "departure_time": 1792919040,
+              "is_cancelled": false,
+              "is_real_time": false,
+              "plan_details": {
+                "arrival_schedule_item": {
+                  "arrival_time": 1792919160,
+                  "departure_time": 1792919220,
+                  "is_cancelled": false,
+                  "is_real_time": false,
+                  "scheduled_arrival_time": 1792919160,
+                  "scheduled_departure_time": 1792919220,
+                  "wheelchair_accessible": 0
+                },
+                "global_route_id": "VVSDE:247150",
+                "internal_itinerary_id": "6121:65535:false",
+                "stop_schedule_items": [
+                  {
+                    "arrival_time": 1792919040,
+                    "departure_time": 1792919040,
+                    "global_stop_id": "VVSDE:1336",
+                    "is_cancelled": false,
+                    "is_real_time": false,
+                    "scheduled_arrival_time": 1792919040,
+                    "scheduled_departure_time": 1792919040,
+                    "wheelchair_accessible": 0
+                  },
+                  {
+                    "arrival_time": 1792919100,
+                    "departure_time": 1792919100,
+                    "global_stop_id": "VVSDE:1337",
+                    "is_cancelled": false,
+                    "is_real_time": false,
+                    "scheduled_arrival_time": 1792919100,
+                    "scheduled_departure_time": 1792919100,
+                    "wheelchair_accessible": 0
+                  },
+                  {
+                    "arrival_time": 1792919160,
+                    "departure_time": 1792919220,
+                    "global_stop_id": "VVSDE:1338",
+                    "is_cancelled": false,
+                    "is_real_time": false,
+                    "scheduled_arrival_time": 1792919160,
+                    "scheduled_departure_time": 1792919220,
+                    "wheelchair_accessible": 0
+                  }
+                ]
+              },
+              "rt_trip_id": "de:vvs:20006_:.vvs-20-6.17.T3.38.j26",
+              "scheduled_arrival_time": 1792919040,
+              "scheduled_departure_time": 1792919040,
+              "trip_search_key": "VVSDE:53038040:6121:4:16",
+              "wheelchair_accessible": 0
+            },
+            {
+              "arrival_time": 1792919280,
+              "departure_time": 1792919280,
+              "is_cancelled": false,
+              "is_real_time": false,
+              "plan_details": {
+                "arrival_schedule_item": {
+                  "arrival_time": 1792919460,
+                  "departure_time": 1792919460,
+                  "is_cancelled": false,
+                  "is_real_time": false,
+                  "scheduled_arrival_time": 1792919460,
+                  "scheduled_departure_time": 1792919460,
+                  "wheelchair_accessible": 0
+                },
+                "global_route_id": "VVSDE:247151",
+                "internal_itinerary_id": "6136:65535:false",
+                "stop_schedule_items": [
+                  {
+                    "arrival_time": 1792919280,
+                    "departure_time": 1792919280,
+                    "global_stop_id": "VVSDE:1408",
+                    "is_cancelled": false,
+                    "is_real_time": false,
+                    "scheduled_arrival_time": 1792919280,
+                    "scheduled_departure_time": 1792919280,
+                    "wheelchair_accessible": 0
+                  },
+                  {
+                    "arrival_time": 1792919340,
+                    "departure_time": 1792919400,
+                    "global_stop_id": "VVSDE:1409",
+                    "is_cancelled": false,
+                    "is_real_time": false,
+                    "scheduled_arrival_time": 1792919340,
+                    "scheduled_departure_time": 1792919400,
+                    "wheelchair_accessible": 0
+                  },
+                  {
+                    "arrival_time": 1792919460,
+                    "departure_time": 1792919460,
+                    "global_stop_id": "VVSDE:1410",
+                    "is_cancelled": false,
+                    "is_real_time": false,
+                    "scheduled_arrival_time": 1792919460,
+                    "scheduled_departure_time": 1792919460,
+                    "wheelchair_accessible": 0
+                  }
+                ]
+              },
+              "rt_trip_id": "de:vvs:20007_:.vvs-20-7.17.T3.18.j26",
+              "scheduled_arrival_time": 1792919280,
+              "scheduled_departure_time": 1792919280,
+              "trip_search_key": "VVSDE:53038040:6136:4:15",
+              "wheelchair_accessible": 0
+            },
+            {
+              "arrival_time": 1792919580,
+              "departure_time": 1792919580,
+              "is_cancelled": false,
+              "is_real_time": false,
+              "plan_details": {
+                "arrival_schedule_item": {
+                  "arrival_time": 1792919700,
+                  "departure_time": 1792919760,
+                  "is_cancelled": false,
+                  "is_real_time": false,
+                  "scheduled_arrival_time": 1792919700,
+                  "scheduled_departure_time": 1792919760,
+                  "wheelchair_accessible": 0
+                },
+                "global_route_id": "VVSDE:247155",
+                "internal_itinerary_id": "6192:65535:false",
+                "stop_schedule_items": [
+                  {
+                    "arrival_time": 1792919580,
+                    "departure_time": 1792919580,
+                    "global_stop_id": "VVSDE:1617",
+                    "is_cancelled": false,
+                    "is_real_time": false,
+                    "scheduled_arrival_time": 1792919580,
+                    "scheduled_departure_time": 1792919580,
+                    "wheelchair_accessible": 0
+                  },
+                  {
+                    "arrival_time": 1792919640,
+                    "departure_time": 1792919640,
+                    "global_stop_id": "VVSDE:1618",
+                    "is_cancelled": false,
+                    "is_real_time": false,
+                    "scheduled_arrival_time": 1792919640,
+                    "scheduled_departure_time": 1792919640,
+                    "wheelchair_accessible": 0
+                  },
+                  {
+                    "arrival_time": 1792919700,
+                    "departure_time": 1792919760,
+                    "global_stop_id": "VVSDE:1619",
+                    "is_cancelled": false,
+                    "is_real_time": false,
+                    "scheduled_arrival_time": 1792919700,
+                    "scheduled_departure_time": 1792919760,
+                    "wheelchair_accessible": 0
+                  }
+                ]
+              },
+              "rt_trip_id": "de:vvs:20012_:.vvs-20-12.14.T3.43.j26",
+              "scheduled_arrival_time": 1792919580,
+              "scheduled_departure_time": 1792919580,
+              "trip_search_key": "VVSDE:53038040:6192:4:16",
+              "wheelchair_accessible": 0
+            }
+          ],
+          "duration": 120,
+          "end_time": 1792919160,
+          "leg_mode": "transit",
+          "routes": [
+            {
+              "alerts": [],
+              "compact_display_short_name": {
+                "boxed_text": "",
+                "elements": [
+                  "stuttgart-u6",
+                  "",
+                  null
+                ],
+                "route_name_redundancy": false
+              },
+              "fares": [],
+              "global_route_id": "VVSDE:247150",
+              "itineraries": [
+                {
+                  "branch_code": "",
+                  "canonical_itinerary": true,
+                  "detour": null,
+                  "direction_headsign": "Gerlingen",
+                  "direction_id": 1,
+                  "headsign": "Gerlingen",
+                  "is_active": true,
+                  "merged_headsign": "Gerlingen",
+                  "plan_details": {
+                    "end_stop_offset": 7,
+                    "internal_itinerary_id": "6121:65535:false",
+                    "plan_shape": "equhHmo`w@_D|Cm@z@Un@_AhF}@~Bm@dA]^[Pk@HcA?i@Ms@[c@]uNsMa@Wq@Kc@JWTORo@nB",
+                    "start_stop_offset": 5
+                  },
+                  "stops": []
+                }
+              ],
+              "mode_key": "Subway",
+              "mode_name": "U-bahn",
+              "real_time_route_id": "de:vvs:20006_:",
+              "route_color": "c6307c",
+              "route_display_short_name": {
+                "boxed_text": "",
+                "elements": [
+                  "stuttgart-u6",
+                  "",
+                  null
+                ],
+                "route_name_redundancy": false
+              },
+              "route_image": "stuttgart-u6",
+              "route_long_name": "Gerlingen - Hauptbahnhof - Flughafen / Messe",
+              "route_network_id": "VVS|Stuttgart",
+              "route_network_name": "VVS",
+              "route_short_name": "U6",
+              "route_text_color": "ffffff",
+              "route_timezone": "Europe/Berlin",
+              "route_type": 1,
+              "sorting_key": "U6",
+              "tts_long_name": "Gerlingen - Hauptbahnhof - Flughafen / Messe",
+              "tts_short_name": "die U6 Linie",
+              "vehicle": {
+                "image": "lbdlafr-tram-vehicle",
+                "name": "U-Bahn",
+                "name_inflection": "f"
+              }
+            },
+            {
+              "alerts": [],
+              "compact_display_short_name": {
+                "boxed_text": "",
+                "elements": [
+                  "stuttgart-u7",
+                  "",
+                  null
+                ],
+                "route_name_redundancy": false
+              },
+              "fares": [],
+              "global_route_id": "VVSDE:247151",
+              "itineraries": [
+                {
+                  "branch_code": "",
+                  "canonical_itinerary": true,
+                  "detour": null,
+                  "direction_headsign": "Mönchfeld",
+                  "direction_id": 1,
+                  "headsign": "Mönchfeld",
+                  "is_active": true,
+                  "merged_headsign": "Mönchfeld",
+                  "plan_details": {
+                    "end_stop_offset": 23,
+                    "internal_itinerary_id": "6136:65535:false",
+                    "plan_shape": "equhHmo`w@_D|Cm@z@Un@_AhF}@~Bm@dA]^[Pk@HcA?i@Ms@[c@]uNsMa@Wq@Kc@JWTORo@nB",
+                    "start_stop_offset": 21
+                  },
+                  "stops": []
+                }
+              ],
+              "mode_key": "Subway",
+              "mode_name": "U-bahn",
+              "real_time_route_id": "de:vvs:20007_:",
+              "route_color": "4ca685",
+              "route_display_short_name": {
+                "boxed_text": "",
+                "elements": [
+                  "stuttgart-u7",
+                  "",
+                  null
+                ],
+                "route_name_redundancy": false
+              },
+              "route_image": "stuttgart-u7",
+              "route_long_name": "Mönchfeld - Hauptbahnhof - Ostfildern",
+              "route_network_id": "VVS|Stuttgart",
+              "route_network_name": "VVS",
+              "route_short_name": "U7",
+              "route_text_color": "ffffff",
+              "route_timezone": "Europe/Berlin",
+              "route_type": 1,
+              "sorting_key": "U7",
+              "tts_long_name": "Mönchfeld - Hauptbahnhof - Ostfildern",
+              "tts_short_name": "die U7 Linie",
+              "vehicle": {
+                "image": "lbdlafr-tram-vehicle",
+                "name": "U-Bahn",
+                "name_inflection": "f"
+              }
+            },
+            {
+              "alerts": [],
+              "compact_display_short_name": {
+                "boxed_text": "",
+                "elements": [
+                  "stuttgart-u12",
+                  "",
+                  null
+                ],
+                "route_name_redundancy": false
+              },
+              "fares": [],
+              "global_route_id": "VVSDE:247155",
+              "itineraries": [
+                {
+                  "branch_code": "",
+                  "canonical_itinerary": true,
+                  "detour": null,
+                  "direction_headsign": "Neckargröningen Remseck",
+                  "direction_id": 1,
+                  "headsign": "Neckargröningen Remseck",
+                  "is_active": true,
+                  "merged_headsign": "Neckargröningen Remseck",
+                  "plan_details": {
+                    "end_stop_offset": 7,
+                    "internal_itinerary_id": "6192:65535:false",
+                    "plan_shape": "equhHmo`w@_D|Cm@z@Un@_AhF}@~Bm@dA]^[Pk@HcA?i@Ms@[c@]uNsMa@Wq@Kc@JWTORo@nB",
+                    "start_stop_offset": 5
+                  },
+                  "stops": []
+                }
+              ],
+              "mode_key": "Subway",
+              "mode_name": "U-bahn",
+              "real_time_route_id": "de:vvs:20012_:",
+              "route_color": "8eb2d2",
+              "route_display_short_name": {
+                "boxed_text": "",
+                "elements": [
+                  "stuttgart-u12",
+                  "",
+                  null
+                ],
+                "route_name_redundancy": false
+              },
+              "route_image": "stuttgart-u12",
+              "route_long_name": "Remseck - Hauptbahnhof - Dürrlewang",
+              "route_network_id": "VVS|Stuttgart",
+              "route_network_name": "VVS",
+              "route_short_name": "U12",
+              "route_text_color": "000000",
+              "route_timezone": "Europe/Berlin",
+              "route_type": 1,
+              "sorting_key": "U12",
+              "tts_long_name": "Remseck - Hauptbahnhof - Dürrlewang",
+              "tts_short_name": "die U12 Linie",
+              "vehicle": {
+                "image": "lbdlafr-tram-vehicle",
+                "name": "U-Bahn",
+                "name_inflection": "f"
+              }
+            }
+          ],
+          "start_time": 1792919040
+        },
+        {
+          "distance": 167.30965390408826,
+          "duration": 193,
+          "end_time": 1792919353,
+          "leg_mode": "walk",
+          "start_time": 1792919160
+        }
+      ],
+      "start_time": 1792918908
+    },
+    {
+      "accessibility": "WheelchairTripsWithUnknownStops",
+      "duration": 420,
+      "end_time": 1792919776,
+      "fare": null,
+      "legs": [
+        {
+          "distance": 114.16119978327215,
+          "duration": 104,
+          "end_time": 1792919460,
+          "leg_mode": "walk",
+          "start_time": 1792919356
+        },
+        {
+          "departures": [
+            {
+              "arrival_time": 1792919460,
+              "departure_time": 1792919460,
+              "is_cancelled": false,
+              "is_real_time": false,
+              "plan_details": {
+                "arrival_schedule_item": {
+                  "arrival_time": 1792919700,
+                  "departure_time": 1792919760,
+                  "is_cancelled": false,
+                  "is_real_time": false,
+                  "scheduled_arrival_time": 1792919700,
+                  "scheduled_departure_time": 1792919760,
+                  "wheelchair_accessible": 0
+                },
+                "global_route_id": "VVSDE:247175",
+                "internal_itinerary_id": "51:65535:false",
+                "stop_schedule_items": [
+                  {
+                    "arrival_time": 1792919460,
+                    "departure_time": 1792919460,
+                    "global_stop_id": "VVSDE:28878",
+                    "is_cancelled": false,
+                    "is_real_time": false,
+                    "scheduled_arrival_time": 1792919460,
+                    "scheduled_departure_time": 1792919460,
+                    "wheelchair_accessible": 0
+                  },
+                  {
+                    "arrival_time": 1792919700,
+                    "departure_time": 1792919760,
+                    "global_stop_id": "VVSDE:53080",
+                    "is_cancelled": false,
+                    "is_real_time": false,
+                    "scheduled_arrival_time": 1792919700,
+                    "scheduled_departure_time": 1792919760,
+                    "wheelchair_accessible": 0
+                  }
+                ]
+              },
+              "rt_trip_id": "de:vvs:30044_:.vvs-30-44.9.T3.15.j26",
+              "scheduled_arrival_time": 1792919460,
+              "scheduled_departure_time": 1792919460,
+              "trip_search_key": "VVSDE:53038040:51:4:14",
+              "wheelchair_accessible": 0
+            },
+            {
+              "arrival_time": 1792920360,
+              "departure_time": 1792920360,
+              "is_cancelled": false,
+              "is_real_time": false,
+              "plan_details": {
+                "arrival_schedule_item": {
+                  "arrival_time": 1792920600,
+                  "departure_time": 1792920660,
+                  "is_cancelled": false,
+                  "is_real_time": false,
+                  "scheduled_arrival_time": 1792920600,
+                  "scheduled_departure_time": 1792920660,
+                  "wheelchair_accessible": 0
+                },
+                "global_route_id": "VVSDE:247175",
+                "internal_itinerary_id": "51:65535:false",
+                "stop_schedule_items": [
+                  {
+                    "arrival_time": 1792920360,
+                    "departure_time": 1792920360,
+                    "global_stop_id": "VVSDE:28878",
+                    "is_cancelled": false,
+                    "is_real_time": false,
+                    "scheduled_arrival_time": 1792920360,
+                    "scheduled_departure_time": 1792920360,
+                    "wheelchair_accessible": 0
+                  },
+                  {
+                    "arrival_time": 1792920600,
+                    "departure_time": 1792920660,
+                    "global_stop_id": "VVSDE:53080",
+                    "is_cancelled": false,
+                    "is_real_time": false,
+                    "scheduled_arrival_time": 1792920600,
+                    "scheduled_departure_time": 1792920660,
+                    "wheelchair_accessible": 0
+                  }
+                ]
+              },
+              "rt_trip_id": "de:vvs:30044_:.vvs-30-44.9.T3.16.j26",
+              "scheduled_arrival_time": 1792920360,
+              "scheduled_departure_time": 1792920360,
+              "trip_search_key": "VVSDE:53038040:51:4:15",
+              "wheelchair_accessible": 0
+            },
+            {
+              "arrival_time": 1792921260,
+              "departure_time": 1792921260,
+              "is_cancelled": false,
+              "is_real_time": false,
+              "plan_details": {
+                "arrival_schedule_item": {
+                  "arrival_time": 1792921500,
+                  "departure_time": 1792921560,
+                  "is_cancelled": false,
+                  "is_real_time": false,
+                  "scheduled_arrival_time": 1792921500,
+                  "scheduled_departure_time": 1792921560,
+                  "wheelchair_accessible": 0
+                },
+                "global_route_id": "VVSDE:247175",
+                "internal_itinerary_id": "51:65535:false",
+                "stop_schedule_items": [
+                  {
+                    "arrival_time": 1792921260,
+                    "departure_time": 1792921260,
+                    "global_stop_id": "VVSDE:28878",
+                    "is_cancelled": false,
+                    "is_real_time": false,
+                    "scheduled_arrival_time": 1792921260,
+                    "scheduled_departure_time": 1792921260,
+                    "wheelchair_accessible": 0
+                  },
+                  {
+                    "arrival_time": 1792921500,
+                    "departure_time": 1792921560,
+                    "global_stop_id": "VVSDE:53080",
+                    "is_cancelled": false,
+                    "is_real_time": false,
+                    "scheduled_arrival_time": 1792921500,
+                    "scheduled_departure_time": 1792921560,
+                    "wheelchair_accessible": 0
+                  }
+                ]
+              },
+              "rt_trip_id": "de:vvs:30044_:.vvs-30-44.9.T3.17.j26",
+              "scheduled_arrival_time": 1792921260,
+              "scheduled_departure_time": 1792921260,
+              "trip_search_key": "VVSDE:53038040:51:4:16",
+              "wheelchair_accessible": 0
+            }
+          ],
+          "duration": 240,
+          "end_time": 1792919700,
+          "leg_mode": "transit",
+          "routes": [
+            {
+              "alerts": [],
+              "compact_display_short_name": {
+                "boxed_text": "",
+                "elements": [
+                  null,
+                  "44",
+                  null
+                ],
+                "route_name_redundancy": false
+              },
+              "fares": [],
+              "global_route_id": "VVSDE:247175",
+              "itineraries": [
+                {
+                  "branch_code": "",
+                  "canonical_itinerary": true,
+                  "detour": null,
+                  "direction_headsign": "Killesberg",
+                  "direction_id": 1,
+                  "headsign": "Killesberg",
+                  "is_active": true,
+                  "merged_headsign": "Killesberg",
+                  "plan_details": {
+                    "end_stop_offset": 12,
+                    "internal_itinerary_id": "51:65535:false",
+                    "plan_shape": "uquhHyr`w@gIcFwAu@c@AcEiCWe@_@]}HeEe@PQ^aAfG_AfEg@zC_@z@MBeA`F_AlD",
+                    "start_stop_offset": 11
+                  },
+                  "stops": []
+                }
+              ],
+              "mode_key": "Bus",
+              "mode_name": "Raftaxi",
+              "real_time_route_id": "de:vvs:30044_:",
+              "route_color": "c31924",
+              "route_display_short_name": {
+                "boxed_text": "",
+                "elements": [
+                  null,
+                  "44",
+                  null
+                ],
+                "route_name_redundancy": false
+              },
+              "route_image": "",
+              "route_long_name": "Killesberg - Hauptbahnhof - Westbahnhof",
+              "route_network_id": "VVS|Stuttgart",
+              "route_network_name": "VVS",
+              "route_short_name": "44",
+              "route_text_color": "ffffff",
+              "route_timezone": "Europe/Berlin",
+              "route_type": 3,
+              "sorting_key": "44",
+              "tts_long_name": "Killesberg - Hauptbahnhof - Westbahnhof",
+              "tts_short_name": "44",
+              "vehicle": {
+                "image": "bus-new",
+                "name": "Bus",
+                "name_inflection": "m"
+              }
+            }
+          ],
+          "start_time": 1792919460
+        },
+        {
+          "distance": 26.401061889099196,
+          "duration": 76,
+          "end_time": 1792919776,
+          "leg_mode": "walk",
+          "start_time": 1792919700
+        }
+      ],
+      "start_time": 1792919356
+    }
+  ]
+}

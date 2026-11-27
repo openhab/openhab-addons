@@ -12,14 +12,15 @@
  */
 package org.openhab.binding.matter.internal.client;
 
-import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.math.BigInteger;
 import java.net.URI;
 import java.net.URLEncoder;
+import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -29,6 +30,7 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -36,9 +38,8 @@ import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.websocket.api.Callback;
 import org.eclipse.jetty.websocket.api.Session;
-import org.eclipse.jetty.websocket.api.WebSocketListener;
-import org.eclipse.jetty.websocket.api.WebSocketPolicy;
 import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.openhab.binding.matter.internal.client.dto.Endpoint;
@@ -52,10 +53,12 @@ import org.openhab.binding.matter.internal.client.dto.ws.BridgeEventMessage;
 import org.openhab.binding.matter.internal.client.dto.ws.BridgeEventTriggered;
 import org.openhab.binding.matter.internal.client.dto.ws.Event;
 import org.openhab.binding.matter.internal.client.dto.ws.EventTriggeredMessage;
+import org.openhab.binding.matter.internal.client.dto.ws.IcdStateMessage;
 import org.openhab.binding.matter.internal.client.dto.ws.Message;
 import org.openhab.binding.matter.internal.client.dto.ws.NodeDataMessage;
 import org.openhab.binding.matter.internal.client.dto.ws.NodeStateMessage;
 import org.openhab.binding.matter.internal.client.dto.ws.OtaUpdateAvailableMessage;
+import org.openhab.binding.matter.internal.client.dto.ws.OtaUpdateStatusMessage;
 import org.openhab.binding.matter.internal.client.dto.ws.Path;
 import org.openhab.binding.matter.internal.client.dto.ws.Request;
 import org.openhab.binding.matter.internal.client.dto.ws.Response;
@@ -85,7 +88,8 @@ import com.google.gson.reflect.TypeToken;
  * @author Dan Cunningham - Initial contribution
  */
 @NonNullByDefault
-public class MatterWebsocketClient implements WebSocketListener, MatterWebsocketService.NodeProcessListener {
+public class MatterWebsocketClient
+        implements Session.Listener.AutoDemanding, MatterWebsocketService.NodeProcessListener {
 
     protected final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -105,7 +109,8 @@ public class MatterWebsocketClient implements WebSocketListener, MatterWebsocket
             .registerTypeAdapter(OctetString.class, new OctetStringDeserializer())
             .registerTypeAdapter(OctetString.class, new OctetStringSerializer()).create();
 
-    protected final WebSocketClient client = new WebSocketClient();
+    private final Object webSocketClientLock = new Object();
+    private @Nullable WebSocketClient webSocketClient;
     protected final ConcurrentHashMap<String, CompletableFuture<JsonElement>> pendingRequests = new ConcurrentHashMap<>();
     protected final CopyOnWriteArrayList<MatterClientListener> clientListeners = new CopyOnWriteArrayList<>();
 
@@ -145,17 +150,13 @@ public class MatterWebsocketClient implements WebSocketListener, MatterWebsocket
             pendingRequests.clear();
 
             if (session != null && session.isOpen()) {
-                session.disconnect();
                 session.close();
                 session = null;
             }
-        } catch (IOException e) {
-            logger.debug("Error trying to disconnect", e);
         } finally {
-            try {
-                client.stop();
-            } catch (Exception e) {
-                logger.debug("Error closing Web Socket", e);
+            synchronized (webSocketClientLock) {
+                stopWebSocketClient(webSocketClient);
+                webSocketClient = null;
             }
             MatterWebsocketService wss = this.wss;
             if (wss != null) {
@@ -230,12 +231,11 @@ public class MatterWebsocketClient implements WebSocketListener, MatterWebsocket
     }
 
     @Override
-    public void onWebSocketConnect(@Nullable Session session) {
+    public void onWebSocketOpen(@Nullable Session session) {
         if (session != null) {
-            final WebSocketPolicy currentPolicy = session.getPolicy();
-            currentPolicy.setInputBufferSize(BUFFER_SIZE);
-            currentPolicy.setMaxTextMessageSize(BUFFER_SIZE);
-            currentPolicy.setMaxBinaryMessageSize(BUFFER_SIZE);
+            session.setInputBufferSize(BUFFER_SIZE);
+            session.setMaxTextMessageSize(BUFFER_SIZE);
+            session.setMaxBinaryMessageSize(BUFFER_SIZE);
             this.session = session;
             for (MatterClientListener listener : clientListeners) {
                 listener.onConnect();
@@ -266,8 +266,8 @@ public class MatterWebsocketClient implements WebSocketListener, MatterWebsocket
                 }
                 logger.debug("result type: {} ", response.type);
                 if (response.type != ResponseType.RESULT_SUCCESS) {
-                    future.completeExceptionally(
-                            new MatterRequestException(response.error, MatterErrorCode.fromErrorId(response.errorId)));
+                    future.completeExceptionally(new MatterRequestException(response.error,
+                            MatterErrorCode.fromErrorId(response.errorId), true));
                 } else {
                     future.complete(response.result);
                 }
@@ -280,8 +280,14 @@ public class MatterWebsocketClient implements WebSocketListener, MatterWebsocket
                 switch (event.type) {
                     case "attributeChanged":
                         logger.debug("attributeChanged message {}", event.data);
-                        AttributeChangedMessage changedMessage = gson.fromJson(event.data,
-                                AttributeChangedMessage.class);
+                        AttributeChangedMessage changedMessage;
+                        try {
+                            changedMessage = gson.fromJson(event.data, AttributeChangedMessage.class);
+                        } catch (JsonParseException e) {
+                            // otherwise lost silently, as nothing reads the result of the submitted task
+                            logger.debug("Could not deserialize AttributeChangedMessage {}", event.data, e);
+                            return;
+                        }
                         if (changedMessage == null) {
                             logger.debug("invalid AttributeChangedMessage");
                             return;
@@ -386,6 +392,37 @@ public class MatterWebsocketClient implements WebSocketListener, MatterWebsocket
                             }
                         }
                         break;
+                    case "otaUpdateStatus":
+                        logger.debug("otaUpdateStatus message {}", event.data);
+                        OtaUpdateStatusMessage otaStatusMessage = gson.fromJson(event.data,
+                                OtaUpdateStatusMessage.class);
+                        if (otaStatusMessage == null || otaStatusMessage.status == null) {
+                            logger.debug("invalid OtaUpdateStatusMessage");
+                            return;
+                        }
+                        for (MatterClientListener listener : clientListeners) {
+                            try {
+                                listener.onEvent(otaStatusMessage);
+                            } catch (Exception e) {
+                                logger.debug("Error notifying listener", e);
+                            }
+                        }
+                        break;
+                    case "icdState":
+                        logger.debug("icdState message {}", event.data);
+                        IcdStateMessage icdStateMessage = gson.fromJson(event.data, IcdStateMessage.class);
+                        if (icdStateMessage == null) {
+                            logger.debug("invalid IcdStateMessage");
+                            return;
+                        }
+                        for (MatterClientListener listener : clientListeners) {
+                            try {
+                                listener.onEvent(icdStateMessage);
+                            } catch (Exception e) {
+                                logger.debug("Error notifying listener", e);
+                            }
+                        }
+                        break;
                     case "ready":
                         for (MatterClientListener listener : clientListeners) {
                             listener.onReady();
@@ -412,8 +449,9 @@ public class MatterWebsocketClient implements WebSocketListener, MatterWebsocket
     }
 
     @Override
-    public void onWebSocketBinary(byte @Nullable [] payload, int offset, int len) {
+    public void onWebSocketBinary(@NonNullByDefault({}) ByteBuffer payload, @NonNullByDefault({}) Callback callback) {
         logger.debug("onWebSocketBinary data, not supported");
+        callback.succeed();
     }
 
     protected CompletableFuture<JsonElement> sendMessage(String namespace, String functionName,
@@ -429,7 +467,7 @@ public class MatterWebsocketClient implements WebSocketListener, MatterWebsocket
         Session session = this.session;
         if (session == null) {
             logger.debug("Could not send {} {} : no valid session", namespace, functionName);
-            responseFuture.completeExceptionally(new MatterRequestException("No valid session", null));
+            responseFuture.completeExceptionally(new MatterRequestException("No valid session", null, false));
             return responseFuture;
         }
         String requestId = UUID.randomUUID().toString();
@@ -437,7 +475,15 @@ public class MatterWebsocketClient implements WebSocketListener, MatterWebsocket
         Request message = new Request(requestId, namespace, functionName, args);
         String jsonMessage = gson.toJson(message);
         logger.debug("sendMessage: {}", jsonMessage);
-        session.getRemote().sendStringByFuture(jsonMessage);
+        session.sendText(jsonMessage, Callback.from(() -> {
+        }, cause -> {
+            logger.debug("Failed to send {} {} with id {}", namespace, functionName, requestId, cause);
+            CompletableFuture<JsonElement> future = pendingRequests.remove(requestId);
+            if (future != null) {
+                future.completeExceptionally(
+                        new MatterRequestException("Failed to send request: " + cause.getMessage(), null, false));
+            }
+        }));
 
         // timeout handling
         scheduler.schedule(() -> {
@@ -463,10 +509,34 @@ public class MatterWebsocketClient implements WebSocketListener, MatterWebsocket
 
         logger.debug("Connecting {}", dest);
         WebSocketClient client = new WebSocketClient();
-        client.setMaxIdleTimeout(Long.MAX_VALUE);
-        client.start();
+        client.setIdleTimeout(Duration.ofSeconds(Long.MAX_VALUE / 1000));
         URI uri = new URI(dest);
-        client.connect(this, uri, new ClientUpgradeRequest()).get();
+        Future<Session> connection;
+        // stop the existing client and atomically swap in the new one
+        // connect() restarts a stopped client, so a disconnect must not stop it until connect() returns
+        synchronized (webSocketClientLock) {
+            stopWebSocketClient(webSocketClient);
+            webSocketClient = client;
+            startWebSocketClient(client);
+            connection = client.connect(this, uri, new ClientUpgradeRequest());
+        }
+        connection.get();
+    }
+
+    void startWebSocketClient(WebSocketClient client) throws Exception {
+        client.start();
+    }
+
+    private void stopWebSocketClient(@Nullable WebSocketClient client) {
+        if (client != null) {
+            scheduler.execute(() -> {
+                try {
+                    client.stop();
+                } catch (Exception e) {
+                    logger.debug("Error closing Web Socket", e);
+                }
+            });
+        }
     }
 
     @NonNullByDefault({})
@@ -592,7 +662,7 @@ public class MatterWebsocketClient implements WebSocketListener, MatterWebsocket
                     // Use reflection to find the field type
                     Field field = getField(clusterClass, path.attributeName);
                     if (field != null) {
-                        value = context.deserialize(valueElement, field.getType());
+                        value = context.deserialize(valueElement, field.getGenericType());
                     }
                 } catch (NoSuchFieldException e) {
                     logger.debug("Field not found for attribute: {}", path.attributeName, e);

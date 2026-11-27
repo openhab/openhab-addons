@@ -20,7 +20,6 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.netatmo.internal.api.dto.NAObject;
 import org.openhab.binding.netatmo.internal.handler.ApiBridgeHandler;
 import org.openhab.binding.netatmo.internal.handler.CommonInterface;
 import org.openhab.core.thing.ThingStatus;
@@ -36,7 +35,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class RefreshCapability extends Capability {
-    public static final Duration ASAP = Duration.ofSeconds(2);
+    protected static final Duration ASAP = Duration.ofSeconds(2);
     protected static final Duration OFFLINE_DELAY = Duration.ofMinutes(15);
     protected static final Duration PROBING_INTERVAL = Duration.ofMinutes(2);
 
@@ -61,6 +60,7 @@ public class RefreshCapability extends Capability {
     @Override
     public void dispose() {
         stopJob();
+        expiring = false;
         super.dispose();
     }
 
@@ -73,7 +73,7 @@ public class RefreshCapability extends Capability {
     }
 
     @Override
-    protected void afterNewData(@Nullable NAObject newData) {
+    protected void afterNewData(Object newData) {
         expiring = false;
         super.afterNewData(newData);
     }
@@ -82,15 +82,20 @@ public class RefreshCapability extends Capability {
         return dataValidity;
     }
 
+    protected boolean isRetrying() {
+        return false;
+    }
+
     private void proceedWithUpdate() {
         Duration delay;
         handler.proceedWithUpdate();
+        expiring = false;
         if (handler.getAccountHandler() instanceof ApiBridgeHandler accountHandler
                 && !ThingStatus.ONLINE.equals(accountHandler.getThing().getStatus())) {
             delay = accountHandler.getIdleTime();
             delay = delay != null ? delay.plus(ASAP) : OFFLINE_DELAY;
             logger.debug("Bridge is not ONLINE, will wait for him to come-back in {}", delay);
-        } else if (!ThingStatus.ONLINE.equals(handler.getThing().getStatus())) {
+        } else if (!ThingStatus.ONLINE.equals(handler.getThing().getStatus()) && !isRetrying()) {
             delay = OFFLINE_DELAY;
             logger.debug("Thing '{}' is not ONLINE, special refresh interval {} used", thingUID, delay);
         } else {

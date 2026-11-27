@@ -62,8 +62,7 @@ public class ArtnetBridgeHandler extends DmxOverEthernetHandler {
 
         receiverNodes.clear();
         if (configuration.address.isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Could not initialize sender (address not set)");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Could not initialize sender (address not set)");
             uninstallScheduler();
             logger.debug("remote address not set for {}", this.thing.getUID());
             return;
@@ -72,7 +71,7 @@ public class ArtnetBridgeHandler extends DmxOverEthernetHandler {
                 receiverNodes = IpNode.fromString(configuration.address, ArtnetNode.DEFAULT_PORT);
                 logger.debug("using unicast mode to {} for {}", receiverNodes.toString(), this.thing.getUID());
             } catch (IllegalArgumentException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
                 return;
             }
         }

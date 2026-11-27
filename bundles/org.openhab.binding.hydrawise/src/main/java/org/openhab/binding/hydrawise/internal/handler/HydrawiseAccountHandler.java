@@ -168,15 +168,15 @@ public class HydrawiseAccountHandler extends BaseBridgeHandler implements Access
                 }
                 oAuthService.getAccessTokenByResourceOwnerPasswordCredentials(config.userName, config.password, SCOPE);
             } else if (oAuthService.getAccessTokenResponse() == null) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Login credentials required.");
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Login credentials required.");
                 return;
             }
             this.refresh = Math.max(config.refreshInterval, MIN_REFRESH_SECONDS);
             initPolling(0, refresh);
         } catch (OAuthException | IOException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         } catch (OAuthResponseException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Login credentials required.");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Login credentials required.");
         }
     }
 
@@ -203,7 +203,7 @@ public class HydrawiseAccountHandler extends BaseBridgeHandler implements Access
                     initPolling(0, refresh);
                 }
             } catch (OAuthException | IOException | OAuthResponseException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
             }
         }, TOKEN_REFRESH_SECONDS, TimeUnit.SECONDS);
     }
@@ -274,7 +274,7 @@ public class HydrawiseAccountHandler extends BaseBridgeHandler implements Access
                 poll(false);
             } else {
                 logger.debug("Will try again during next poll period", e);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
         } catch (HydrawiseAuthenticationException e) {
             logger.debug("Token has been rejected, will try to refresh token in {} secs: {}", TOKEN_REFRESH_SECONDS,

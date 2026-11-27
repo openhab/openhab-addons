@@ -57,6 +57,7 @@ public class KaleidescapeBindingConstants {
     public static final String TITLE_LENGTH = "ui#title_length";
     public static final String TITLE_LOC = "ui#title_loc";
     public static final String ENDTIME = "ui#endtime";
+    public static final String PROGRESS = "ui#progress";
     public static final String CHAPTER_NUM = "ui#chapter_num";
     public static final String CHAPTER_LENGTH = "ui#chapter_length";
     public static final String CHAPTER_LOC = "ui#chapter_loc";
@@ -64,6 +65,7 @@ public class KaleidescapeBindingConstants {
     public static final String MOVIE_LOCATION = "ui#movie_location";
     public static final String ASPECT_RATIO = "ui#aspect_ratio";
     public static final String VIDEO_MODE = "ui#video_mode";
+    public static final String VIDEO_MODE2 = "ui#video-mode2";
     public static final String VIDEO_MODE_COMPOSITE = "ui#video_mode_composite";
     public static final String VIDEO_MODE_COMPONENT = "ui#video_mode_component";
     public static final String VIDEO_MODE_HDMI = "ui#video_mode_hdmi";
@@ -83,8 +85,9 @@ public class KaleidescapeBindingConstants {
     public static final String USER_DEFINED_EVENT = "ui#user_defined_event";
     public static final String USER_INPUT = "ui#user_input";
     public static final String USER_INPUT_PROMPT = "ui#user_input_prompt";
-    public static final String CHANNEL_TYPE_SENDCMD = "ui#sendcmd";
-    public static final String CHANNEL_TYPE_SEARCH = "ui#search";
+    public static final String SENDCMD = "ui#sendcmd";
+    public static final String SEARCH = "ui#search";
+    public static final String PARENTAL_CONTROL_LEVEL = "parental-control#level";
 
     public static final String MUSIC = "music#";
     public static final String MUSIC_CONTROL = "music#control";
@@ -139,6 +142,7 @@ public class KaleidescapeBindingConstants {
             DETAIL_ARTIST, DETAIL_DIRECTORS, DETAIL_GENRES, DETAIL_RATING_REASON, DETAIL_SYNOPSIS, DETAIL_REVIEW,
             DETAIL_COLOR_DESCRIPTION, DETAIL_COUNTRY, DETAIL_ASPECT_RATIO, DETAIL_DISC_LOCATION));
 
+    public static final String CINEMASCAPE_MASK_ERR_MSG = "028:Incompatible video configuration";
     public static final String STANDBY_MSG = "Device is in standby";
     public static final String PROPERTY_COMPONENT_TYPE = "Component Type";
     public static final String PROPERTY_FRIENDLY_NAME = "Friendly Name";
@@ -158,9 +162,11 @@ public class KaleidescapeBindingConstants {
     public static final String GET_SCREEN_MASK = "GET_SCREEN_MASK";
     public static final String GET_SCREEN_MASK2 = "GET_SCREEN_MASK2";
     public static final String GET_VIDEO_MODE = "GET_VIDEO_MODE";
+    public static final String GET_VIDEO_MODE2 = "GET_VIDEO_MODE2";
     public static final String GET_UI_STATE = "GET_UI_STATE";
     public static final String GET_HIGHLIGHTED_SELECTION = "GET_HIGHLIGHTED_SELECTION";
     public static final String GET_CHILD_MODE_STATE = "GET_CHILD_MODE_STATE";
+    public static final String GET_PARENTAL_CONTROL_LEVEL = "GET_PARENTAL_CONTROL_LEVEL";
     public static final String GET_MOVIE_LOCATION = "GET_MOVIE_LOCATION";
     public static final String GET_MOVIE_MEDIA_TYPE = "GET_MOVIE_MEDIA_TYPE";
     public static final String GET_PLAYING_TITLE_NAME = "GET_PLAYING_TITLE_NAME";

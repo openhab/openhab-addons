@@ -79,6 +79,10 @@ public class ValueFactory {
                 value = new RollershutterValue(config.on, config.off, config.stop, config.onState, config.offState,
                         config.invert, config.transformExtentsToString);
                 break;
+            case MqttBindingConstants.PLAYER:
+                value = new PlayerValue(config.play, config.pause, config.next, config.previous, config.rewind,
+                        config.fastforward);
+                break;
             case MqttBindingConstants.TRIGGER:
                 config.trigger = true;
                 value = new TextValue();

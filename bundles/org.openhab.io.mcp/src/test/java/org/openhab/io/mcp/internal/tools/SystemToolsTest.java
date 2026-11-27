@@ -129,7 +129,7 @@ class SystemToolsTest {
         try (MockedStatic<OpenHAB> openHABMock = mockStatic(OpenHAB.class)) {
             openHABMock.when(OpenHAB::getVersion).thenReturn("5.2.0");
 
-            CallToolResult result = tools().handleGetSystemInfo(createRequest(Map.of()));
+            CallToolResult result = tools().handleGetSystemInfo(createRequest(Map.of()), true);
             assertSuccess(result);
 
             Map<String, Object> parsed = parseResult(result);
@@ -149,7 +149,7 @@ class SystemToolsTest {
         try (MockedStatic<OpenHAB> openHABMock = mockStatic(OpenHAB.class)) {
             openHABMock.when(OpenHAB::getVersion).thenReturn("5.2.0");
 
-            CallToolResult result = tools().handleGetSystemInfo(createRequest(Map.of()));
+            CallToolResult result = tools().handleGetSystemInfo(createRequest(Map.of()), true);
             Map<String, Object> parsed = parseResult(result);
             assertEquals(2, parsed.get("itemCount"));
         }
@@ -168,7 +168,7 @@ class SystemToolsTest {
         try (MockedStatic<OpenHAB> openHABMock = mockStatic(OpenHAB.class)) {
             openHABMock.when(OpenHAB::getVersion).thenReturn("5.2.0");
 
-            CallToolResult result = tools().handleGetSystemInfo(createRequest(Map.of()));
+            CallToolResult result = tools().handleGetSystemInfo(createRequest(Map.of()), true);
             Map<String, Object> parsed = parseResult(result);
             assertEquals(2, parsed.get("thingCount"));
             assertEquals(1, parsed.get("ruleCount"));
@@ -184,7 +184,7 @@ class SystemToolsTest {
         try (MockedStatic<OpenHAB> openHABMock = mockStatic(OpenHAB.class)) {
             openHABMock.when(OpenHAB::getVersion).thenReturn("5.2.0");
 
-            CallToolResult result = tools().handleGetSystemInfo(createRequest(Map.of()));
+            CallToolResult result = tools().handleGetSystemInfo(createRequest(Map.of()), true);
             Map<String, Object> parsed = parseResult(result);
             assertNotNull(parsed.get("currentDateTime"));
             assertNotNull(parsed.get("timeZone"));
@@ -209,7 +209,7 @@ class SystemToolsTest {
         try (MockedStatic<OpenHAB> openHABMock = mockStatic(OpenHAB.class)) {
             openHABMock.when(OpenHAB::getVersion).thenReturn("5.2.0");
 
-            CallToolResult result = tools().handleGetSystemInfo(createRequest(Map.of()));
+            CallToolResult result = tools().handleGetSystemInfo(createRequest(Map.of()), true);
             Map<String, Object> parsed = parseResult(result);
             List<String> bindings = (List<String>) parsed.get("installedBindings");
             assertNotNull(bindings);
@@ -227,7 +227,7 @@ class SystemToolsTest {
         when(Objects.requireNonNull(itemRegistry).getItems()).thenReturn(List.of(openContact, closedContact));
         when(Objects.requireNonNull(thingRegistry).getAll()).thenReturn(List.of());
 
-        CallToolResult result = tools().handleGetHomeStatus(createRequest(Map.of()));
+        CallToolResult result = tools().handleGetHomeStatus(createRequest(Map.of()), true);
         assertSuccess(result);
 
         Map<String, Object> parsed = parseResult(result);
@@ -250,7 +250,7 @@ class SystemToolsTest {
         when(Objects.requireNonNull(itemRegistry).getItems()).thenReturn(List.of(lightOn, lightOff));
         when(Objects.requireNonNull(thingRegistry).getAll()).thenReturn(List.of());
 
-        CallToolResult result = tools().handleGetHomeStatus(createRequest(Map.of()));
+        CallToolResult result = tools().handleGetHomeStatus(createRequest(Map.of()), true);
         Map<String, Object> parsed = parseResult(result);
         Map<String, Object> lighting = (Map<String, Object>) parsed.get("lighting");
         assertNotNull(lighting);
@@ -265,7 +265,7 @@ class SystemToolsTest {
         when(Objects.requireNonNull(itemRegistry).getItems()).thenReturn(List.of(lampOn));
         when(Objects.requireNonNull(thingRegistry).getAll()).thenReturn(List.of());
 
-        CallToolResult result = tools().handleGetHomeStatus(createRequest(Map.of()));
+        CallToolResult result = tools().handleGetHomeStatus(createRequest(Map.of()), true);
         Map<String, Object> parsed = parseResult(result);
         Map<String, Object> lighting = (Map<String, Object>) parsed.get("lighting");
         assertNotNull(lighting);
@@ -284,7 +284,7 @@ class SystemToolsTest {
         when(Objects.requireNonNull(itemRegistry).getItems()).thenReturn(List.of(dimmer));
         when(Objects.requireNonNull(thingRegistry).getAll()).thenReturn(List.of());
 
-        CallToolResult result = tools().handleGetHomeStatus(createRequest(Map.of()));
+        CallToolResult result = tools().handleGetHomeStatus(createRequest(Map.of()), true);
         Map<String, Object> parsed = parseResult(result);
         Map<String, Object> lighting = (Map<String, Object>) parsed.get("lighting");
         assertNotNull(lighting);
@@ -300,7 +300,7 @@ class SystemToolsTest {
         when(Objects.requireNonNull(itemRegistry).getItems()).thenReturn(List.of(tempByTag, tempByName));
         when(Objects.requireNonNull(thingRegistry).getAll()).thenReturn(List.of());
 
-        CallToolResult result = tools().handleGetHomeStatus(createRequest(Map.of()));
+        CallToolResult result = tools().handleGetHomeStatus(createRequest(Map.of()), true);
         Map<String, Object> parsed = parseResult(result);
         Map<String, Object> climate = (Map<String, Object>) parsed.get("climate");
         assertNotNull(climate);
@@ -318,7 +318,7 @@ class SystemToolsTest {
         when(Objects.requireNonNull(itemRegistry).getItems()).thenReturn(List.of(energyItem, powerItem));
         when(Objects.requireNonNull(thingRegistry).getAll()).thenReturn(List.of());
 
-        CallToolResult result = tools().handleGetHomeStatus(createRequest(Map.of()));
+        CallToolResult result = tools().handleGetHomeStatus(createRequest(Map.of()), true);
         Map<String, Object> parsed = parseResult(result);
         Map<String, Object> energy = (Map<String, Object>) parsed.get("energy");
         assertNotNull(energy);
@@ -336,7 +336,7 @@ class SystemToolsTest {
         Thing offline = mockThing("t3", "Broken Thing", ThingStatus.OFFLINE, "zwave");
         when(Objects.requireNonNull(thingRegistry).getAll()).thenReturn(List.of(online1, online2, offline));
 
-        CallToolResult result = tools().handleGetHomeStatus(createRequest(Map.of()));
+        CallToolResult result = tools().handleGetHomeStatus(createRequest(Map.of()), true);
         Map<String, Object> parsed = parseResult(result);
         Map<String, Object> devices = (Map<String, Object>) parsed.get("devices");
         assertNotNull(devices);
@@ -352,7 +352,7 @@ class SystemToolsTest {
         Thing offline = mockThing("t1", "Broken Thing", ThingStatus.OFFLINE, "zwave");
         when(Objects.requireNonNull(thingRegistry).getAll()).thenReturn(List.of(offline));
 
-        CallToolResult result = tools().handleGetHomeStatus(createRequest(Map.of()));
+        CallToolResult result = tools().handleGetHomeStatus(createRequest(Map.of()), true);
         Map<String, Object> parsed = parseResult(result);
         Map<String, Object> devices = (Map<String, Object>) parsed.get("devices");
         assertNotNull(devices);
@@ -368,7 +368,7 @@ class SystemToolsTest {
         when(Objects.requireNonNull(itemRegistry).getItems()).thenReturn(List.of());
         when(Objects.requireNonNull(thingRegistry).getAll()).thenReturn(List.of());
 
-        CallToolResult result = tools().handleGetHomeStatus(createRequest(Map.of()));
+        CallToolResult result = tools().handleGetHomeStatus(createRequest(Map.of()), true);
         assertSuccess(result);
         Map<String, Object> parsed = parseResult(result);
         assertNotNull(parsed.get("security"));
@@ -376,5 +376,40 @@ class SystemToolsTest {
         assertNotNull(parsed.get("climate"));
         assertNotNull(parsed.get("energy"));
         assertNotNull(parsed.get("devices"));
+    }
+
+    @Test
+    void homeStatusLeavesOutDevicesForNonAdmin() throws Exception {
+        when(Objects.requireNonNull(itemRegistry).getItems()).thenReturn(List.of());
+
+        Map<String, Object> parsed = parseResult(tools().handleGetHomeStatus(createRequest(Map.of()), false));
+
+        assertNotNull(parsed.get("security"));
+        assertNull(parsed.get("devices"));
+        verifyNoInteractions(Objects.requireNonNull(thingRegistry));
+    }
+
+    @Test
+    void systemInfoLeavesOutThingsForNonAdmin() throws Exception {
+        when(Objects.requireNonNull(itemRegistry).getItems()).thenReturn(List.of());
+        when(Objects.requireNonNull(ruleRegistry).getAll()).thenReturn(List.of());
+
+        try (MockedStatic<OpenHAB> openHABMock = mockStatic(OpenHAB.class)) {
+            openHABMock.when(OpenHAB::getVersion).thenReturn("5.2.0");
+
+            Map<String, Object> parsed = parseResult(tools().handleGetSystemInfo(createRequest(Map.of()), false));
+
+            assertNotNull(parsed.get("itemCount"));
+            assertNull(parsed.get("thingCount"));
+            assertNull(parsed.get("installedBindings"));
+            verifyNoInteractions(Objects.requireNonNull(thingRegistry));
+        }
+    }
+
+    @Test
+    void toolAnnotationsDescribeSideEffects() {
+        SystemTools t = tools();
+        McpTestHelper.assertReadOnlyTool(t.getSystemInfoTool());
+        McpTestHelper.assertReadOnlyTool(t.getHomeStatusTool());
     }
 }

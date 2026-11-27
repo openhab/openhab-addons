@@ -19,7 +19,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.StringType;
-import org.openhab.core.types.State;
 
 /**
  *
@@ -31,28 +30,28 @@ public class TypeConverterTest {
     @Test
     public void testStringType() throws Exception {
         var typeConverter = TypeConverters.create("String", "String");
-        var state = typeConverter.toStateCommand("motion");
+        var state = typeConverter.toState("motion");
         assumeTrue(state instanceof StringType);
-        assertEquals("motion", typeConverter.toPropertyValue((State) state));
+        assertEquals("motion", typeConverter.toPropertyValue(state));
     }
 
     @Test
     public void testNumberType() throws Exception {
         var typeConverter = TypeConverters.create("Number", "Number");
-        var state = typeConverter.toStateCommand(45.6);
+        var state = typeConverter.toState(45.6);
         assumeTrue(state instanceof DecimalType);
-        assertEquals(45.6, typeConverter.toPropertyValue((State) state));
+        assertEquals(45.6, typeConverter.toPropertyValue(state));
     }
 
     @Test
     public void testNumberIntegerType() throws Exception {
         var typeConverter = TypeConverters.create("Number", "Integer");
-        var state = typeConverter.toStateCommand(45);
+        var state = typeConverter.toState(45);
         assumeTrue(state instanceof DecimalType);
-        assertEquals(45, typeConverter.toPropertyValue((State) state));
+        assertEquals(45, typeConverter.toPropertyValue(state));
 
-        state = typeConverter.toStateCommand(45.2);
+        state = typeConverter.toState(45.2);
         assumeTrue(state instanceof DecimalType);
-        assertEquals(45, typeConverter.toPropertyValue((State) state));
+        assertEquals(45, typeConverter.toPropertyValue(state));
     }
 }

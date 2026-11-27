@@ -57,6 +57,9 @@ class URIMetaDataProcessorTest {
         assertTrue(result.matches("<DIDL-Lite.+</DIDL-Lite>"));
         assertTrue(result.contains(">" + MP3_STREAM_URL + "</res></item></DIDL-Lite>"));
         assertTrue(result.contains("protocolInfo=\"http-get:*:audio/mpeg:*\""));
+        assertFalse(result.contains("nrAudioChannels="));
+        assertFalse(result.contains("sampleFrequency="));
+        assertFalse(result.contains("bitrate="));
     }
 
     @Test

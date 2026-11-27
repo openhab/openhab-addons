@@ -101,8 +101,7 @@ public class QbusDimmerHandler extends QbusGlobalHandler {
                 if (qBridgeHandler.getStatus() == ThingStatus.ONLINE) {
                     updateStatus(ThingStatus.ONLINE);
                 } else {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
-                            "Bridge offline for DIMMER ID " + this.dimmerId);
+                    updateStatus(ThingStatusDetail.BRIDGE_OFFLINE, "Bridge offline for DIMMER ID " + this.dimmerId);
                 }
             }
         });

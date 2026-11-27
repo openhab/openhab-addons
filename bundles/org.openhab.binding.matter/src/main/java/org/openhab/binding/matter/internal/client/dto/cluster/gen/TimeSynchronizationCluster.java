@@ -84,7 +84,7 @@ public class TimeSynchronizationCluster extends BaseCluster {
      * commissioning. If no default NTP server is available, the Commissioner may set this value to null. The default
      * IANA assigned NTP port of 123 shall be used to access the NTP server.
      * If set, the format of this attribute shall be a domain name or a static IPv6 address with no port, in text
-     * format, as specified in RFC 5952. The address format shall follow the recommendations in Section 4 and shall NOT
+     * format, as specified in RFC5952. The address format shall follow the recommendations in Section 4 and shall NOT
      * contain a port number.
      */
     public String defaultNtp; // 4 string R V
@@ -140,7 +140,7 @@ public class TimeSynchronizationCluster extends BaseCluster {
      */
     public TimeZoneDatabaseEnum timeZoneDatabase; // 8 TimeZoneDatabaseEnum R V
     /**
-     * Indicates if the node is running an RFC 5905 NTPv4 compliant server on port 123, this value shall be True.
+     * Indicates if the node is running an RFC5905 NTPv4 compliant server on port 123, this value shall be True.
      * If the node is not currently running an NTP server, this value shall be False.
      */
     public Boolean ntpServerAvailable; // 9 bool R V

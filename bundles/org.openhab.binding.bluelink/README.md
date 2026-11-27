@@ -27,22 +27,30 @@ registered to your account.
 
 ### `account` Bridge
 
-| Parameter  | Required | Description                                                      |
-|------------|----------|------------------------------------------------------------------|
-| `username` | No       | Bluelink account email (not required for EU region)              |
-| `password` | Yes      | Bluelink account password (for EU: refresh token)                |
-| `pin`      | No       | Bluelink service PIN (required for lock/unlock commands)         |
-| `region`   | No       | Country code (`US`, `CA`, or `EU`), autodetected if absent       |
-| `brand`    | No       | One of `hyundai`, `kia`, `genesis` (required for CA and EU)      |
+| Parameter  | Required | Description                                                                          |
+|------------|----------|--------------------------------------------------------------------------------------|
+| `username` | Yes      | Bluelink account email                                                               |
+| `password` | Yes      | Bluelink account password                                                            |
+| `pin`      | No       | Bluelink service PIN (required for lock/unlock commands, not required for EU region) |
+| `region`   | No       | Country code (`US`, `CA`, or `EU`), autodetected if absent                           |
+| `brand`    | No       | One of `hyundai`, `kia`, `genesis` (required for CA and EU)                          |
 
 #### EU Region Notes
 
-The EU region uses an OAuth2 refresh token instead of username/password authentication.
-Put your refresh token in the `password` field.
-A refresh token is typically valid for 180 days, after which you will need to provide a new one.
-The following script may be used to obtain a refresh token: [RustyDust/bluelink_refresh_token](https://github.com/RustyDust/bluelink_refresh_token).
+For the EU region, log in with your account email and password.
+Refresh tokens are no longer supported, as new ones cannot be obtained since August 2026.
+If you used a refresh token before, enter your account email and password instead.
 
-The `username` field is not required for EU.
+Both legacy and newer CCS2/CCU-based vehicles are supported in the EU region.
+
+The `pin` field is not required for the EU region.
+
+#### Canada Region Notes
+
+When openHAB logs in from a new device, the account asks for a verification code.
+Run the Request Verification Code action of the account Thing to receive the code by e-mail.
+Then run the Verify Code action with this code.
+Afterwards openHAB is a known device and further logins do not need a code.
 
 ### `vehicle` Thing
 

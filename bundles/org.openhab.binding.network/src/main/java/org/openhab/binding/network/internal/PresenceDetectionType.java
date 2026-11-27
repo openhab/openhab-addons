@@ -19,11 +19,13 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * Used by {@see PresenceDetectionValue}.
  *
  * @author David Graeff - Initial contribution
+ * @author Alexander Friese - Add HTTP presence detection
  */
 @NonNullByDefault
 public enum PresenceDetectionType {
     ARP_PING,
     ICMP_PING,
     TCP_CONNECTION,
-    DHCP_REQUEST
+    DHCP_REQUEST,
+    HTTP_REQUEST
 }

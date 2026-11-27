@@ -26,10 +26,10 @@ import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.BytesRequestContent;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.BytesContentProvider;
+import org.eclipse.jetty.client.Request;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.sensibo.internal.SensiboCommunicationException;
@@ -153,13 +153,11 @@ public class SensiboAccountHandler extends BaseBridgeHandler {
         } catch (final SensiboConfigurationException e) {
             logger.info("Error initializing Sensibo data: {}", e.getMessage());
             model = new SensiboModel(0); // Empty model
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Error fetching initial data: " + e.getMessage());
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Error fetching initial data: " + e.getMessage());
         } catch (final SensiboException e) {
             logger.info("Error initializing Sensibo data: {}", e.getMessage());
             model = new SensiboModel(0); // Empty model
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Error fetching initial data: " + e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "Error fetching initial data: " + e.getMessage());
             // Reschedule init
             scheduler.schedule(this::initializeInternal, 30, TimeUnit.SECONDS);
         }
@@ -241,10 +239,10 @@ public class SensiboAccountHandler extends BaseBridgeHandler {
                 updateStatus(ThingStatus.ONLINE);
             } catch (SensiboConfigurationException e) {
                 logger.debug("Error updating Sensibo model do to {}", e.getMessage());
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR);
             } catch (SensiboException e) {
                 logger.debug("Error updating Sensibo model do to {}", e.getMessage());
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR);
             }
         }
     }
@@ -274,8 +272,8 @@ public class SensiboAccountHandler extends BaseBridgeHandler {
 
         if (!req.getMethod().contentEquals(HttpMethod.GET.asString())) { // POST, PATCH
             final String reqJson = gson.toJson(req);
-            request = request.content(new BytesContentProvider(reqJson.getBytes(StandardCharsets.UTF_8)),
-                    "application/json");
+            request = request
+                    .body(new BytesRequestContent("application/json", reqJson.getBytes(StandardCharsets.UTF_8)));
         }
 
         requestLogger.listenTo(request, new String[] { config.apiKey });

@@ -16,15 +16,19 @@ import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.mqtt.generic.IgnoreType;
 import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.types.Command;
+import org.openhab.core.types.Type;
+import org.openhab.core.types.UnDefType;
 
 /**
  * Implements an open/close boolean value.
  *
  * @author David Graeff - Initial contribution
+ * @author Leo Siepel - State-only Contact handling
  */
 @NonNullByDefault
 public class OpenCloseValue extends Value {
@@ -35,7 +39,7 @@ public class OpenCloseValue extends Value {
      * Creates a contact Open/Close type.
      */
     public OpenCloseValue() {
-        super(CoreItemFactory.CONTACT, List.of(OpenClosedType.class, StringType.class));
+        super(CoreItemFactory.CONTACT, List.of(StringType.class));
         this.openString = OpenClosedType.OPEN.name();
         this.closeString = OpenClosedType.CLOSED.name();
     }
@@ -47,34 +51,32 @@ public class OpenCloseValue extends Value {
      * @param closeValue The OFF value string. This will be compared to MQTT messages.
      */
     public OpenCloseValue(@Nullable String openValue, @Nullable String closeValue) {
-        super(CoreItemFactory.CONTACT, List.of(OpenClosedType.class, StringType.class));
+        super(CoreItemFactory.CONTACT, List.of(StringType.class));
         this.openString = openValue == null ? OpenClosedType.OPEN.name() : openValue;
         this.closeString = closeValue == null ? OpenClosedType.CLOSED.name() : closeValue;
     }
 
     @Override
-    public OpenClosedType parseCommand(Command command) throws IllegalArgumentException {
-        if (command instanceof OpenClosedType openClosed) {
-            return openClosed;
-        } else {
-            final String updatedValue = command.toString();
-            if (openString.equals(updatedValue)) {
-                return OpenClosedType.OPEN;
-            } else if (closeString.equals(updatedValue)) {
-                return OpenClosedType.CLOSED;
-            } else {
-                return OpenClosedType.valueOf(updatedValue);
-            }
-        }
+    public Command parseCommand(Command command) throws IllegalArgumentException {
+        throw new IllegalArgumentException("Contact channels do not support commands");
     }
 
     @Override
-    public String getMQTTpublishValue(Command command, @Nullable String pattern) {
-        String formatPattern = pattern;
-        if (formatPattern == null) {
-            formatPattern = "%s";
+    public Type parseMessage(Command command) throws IllegalArgumentException {
+        if (command instanceof StringType string) {
+            if (string.toString().equals(ignoreValue)) {
+                return IgnoreType.SENTINEL;
+            } else if (string.toString().equals(nullValue) || string.toString().isEmpty()) {
+                return UnDefType.NULL;
+            }
         }
 
-        return String.format(formatPattern, command == OpenClosedType.OPEN ? openString : closeString);
+        String value = command.toString();
+        if (openString.equals(value)) {
+            return OpenClosedType.OPEN;
+        } else if (closeString.equals(value)) {
+            return OpenClosedType.CLOSED;
+        }
+        return OpenClosedType.valueOf(value);
     }
 }

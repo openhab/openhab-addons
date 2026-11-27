@@ -24,7 +24,7 @@
 			{
 				"property": "mode",
 				"friendlyName": "Mode",
-				"channel": "airFreshMode",
+				"channel": "mode",
 				"type": "String",
 				"stateDescription": {
 					"options": [
@@ -49,15 +49,17 @@
 						"parameterType": "STRING"
 					}
 				],
+				"category": "fan",
 				"tags": [
-					"Control"
+					"Control",
+					"Mode"
 				],
 				"readmeComment": "Value mapping `[\"auto\"\u003d\"Auto\",\"sleep\"\u003d\"Sleep\",\"favourite\"\u003d\"Favorite\"]`"
 			},
 			{
 				"property": "ptc_on",
-				"friendlyName": "PTC",
-				"channel": "airFreshPTCPower",
+				"friendlyName": "Heater",
+				"channel": "heater",
 				"type": "Switch",
 				"refresh": true,
 				"actions": [
@@ -65,21 +67,31 @@
 						"command": "set_ptc_on",
 						"parameterType": "ONOFFBOOL"
 					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch"
 				]
 			},
 			{
 				"property": "ptc_status",
 				"friendlyName": "PTC Status",
-				"channel": "airFreshPTCStatus",
+				"channel": "ptc_status",
 				"type": "Switch",
+				"stateDescription": {
+					"readOnly": true
+				},
 				"refresh": true,
-				"ChannelGroup": "Status",
-				"actions": []
+				"actions": [],
+				"category": "status",
+				"tags": [
+					"Status"
+				]
 			},
 			{
 				"property": "display",
 				"friendlyName": "Display",
-				"channel": "airFreshDisplay",
+				"channel": "display",
 				"type": "Switch",
 				"refresh": true,
 				"actions": [
@@ -87,12 +99,16 @@
 						"command": "set_display",
 						"parameterType": "ONOFFBOOL"
 					}
+				],
+				"category": "screen",
+				"tags": [
+					"Switch"
 				]
 			},
 			{
 				"property": "child_lock",
 				"friendlyName": "Child Lock",
-				"channel": "airFreshChildLock",
+				"channel": "child_lock",
 				"type": "Switch",
 				"refresh": true,
 				"actions": [
@@ -100,12 +116,17 @@
 						"command": "set_child_lock",
 						"parameterType": "ONOFFBOOL"
 					}
+				],
+				"category": "lock",
+				"tags": [
+					"Switch",
+					"Enabled"
 				]
 			},
 			{
 				"property": "sound",
-				"friendlyName": "Sound",
-				"channel": "airFreshSound",
+				"friendlyName": "Notification Sound",
+				"channel": "alarm",
 				"type": "Switch",
 				"refresh": true,
 				"actions": [
@@ -113,32 +134,44 @@
 						"command": "set_sound",
 						"parameterType": "ONOFFBOOL"
 					}
+				],
+				"category": "soundvolume",
+				"tags": [
+					"Switch",
+					"Enabled"
 				]
 			},
 			{
 				"property": "pm25",
 				"friendlyName": "PM2.5",
-				"channel": "airFreshPM25",
-				"type": "Number",
+				"channel": "pm25",
+				"type": "Number:Density",
+				"unit": "μg/m3",
 				"stateDescription": {
-					"pattern": "%.0f"
+					"pattern": "%.0f %unit%",
+					"readOnly": true
 				},
 				"refresh": true,
-				"ChannelGroup": "Status",
-				"actions": []
+				"actions": [],
+				"category": "smoke",
+				"tags": [
+					"Measurement",
+					"ParticulateMatter"
+				]
 			},
 			{
 				"property": "co2",
 				"friendlyName": "CO2",
-				"channel": "airFreshCO2",
-				"type": "Number",
+				"channel": "co2",
+				"type": "Number:Dimensionless",
+				"unit": "ppm",
 				"stateDescription": {
-					"pattern": "%.0f"
+					"pattern": "%.0f %unit%",
+					"readOnly": true
 				},
 				"refresh": true,
-				"ChannelGroup": "Status",
 				"actions": [],
-				"category": "co2",
+				"category": "carbondioxide",
 				"tags": [
 					"Measurement",
 					"CO2"
@@ -147,23 +180,28 @@
 			{
 				"property": "control_speed",
 				"friendlyName": "Current Speed",
-				"channel": "airFreshCurrentSpeed",
+				"channel": "control_speed",
 				"type": "Number",
 				"stateDescription": {
-					"pattern": "%.0f m³/h"
+					"pattern": "%.0f m³/h",
+					"readOnly": true
 				},
 				"refresh": true,
-				"ChannelGroup": "Status",
-				"actions": []
+				"actions": [],
+				"category": "fan",
+				"tags": [
+					"Measurement",
+					"Airflow"
+				]
 			},
 			{
 				"property": "favourite_speed",
 				"friendlyName": "Favorite Speed",
-				"channel": "airFreshFavoriteSpeed",
+				"channel": "favourite_speed",
 				"type": "Number",
 				"stateDescription": {
-					"minimum": 0,
-					"maximum": 300,
+					"minimum": 60,
+					"maximum": 150,
 					"pattern": "%.0f"
 				},
 				"refresh": true,
@@ -172,57 +210,103 @@
 						"command": "set_favourite_speed",
 						"parameterType": "NUMBER"
 					}
+				],
+				"category": "fan",
+				"tags": [
+					"Control",
+					"Speed"
 				]
 			},
 			{
 				"property": "temperature_outside",
 				"friendlyName": "Temperature Outside",
-				"channel": "airFreshTemperature",
-				"type": "Number",
+				"channel": "temperature_outside",
+				"type": "Number:Temperature",
+				"unit": "CELSIUS",
 				"stateDescription": {
-					"pattern": "%.0f°C"
+					"pattern": "%.1f %unit%",
+					"readOnly": true
 				},
 				"refresh": true,
-				"ChannelGroup": "Status",
-				"actions": []
+				"actions": [],
+				"category": "temperature",
+				"tags": [
+					"Measurement",
+					"Temperature"
+				]
 			},
 			{
 				"property": "filter_rate",
-				"friendlyName": "Filter Percents Remaining",
-				"channel": "airFreshFilterPercents",
-				"type": "Number",
+				"friendlyName": "Filter Remaining",
+				"channel": "filter_percents",
+				"type": "Number:Dimensionless",
+				"unit": "PERCENT",
 				"stateDescription": {
-					"pattern": "%.0f%%"
+					"minimum": 0,
+					"maximum": 100,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
 				},
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"category": "status",
+				"tags": [
+					"Measurement",
+					"Level"
+				]
 			},
 			{
 				"property": "filter_day",
 				"friendlyName": "Filter Days Remaining",
-				"channel": "airFreshFilterDays",
-				"type": "Number",
+				"channel": "filter_days",
+				"type": "Number:Time",
+				"unit": "days",
 				"stateDescription": {
-					"pattern": "%.0f"
+					"pattern": "%.0f %unit%",
+					"readOnly": true
 				},
 				"refresh": true,
-				"ChannelGroup": "Status",
-				"actions": []
+				"actions": [],
+				"category": "time",
+				"tags": [
+					"Measurement",
+					"Duration"
+				]
 			},
 			{
 				"property": "",
 				"friendlyName": "Reset Filter",
-				"channel": "airFreshResetFilterA1",
+				"channel": "reset_filter",
 				"type": "String",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "reset",
+							"label": "Reset Filter"
+						}
+					]
+				},
 				"refresh": false,
-				"ChannelGroup": "actions",
 				"actions": [
 					{
 						"command": "set_filter_reset",
-						"parameterType": "STRING"
+						"parameterType": "NONE",
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "reset",
+									"returnValue": "reset"
+								}
+							]
+						}
 					}
-				]
+				],
+				"category": "settings",
+				"readmeComment": "Value mapping `[\"reset\"\u003d\"Reset Filter\"]`"
 			}
-		]
+		],
+		"experimental": false
 	}
 }

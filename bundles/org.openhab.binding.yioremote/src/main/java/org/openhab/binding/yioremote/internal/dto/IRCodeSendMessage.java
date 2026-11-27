@@ -12,45 +12,23 @@
  */
 package org.openhab.binding.yioremote.internal.dto;
 
+import static org.openhab.binding.yioremote.internal.YIOremoteBindingConstants.*;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
-import com.google.gson.JsonObject;
-
 /**
- * The {@link IRCodeSendMessage} the IRCodeSendMessage DTO
- *
+ * The {@link IRCodeSendMessage} asks the YIO Dock to send an IR code.
  *
  * @author Michael Loercher - Initial contribution
  */
 @NonNullByDefault
 public class IRCodeSendMessage {
-    private String type = "dock";
-    private String command = "ir_send";
+    public final String type = MESSAGE_TYPE_DOCK;
+    public final String command = COMMAND_IR_SEND;
+    public final String code;
+    public final String format = IR_CODE_FORMAT_HEX;
 
-    private IRCode ircode = new IRCode();
-
-    public IRCodeSendMessage(IRCode ircode) {
-        this.ircode = ircode;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public String getCommand() {
-        return command;
-    }
-
-    public JsonObject getIRcodeSendMessageJsonObject() {
-        JsonObject irCodeSendMessage = new JsonObject();
-        irCodeSendMessage.addProperty("type", type);
-        irCodeSendMessage.addProperty("command", command);
-        irCodeSendMessage.addProperty("code", ircode.getCode());
-        irCodeSendMessage.addProperty("format", ircode.getFormat());
-        return irCodeSendMessage;
-    }
-
-    public String getIRcodeSendMessageString() {
-        return getIRcodeSendMessageJsonObject().toString();
+    public IRCodeSendMessage(String code) {
+        this.code = code;
     }
 }

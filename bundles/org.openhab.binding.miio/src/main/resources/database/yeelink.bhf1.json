@@ -7,7 +7,7 @@
 		"channels": [
 			{
 				"property": "power",
-				"friendlyName": "Power",
+				"friendlyName": "Light",
 				"channel": "power",
 				"type": "Switch",
 				"refresh": true,
@@ -17,23 +17,7 @@
 						"parameterType": "ONOFF"
 					}
 				],
-				"category": "switch",
-				"tags": [
-					"Switch"
-				]
-			},
-			{
-				"property": "bh_mode",
-				"friendlyName": "Bath Heater mode",
-				"channel": "bh_mode",
-				"type": "String",
-				"refresh": true,
-				"actions": [
-					{
-						"command": "set_bh_mode",
-						"parameterType": "STRING"
-					}
-				]
+				"category": "light"
 			},
 			{
 				"property": "bright",
@@ -45,6 +29,11 @@
 					{
 						"command": "set_bright",
 						"parameterType": "NUMBER",
+						"parameters": [
+							"$value$",
+							"smooth",
+							500
+						],
 						"condition": {
 							"name": "BrightnessExisting"
 						}
@@ -59,14 +48,109 @@
 				],
 				"category": "light",
 				"tags": [
-					"Setpoint",
-					"Light"
-				]
+					"Control",
+					"Brightness"
+				],
+				"readmeComment": "Sets the brightness of the active light mode (normal or night light)."
+			},
+			{
+				"property": "ct",
+				"friendlyName": "Color Temperature",
+				"channel": "color_temperature",
+				"type": "Number:Temperature",
+				"unit": "kelvin",
+				"stateDescription": {
+					"minimum": 2700,
+					"maximum": 6500,
+					"step": 1,
+					"pattern": "%.0f K"
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_ct_abx",
+						"parameterType": "NUMBER",
+						"parameters": [
+							"$value$",
+							"smooth",
+							500
+						]
+					}
+				],
+				"category": "colorlight"
+			},
+			{
+				"property": "",
+				"friendlyName": "Night Light",
+				"channel": "night_light",
+				"type": "Switch",
+				"refresh": false,
+				"actions": [
+					{
+						"command": "set_power",
+						"parameterType": "NONE",
+						"parameters": [
+							"on",
+							"smooth",
+							500,
+							5
+						],
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "ON",
+									"returnValue": 5
+								}
+							]
+						}
+					},
+					{
+						"command": "set_power",
+						"parameterType": "NONE",
+						"parameters": [
+							"on",
+							"smooth",
+							500,
+							1
+						],
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "OFF",
+									"returnValue": 1
+								}
+							]
+						}
+					}
+				],
+				"category": "light",
+				"readmeComment": "Write only. ON switches the light on in night light mode, OFF switches it to the normal light."
+			},
+			{
+				"property": "nl_br",
+				"friendlyName": "Night Light Brightness",
+				"channel": "nightlight_brightness",
+				"type": "Number:Dimensionless",
+				"unit": "percentage",
+				"stateDescription": {
+					"pattern": "%.0f %%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "light",
+				"tags": [
+					"Status",
+					"Brightness"
+				],
+				"readmeComment": "Set with the brightness channel while the night light is on."
 			},
 			{
 				"property": "delayoff",
-				"friendlyName": "Shutdown Timer",
-				"channel": "delayoff",
+				"friendlyName": "Light Off Timer",
+				"channel": "light_off_timer",
 				"type": "Number:Time",
 				"unit": "minutes",
 				"stateDescription": {
@@ -90,11 +174,140 @@
 				]
 			},
 			{
+				"property": "bh_mode",
+				"friendlyName": "Heater Mode",
+				"channel": "heater_mode",
+				"type": "String",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "bh_off",
+							"label": "Off"
+						},
+						{
+							"value": "warmwind",
+							"label": "Heater"
+						},
+						{
+							"value": "venting",
+							"label": "Air Change"
+						},
+						{
+							"value": "drying",
+							"label": "Bathroom Drying"
+						},
+						{
+							"value": "drying_cloth",
+							"label": "Clothes Drying"
+						},
+						{
+							"value": "coolwind",
+							"label": "Fan"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_bh_mode",
+						"parameterType": "STRING",
+						"condition": {
+							"name": "LowerCase"
+						}
+					}
+				],
+				"category": "heating",
+				"tags": [
+					"Control",
+					"Mode"
+				],
+				"readmeComment": "A mode keeps running until it is switched off or the heater timer ends."
+			},
+			{
+				"property": "bh_delayoff",
+				"friendlyName": "Heater Timer",
+				"channel": "heater_timer",
+				"type": "Number:Time",
+				"unit": "minutes",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 120,
+					"step": 1,
+					"pattern": "%.0f %unit%"
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "bath_4modes_cron_start",
+						"parameterType": "NUMBER",
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "[1-9][0-9]*(\\.0*)?"
+								}
+							]
+						}
+					},
+					{
+						"command": "bath_4modes_cron_stop",
+						"parameterType": "NONE",
+						"parameters": [
+							0
+						],
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "0(\\.0*)?"
+								}
+							]
+						}
+					}
+				],
+				"category": "time",
+				"tags": [
+					"Setpoint",
+					"Duration"
+				],
+				"readmeComment": "Remaining time until the heater mode switches off. Can only be set while a mode is running; 0 cancels the timer."
+			},
+			{
+				"property": "aim_temp",
+				"friendlyName": "Target Temperature",
+				"channel": "target_temperature",
+				"type": "Number:Temperature",
+				"unit": "CELSIUS",
+				"stateDescription": {
+					"minimum": 30,
+					"maximum": 45,
+					"step": 1,
+					"pattern": "%.0f %unit%"
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_temp",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "temperature",
+				"tags": [
+					"Setpoint",
+					"Temperature"
+				],
+				"readmeComment": "Used in Heater mode."
+			},
+			{
 				"property": "temperature",
 				"friendlyName": "Temperature",
 				"channel": "temperature",
 				"type": "Number:Temperature",
 				"unit": "CELSIUS",
+				"stateDescription": {
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
 				"refresh": true,
 				"actions": [],
 				"category": "temperature",
@@ -104,18 +317,128 @@
 				]
 			},
 			{
-				"property": "nl_br",
-				"friendlyName": "Nightlight Brightness",
-				"channel": "nightlightBrightness",
-				"type": "Number",
+				"property": "humidity",
+				"friendlyName": "Humidity",
+				"channel": "humidity",
+				"type": "Number:Dimensionless",
+				"unit": "percentage",
+				"stateDescription": {
+					"pattern": "%.0f %%",
+					"readOnly": true
+				},
 				"refresh": true,
 				"actions": [],
-				"category": "light",
+				"category": "humidity",
+				"tags": [
+					"Measurement",
+					"Humidity"
+				]
+			},
+			{
+				"property": "",
+				"friendlyName": "Fan Level",
+				"channel": "fan_level",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "Low"
+						},
+						{
+							"value": "1",
+							"label": "Medium"
+						},
+						{
+							"value": "2",
+							"label": "High"
+						},
+						{
+							"value": "9",
+							"label": "Turbo"
+						}
+					]
+				},
+				"refresh": false,
+				"actions": [
+					{
+						"command": "set_gears_idx",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "fan",
+				"tags": [
+					"Control",
+					"Speed"
+				],
+				"readmeComment": "Write only. Sets the fan level of the running mode; Turbo is only available in Air Change mode."
+			},
+			{
+				"property": "swing_action",
+				"friendlyName": "Swing",
+				"channel": "swing",
+				"type": "String",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "swing",
+							"label": "Swing"
+						},
+						{
+							"value": "stop",
+							"label": "Fixed"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_swing",
+						"parameterType": "STRING",
+						"parameters": [
+							"$value$",
+							0
+						]
+					}
+				],
+				"category": "flow",
+				"tags": [
+					"Control",
+					"Airflow"
+				],
+				"readmeComment": "Value mapping `[\"swing\"\u003d\"Swing\",\"stop\"\u003d\"Fixed\"]`"
+			},
+			{
+				"property": "swing_angle",
+				"friendlyName": "Wind Direction",
+				"channel": "swing_angle",
+				"type": "Number:Angle",
+				"unit": "degree",
+				"stateDescription": {
+					"minimum": 60,
+					"maximum": 115,
+					"step": 1,
+					"pattern": "%.0f %unit%"
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_swing",
+						"parameterType": "NUMBER",
+						"parameters": [
+							"angle",
+							"$value$"
+						]
+					}
+				],
+				"category": "flow",
 				"tags": [
 					"Setpoint",
-					"Light"
-				]
+					"Airflow"
+				],
+				"readmeComment": "Fixed air outlet angle, used when swing is off."
 			}
-		]
+		],
+		"experimental": false
 	}
 }

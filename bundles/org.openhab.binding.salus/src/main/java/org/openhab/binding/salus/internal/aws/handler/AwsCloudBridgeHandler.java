@@ -51,11 +51,6 @@ public final class AwsCloudBridgeHandler extends AbstractBridgeHandler<AwsCloudB
     }
 
     @Override
-    public boolean isReadOnly() {
-        return true;
-    }
-
-    @Override
     public String channelPrefix() {
         return "ep9";
     }

@@ -84,7 +84,7 @@ public abstract class ElectroluxApplianceHandler extends BaseThingHandler {
     public void initialize() {
         config = getConfigAs(ElectroluxApplianceConfiguration.class);
         if (config.getSerialNumber().isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                     getLocalizedText("error.electroluxappliance.all-devices.missing-serial-number"));
         } else {
             updateStatus(ThingStatus.UNKNOWN);

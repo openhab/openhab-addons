@@ -1368,9 +1368,14 @@ public class HomekitCharacteristicFactory {
 
     private static RemainingDurationCharacteristic createRemainingDurationCharacteristic(HomekitTaggedItem taggedItem,
             HomekitAccessoryUpdater updater) {
-        return new RemainingDurationCharacteristic(getIntSupplier(taggedItem, 0),
-                getSubscriber(taggedItem, REMAINING_DURATION, updater),
-                getUnsubscriber(taggedItem, REMAINING_DURATION, updater));
+        return new RemainingDurationCharacteristic(getIntSupplier(taggedItem, 0), callback -> {
+            var filter = new RemainingDurationNotificationFilter(getIntFromItem(taggedItem, 0), System::nanoTime);
+            updater.subscribeToUpdates((GenericItem) taggedItem.getItem(), REMAINING_DURATION.getTag(), state -> {
+                if (state instanceof DecimalType duration && filter.shouldNotify(duration.intValue())) {
+                    callback.changed();
+                }
+            });
+        }, getUnsubscriber(taggedItem, REMAINING_DURATION, updater));
     }
 
     private static RemoteKeyCharacteristic createRemoteKeyCharacteristic(HomekitTaggedItem taggedItem,

@@ -634,8 +634,8 @@ public class UnifiProtectCameraHandler extends UnifiProtectAbstractDeviceHandler
                 String motionChannelId = eventType == WSEventType.ADD ? CHANNEL_MOTION_START : CHANNEL_MOTION_UPDATE;
                 if (hasChannel(motionChannelId)) {
                     triggerChannel(new ChannelUID(thing.getUID(), motionChannelId));
-                    updateContactChannel(CHANNEL_MOTION_CONTACT, OpenClosedType.OPEN);
                 }
+                updateContactChannel(CHANNEL_MOTION_CONTACT, OpenClosedType.OPEN);
                 maybeUpdateSnapshot(CHANNEL_MOTION_SNAPSHOT, Sequence.AFTER);
                 break;
 
@@ -646,8 +646,8 @@ public class UnifiProtectCameraHandler extends UnifiProtectAbstractDeviceHandler
                             : CHANNEL_SMART_DETECT_AUDIO_UPDATE;
                     if (hasChannel(channelId)) {
                         triggerChannel(channelId, e.smartDetectTypes);
-                        updateContactChannel(CHANNEL_SMART_DETECT_AUDIO_CONTACT, OpenClosedType.OPEN);
                     }
+                    updateContactChannel(CHANNEL_SMART_DETECT_AUDIO_CONTACT, OpenClosedType.OPEN);
                     maybeUpdateSnapshot(CHANNEL_SMART_DETECT_AUDIO_SNAPSHOT, Sequence.AFTER);
                 }
                 break;
@@ -659,8 +659,8 @@ public class UnifiProtectCameraHandler extends UnifiProtectAbstractDeviceHandler
                             : CHANNEL_SMART_DETECT_ZONE_UPDATE;
                     if (hasChannel(channelId)) {
                         triggerChannel(channelId, e.smartDetectTypes);
-                        updateContactChannel(CHANNEL_SMART_DETECT_ZONE_CONTACT, OpenClosedType.OPEN);
                     }
+                    updateContactChannel(CHANNEL_SMART_DETECT_ZONE_CONTACT, OpenClosedType.OPEN);
                     maybeUpdateSnapshot(CHANNEL_SMART_DETECT_ZONE_SNAPSHOT, Sequence.AFTER);
                 }
                 break;
@@ -672,8 +672,8 @@ public class UnifiProtectCameraHandler extends UnifiProtectAbstractDeviceHandler
                             : CHANNEL_SMART_DETECT_LINE_UPDATE;
                     if (hasChannel(channelId)) {
                         triggerChannel(channelId, e.smartDetectTypes);
-                        updateContactChannel(CHANNEL_SMART_DETECT_LINE_CONTACT, OpenClosedType.OPEN);
                     }
+                    updateContactChannel(CHANNEL_SMART_DETECT_LINE_CONTACT, OpenClosedType.OPEN);
                     maybeUpdateSnapshot(CHANNEL_SMART_DETECT_LINE_SNAPSHOT, Sequence.AFTER);
                 }
                 break;
@@ -685,16 +685,18 @@ public class UnifiProtectCameraHandler extends UnifiProtectAbstractDeviceHandler
                             : CHANNEL_SMART_DETECT_LOITER_UPDATE;
                     if (hasChannel(channelId)) {
                         triggerChannel(channelId, e.smartDetectTypes);
-                        updateContactChannel(CHANNEL_SMART_DETECT_LOITER_CONTACT, OpenClosedType.OPEN);
                     }
+                    updateContactChannel(CHANNEL_SMART_DETECT_LOITER_CONTACT, OpenClosedType.OPEN);
                     maybeUpdateSnapshot(CHANNEL_SMART_DETECT_LOITER_SNAPSHOT, Sequence.AFTER);
                 }
                 break;
             case RING:
-                if (event instanceof RingEvent && hasChannel(CHANNEL_RING)) {
+                if (event instanceof RingEvent) {
                     maybeUpdateSnapshot(CHANNEL_RING_SNAPSHOT, Sequence.BEFORE);
-                    triggerChannel(new ChannelUID(thing.getUID(), CHANNEL_RING),
-                            event.end == null ? "PRESSED" : "RELEASED");
+                    if (hasChannel(CHANNEL_RING)) {
+                        triggerChannel(new ChannelUID(thing.getUID(), CHANNEL_RING),
+                                event.end == null ? "PRESSED" : "RELEASED");
+                    }
                     updateContactChannel(CHANNEL_RING_CONTACT, OpenClosedType.OPEN);
                     maybeUpdateSnapshot(CHANNEL_RING_SNAPSHOT, Sequence.AFTER);
                 }
@@ -1099,14 +1101,17 @@ public class UnifiProtectCameraHandler extends UnifiProtectAbstractDeviceHandler
             Set<String> activeChannelIds, @Nullable String label) {
         ChannelUID uid = new ChannelUID(thing.getUID(), channelId);
         activeChannelIds.add(channelId);
-        if (thing.getChannel(uid) == null) {
-            ChannelBuilder cb = ChannelBuilder.create(uid, null)
-                    .withType(new ChannelTypeUID(channelTypeNamespace, channelTypeId)).withKind(ChannelKind.TRIGGER);
-            if (label != null) {
-                cb.withLabel(translationService.getTranslation(label));
-            }
-            channelAdd.add(cb.build());
+        // Unconditional, exactly like addChannel: addRemoveChannels REPLACES the thing's whole
+        // channel list with channelAdd, so skipping a channel because it already exists REMOVES
+        // it from the thing. With an existence check here every full rebuild flipped the trigger
+        // channels between present and stripped, and any event that arrived while stripped was
+        // silently dropped (hasChannel gates both the trigger and the contact update).
+        ChannelBuilder cb = ChannelBuilder.create(uid, null)
+                .withType(new ChannelTypeUID(channelTypeNamespace, channelTypeId)).withKind(ChannelKind.TRIGGER);
+        if (label != null) {
+            cb.withLabel(translationService.getTranslation(label));
         }
+        channelAdd.add(cb.build());
     }
 
     private Sequence getSnapshotSequence(String channelId) {
@@ -1160,6 +1165,7 @@ public class UnifiProtectCameraHandler extends UnifiProtectAbstractDeviceHandler
                 break;
             case SMART_DETECT:
             case SMART_DETECT_LINE:
+            case SMART_DETECT_LOITER_ZONE:
             case SMART_AUDIO_DETECT:
                 thumbnailChannel = CHANNEL_SMART_DETECT_THUMBNAIL;
                 break;

@@ -87,7 +87,7 @@ public class PowerSourceCluster extends BaseCluster {
      * of NULL shall indicate the Node is currently unable to assess the value. If the wired source is not connected,
      * but the Node is still able to assess a value, then the assessed value may be reported.
      */
-    public Integer wiredAssessedInputVoltage; // 3 uint32 R V
+    public Long wiredAssessedInputVoltage; // 3 uint32 R V
     /**
      * Indicates the assessed frequency of the voltage, currently provided by the hard-wired source, in Hz. A value of
      * NULL shall indicate the Node is currently unable to assess the value. If the wired source is not connected, but
@@ -104,17 +104,17 @@ public class PowerSourceCluster extends BaseCluster {
      * value of NULL shall indicate the Node is currently unable to assess the value. If the wired source is not
      * connected, but the Node is still able to assess a value, then the assessed value may be reported.
      */
-    public Integer wiredAssessedCurrent; // 6 uint32 R V
+    public Long wiredAssessedCurrent; // 6 uint32 R V
     /**
      * Indicates the nominal voltage, printed as part of the Node's regulatory compliance label in mV (millivolts),
      * expected to be provided by the hard-wired source.
      */
-    public Integer wiredNominalVoltage; // 7 uint32 R V
+    public Long wiredNominalVoltage; // 7 uint32 R V
     /**
      * Indicates the maximum current, printed as part of the Node's regulatory compliance label in mA (milliamps),
      * expected to be provided by the hard-wired source.
      */
-    public Integer wiredMaximumCurrent; // 8 uint32 R V
+    public Long wiredMaximumCurrent; // 8 uint32 R V
     /**
      * Indicates if the Node detects that the hard-wired power source is properly connected.
      */
@@ -134,7 +134,7 @@ public class PowerSourceCluster extends BaseCluster {
      * Indicates the currently measured output voltage of the battery in mV (millivolts). A value of NULL shall indicate
      * the Node is currently unable to assess the value.
      */
-    public Integer batVoltage; // 11 uint32 R V
+    public Long batVoltage; // 11 uint32 R V
     /**
      * Indicates the estimated percentage of battery charge remaining until the battery will no longer be able to
      * provide power to the Node. Values are expressed in half percent units, ranging from 0 to 200. E.g. a value of 48
@@ -153,7 +153,7 @@ public class PowerSourceCluster extends BaseCluster {
      * - When it changes from null to any other value and vice versa.
      * Since reporting consumes power, devices SHOULD be careful not to over-report.
      */
-    public Integer batTimeRemaining; // 13 uint32 R V
+    public Long batTimeRemaining; // 13 uint32 R V
     /**
      * Indicates a coarse ranking of the charge level of the battery, used to indicate when intervention is required as
      * specified in BatChargeLevelEnum.
@@ -209,7 +209,7 @@ public class PowerSourceCluster extends BaseCluster {
      * Indicates the preferred minimum charge capacity rating in mAh of individual, user- or factory-serviceable battery
      * cells or packs in the battery source.
      */
-    public Integer batCapacity; // 24 uint32 R V
+    public Long batCapacity; // 24 uint32 R V
     /**
      * Indicates the quantity of individual, user- or factory-serviceable battery cells or packs in the battery source.
      */
@@ -226,7 +226,7 @@ public class PowerSourceCluster extends BaseCluster {
      * - When it changes from null to any other value and vice versa.
      * Since reporting consumes power, devices SHOULD be careful not to over-report.
      */
-    public Integer batTimeToFullCharge; // 27 uint32 R V
+    public Long batTimeToFullCharge; // 27 uint32 R V
     /**
      * Indicates whether the Node can remain operational while the battery source is charging.
      */
@@ -235,7 +235,7 @@ public class PowerSourceCluster extends BaseCluster {
      * Indicates assessed current in mA (milliamps) presently supplied to charge the battery source. A value of NULL
      * shall indicate the Node is currently unable to assess the value.
      */
-    public Integer batChargingCurrent; // 29 uint32 R V
+    public Long batChargingCurrent; // 29 uint32 R V
     /**
      * Indicates the set of charge faults currently detected by the Node on this power source. This set is represented
      * as a list of BatChargeFaultEnum. When the Node detects a fault has been raised, the appropriate

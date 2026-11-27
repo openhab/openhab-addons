@@ -32,6 +32,8 @@ public class ModbusTcpConfiguration {
     private int reconnectAfterMillis;
     private int afterConnectionDelayMillis;
     private int connectTimeoutMillis = 10_000;
+    private int receiveTimeoutMillis = 3_000;
+
     private boolean enableDiscovery;
     private boolean rtuEncoded;
 
@@ -117,5 +119,13 @@ public class ModbusTcpConfiguration {
 
     public void setDiscoveryEnabled(boolean enableDiscovery) {
         this.enableDiscovery = enableDiscovery;
+    }
+
+    public int getReceiveTimeoutMillis() {
+        return receiveTimeoutMillis;
+    }
+
+    public void setReceiveTimeoutMillis(int receiveTimeoutMillis) {
+        this.receiveTimeoutMillis = receiveTimeoutMillis;
     }
 }

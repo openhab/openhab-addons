@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.enphase.internal;
 
+import static org.openhab.binding.enphase.internal.EnphaseBindingConstants.THING_TYPE_ENPHASE_BATTERY;
 import static org.openhab.binding.enphase.internal.EnphaseBindingConstants.THING_TYPE_ENPHASE_ENVOY;
 import static org.openhab.binding.enphase.internal.EnphaseBindingConstants.THING_TYPE_ENPHASE_INVERTER;
 import static org.openhab.binding.enphase.internal.EnphaseBindingConstants.THING_TYPE_ENPHASE_RELAY;
@@ -22,6 +23,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
+import org.openhab.binding.enphase.internal.handler.EnphaseBatteryHandler;
 import org.openhab.binding.enphase.internal.handler.EnphaseInverterHandler;
 import org.openhab.binding.enphase.internal.handler.EnphaseRelayHandler;
 import org.openhab.binding.enphase.internal.handler.EnvoyBridgeHandler;
@@ -48,7 +50,7 @@ import org.osgi.service.component.annotations.Reference;
 public class EnphaseHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_ENPHASE_ENVOY,
-            THING_TYPE_ENPHASE_INVERTER, THING_TYPE_ENPHASE_RELAY);
+            THING_TYPE_ENPHASE_INVERTER, THING_TYPE_ENPHASE_RELAY, THING_TYPE_ENPHASE_BATTERY);
 
     private final MessageTranslator messageTranslator;
     private final EnvoyHostAddressCache envoyHostAddressCache;
@@ -63,7 +65,8 @@ public class EnphaseHandlerFactory extends BaseThingHandlerFactory {
         // Note: Had to switch to using a locally generated httpClient as
         // the Envoy server went to a self-signed SSL connection and this
         // was the only way to set the client to ignore SSL errors
-        this.httpClient = new HttpClient(new SslContextFactory.Client(true));
+        this.httpClient = new HttpClient();
+        this.httpClient.setSslContextFactory(new SslContextFactory.Client(true));
         startHttpClient();
     }
 
@@ -95,6 +98,8 @@ public class EnphaseHandlerFactory extends BaseThingHandlerFactory {
             return new EnphaseInverterHandler(thing, messageTranslator);
         } else if (THING_TYPE_ENPHASE_RELAY.equals(thingTypeUID)) {
             return new EnphaseRelayHandler(thing, messageTranslator);
+        } else if (THING_TYPE_ENPHASE_BATTERY.equals(thingTypeUID)) {
+            return new EnphaseBatteryHandler(thing, messageTranslator);
         }
 
         return null;

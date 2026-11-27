@@ -34,7 +34,6 @@ import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
-import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
@@ -62,8 +61,7 @@ public class UniFiSiteThingHandler extends UniFiBaseThingHandler<UniFiSite, UniF
     protected boolean initialize(final UniFiSiteThingConfig config) {
         this.config = config;
         if (!config.isValid()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/error.thing.site.offline.configuration_error");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.thing.site.offline.configuration_error");
             return false;
         }
         return true;

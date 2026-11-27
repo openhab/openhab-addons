@@ -72,6 +72,11 @@ public class Measure {
             return fw;
         }
 
+        fw = firmware;
+        if (fw != null) {
+            return fw;
+        }
+
         return "";
     }
 
@@ -115,90 +120,47 @@ public class Measure {
         return rhumCompensated;
     }
 
-    @Nullable
-    public String locationId;
-
-    @Nullable
-    public String locationName;
-
-    @Nullable
-    public String serialno;
-
-    @Nullable
-    public Double pm01; // The raw PM 1 value in ug
-
-    @Nullable
-    public Double pm02; // The raw PM 2.5 value in ug
-
-    @Nullable
-    public Double pm10; // The raw PM 10 value in ug
-
-    @Nullable
-    public Double pm003Count; // The number of particles with a diameter beyond 0.3 microns in 1 deciliter of air
-
-    @Nullable
-    public Double atmp; // The ambient temperature in celsius
-
-    @Nullable
-    public Double atmpCompensated; // The ambient temperature, compensated for sensor inaccuracies
-
-    @Nullable
-    public Double rhum; // The relative humidity in percent
-
-    @Nullable
-    public Double rhumCompensated; // The relative humidity in percent, compensated for sensor inaccuracies
-
-    @Nullable
-    public Double rco2; // The CO2 value in ppm
-
-    @Nullable
-    public Double tvoc; // The TVOC value in ppb, provided in case that the sensor delivers an absolute value
-
-    @Nullable
-    public Double tvocIndex; // The value of the TVOC index, sensor model dependent
-
-    @Nullable
-    public Double tvocRaw; // Raw data from TVOC senosor
-
-    @Nullable
-    public Double noxIndex; // The value of the NOx index, sensor model dependent
-
-    @Nullable
-    public Double noxRaw; // Raw data from NOx sensor
-
-    @Nullable
-    public Double wifi; // The wifi signal strength in dBm
-
-    @Nullable
-    public Integer datapoints; // The number of datapoints, present only for aggregated data
-
-    @Nullable
-    public String timestamp; // Timestamp of the measures in ISO 8601 format with UTC offset, e.g. 2022-03-28T12:07:40Z
-
-    @Nullable
-    public String firmwareVersion; // The firmware version running on the device, e.g. "9.2.6", not present for averages
-
-    @Nullable
-    public String ledMode; // co2, pm, off, default
-
-    @Nullable
-    public String ledCo2Threshold1;
-
-    @Nullable
-    public String ledCo2Threshold2;
-
-    @Nullable
-    public String ledCo2ThresholdEnd;
-
-    @Nullable
-    public Long boot; // Number of times sensor has uploaded data since last reboot
-
-    @Nullable
-    public Long bootCount; // Same as boot, in firmwares > v3
-
-    @Nullable
-    public String fwMode; // Model of sensor from local API
-
-    @Nullable
-    public String model; // Model of sensor from cloud API
+    public @Nullable Double atmp; // The ambient temperature in celsius
+    public @Nullable Double atmpCompensated; // The ambient temperature, compensated for sensor inaccuracies
+    public @Nullable Long boot; // Number of times sensor has uploaded data since last reboot
+    public @Nullable Long bootCount; // Same as boot, in firmwares > v3
+    public @Nullable Integer datapoints; // The number of datapoints, present only for aggregated data
+    public @Nullable String firmware; // The firmware version running on the device, e.g. "9.2.6", not present for
+                                      // averages
+    public @Nullable String firmwareVersion; // The firmware version running on the device, e.g. "9.2.6", not present
+                                             // for averages
+    public @Nullable String fwMode; // Model of sensor from local API
+    public @Nullable String ledCo2Threshold1;
+    public @Nullable String ledCo2Threshold2;
+    public @Nullable String ledCo2ThresholdEnd;
+    public @Nullable String ledMode; // co2, pm, off, default
+    public @Nullable String locationId;
+    public @Nullable String locationName;
+    public @Nullable String model; // Model of sensor from cloud API
+    public @Nullable Double noxIndex; // The value of the NOx index, sensor model dependent
+    public @Nullable Double noxRaw; // Raw data from NOx sensor
+    public @Nullable Double pm003Count; // The number of particles with a diameter beyond 0.3 microns in 1 deciliter of
+                                        // air
+    public @Nullable Double pm005Count;
+    public @Nullable Double pm01; // The raw PM 1 value in ug
+    public @Nullable Double pm01Count;
+    public @Nullable Double pm01Standard;
+    public @Nullable Double pm02; // The raw PM 2.5 value in ug
+    public @Nullable Double pm02Compensated;
+    public @Nullable Double pm02Count;
+    public @Nullable Double pm02Standard;
+    public @Nullable Double pm10; // The raw PM 10 value in ug
+    public @Nullable Double pm10Count;
+    public @Nullable Double pm10Standard;
+    public @Nullable Double pm50Count;
+    public @Nullable Double rco2; // The CO2 value in ppm
+    public @Nullable Double rhum; // The relative humidity in percent
+    public @Nullable Double rhumCompensated; // The relative humidity in percent, compensated for sensor inaccuracies
+    public @Nullable String serialno;
+    public @Nullable String timestamp; // Timestamp of the measures in ISO 8601 format with UTC offset, e.g.
+                                       // 2022-03-28T12:07:40Z
+    public @Nullable Double tvoc; // The TVOC value in ppb, provided in case that the sensor delivers an absolute value
+    public @Nullable Double tvocIndex; // The value of the TVOC index, sensor model dependent
+    public @Nullable Double tvocRaw; // Raw data from TVOC senosor
+    public @Nullable Double wifi; // The wifi signal strength in dBm
 }

@@ -14,7 +14,6 @@ package org.openhab.binding.tesla.internal.handler;
 
 import static org.openhab.binding.tesla.internal.TeslaBindingConstants.*;
 
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.net.URI;
@@ -24,6 +23,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -33,10 +33,6 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
 import javax.measure.quantity.Temperature;
-import javax.ws.rs.ProcessingException;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -81,8 +77,14 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+
+import jakarta.ws.rs.ProcessingException;
+import jakarta.ws.rs.client.WebTarget;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 
 /**
  * The {@link TeslaVehicleHandler} is responsible for handling commands, which are sent
@@ -96,6 +98,9 @@ public class TeslaVehicleHandler extends BaseThingHandler {
 
     private static final int SLOW_STATUS_REFRESH_INTERVAL = 60000;
     private static final int API_SLEEP_INTERVAL_MINUTES = 20;
+    private static final List<String> ACTIVE_ROUTE_FIELDS = List.of("active_route_destination", "active_route_latitude",
+            "active_route_longitude", "active_route_miles_to_arrival", "active_route_minutes_to_arrival",
+            "active_route_traffic_minutes_delay");
     private static final int MOVE_THRESHOLD_INTERVAL_MINUTES_DEFAULT = 5;
     private static final int THRESHOLD_INTERVAL_FOR_ADVANCED_MINUTES = 60;
     private static final int EVENT_MAXIMUM_ERRORS_IN_INTERVAL = 10;
@@ -182,8 +187,17 @@ public class TeslaVehicleHandler extends BaseThingHandler {
         useAdvancedStates = Objects
                 .requireNonNullElse((boolean) getConfig().get(TeslaBindingConstants.CONFIG_USEDADVANCEDSTATES), false);
         Bridge bridge = getBridge();
-        if (bridge == null || !(bridge.getHandler() instanceof TeslaAccountHandler teslaAccountHandler)) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
+        if (bridge == null) {
+            logger.debug("Bridge unavailable for Thing {}", getThing().getUID());
+            return;
+        }
+        var bridgeHandler = bridge.getHandler();
+        if (bridgeHandler == null) {
+            logger.debug("Bridge handler unavailable for Thing {}", getThing().getUID());
+            return;
+        }
+        if (!(bridgeHandler instanceof TeslaAccountHandler teslaAccountHandler)) {
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Tesla account bridge handler is unavailable");
             return;
         }
         account = teslaAccountHandler;
@@ -523,13 +537,8 @@ public class TeslaVehicleHandler extends BaseThingHandler {
     }
 
     @Override
-    protected void updateStatus(ThingStatus status, ThingStatusDetail statusDetail) {
-        super.updateStatus(status, statusDetail);
-    }
-
-    @Override
-    protected void updateStatus(ThingStatus status, ThingStatusDetail statusDetail, @Nullable String description) {
-        super.updateStatus(status, statusDetail, description);
+    protected void updateStatus(ThingStatusDetail statusDetail, @Nullable String description) {
+        super.updateStatus(statusDetail, description);
     }
 
     public void requestData(String command) {
@@ -579,7 +588,7 @@ public class TeslaVehicleHandler extends BaseThingHandler {
         int computedInactivityPeriod = inactivity;
         VehicleState vehicleState = this.vehicleState;
         if (useAdvancedStates) {
-            if (vehicleState != null && vehicleState.isUserPresent && !isInMotion()) {
+            if (vehicleState != null && Boolean.TRUE.equals(vehicleState.isUserPresent) && !isInMotion()) {
                 logger.debug("Car is occupied but stationary.");
                 if (lastAdvModesTimestamp < (System.currentTimeMillis()
                         - (THRESHOLD_INTERVAL_FOR_ADVANCED_MINUTES * 60 * 1000))) {
@@ -657,7 +666,7 @@ public class TeslaVehicleHandler extends BaseThingHandler {
             return true;
         } else if (response != null && response.getStatus() == 401) {
             logger.debug("The access token has expired, trying to get a new one.");
-            account.authenticate();
+            account.reauthenticate();
         } else {
             apiIntervalErrors++;
             if (immediatelyFail || apiIntervalErrors >= TeslaAccountHandler.API_MAXIMUM_ERRORS_IN_INTERVAL) {
@@ -669,7 +678,7 @@ public class TeslaVehicleHandler extends BaseThingHandler {
                             TeslaAccountHandler.API_ERROR_INTERVAL_SECONDS);
                 }
 
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR);
             } else if ((System.currentTimeMillis() - apiIntervalTimestamp) > 1000
                     * TeslaAccountHandler.API_ERROR_INTERVAL_SECONDS) {
                 logger.trace("Resetting the error counter. ({} errors in the last interval)", apiIntervalErrors);
@@ -859,7 +868,7 @@ public class TeslaVehicleHandler extends BaseThingHandler {
 
                 }
             } catch (ProcessingException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
         }
         return null;
@@ -959,9 +968,13 @@ public class TeslaVehicleHandler extends BaseThingHandler {
                     }
 
                     ClimateState climateState = this.climateState = vehicleData.climateState;
-                    BigDecimal avgtemp = roundBigDecimal(new BigDecimal(
-                            (climateState.passengerTempSetting + climateState.passengerTempSetting) / 2.0f));
-                    updateState(CHANNEL_COMBINED_TEMP, new QuantityType<>(avgtemp, SIUnits.CELSIUS));
+                    updateState(CHANNEL_COMBINED_TEMP,
+                            new QuantityType<>(combinedTemperature(climateState), SIUnits.CELSIUS));
+
+                    OnOffType tirePressureWarning = tirePressureWarning(vehicleState);
+                    if (tirePressureWarning != null) {
+                        updateState(CHANNEL_TIRE_PRESSURE_WARNING, tirePressureWarning);
+                    }
 
                     SoftwareUpdate softwareUpdate = this.softwareUpdate = vehicleState.softwareUpdate;
 
@@ -971,7 +984,7 @@ public class TeslaVehicleHandler extends BaseThingHandler {
                         Set<Map.Entry<String, JsonElement>> entrySet = new HashSet<>();
 
                         if (driveState != null) {
-                            entrySet.addAll(gson.toJsonTree(driveState, DriveState.class).getAsJsonObject().entrySet());
+                            entrySet.addAll(toJsonWithRouteCleared(gson, driveState).entrySet());
                         }
                         entrySet.addAll(gson.toJsonTree(guiState, GUIState.class).getAsJsonObject().entrySet());
                         entrySet.addAll(gson.toJsonTree(vehicleState, VehicleState.class).getAsJsonObject().entrySet());
@@ -1049,7 +1062,48 @@ public class TeslaVehicleHandler extends BaseThingHandler {
         return roundBigDecimal(quantity.toBigDecimal()).floatValue();
     }
 
-    protected BigDecimal roundBigDecimal(BigDecimal value) {
+    /**
+     * The vehicle only reports the active_route fields while a route is active. Missing fields are added as null, so
+     * the navigation channels become UNDEF when the route has ended instead of keeping its last values.
+     */
+    static JsonObject toJsonWithRouteCleared(Gson gson, DriveState driveState) {
+        JsonObject json = gson.toJsonTree(driveState, DriveState.class).getAsJsonObject();
+        for (String field : ACTIVE_ROUTE_FIELDS) {
+            if (!json.has(field)) {
+                json.add(field, JsonNull.INSTANCE);
+            }
+        }
+        return json;
+    }
+
+    /**
+     * The average of the driver and passenger temperature settings, as described for the combinedtemp channel.
+     */
+    static BigDecimal combinedTemperature(ClimateState climateState) {
+        return roundBigDecimal(
+                new BigDecimal((climateState.driverTempSetting + climateState.passengerTempSetting) / 2.0f));
+    }
+
+    /**
+     * Combines the soft and hard pressure warnings of all tires. Returns null if the vehicle reports none of them.
+     */
+    static @Nullable OnOffType tirePressureWarning(VehicleState vehicleState) {
+        Boolean[] warnings = { vehicleState.tpmsSoftWarningFl, vehicleState.tpmsSoftWarningFr,
+                vehicleState.tpmsSoftWarningRl, vehicleState.tpmsSoftWarningRr, vehicleState.tpmsHardWarningFl,
+                vehicleState.tpmsHardWarningFr, vehicleState.tpmsHardWarningRl, vehicleState.tpmsHardWarningRr };
+        boolean reported = false;
+        for (Boolean warning : warnings) {
+            if (warning != null) {
+                if (warning) {
+                    return OnOffType.ON;
+                }
+                reported = true;
+            }
+        }
+        return reported ? OnOffType.OFF : null;
+    }
+
+    protected static BigDecimal roundBigDecimal(BigDecimal value) {
         return value.setScale(1, RoundingMode.HALF_EVEN);
     }
 
@@ -1209,7 +1263,7 @@ public class TeslaVehicleHandler extends BaseThingHandler {
                                     logger.warn(
                                             "Event : Reached the maximum number of errors ({}) for the current interval ({} seconds)",
                                             EVENT_MAXIMUM_ERRORS_IN_INTERVAL, EVENT_ERROR_INTERVAL_SECONDS);
-                                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR);
                                     eventEndpoint.closeConnection();
                                 }
 
@@ -1235,7 +1289,7 @@ public class TeslaVehicleHandler extends BaseThingHandler {
                             }
                         }
                     }
-                } catch (URISyntaxException | NumberFormatException | IOException e) {
+                } catch (URISyntaxException | NumberFormatException e) {
                     logger.debug("Event : An exception occurred while processing events: '{}'", e.getMessage());
                 }
 

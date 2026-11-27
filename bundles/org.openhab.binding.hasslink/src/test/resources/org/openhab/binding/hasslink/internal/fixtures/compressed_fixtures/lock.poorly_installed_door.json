@@ -1,0 +1,17 @@
+{
+  "id": 10,
+  "type": "event",
+  "event": {
+    "a": {
+      "lock.poorly_installed_door": {
+        "s": "unlocked",
+        "a": {
+          "friendly_name": "Poorly Installed Door",
+          "supported_features": 0
+        },
+        "c": "01M3201RGBFRKVV5465ND7QFS2",
+        "lc": 1789994787.3395236
+      }
+    }
+  }
+}

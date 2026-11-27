@@ -38,6 +38,7 @@ public enum RobotCababilities {
     FW_FEATURES("", "info#fw_features", "miio:fw_features", "get_fw_features"),
     ROOM_MAPPING("", "info#room_mapping", "miio:room_mapping", "get_room_mapping"),
     MULTI_MAP_LIST("", "info#multi_maps_list", "miio:multi_maps_list", "get_multi_maps_list"),
+    CURRENT_MAP("", "actions#current_map", "miio:current_map", ""),
     CUSTOMIZE_CLEAN_MODE("", "info#customize_clean_mode", "miio:customize_clean_mode", "get_customize_clean_mode"),
     SEGMENT_CLEAN("", "actions#segment", "miio:segment", ""),
     COLLECT_DUST("auto_dust_collection", "actions#collect_dust", "miio:collect_dust", ""),

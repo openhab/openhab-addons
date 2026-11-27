@@ -13,7 +13,6 @@
 package org.openhab.binding.homeconnectdirect.internal.handler;
 
 import static org.openhab.binding.homeconnectdirect.internal.HomeConnectDirectBindingConstants.*;
-import static org.openhab.binding.homeconnectdirect.internal.service.websocket.model.Resource.RO_ACTIVE_PROGRAM;
 import static org.openhab.binding.homeconnectdirect.internal.service.websocket.model.Resource.RO_ALL_MANDATORY_VALUES;
 import static org.openhab.core.library.unit.ImperialUnits.FAHRENHEIT;
 import static org.openhab.core.library.unit.SIUnits.CELSIUS;
@@ -42,19 +41,15 @@ import org.openhab.binding.homeconnectdirect.internal.provider.HomeConnectDirect
 import org.openhab.binding.homeconnectdirect.internal.provider.HomeConnectDirectDynamicStateDescriptionProvider;
 import org.openhab.binding.homeconnectdirect.internal.service.description.DeviceDescriptionService;
 import org.openhab.binding.homeconnectdirect.internal.service.description.model.ContentType;
-import org.openhab.binding.homeconnectdirect.internal.service.description.model.DeviceDescriptionType;
 import org.openhab.binding.homeconnectdirect.internal.service.description.model.Enumeration;
 import org.openhab.binding.homeconnectdirect.internal.service.description.model.change.DeviceDescriptionChange;
 import org.openhab.binding.homeconnectdirect.internal.service.profile.ApplianceProfileService;
-import org.openhab.binding.homeconnectdirect.internal.service.websocket.model.Action;
 import org.openhab.binding.homeconnectdirect.internal.service.websocket.model.Resource;
-import org.openhab.binding.homeconnectdirect.internal.service.websocket.model.data.ProgramData;
 import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.QuantityType;
-import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
@@ -120,6 +115,11 @@ public class HomeConnectDirectOvenHandler extends BaseHomeConnectDirectHandler {
     }
 
     @Override
+    protected boolean isStopProgramCommandSupported() {
+        return true;
+    }
+
+    @Override
     public void dispose() {
         stopValuesPolling();
         super.dispose();
@@ -146,29 +146,6 @@ public class HomeConnectDirectOvenHandler extends BaseHomeConnectDirectHandler {
                 sendIntegerOptionIfAllowed(temperatureQuantityType, OVEN_SET_POINT_TEMPERATURE_KEY);
             } else {
                 logger.warn("Could not set temperature! uid={}", getThing().getUID());
-            }
-        } else if (CHANNEL_OVEN_PROGRAM_COMMAND.equals(channelUID.getId()) && command instanceof StringType) {
-            if (COMMAND_START.equalsIgnoreCase(command.toFullString())) {
-                var selectedProgram = getKeyValueStore().get(SELECTED_PROGRAM_KEY);
-                if (selectedProgram != null) {
-                    getDeviceDescriptionServiceOptional().ifPresent(deviceDescriptionService -> {
-                        if (deviceDescriptionService.getActiveProgram(true) != null) {
-                            mapProgramKey(selectedProgram).ifPresent(programUid -> send(Action.POST, RO_ACTIVE_PROGRAM,
-                                    List.of(new ProgramData(programUid, null)), null, 1));
-                        } else {
-                            logger.info(
-                                    "The '{}' control is either unavailable or in read-only mode. Cannot start program.",
-                                    ACTIVE_PROGRAM_KEY);
-                        }
-                    });
-
-                }
-            } else if (COMMAND_PAUSE.equalsIgnoreCase(command.toFullString())) {
-                sendBooleanCommandIfAllowed(PAUSE_PROGRAM_KEY);
-            } else if (COMMAND_RESUME.equalsIgnoreCase(command.toFullString())) {
-                sendBooleanCommandIfAllowed(RESUME_PROGRAM_KEY);
-            } else if (COMMAND_STOP.equalsIgnoreCase(command.toFullString())) {
-                sendBooleanCommandIfAllowed(ABORT_PROGRAM_KEY);
             }
         }
 
@@ -201,9 +178,6 @@ public class HomeConnectDirectOvenHandler extends BaseHomeConnectDirectHandler {
                         updateStateIfLinked(CHANNEL_OVEN_SET_POINT_TEMPERATURE, UnDefType.UNDEF);
                     }
                 });
-            } else if (DeviceDescriptionType.COMMAND.equals(deviceDescriptionChange.type())
-                    || DeviceDescriptionType.COMMAND_LIST.equals(deviceDescriptionChange.type())) {
-                updateProgramCommandDescription();
             }
 
             // if temperature isn't available -> set to UNDEF
@@ -264,7 +238,6 @@ public class HomeConnectDirectOvenHandler extends BaseHomeConnectDirectHandler {
     private void initializeAllStates() {
         initializeState(CHANNEL_OVEN_DURATION);
         initializeState(CHANNEL_OVEN_SET_POINT_TEMPERATURE);
-        initializeState(CHANNEL_OVEN_PROGRAM_COMMAND);
         Stream.of(doorChannels, currentTemperatureChannels, meatProbeChannels, lightChannels, meatProbePluggedChannels)
                 .flatMap(Set::stream).map(DynamicChannel::channelName).forEach(this::initializeState);
     }
@@ -276,8 +249,6 @@ public class HomeConnectDirectOvenHandler extends BaseHomeConnectDirectHandler {
         } else if (CHANNEL_OVEN_SET_POINT_TEMPERATURE.equals(channelId)) {
             updateIntegerOptionDescriptionIfLinked(channelId, OVEN_SET_POINT_TEMPERATURE_KEY);
             updateStateIfLinked(channelId, UnDefType.UNDEF);
-        } else if (CHANNEL_OVEN_PROGRAM_COMMAND.equals(channelId)) {
-            updateProgramCommandDescription();
         } else if (isChannelInSet(doorChannels, channelId)) {
             updateStateIfLinked(channelId, OpenClosedType.CLOSED);
         } else if (isChannelInSet(currentTemperatureChannels, channelId)
@@ -423,8 +394,9 @@ public class HomeConnectDirectOvenHandler extends BaseHomeConnectDirectHandler {
         return Objects.requireNonNullElse(unit, CELSIUS);
     }
 
-    private void updateProgramCommandDescription() {
-        getLinkedChannel(CHANNEL_OVEN_PROGRAM_COMMAND).ifPresent(channel -> {
+    @Override
+    protected void updateProgramCommandDescription() {
+        getLinkedChannel(CHANNEL_PROGRAM_COMMAND).ifPresent(channel -> {
             var commandOptions = new ArrayList<CommandOption>();
 
             if (!STATE_NO_PROGRAM.equals(getKeyValueStore().getOrDefault(SELECTED_PROGRAM_KEY, STATE_NO_PROGRAM))

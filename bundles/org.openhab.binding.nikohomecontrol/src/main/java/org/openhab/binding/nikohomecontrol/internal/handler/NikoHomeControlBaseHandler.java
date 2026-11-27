@@ -87,10 +87,14 @@ public abstract class NikoHomeControlBaseHandler extends BaseThingHandler implem
         logger.debug("device initialized {}", deviceId);
 
         Bridge bridge = getBridge();
-        if ((bridge != null) && (bridge.getStatus() == ThingStatus.ONLINE)) {
+        if (bridge == null) {
+            logger.debug("Bridge unavailable for Thing: {}", thing.getUID());
+            return;
+        }
+        if (bridge.getStatus() == ThingStatus.ONLINE) {
             updateStatus(ThingStatus.ONLINE);
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
         }
 
         refresh();
@@ -100,8 +104,7 @@ public abstract class NikoHomeControlBaseHandler extends BaseThingHandler implem
 
     @Override
     public void deviceRemoved() {
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                "@text/offline.configuration-error.deviceRemoved");
+        updateStatus(ThingStatusDetail.GONE, "@text/offline.configuration-error.deviceRemoved");
     }
 
     abstract void startCommunication();
@@ -112,17 +115,19 @@ public abstract class NikoHomeControlBaseHandler extends BaseThingHandler implem
         nhcComm.scheduleRestartCommunication();
         // If still not active, take thing offline and return.
         if (!nhcComm.communicationActive()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/offline.communication-error");
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/offline.communication-error");
             return;
         }
         // Also put the bridge back online
+        if (getBridge() == null) {
+            logger.debug("Bridge unavailable while restarting communication for Thing: {}", thing.getUID());
+            return;
+        }
         NikoHomeControlBridgeHandler nhcBridgeHandler = getBridgeHandler();
         if (nhcBridgeHandler != null) {
             nhcBridgeHandler.bridgeOnline();
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED,
-                    "@text/offline.bridge-unitialized");
+            updateStatus(ThingStatus.UNKNOWN, "@text/offline.bridge-unitialized");
         }
     }
 
@@ -152,7 +157,7 @@ public abstract class NikoHomeControlBaseHandler extends BaseThingHandler implem
                 refresh();
             }
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
         }
     }
 }

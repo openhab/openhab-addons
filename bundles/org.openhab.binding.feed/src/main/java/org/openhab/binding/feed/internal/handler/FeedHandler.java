@@ -95,7 +95,7 @@ public class FeedHandler extends BaseThingHandler {
             url = URI.create(urlString).toURL();
         } catch (MalformedURLException e) {
             logger.warn("Url '{}' is not valid: ", urlString, e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, e.getMessage());
             return false;
         }
 
@@ -271,15 +271,15 @@ public class FeedHandler extends BaseThingHandler {
             return feed;
         } catch (IOException e) {
             logger.warn("Error accessing feed: {}", localUrl, e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
             return null;
         } catch (IllegalArgumentException e) {
             logger.warn("Feed URL is null: {} ", localUrl, e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, e.getMessage());
             return null;
         } catch (FeedException e) {
             logger.warn("Feed content is not valid: {} ", localUrl, e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, e.getMessage());
             return null;
         }
     }

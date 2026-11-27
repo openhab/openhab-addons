@@ -21,7 +21,6 @@ import org.openhab.binding.openwebnet.internal.OpenWebNetBindingConstants;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
-import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.types.Command;
@@ -103,7 +102,7 @@ public class OpenWebNetAuxiliaryHandler extends OpenWebNetThingHandler {
                 send(msg);
             } catch (MalformedFrameException | UnsupportedFrameException | OWNException e) {
                 logger.debug("Exception while processing command: {}", e.getMessage());
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
         }
     }

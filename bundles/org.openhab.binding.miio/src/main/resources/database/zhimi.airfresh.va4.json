@@ -1,7 +1,6 @@
 {
 	"deviceMapping": {
 		"id": [
-			"zhimi.airfresh.va2",
 			"zhimi.airfresh.va4"
 		],
 		"propertyMethod": "get_prop",
@@ -35,6 +34,10 @@
 						"command": "set_ptc_state",
 						"parameterType": "ONOFF"
 					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch"
 				]
 			},
 			{
@@ -54,15 +57,15 @@
 						},
 						{
 							"value": "low",
-							"label": "1"
+							"label": "Level 1"
 						},
 						{
 							"value": "middle",
-							"label": "2"
+							"label": "Level 2"
 						},
 						{
 							"value": "strong",
-							"label": "3"
+							"label": "Level 3"
 						},
 						{
 							"value": "auto",
@@ -77,10 +80,12 @@
 						"parameterType": "STRING"
 					}
 				],
+				"category": "fan",
 				"tags": [
-					"Control"
+					"Control",
+					"Mode"
 				],
-				"readmeComment": "Value mapping `[\"interval\"\u003d\"Interval\",\"silent\"\u003d\"Night\",\"low\"\u003d\"1\",\"middle\"\u003d\"2\",\"strong\"\u003d\"3\",\"auto\"\u003d\"Auto\"]`"
+				"readmeComment": "Value mapping `[\"interval\"\u003d\"Interval\",\"silent\"\u003d\"Night\",\"low\"\u003d\"Level 1\",\"middle\"\u003d\"Level 2\",\"strong\"\u003d\"Level 3\",\"auto\"\u003d\"Auto\"]`"
 			},
 			{
 				"property": "humidity",
@@ -88,8 +93,11 @@
 				"channel": "humidity",
 				"type": "Number:Dimensionless",
 				"unit": "PERCENT",
+				"stateDescription": {
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
 				"refresh": true,
-				"ChannelGroup": "Status",
 				"actions": [],
 				"category": "humidity",
 				"tags": [
@@ -111,9 +119,8 @@
 					"readOnly": true
 				},
 				"refresh": true,
-				"ChannelGroup": "Status",
 				"actions": [],
-				"category": "co2",
+				"category": "carbondioxide",
 				"tags": [
 					"Measurement",
 					"CO2"
@@ -122,116 +129,147 @@
 			{
 				"property": "child_lock",
 				"friendlyName": "Child Lock",
-				"channel": "childLock",
+				"channel": "child_lock",
 				"type": "Switch",
 				"refresh": true,
 				"actions": [
 					{
 						"command": "set_child_lock",
-						"parameterType": "ONOFFBOOL"
+						"parameterType": "ONOFF"
 					}
+				],
+				"category": "lock",
+				"tags": [
+					"Switch",
+					"Enabled"
 				]
 			},
 			{
 				"property": "buzzer",
-				"friendlyName": "Buzzer",
-				"channel": "buzzer",
+				"friendlyName": "Notification Sound",
+				"channel": "alarm",
 				"type": "Switch",
 				"refresh": true,
-				"ChannelGroup": "actions",
 				"actions": [
 					{
 						"command": "set_buzzer",
 						"parameterType": "ONOFF"
 					}
+				],
+				"category": "soundvolume",
+				"tags": [
+					"Switch",
+					"Enabled"
 				]
 			},
 			{
 				"property": "aqi",
-				"friendlyName": "Air Quality Index",
+				"friendlyName": "PM2.5",
 				"channel": "aqi",
-				"type": "Number",
+				"type": "Number:Density",
+				"unit": "μg/m3",
 				"stateDescription": {
-					"pattern": "%.0f",
+					"pattern": "%.0f %unit%",
 					"readOnly": true
 				},
 				"refresh": true,
-				"ChannelGroup": "Status",
 				"actions": [],
+				"category": "smoke",
 				"tags": [
-					"Measurement"
+					"Measurement",
+					"ParticulateMatter"
 				]
 			},
 			{
 				"property": "average_aqi",
-				"friendlyName": "Average Air Quality Index",
-				"channel": "averageaqi",
-				"type": "Number",
+				"friendlyName": "Average PM2.5",
+				"channel": "average_aqi",
+				"type": "Number:Density",
+				"unit": "μg/m3",
 				"stateDescription": {
-					"pattern": "%.0f",
+					"pattern": "%.0f %unit%",
 					"readOnly": true
 				},
 				"refresh": true,
-				"ChannelGroup": "Status",
 				"actions": [],
+				"category": "smoke",
 				"tags": [
-					"Measurement"
+					"Measurement",
+					"ParticulateMatter"
 				]
 			},
 			{
 				"property": "f1_hour_used",
-				"friendlyName": "Filter Hours used",
-				"channel": "filterhours",
+				"friendlyName": "Filter Hours Used",
+				"channel": "filter_hours",
 				"type": "Number:Time",
 				"unit": "hours",
+				"stateDescription": {
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
 				"refresh": true,
-				"ChannelGroup": "Status",
 				"actions": [],
-				"category": "time"
+				"category": "time",
+				"tags": [
+					"Measurement",
+					"Duration"
+				]
 			},
 			{
 				"property": "use_time",
 				"friendlyName": "Run Time",
-				"channel": "usedhours",
+				"channel": "used_hours",
 				"type": "Number:Time",
 				"unit": "hours",
+				"stateDescription": {
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
 				"refresh": true,
 				"transformation": "SecondsToHours",
-				"ChannelGroup": "Status",
 				"actions": [],
-				"category": "time"
+				"category": "time",
+				"tags": [
+					"Measurement",
+					"Duration"
+				]
 			},
 			{
 				"property": "motor1_speed",
 				"friendlyName": "Motor Speed",
-				"channel": "motorspeed",
+				"channel": "motor_speed",
 				"type": "Number",
 				"stateDescription": {
 					"pattern": "%.0f rpm",
 					"readOnly": true
 				},
 				"refresh": true,
-				"ChannelGroup": "Status",
-				"actions": []
+				"actions": [],
+				"category": "fan",
+				"tags": [
+					"Measurement",
+					"Speed"
+				]
 			},
 			{
 				"property": "led_level",
-				"friendlyName": "Led - Brightness",
+				"friendlyName": "Indicator Light Brightness",
 				"channel": "led_level",
 				"type": "Number",
 				"stateDescription": {
 					"options": [
 						{
 							"value": "0",
-							"label": "High"
+							"label": "Bright"
 						},
 						{
 							"value": "1",
-							"label": "Low"
+							"label": "Dim"
 						},
 						{
 							"value": "2",
-							"label": "Idle"
+							"label": "Off"
 						}
 					]
 				},
@@ -242,7 +280,12 @@
 						"parameterType": "NUMBER"
 					}
 				],
-				"readmeComment": "Value mapping `[\"0\"\u003d\"High\",\"1\"\u003d\"Low\",\"2\"\u003d\"Idle\"]`"
+				"category": "screen",
+				"tags": [
+					"Control",
+					"Brightness"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Bright\",\"1\"\u003d\"Dim\",\"2\"\u003d\"Off\"]`"
 			},
 			{
 				"property": "temp_dec",
@@ -255,7 +298,6 @@
 					"readOnly": true
 				},
 				"refresh": true,
-				"ChannelGroup": "Status",
 				"actions": [],
 				"category": "temperature",
 				"tags": [
@@ -263,6 +305,7 @@
 					"Temperature"
 				]
 			}
-		]
+		],
+		"experimental": false
 	}
 }

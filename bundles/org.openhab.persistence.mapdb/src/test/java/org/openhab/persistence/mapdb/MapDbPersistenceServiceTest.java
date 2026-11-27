@@ -12,12 +12,8 @@
  */
 package org.openhab.persistence.mapdb;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -301,6 +297,38 @@ class MapDbPersistenceServiceTest {
     @Test
     void labelIsCorrect() throws Exception {
         assertEquals("MapDB", service.getLabel(null));
+    }
+
+    @Test
+    void persistedItemReturnsNullWhenStoredStateCannotBeRestored() throws Exception {
+        logger.debug("Starting persistedItemReturnsNullWhenStoredStateCannotBeRestored");
+        String itemName = "TestBrokenState";
+        when(numberItem.getName()).thenReturn(itemName);
+
+        // A real State whose class round-trips fine, but whose value string can no longer be
+        // parsed back into that type on restore. StateTypeAdapter must return null rather
+        // than let a broken record surface as a "valid" persisted item.
+        DecimalType brokenState = spy(new DecimalType(42.5));
+        when(brokenState.toFullString()).thenReturn("not-a-number");
+        when(numberItem.getState()).thenReturn(brokenState);
+
+        service.store(numberItem);
+
+        // Use the wait in deactivate to make sure the value is stored. waitForStorage() would call query() which would
+        // fail because the state is broken.
+        service.deactivate();
+        service.activate();
+
+        PersistedItem persistedItem = service.persistedItem(itemName, null);
+        assertNull(persistedItem, "A record with an unparsable state must not be restored as a valid persisted item");
+
+        FilterCriteria criteria = new FilterCriteria();
+        criteria.setItemName(itemName);
+        criteria.setPageSize(1);
+        Iterable<HistoricItem> results = service.query(criteria);
+        assertFalse(results.iterator().hasNext(),
+                "A record with an unparsable state must not be returned from query() either");
+        logger.debug("Ending persistedItemReturnsNullWhenStoredStateCannotBeRestored");
     }
 
     /*

@@ -6,6 +6,14 @@ import { BridgeController } from "../BridgeController";
 const logger = Logger.get("GenericDevice");
 
 /**
+ * Identity kept from a replaced endpoint, so paired ecosystems see the same device
+ */
+export interface EndpointIdentity {
+    number?: number;
+    uniqueId?: string;
+}
+
+/**
  * This is the base class for all matter device types.
  */
 export abstract class BaseDeviceType {
@@ -20,6 +28,8 @@ export abstract class BaseDeviceType {
         protected productName: string,
         protected productLabel: string,
         protected serialNumber: string,
+        protected reachable = true,
+        protected identity: EndpointIdentity = {},
     ) {
         this.nodeLabel = this.#truncateString(nodeLabel);
         this.productLabel = this.#truncateString(productLabel);
@@ -66,12 +76,13 @@ export abstract class BaseDeviceType {
     protected endPointDefaults() {
         return {
             id: this.endpointId,
+            ...(this.identity.number !== undefined ? { number: this.identity.number } : {}),
             bridgedDeviceBasicInformation: {
                 nodeLabel: this.nodeLabel,
                 productName: this.productName,
                 productLabel: this.productLabel,
                 serialNumber: this.serialNumber,
-                reachable: true,
+                reachable: this.reachable,
             },
         };
     }

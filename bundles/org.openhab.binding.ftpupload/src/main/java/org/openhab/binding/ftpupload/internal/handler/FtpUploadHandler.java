@@ -70,15 +70,14 @@ public class FtpUploadHandler extends BaseThingHandler implements FtpServerEvent
         logger.debug("Using configuration: {}", configuration.toString());
 
         if (configuration.userName.isBlank() || configuration.password.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/configuration-user-password-error");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/configuration-user-password-error");
             return;
         }
         ftpServer.addEventListener(this);
         try {
             ftpServer.addAuthenticationCredentials(configuration.userName, configuration.password);
         } catch (IllegalArgumentException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
         }
 
         updateStatus(ThingStatus.ONLINE);

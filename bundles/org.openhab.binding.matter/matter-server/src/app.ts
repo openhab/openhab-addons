@@ -1,4 +1,4 @@
-import { LogFormat, Logger, LogLevel } from "@matter/general";
+import { Environment, LogFormat, Logger, LogLevel } from "@matter/general";
 import { IncomingMessage } from "http";
 import WebSocket, { Server } from "ws";
 import yargs from "yargs";
@@ -15,9 +15,14 @@ const argv: any = yargs(hideBin(process.argv)).argv;
 const logger = Logger.get("matter");
 Logger.level = LogLevel.DEBUG;
 Logger.format = LogFormat.PLAIN;
+// We handle SIGTERM/SIGINT ourselves so controllers can close before the process exits
+Environment.default.vars.set("runtime.signals", false);
 
 process.on("SIGINT", () => void shutdownHandler("SIGINT"));
 process.on("SIGTERM", () => void shutdownHandler("SIGTERM"));
+// openHAB force kills the process 3 seconds after asking it to stop, so exit before that even if closing hangs
+const SHUTDOWN_TIMEOUT_MS = 2500;
+
 process.on("uncaughtException", function (err) {
     logger.error(`Caught exception: ${err} ${err.stack}`);
 });
@@ -37,8 +42,13 @@ setInterval(() => {
 
 const shutdownHandler = async (signal: string) => {
     logger.info(`Received ${signal}. Closing WebSocket connections...`);
+    setTimeout(() => {
+        logger.warn("Timed out closing connections and controllers, exiting");
+        process.exit(0);
+    }, SHUTDOWN_TIMEOUT_MS).unref();
 
     const closePromises: Promise<void>[] = [];
+    const sessions = [...wss.clients] as WebSocketSession[];
 
     wss.clients.forEach((client: WebSocket) => {
         if (client.readyState === WebSocket.OPEN) {
@@ -64,6 +74,9 @@ const shutdownHandler = async (signal: string) => {
         })
         .then(() => {
             logger.info("WebSocket server closed.");
+            return Promise.allSettled(sessions.flatMap(session => session.closing ?? []));
+        })
+        .then(() => {
             process.exit(0);
         })
         .catch(err => {
@@ -74,6 +87,7 @@ const shutdownHandler = async (signal: string) => {
 
 export interface WebSocketSession extends WebSocket {
     controller?: Controller;
+    closing?: Promise<void>;
     sendResponse(type: string, id: string, result?: any, error?: string, errorId?: string): void;
     sendEvent(type: string, data?: any): void;
 }
@@ -123,7 +137,7 @@ wss.on("connection", (ws: WebSocketSession, req: IncomingMessage) => {
     ws.on("close", () => {
         logger.info("WebSocket closed");
         if (ws.controller) {
-            void ws.controller.close().catch((error: Error) => {
+            ws.closing = ws.controller.close().catch((error: Error) => {
                 logger.error(`Error closing controller: ${error}`);
             });
         }

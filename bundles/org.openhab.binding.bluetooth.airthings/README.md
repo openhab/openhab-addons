@@ -26,6 +26,8 @@ Supported configuration parameters for the things:
 | address                         | String  |         | Yes      | Bluetooth address of the device (in format "XX:XX:XX:XX:XX:XX") |
 | refreshInterval                 | Integer | 300     | No       | How often a refresh shall occur in seconds                      |
 
+Note: If connecting to a device or reading from it fails, the next attempt is made after 60 seconds, or after `refreshInterval` if that is shorter. This repeats until a read succeeds.
+
 ## Channels
 
 Following channels are supported for `Airthings Wave Mini` thing:

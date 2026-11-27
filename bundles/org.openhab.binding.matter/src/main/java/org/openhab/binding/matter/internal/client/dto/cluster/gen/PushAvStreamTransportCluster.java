@@ -46,10 +46,10 @@ public class PushAvStreamTransportCluster extends BaseCluster {
     /**
      * This attribute shall be a list of TransportConfigurationStruct which represents all the allocated connections
      * added via AllocatePushTransport. When this attribute is read over a non Large Message (See Large Message Quality
-     * in the Data Model section of [[MatterCore]](#ref_MatterCore)) capable transport, the TransportOptions field shall
-     * NOT be included. To get the full details of the connections use the FindTransport command. The maximum size of
-     * this list is run-time dependent upon the resource constraints of the system as described in Resource Management
-     * and Stream Priorities and the currently used bandwidth of the total available specified by MaxNetworkBandwidth.
+     * in the Data Model section of MatterCore) capable transport, the TransportOptions field shall NOT be included. To
+     * get the full details of the connections use the FindTransport command. The maximum size of this list is run-time
+     * dependent upon the resource constraints of the system as described in Resource Management and Stream Priorities
+     * and the currently used bandwidth of the total available specified by MaxNetworkBandwidth.
      */
     public List<TransportConfigurationStruct> currentConnections; // 1 list R S V
 
@@ -223,18 +223,6 @@ public class PushAvStreamTransportCluster extends BaseCluster {
          */
         public String trackName; // string
         /**
-         * This field, if present, shall indicate the CENC key to be used to encrypt the CMAF data. When absent, the
-         * CMAF data shall be sent without CENC encryption added. See CMAF Background for further details on CMAF CENC
-         * encryption.
-         */
-        public OctetString cencKey; // octstr
-        /**
-         * This field, if present, shall indicate the opaque CENC Key ID (KID) that represents the key in the
-         * Controllers ecosystem. This fields maps to the KID value as specified in ISO 23001-7:2023 or later. See CMAF
-         * Background for further details on CMAF CENC encryption.
-         */
-        public OctetString cencKeyId; // octstr
-        /**
          * This field, if present and true, indicates that AVMetadataStruct based Metadata tracks and boxes may be
          * included in the CMAF segments. If this field is not present or is false, metadata tracks and boxes shall NOT
          * be included.
@@ -250,15 +238,12 @@ public class PushAvStreamTransportCluster extends BaseCluster {
         public Boolean metadataEnabled; // bool
 
         public CMAFContainerOptionsStruct(CMAFInterfaceEnum cmafInterface, Integer segmentDuration,
-                Integer chunkDuration, Integer sessionGroup, String trackName, OctetString cencKey,
-                OctetString cencKeyId, Boolean metadataEnabled) {
+                Integer chunkDuration, Integer sessionGroup, String trackName, Boolean metadataEnabled) {
             this.cmafInterface = cmafInterface;
             this.segmentDuration = segmentDuration;
             this.chunkDuration = chunkDuration;
             this.sessionGroup = sessionGroup;
             this.trackName = trackName;
-            this.cencKey = cencKey;
-            this.cencKeyId = cencKeyId;
             this.metadataEnabled = metadataEnabled;
         }
     }
@@ -310,7 +295,7 @@ public class PushAvStreamTransportCluster extends BaseCluster {
 
     /**
      * This struct encodes the conditions and options that configures the trigger for the push transport. The transport
-     * shall only start transmitting AV Streams when it's associated trigger is activated.
+     * shall only start transmitting AV Streams when its associated trigger is activated.
      */
     public static class TransportTriggerOptionsStruct {
         /**
@@ -319,8 +304,8 @@ public class PushAvStreamTransportCluster extends BaseCluster {
         public TransportTriggerTypeEnum triggerType; // TransportTriggerTypeEnum
         /**
          * This field shall be a list of TransportZoneOptionsStruct containing the Motion Zones to trigger on. If this
-         * list is null, empty, or the Zone Management Cluster is not supported on this endpoint, then motion anywhere
-         * shall cause the trigger to activate. The maximum size of this list is MaxZones.
+         * list is null, empty, or if the Zone Management Cluster is not supported on this endpoint, then motion
+         * anywhere shall cause the trigger to activate. The maximum size of this list is MaxZones
          */
         public List<TransportZoneOptionsStruct> motionZones; // list
         /**
@@ -369,7 +354,7 @@ public class PushAvStreamTransportCluster extends BaseCluster {
      * This struct is used to encode a set of values for controlling the lifecycle of a motion triggered transport.
      * When a Motion Trigger is activated, either by receiving a ManuallyTriggerTransport command, or when motion is
      * initially detected which matches a configured motion trigger, the Node shall start the push transport configured
-     * with this trigger see (TransportOptionsStruct).
+     * with this trigger (see TransportOptionsStruct).
      * This places the Node in a Motion Detected state, at which point the Node shall internally track two values.
      * ### TimeSinceActivation
      * : The time in seconds since the trigger was activated.
@@ -401,7 +386,7 @@ public class PushAvStreamTransportCluster extends BaseCluster {
          * This field shall indicate the maximum duration (in seconds) after initial motion detection that additional
          * motion will be detected.
          */
-        public Integer maxDuration; // elapsed-s
+        public Long maxDuration; // elapsed-s
         /**
          * This field shall indicate the duration (in seconds) after a transport finishes transmitting that the Node
          * shall NOT activate the trigger again.
@@ -409,7 +394,7 @@ public class PushAvStreamTransportCluster extends BaseCluster {
         public Integer blindDuration; // uint16
 
         public TransportMotionTriggerTimeControlStruct(Integer initialDuration, Integer augmentationDuration,
-                Integer maxDuration, Integer blindDuration) {
+                Long maxDuration, Integer blindDuration) {
             this.initialDuration = initialDuration;
             this.augmentationDuration = augmentationDuration;
             this.maxDuration = maxDuration;
@@ -446,11 +431,11 @@ public class PushAvStreamTransportCluster extends BaseCluster {
         /**
          * This field shall be a TLSEndpointID representing a provisioned TLS Endpoint, which shall have valid TLSCAID
          * and TLSCCDID values (see Chapter 14, Certificate Authority ID (CAID) Mapping and the ProvisionEndpoint
-         * command in the TLS Client Management Cluster sections in [[MatterCore]](#ref_MatterCore)).
+         * command in the TLS Client Management Cluster sections in MatterCore).
          */
         public Integer tlsEndpointId; // TlsClientManagement.TLSEndpointID
         /**
-         * This field shall be a valid string in RFC 3986 format representing the upload location. The field shall use
+         * This field shall be a valid string in RFC3986 format representing the upload location. The field shall use
          * the https scheme which will be validated by the underlying TLSEndpointID.
          * When the IngestMethod is CMAFIngest, this shall be the CMAF publishing_point_URL to transport the AV Stream
          * to. The URL length does not need to include space for the full CMAF POST_URL fields which specify the
@@ -476,7 +461,7 @@ public class PushAvStreamTransportCluster extends BaseCluster {
          * This field shall be an unsigned 32 bit integer representing the TTL in seconds of a transport allocation. If
          * not present, the transport shall never expire.
          */
-        public Integer expiryTime; // epoch-s
+        public Long expiryTime; // epoch-s
         /**
          * This field shall be a list of VideoStreamStruct which indicates the requested video streams and the stream
          * names for this transport.
@@ -490,7 +475,7 @@ public class PushAvStreamTransportCluster extends BaseCluster {
 
         public TransportOptionsStruct(StreamUsageEnum streamUsage, Integer videoStreamId, Integer audioStreamId,
                 Integer tlsEndpointId, String url, TransportTriggerOptionsStruct triggerOptions,
-                IngestMethodsEnum ingestMethod, ContainerOptionsStruct containerOptions, Integer expiryTime,
+                IngestMethodsEnum ingestMethod, ContainerOptionsStruct containerOptions, Long expiryTime,
                 List<VideoStreamStruct> videoStreams, List<AudioStreamStruct> audioStreams) {
             this.streamUsage = streamUsage;
             this.videoStreamId = videoStreamId;

@@ -94,9 +94,9 @@ public class Ipx800v3Handler extends BaseThingHandler implements Ipx800EventList
             jobs.add(scheduler.scheduleWithFixedDelay(this::readStatusFile, 1500, config.pullInterval,
                     TimeUnit.MILLISECONDS));
         } catch (UnknownHostException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
         } catch (IOException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 
@@ -205,7 +205,7 @@ public class Ipx800v3Handler extends BaseThingHandler implements Ipx800EventList
 
     @Override
     public void errorOccurred(Exception e) {
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+        updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
     }
 
     private boolean ignoreCondition(double newValue, PortData portData, Configuration configuration,

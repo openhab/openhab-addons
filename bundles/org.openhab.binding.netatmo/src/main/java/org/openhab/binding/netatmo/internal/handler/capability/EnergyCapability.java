@@ -64,8 +64,30 @@ public class EnergyCapability extends RestCapability<EnergyApi> {
     }
 
     @Override
-    protected void updateHomeData(HomeData homeData) {
-        if (homeData instanceof HomeData.Energy energyData) {
+    protected void internalSetNewData(Object newData) {
+        super.internalSetNewData(newData);
+        if (newData instanceof HomeStatus energyStatus) {
+            NAObjectMap<Room> rooms = energyStatus.getRooms();
+            NAObjectMap<HomeStatusModule> modules = energyStatus.getModules();
+            handler.getActiveChildren(FeatureArea.ENERGY).forEach(childHandler -> {
+                String childId = childHandler.getId();
+                logger.trace("childId: {}", childId);
+                rooms.getOpt(childId).ifPresentOrElse(roomData -> {
+                    logger.trace("roomData: {}", roomData);
+                    childHandler.setNewData(roomData);
+                }, () -> {
+                    modules.getOpt(childId).ifPresent(moduleData -> {
+                        logger.trace("moduleData: {}", moduleData);
+                        childHandler.setNewData(moduleData);
+                        modules.values().stream().filter(module -> childId.equals(module.getBridge()))
+                                .forEach(bridgedModule -> {
+                                    logger.trace("bridgedModule: {}", bridgedModule);
+                                    childHandler.setNewData(bridgedModule);
+                                });
+                    });
+                });
+            });
+        } else if (newData instanceof HomeData homeData && homeData instanceof HomeData.Energy energyData) {
             NAObjectMap<HomeDataRoom> rooms = energyData.getRooms();
             NAObjectMap<HomeDataModule> modules = energyData.getModules();
             handler.getActiveChildren(FeatureArea.ENERGY).forEach(childHandler -> {
@@ -82,30 +104,6 @@ public class EnergyCapability extends RestCapability<EnergyApi> {
                     energyData.getThermSchedules().stream().map(p -> new StateOption(p.getId(), p.getName())).toList());
             setPointDefaultDuration = energyData.getSetpointDefaultDuration();
         }
-    }
-
-    @Override
-    protected void updateHomeStatus(HomeStatus energyStatus) {
-        NAObjectMap<Room> rooms = energyStatus.getRooms();
-        NAObjectMap<HomeStatusModule> modules = energyStatus.getModules();
-        handler.getActiveChildren(FeatureArea.ENERGY).forEach(childHandler -> {
-            String childId = childHandler.getId();
-            logger.trace("childId: {}", childId);
-            rooms.getOpt(childId).ifPresentOrElse(roomData -> {
-                logger.trace("roomData: {}", roomData);
-                childHandler.setNewData(roomData);
-            }, () -> {
-                modules.getOpt(childId).ifPresent(moduleData -> {
-                    logger.trace("moduleData: {}", moduleData);
-                    childHandler.setNewData(moduleData);
-                    modules.values().stream().filter(module -> childId.equals(module.getBridge()))
-                            .forEach(bridgedModule -> {
-                                logger.trace("bridgedModule: {}", bridgedModule);
-                                childHandler.setNewData(bridgedModule);
-                            });
-                });
-            });
-        });
     }
 
     public void setThermPoint(String roomId, SetpointMode mode, long endtime, double temp) {

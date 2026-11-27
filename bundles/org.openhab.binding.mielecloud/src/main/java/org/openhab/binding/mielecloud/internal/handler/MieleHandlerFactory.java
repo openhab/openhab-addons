@@ -51,7 +51,8 @@ public class MieleHandlerFactory extends BaseThingHandlerFactory {
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_BRIDGE, THING_TYPE_WASHING_MACHINE,
             THING_TYPE_WASHER_DRYER, THING_TYPE_COFFEE_SYSTEM, THING_TYPE_FRIDGE_FREEZER, THING_TYPE_FRIDGE,
             THING_TYPE_FREEZER, THING_TYPE_OVEN, THING_TYPE_WINE_STORAGE, THING_TYPE_HOB, THING_TYPE_DRYER,
-            THING_TYPE_DISHWASHER, THING_TYPE_HOOD, THING_TYPE_DISH_WARMER, THING_TYPE_ROBOTIC_VACUUM_CLEANER);
+            THING_TYPE_DISHWASHER, THING_TYPE_HOOD, THING_TYPE_DISH_WARMER, THING_TYPE_ROBOTIC_VACUUM_CLEANER,
+            THING_TYPE_HOB_WITH_VAPOR_EXTRACTION);
 
     private final HttpClientFactory httpClientFactory;
     private final OAuthTokenRefresher tokenRefresher;
@@ -92,6 +93,8 @@ public class MieleHandlerFactory extends BaseThingHandlerFactory {
             return new OvenDeviceThingHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_HOB)) {
             return new HobDeviceThingHandler(thing);
+        } else if (thingTypeUID.equals(THING_TYPE_HOB_WITH_VAPOR_EXTRACTION)) {
+            return new HobWithVaporExtractionDeviceThingHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_DISHWASHER)) {
             return new DishwasherDeviceThingHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_DRYER)) {

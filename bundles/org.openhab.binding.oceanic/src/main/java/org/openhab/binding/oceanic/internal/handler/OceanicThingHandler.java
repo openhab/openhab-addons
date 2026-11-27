@@ -91,7 +91,7 @@ public abstract class OceanicThingHandler extends BaseThingHandler {
             }
         } catch (Exception e) {
             logger.error("An exception occurred while polling the Oceanic Water Softener: '{}'", e.getMessage(), e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             scheduler.schedule(resetRunnable, 0, TimeUnit.SECONDS);
         }
     };

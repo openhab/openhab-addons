@@ -12,14 +12,23 @@
  */
 package org.openhab.io.yamlcomposer.internal.expression;
 
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.util.AbstractMap;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.io.yamlcomposer.internal.LogSession;
+import org.openhab.io.yamlcomposer.internal.core.EvaluationContext;
 import org.openhab.io.yamlcomposer.internal.expression.filters.DigFilter;
+import org.openhab.io.yamlcomposer.internal.expression.filters.EnumerateFilter;
 import org.openhab.io.yamlcomposer.internal.expression.filters.LabelFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,6 +40,7 @@ import com.hubspot.jinjava.features.FeatureStrategies;
 import com.hubspot.jinjava.interpret.Context;
 import com.hubspot.jinjava.interpret.JinjavaInterpreter;
 import com.hubspot.jinjava.interpret.TemplateError;
+import com.hubspot.jinjava.lib.fn.ELFunctionDefinition;
 import com.hubspot.jinjava.util.ObjectTruthValue;
 
 /**
@@ -60,23 +70,40 @@ public class ExpressionEvaluator {
         Context context = JINJAVA.getGlobalContext();
         context.registerFilter(new LabelFilter());
         context.registerFilter(new DigFilter());
+        context.registerFilter(new EnumerateFilter());
+
+        context.registerFunction(
+                new ELFunctionDefinition("", "enumerate", EnumerateFilter.class, "staticEnumerate", Object[].class));
     }
 
     /**
      * Evaluate a Jinjava expression and return the raw object result (no string coercion).
      *
      * @param expression the expression content without delimiters (e.g., "user.profile")
-     * @param variables the variable context
+     * @param context the evaluation context containing live scope, callbacks, and resolvers
+     * @param logSession the logging session
+     * @param sourceLocation description of the source location for logging
      * @return the evaluated object in its native type
      */
-    public static @Nullable Object renderObject(String expression, Map<String, @Nullable Object> variables,
+    public static @Nullable Object renderObject( //
+            String expression, //
+            EvaluationContext context, //
             LogSession logSession, String sourceLocation) {
-        @SuppressWarnings("null")
-        Context context = new Context(JINJAVA.getGlobalContext(), variables);
-        context.setDynamicVariableResolver(varName -> dynamicVariableResolver(varName, variables));
-        JinjavaInterpreter interpreter = new JinjavaInterpreter(JINJAVA, context, CONFIG);
 
-        Object result = interpreter.resolveELExpression(expression, 0);
+        // Transform Ruby-style ranges ([1..5] / [1...5]) into Jinjava-compatible range() calls
+        String transformedExpression = RangeExpressionTransformer.transform(expression);
+
+        Map<String, @Nullable Object> variables = context.scope().flatten();
+
+        @SuppressWarnings("null")
+        Context jinjaContext = new Context(JINJAVA.getGlobalContext(), variables);
+        jinjaContext.setDynamicVariableResolver(varName -> dynamicVariableResolver(varName, context));
+        JinjavaInterpreter interpreter = new JinjavaInterpreter(JINJAVA, jinjaContext, CONFIG);
+
+        Object result;
+        try (var scope = JinjavaInterpreter.closeablePushCurrent(interpreter).get()) {
+            result = interpreter.resolveELExpression(transformedExpression, 0);
+        }
 
         @SuppressWarnings("null")
         List<TemplateError> errors = interpreter.getErrorsCopy();
@@ -124,22 +151,66 @@ public class ExpressionEvaluator {
     }
 
     /**
-     * Dynamic variable resolver for Jinjava to provide special variables like "VARS" and "ENV".
+     * Dynamic variable resolver for Jinjava to provide special variables like "VARS" and "ENV"
+     * as well as dynamic source lookups via the context's sourceResolver.
      *
      * @param varName the name of the variable being resolved
-     * @param context the current variable context
-     * @return the value of the special variable, or null if it's not a special variable
+     * @param context the evaluation context containing scope, callbacks, and resolvers
+     * @return the value of the special variable or dynamic source, or null if unresolvable
      */
-    private static @Nullable Object dynamicVariableResolver(@Nullable String varName,
-            Map<String, @Nullable Object> context) {
+    private static @Nullable Object dynamicVariableResolver(@Nullable String varName, EvaluationContext context) {
         if ("VARS".equals(varName)) {
-            return context;
+            return context.scope().flatten();
         }
 
         if ("ENV".equals(varName)) {
-            return System.getenv();
+            return new TrackingEnvMap(context.envVarCallback());
         }
+
+        if (varName != null) {
+            return context.sourceResolver().apply(varName);
+        }
+
         return null;
+    }
+
+    /**
+     * A custom Map wrapper around System.getenv() that intercepts key lookups
+     * to record which environment variables are accessed by expressions.
+     */
+    private static class TrackingEnvMap extends AbstractMap<String, @Nullable String> {
+
+        private final Consumer<String> callback;
+
+        private static final Set<String> PUBLIC_MAP_METHODS = Arrays.stream(java.util.Map.class.getMethods())
+                .filter(method -> !Modifier.isStatic(method.getModifiers())).map(Method::getName)
+                .collect(Collectors.toUnmodifiableSet());
+
+        TrackingEnvMap(Consumer<String> callback) {
+            this.callback = callback;
+        }
+
+        @Override
+        public @Nullable String get(@Nullable Object key) {
+            if (key instanceof String varName) {
+                // Guard against public Map method names so expression probing
+                // never tracks them as environment variables
+                if (PUBLIC_MAP_METHODS.contains(varName)) {
+                    return null;
+                }
+
+                callback.accept(varName);
+                return System.getenv(varName);
+            }
+            return null;
+        }
+
+        @Override
+        public Set<Entry<String, @Nullable String>> entrySet() {
+            @SuppressWarnings({ "unchecked", "rawtypes" })
+            Set<Entry<String, @Nullable String>> entrySet = (Set) System.getenv().entrySet();
+            return entrySet;
+        }
     }
 
     /**

@@ -59,7 +59,7 @@ public class FoscamHandler extends ChannelDuplexHandler {
         try {
             String content = msg.toString();
             ipCameraHandler.logger.trace("HTTP Result back from camera is \t:{}:", content);
-            ////////////// Motion Alarm //////////////
+            // Motion Alarm
             if (content.contains("<motionDetectAlarm>")) {
                 if (content.contains("<motionDetectAlarm>0</motionDetectAlarm>")) {
                     ipCameraHandler.setChannelState(CHANNEL_ENABLE_MOTION_ALARM, OnOffType.OFF);
@@ -72,7 +72,7 @@ public class FoscamHandler extends ChannelDuplexHandler {
                 }
             }
 
-            ////////////// Sound Alarm //////////////
+            // Sound Alarm
             if (content.contains("<soundAlarm>0</soundAlarm>")) {
                 ipCameraHandler.setChannelState(CHANNEL_ENABLE_AUDIO_ALARM, OnOffType.OFF);
                 ipCameraHandler.setChannelState(CHANNEL_AUDIO_ALARM, OnOffType.OFF);
@@ -86,7 +86,7 @@ public class FoscamHandler extends ChannelDuplexHandler {
                 ipCameraHandler.audioDetected();
             }
 
-            ////////////// Sound Threshold //////////////
+            // Sound Threshold
             if (content.contains("<sensitivity>0</sensitivity>")) {
                 ipCameraHandler.setChannelState(CHANNEL_THRESHOLD_AUDIO_ALARM, PercentType.ZERO);
             }
@@ -97,7 +97,7 @@ public class FoscamHandler extends ChannelDuplexHandler {
                 ipCameraHandler.setChannelState(CHANNEL_THRESHOLD_AUDIO_ALARM, PercentType.HUNDRED);
             }
 
-            //////////////// Infrared LED /////////////////////
+            // Infrared LED
             if (content.contains("<infraLedState>0</infraLedState>")) {
                 ipCameraHandler.setChannelState(CHANNEL_ENABLE_LED, OnOffType.OFF);
             }

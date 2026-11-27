@@ -30,14 +30,17 @@ import org.junit.jupiter.api.Test;
 import org.openhab.binding.hue.internal.api.dto.clip2.ActionEntry;
 import org.openhab.binding.hue.internal.api.dto.clip2.Alerts;
 import org.openhab.binding.hue.internal.api.dto.clip2.Button;
+import org.openhab.binding.hue.internal.api.dto.clip2.ColorXy;
 import org.openhab.binding.hue.internal.api.dto.clip2.ContactReport;
 import org.openhab.binding.hue.internal.api.dto.clip2.Dimming;
 import org.openhab.binding.hue.internal.api.dto.clip2.Effects;
 import org.openhab.binding.hue.internal.api.dto.clip2.Event;
+import org.openhab.binding.hue.internal.api.dto.clip2.Gradient;
 import org.openhab.binding.hue.internal.api.dto.clip2.LightLevel;
 import org.openhab.binding.hue.internal.api.dto.clip2.MetaData;
 import org.openhab.binding.hue.internal.api.dto.clip2.MirekSchema;
 import org.openhab.binding.hue.internal.api.dto.clip2.Motion;
+import org.openhab.binding.hue.internal.api.dto.clip2.PairXy;
 import org.openhab.binding.hue.internal.api.dto.clip2.Power;
 import org.openhab.binding.hue.internal.api.dto.clip2.ProductData;
 import org.openhab.binding.hue.internal.api.dto.clip2.RelativeRotary;
@@ -64,6 +67,7 @@ import org.openhab.binding.hue.internal.api.dto.clip2.enums.UpdateStatusV2;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.ZigbeeStatus;
 import org.openhab.binding.hue.internal.api.dto.clip2.helper.Setters;
 import org.openhab.binding.hue.internal.api.serialization.InstantDeserializer;
+import org.openhab.binding.hue.internal.exceptions.CriticalFieldMissingException;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
@@ -75,6 +79,7 @@ import org.openhab.core.library.types.StringType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 import org.openhab.core.util.ColorUtil;
+import org.openhab.core.util.ColorUtil.Gamut;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -93,7 +98,6 @@ class Clip2DtoTest {
 
     private static final Gson GSON = new GsonBuilder().registerTypeAdapter(Instant.class, new InstantDeserializer())
             .create();
-    private static final Double MINIMUM_DIMMING_LEVEL = Double.valueOf(12.34f);
 
     /**
      * Load the test JSON payload string from a file
@@ -204,7 +208,7 @@ class Clip2DtoTest {
     }
 
     @Test
-    void testGroupedLight() {
+    void testGroupedLight() throws CriticalFieldMissingException {
         String json = load(ResourceType.GROUPED_LIGHT.name().toLowerCase());
         Resources resources = GSON.fromJson(json, Resources.class);
         assertNotNull(resources);
@@ -243,13 +247,13 @@ class Clip2DtoTest {
     }
 
     @Test
-    void testLight() {
+    void testLight() throws CriticalFieldMissingException {
         String json = load(ResourceType.LIGHT.name().toLowerCase());
         Resources resources = GSON.fromJson(json, Resources.class);
         assertNotNull(resources);
         List<Resource> list = resources.getResources();
         assertNotNull(list);
-        assertEquals(17, list.size());
+        assertEquals(18, list.size());
         int itemFoundCount = 0;
         for (Resource item : list) {
             assertEquals(ResourceType.LIGHT, item.getType());
@@ -269,10 +273,20 @@ class Clip2DtoTest {
                 state = item.getBrightnessState();
                 percentState = assertInstanceOf(PercentType.class, state);
                 assertEquals(93.0, percentState.doubleValue(), 0.1);
-                assertEquals(UnDefType.UNDEF, item.getColorTemperaturePercentState());
+                ColorXy colorXY = item.getColorXy();
+                assertNotNull(colorXY);
+                PairXy pairXy = colorXY.getXY();
+                assertNotNull(pairXy);
+                double[] xy = pairXy.getXY();
+                assertNotNull(xy);
+                assertEquals(2, xy.length);
+                assertEquals(0.6367, xy[0]);
+                assertEquals(0.3503, xy[1]);
+                Gamut gamut = colorXY.getGamut();
+                assertNotNull(gamut);
                 state = item.getColorState();
                 HSBType hsbState = assertInstanceOf(HSBType.class, state);
-                double[] xy = ColorUtil.hsbToXY(hsbState);
+                xy = ColorUtil.hsbToXY(hsbState, gamut);
                 assertEquals(0.6367, xy[0], 0.01); // note: rounding errors !!
                 assertEquals(0.3503, xy[1], 0.01); // note: rounding errors !!
                 assertEquals(item.getBrightnessState(), hsbState.getBrightness());
@@ -345,8 +359,54 @@ class Clip2DtoTest {
                     assertEquals(ActionType.BREATHE, actionValue);
                 }
             }
+            if (name.contains("Signe gulvlampe")) {
+                itemFoundCount++;
+                assertEquals(ResourceType.LIGHT, item.getType());
+
+                // test gradient points (get)
+                Gradient gradient = item.getGradient();
+                assertNotNull(gradient);
+                List<PairXy> points = gradient.getXyPoints();
+                assertNotNull(points);
+                assertEquals(5, points.size());
+                PairXy point1 = points.get(0);
+                assertNotNull(point1);
+                double[] xy1 = point1.getXY();
+                assertNotNull(xy1);
+                assertEquals(2, xy1.length);
+                assertEquals(0.5791, xy1[0]);
+                assertEquals(0.3876, xy1[1]);
+                PairXy point5 = points.get(4);
+                assertNotNull(point5);
+                double[] xy5 = point5.getXY();
+                assertNotNull(xy5);
+                assertEquals(2, xy5.length);
+                assertEquals(0.5704, xy5[0]);
+                assertEquals(0.2691, xy5[1]);
+
+                // test gradient points (set + get)
+                gradient.setPointXy(2, new PairXy().setXY(new double[] { 0.5, 0.3 }));
+                points = gradient.getXyPoints();
+                assertNotNull(points);
+                assertEquals(5, points.size());
+                PairXy point2 = points.get(2);
+                assertNotNull(point2);
+                double[] xy2 = point2.getXY();
+                assertNotNull(xy2);
+                assertEquals(2, xy2.length);
+                assertEquals(0.5, xy2[0]);
+                assertEquals(0.3, xy2[1]);
+
+                List<PairXy> points2 = gradient.getXyPoints();
+                assertThrows(IndexOutOfBoundsException.class, () -> points2.get(-1));
+                assertThrows(IndexOutOfBoundsException.class, () -> points2.get(5));
+
+                PairXy pairXy = new PairXy().setXY(new double[] { 0.5, 0.3 });
+                assertThrows(IndexOutOfBoundsException.class, () -> gradient.setPointXy(-1, pairXy));
+                assertThrows(IndexOutOfBoundsException.class, () -> gradient.setPointXy(5, pairXy));
+            }
         }
-        assertEquals(2, itemFoundCount);
+        assertEquals(3, itemFoundCount);
     }
 
     @Test
@@ -410,21 +470,15 @@ class Clip2DtoTest {
     }
 
     @Test
-    void testResourceMerging() {
+    void testResourceMerging() throws CriticalFieldMissingException {
         // create resource one
         Resource one = new Resource(ResourceType.LIGHT).setId("AARDVARK");
         assertNotNull(one);
-        // preset the minimum dimming level
-        try {
-            Dimming dimming = new Dimming().setMinimumDimmingLevel(MINIMUM_DIMMING_LEVEL);
-            Field dimming2 = one.getClass().getDeclaredField("dimming");
-            dimming2.setAccessible(true);
-            dimming2.set(one, dimming);
-        } catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
-            fail();
-        }
         Setters.setColorXy(one, HSBType.RED, null);
-        Setters.setDimming(one, PercentType.HUNDRED, null);
+        one.setBrightness(PercentType.HUNDRED);
+        ColorXy xy = one.getColorXy();
+        assertNotNull(xy);
+        xy.setGamut(ColorUtil.DEFAULT_GAMUT);
         HSBType colorState = assertInstanceOf(HSBType.class, one.getColorState());
         assertEquals(PercentType.HUNDRED, one.getBrightnessState());
         assertTrue(HSBType.RED.closeTo(colorState, 0.01));
@@ -432,15 +486,15 @@ class Clip2DtoTest {
         // switching off should change HSB and Brightness
         one.setOnOff(OnOffType.OFF);
         colorState = assertInstanceOf(HSBType.class, one.getColorState());
-        assertEquals(0, colorState.getBrightness().doubleValue(), 0.01);
+        assertEquals(PercentType.ZERO, colorState.getBrightness());
         assertEquals(PercentType.ZERO, one.getBrightnessState());
         one.setOnOff(OnOffType.ON);
 
         // setting brightness to zero should change it to the minimum dimming level
-        Setters.setDimming(one, PercentType.ZERO, null);
+        one.setBrightness(PercentType.ZERO);
         colorState = assertInstanceOf(HSBType.class, one.getColorState());
-        assertEquals(MINIMUM_DIMMING_LEVEL, colorState.getBrightness().doubleValue(), 0.01);
-        assertEquals(MINIMUM_DIMMING_LEVEL, ((PercentType) one.getBrightnessState()).doubleValue(), 0.01);
+        assertEquals(0.0, colorState.getBrightness().doubleValue(), 0.01);
+        assertEquals(0.0, ((PercentType) one.getBrightnessState()).doubleValue(), 0.01);
         one.setOnOff(OnOffType.ON);
 
         // null its Dimming field
@@ -452,17 +506,16 @@ class Clip2DtoTest {
             fail();
         }
 
-        // confirm that brightness is no longer valid, and therefore that color has also changed
+        // confirm that brightness is no longer valid, and therefore that color is also no longer valid
         assertEquals(UnDefType.NULL, one.getBrightnessState());
-        colorState = assertInstanceOf(HSBType.class, one.getColorState());
-        assertTrue((new HSBType(DecimalType.ZERO, PercentType.HUNDRED, new PercentType(50))).closeTo(colorState, 0.01));
+        assertThrows(CriticalFieldMissingException.class, () -> one.getColorState());
 
         PercentType testBrightness = new PercentType(42);
 
         // create resource two
         Resource two = new Resource(ResourceType.DEVICE).setId("ALLIGATOR");
         assertNotNull(two);
-        Setters.setDimming(two, testBrightness, null);
+        two.setBrightness(testBrightness);
         assertEquals(UnDefType.NULL, two.getColorState());
         assertEquals(testBrightness, two.getBrightnessState());
 
@@ -475,6 +528,47 @@ class Clip2DtoTest {
         assertEquals(testBrightness, one.getBrightnessState());
         colorState = assertInstanceOf(HSBType.class, one.getColorState());
         assertTrue((new HSBType(DecimalType.ZERO, PercentType.HUNDRED, testBrightness)).closeTo(colorState, 0.01));
+    }
+
+    @Test
+    void testOnOff() throws CriticalFieldMissingException {
+        Resource light = new Resource(ResourceType.LIGHT).setId("AARDVARK");
+        assertNotNull(light);
+
+        State state = light.getOnOffState();
+        assertEquals(UnDefType.NULL, state);
+
+        // pure on/off device OFF
+        light.setOnOff(OnOffType.OFF);
+        state = light.getOnOffState();
+        assertEquals(OnOffType.OFF, state);
+        state = light.getSwitchState();
+        assertEquals(OnOffType.OFF, state);
+
+        // pure on/off device OFF
+        light.setOnOff(OnOffType.ON);
+        state = light.getOnOffState();
+        assertEquals(OnOffType.ON, state);
+        state = light.getSwitchState();
+        assertEquals(OnOffType.ON, state);
+
+        // add an empty dimming field to the light
+        Dimming dimming = new Dimming();
+        light.setDimming(dimming);
+        light.setOnOff(OnOffType.ON);
+        light.setOnOff(OnOffType.OFF);
+        state = light.getOnOffState();
+        assertEquals(OnOffType.OFF, state);
+        state = light.getSwitchState();
+        assertEquals(OnOffType.OFF, state);
+
+        // add a 100% brightness value
+        dimming.setBrightness(100.0);
+        light.setOnOff(OnOffType.OFF);
+        state = light.getOnOffState();
+        assertEquals(OnOffType.OFF, state);
+        state = light.getSwitchState();
+        assertEquals(OnOffType.OFF, state);
     }
 
     @Test
@@ -502,7 +596,7 @@ class Clip2DtoTest {
     }
 
     @Test
-    void testScene() {
+    void testScene() throws CriticalFieldMissingException {
         String json = load(ResourceType.SCENE.name().toLowerCase());
         Resources resources = GSON.fromJson(json, Resources.class);
         assertNotNull(resources);
@@ -579,9 +673,10 @@ class Clip2DtoTest {
     }
 
     @Test
-    void testSetGetPureColors() {
+    void testSetGetPureColors() throws CriticalFieldMissingException {
         Resource resource = new Resource(ResourceType.LIGHT);
         assertNotNull(resource);
+        resource.setDimming(new Dimming().setBrightness(100.0));
 
         HSBType cyan = new HSBType("180,100,100");
         HSBType yellow = new HSBType("60,100,100");
@@ -589,6 +684,9 @@ class Clip2DtoTest {
 
         for (HSBType color : Set.of(HSBType.WHITE, HSBType.RED, HSBType.GREEN, HSBType.BLUE, cyan, yellow, magenta)) {
             Setters.setColorXy(resource, color, null);
+            ColorXy xy = resource.getColorXy();
+            assertNotNull(xy);
+            xy.setGamut(ColorUtil.DEFAULT_GAMUT);
             State state = resource.getColorState();
             HSBType hsbState = assertInstanceOf(HSBType.class, state);
             assertTrue(color.closeTo(hsbState, 0.01));

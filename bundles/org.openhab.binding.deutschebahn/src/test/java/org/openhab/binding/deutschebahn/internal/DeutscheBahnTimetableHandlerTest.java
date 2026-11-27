@@ -21,8 +21,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.concurrent.ScheduledExecutorService;
 
@@ -31,6 +29,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.openhab.binding.deutschebahn.internal.timetable.TimeproviderStub;
+import org.openhab.binding.deutschebahn.internal.timetable.TimetableTimeConverter;
 import org.openhab.binding.deutschebahn.internal.timetable.TimetablesV1ApiFactory;
 import org.openhab.binding.deutschebahn.internal.timetable.TimetablesV1ApiStub;
 import org.openhab.binding.deutschebahn.internal.timetable.TimetablesV1Impl.HttpCallable;
@@ -63,6 +62,12 @@ public class DeutscheBahnTimetableHandlerTest implements TimetablesV1ImplTestHel
         return config;
     }
 
+    private static DeutscheBahnTrainConfiguration createTrainConfig(int position) {
+        final DeutscheBahnTrainConfiguration trainConfig = new DeutscheBahnTrainConfiguration();
+        trainConfig.position = position;
+        return trainConfig;
+    }
+
     private static Bridge mockBridge(String trainFilter) {
         final Bridge bridge = mock(Bridge.class);
         when(bridge.getUID()).thenReturn(new ThingUID(DeutscheBahnBindingConstants.TIMETABLE_TYPE, "timetable"));
@@ -72,9 +77,18 @@ public class DeutscheBahnTimetableHandlerTest implements TimetablesV1ImplTestHel
         things.add(DeutscheBahnTrainHandlerTest.mockThing(1));
         things.add(DeutscheBahnTrainHandlerTest.mockThing(2));
         things.add(DeutscheBahnTrainHandlerTest.mockThing(3));
-        when(things.get(0).getHandler()).thenReturn(mock(DeutscheBahnTrainHandler.class));
-        when(things.get(1).getHandler()).thenReturn(mock(DeutscheBahnTrainHandler.class));
-        when(things.get(2).getHandler()).thenReturn(mock(DeutscheBahnTrainHandler.class));
+
+        DeutscheBahnTrainHandler trainHandler1 = mock(DeutscheBahnTrainHandler.class);
+        DeutscheBahnTrainHandler trainHandler2 = mock(DeutscheBahnTrainHandler.class);
+        DeutscheBahnTrainHandler trainHandler3 = mock(DeutscheBahnTrainHandler.class);
+
+        when(things.get(0).getHandler()).thenReturn(trainHandler1);
+        when(things.get(1).getHandler()).thenReturn(trainHandler2);
+        when(things.get(2).getHandler()).thenReturn(trainHandler3);
+
+        when(trainHandler1.getConfigAs(DeutscheBahnTrainConfiguration.class)).thenReturn(createTrainConfig(1));
+        when(trainHandler2.getConfigAs(DeutscheBahnTrainConfiguration.class)).thenReturn(createTrainConfig(2));
+        when(trainHandler3.getConfigAs(DeutscheBahnTrainConfiguration.class)).thenReturn(createTrainConfig(3));
 
         when(bridge.getThings()).thenReturn(things);
 
@@ -91,7 +105,7 @@ public class DeutscheBahnTimetableHandlerTest implements TimetablesV1ImplTestHel
             final Bridge bridge, //
             final TimetablesV1ApiFactory apiFactory) { //
         final TimeproviderStub timeProvider = new TimeproviderStub();
-        timeProvider.time = new GregorianCalendar(2021, Calendar.AUGUST, 16, 9, 30);
+        timeProvider.time = createCalendar(2021, 8, 16, 9, 30);
 
         final ScheduledExecutorService executorStub = Mockito.mock(ScheduledExecutorService.class);
         doAnswer((InvocationOnMock invocation) -> {
@@ -100,7 +114,7 @@ public class DeutscheBahnTimetableHandlerTest implements TimetablesV1ImplTestHel
         }).when(executorStub).execute(any(Runnable.class));
 
         final DeutscheBahnTimetableHandler handler = new DeutscheBahnTimetableHandler(bridge, apiFactory, timeProvider,
-                executorStub);
+                TIME_CONVERTER, executorStub);
         handler.setCallback(callback);
         handler.initialize();
         return handler;
@@ -176,8 +190,8 @@ public class DeutscheBahnTimetableHandlerTest implements TimetablesV1ImplTestHel
 
         final TimetablesV1ApiStub stubWithError = TimetablesV1ApiStub.createWithException();
 
-        final DeutscheBahnTimetableHandler handler = createAndInitHandler(callback, bridge,
-                (String clientId, String clientSecret, HttpCallable httpCallable) -> stubWithError);
+        final DeutscheBahnTimetableHandler handler = createAndInitHandler(callback, bridge, (String clientId,
+                String clientSecret, HttpCallable httpCallable, TimetableTimeConverter timeConverter) -> stubWithError);
 
         try {
             verify(callback).statusUpdated(eq(bridge), argThat(arg -> arg.getStatus().equals(ThingStatus.UNKNOWN)));
@@ -215,8 +229,8 @@ public class DeutscheBahnTimetableHandlerTest implements TimetablesV1ImplTestHel
 
         final TimetablesV1ApiStub stubWithData = TimetablesV1ApiStub.createWithResult(timetable);
 
-        final DeutscheBahnTimetableHandler handler = createAndInitHandler(callback, bridge,
-                (String clientId, String clientSecret, HttpCallable httpCallable) -> stubWithData);
+        final DeutscheBahnTimetableHandler handler = createAndInitHandler(callback, bridge, (String clientId,
+                String clientSecret, HttpCallable httpCallable, TimetableTimeConverter timeConverter) -> stubWithData);
 
         try {
             verify(callback).statusUpdated(eq(bridge), argThat(arg -> arg.getStatus().equals(ThingStatus.UNKNOWN)));

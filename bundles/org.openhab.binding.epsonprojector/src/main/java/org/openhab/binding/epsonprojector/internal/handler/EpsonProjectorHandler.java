@@ -111,7 +111,7 @@ public class EpsonProjectorHandler extends BaseThingHandler {
         } else if (THING_TYPE_PROJECTOR_TCP.equals(thing.getThingTypeUID())) {
             device = Optional.of(new EpsonProjectorDevice(config));
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR);
             return;
         }
 
@@ -389,6 +389,16 @@ public class EpsonProjectorHandler extends BaseThingHandler {
                 case POWER:
                     remoteController.setPower((OnOffType) command);
                     isPowerOn = (OnOffType) command == OnOffType.ON;
+
+                    // Set Freeze and Mute states to Off when power switched Off
+                    if ((OnOffType) command == OnOffType.OFF) {
+                        if (isLinked(CHANNEL_TYPE_FREEZE)) {
+                            updateState(CHANNEL_TYPE_FREEZE, OnOffType.OFF);
+                        }
+                        if (isLinked(CHANNEL_TYPE_MUTE)) {
+                            updateState(CHANNEL_TYPE_MUTE, OnOffType.OFF);
+                        }
+                    }
                     break;
                 case SOURCE:
                     remoteController.setSource(command.toString());
@@ -456,7 +466,7 @@ public class EpsonProjectorHandler extends BaseThingHandler {
                 isPowerOn = false;
 
                 if (passwordError != null) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, passwordError);
+                    updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, passwordError);
                     cancelPollingJob();
                 } else {
                     updateStatus(ThingStatus.OFFLINE);

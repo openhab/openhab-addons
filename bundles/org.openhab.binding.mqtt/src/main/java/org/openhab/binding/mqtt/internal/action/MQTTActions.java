@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.mqtt.internal.action;
 
+import java.nio.charset.StandardCharsets;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mqtt.handler.AbstractBrokerHandler;
@@ -64,7 +66,7 @@ public class MQTTActions implements ThingActions {
             logger.debug("skipping MQTT publishing to topic '{}' due to null value.", topic);
             return;
         }
-        publishMQTT(topic, value.getBytes(), retain);
+        publishMQTT(topic, value.getBytes(StandardCharsets.UTF_8), retain);
     }
 
     @RuleAction(label = "@text/actionLabel", description = "@text/actionDesc")

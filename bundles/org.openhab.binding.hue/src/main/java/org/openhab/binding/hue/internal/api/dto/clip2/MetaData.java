@@ -35,6 +35,10 @@ public class MetaData {
         return Archetype.of(archetype);
     }
 
+    public String getArchetypeAsString() {
+        return getArchetype().toString();
+    }
+
     public @Nullable String getName() {
         return name;
     }
@@ -46,5 +50,10 @@ public class MetaData {
     public int getControlId() {
         Integer controlId = this.controlId;
         return controlId != null ? controlId.intValue() : 0;
+    }
+
+    @Override
+    public String toString() {
+        return "[archetype=" + archetype + ", name=" + name + "]";
     }
 }

@@ -59,7 +59,7 @@ public class SomfySceneHandler extends BaseThingHandler {
             }
         } catch (SomfyMyLinkException e) {
             logger.warn("Error handling command: {}", e.getMessage());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 

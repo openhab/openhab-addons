@@ -14,24 +14,27 @@ package org.openhab.binding.evohome.internal.api.models.v2.dto.response;
 
 import java.util.List;
 
+import org.eclipse.jdt.annotation.Nullable;
+
 import com.google.gson.annotations.SerializedName;
 
 /**
  * Response model for the heat set point capabilities
  *
  * @author Jasper van Zuijlen - Initial contribution
+ * @author Kovacs Istvan - Expose optional command limits
  *
  */
 public class HeatSetpointCapabilities {
 
     @SerializedName("maxHeatSetpoint")
-    private double maxHeatSetpoint;
+    private Double maxHeatSetpoint;
 
     @SerializedName("minHeatSetpoint")
-    private double minHeatSetpoint;
+    private Double minHeatSetpoint;
 
     @SerializedName("valueResolution")
-    private double valueResolution;
+    private Double valueResolution;
 
     @SerializedName("allowedSetpointModes")
     private List<String> allowedSetpointModes;
@@ -41,4 +44,28 @@ public class HeatSetpointCapabilities {
 
     @SerializedName("timingResolution")
     private String timingResolution;
+
+    public @Nullable Double getMaxHeatSetpoint() {
+        return maxHeatSetpoint;
+    }
+
+    public @Nullable Double getMinHeatSetpoint() {
+        return minHeatSetpoint;
+    }
+
+    public @Nullable Double getValueResolution() {
+        return valueResolution;
+    }
+
+    public List<String> getAllowedSetpointModes() {
+        return allowedSetpointModes == null ? List.of() : allowedSetpointModes;
+    }
+
+    public @Nullable String getMaxDuration() {
+        return maxDuration;
+    }
+
+    public @Nullable String getTimingResolution() {
+        return timingResolution;
+    }
 }

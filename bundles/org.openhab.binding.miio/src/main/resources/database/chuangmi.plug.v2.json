@@ -3,6 +3,7 @@
 		"id": [
 			"chuangmi.plug.v2"
 		],
+		"experimental": false,
 		"channels": [
 			{
 				"property": "power",
@@ -16,9 +17,10 @@
 						"parameterType": "ONOFF"
 					}
 				],
-				"category": "switch",
+				"category": "poweroutlet",
 				"tags": [
-					"Switch"
+					"Switch",
+					"Power"
 				]
 			},
 			{
@@ -27,12 +29,16 @@
 				"channel": "usb",
 				"type": "Switch",
 				"refresh": true,
-				"ChannelGroup": "actions",
 				"actions": [
 					{
 						"command": "set_usb_*",
 						"parameterType": "ONOFFPARA"
 					}
+				],
+				"category": "poweroutlet",
+				"tags": [
+					"Switch",
+					"Power"
 				]
 			}
 		]

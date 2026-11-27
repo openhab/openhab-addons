@@ -59,8 +59,7 @@ public class ALD1Handler extends BaseModbusThingHandler {
         config = getConfigAs(ALD1Configuration.class);
 
         if (config.pollInterval <= 0) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Invalid poll interval: " + config.pollInterval);
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Invalid poll interval: " + config.pollInterval);
             return;
         }
 
@@ -90,7 +89,7 @@ public class ALD1Handler extends BaseModbusThingHandler {
     }
 
     private void readError(AsyncModbusFailure<ModbusReadRequestBlueprint> error) {
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+        updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                 "Failed to retrieve data: " + error.getCause().getMessage());
     }
 

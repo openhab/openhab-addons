@@ -13,6 +13,8 @@
 package org.openhab.binding.shelly.internal.api2;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.SHELLY_BTNT_ACTIVATE;
+import static org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.SHELLY2_BTNT_ACTIVATE;
 
 import java.util.ArrayList;
 
@@ -20,7 +22,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsEMeter;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsStatus;
-import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2DeviceStatusEmData;
+import org.openhab.binding.shelly.internal.api2.dto.ShellyMeterJsonDTO.Shelly2DeviceStatusEmData;
 
 /**
  * Covers em1data:N (single-phase clamp) total/returned-energy mapping, i.e. #18166 (Pro EM-50 / EM Mini lifetime
@@ -106,5 +108,11 @@ public class Shelly2ApiClientTest {
         emData.totalActiveEnergy = 10.0;
 
         assertDoesNotThrow(() -> Shelly2ApiClient.applyEm1Data(status, 5, emData));
+    }
+
+    @Test
+    void inModeActivateMapsToDedicatedButtonType() {
+        // #19755: Mini G3/G4 and Plus devices report in_mode "activate", which was missing from the map
+        assertEquals(SHELLY_BTNT_ACTIVATE, Shelly2ApiClient.MAP_INMODE_BTNTYPE.get(SHELLY2_BTNT_ACTIVATE));
     }
 }

@@ -17,17 +17,21 @@ import static org.openhab.binding.asuswrt.internal.constants.AsuswrtBindingSetti
 import static org.openhab.binding.asuswrt.internal.constants.AsuswrtErrorConstants.*;
 import static org.openhab.binding.asuswrt.internal.helpers.AsuswrtUtils.getValueOrDefault;
 
+import java.net.HttpCookie;
+import java.net.URI;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.HttpResponse;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.api.Result;
-import org.eclipse.jetty.client.util.BufferingResponseListener;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.BufferingResponseListener;
+import org.eclipse.jetty.client.ContentResponse;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.Response;
+import org.eclipse.jetty.client.Result;
+import org.eclipse.jetty.client.StringRequestContent;
+import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.asuswrt.internal.helpers.AsuswrtUtils;
 import org.openhab.binding.asuswrt.internal.things.AsuswrtRouter;
@@ -41,6 +45,7 @@ import com.google.gson.JsonObject;
  * The {@link AsuswrtHttpClient} is used for (a)synchronous HTTP requests.
  *
  * @author Christian Wild - Initial contribution
+ * @author Daniel Malmgren - Nonce-based authentication support
  */
 @NonNullByDefault
 public class AsuswrtHttpClient {
@@ -86,15 +91,27 @@ public class AsuswrtHttpClient {
      * @return {@link ContentResponse} of the request
      */
     protected @Nullable ContentResponse getSyncRequest(String url, String payload) {
-        logger.trace("({}) sendRequest '{}' to '{}' with cookie '{}'", uid, payload, url, cookieStore.getCookie());
+        return getSyncRequest(url, payload, HTTP_CONTENT_TYPE);
+    }
+
+    /**
+     * Sends a synchronous HTTP request with the supplied content type.
+     *
+     * @param url the URL the request is sent to
+     * @param payload the payload to send
+     * @param contentType the request content type
+     * @return {@link ContentResponse} of the request
+     */
+    protected @Nullable ContentResponse getSyncRequest(String url, String payload, String contentType) {
+        logger.trace("({}) send request to '{}'", uid, url);
         Request httpRequest = this.router.getHttpClient().newRequest(url).method(HttpMethod.POST.toString());
 
         // Set header
-        httpRequest = setHeaders(httpRequest);
+        httpRequest = setHeaders(httpRequest, contentType, url);
         httpRequest.timeout(HTTP_TIMEOUT_MS, TimeUnit.MILLISECONDS);
 
         // Add request body
-        httpRequest.content(new StringContentProvider(payload, HTTP_CONTENT_CHARSET), HTTP_CONTENT_TYPE);
+        httpRequest.body(new StringRequestContent(payload, HTTP_CONTENT_CHARSET));
         try {
             return httpRequest.send();
         } catch (Exception e) {
@@ -114,52 +131,81 @@ public class AsuswrtHttpClient {
      * @param command command to execute, this will handle ResponseType
      */
     protected void sendAsyncRequest(String url, String payload, String command) {
-        logger.trace("({}) sendAsyncRequest to '{}' with cookie '{}'", uid, url, cookieStore.getCookie());
+        sendAsyncRequest(url, payload, command, null);
+    }
+
+    /**
+     * Sends an asynchronous HTTP request so it does not wait for an answer.
+     *
+     * The result will be handled in {@link #handleHttpSuccessResponse(String, String)} or
+     * {@link #handleHttpResultError(Throwable)}. Afterwards, {@code onComplete} is run (whether the
+     * request succeeded or failed), so callers can be notified once the round-trip has finished.
+     *
+     * @param url the URL to which the request is sent to
+     * @param payload the payload data
+     * @param command command to execute, this will handle ResponseType
+     * @param onComplete callback run after the request has finished, or {@code null} if not needed
+     */
+    protected void sendAsyncRequest(String url, String payload, String command, @Nullable Runnable onComplete) {
+        logger.trace("({}) sendAsyncRequest to '{}'", uid, url);
         try {
             Request httpRequest = router.getHttpClient().newRequest(url).method(HttpMethod.POST.toString());
 
             // Set header
-            httpRequest = setHeaders(httpRequest);
+            httpRequest = setHeaders(httpRequest, HTTP_CONTENT_TYPE, url);
 
             // Add request body
-            httpRequest.content(new StringContentProvider(payload, HTTP_CONTENT_CHARSET), HTTP_CONTENT_TYPE);
+            httpRequest.body(new StringRequestContent(payload, HTTP_CONTENT_CHARSET));
 
             httpRequest.timeout(HTTP_TIMEOUT_MS, TimeUnit.MILLISECONDS).send(new BufferingResponseListener() {
                 @NonNullByDefault({})
                 @Override
                 public void onComplete(Result result) {
-                    final HttpResponse response = (HttpResponse) result.getResponse();
-                    if (result.getFailure() != null) {
-                        // Handle result errors
-                        handleHttpResultError(result.getFailure());
-                    } else if (response.getStatus() != 200) {
-                        logger.debug("({}) sendAsyncRequest response error '{}'", uid, response.getStatus());
-                        router.errorHandler.raiseError(ERR_RESPONSE, getContentAsString());
-                    } else {
-                        // Request successful
-                        String rBody = getContentAsString();
-                        logger.trace("({}) requestCompleted '{}'", uid, rBody);
-                        // Handle result
-                        if (rBody != null) {
-                            handleHttpSuccessResponse(rBody, command);
+                    try {
+                        final Response response = result.getResponse();
+                        if (result.getFailure() != null) {
+                            // Handle result errors
+                            handleHttpResultError(result.getFailure());
+                        } else if (response.getStatus() != 200) {
+                            logger.debug("({}) sendAsyncRequest response error '{}'", uid, response.getStatus());
+                            router.errorHandler.raiseError(ERR_RESPONSE, getContentAsString());
+                        } else {
+                            // Request successful
+                            String rBody = getContentAsString();
+                            logger.trace("({}) requestCompleted '{}'", uid, rBody);
+                            // Handle result
+                            if (rBody != null) {
+                                handleHttpSuccessResponse(rBody, command);
+                            }
+                        }
+                    } finally {
+                        if (onComplete != null) {
+                            onComplete.run();
                         }
                     }
                 }
             });
         } catch (Exception e) {
             router.errorHandler.raiseError(e);
+            if (onComplete != null) {
+                onComplete.run();
+            }
         }
     }
 
     /**
      * Sets HTTP headers.
      */
-    private Request setHeaders(Request httpRequest) {
+    private Request setHeaders(Request httpRequest, String contentType, String url) {
         // Set header
-        httpRequest.header("content-type", HTTP_CONTENT_TYPE);
-        httpRequest.header("user-agent", HTTP_USER_AGENT);
+        URI uri = URI.create(url);
+        httpRequest.headers(headers -> {
+            headers.put("content-type", contentType);
+            headers.put("user-agent", HTTP_USER_AGENT);
+            headers.put("referer", uri.getScheme() + "://" + uri.getRawAuthority() + "/");
+        });
         if (cookieStore.isValid()) {
-            httpRequest.header("cookie", cookieStore.getCookie());
+            httpRequest.headers(headers -> headers.put("cookie", cookieStore.getCookie()));
         }
         return httpRequest;
     }
@@ -206,7 +252,23 @@ public class AsuswrtHttpClient {
         cookieStore.resetCookie();
         if (response.getStatus() == 200) {
             String rBody = response.getContentAsString();
-            logger.trace("({}) received response '{}'", uid, rBody);
+            List<String> setCookieHeaders = response.getHeaders().getValuesList(HttpHeader.SET_COOKIE);
+            for (String setCookieHeader : setCookieHeaders) {
+                try {
+                    for (HttpCookie cookie : HttpCookie.parse(setCookieHeader)) {
+                        if ("asus_token".equals(cookie.getName()) && !cookie.getValue().isBlank()) {
+                            cookieStore.setCookie(cookie.getName() + "=" + cookie.getValue());
+                            return;
+                        }
+                    }
+                } catch (IllegalArgumentException e) {
+                    logger.debug("({}) invalid Set-Cookie header on login response", uid);
+                }
+            }
+
+            if (!rBody.stripLeading().startsWith("{")) {
+                return;
+            }
             try {
                 /* get json object 'asus_token' */
                 JsonObject jsonObject = gson.fromJson(rBody, JsonObject.class);

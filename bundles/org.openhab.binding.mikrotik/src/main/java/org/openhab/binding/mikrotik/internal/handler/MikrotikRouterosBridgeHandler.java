@@ -79,10 +79,10 @@ public class MikrotikRouterosBridgeHandler extends BaseBridgeHandler {
         logger.debug("Initializing MikrotikRouterosBridgeHandler with config = {}", cfg);
         if (cfg.isValid()) {
             this.routeros = new RouterosDevice(cfg.host, cfg.port, cfg.login, cfg.password);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, String.format("Connecting to %s", cfg.host));
+            updateStatus(ThingStatus.OFFLINE, String.format("Connecting to %s", cfg.host));
             scheduleRefreshJob();
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Configuration is not valid");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Configuration is not valid");
         }
     }
 
@@ -96,17 +96,39 @@ public class MikrotikRouterosBridgeHandler extends BaseBridgeHandler {
 
     @Override
     protected void updateStatus(ThingStatus status, ThingStatusDetail statusDetail, @Nullable String description) {
-        if (status == ThingStatus.ONLINE
-                || (status == ThingStatus.OFFLINE && statusDetail == ThingStatusDetail.COMMUNICATION_ERROR)) {
-            scheduleRefreshJob();
-        } else if (status == ThingStatus.OFFLINE && statusDetail == ThingStatusDetail.CONFIGURATION_ERROR) {
-            cancelRefreshJob();
-        }
         // update the status only if it's changed
         ThingStatusInfo statusInfo = ThingStatusInfoBuilder.create(status, statusDetail).withDescription(description)
                 .build();
         if (!statusInfo.equals(getThing().getStatusInfo())) {
             super.updateStatus(status, statusDetail, description);
+        }
+        statusUpdated(status, statusDetail);
+    }
+
+    @Override
+    protected void updateStatus(ThingStatus status) {
+        super.updateStatus(status);
+        statusUpdated(status, ThingStatusDetail.NONE);
+    }
+
+    @Override
+    protected void updateStatus(ThingStatus status, @Nullable String description) {
+        super.updateStatus(status, description);
+        statusUpdated(status, ThingStatusDetail.NONE);
+    }
+
+    @Override
+    protected void updateStatus(ThingStatusDetail detail, @Nullable String description) {
+        super.updateStatus(detail, description);
+        statusUpdated(getThing().getStatus(), detail);
+    }
+
+    private void statusUpdated(ThingStatus status, ThingStatusDetail detail) {
+        if (status == ThingStatus.ONLINE
+                || (status == ThingStatus.OFFLINE && detail == ThingStatusDetail.COMMUNICATION_ERROR)) {
+            scheduleRefreshJob();
+        } else if (status == ThingStatus.OFFLINE && detail == ThingStatusDetail.CONFIGURATION_ERROR) {
+            cancelRefreshJob();
         }
     }
 
@@ -150,7 +172,7 @@ public class MikrotikRouterosBridgeHandler extends BaseBridgeHandler {
             job = this.dailyJob;
             if (job != null) {
                 job.cancel(true);
-                this.refreshJob = null;
+                this.dailyJob = null;
             }
         }
     }
@@ -195,12 +217,12 @@ public class MikrotikRouterosBridgeHandler extends BaseBridgeHandler {
                 }
                 if (errorMessage.contains("Command timed out") || errorMessage.contains("Error connecting")) {
                     routeros.stop();
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, errorMessage);
+                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, errorMessage);
                 } else if (errorMessage.contains("Connection refused")) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                             "Remote host refused to connect, make sure port is correct");
                 } else {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, errorMessage);
+                    updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, errorMessage);
                 }
             }
         } else {
@@ -238,10 +260,10 @@ public class MikrotikRouterosBridgeHandler extends BaseBridgeHandler {
         } catch (MikrotikApiException e) {
             logger.error("RouterOS cache refresh failed in {} due to Mikrotik API error", getThing().getUID(), e);
             routeros.stop();
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         } catch (Exception e) {
             logger.error("Unhandled exception while refreshing the {} RouterOS model", getThing().getUID(), e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 

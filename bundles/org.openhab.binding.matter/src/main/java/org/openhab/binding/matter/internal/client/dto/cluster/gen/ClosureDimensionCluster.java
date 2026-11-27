@@ -193,7 +193,7 @@ public class ClosureDimensionCluster extends BaseCluster {
 
     // Enums
     /**
-     * Legend: !legendOpen Open !legendClosed Closed
+     * ### Legend: Open Closed
      */
     public enum TranslationDirectionEnum implements MatterEnum {
         DOWNWARD(0, "Downward"),
@@ -229,7 +229,7 @@ public class ClosureDimensionCluster extends BaseCluster {
     }
 
     /**
-     * Legend: !legendOpen Open !legendClosed Closed
+     * ### Legend: Open Closed
      */
     public enum RotationAxisEnum implements MatterEnum {
         LEFT(0, "Left"),

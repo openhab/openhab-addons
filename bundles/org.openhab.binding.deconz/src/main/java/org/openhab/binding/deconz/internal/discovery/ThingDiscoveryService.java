@@ -264,6 +264,8 @@ public class ThingDiscoveryService extends AbstractThingHandlerDiscoveryService<
             thingTypeUID = THING_TYPE_LIGHT_SENSOR;
         } else if (sensor.type.contains("ZHAAirQuality")) { // ZHAAirQuality
             thingTypeUID = THING_TYPE_AIRQUALITY_SENSOR;
+        } else if (sensor.type.contains("ZHAParticulateMatter")) { // ZHAParticulateMatter
+            thingTypeUID = THING_TYPE_PARTICULATEMATTER_SENSOR;
         } else if (sensor.type.contains("ZHATemperature")) { // ZHATemperature
             thingTypeUID = THING_TYPE_TEMPERATURE_SENSOR;
         } else if (sensor.type.contains("ZHAHumidity")) { // ZHAHumidity

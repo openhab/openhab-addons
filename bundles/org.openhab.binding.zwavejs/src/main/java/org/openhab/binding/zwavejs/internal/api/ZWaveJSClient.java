@@ -27,11 +27,9 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.websocket.api.RemoteEndpoint;
+import org.eclipse.jetty.websocket.api.Callback;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.StatusCode;
-import org.eclipse.jetty.websocket.api.WebSocketListener;
-import org.eclipse.jetty.websocket.api.WebSocketPolicy;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.openhab.binding.zwavejs.internal.BindingConstants;
 import org.openhab.binding.zwavejs.internal.api.adapter.InstantAdapter;
@@ -43,6 +41,7 @@ import org.openhab.binding.zwavejs.internal.api.dto.messages.EventMessage;
 import org.openhab.binding.zwavejs.internal.api.dto.messages.ResultMessage;
 import org.openhab.binding.zwavejs.internal.api.dto.messages.VersionMessage;
 import org.openhab.binding.zwavejs.internal.api.exception.CommunicationException;
+import org.openhab.binding.zwavejs.internal.config.ZwaveJSBridgeConfiguration;
 import org.openhab.binding.zwavejs.internal.handler.ZwaveEventListener;
 import org.openhab.core.common.ThreadPoolManager;
 import org.slf4j.Logger;
@@ -77,7 +76,7 @@ import com.google.gson.typeadapters.RuntimeTypeAdapterFactory;
  * @author Leo Siepel - Initial contribution
  */
 @NonNullByDefault
-public class ZWaveJSClient implements WebSocketListener {
+public class ZWaveJSClient implements Session.Listener.AutoDemanding {
 
     private static final int RECONNECT_INTERVAL_MINUTES = 2;
     private static final String BINDING_SHUTDOWN_MESSAGE = "Binding shutdown";
@@ -91,7 +90,7 @@ public class ZWaveJSClient implements WebSocketListener {
     private final Object lifecycleLock = new Object();
     private final Object sendLock = new Object();
 
-    private volatile int bufferSize = 1048576 * 2; // 2 MiB
+    private volatile int bufferSize = ZwaveJSBridgeConfiguration.DEFAULT_MAX_MESSAGE_SIZE;
     private volatile @Nullable Session session;
     private @Nullable Future<?> sessionFuture;
     private @Nullable ScheduledFuture<?> keepAliveFuture;
@@ -238,7 +237,7 @@ public class ZWaveJSClient implements WebSocketListener {
     }
 
     @Override
-    public void onWebSocketConnect(@NonNullByDefault({}) Session session) {
+    public void onWebSocketOpen(@NonNullByDefault({}) Session session) {
         synchronized (lifecycleLock) {
             if (shuttingDown) {
                 logger.debug("WebSocket connected but client is shutting down, closing session");
@@ -246,22 +245,16 @@ public class ZWaveJSClient implements WebSocketListener {
                 this.session = null;
                 return;
             }
-            logger.debug("onWebSocketConnect('{}')", session);
+            logger.debug("onWebSocketOpen('{}')", session);
             this.session = session;
-
-            final WebSocketPolicy currentPolicy = session.getPolicy();
-            currentPolicy.setInputBufferSize(bufferSize);
-            currentPolicy.setMaxTextMessageSize(bufferSize);
-            currentPolicy.setMaxBinaryMessageSize(bufferSize);
+            session.setInputBufferSize(bufferSize);
+            session.setMaxTextMessageSize(bufferSize);
+            session.setMaxBinaryMessageSize(bufferSize);
 
             keepAliveFuture = scheduler.scheduleWithFixedDelay(() -> {
-                try {
-                    String data = "Ping";
-                    ByteBuffer payload = ByteBuffer.wrap(data.getBytes(StandardCharsets.UTF_8));
-                    session.getRemote().sendPing(payload);
-                } catch (IOException e) {
-                    logger.warn("Problem sending periodic Ping: {}", e.getMessage());
-                }
+                String data = "Ping";
+                ByteBuffer payload = ByteBuffer.wrap(data.getBytes(StandardCharsets.UTF_8));
+                session.sendPing(payload, Callback.NOOP);
             }, 25, 25, TimeUnit.SECONDS);
 
             stopReconnectJobLocked();
@@ -287,8 +280,9 @@ public class ZWaveJSClient implements WebSocketListener {
     }
 
     @Override
-    public void onWebSocketBinary(@NonNullByDefault({}) byte[] payload, int offset, int len) {
-        logger.debug("Ignoring unsupported binary websocket message (offset={}, len={})", offset, len);
+    public void onWebSocketBinary(@NonNullByDefault({}) ByteBuffer payload, @NonNullByDefault({}) Callback callback) {
+        logger.debug("Ignoring unsupported binary websocket message");
+        callback.succeed();
     }
 
     @Override
@@ -299,14 +293,12 @@ public class ZWaveJSClient implements WebSocketListener {
         } catch (JsonParseException ex) {
             logger.warn("Failed to parse incoming WebSocket message: {}", ex.getMessage());
             logger.trace("RECV | {}", message);
-            notifyListenersOnError("Failed to parse message: " + ex.getMessage());
             return;
         }
 
         if (baseEvent == null || baseEvent.type == null) {
             logger.warn("Received event with unknown or null type.");
             logger.trace("RECV | {}", message);
-            notifyListenersOnError("Received event with unknown or null type.");
             return;
         }
 
@@ -315,7 +307,6 @@ public class ZWaveJSClient implements WebSocketListener {
         // Notify listeners
         for (ZwaveEventListener listener : listeners) {
             try {
-
                 listener.onEvent(baseEvent);
             } catch (Exception e) {
                 if (logger.isDebugEnabled()) {
@@ -374,20 +365,15 @@ public class ZWaveJSClient implements WebSocketListener {
     public void sendCommand(BaseCommand command) {
         String commandAsJson = gson.toJson(command);
         Session session = this.session;
-        try {
-            if (session == null || !(session.getRemote() instanceof RemoteEndpoint endpoint)) {
-                logger.warn("Failed while sending command: {}. Problem with session or remote endpoint",
-                        command.getClass());
-                return;
-            }
-            logger.debug("Sending command: {}.", command.getClass().getSimpleName());
-            logger.trace("SEND | {}", commandAsJson);
-            synchronized (sendLock) {
-                endpoint.sendString(commandAsJson);
-            }
-        } catch (IOException e) {
-            logger.warn("IOException while sending command: {}. Error {}", command.getClass().getSimpleName(),
-                    e.getMessage());
+        if (session == null || !session.isOpen()) {
+            logger.warn("Failed while sending command: {}. Problem with session or remote endpoint",
+                    command.getClass());
+            return;
+        }
+        logger.debug("Sending command: {}.", command.getClass().getSimpleName());
+        logger.trace("SEND | {}", commandAsJson);
+        synchronized (sendLock) {
+            session.sendText(commandAsJson, Callback.NOOP);
         }
     }
 
@@ -399,7 +385,7 @@ public class ZWaveJSClient implements WebSocketListener {
         if (session != null) {
             stopKeepAliveLocked();
             try {
-                session.close(statusCode, reason);
+                session.close(statusCode, reason, Callback.NOOP);
             } catch (Exception e) {
                 logger.warn("Error while closing websocket session: {}", e.getMessage());
             }

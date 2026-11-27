@@ -89,7 +89,7 @@ public class ElroConnectsDeviceEntrySensor extends ElroConnectsDevice {
                 handler.updateState(BATTERY_LEVEL, UnDefType.UNDEF);
                 handler.updateState(LOW_BATTERY, UnDefType.UNDEF);
                 String msg = String.format("@text/offline.device-not-syncing [ \"%d\" ]", deviceId);
-                handler.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, msg);
+                handler.updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, msg);
                 break;
             case FAULT:
                 handler.updateState(ENTRY, UnDefType.UNDEF);
@@ -97,7 +97,7 @@ public class ElroConnectsDeviceEntrySensor extends ElroConnectsDevice {
                 handler.updateState(BATTERY_LEVEL, UnDefType.UNDEF);
                 handler.updateState(LOW_BATTERY, UnDefType.UNDEF);
                 msg = String.format("@text/offline.device-fault [ \"%d\" ]", deviceId);
-                handler.updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, msg);
+                handler.updateStatus(ThingStatus.ONLINE, msg);
                 break;
             default:
                 handler.updateState(ENTRY,

@@ -1,0 +1,499 @@
+{
+	"deviceMapping": {
+		"id": [
+			"philips.light.strip3",
+			"philips.light.strip5"
+		],
+		"propertyMethod": "get_properties",
+		"maxProperties": 4,
+		"channels": [
+			{
+				"property": "on",
+				"siid": 2,
+				"piid": 1,
+				"friendlyName": "Power",
+				"channel": "on",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "switch"
+			},
+			{
+				"property": "mode",
+				"siid": 2,
+				"piid": 2,
+				"friendlyName": "Scene",
+				"channel": "mode",
+				"type": "Number",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 8,
+					"step": 1,
+					"pattern": "%.0f",
+					"options": [
+						{
+							"value": "0",
+							"label": "Custom"
+						},
+						{
+							"value": "1",
+							"label": "Feeling of Love"
+						},
+						{
+							"value": "2",
+							"label": "Cozy Bonfire"
+						},
+						{
+							"value": "3",
+							"label": "Northern European Aurora"
+						},
+						{
+							"value": "4",
+							"label": "Beach Walk"
+						},
+						{
+							"value": "5",
+							"label": "Dreamlike Colors"
+						},
+						{
+							"value": "6",
+							"label": "Midsummer"
+						},
+						{
+							"value": "7",
+							"label": "Rapid Changes"
+						},
+						{
+							"value": "8",
+							"label": "Seasons"
+						}
+					]
+				},
+				"category": "light",
+				"tags": [
+					"Control",
+					"Mode"
+				],
+				"readmeComment": "0 is the color set with the color channel or a custom mode selected with the custom mode channel. Value mapping `[\"0\"\u003d\"Custom\",\"1\"\u003d\"Feeling of Love\",\"2\"\u003d\"Cozy Bonfire\",\"3\"\u003d\"Northern European Aurora\",\"4\"\u003d\"Beach Walk\",\"5\"\u003d\"Dreamlike Colors\",\"6\"\u003d\"Midsummer\",\"7\"\u003d\"Rapid Changes\",\"8\"\u003d\"Seasons\"]`"
+			},
+			{
+				"property": "brightness",
+				"siid": 2,
+				"piid": 3,
+				"friendlyName": "Brightness",
+				"channel": "brightness",
+				"type": "Dimmer",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "light",
+				"tags": [
+					"Control",
+					"Brightness"
+				]
+			},
+			{
+				"property": "color",
+				"siid": 2,
+				"piid": 4,
+				"friendlyName": "Color",
+				"channel": "color",
+				"type": "Color",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "COLOR",
+						"condition": {
+							"name": "HSBOnly"
+						}
+					}
+				],
+				"category": "colorlight",
+				"tags": [
+					"Control",
+					"Color"
+				],
+				"readmeComment": "RGB color of the light. The brightness part of a color command scales the RGB value, use the brightness channel to dim the light."
+			},
+			{
+				"property": "acousto-optic-rhythm",
+				"siid": 3,
+				"piid": 3,
+				"friendlyName": "Music Sync",
+				"channel": "musicSync",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch",
+					"Enabled"
+				],
+				"readmeComment": "Interaction of light and sound."
+			},
+			{
+				"property": "mitv-rhythm",
+				"siid": 3,
+				"piid": 2,
+				"friendlyName": "TV Sync",
+				"channel": "tvSync",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch",
+					"Enabled"
+				],
+				"readmeComment": "The color follows the picture of a connected Xiaomi TV. The Mi Home app of the strip5 and of strip3 with firmware up to 2.1.8_0026 does not offer to switch it."
+			},
+			{
+				"property": "mitv-available",
+				"siid": 3,
+				"piid": 15,
+				"friendlyName": "TV Connected",
+				"channel": "tvConnected",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [],
+				"stateDescription": {
+					"readOnly": true
+				},
+				"category": "switch",
+				"tags": [
+					"Status",
+					"Info"
+				]
+			},
+			{
+				"property": "dvalue",
+				"siid": 3,
+				"piid": 4,
+				"friendlyName": "Delayed Turn-off",
+				"channel": "dv",
+				"type": "Number:Time",
+				"unit": "seconds",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 21600,
+					"step": 1,
+					"pattern": "%.0f %unit%"
+				},
+				"category": "time",
+				"tags": [
+					"Setpoint",
+					"Duration"
+				]
+			},
+			{
+				"property": "rhythm-color-type",
+				"siid": 3,
+				"piid": 6,
+				"friendlyName": "Music Sync Colors",
+				"channel": "rhythmColor",
+				"type": "String",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "STRING"
+					}
+				],
+				"stateDescription": {
+					"options": [
+						{
+							"value": "A",
+							"label": "Rainbow"
+						},
+						{
+							"value": "B",
+							"label": "Passion"
+						},
+						{
+							"value": "C",
+							"label": "Freshness"
+						},
+						{
+							"value": "D",
+							"label": "Sunshine"
+						},
+						{
+							"value": "E",
+							"label": "Romance"
+						}
+					]
+				},
+				"category": "colorlight",
+				"tags": [
+					"Control",
+					"Color"
+				],
+				"readmeComment": "Custom colors are shown as a `#RRGGBB` value. Value mapping `[\"A\"\u003d\"Rainbow\",\"B\"\u003d\"Passion\",\"C\"\u003d\"Freshness\",\"D\"\u003d\"Sunshine\",\"E\"\u003d\"Romance\"]`"
+			},
+			{
+				"property": "rhythm-sensitivity",
+				"siid": 3,
+				"piid": 7,
+				"friendlyName": "Music Sync Sensitivity",
+				"channel": "rhythmSensitivity",
+				"type": "Number",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 2,
+					"step": 1,
+					"pattern": "%.0f",
+					"options": [
+						{
+							"value": "0",
+							"label": "Gentle"
+						},
+						{
+							"value": "1",
+							"label": "Lyric"
+						},
+						{
+							"value": "2",
+							"label": "Dynamic"
+						}
+					]
+				},
+				"category": "settings",
+				"tags": [
+					"Control",
+					"Mode"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Gentle\",\"1\"\u003d\"Lyric\",\"2\"\u003d\"Dynamic\"]`"
+			},
+			{
+				"property": "rhythm-animation",
+				"siid": 3,
+				"piid": 8,
+				"friendlyName": "Music Sync Effect",
+				"channel": "rhythmAnimation",
+				"type": "Number",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 3,
+					"step": 1,
+					"pattern": "%.0f",
+					"options": [
+						{
+							"value": "0",
+							"label": "Breathing"
+						},
+						{
+							"value": "1",
+							"label": "Flashing"
+						},
+						{
+							"value": "2",
+							"label": "Random"
+						},
+						{
+							"value": "3",
+							"label": "Blooming"
+						}
+					]
+				},
+				"category": "light",
+				"tags": [
+					"Control",
+					"Mode"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Breathing\",\"1\"\u003d\"Flashing\",\"2\"\u003d\"Random\",\"3\"\u003d\"Blooming\"]`"
+			},
+			{
+				"property": "diy-id",
+				"siid": 3,
+				"piid": 12,
+				"friendlyName": "Custom Mode",
+				"channel": "diyId",
+				"type": "Number",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 20,
+					"step": 1,
+					"pattern": "%.0f"
+				},
+				"category": "light",
+				"tags": [
+					"Control",
+					"Mode"
+				],
+				"readmeComment": "Number of a custom mode created in the Mi Home app, 0 when no custom mode is active."
+			},
+			{
+				"property": "length-strip",
+				"siid": 3,
+				"piid": 16,
+				"friendlyName": "Strip Length",
+				"channel": "stripLength",
+				"type": "Number",
+				"refresh": true,
+				"actions": [],
+				"stateDescription": {
+					"minimum": 2,
+					"maximum": 5,
+					"step": 1,
+					"pattern": "%.0f m",
+					"readOnly": true
+				},
+				"category": "line",
+				"tags": [
+					"Status",
+					"Info"
+				]
+			},
+			{
+				"property": "control-scene",
+				"siid": 3,
+				"piid": 20,
+				"friendlyName": "Control Box Modes",
+				"channel": "controlScene",
+				"type": "String",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "STRING"
+					}
+				],
+				"category": "text",
+				"tags": [
+					"Control",
+					"Mode"
+				],
+				"readmeComment": "The 3 modes the mode button of the control box cycles through, as a JSON array, e.g. `[1,2,3]`. 1-8 are the scenes of the scene channel, 100 + n is custom mode n."
+			},
+			{
+				"property": "",
+				"friendlyName": "Actions",
+				"channel": "actions",
+				"type": "String",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "light-toggle",
+							"label": "Light Toggle"
+						},
+						{
+							"value": "brightness-up",
+							"label": "Brightness Up"
+						},
+						{
+							"value": "brightness-down",
+							"label": "Brightness Down"
+						}
+					]
+				},
+				"refresh": false,
+				"actions": [
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 2,
+						"aiid": 1,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "light-toggle"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 3,
+						"aiid": 1,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "brightness-up"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 3,
+						"aiid": 2,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "brightness-down"
+								}
+							]
+						}
+					}
+				],
+				"category": "light",
+				"tags": [
+					"Control",
+					"Light"
+				],
+				"readmeComment": "Value mapping `[\"light-toggle\"\u003d\"Light Toggle\",\"brightness-up\"\u003d\"Brightness Up\",\"brightness-down\"\u003d\"Brightness Down\"]`"
+			}
+		],
+		"experimental": true
+	}
+}

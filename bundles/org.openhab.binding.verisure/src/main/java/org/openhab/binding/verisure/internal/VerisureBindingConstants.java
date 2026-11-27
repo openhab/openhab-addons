@@ -105,6 +105,24 @@ public class VerisureBindingConstants {
     public static final String CHANNEL_DOOR_WINDOW_TRIGGER_CHANNEL = "doorWindowTriggerChannel";
     public static final String CHANNEL_GATEWAY_TRIGGER_CHANNEL = "gatewayTriggerChannel";
     public static final String CHANNEL_BATTERY_STATUS = "lowBattery";
+    public static final String CHANNEL_BATTERY_LEVEL = "batteryLevel";
+    public static final String CHANNEL_SYSTEM_HEALTH = "systemHealth";
+    public static final String CHANNEL_SYSTEM_HEALTH_ALERTS = "systemHealthAlerts";
+    public static final String CHANNEL_ARM_CHECK = "armCheck";
+    public static final String CHANNEL_ARM_CHECK_RESULT = "armCheckResult";
+    public static final String CHANNEL_VACATION_MODE = "vacationMode";
+    public static final String CHANNEL_VACATION_MODE_START = "vacationModeStart";
+    public static final String CHANNEL_VACATION_MODE_END = "vacationModeEnd";
+    public static final String CHANNEL_TEMPERATURE_ALERT_MIN = "temperatureAlertMin";
+    public static final String CHANNEL_TEMPERATURE_ALERT_MIN_ENABLED = "temperatureAlertMinEnabled";
+    public static final String CHANNEL_TEMPERATURE_ALERT_MAX = "temperatureAlertMax";
+    public static final String CHANNEL_TEMPERATURE_ALERT_MAX_ENABLED = "temperatureAlertMaxEnabled";
+    public static final String CHANNEL_HUMIDITY_ALERT_MIN = "humidityAlertMin";
+    public static final String CHANNEL_HUMIDITY_ALERT_MIN_ENABLED = "humidityAlertMinEnabled";
+    public static final String CHANNEL_HUMIDITY_ALERT_MAX = "humidityAlertMax";
+    public static final String CHANNEL_HUMIDITY_ALERT_MAX_ENABLED = "humidityAlertMaxEnabled";
+
+    public static final String PROPERTY_LATEST_FIRMWARE_VERSION = "latestFirmwareVersion";
 
     // Trigger channel events
     public static final String TRIGGER_EVENT_LOCK = "LOCK";
@@ -136,8 +154,6 @@ public class VerisureBindingConstants {
     public static final String ALARM_COMMAND = BASE_URL + "/remotecontrol/armstatechange.cmd";
     public static final String SMARTLOCK_LOCK_COMMAND = BASE_URL + "/remotecontrol/lockunlock.cmd";
     public static final String SMARTLOCK_SET_COMMAND = BASE_URL + "/overview/setdoorlock.cmd";
-    public static final String SMARTLOCK_AUTORELOCK_COMMAND = BASE_URL + "/settings/setautorelock.cmd";
-    public static final String SMARTLOCK_VOLUME_COMMAND = BASE_URL + "/settings/setvolume.cmd";
 
     public static final String SMARTPLUG_COMMAND = BASE_URL + "/settings/smartplug/onoffplug.cmd";
     public static final String START_REDIRECT = "/se/start.html";
@@ -151,11 +167,11 @@ public class VerisureBindingConstants {
     public static final String SET_INSTALLATION = BASE_URL + "/setinstallation?giid=";
     public static final String BASEURL_API = "https://m-api02.verisure.com";
     public static final String START_GRAPHQL = "/graphql";
+    public static final String START_GRAPHQL_MYPAGES = "/graphql/mypages";
     public static final String AUTH_TOKEN = "/auth/token";
     public static final String AUTH_LOGIN = "/auth/login";
 
     public static final String ALARMSTATUS_PATH = "/remotecontrol";
-    public static final String SMARTLOCK_PATH = "/overview/doorlock/";
     public static final String DOORWINDOW_PATH = "/settings/doorwindow";
     public static final String USERTRACKING_PATH = "/overview/usertrackingcontacts";
     public static final String CLIMATEDEVICE_PATH = "/overview/climatedevice";
@@ -165,5 +181,4 @@ public class VerisureBindingConstants {
     public static final String TEMPERATURE_CONTROL_PATH = "/overview/temperaturecontrol";
     public static final String MOUSEDETECTION_PATH = "/overview/mousedetection";
     public static final String CAMERA_PATH = "/overview/camera";
-    public static final String BATTERY_STATUS = "/batterywizard/choose/device?_";
 }

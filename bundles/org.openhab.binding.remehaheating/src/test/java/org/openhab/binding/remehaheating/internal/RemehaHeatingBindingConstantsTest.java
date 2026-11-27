@@ -43,6 +43,21 @@ public class RemehaHeatingBindingConstantsTest {
         assertEquals("dhw-mode", RemehaHeatingBindingConstants.CHANNEL_DHW_MODE);
         assertEquals("water-pressure-ok", RemehaHeatingBindingConstants.CHANNEL_WATER_PRESSURE_OK);
         assertEquals("dhw-status", RemehaHeatingBindingConstants.CHANNEL_DHW_STATUS);
+        assertEquals("thermal-mode", RemehaHeatingBindingConstants.CHANNEL_THERMAL_MODE);
+        assertEquals("operating-mode", RemehaHeatingBindingConstants.CHANNEL_OPERATING_MODE);
+        assertEquals("seasonal-mode", RemehaHeatingBindingConstants.CHANNEL_SEASONAL_MODE);
+        assertEquals("holiday-active", RemehaHeatingBindingConstants.CHANNEL_HOLIDAY_ACTIVE);
+        assertEquals("zone-mode", RemehaHeatingBindingConstants.CHANNEL_ZONE_MODE);
+        assertEquals("heating-demand", RemehaHeatingBindingConstants.CHANNEL_HEATING_DEMAND);
+        assertEquals("next-setpoint", RemehaHeatingBindingConstants.CHANNEL_NEXT_SETPOINT);
+        assertEquals("next-switch-time", RemehaHeatingBindingConstants.CHANNEL_NEXT_SWITCH_TIME);
+        assertEquals("fireplace-mode-active", RemehaHeatingBindingConstants.CHANNEL_FIREPLACE_MODE_ACTIVE);
+        assertEquals("dhw-next-switch-time", RemehaHeatingBindingConstants.CHANNEL_DHW_NEXT_SWITCH_TIME);
+        assertEquals("dhw-anti-legionella", RemehaHeatingBindingConstants.CHANNEL_DHW_ANTI_LEGIONELLA);
+        assertEquals("heating-curve-slope", RemehaHeatingBindingConstants.CHANNEL_HEATING_CURVE_SLOPE);
+        assertEquals("heating-curve-base-setpoint", RemehaHeatingBindingConstants.CHANNEL_HEATING_CURVE_BASE_SETPOINT);
+        assertEquals("heating-curve-max-flow-temperature",
+                RemehaHeatingBindingConstants.CHANNEL_HEATING_CURVE_MAX_FLOW_TEMPERATURE);
     }
 
     @Test

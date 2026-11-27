@@ -81,6 +81,7 @@ public class EvccHandlerFactory extends BaseThingHandlerFactory {
 
         if (THING_TYPE_SERVER.equals(type)) {
             handler = new EvccBridgeHandler((Bridge) thing, httpClientFactory, i18nProvider, localeProvider);
+            // handler = new EvccBridgeHandler((Bridge) thing, httpClientFactory, i18nProvider, localeProvider);
         } else if (THING_TYPE_SITE.equals(type)) {
             handler = new EvccSiteHandler(thing, channelTypeRegistry);
         } else if (THING_TYPE_VEHICLE.equals(type)) {

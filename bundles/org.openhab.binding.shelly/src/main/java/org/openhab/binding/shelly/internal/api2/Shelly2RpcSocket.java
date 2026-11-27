@@ -14,7 +14,7 @@ package org.openhab.binding.shelly.internal.api2;
 
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.SHELLY_API_TIMEOUT_MS;
 import static org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.*;
-import static org.openhab.binding.shelly.internal.api2.ShellyBluJsonDTO.*;
+import static org.openhab.binding.shelly.internal.api2.dto.ShellyBluJsonDTO.*;
 import static org.openhab.binding.shelly.internal.discovery.ShellyThingCreator.addBluThing;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
@@ -24,30 +24,27 @@ import java.net.InetSocketAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.ByteBuffer;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-
-import javax.ws.rs.core.HttpHeaders;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.websocket.api.RemoteEndpoint;
+import org.eclipse.jetty.websocket.api.Callback;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.StatusCode;
-import org.eclipse.jetty.websocket.api.WriteCallback;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
-import org.eclipse.jetty.websocket.api.annotations.OnWebSocketConnect;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketError;
-import org.eclipse.jetty.websocket.api.annotations.OnWebSocketFrame;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketOpen;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketPong;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
-import org.eclipse.jetty.websocket.api.extensions.Frame;
 import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
-import org.eclipse.jetty.websocket.common.OpCode;
 import org.openhab.binding.shelly.internal.api.ShellyApiException;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2NotifyEvent;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2NotifyEventData;
@@ -62,13 +59,18 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 
+import jakarta.ws.rs.core.HttpHeaders;
+
 /**
  * @author Markus Michels - Initial contribution
  */
 @NonNullByDefault
-@WebSocket(maxIdleTime = 7 * 60 * 1000)
-public class Shelly2RpcSocket implements WriteCallback {
+@WebSocket
+public class Shelly2RpcSocket implements Callback {
+    static final int MAX_IDLE_TIME_MS = 7 * 60 * 1000;
     private static final long PING_TASK_FREQUENCY_MIN = 2; // = 3 ping before timeout
+    private static final AtomicLong CONNECTION_IDS = new AtomicLong();
+    private static final long CURRENT_CONNECTION = 0;
     private final Logger logger = LoggerFactory.getLogger(Shelly2RpcSocket.class);
     private final Gson gson = new Gson();
 
@@ -85,6 +87,12 @@ public class Shelly2RpcSocket implements WriteCallback {
 
     // All access must be guarded by "this"
     private @Nullable Shelly2RpctInterface websocketHandler;
+
+    // All access must be guarded by "this"
+    private boolean disposed = false;
+
+    // All access must be guarded by "this"; unique across sockets, so a replaced socket's id never matches
+    private long connectionId = CONNECTION_IDS.incrementAndGet();
 
     private final WebSocketClient client;
     private final ScheduledExecutorService scheduler;
@@ -168,11 +176,15 @@ public class Shelly2RpcSocket implements WriteCallback {
 
         // Start connecting the WebSocket session (result will be passed to onConnect()/onError())
         synchronized (this) {
+            if (disposed) {
+                throw new ShellyApiException(thingName + ": WebSocket was disposed, connect rejected");
+            }
             disconnect(); // for safety
+            connectionId = CONNECTION_IDS.incrementAndGet();
 
             try {
                 // Connect async
-                client.connect(this, uri, request);
+                client.connect(new ConnectAttempt(connectionId), uri, request);
             } catch (RuntimeException | IOException e) {
                 // Keep this if your Jetty version still declares IOException on start()/connect path
                 throw new ShellyApiException("Failed to connect WebSocket: " + e.getMessage(), e);
@@ -185,20 +197,31 @@ public class Shelly2RpcSocket implements WriteCallback {
      *
      * @param session Newly created WebSocket connection
      */
-    @OnWebSocketConnect
+    @OnWebSocketOpen
     public void onConnect(Session session) {
-        if (session.getRemoteAddress() == null) {
+        onConnect(session, CURRENT_CONNECTION);
+    }
+
+    private void onConnect(Session session, long attemptId) {
+        if (session.getRemoteSocketAddress() == null) {
             if (logger.isDebugEnabled()) {
                 logger.debug("{}: Invalid inbound WebSocket connect (invalid remote ip)", thingName);
             }
-            session.close(StatusCode.ABNORMAL, "Invalid remote IP");
+            session.close(StatusCode.ABNORMAL, "Invalid remote IP", Callback.NOOP);
+            return;
+        }
+        // Jetty 12 no longer takes the idle timeout from the @WebSocket annotation
+        session.setIdleTimeout(Duration.ofMillis(MAX_IDLE_TIME_MS));
+
+        if (isDisposed()) {
+            closeDisposedSession(session);
             return;
         }
 
         InetSocketAddress socketAddr = this.deviceSocketAddr;
         if (socketAddr == null) {
             // This is the inbound event web socket
-            this.deviceSocketAddr = socketAddr = session.getRemoteAddress();
+            this.deviceSocketAddr = socketAddr = (InetSocketAddress) session.getRemoteSocketAddress();
         }
 
         // It's a bit wasteful to retrieve the ThingInterface even if we already have a handler, but we can't call
@@ -211,32 +234,49 @@ public class Shelly2RpcSocket implements WriteCallback {
         } catch (IllegalArgumentException e) { // unknown thing
             logger.debug("{}: Inbound connection request from {}, but unknown/disabled thing - {}, closing socket",
                     thingName, socketAddr, e.getMessage());
-            session.close(StatusCode.SHUTDOWN, "Thing not active");
+            session.close(StatusCode.SHUTDOWN, "Thing not active", Callback.NOOP);
             return;
         }
 
+        @Nullable
         Shelly2RpctInterface handler;
         List<String> queue = null;
+        boolean replaced;
         synchronized (this) {
-            handler = websocketHandler;
-            this.session = session;
-            if (handler == null) {
-                Shelly2ApiRpc api = (Shelly2ApiRpc) thing.getApi();
+            replaced = isReplacedAttempt(attemptId);
+            handler = disposed || replaced ? null : websocketHandler;
+            if (handler == null && !disposed && !replaced && thing.getApi() instanceof Shelly2ApiRpc api) {
                 handler = api.getRpcHandler();
                 websocketHandler = handler;
             }
+            if (handler != null) {
+                this.session = session;
 
-            if (!sendQueue.isEmpty()) {
-                queue = List.copyOf(sendQueue);
-                sendQueue.clear();
+                if (!sendQueue.isEmpty()) {
+                    queue = List.copyOf(sendQueue);
+                    sendQueue.clear();
+                }
+
+                // keep atomic with the disposed check, or a racing dispose() won't cancel this task
+                startPing(session);
             }
         }
 
-        if (logger.isDebugEnabled()) {
-            logger.debug("{}: WebSocket connected {}<-{}, Idle Timeout={}", thingName, session.getLocalAddress(),
-                    session.getRemoteAddress(), session.getIdleTimeout());
+        if (replaced) {
+            logger.debug("{}: WebSocket connect of a replaced attempt completed, closing session", thingName);
+            session.close(StatusCode.NORMAL, "Connection replaced", Callback.NOOP);
+            return;
         }
-        startPing(session);
+        if (handler == null) {
+            // dispose() came in while this connect was being processed, or the Thing has no RPC API
+            closeDisposedSession(session);
+            return;
+        }
+
+        if (logger.isDebugEnabled()) {
+            logger.debug("{}: WebSocket connected {}<-{}, Idle Timeout={}", thingName, session.getLocalSocketAddress(),
+                    session.getRemoteSocketAddress(), session.getIdleTimeout());
+        }
         handler.onConnect(socketAddr, true);
 
         if (queue != null) {
@@ -244,9 +284,8 @@ public class Shelly2RpcSocket implements WriteCallback {
                 logger.debug("{}: Sending {} queued RPC request{}", thingName, queue.size(),
                         queue.size() > 1 ? "s" : "");
             }
-            RemoteEndpoint remote = session.getRemote();
             for (String msg : queue) {
-                remote.sendString(msg, this);
+                session.sendText(msg, this);
             }
         }
     }
@@ -282,21 +321,20 @@ public class Shelly2RpcSocket implements WriteCallback {
             }
         }
 
-        RemoteEndpoint remote = session.getRemote();
         if (queue != null) {
             if (logger.isDebugEnabled()) {
                 logger.debug("{}: Sending {} queued API request{}", thingName, queue.size(),
                         queue.size() > 1 ? "s" : "");
             }
             for (String queued : queue) {
-                remote.sendString(queued, this);
+                session.sendText(queued, this);
             }
         }
 
         if (logger.isTraceEnabled()) {
             logger.trace("{}: Sending RPC message {}", thingName, str);
         }
-        remote.sendString(str, this);
+        session.sendText(str, this);
     }
 
     /**
@@ -305,19 +343,43 @@ public class Shelly2RpcSocket implements WriteCallback {
      * Clears {@code sendQueue} (NOT preserved across reconnects).
      */
     public void disconnect() {
-        stopPing();
         Session session;
         synchronized (this) {
+            stopPing();
             session = this.session;
             cleanup();// set session=null, clear send queue
         }
         if (session != null && session.isOpen()) {
             if (logger.isTraceEnabled()) {
-                logger.trace("{}: Closing WebSocket session ({} -> {})", thingName, session.getLocalAddress(),
-                        session.getRemoteAddress());
+                logger.trace("{}: Closing WebSocket session ({} -> {})", thingName, session.getLocalSocketAddress(),
+                        session.getRemoteSocketAddress());
             }
-            session.close(StatusCode.NORMAL, "Socket closed");
+            session.close(StatusCode.NORMAL, "Socket closed", Callback.NOOP);
         }
+    }
+
+    /**
+     * Detach the socket from its message handler for good and close the session.
+     * <p>
+     * Jetty delivers connect, close and error callbacks asynchronously on its own threads, so they can still arrive
+     * after {@link #disconnect()} has returned. Dropping the handler first makes sure that a socket which is torn
+     * down while the Thing is being disposed can no longer report anything to a handler which no longer exists.
+     */
+    public void dispose() {
+        synchronized (this) {
+            disposed = true;
+            websocketHandler = null;
+        }
+        disconnect();
+    }
+
+    private synchronized boolean isDisposed() {
+        return disposed;
+    }
+
+    private void closeDisposedSession(Session session) {
+        logger.debug("{}: WebSocket connected after the Thing was disposed, closing session", thingName);
+        session.close(StatusCode.SHUTDOWN, "Thing disposed", Callback.NOOP);
     }
 
     /**
@@ -341,10 +403,12 @@ public class Shelly2RpcSocket implements WriteCallback {
                 if (thingName.isEmpty()) {
                     thingName = getString(message.src);
                 }
-                if (message.method == null) {
-                    message.method = SHELLYRPC_METHOD_NOTIFYFULLSTATUS;
+                String method = message.method;
+                if (method == null) {
+                    method = SHELLYRPC_METHOD_NOTIFYFULLSTATUS;
+                    message.method = method;
                 }
-                switch (message.method) {
+                switch (method) {
                     case SHELLYRPC_METHOD_NOTIFYSTATUS:
                     case SHELLYRPC_METHOD_NOTIFYFULLSTATUS:
                         Shelly2RpcNotifyStatus status = fromJson(gson, receivedMessage, Shelly2RpcNotifyStatus.class);
@@ -361,9 +425,10 @@ public class Shelly2RpcSocket implements WriteCallback {
                         if (notifyEvents == null) {
                             logger.debug("{}: Malformed event data: {}", thingName, receivedMessage);
                         } else {
+                            boolean hasRegularEvent = false;
                             for (Shelly2NotifyEvent e : notifyEvents) {
                                 if (getString(e.event).startsWith(SHELLY2_EVENT_BLUPREFIX)) {
-                                    Shelly2NotifyBluEventData blu = e.blu;
+                                    Shelly2NotifyBluEventData blu = e.getBluData(gson);
                                     String address = getString(blu != null ? blu.addr : "").replace(":", "");
                                     ShellyThingInterface bluThing = thingTable.findThing(address);
                                     if (bluThing != null) {
@@ -387,10 +452,14 @@ public class Shelly2RpcSocket implements WriteCallback {
                                                     message.src, e.event, blu.addr);
                                         }
                                     }
+                                } else if (SHELLY2_EVENT_BLE_SCAN_RESULT.equals(e.event)) {
+                                    logger.trace("{}: Ignoring {} event from non-BLU BLE scanner", thingName, e.event);
                                 } else {
-                                    // non-BLU event: always use the hub's handler, never the BLU one
-                                    handler.onNotifyEvent(receivedMessage);
+                                    hasRegularEvent = true;
                                 }
+                            }
+                            if (hasRegularEvent) {
+                                handler.onNotifyEvent(receivedMessage);
                             }
                         }
                         break;
@@ -405,6 +474,9 @@ public class Shelly2RpcSocket implements WriteCallback {
             }
         } catch (ShellyApiException | IllegalArgumentException e) {
             logger.debug("{}: Unable to process Rpc message ({}): {}", thingName, e.getMessage(), receivedMessage);
+        } catch (RuntimeException e) {
+            // escaping to Jetty would close the session and take the Thing offline for a single bad message
+            logger.warn("{}: Unexpected error processing Rpc message: {}", thingName, receivedMessage, e);
         }
     }
 
@@ -420,16 +492,25 @@ public class Shelly2RpcSocket implements WriteCallback {
      * @param reason Textual reason
      */
     @OnWebSocketClose
-    public void onClose(int statusCode, String reason) {
+    public void onClose(@Nullable Session session, int statusCode, String reason) {
+        onClose(session, statusCode, reason, CURRENT_CONNECTION);
+    }
+
+    private void onClose(@Nullable Session session, int statusCode, String reason, long attemptId) {
         if (statusCode != StatusCode.NORMAL && logger.isTraceEnabled()) {
             logger.trace("{}: RPC connection closed abnormally: {} - {}", thingName, statusCode, getString(reason));
         }
 
-        stopPing();
-
         Shelly2RpctInterface handler;
+        long closedConnectionId;
         synchronized (this) {
+            if (isStaleSession(session) || isReplacedAttempt(attemptId)) {
+                logger.trace("{}: Ignore close of a replaced WebSocket session", thingName);
+                return;
+            }
+            stopPing();
             handler = this.websocketHandler;
+            closedConnectionId = connectionId;
 
             // set session=null, clear send queue
             // this also prevents another socket closed issued by thingOffline()->api-close()->close()
@@ -437,7 +518,7 @@ public class Shelly2RpcSocket implements WriteCallback {
         }
 
         if (handler != null) {
-            handler.onClose(inbound, statusCode, reason);
+            handler.onClose(closedConnectionId, inbound, statusCode, reason);
         }
     }
 
@@ -447,12 +528,21 @@ public class Shelly2RpcSocket implements WriteCallback {
      * @param cause WebSocket error/Exception
      */
     @OnWebSocketError
-    public void onError(Throwable cause) {
-        stopPing();
+    public void onError(@Nullable Session session, Throwable cause) {
+        onError(session, cause, CURRENT_CONNECTION);
+    }
 
+    private void onError(@Nullable Session session, Throwable cause, long attemptId) {
         Shelly2RpctInterface websocketHandler;
+        long failedConnectionId;
         synchronized (this) {
+            if (isStaleSession(session) || isReplacedAttempt(attemptId)) {
+                logger.trace("{}: Ignore error of a replaced WebSocket session: {}", thingName, cause.getMessage());
+                return;
+            }
+            stopPing();
             websocketHandler = this.websocketHandler;
+            failedConnectionId = connectionId;
 
             // set session=null, clear send queue
             // this also prevents another socket closed issued by thingOffline()->api-close()->close()
@@ -464,7 +554,69 @@ public class Shelly2RpcSocket implements WriteCallback {
             return;
         }
         if (websocketHandler != null) {
-            websocketHandler.onError(cause);
+            websocketHandler.onError(failedConnectionId, cause);
+        }
+    }
+
+    /**
+     * A reconnect started after a close/error was reported assigns a new id, so the late callback can be recognized
+     * and must not tear down the replacement connection.
+     */
+    public synchronized boolean isCurrentConnection(long connectionId) {
+        return this.connectionId == connectionId;
+    }
+
+    /**
+     * Jetty reports close/error of a previous session asynchronously, possibly after a reconnect already released it
+     * or installed a new one; tearing down for it would drop the requests queued for, or the connection of, the new
+     * session.
+     */
+    private boolean isStaleSession(@Nullable Session callbackSession) {
+        return callbackSession != null && !callbackSession.equals(this.session);
+    }
+
+    /**
+     * A connect attempt can still fail or complete after a newer attempt was started, Jetty then reports it without
+     * a session, so only the attempt's own id tells whether it is still the current one.
+     */
+    private boolean isReplacedAttempt(long attemptId) {
+        return attemptId != CURRENT_CONNECTION && attemptId != connectionId;
+    }
+
+    /**
+     * Endpoint of a single outbound connect attempt, passing its callbacks on together with the attempt's id.
+     */
+    @WebSocket
+    public class ConnectAttempt {
+        private final long attemptId;
+
+        ConnectAttempt(long attemptId) {
+            this.attemptId = attemptId;
+        }
+
+        @OnWebSocketOpen
+        public void onConnect(Session session) {
+            Shelly2RpcSocket.this.onConnect(session, attemptId);
+        }
+
+        @OnWebSocketMessage
+        public void onMessage(Session session, String receivedMessage) {
+            Shelly2RpcSocket.this.onMessage(session, receivedMessage);
+        }
+
+        @OnWebSocketClose
+        public void onClose(@Nullable Session session, int statusCode, String reason) {
+            Shelly2RpcSocket.this.onClose(session, statusCode, reason, attemptId);
+        }
+
+        @OnWebSocketError
+        public void onError(@Nullable Session session, Throwable cause) {
+            Shelly2RpcSocket.this.onError(session, cause, attemptId);
+        }
+
+        @OnWebSocketPong
+        public void onPong(ByteBuffer payload) {
+            Shelly2RpcSocket.this.onPong(payload);
         }
     }
 
@@ -491,27 +643,17 @@ public class Shelly2RpcSocket implements WriteCallback {
         }
     }
 
-    @OnWebSocketFrame
-    public void onFrame(Frame frame) {
-        switch (frame.getOpCode()) {
-            case OpCode.PING:
-                // Jetty auto-responds with PONG by default
-                if (logger.isTraceEnabled()) {
-                    logger.trace("{}: WebSocket PING received", thingName);
-                }
-                break;
-            case OpCode.PONG:
-                if (logger.isTraceEnabled()) {
-                    logger.trace("{}: WebSocket PONG received", thingName);
-                }
-                Shelly2RpctInterface websocketHandler;
-                synchronized (this) {
-                    websocketHandler = this.websocketHandler;
-                }
-                if (websocketHandler != null) {
-                    websocketHandler.onPong();
-                }
-                break;
+    @OnWebSocketPong
+    public void onPong(ByteBuffer payload) {
+        if (logger.isTraceEnabled()) {
+            logger.trace("{}: WebSocket PONG received", thingName);
+        }
+        Shelly2RpctInterface websocketHandler;
+        synchronized (this) {
+            websocketHandler = this.websocketHandler;
+        }
+        if (websocketHandler != null) {
+            websocketHandler.onPong();
         }
     }
 
@@ -537,7 +679,7 @@ public class Shelly2RpcSocket implements WriteCallback {
      * Asynchronous write completed with error
      */
     @Override
-    public void writeFailed(@Nullable Throwable x) {
+    public void fail(@Nullable Throwable x) {
         if (logger.isDebugEnabled()) {
             if (x == null) {
                 logger.debug("{}: Sending RPC Message failed", thingName);
@@ -551,7 +693,7 @@ public class Shelly2RpcSocket implements WriteCallback {
      * Asynchronous write completed with success
      */
     @Override
-    public void writeSuccess() {
+    public void succeed() {
         // Nothing to do
     }
 
@@ -579,22 +721,15 @@ public class Shelly2RpcSocket implements WriteCallback {
 
         @Override
         public void run() {
-            Session session;
-            synchronized (this) {
-                session = this.session;
-            }
             if (session.isOpen()) {
-                RemoteEndpoint remote = session.getRemote();
+                InetSocketAddress remoteAddr = (InetSocketAddress) session.getRemoteSocketAddress();
                 if (logger.isTraceEnabled()) {
-                    logger.trace("Sending WebSocket ping to {}", remote.getInetSocketAddress().getHostString());
+                    logger.trace("Sending WebSocket ping to {}",
+                            remoteAddr != null ? remoteAddr.getHostString() : "unknown");
                 }
-                try {
-                    remote.sendPing(ByteBuffer.allocate(0));
-                } catch (IOException e) {
-                    logger.debug("Faied to send WebSocket ping to {}: {}",
-                            remote.getInetSocketAddress().getHostString(), e.getMessage());
-                    logger.trace("", e);
-                }
+                session.sendPing(ByteBuffer.allocate(0), Callback.from(() -> {
+                }, e -> logger.debug("Failed to send WebSocket ping to {}: {}",
+                        remoteAddr != null ? remoteAddr.getHostString() : "unknown", e.getMessage())));
             }
         }
     }

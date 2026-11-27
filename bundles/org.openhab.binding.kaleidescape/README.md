@@ -5,11 +5,11 @@ Beyond just integrating playback transport controls, all meta-data provided via 
 By using rules, it is possible to control other Things such as lighting, projector lens shift, screen masking, etc. based on events that occur during movie playback.
 A simulated remote control is available in BasicUI using the Buttongrid sitemap element described below.
 Finally, any other command that is supported by the control protocol can be sent to the component through rules.
-See [Kaleidescape-System-Control-Protocol-Reference-Manual.pdf](https://support.kaleidescape.com/article/Control-Protocol-Reference-Manual) for a reference of available commands.
+See [Kaleidescape-System-Control-Protocol-Reference-Manual.pdf](https://support.kaleidescape.com/support/article/Control-Protocol-Reference-Manual) for a reference of available commands.
 
 ## Supported Things
 
-All movie player components including the original K-Player series, M Class Players, Cinema One, Alto, and Strato are supported.
+All movie player components including legacy Premiere line components (K-Player, M Class & Cinema One) and Encore line components (Alto & Strato) are supported.
 It is important to choose the correct Thing type to ensure the available channels are correct for the component being used.
 
 The supported Thing types are:
@@ -17,7 +17,7 @@ The supported Thing types are:
 - `player` Any KPlayer, M Class [M300, M500, M700] or Cinema One 1st Gen player
 - `cinemaone` Cinema One (2nd Gen)
 - `alto`
-- `strato` Includes Strato, Strato S, Strato C, Strato V, Strato M, or Strato E
+- `strato` Includes Strato, Strato S, Strato C, Strato V, Strato M, Strato E, or Strato K
 
 The binding supports either a TCP/IP connection or direct serial port connection (19200-8-N-1) to the Kaleidescape component.
 
@@ -25,23 +25,24 @@ The binding supports either a TCP/IP connection or direct serial port connection
 
 Auto-discovery is supported for Alto and Strato components if the device can be located on the local network using SDDP.
 Manually initiated discovery will locate all legacy Premiere line components if they are on the same IP subnet of the openHAB server.
-In the Inbox, select Search for Things and then choose the Kaleidescape Binding to initiate a discovery scan.
+When adding a Thing, choose the Kaleidescape Binding and then press the Scan button to initiate discovery.
 
 ## Thing Configuration
 
 The Thing has the following configuration parameters:
 
-| Parameter Label                   | Parameter ID           | Description                                                                                                                             | Accepted values                                      |
-|-----------------------------------|------------------------|-----------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------|
-| Address                           | host                   | Host name or IP address of the Kaleidescape component                                                                                   | A host name or IP address                            |
-| Port                              | port                   | Communication port of the IP connection                                                                                                 | 10000 (default - should not need to change)          |
-| Serial Port                       | serialPort             | Serial port for connecting directly to a component                                                                                      | Serial port name (optional)                          |
-| Update Period                     | updatePeriod           | Tells the component how often time status updates should be sent (see notes below)                                                      | 0 or 1 are the currently accepted values (default 0) |
-| Advanced Volume Control Enabled   | volumeEnabled          | Enable the volume and mute controls in the K iPad & phone apps; when enabled the volume and mute channels described below are active    | Boolean (default false)                              |
-| Initial Volume Setting            | initialVolume          | Initial volume level set when the binding starts up                                                                                     | 0 to 75 (default 25)                                 |
-| Basic Volume Control Enabled      | volumeBasicEnabled     | Enables stateless volume up/down and mute controls in the K apps; cannot be used when `volumeEnabled` is true (see rules example below) | Boolean (default false)                              |
-| Load Highlighted Details          | loadHighlightedDetails | When enabled the binding will automatically load the metadata channels when the selected item in the UI (Movie or Album) changes        | Boolean (default false)                              |
-| Load Album Details                | loadAlbumDetails       | When enabled the binding will automatically load the metadata channels for the currently playing Album                                  | Boolean (default false) N/A for Alto and Strato      |
+| Parameter Label                   | Parameter ID            | Description                                                                                                                             | Accepted values                                      |
+|-----------------------------------|-------------------------|-----------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------|
+| Address                           | host                    | Host name or IP address of the Kaleidescape component                                                                                   | A host name or IP address                            |
+| Port                              | port                    | Communication port of the IP connection                                                                                                 | 10000 (default - should not need to change)          |
+| Serial Port                       | serialPort              | Serial port for connecting directly to a component                                                                                      | Serial port name (optional)                          |
+| Update Period                     | updatePeriod            | Tells the component how often time status updates should be sent (see notes below)                                                      | 0 or 1 are the currently accepted values (default 0) |
+| Advanced Volume Control Enabled   | volumeEnabled           | Enable the volume and mute controls in the K iPad & phone apps; when enabled the volume and mute channels described below are active    | Boolean (default false)                              |
+| Initial Volume Setting            | initialVolume           | Initial volume level set when the binding starts up                                                                                     | 0 to 75 (default 25)                                 |
+| Basic Volume Control Enabled      | volumeBasicEnabled      | Enables stateless volume up/down and mute controls in the K apps; cannot be used when `volumeEnabled` is true (see rules example below) | Boolean (default false)                              |
+| Load Highlighted Details          | loadHighlightedDetails  | When enabled the binding will automatically load the metadata channels when the selected item in the UI (Movie or Album) changes        | Boolean (default false)                              |
+| Load Album Details                | loadAlbumDetails        | When enabled the binding will automatically load the metadata channels for the currently playing Album                                  | Boolean (default false) N/A for Alto and Strato      |
+| Parental Control Passcode         | parentalControlPasscode | The passcode to change parental control levels (Alto and Strato only)                                                                   | String (1 to 8 digits, optional)                     |
 
 Some notes:
 
@@ -49,7 +50,6 @@ Some notes:
 - When set to the default of 0, the component only sends running time update messages sporadically (as an example: when the movie chapter changes) while content is playing.
 - In this case, the running time channels will also only sporadically update.
 - When updatePeriod is set to 1 (values greater than 1 are not yet supported by the control protocol), the component sends running time status update messages every second.
-- Be aware that this could cause performance impacts to your openHAB system.
 
 - On Linux, you may get an error stating the serial port cannot be opened when the Kaleidescape binding tries to load.
 - You can get around this by adding the `openhab` user to the `dialout` group like this: `usermod -a -G dialout openhab`.
@@ -73,6 +73,7 @@ The following channels are available:
 | ui#title_length            | Number:Time | The total running time of the currently playing movie (seconds)                                                                 |
 | ui#title_loc               | Number:Time | The running time elapsed of the currently playing movie (seconds)                                                               |
 | ui#endtime                 | DateTime    | The date/time when the currently playing movie will end (timestamp)                                                             |
+| ui#progress                | Dimmer      | The percentage complete [0-100%] of the currently playing movie                                                                 |
 | ui#chapter_num             | Number      | The current chapter number of the movie that is playing                                                                         |
 | ui#chapter_length          | Number:Time | The total running time of the current chapter (seconds)                                                                         |
 | ui#chapter_loc             | Number:Time | The running time elapsed of the current chapter                                                                                 |
@@ -80,6 +81,7 @@ The following channels are available:
 | ui#movie_location          | String      | Identifies the location in the movie, ie: Main content, Intermission, or End Credits                                            |
 | ui#aspect_ratio            | String      | Identifies the aspect ratio of the movie                                                                                        |
 | ui#video_mode              | String      | Raw output of video mode data from the component, format: 00:00:00                                                              |
+| ui#video-mode2             | String      | Identifies characteristics of the HDMI video mode currently active (Strato Only)                                                |
 | ui#video_mode_composite    | String      | Identifies the video mode currently active on the composite video output                                                        |
 | ui#video_mode_component    | String      | Identifies the video mode currently active on the component video output                                                        |
 | ui#video_mode_hdmi         | String      | Identifies the video mode currently active on the HDMI video output                                                             |
@@ -101,6 +103,7 @@ The following channels are available:
 | ui#user_input_prompt       | String      | Indicates user input prompt info and properties currently shown on screen                                                       |
 | ui#sendcmd                 | String      | Sends a raw command to the Kaleidescape player (write-only)                                                                     |
 | ui#search                  | String      | Executes a movie title search in the UI for the given string (write-only)                                                       |
+| parental-control#level     | Number      | Retrieves or sets the parental control level (1-8) (Alto and Strato only)                                                       |
 | -- music channels (not available on Alto and Strato) --                                                                                                                    |||
 | music#control              | Player      | Control Music Playback e.g. play/pause/next/previous/ffward/rewind                                                              |
 | music#repeat               | Switch      | Controls repeat playback for music                                                                                              |
@@ -166,7 +169,8 @@ String z1_Ui_PlaySpeed "Play Speed: [%s]" { channel="kaleidescape:player:myzone1
 Number z1_Ui_TitleNum "Title Number: [%s]" { channel="kaleidescape:player:myzone1:ui#title_num" }
 Number:Time z1_Ui_TitleLength "Title Length: [%s]" { channel="kaleidescape:player:myzone1:ui#title_length" }
 Number:Time z1_Ui_TitleLoc "Title Location: [%s]" { channel="kaleidescape:player:myzone1:ui#title_loc" }
-DateTime z1_Ui_TitleEndTime "Title End Time: [%s]" { channel="kaleidescape:player:myzone1:ui#endtime" }
+DateTime z1_Ui_TitleEndTime "Title End Time: [%1$tY-%1$tm-%1$td %1$tH:%1$tM]" { channel="kaleidescape:player:myzone1:ui#endtime" }
+Dimmer z1_Ui_TitleProgress "Title Progress [%.0f%%]" { channel="kaleidescape:player:myzone1:ui#progress" }
 Number z1_Ui_ChapterNum "Chapter Number: [%s]" { channel="kaleidescape:player:myzone1:ui#chapter_num" }
 Number:Time z1_Ui_ChapterLength "Chapter Length: [%s]" { channel="kaleidescape:player:myzone1:ui#chapter_length" }
 Number:Time z1_Ui_ChapterLoc "Chapter Location: [%s]" { channel="kaleidescape:player:myzone1:ui#chapter_loc" }
@@ -174,6 +178,8 @@ String z1_Ui_MovieMediaType "Media Type: [%s]" { channel="kaleidescape:player:my
 String z1_Ui_MovieLocation "Movie Location: [%s]" { channel="kaleidescape:player:myzone1:ui#movie_location" }
 String z1_Ui_AspectRatio "Aspect Ratio: [%s]" { channel="kaleidescape:player:myzone1:ui#aspect_ratio" }
 String z1_Ui_VideoMode "Video Mode (raw): [%s]" { channel="kaleidescape:player:myzone1:ui#video_mode" }
+// Video Mode 2 only available on the Strato
+String z1_Ui_VideoMode2 "Video Mode 2: [%s]" { channel="kaleidescape:player:myzone1:ui#video-mode2" }
 String z1_Ui_VideoModeComposite "Video Mode (Composite): [%s]" { channel="kaleidescape:player:myzone1:ui#video_mode_composite" }
 String z1_Ui_VideoModeComponent "Video Mode (Component): [%s]" { channel="kaleidescape:player:myzone1:ui#video_mode_component" }
 String z1_Ui_VideoModeHdmi "Video Mode (HDMI): [%s]" { channel="kaleidescape:player:myzone1:ui#video_mode_hdmi" }
@@ -196,6 +202,8 @@ String z1_Ui_UserInput "User Input: [%s]" { channel="kaleidescape:player:myzone1
 String z1_Ui_UserInputPrompt "User Input Prompt[%s]" { channel="kaleidescape:player:myzone1:ui#user_input_prompt" }
 String z1_Ui_Sendcmd "Send Command" { channel="kaleidescape:player:myzone1:ui#sendcmd" }
 String z1_Ui_MovieSearch "Movie Search" { channel="kaleidescape:player:myzone1:ui#search" }
+// Alto and Strato only
+String z1_ParentalControlLevel "Parental Control Level: [%s]" { channel="kaleidescape:player:myzone1:parental-control#level" }
 
 // Music Channels (not available on Alto or Strato)
 Player z1_Music_Control "Music Control" { channel="kaleidescape:player:myzone1:music#control" }
@@ -274,6 +282,7 @@ sitemap kaleidescape label="Kaleidescape" {
             Text item=z1_Ui_TitleLength icon="time"
             Text item=z1_Ui_TitleLoc icon="time"
             Text item=z1_Ui_TitleEndTime icon="time"
+            Slider item=z1_Ui_TitleProgress icon="time"
             Text item=z1_Ui_MovieMediaType icon="colorwheel"
             Text item=z1_Ui_ChapterNum icon="video"
             Text item=z1_Ui_ChapterLength icon="time"
@@ -281,6 +290,7 @@ sitemap kaleidescape label="Kaleidescape" {
             Text item=z1_Ui_MovieLocation icon="video"
             Text item=z1_Ui_AspectRatio icon="cinemascreen"
             Text item=z1_Ui_VideoMode icon="screen"
+            Text item=z1_Ui_VideoMode2 icon="screen"
             Text item=z1_Ui_VideoModeComposite icon="screen"
             Text item=z1_Ui_VideoModeComponent icon="screen"
             Text item=z1_Ui_VideoModeHdmi icon="screen"
@@ -295,6 +305,7 @@ sitemap kaleidescape label="Kaleidescape" {
             Text item=z1_Ui_CinemascapeMode icon="screen"
             Text item=z1_Ui_UiState icon="player"
             Text item=z1_Ui_ChildModeState icon="player"
+            Text item=z1_ParentalControlLevel icon="lock"
             Text item=z1_Ui_ReadinessState icon="switch"
             Text item=z1_Ui_HighlightedSelection icon="zoom"
             Text item=z1_Ui_UserDefinedEvent icon="zoom"

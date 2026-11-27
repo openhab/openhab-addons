@@ -148,14 +148,15 @@ public class MatterLabelUtils {
         Integer deviceTypeID = -1;
         if (descriptorCluster != null && !descriptorCluster.deviceTypeList.isEmpty()) {
             for (DeviceTypeStruct ds : descriptorCluster.deviceTypeList) {
+                int deviceType = ds.deviceType.intValue();
                 // ignore bridge types
-                if (!DeviceTypes.BRIDGED_NODE.equals(ds.deviceType) && !DeviceTypes.AGGREGATOR.equals(ds.deviceType)) {
-                    deviceTypeID = ds.deviceType;
+                if (deviceType != DeviceTypes.BRIDGED_NODE && deviceType != DeviceTypes.AGGREGATOR) {
+                    deviceTypeID = deviceType;
                     break;
                 }
             }
             if (deviceTypeID == -1) {
-                deviceTypeID = descriptorCluster.deviceTypeList.get(0).deviceType;
+                deviceTypeID = descriptorCluster.deviceTypeList.get(0).deviceType.intValue();
             }
         }
         return deviceTypeID;

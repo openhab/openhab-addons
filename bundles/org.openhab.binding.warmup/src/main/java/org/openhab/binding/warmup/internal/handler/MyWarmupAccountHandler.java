@@ -55,16 +55,15 @@ public class MyWarmupAccountHandler extends BaseBridgeHandler {
     public void initialize() {
         MyWarmupConfigurationDTO config = getConfigAs(MyWarmupConfigurationDTO.class);
         if (config.username.length() == 0) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Username not configured");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Username not configured");
         } else if (config.password.length() == 0) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Password not configured");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Password not configured");
         } else if (config.refreshInterval >= 10) {
             api.setConfiguration(config);
             refreshJob = scheduler.scheduleWithFixedDelay(this::refreshFromServer, 0, config.refreshInterval,
                     TimeUnit.SECONDS);
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Refresh interval misconfigured (minimum 10s)");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Refresh interval misconfigured (minimum 10s)");
         }
     }
 
@@ -95,7 +94,7 @@ public class MyWarmupAccountHandler extends BaseBridgeHandler {
             updateStatus(ThingStatus.ONLINE);
         } catch (MyWarmupApiException e) {
             queryResponse = null;
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
         refreshFromCache();
     }

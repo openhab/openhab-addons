@@ -45,6 +45,7 @@ import org.slf4j.LoggerFactory;
  * sent to one of the channels.
  *
  * @author Mark Herwege - Initial Contribution
+ * @author Leo Siepel - Validate percentage action states
  */
 @NonNullByDefault
 public class NikoHomeControlActionHandler extends NikoHomeControlBaseHandler implements NhcActionEvent {
@@ -121,13 +122,13 @@ public class NikoHomeControlActionHandler extends NikoHomeControlBaseHandler imp
                 nhcAction.execute(NHCON);
             }
         } else if (command instanceof IncreaseDecreaseType increaseDecreaseCommand) {
-            int currentValue = nhcAction.getState();
-            int newValue;
+            long currentValue = nhcAction.getState();
+            long newValue;
             if (IncreaseDecreaseType.INCREASE.equals(increaseDecreaseCommand)) {
                 newValue = currentValue + stepValue;
                 // round down to step multiple
                 newValue = newValue - newValue % stepValue;
-                nhcAction.execute(Integer.toString(newValue > 100 ? 100 : newValue));
+                nhcAction.execute(Long.toString(newValue > 100 ? 100 : newValue));
             } else {
                 newValue = currentValue - stepValue;
                 // round up to step multiple
@@ -135,7 +136,7 @@ public class NikoHomeControlActionHandler extends NikoHomeControlBaseHandler imp
                 if (newValue <= 0) {
                     nhcAction.execute(NHCOFF);
                 } else {
-                    nhcAction.execute(Integer.toString(newValue));
+                    nhcAction.execute(Long.toString(newValue));
                 }
             }
         } else if (command instanceof PercentType percentCommand) {
@@ -184,17 +185,21 @@ public class NikoHomeControlActionHandler extends NikoHomeControlBaseHandler imp
         }
         deviceId = config.actionId;
 
-        NikoHomeControlBridgeHandler bridgeHandler = getBridgeHandler();
+        Bridge bridge = getBridge();
+        if (bridge == null) {
+            logger.debug("Bridge unavailable while initializing Thing: {}", thing.getUID());
+            return;
+        }
+        NikoHomeControlBridgeHandler bridgeHandler = (NikoHomeControlBridgeHandler) bridge.getHandler();
         if (bridgeHandler == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.configuration-error.invalid-bridge-handler");
             return;
         }
 
         updateStatus(ThingStatus.UNKNOWN);
 
-        Bridge bridge = getBridge();
-        if ((bridge != null) && ThingStatus.ONLINE.equals(bridge.getStatus())) {
+        if (ThingStatus.ONLINE.equals(bridge.getStatus())) {
             // We need to do this in a separate thread because we may have to wait for the
             // communication to become active
             commStartThread = scheduler.submit(this::startCommunication);
@@ -210,23 +215,20 @@ public class NikoHomeControlActionHandler extends NikoHomeControlBaseHandler imp
         }
 
         if (!nhcComm.communicationActive()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/offline.communication-error");
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/offline.communication-error");
             return;
         }
 
         NhcAction nhcAction = nhcComm.getActions().get(deviceId);
         if (nhcAction == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.configuration-error.deviceId");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.configuration-error.deviceId");
             return;
         }
 
         ActionType actionType = nhcAction.getType();
         if (!(ActionType.TRIGGER.equals(actionType) || ActionType.RELAY.equals(actionType)
                 || ActionType.DIMMER.equals(actionType) || ActionType.ROLLERSHUTTER.equals(actionType))) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.configuration-error.actionType");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.configuration-error.actionType");
             return;
         }
 
@@ -285,7 +287,7 @@ public class NikoHomeControlActionHandler extends NikoHomeControlBaseHandler imp
     }
 
     @Override
-    public void actionEvent(int actionState) {
+    public void actionEvent(long actionState) {
         NhcAction nhcAction = this.nhcAction;
         if (nhcAction == null) {
             logger.debug("action with ID {} not initialized", deviceId);
@@ -303,12 +305,20 @@ public class NikoHomeControlActionHandler extends NikoHomeControlBaseHandler imp
                 updateStatus(ThingStatus.ONLINE);
                 break;
             case DIMMER:
-                updateState(CHANNEL_BRIGHTNESS, new PercentType(actionState));
+                if (actionState < 0 || actionState > 100) {
+                    logger.debug("Ignoring out-of-range {} state {} for action {}", actionType, actionState, deviceId);
+                    return;
+                }
+                updateState(CHANNEL_BRIGHTNESS, new PercentType((int) actionState));
                 updateStatus(ThingStatus.ONLINE);
                 break;
             case ROLLERSHUTTER:
-                updateState(CHANNEL_ROLLERSHUTTER,
-                        !invert ? new PercentType(100 - actionState) : new PercentType(actionState));
+                if (actionState < 0 || actionState > 100) {
+                    logger.debug("Ignoring out-of-range {} state {} for action {}", actionType, actionState, deviceId);
+                    return;
+                }
+                int percentage = (int) actionState;
+                updateState(CHANNEL_ROLLERSHUTTER, new PercentType(invert ? percentage : 100 - percentage));
                 updateStatus(ThingStatus.ONLINE);
                 break;
             default:

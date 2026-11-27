@@ -55,16 +55,8 @@ public class SpeedtestBindingConstants {
     public static final String RESULT_IMAGE = "resultImage";
     public static final String TRIGGER_TEST = "triggerTest";
 
-    public static final String PROPERTY_SERVER_LIST1 = "Server List 1";
-    public static final String PROPERTY_SERVER_LIST2 = "Server List 2";
-    public static final String PROPERTY_SERVER_LIST3 = "Server List 3";
-    public static final String PROPERTY_SERVER_LIST4 = "Server List 4";
-    public static final String PROPERTY_SERVER_LIST5 = "Server List 5";
-    public static final String PROPERTY_SERVER_LIST6 = "Server List 6";
-    public static final String PROPERTY_SERVER_LIST7 = "Server List 7";
-    public static final String PROPERTY_SERVER_LIST8 = "Server List 8";
-    public static final String PROPERTY_SERVER_LIST9 = "Server List 9";
-    public static final String PROPERTY_SERVER_LIST10 = "Server List 10";
+    public static final String PROPERTY_SERVER_LIST_PREFIX = "Server List ";
+    public static final int SERVER_LIST_PROPERTY_COUNT = 10;
 
     public static final Set<String> SUPPORTED_CHANNEL_IDS = Set.of(SERVER, TIMESTAMP, PING_JITTER, PING_LATENCY,
             DOWNLOAD_BANDWIDTH, DOWNLOAD_BYTES, DOWNLOAD_ELAPSED, UPLOAD_BANDWIDTH, UPLOAD_BYTES, UPLOAD_ELAPSED, ISP,

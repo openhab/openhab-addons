@@ -122,14 +122,14 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
             }
         } catch (SomfyMyLinkException e) {
             logger.info("Error handling command: {}", e.getMessage());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 
     @Override
     public void initialize() {
         logger.info("Initializing mylink");
-        config = getThing().getConfiguration().as(SomfyMyLinkConfiguration.class);
+        config = getConfigAs(SomfyMyLinkConfiguration.class);
 
         commandExecutor = Executors.newSingleThreadExecutor(new NamedThreadFactory(thing.getUID().getAsString(), true));
 
@@ -150,13 +150,12 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
 
     private boolean validConfiguration(@Nullable SomfyMyLinkConfiguration config) {
         if (config == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "mylink configuration missing");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "mylink configuration missing");
             return false;
         }
 
         if (config.ipAddress.isEmpty() || config.systemId.isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "mylink address or system id not specified");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "mylink address or system id not specified");
             return false;
         }
 
@@ -185,7 +184,7 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
             updateStatus(ThingStatus.ONLINE);
         } catch (SomfyMyLinkException | InterruptedException | ExecutionException e) {
             logger.warn("Problem with mylink during heartbeat: {}", e.getMessage());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 
@@ -360,14 +359,15 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
             socket.setSoTimeout(MYLINK_DEFAULT_TIMEOUT);
             return socket;
         } catch (IOException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             throw e;
         }
     }
 
     @Override
     public void thingUpdated(Thing thing) {
-        SomfyMyLinkConfiguration newConfig = thing.getConfiguration().as(SomfyMyLinkConfiguration.class);
+        setThing(thing);
+        SomfyMyLinkConfiguration newConfig = getConfigAs(SomfyMyLinkConfiguration.class);
         config = newConfig;
     }
 

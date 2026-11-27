@@ -21,10 +21,12 @@ import java.util.Locale;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.shelly.internal.api1.Shelly1CoapJSonDTO.CoIotDescrBlk;
 import org.openhab.binding.shelly.internal.api1.Shelly1CoapJSonDTO.CoIotDescrSen;
 import org.openhab.binding.shelly.internal.api1.Shelly1CoapJSonDTO.CoIotSensor;
-import org.openhab.binding.shelly.internal.handler.ShellyColorUtils;
+import org.openhab.binding.shelly.internal.handler.LightModelAccessor;
+import org.openhab.binding.shelly.internal.handler.ShellyLightModel;
 import org.openhab.binding.shelly.internal.handler.ShellyThingInterface;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.unit.ImperialUnits;
@@ -65,13 +67,12 @@ public class Shelly1CoIoTVersion1 extends Shelly1CoIoTProtocol implements Shelly
      * @param serial
      * @param s
      * @param updates
-     * @param col
      */
     @Override
     public boolean handleStatusUpdate(List<CoIotSensor> sensorUpdates, CoIotDescrSen sen, int serial, CoIotSensor s,
-            Map<String, State> updates, ShellyColorUtils col) {
+            Map<String, State> updates, LightModelAccessor.@Nullable LightModels lightModels) {
         // first check the base implementation
-        if (super.handleStatusUpdate(sensorUpdates, sen, s, updates, col)) {
+        if (super.handleStatusUpdate(sensorUpdates, sen, s, updates, lightModels)) {
             // process by the base class
             return true;
         }
@@ -190,7 +191,7 @@ public class Shelly1CoIoTVersion1 extends Shelly1CoIoTProtocol implements Shelly
                         updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_TILT,
                                 toQuantityType(s.value, DIGITS_NONE, Units.DEGREE_ANGLE));
                         break;
-                    case "vibration": // DW with FW1.6.5+
+                    case SHELLY_EVENT_VIBRATION: // DW with FW1.6.5+
                         if (profile.isMotion) {
                             // handle as status
                             updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_VIBRATION,
@@ -201,12 +202,18 @@ public class Shelly1CoIoTVersion1 extends Shelly1CoIoTProtocol implements Shelly
                                     EVENT_TYPE_VIBRATION);
                         }
                         break;
-                    case "temp": // Shelly Bulb
+                    case SHELLY_COLOR_TEMP: // Shelly Bulb
                     case "colortemperature": // Shelly Duo
-                        updateChannel(updates,
-                                profile.inColor ? CHANNEL_GROUP_COLOR_CONTROL : CHANNEL_GROUP_WHITE_CONTROL,
-                                CHANNEL_COLOR_TEMP,
-                                ShellyColorUtils.toPercent((int) s.value, profile.minTemp, profile.maxTemp));
+                        if (profile.inColor) {
+                            break;
+                        }
+                        ShellyLightModel model = getLightModelForSensor(sen, lightModels);
+                        if (model != null) {
+                            model.setColorTemp(s.value);
+                        } else {
+                            logger.debug("{}: Unable to update color temperature for {}: LightModel not found",
+                                    thingName, sen.desc);
+                        }
                         break;
                     case "sensor state": // Shelly Gas
                         updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_SSTATE, getStringType(s.valueStr));
@@ -271,7 +278,8 @@ public class Shelly1CoIoTVersion1 extends Shelly1CoIoTProtocol implements Shelly
 
         // RGBW2 reports Power_0, Power_1, Power_2, Power_3; same for VSwitch and Brightness, all of them linkted to L:0
         // we break it up to Power with L:0, Power with L:1...
-        if (desc.contains("_") && (desc.contains("power") || desc.contains("vswitch") || desc.contains("brightness"))) {
+        if (desc.contains("_")
+                && (desc.contains("power") || desc.contains("vswitch") || desc.contains(SHELLY_COLOR_BRIGHTNESS))) {
             String newDesc = substringBefore(sen.desc, "_");
             String newLink = substringAfter(sen.desc, "_");
             sen.desc = newDesc;
@@ -357,16 +365,16 @@ public class Shelly1CoIoTVersion1 extends Shelly1CoIoTProtocol implements Shelly
                     sen.type = "S";
                     sen.desc = "Output";
                     break;
-                case "brightness":
+                case SHELLY_COLOR_BRIGHTNESS:
                     sen.type = "S";
                     sen.desc = "Brightness";
                     break;
-                case "red":
-                case "green":
-                case "blue":
-                case "white":
-                case "gain":
-                case "temp": // Bulb: Color temperature
+                case SHELLY_COLOR_RED:
+                case SHELLY_COLOR_GREEN:
+                case SHELLY_COLOR_BLUE:
+                case SHELLY_COLOR_WHITE:
+                case SHELLY_COLOR_GAIN:
+                case SHELLY_COLOR_TEMP: // Bulb: Color temperature
                     sen.desc = sen.type;
                     sen.type = "S";
                     break;

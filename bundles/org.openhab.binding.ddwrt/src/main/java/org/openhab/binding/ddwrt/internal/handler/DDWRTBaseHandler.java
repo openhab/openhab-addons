@@ -65,7 +65,7 @@ public abstract class DDWRTBaseHandler<E, C> extends BaseThingHandler
         final Bridge bridge = getBridge();
         if (bridge == null || bridge.getHandler() == null
                 || !(bridge.getHandler() instanceof DDWRTNetworkBridgeHandler)) {
-            updateStatus(OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.bridge-missing");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.bridge-missing");
             return;
         }
 
@@ -77,7 +77,7 @@ public abstract class DDWRTBaseHandler<E, C> extends BaseThingHandler
 
         if (initialize(config)) {
             if (bridge.getStatus() == OFFLINE) {
-                updateStatus(OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "@text/offline.bridge-offline");
+                updateStatus(ThingStatusDetail.BRIDGE_OFFLINE, "@text/offline.bridge-offline");
             } else {
                 updateStatus(ONLINE);
             }
@@ -157,7 +157,7 @@ public abstract class DDWRTBaseHandler<E, C> extends BaseThingHandler
 
     @Override
     public void reportOffline(@Nullable String detail) {
-        updateStatus(OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, detail);
+        updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, detail);
     }
 
     @Override

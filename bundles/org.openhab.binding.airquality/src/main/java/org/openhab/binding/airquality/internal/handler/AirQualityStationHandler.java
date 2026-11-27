@@ -101,7 +101,7 @@ public class AirQualityStationHandler extends BaseThingHandler {
             refreshJob = scheduler.scheduleWithFixedDelay(this::updateAndPublishData, 0, config.refresh,
                     TimeUnit.MINUTES);
         } catch (AirQualityException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
         }
     }
 
@@ -191,7 +191,7 @@ public class AirQualityStationHandler extends BaseThingHandler {
                 result = apiBridge.getData(config.stationId, config.location);
                 updateStatus(ThingStatus.ONLINE);
             } catch (AirQualityException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
+                updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
             }
         }
         return Optional.ofNullable(result);
@@ -204,10 +204,10 @@ public class AirQualityStationHandler extends BaseThingHandler {
             if (handler instanceof AirQualityBridgeHandler) {
                 return ((AirQualityBridgeHandler) handler).getApiBridge();
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/incorrect-bridge");
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/incorrect-bridge");
             }
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
         }
         return null;
     }

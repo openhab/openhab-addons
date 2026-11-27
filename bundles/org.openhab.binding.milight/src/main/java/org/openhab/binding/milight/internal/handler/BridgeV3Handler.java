@@ -70,7 +70,7 @@ public class BridgeV3Handler extends AbstractBridgeHandler {
     protected void startConnectAndKeepAlive() {
         if (address == null) {
             if (!config.bridgeid.matches("^([0-9A-Fa-f]{12})$")) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "bridgeID invalid!");
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "bridgeID invalid!");
                 return;
             }
             try {
@@ -89,7 +89,7 @@ public class BridgeV3Handler extends AbstractBridgeHandler {
             socket.setBroadcast(true);
             socket.bind(null);
         } catch (SocketException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
         }
 
         running = scheduler.scheduleWithFixedDelay(this::receive, 0, config.refreshTime, TimeUnit.SECONDS);
@@ -159,7 +159,7 @@ public class BridgeV3Handler extends AbstractBridgeHandler {
                     // We found a bridge, but it is not the one that is handled by this handler
                     if (!config.host.isEmpty()) { // The user has set a host address -> but wrong bridge found!
                         stopKeepAlive();
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                                 "Wrong bridge found on host address. Change bridgeid or host configuration.");
                         break;
                     }
@@ -187,10 +187,10 @@ public class BridgeV3Handler extends AbstractBridgeHandler {
                 break;
             }
             if (timeoutsCounter > attempts) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Bridge did not respond!");
+                updateStatus(ThingStatus.OFFLINE, "Bridge did not respond!");
             }
         } catch (IOException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 }

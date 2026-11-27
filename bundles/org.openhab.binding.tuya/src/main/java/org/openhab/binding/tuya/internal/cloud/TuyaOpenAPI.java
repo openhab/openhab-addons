@@ -14,7 +14,6 @@ package org.openhab.binding.tuya.internal.cloud;
 
 import java.lang.reflect.Type;
 import java.net.URI;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -23,14 +22,12 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentProvider;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpField;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.tuya.internal.cloud.dto.CommandRequest;
@@ -39,6 +36,7 @@ import org.openhab.binding.tuya.internal.cloud.dto.DeviceSchema;
 import org.openhab.binding.tuya.internal.cloud.dto.FactoryInformation;
 import org.openhab.binding.tuya.internal.cloud.dto.Login;
 import org.openhab.binding.tuya.internal.cloud.dto.ResultResponse;
+import org.openhab.binding.tuya.internal.cloud.dto.SubDeviceInfo;
 import org.openhab.binding.tuya.internal.cloud.dto.Token;
 import org.openhab.binding.tuya.internal.config.ProjectConfiguration;
 import org.openhab.binding.tuya.internal.util.CryptoUtil;
@@ -53,6 +51,7 @@ import com.google.gson.reflect.TypeToken;
  * The {@link TuyaOpenAPI} is an implementation of the Tuya OpenApi specification
  *
  * @author Jan N. Klug - Initial contribution
+ * @author Maciej Jarzebowski - Add sub-device retrieval
  */
 @NonNullByDefault
 public class TuyaOpenAPI {
@@ -163,6 +162,17 @@ public class TuyaOpenAPI {
                 .thenCompose(s -> processResponse(s, DeviceSchema.class));
     }
 
+    /**
+     * Retrieves the devices connected through the given gateway.
+     *
+     * @param deviceId the device id of the gateway
+     * @return the sub-devices, an empty list if the device is not a gateway
+     */
+    public CompletableFuture<List<SubDeviceInfo>> getSubDevices(String deviceId) {
+        return request(HttpMethod.GET, "/v1.0/devices/" + deviceId + "/sub-devices", Map.of(), null).thenCompose(
+                s -> processResponse(s, TypeToken.getParameterized(List.class, SubDeviceInfo.class).getType()));
+    }
+
     public CompletableFuture<Boolean> sendCommand(String deviceId, CommandRequest command) {
         return request(HttpMethod.POST, "/v1.0/iot-03/devices/" + deviceId + "/commands", Map.of(), command)
                 .thenCompose(s -> processResponse(s, Boolean.class));
@@ -201,10 +211,10 @@ public class TuyaOpenAPI {
         String fullUrl = config.dataCenter + signUrl(path, params);
         Request request = httpClient.newRequest(URI.create(fullUrl));
         request.method(method);
-        headers.forEach(request::header);
+        request.headers(h -> headers.forEach(h::add));
         if (body != null) {
-            request.content(new StringContentProvider(gson.toJson(body)));
-            request.header("Content-Type", "application/json");
+            request.body(new StringRequestContent(gson.toJson(body)));
+            request.headers(h -> h.add("Content-Type", "application/json"));
         }
 
         if (logger.isTraceEnabled()) {
@@ -257,13 +267,7 @@ public class TuyaOpenAPI {
      * @return the string representing the request
      */
     private String requestToLogString(Request request) {
-        ContentProvider contentProvider = request.getContent();
-        String contentString = contentProvider == null ? "null"
-                : StreamSupport.stream(contentProvider.spliterator(), false)
-                        .map(b -> StandardCharsets.UTF_8.decode(b).toString()).collect(Collectors.joining(", "));
-
         return "Method = {" + request.getMethod() + "}, Headers = {"
-                + request.getHeaders().stream().map(HttpField::toString).collect(Collectors.joining(", "))
-                + "}, Content = {" + contentString + "}";
+                + request.getHeaders().stream().map(HttpField::toString).collect(Collectors.joining(", ")) + "}";
     }
 }

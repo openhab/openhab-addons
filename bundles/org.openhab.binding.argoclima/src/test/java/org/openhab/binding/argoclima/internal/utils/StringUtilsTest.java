@@ -20,7 +20,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 
 /**
- * UT for {@link org.openhab.binding.argoclima.internal.utils.StringUtils
+ * UT for {@link org.openhab.binding.argoclima.internal.utils.StringUtils}
  *
  * @author Mateusz Bronk - Initial contribution
  */

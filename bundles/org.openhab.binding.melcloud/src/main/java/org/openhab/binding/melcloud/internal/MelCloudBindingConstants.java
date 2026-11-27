@@ -27,6 +27,8 @@ import org.openhab.core.thing.ThingTypeUID;
  * @author Luca Calcaterra - Initial contribution
  * @author Wietse van Buitenen - Added heatpump device
  * @author Alessio Galliazzo - Added heatpump functionalities for flow temperature and temperature control
+ * @author Bernd Weymann - Added MELCloud Home bridge skeleton
+ * @author Bernd Weymann - Added MELCloud Home ATA/ATW unit Things
  */
 @NonNullByDefault
 public class MelCloudBindingConstants {
@@ -36,6 +38,11 @@ public class MelCloudBindingConstants {
     // List of Bridge Type UIDs
     public static final ThingTypeUID THING_TYPE_MELCLOUD_ACCOUNT = new ThingTypeUID(BINDING_ID, "melcloudaccount");
     public static final ThingTypeUID THING_TYPE_HEATPUMPDEVICE = new ThingTypeUID(BINDING_ID, "heatpumpdevice");
+    // Skeleton bridge for the newer MELCloud Home platform (auth.melcloudhome.com).
+    public static final ThingTypeUID THING_TYPE_MELCLOUD_HOME_ACCOUNT = new ThingTypeUID(BINDING_ID, "home-account");
+    // MELCloud Home unit Things.
+    public static final ThingTypeUID THING_TYPE_MELCLOUD_HOME_ATA_UNIT = new ThingTypeUID(BINDING_ID, "ata-unit");
+    public static final ThingTypeUID THING_TYPE_MELCLOUD_HOME_ATW_UNIT = new ThingTypeUID(BINDING_ID, "atw-unit");
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_ACDEVICE = new ThingTypeUID(BINDING_ID, "acdevice");
@@ -43,7 +50,6 @@ public class MelCloudBindingConstants {
     // List of all Channel ids
     public static final String CHANNEL_POWER = "power";
     public static final String CHANNEL_OPERATION_MODE = "operationMode";
-    public static final String CHANNEL_OPERATION_MODE_STRING = "operationModeString";
     public static final String CHANNEL_SET_TEMPERATURE = "setTemperature";
     public static final String CHANNEL_FAN_SPEED = "fanSpeed";
     public static final String CHANNEL_VANE_HORIZONTAL = "vaneHorizontal";
@@ -68,10 +74,76 @@ public class MelCloudBindingConstants {
     public static final String CHANNEL_HAS_PENDING_COMMAND = "hasPendingCommand";
     public static final String CHANNEL_OFFLINE = "offline";
 
+    // MELCloud Home ATA/ATW unit channels. These Things use kebab-case channel ids, unlike the legacy A.C./Heatpump
+    // Device Things above. Channel ids that aren't shared with a legacy Thing are renamed in place (e.g.
+    // CHANNEL_OUTDOOR_TEMPERATURE); ids that ARE shared with a legacy Thing (operationMode, setTemperature,
+    // fanSpeed, vaneHorizontal, vaneVertical, roomTemperature, setTemperatureZone1/2, roomTemperatureZone1/2,
+    // tankWaterTemperature, tankTargetWaterTemperature, forcedHotWaterMode) keep their legacy camelCase constant
+    // above and get a dedicated CHANNEL_HOME_* kebab-case constant below, since the same Java constant can't hold
+    // two different id strings. operationMode/fanSpeed/vaneHorizontal/vaneVertical reuse the same channel ids as
+    // the legacy A.C. Device, but the ATA unit binds them to dedicated Number channel-types
+    // (ataOperationMode-channel/ataFanSpeed-channel/ataVaneHorizontal-channel/ataVaneVertical-channel) instead of
+    // the legacy A.C. Device's String-based ones.
+    public static final String CHANNEL_HOME_OPERATION_MODE = "operation-mode";
+    public static final String CHANNEL_HOME_SET_TEMPERATURE = "set-temperature";
+    public static final String CHANNEL_HOME_FAN_SPEED = "fan-speed";
+    public static final String CHANNEL_HOME_VANE_HORIZONTAL = "vane-horizontal";
+    public static final String CHANNEL_HOME_VANE_VERTICAL = "vane-vertical";
+    public static final String CHANNEL_HOME_ROOM_TEMPERATURE = "room-temperature";
+    public static final String CHANNEL_HOME_SET_TEMPERATURE_ZONE1 = "set-temperature-zone1";
+    public static final String CHANNEL_HOME_SET_TEMPERATURE_ZONE2 = "set-temperature-zone2";
+    public static final String CHANNEL_HOME_ROOM_TEMPERATURE_ZONE1 = "room-temperature-zone1";
+    public static final String CHANNEL_HOME_ROOM_TEMPERATURE_ZONE2 = "room-temperature-zone2";
+    public static final String CHANNEL_HOME_TANK_WATER_TEMPERATURE = "tank-water-temperature";
+    public static final String CHANNEL_HOME_TANK_TARGET_WATER_TEMPERATURE = "tank-target-water-temperature";
+    public static final String CHANNEL_HOME_FORCED_HOTWATERMODE = "forced-hot-water-mode";
+
+    public static final String CHANNEL_OUTDOOR_TEMPERATURE = "outdoor-temperature";
+    public static final String CHANNEL_ENERGY_CONSUMED = "energy-consumed";
+    public static final String CHANNEL_ENERGY_PRODUCED = "energy-produced";
+    public static final String CHANNEL_COP = "cop";
+    public static final String CHANNEL_RSSI = "rssi";
+    public static final String CHANNEL_IS_IN_ERROR = "is-in-error";
+    public static final String CHANNEL_ERROR_CODE = "error-code";
+    public static final String CHANNEL_IN_STANDBY_MODE = "in-standby-mode";
+    public static final String CHANNEL_OPERATION_STATUS = "operation-status";
+    public static final String CHANNEL_ZONE1_OPERATION_MODE = "zone1-operation-mode";
+    public static final String CHANNEL_ZONE2_OPERATION_MODE = "zone2-operation-mode";
+    public static final String CHANNEL_HOLIDAY_MODE = "holiday-mode";
+    public static final String CHANNEL_FROST_PROTECTION = "frost-protection";
+
+    // MELCloud Home ATA unit capability properties: static per-unit limits/flags reported by the API's
+    // GET /context "capabilities" object, written once as Thing properties by MelCloudHomeAtaUnitHandler.
+    public static final String PROPERTY_ATA_NUMBER_OF_FAN_SPEEDS = "numberOfFanSpeeds";
+    public static final String PROPERTY_ATA_MIN_TEMP_HEAT = "minTempHeat";
+    public static final String PROPERTY_ATA_MAX_TEMP_HEAT = "maxTempHeat";
+    public static final String PROPERTY_ATA_MIN_TEMP_COOL_DRY = "minTempCoolDry";
+    public static final String PROPERTY_ATA_MAX_TEMP_COOL_DRY = "maxTempCoolDry";
+    public static final String PROPERTY_ATA_HAS_HALF_DEGREE_INCREMENTS = "hasHalfDegreeIncrements";
+    public static final String PROPERTY_ATA_HAS_SWING = "hasSwing";
+    public static final String PROPERTY_ATA_HAS_STANDBY = "hasStandby";
+    public static final String PROPERTY_ATA_HAS_ENERGY_CONSUMED_METER = "hasEnergyConsumedMeter";
+
+    // MELCloud Home ATW unit capability properties: static per-unit flags reported by the API's GET /context
+    // "capabilities" object, written once as Thing properties by MelCloudHomeAtwUnitHandler.
+    public static final String PROPERTY_ATW_HAS_HOT_WATER = "hasHotWater";
+    public static final String PROPERTY_ATW_HAS_ZONE2 = "hasZone2";
+    public static final String PROPERTY_ATW_HAS_HALF_DEGREES = "hasHalfDegrees";
+    public static final String PROPERTY_ATW_HAS_COOLING_MODE = "hasCoolingMode";
+    public static final String PROPERTY_ATW_HAS_MEASURED_ENERGY_CONSUMPTION = "hasMeasuredEnergyConsumption";
+    public static final String PROPERTY_ATW_HAS_MEASURED_ENERGY_PRODUCTION = "hasMeasuredEnergyProduction";
+    public static final String PROPERTY_ATW_HAS_ESTIMATED_ENERGY_CONSUMPTION = "hasEstimatedEnergyConsumption";
+    public static final String PROPERTY_ATW_HAS_ESTIMATED_ENERGY_PRODUCTION = "hasEstimatedEnergyProduction";
+    public static final String PROPERTY_ATW_FTC_MODEL = "ftcModel";
+
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPE_UIDS = Collections
-            .unmodifiableSet(Stream.of(THING_TYPE_MELCLOUD_ACCOUNT, THING_TYPE_ACDEVICE, THING_TYPE_HEATPUMPDEVICE)
-                    .collect(Collectors.toSet()));
+            .unmodifiableSet(Stream.of(THING_TYPE_MELCLOUD_ACCOUNT, THING_TYPE_ACDEVICE, THING_TYPE_HEATPUMPDEVICE,
+                    THING_TYPE_MELCLOUD_HOME_ACCOUNT, THING_TYPE_MELCLOUD_HOME_ATA_UNIT,
+                    THING_TYPE_MELCLOUD_HOME_ATW_UNIT).collect(Collectors.toSet()));
 
     public static final Set<ThingTypeUID> DISCOVERABLE_THING_TYPE_UIDS = Collections
             .unmodifiableSet(Stream.of(THING_TYPE_ACDEVICE, THING_TYPE_HEATPUMPDEVICE).collect(Collectors.toSet()));
+
+    public static final Set<ThingTypeUID> HOME_DISCOVERABLE_THING_TYPE_UIDS = Collections.unmodifiableSet(Stream
+            .of(THING_TYPE_MELCLOUD_HOME_ATA_UNIT, THING_TYPE_MELCLOUD_HOME_ATW_UNIT).collect(Collectors.toSet()));
 }

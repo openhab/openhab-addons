@@ -1,14 +1,25 @@
 # Tibber Binding
 
-The Tibber Binding retrieves `prices` from the [Tibber API](https://developer.tibber.com).
+The Tibber Binding supports two independent ways to get data from Tibber.
+
+The **cloud** Thing `tibberapi` retrieves `prices` from the [Tibber API](https://developer.tibber.com).
 If you have Tibber Pulse hardware, you can also use the [live group](#live-group) and [statistics group](#statistics-group).
 Historical energy data (consumption, cost, and production) is available in the [history group](#history-group) for all users.
+It needs a Tibber account.
+
+The **local** Things `pulse-bridge` and `pulse-meter` read the live data of a Tibber Pulse directly from the Tibber bridge on your local network.
+They need no Tibber account and no Internet access, see [Local Pulse Bridge](#local-pulse-bridge).
+
+The sections up to the [Full Example](#full-example) describe the cloud part.
+The section [Local Pulse Bridge](#local-pulse-bridge) describes the local part and can be read on its own.
 
 ## Supported Things
 
-| Type  | ID        | Description              |
-|-------|-----------|--------------------------|
-| Thing | tibberapi | Connection to Tibber API |
+| Type   | ID             | Thing Type UID        | Description                                          |
+|--------|----------------|-----------------------|------------------------------------------------------|
+| Thing  | `tibberapi`    | `tibber:tibberapi`    | Cloud: connection to the Tibber API                  |
+| Bridge | `pulse-bridge` | `tibber:pulse-bridge` | Local: connection to one Tibber bridge               |
+| Thing  | `pulse-meter`  | `tibber:pulse-meter`  | Local: one electricity meter read through the bridge |
 
 ## Thing Configuration
 
@@ -349,7 +360,7 @@ then
     var secondsTillStart = Duration.between(Instant.now(), Instant.parse(startsAt)).getSeconds()
     // if the start should happen immediately, avoid negative values
     secondsTillStart = Math::max(0,secondsTillStart) 
-    bestPriceTimer = createTimer(now.plusSeconds(secondsTillStart), [|           
+    bestPriceTimer = createTimer(now.plusSeconds(secondsTillStart), [
         logInfo("TibberBestPrice","Start your device")
     ])
 end
@@ -573,3 +584,181 @@ then
     logInfo("Tibber Update","Price event {}", receivedEvent)
 end
 ```
+
+## Local Pulse Bridge
+
+The Things `pulse-bridge` and `pulse-meter` read the live data of a Tibber Pulse directly from the Tibber bridge on your local network.
+They need no Tibber account and no Internet access.
+The bridge sends a new reading about every 3 seconds, and the Binding publishes it as net power, import and export energy and, if your meter reports them, voltage, current, power per phase and grid frequency.
+
+### Related Bindings
+
+- Use the cloud Thing `tibberapi` of this Binding, see [Thing Configuration](#thing-configuration), if you need prices, consumption history, or the cloud-based Pulse live data.
+- Use the [`smartmeter`](https://www.openhab.org/addons/bindings/smartmeter/) Binding if you read your meter directly through a serial or USB optical head, without the bridge.
+
+### Pulse Things
+
+| Thing Type ID  | Type   | Label               | Description                                                      |
+|----------------|--------|---------------------|------------------------------------------------------------------|
+| `pulse-bridge` | Bridge | Tibber Pulse Bridge | Connection to one Tibber bridge.                                 |
+| `pulse-meter`  | Thing  | Tibber Pulse Meter  | One electricity meter, identified by the device id of its Pulse. |
+
+Add the `pulse-bridge` Thing first, then the `pulse-meter` Thing below it.
+Both are offered in the Inbox, see [Discovery](#discovery).
+
+### Prerequisites
+
+- The bridge must be reachable from openHAB in your local network.
+  Give it a fixed IP address, for example with a DHCP reservation in your router.
+- The password is the code on the QR label of the bridge.
+- The web interface of the bridge must stay enabled permanently, see the next section.
+- Only Pulse models that read the meter in the SML format are supported, which depends on the model you own.
+  Pulse models for other meter types, such as impulse counters, are not supported.
+
+### Keeping the Bridge's Web Interface Enabled
+
+The bridge delivers its readings through its web server, so a bridge whose web interface is switched off cannot be used.
+The steps below follow the guide of the Home Assistant project `marq24/ha-tibber-pulse-local`, and they can differ by hardware revision and firmware.
+
+1. Put the bridge into access point mode by unplugging it and plugging it in again, as described in the guide.
+   The LED turns green.
+1. Connect a phone or laptop to the Wi-Fi network `Tibber Bridge`.
+   The Wi-Fi password is the code on the label of the bridge.
+1. Open the web interface of the bridge in a browser and log in with the same code.
+1. Set the parameter `webserver_force_enable` to `true`, using the console or the parameters page depending on your firmware, and store the parameters.
+1. Restart the bridge so that it returns to your home network.
+
+See the [preparation guide](https://github.com/marq24/ha-tibber-pulse-local/blob/main/preparation.md) for details, screenshots and troubleshooting.
+
+### Discovery
+
+#### Bridge Discovery
+
+The bridge appears in the Inbox by itself while its web interface is enabled.
+The entry is named "Tibber Pulse Bridge" and contains the IP address of the bridge.
+Its Thing UID contains the host label of the bridge, for example `tibber:pulse-bridge:bridge01234567`.
+
+#### Meter Discovery
+
+When the `pulse-bridge` Thing is online, the meters that it receives appear in the Inbox as "Tibber Pulse Meter".
+The device id of the Pulse is part of the Thing UID of the entry.
+Approve the entry to create the `pulse-meter` Thing.
+A manual scan offers the meters again, for example after you removed a `pulse-meter` Thing.
+
+### Pulse Thing Configuration
+
+#### `pulse-bridge` Thing Configuration
+
+| Name       | Type | Description                                                                  | Default | Required | Advanced |
+|------------|------|------------------------------------------------------------------------------|---------|----------|----------|
+| `hostname` | text | Host name or IP address of the bridge, without scheme, port, or path.        | N/A     | yes      | no       |
+| `password` | text | Password of the bridge web interface, printed as a code on the bridge label. | N/A     | yes      | no       |
+
+Do not configure two `pulse-bridge` Things for the same bridge.
+
+#### `pulse-meter` Thing Configuration
+
+| Name           | Type    | Description                                                                                              | Default | Required | Advanced |
+|----------------|---------|----------------------------------------------------------------------------------------------------------|---------|----------|----------|
+| `deviceId`     | text    | Device id of the Pulse, 16 hexadecimal digits. The Inbox entry of the meter contains it.                 | N/A     | yes      | no       |
+| `staleTimeout` | integer | Seconds without a valid reading after which the meter goes offline and its live values become undefined. | 60      | no       | yes      |
+
+The `staleTimeout` must be at least 10.
+
+### Pulse Channels
+
+All Channels of the `pulse-meter` Thing are read-only.
+The per-phase Channels and `frequency` are advanced Channels.
+A quantity that your meter does not report stays `UNDEF`.
+
+| Channel ID      | Type                     | Unit | Description                                                                        | Advanced |
+|-----------------|--------------------------|------|------------------------------------------------------------------------------------|----------|
+| `power`         | Number:Power             | W    | Net active power, positive when drawn from the grid and negative when fed into it. | no       |
+| `energy-import` | Number:Energy            | kWh  | Total energy drawn from the grid.                                                  | no       |
+| `energy-export` | Number:Energy            | kWh  | Total energy fed into the grid.                                                    | no       |
+| `power-l1`      | Number:Power             | W    | Active power on phase L1.                                                          | yes      |
+| `power-l2`      | Number:Power             | W    | Active power on phase L2.                                                          | yes      |
+| `power-l3`      | Number:Power             | W    | Active power on phase L3.                                                          | yes      |
+| `voltage-l1`    | Number:ElectricPotential | V    | Voltage on phase L1.                                                               | yes      |
+| `voltage-l2`    | Number:ElectricPotential | V    | Voltage on phase L2.                                                               | yes      |
+| `voltage-l3`    | Number:ElectricPotential | V    | Voltage on phase L3.                                                               | yes      |
+| `current-l1`    | Number:ElectricCurrent   | A    | Current on phase L1.                                                               | yes      |
+| `current-l2`    | Number:ElectricCurrent   | A    | Current on phase L2.                                                               | yes      |
+| `current-l3`    | Number:ElectricCurrent   | A    | Current on phase L3.                                                               | yes      |
+| `frequency`     | Number:Frequency         | Hz   | Grid frequency.                                                                    | yes      |
+
+The energy counters keep their last value when the connection is lost, all other Channels become `UNDEF`.
+To record when the meter was last updated, link a DateTime Item to the `power` Channel with the `timestamp-update` profile, as in the example below.
+
+### Pulse Thing Statuses
+
+#### `pulse-bridge` Thing Statuses
+
+| Status  | Detail              | Cause                                                                                |
+|---------|---------------------|--------------------------------------------------------------------------------------|
+| UNKNOWN | NONE                | Waiting for the first data from the bridge                                           |
+| ONLINE  | NONE                | The bridge delivers data                                                             |
+| OFFLINE | CONFIGURATION_ERROR | The host name is invalid or the password is empty or was rejected by the bridge      |
+| OFFLINE | COMMUNICATION_ERROR | The bridge cannot be reached, does not deliver data, or another client took the data |
+
+The Binding reconnects by itself after a communication error.
+After a rejected password it waits until you change the configuration of the `pulse-bridge` Thing.
+A `pulse-bridge` Thing that was approved without a password stays UNINITIALIZED until you enter the password.
+
+#### `pulse-meter` Thing Statuses
+
+| Status  | Detail              | Cause                                  |
+|---------|---------------------|----------------------------------------|
+| UNKNOWN | NONE                | No reading has arrived yet             |
+| ONLINE  | NONE                | The meter delivers readings            |
+| OFFLINE | COMMUNICATION_ERROR | No reading for `staleTimeout` seconds  |
+| OFFLINE | BRIDGE_OFFLINE      | The `pulse-bridge` Thing is not online |
+| OFFLINE | CONFIGURATION_ERROR | Invalid `deviceId` or `staleTimeout`   |
+
+### Limits and Notes
+
+- Only Pulse models that read the meter in the SML format are supported, which depends on the model you own.
+  Models for other meter types, such as impulse counters, are not supported.
+- The bridge serves only one client at a time.
+  If you open the live page of the bridge, a browser tab or a Home Assistant integration while the Binding is connected, one of them loses the data.
+- The communication with the bridge is not encrypted, so the password can be read by anyone who can listen on your local network.
+- The Binding was tested with a Tibber Pulse IR on a bridge with firmware ESP 1811-97099eed / EFR 835-942ac28e.
+  Other firmware versions, other meters and several Pulses on one bridge may behave differently.
+- Meters that report no power leave the power Channels `UNDEF`.
+- Bridges that announce themselves differently from the tested firmware are not discovered, the API token of newer firmware is not supported, and neither are readings that newer firmware decodes itself.
+
+### Pulse Full Example
+
+#### `pulse.things` Example
+
+```java
+Bridge tibber:pulse-bridge:home "Tibber Pulse Bridge" [ hostname="192.0.2.20", password="<QR code>" ] {
+    Thing pulse-meter main "Electricity Meter" [ deviceId="0123456789abcdef", staleTimeout=60 ]
+}
+```
+
+Replace the host name and the password with the values of your bridge.
+The password is the code on its label.
+
+#### `pulse.items` Example
+
+```java
+Number:Power             Grid_Power         "Grid power [%.0f %unit%]"      {channel="tibber:pulse-meter:home:main:power"}
+Number:Energy            Grid_Energy_Import "Energy imported [%.3f %unit%]" {channel="tibber:pulse-meter:home:main:energy-import"}
+Number:Energy            Grid_Energy_Export "Energy exported [%.3f %unit%]" {channel="tibber:pulse-meter:home:main:energy-export"}
+Number:Power             Grid_Power_L1      "Power L1 [%.0f %unit%]"        {channel="tibber:pulse-meter:home:main:power-l1"}
+Number:ElectricPotential Grid_Voltage_L1    "Voltage L1 [%.1f %unit%]"      {channel="tibber:pulse-meter:home:main:voltage-l1"}
+Number:ElectricCurrent   Grid_Current_L1    "Current L1 [%.2f %unit%]"      {channel="tibber:pulse-meter:home:main:current-l1"}
+Number:Frequency         Grid_Frequency     "Frequency [%.1f %unit%]"       {channel="tibber:pulse-meter:home:main:frequency"}
+DateTime                 Grid_Last_Update   "Last update [%1$tF %1$tT]"     {channel="tibber:pulse-meter:home:main:power" [profile="system:timestamp-update"]}
+```
+
+### Acknowledgements
+
+The Pulse part of this Binding is an independent implementation.
+It is not affiliated with or supported by Tibber, and it contains no code from the projects below or from the SmlLib library that they use.
+It builds on the experience that these projects documented about the Tibber bridge:
+
+- [`marq24/ha-tibber-pulse-local`](https://github.com/marq24/ha-tibber-pulse-local) (Apache-2.0): how to read the data stream of the bridge and how to interpret its readings.
+- [`jimmyw/ha-tibber-pulse-local`](https://github.com/jimmyw/ha-tibber-pulse-local) (MIT): how to reconnect after a lost connection, and how the bridge announces itself on the network.
+- [`ProfDrYoMan/tibber_pulse_local`](https://github.com/ProfDrYoMan/tibber_pulse_local) (MIT): the collection of knowledge about the bridge.

@@ -68,7 +68,7 @@ public class EaseeChargerHandler extends EaseeBaseThingHandler {
         logger.debug("About to initialize Charger");
         logger.debug("Easee Charger initialized with id: {}", getId());
 
-        updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, STATUS_WAITING_FOR_BRIDGE);
+        updateStatus(ThingStatus.UNKNOWN, STATUS_WAITING_FOR_BRIDGE);
         startPolling();
 
         enqueueCommand(new Charger(this, getId(), this::updatePropertiesAndOnlineStatus));
@@ -156,9 +156,9 @@ public class EaseeChargerHandler extends EaseeBaseThingHandler {
      */
     public void setOnline(boolean isOnline) {
         if (isOnline) {
-            super.updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
+            super.updateStatus(ThingStatus.ONLINE);
         } else {
-            super.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, STATUS_NO_CONNECTION);
+            super.updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, STATUS_NO_CONNECTION);
         }
     }
 

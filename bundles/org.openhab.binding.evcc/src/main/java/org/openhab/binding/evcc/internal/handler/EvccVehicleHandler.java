@@ -15,9 +15,13 @@ package org.openhab.binding.evcc.internal.handler;
 import static org.openhab.binding.evcc.internal.EvccBindingConstants.*;
 
 import java.util.Locale;
+import java.util.Objects;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.evcc.internal.handler.routing.HandlerRoute;
+import org.openhab.binding.evcc.internal.handler.routing.JsonPathExtraction;
+import org.openhab.binding.evcc.internal.handler.routing.MessageRouter;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -29,6 +33,7 @@ import org.openhab.core.types.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 
@@ -59,6 +64,7 @@ public class EvccVehicleHandler extends EvccBaseThingHandler {
             }
             String url = endpoint + "/" + getPropertyOrConfigValue(PROPERTY_VEHICLE_ID) + "/" + datapoint + "/" + value;
             logger.debug("Sending command to this url: {}", url);
+            forgetLastState(channelUID);
             performApiRequest(url, POST, JsonNull.INSTANCE);
         } else {
             super.handleCommand(channelUID, command);
@@ -66,9 +72,21 @@ public class EvccVehicleHandler extends EvccBaseThingHandler {
     }
 
     @Override
-    public void prepareApiResponseForChannelStateUpdate(JsonObject state) {
-        state = state.getAsJsonObject(JSON_KEY_VEHICLES).getAsJsonObject(getPropertyOrConfigValue(PROPERTY_VEHICLE_ID));
-        updateStatesFromApiResponse(state);
+    public String getIdentifier() {
+        return Objects.requireNonNullElse(getPropertyOrConfigValue(PROPERTY_VEHICLE_ID), "");
+    }
+
+    @Override
+    public void initializeThingFromLatestState(JsonObject state) {
+        logger.trace("Vehicle handler {} initializing from state", getIdentifier());
+        JsonObject vehicleState = getStateFromCachedState(state);
+        if (vehicleState.isEmpty()) {
+            logger.debug("No vehicle state found for {}", getIdentifier());
+            return;
+        }
+        createChannelsAndSetStatesFromApiResponse(vehicleState);
+        logger.trace("Vehicle handler {} initialized successfully", getIdentifier());
+        updateStatus(ThingStatus.ONLINE);
     }
 
     @Override
@@ -93,28 +111,43 @@ public class EvccVehicleHandler extends EvccBaseThingHandler {
 
         if (getPropertyOrConfigValue(PROPERTY_VEHICLE_ID).isEmpty()) {
             logger.warn("No vehicle ID given");
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR);
             return;
         }
 
         super.initialize();
-        Optional.ofNullable(bridgeHandler).ifPresent(handler -> {
-            endpoint = String.join("/", handler.getBaseURL(), API_PATH_VEHICLES);
-            JsonObject stateOpt = handler.getCachedEvccState().deepCopy();
-            if (stateOpt.isEmpty()) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+        Optional.ofNullable(bridgeHandler).ifPresentOrElse(handler -> {
+            if (getPropertyOrConfigValue(PROPERTY_VEHICLE_ID).isEmpty()) {
+                logger.warn("No vehicle ID given");
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR);
                 return;
             }
-
-            JsonObject state = stateOpt.getAsJsonObject(JSON_KEY_VEHICLES)
-                    .getAsJsonObject(getPropertyOrConfigValue(PROPERTY_VEHICLE_ID));
-            commonInitialize(state);
-        });
+            endpoint = String.join("/", handler.getBaseURL(), API_PATH_VEHICLES);
+            handler.register(this);
+            MessageRouter router = handler.getMessageRouter();
+            router.registerRoute(new HandlerRoute(JSON_KEY_VEHICLES,
+                    new JsonPathExtraction("$." + getPropertyOrConfigValue(PROPERTY_VEHICLE_ID)), this,
+                    JSON_KEY_VEHICLES));
+        }, () -> logger.debug("The bridge handler was unexpected null, for thing: {}", getThing().getUID()));
     }
 
     @Override
     public JsonObject getStateFromCachedState(JsonObject state) {
-        return state.has(JSON_KEY_VEHICLES) ? state.getAsJsonObject(JSON_KEY_VEHICLES)
-                .getAsJsonObject(getPropertyOrConfigValue(PROPERTY_VEHICLE_ID)) : new JsonObject();
+        JsonObject vehicles = state.getAsJsonObject(JSON_KEY_VEHICLES);
+        if (vehicles == null) {
+            return new JsonObject();
+        }
+        JsonObject vehicleState = vehicles.getAsJsonObject(getPropertyOrConfigValue(PROPERTY_VEHICLE_ID));
+        return vehicleState != null ? vehicleState : new JsonObject();
+    }
+
+    @Override
+    public void handleUpdate(String key, JsonElement value) {
+        if (JSON_KEY_VEHICLES.equals(key) && value.isJsonObject()) {
+            updateOnlyPresentChannels(value.getAsJsonObject());
+            updateStatus(ThingStatus.ONLINE);
+            return;
+        }
+        super.handleUpdate(key, value);
     }
 }

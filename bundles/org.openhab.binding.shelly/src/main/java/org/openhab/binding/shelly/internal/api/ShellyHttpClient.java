@@ -21,6 +21,7 @@ import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
 import java.util.Base64;
+import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -28,14 +29,12 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import javax.ws.rs.core.HttpHeaders;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpFields;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
@@ -50,6 +49,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+
+import jakarta.ws.rs.core.HttpHeaders;
 
 /**
  * {@link ShellyHttpClient} implements basic HTTP access
@@ -72,6 +73,18 @@ public class ShellyHttpClient {
     protected AtomicInteger timeoutErrors = new AtomicInteger(0);
     protected AtomicInteger timeoutsRecovered = new AtomicInteger(0);
     protected volatile boolean basicAuth = false;
+
+    private static final int NC_MAX_NONCES = 4;
+
+    // per-nonce counters: an in-flight request for an older nonce must not reset the counter of the current one
+    private final Map<String, Long> ncCounters = new LinkedHashMap<>(NC_MAX_NONCES + 1, 0.75f, true) {
+        private static final long serialVersionUID = 1L;
+
+        @Override
+        protected boolean removeEldestEntry(Map.@Nullable Entry<String, Long> eldest) {
+            return size() > NC_MAX_NONCES;
+        }
+    };
 
     protected final ShellyApiConfiguration config;
 
@@ -185,7 +198,8 @@ public class ShellyHttpClient {
                     }
                 }
                 if (!authHeader.isEmpty()) {
-                    request.header(HTTP_HEADER_AUTH, authHeader);
+                    final String finalAuthHeader = authHeader;
+                    request.headers(h -> h.add(HTTP_HEADER_AUTH, finalAuthHeader));
                 }
             }
             fillPostData(request, data);
@@ -203,12 +217,22 @@ public class ShellyHttpClient {
             }
 
             if (response.contains("\"error\":{")) { // Gen2
-                Shelly2RpcBaseMessage message = gson.fromJson(response, Shelly2RpcBaseMessage.class);
-                if (message != null && message.error != null) {
-                    builder.httpCode(message.error.code);
-                    builder.response(message.error.message);
-                    if (getInteger(message.error.code) == HttpStatus.UNAUTHORIZED_401) {
-                        builder.authChallenge(getString(message.error.message).replaceAll("\\\"", "\""));
+                Shelly2RpcBaseMessage message = null;
+                try {
+                    message = fromJson(gson, response, Shelly2RpcBaseMessage.class, false);
+                } catch (ShellyApiException e) {
+                    // keep the HTTP status and auth header handling below instead of failing on the body
+                    logger.debug("{}: Unable to parse error response: {}", thingName, e.getMessage());
+                }
+                var error = message != null ? message.error : null;
+                if (error != null) {
+                    Integer code = error.code;
+                    if (code != null) {
+                        builder.httpCode(code);
+                    }
+                    builder.response(error.message);
+                    if (getInteger(error.code) == HttpStatus.UNAUTHORIZED_401) {
+                        builder.authChallenge(getString(error.message).replaceAll("\\\"", "\""));
                     }
                 }
             }
@@ -239,6 +263,17 @@ public class ShellyHttpClient {
 
     protected @Nullable Shelly2AuthRsp buildAuthResponse(String uri, @Nullable Shelly2AuthChallenge challenge,
             String user, String password) throws ShellyApiException {
+        return buildAuthResponse(challenge, user, password, sha256(HttpMethod.POST + ":" + uri));
+    }
+
+    // a WebSocket request has no HTTP method/URI, the RPC spec defines HA2 = SHA256("dummy_method:dummy_uri")
+    protected @Nullable Shelly2AuthRsp buildChannelAuthResponse(@Nullable Shelly2AuthChallenge challenge, String user,
+            String password) throws ShellyApiException {
+        return buildAuthResponse(challenge, user, password, SHELLY2_AUTH_NOISE);
+    }
+
+    private @Nullable Shelly2AuthRsp buildAuthResponse(@Nullable Shelly2AuthChallenge challenge, String user,
+            String password, String ha2) throws ShellyApiException {
         if (challenge == null) {
             return null; // not required
         }
@@ -253,11 +288,18 @@ public class ShellyHttpClient {
         response.realm = challenge.realm;
         response.nonce = challenge.nonce;
         response.cnonce = Long.toHexString((long) Math.floor(Math.random() * 10e8));
-        response.nc = "00000001";
+        long nc;
+        synchronized (ncCounters) {
+            // a cached nonce is reused, a repeated nc looks like a replay and drives the device into 429 throttling
+            String nonce = getString(challenge.nonce);
+            Long previous = ncCounters.get(nonce);
+            nc = previous != null ? previous + 1 : 1;
+            ncCounters.put(nonce, nc);
+        }
+        response.nc = String.format(Locale.ROOT, "%08x", nc);
         response.authType = challenge.authType;
         response.algorithm = challenge.algorithm;
         String ha1 = sha256(response.username + ":" + response.realm + ":" + password);
-        String ha2 = sha256(HttpMethod.POST + ":" + uri);// SHELLY2_AUTH_NOISE;
         response.response = sha256(
                 ha1 + ":" + response.nonce + ":" + response.nc + ":" + response.cnonce + ":" + "auth" + ":" + ha2);
         return response;
@@ -269,6 +311,12 @@ public class ShellyHttpClient {
                 rsp.username, rsp.realm, uri, rsp.nonce, rsp.cnonce, rsp.nc, rsp.response, rsp.algorithm) : "";
     }
 
+    protected String buildAuthHeader(HttpMethod method, String uri, Shelly2AuthChallenge challenge)
+            throws ShellyApiException {
+        return formatAuthResponse(uri,
+                buildAuthResponse(challenge, SHELLY2_AUTHDEF_USER, config.getPassword(), sha256(method + ":" + uri)));
+    }
+
     /**
      * Fill in POST data, set http headers
      *
@@ -278,12 +326,9 @@ public class ShellyHttpClient {
     private void fillPostData(Request request, String data) {
         boolean json = data.startsWith("{") || data.contains("\": {");
         String type = json ? CONTENT_TYPE_JSON : CONTENT_TYPE_FORM_URLENC;
-        request.header(HttpHeader.CONTENT_TYPE, type);
+        request.headers(h -> h.add(HttpHeader.CONTENT_TYPE, type));
         if (!data.isEmpty()) {
-            StringContentProvider postData;
-            postData = new StringContentProvider(type, data, StandardCharsets.UTF_8);
-            request.content(postData);
-            // request.header(HttpHeader.CONTENT_LENGTH, Long.toString(postData.getLength()));
+            request.body(new StringRequestContent(type, data));
         }
     }
 
@@ -331,6 +376,11 @@ public class ShellyHttpClient {
 
     public int getTimeoutsRecovered() {
         return timeoutsRecovered.get();
+    }
+
+    public void resetTimeoutCounters() {
+        timeoutErrors.set(0);
+        timeoutsRecovered.set(0);
     }
 
     public void postEvent(String device, String index, String event, Map<String, String> parms)

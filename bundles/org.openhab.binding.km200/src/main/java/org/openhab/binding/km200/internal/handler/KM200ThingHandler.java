@@ -63,6 +63,7 @@ import org.slf4j.LoggerFactory;
  * sent to one of the channels.
  *
  * @author Markus Eckhardt - Initial contribution
+ * @author Leo Siepel - File-defined Thing configuration
  */
 @NonNullByDefault
 public class KM200ThingHandler extends BaseThingHandler {
@@ -184,33 +185,43 @@ public class KM200ThingHandler extends BaseThingHandler {
     public void initialize() {
         Bridge bridge = this.getBridge();
         if (bridge == null) {
-            logger.debug("Bridge not existing");
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            logger.debug("Bridge unavailable while initializing Thing: {}", thing.getUID());
             return;
         }
         logger.debug("initialize, Bridge: {}", bridge);
         KM200GatewayHandler gateway = (KM200GatewayHandler) bridge.getHandler();
         if (gateway == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
             logger.debug("Gateway not existing: {}", bridge);
             return;
         }
-        String service = KM200Utils.translatesNameToPath(thing.getProperties().get("root"));
-        if (service == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "root property missing");
+        Object rootService = getConfig().get(CONFIG_ROOT_SERVICE);
+        String service = rootService != null ? rootService.toString()
+                : KM200Utils.translatesNameToPath(thing.getProperties().get("root"));
+        if (service == null || !service.startsWith("/") || service.length() < 2) {
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Root service missing or not an absolute service path");
             return;
         }
         synchronized (gateway.getDevice()) {
-            updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_PENDING);
             if (!gateway.getDevice().getInited()) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
+                updateStatus(ThingStatus.UNKNOWN);
                 logger.debug("Bridge: not initialized: {}", bridge);
                 return;
             }
+            if (rootService != null && !gateway.getDevice().containsService(service)) {
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Unknown rootService: " + service);
+                return;
+            }
+            updateStatus(ThingStatus.UNKNOWN);
             List<Channel> subChannels = new ArrayList<>();
             if (gateway.getDevice().containsService(service)) {
                 KM200ServiceObject serObj = gateway.getDevice().getServiceObject(service);
                 if (null != serObj) {
+                    if (rootService != null && serObj.serviceTreeMap.isEmpty()) {
+                        updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
+                                "Root service has no child services: " + service);
+                        return;
+                    }
                     addChannels(serObj, thing, subChannels, "");
                 }
             } else if (service.contains(SWITCH_PROGRAM_PATH_NAME)) {

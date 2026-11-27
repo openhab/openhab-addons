@@ -13,6 +13,7 @@
 package org.openhab.binding.shelly.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.core.thing.type.ChannelTypeUID;
 
 /**
  * The {@link ShellyBindingConstants} class defines common constants, which are
@@ -41,6 +42,7 @@ public class ShellyBindingConstants {
     public static final String PROPERTY_DEV_GEN = "deviceGeneration";
     public static final String PROPERTY_DEV_AUTH = "deviceAuth";
     public static final String PROPERTY_GW_DEVICE = "gatewayDevice";
+    public static final String PROPERTY_ADDON_FIRMWARE = "addonFirmware";
     public static final String PROPERTY_HWREV = "deviceHwRev";
     public static final String PROPERTY_HWBATCH = "deviceHwBatch";
     public static final String PROPERTY_UPDATE_PERIOD = "devUpdatePeriod";
@@ -68,7 +70,8 @@ public class ShellyBindingConstants {
      * CHANNEL_GROUP_LIGHT_CONTROL control Light power, color mode, timers
      * CHANNEL_GROUP_COLOR_CONTROL color HSB, RGBW values
      * CHANNEL_GROUP_WHITE_CONTROL white White brightness and temperature
-     * CHANNEL_GROUP_LIGHT_CHANNEL channel1..n RGBW2 individual white channels
+     * CHANNEL_GROUP_LIGHT_CHANNEL channel1..n RGBW2 individual white channels (deprecated, see light1..n)
+     * CHANNEL_GROUP_LIGHT_INDEX light1..n RGBW2/RGBW PM individual white channels
      * CHANNEL_GROUP_METER meter1..n Watts, kWh, voltage, current
      * CHANNEL_GROUP_NMETER nmeter 3EM neutral current
      * CHANNEL_GROUP_SENSOR sensors All environmental readings
@@ -90,6 +93,8 @@ public class ShellyBindingConstants {
     public static final String CHANNEL_TIMER_AUTOON = "autoOn";
     public static final String CHANNEL_TIMER_AUTOOFF = "autoOff";
     public static final String CHANNEL_TIMER_ACTIVE = "timerActive";
+    public static final String CHANNEL_DALI_DEVICES = "daliDeviceCount";
+    public static final String CHANNEL_DALI_SCAN_ACTIVE = "daliScanActive";
 
     // Roller
     public static final String CHANNEL_GROUP_ROL_CONTROL = "roller";
@@ -160,17 +165,21 @@ public class ShellyBindingConstants {
     public static final String CHANNEL_SENSOR_ROTATIONZ = "rotationZ"; // BLU Remote
     public static final String CHANNEL_SENSOR_CHANNEL = "channel"; // BLU Remote
     public static final String CHANNEL_SENSOR_STEPS = "steps"; // BLU Remote
+    public static final String CHANNEL_SENSOR_PRESENCE = "presence"; // Shelly Presence: zone occupancy (ON=detected)
+    public static final String CHANNEL_SENSOR_OBJECT_COUNT = "objectCount"; // Shelly Presence: objects in zone
     public static final String CHANNEL_SENSOR_DIRECTION = "direction"; // BLU Remote
     public static final String CHANNEL_SENSOR_DISTANCE = "distance"; // BLU DIstance
     public static final String CHANNEL_SENSOR_RAINST = "rainStatus"; // BLU Weather
     public static final String CHANNEL_SENSOR_WINDSP = "windSpeed"; // BLU Weather
     public static final String CHANNEL_SENSOR_WINDDIR = "windDirection"; // BLU Weather
     public static final String CHANNEL_SENSOR_GUSTSP = "gustSpeed"; // BLU Weather
-    public static final String CHANNEL_SENSOR_GUSTDIR = "gustDirection"; // BLU Weather
     public static final String CHANNEL_SENSOR_UV = "uvIndex"; // BLU Weather
     public static final String CHANNEL_SENSOR_PRESSURE = "pressure"; // BLU Weather
     public static final String CHANNEL_SENSOR_DEWPOINT = "dewPoint"; // BLU Weather
     public static final String CHANNEL_SENSOR_PRECIPITATION = "precipitation"; // BLU Weather
+    public static final String CHANNEL_SENSOR_WINDDIR_STR = "windDirectionStr"; // BLU Weather
+    public static final String CHANNEL_SENSOR_APPARENT_TEMP = "apparentTemp"; // BLU Weather
+    public static final String CHANNEL_SENSOR_SEALEVEL_PRESSURE = "seaLevelPressure"; // BLU Weather
 
     // Control channels
     public static final String CHANNEL_CONTROL_SETTEMP = "targetTemp"; // TRV
@@ -197,17 +206,35 @@ public class ShellyBindingConstants {
     public static final String CHANNEL_ESENSOR_INPUT1 = CHANNEL_ESENSOR_INPUT + "1";
 
     public static final String CHANNEL_GROUP_CONTROL = "control";
+    public static final String CHANNEL_CTRL_SENSOR_ENABLE = "sensorEnable"; // Shelly Presence: enable/disable radar
     public static final String CHANNEL_SENSE_KEY = "key";
 
     public static final String CHANNEL_GROUP_BATTERY = "battery";
     public static final String CHANNEL_SENSOR_BAT_LEVEL = "batteryLevel";
     public static final String CHANNEL_SENSOR_BAT_LOW = "lowBattery";
+    public static final String CHANNEL_SENSOR_CAPACITOR_VOLTAGE = "capacitorVoltage"; // BLU Weather
+
+    // Wall Display Media Player
+    public static final String CHANNEL_GROUP_MEDIA = "media";
+    public static final String CHANNEL_MEDIA_CONTROL = "mediaControl";
+    public static final String CHANNEL_MEDIA_VOLUME = "volume";
+    public static final String CHANNEL_MEDIA_TITLE = "title";
+    public static final String CHANNEL_MEDIA_ARTIST = "artist";
+    public static final String CHANNEL_MEDIA_ALBUM = "album";
+    public static final String CHANNEL_MEDIA_TYPE = "mediaType";
+    public static final String CHANNEL_MEDIA_PLAY_MEDIA_ID = "playMediaId";
+    public static final String CHANNEL_MEDIA_PLAY_RADIO_FAV_ID = "playRadioFavId";
+
+    // Wall Display Thermostat reuses the "control" group and CHANNEL_CONTROL_SETTEMP ("targetTemp") from the TRV
+    // channel set; current_C/output are covered by the existing sensors#temperature / relay#output channels.
+    public static final String CHANNEL_THERMOSTAT_ENABLE = "thermostatEnable";
 
     public static final String CHANNEL_GROUP_LIGHT_CONTROL = "control";
     public static final String CHANNEL_LIGHT_COLOR_MODE = "mode";
     public static final String CHANNEL_LIGHT_POWER = "power";
     public static final String CHANNEL_LIGHT_DEFSTATE = "defaultState";
     public static final String CHANNEL_GROUP_LIGHT_CHANNEL = "channel";
+    public static final String CHANNEL_GROUP_LIGHT_INDEX = "light";
 
     // Bulb/RGBW2 in color mode
     public static final String CHANNEL_GROUP_COLOR_CONTROL = "color";
@@ -222,7 +249,18 @@ public class ShellyBindingConstants {
 
     // Bulb/RGBW2/Dup in White Mode
     public static final String CHANNEL_GROUP_WHITE_CONTROL = "white";
+    public static final String CHANNEL_COLOR_TEMP_PCT = "temperature-pct";
     public static final String CHANNEL_COLOR_TEMP = "temperature";
+
+    // full channel names
+    public static final String CHAN_FULL_CONTROL_POWER = CHANNEL_GROUP_LIGHT_CONTROL + "#" + CHANNEL_LIGHT_POWER;
+    public static final String CHAN_FULL_CONTROL_BRIGHT = CHANNEL_GROUP_LIGHT_CONTROL + "#" + CHANNEL_BRIGHTNESS;
+    public static final String CHAN_FULL_PRIMARY_COLOR = CHANNEL_GROUP_COLOR_CONTROL + "#" + CHANNEL_COLOR_PICKER;
+    public static final String CHAN_FULL_WHITE_BRIGHT = CHANNEL_GROUP_WHITE_CONTROL + "#" + CHANNEL_BRIGHTNESS;
+
+    // advanced channel types
+    public static final ChannelTypeUID TYPE_UID_ADV_POWER = new ChannelTypeUID(BINDING_ID, "powerAdvanced");
+    public static final ChannelTypeUID TYPE_UID_ADV_BRIGHT = new ChannelTypeUID(BINDING_ID, "brightnessAdvanced");
 
     // Device Status
     public static final String CHANNEL_GROUP_DEV_STATUS = "device";
@@ -233,6 +271,8 @@ public class ShellyBindingConstants {
     public static final String CHANNEL_DEVST_RSSI = "wifiSignal";
     public static final String CHANNEL_DEVST_ITEMP = "internalTemp";
     public static final String CHANNEL_DEVST_WAKEUP = "wakeupReason";
+    public static final String CHANNEL_DEVST_WAKEUP_PERIOD = "wakeupPeriod";
+    public static final String CHANNEL_DEVST_RESTARTREQ = "restartReq";
     public static final String CHANNEL_DEVST_ALARM = "alarm";
     public static final String CHANNEL_DEVST_ACCUWATTS = "accumulatedWatts";
     public static final String CHANNEL_DEVST_ACCUMULATEDPOWER = "accumulatedPower";
@@ -249,10 +289,26 @@ public class ShellyBindingConstants {
 
     public static final String CHANNEL_DEVST_CHARGER = "charger";
     public static final String CHANNEL_DEVST_UPDATE = "updateAvailable";
+    public static final String CHANNEL_DEVST_DEBUG = "deviceDebug";
     public static final String CHANNEL_DEVST_SELFTTEST = "selfTest";
     public static final String CHANNEL_DEVST_VOLTAGE = "supplyVoltage";
     public static final String CHANNEL_DEVST_CALIBRATED = "calibrated";
     public static final String CHANNEL_DEVST_FIRMWARE = "firmware";
+    public static final String CHANNEL_DEVST_RELAY_IN_THERMOSTAT = "relayInThermostat";
+    public static final String CHANNEL_DEVST_SENSOR_IN_THERMOSTAT = "sensorInThermostat";
+
+    // Diagnostics (Gen2+ only)
+    public static final String CHANNEL_GROUP_DIAG = "diagnostics";
+    public static final String CHANNEL_DIAG_TOTALMEM = "totalMem";
+    public static final String CHANNEL_DIAG_FREEMEM = "freeMem";
+    public static final String CHANNEL_DIAG_TOTALFS = "totalFS";
+    public static final String CHANNEL_DIAG_FREEFS = "freeFS";
+    public static final String CHANNEL_DIAG_RESTARTS = "restarts";
+    public static final String CHANNEL_DIAG_TIMEOUTERRORS = "timeoutErrors";
+    public static final String CHANNEL_DIAG_ALARMS = "alarms";
+    public static final String CHANNEL_DIAG_LASTALARM = "lastAlarm";
+    public static final String CHANNEL_DIAG_PROTOCOLERRORS = "protocolErrors";
+    public static final String CHANNEL_DIAG_MAXITEMP = "maxInternalTemp";
 
     public static final String CHANNEL_LED_STATUS_DISABLE = "statusLed";
     public static final String CHANNEL_LED_POWER_DISABLE = "powerLed";
@@ -264,6 +320,19 @@ public class ShellyBindingConstants {
     public static final String CHANNEL_STATUS_EVENTCOUNT = "eventCount";
     public static final String CHANNEL_STATUS_EVENTCOUNT1 = CHANNEL_STATUS_EVENTCOUNT + "1";
     public static final String CHANNEL_STATUS_EVENTCOUNT2 = CHANNEL_STATUS_EVENTCOUNT + "2";
+
+    // LoRa
+    public static final String CHANNEL_GROUP_LORA = "lora";
+    public static final String CHANNEL_LORA_RXDATA = "dataRx"; // Regular String
+    public static final String CHANNEL_LORA_TXDATA = "dataTx"; // Regular String
+    public static final String CHANNEL_LORA_RXDATARAW = "dataRxRaw"; // BASE64-encoded string
+    public static final String CHANNEL_LORA_TXDATARAW = "dataTxRaw";// BASE64-encoded string
+    public static final String CHANNEL_LORA_RXBYTES = "bytesRx";
+    public static final String CHANNEL_LORA_TXBYTES = "bytesTx";
+    public static final String CHANNEL_LORA_TXERRORS = "errorsTx";
+    public static final String CHANNEL_LORA_RSSI = "rssi";
+    public static final String CHANNEL_LORA_SNR = "snr";
+    public static final String CHANNEL_LORA_AIRTIME = "airtime";
 
     // General
     public static final String CHANNEL_LAST_UPDATE = "lastUpdate";
@@ -277,6 +346,9 @@ public class ShellyBindingConstants {
     public static final String SHELLY_API_FWCOIOT2 = "v1.8";// CoAP 2 with FW 1.8+
     public static final String SHELLY_API_FW_110 = "v1.10"; // FW 1.10 or newer detected, activates some add feature
     public static final String SHELLY2_API_MIN_FWVERSION = "v0.10.1"; // Gen 2 minimum FW
+
+    // Unprefixed (unlike the "v"-prefixed Gen1 constants above) to match Gen2+ profile.fwVersion (e.g. "1.2.3")
+    public static final String SHELLY2_API_FW_BLEAUTOSCAN = "2.0"; // FW 2.0+: BLE.SetConfig enable flag removed
 
     // Alarm types/messages
     public static final String ALARM_TYPE_NONE = "NONE";
@@ -292,6 +364,7 @@ public class ShellyBindingConstants {
     public static final String ALARM_TYPE_BTH_UNKNOWN_TYPE = "BTH_UNKNOWN_TYPE";
     public static final String ALARM_TYPE_FLOOD = "FLOOD";
     public static final String ALARM_TYPE_MUTED = "ALARM_MUTED";
+    public static final String ALARM_TYPE_LORA_RECEIVED = "LORA_RECEIVED";
     public static final String EVENT_TYPE_VIBRATION = "VIBRATION";
 
     // Event types
@@ -312,6 +385,7 @@ public class ShellyBindingConstants {
     public static final int DIGITS_VAR = 2;
     public static final int DIGITS_KWH = 3;
     public static final int DIGITS_VOLT = 2;
+    public static final int DIGITS_VOLT_PRECISE = 3;
     public static final int DIGITS_AMPERE = 3;
     public static final int DIGITS_FREQUENCY = 2;
     public static final int DIGITS_TEMP = 1;

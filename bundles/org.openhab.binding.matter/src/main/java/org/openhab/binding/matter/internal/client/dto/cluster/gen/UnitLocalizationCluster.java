@@ -77,7 +77,7 @@ public class UnitLocalizationCluster extends BaseCluster {
     public static class FeatureMap {
         /**
          * 
-         * The Node can be configured to use different units of temperature when conveying values to a user.
+         * The Node can be configured to use different units of temperature when conveying values to a user
          */
         public boolean temperatureUnit;
 

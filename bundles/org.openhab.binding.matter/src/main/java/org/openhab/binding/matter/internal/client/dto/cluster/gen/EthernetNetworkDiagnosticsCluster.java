@@ -123,13 +123,13 @@ public class EthernetNetworkDiagnosticsCluster extends BaseCluster {
     public static class FeatureMap {
         /**
          * 
-         * Node makes available the counts for the number of received and transmitted packets on the ethernet interface.
+         * Node makes available the counts for the number of received and transmitted packets on the ethernet interface
          */
         public boolean packetCounts;
         /**
          * 
          * Node makes available the counts for the number of errors that have occurred during the reception and
-         * transmission of packets on the ethernet interface.
+         * transmission of packets on the ethernet interface
          */
         public boolean errorCounts;
 

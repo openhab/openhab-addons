@@ -178,7 +178,7 @@ public class ICalendarHandler extends BaseBridgeHandler implements CalendarUpdat
                         updateStates();
                         updateChildren();
                     } else {
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                                 "The calendar seems to be configured correctly, but the local copy of calendar could not be loaded.");
                     }
                 });
@@ -191,7 +191,7 @@ public class ICalendarHandler extends BaseBridgeHandler implements CalendarUpdat
                 pullJobFuture = scheduler.scheduleWithFixedDelay(regularPull, 0, refreshTime, TimeUnit.MINUTES);
             }
         } catch (ConfigBrokenException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
         }
     }
 
@@ -355,7 +355,7 @@ public class ICalendarHandler extends BaseBridgeHandler implements CalendarUpdat
         final Event nextEvent = currentCalendar.getNextEvent(now);
         final ICalendarConfiguration currentConfig = this.configuration;
         if (currentConfig == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                     "Something is broken, the configuration is not available.");
             return;
         }

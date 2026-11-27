@@ -23,6 +23,9 @@ import org.openhab.binding.mercedesme.internal.utils.UOMObserver;
 import org.openhab.binding.mercedesme.internal.utils.Utils;
 import org.openhab.core.library.unit.ImperialUnits;
 
+import com.daimler.mbcarkit.proto.VehicleEvents.AttributeStatus;
+import com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus;
+
 /**
  * {@link UtilsTest} for helper functions
  *
@@ -66,6 +69,25 @@ class UtilsTest {
     }
 
     @Test
+    public void testMaskVin() {
+        assertEquals("*************0713", Utils.maskVin("W1N9N0CB6SJ140713"), "17 character VIN");
+        assertEquals("1234", Utils.maskVin("1234"), "exactly the visible characters");
+        assertEquals("123", Utils.maskVin("123"), "shorter than the visible characters");
+        assertEquals("", Utils.maskVin(""), "empty VIN");
+    }
+
+    @Test
+    public void testMaskVinsIn() {
+        assertEquals("/v1/vehicle/*************0713/capabilities",
+                Utils.maskVinsIn("/v1/vehicle/W1N9N0CB6SJ140713/capabilities"), "VIN inside a request path");
+        assertEquals("prefix *************0713 suffix", Utils.maskVinsIn("prefix W1N9N0CB6SJ140713 suffix"),
+                "VIN inside a text");
+        assertEquals("*************0713", Utils.maskVinsIn("w1n9n0cb6sj140713"), "lower case VIN");
+        assertEquals("no vin inside", Utils.maskVinsIn("no vin inside"), "text without VIN");
+        assertEquals("W1N9N0CB6SJ14071", Utils.maskVinsIn("W1N9N0CB6SJ14071"), "16 characters only");
+    }
+
+    @Test
     public void testHVACZoneValues() {
         assertEquals(1, Utils.getZoneNumber("frontLeft"), "Front Left");
         assertEquals(2, Utils.getZoneNumber("frontRight"), "Front Right");
@@ -81,6 +103,41 @@ class UtilsTest {
         assertEquals(2, Utils.getChargeProgramNumber("HOME_CHARGE_PROGRAM"), "Home");
         assertEquals(3, Utils.getChargeProgramNumber("WORK_CHARGE_PROGRAM"), "Work");
         assertEquals(-1, Utils.getChargeProgramNumber("UNKNOWN"), "Unknown");
+    }
+
+    @Test
+    public void testIsNilForNilValueFlag() {
+        // Arrange
+        VehicleAttributeStatus nilFlagged = VehicleAttributeStatus.newBuilder().setNilValue(true).build();
+
+        // Act & Assert
+        assertTrue(Utils.isNil(nilFlagged), "nil_value = true must be reported as nil");
+    }
+
+    @Test
+    public void testIsNilForNonValidStatusWithDefaultValue() {
+        // Arrange - no value set: int_value stays at the protobuf default 0 and must not read as a real 0
+        VehicleAttributeStatus notReceived = VehicleAttributeStatus.newBuilder()
+                .setStatus(AttributeStatus.VALUE_NOT_RECEIVED_VALUE).setIntValue(0).build();
+        VehicleAttributeStatus invalid = VehicleAttributeStatus.newBuilder()
+                .setStatus(AttributeStatus.VALUE_INVALID_VALUE).setIntValue(0).build();
+        VehicleAttributeStatus notAvailable = VehicleAttributeStatus.newBuilder()
+                .setStatus(AttributeStatus.VALUE_NOT_AVAILABLE_VALUE).setIntValue(0).build();
+
+        // Act & Assert
+        assertTrue(Utils.isNil(notReceived), "status = VALUE_NOT_RECEIVED must be reported as nil");
+        assertTrue(Utils.isNil(invalid), "status = VALUE_INVALID must be reported as nil");
+        assertTrue(Utils.isNil(notAvailable), "status = VALUE_NOT_AVAILABLE must be reported as nil");
+    }
+
+    @Test
+    public void testIsNilForValidStatus() {
+        // Arrange
+        VehicleAttributeStatus valid = VehicleAttributeStatus.newBuilder().setStatus(AttributeStatus.VALUE_VALID_VALUE)
+                .setIntValue(74).build();
+
+        // Act & Assert
+        assertFalse(Utils.isNil(valid), "status = VALUE_VALID with a populated value must not be reported as nil");
     }
 
     @Test

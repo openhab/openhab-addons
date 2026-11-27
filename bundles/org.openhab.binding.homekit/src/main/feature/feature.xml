@@ -4,6 +4,7 @@
 
 	<feature name="openhab-binding-homekit" description="HomeKit Binding" version="${project.version}">
 		<feature>openhab-runtime-base</feature>
+		<bundle dependency="true">mvn:org.bouncycastle/bcprov-jdk18on/${bouncycastle.version}</bundle>
 		<bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.homekit/${project.version}</bundle>
 	</feature>
 </features>

@@ -13,6 +13,7 @@ Currently, the following metrics are provided:
 - openHAB bundle states
 - openHAB thing states
 - openHAB rule runs (per rule)
+- openHAB rule execution duration (per rule)
 - openHAB thread pool stats (per scheduler)
 - JVM stats including metrics of:
   - Class loader

@@ -1,0 +1,1783 @@
+{
+	"deviceMapping": {
+		"id": [
+			"viomi.vacuum.v12",
+			"viomi.vacuum.v13",
+			"viomi.vacuum.v19",
+			"viomi.vacuum.v25",
+			"viomi.vacuum.v35"
+		],
+		"propertyMethod": "get_properties",
+		"maxProperties": 1,
+		"channels": [
+			{
+				"property": "",
+				"friendlyName": "Actions",
+				"channel": "vacuumaction",
+				"type": "String",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "start-sweep",
+							"label": "Start cleaning"
+						},
+						{
+							"value": "start-sweep-walls",
+							"label": "Start cleaning along walls"
+						},
+						{
+							"value": "stop-sweeping",
+							"label": "Stop cleaning"
+						},
+						{
+							"value": "pause",
+							"label": "Pause cleaning"
+						},
+						{
+							"value": "start-charge",
+							"label": "Go to dock"
+						},
+						{
+							"value": "stop-charge",
+							"label": "Stop returning to dock"
+						},
+						{
+							"value": "find-device",
+							"label": "Locate the robot"
+						},
+						{
+							"value": "start-point-clean",
+							"label": "Start point cleaning"
+						},
+						{
+							"value": "pause-point-clean",
+							"label": "Pause point cleaning"
+						},
+						{
+							"value": "start-zone-clean",
+							"label": "Start zone cleaning"
+						},
+						{
+							"value": "pause-zone-clean",
+							"label": "Pause zone cleaning"
+						},
+						{
+							"value": "save-new-map",
+							"label": "Save the new map"
+						},
+						{
+							"value": "replace-saved-map",
+							"label": "Replace the saved map with the new map"
+						},
+						{
+							"value": "discard-new-map",
+							"label": "Discard the new map"
+						},
+						{
+							"value": "create-new-map",
+							"label": "Create a new map"
+						},
+						{
+							"value": "reset-side-brush",
+							"label": "Reset side brush life"
+						},
+						{
+							"value": "reset-main-brush",
+							"label": "Reset main brush life"
+						},
+						{
+							"value": "reset-dust-filter",
+							"label": "Reset dust box filter life"
+						},
+						{
+							"value": "reset-map",
+							"label": "Clear the saved map"
+						},
+						{
+							"value": "set-calibration",
+							"label": "Calibrate"
+						}
+					]
+				},
+				"refresh": false,
+				"actions": [
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 4,
+						"aiid": 13,
+						"parameters": [
+							{
+								"piid": 21,
+								"value": 0
+							},
+							{
+								"piid": 22,
+								"value": 1
+							},
+							{
+								"piid": 20,
+								"value": ""
+							}
+						],
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "start-sweep"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 4,
+						"aiid": 13,
+						"parameters": [
+							{
+								"piid": 21,
+								"value": 1
+							},
+							{
+								"piid": 22,
+								"value": 1
+							},
+							{
+								"piid": 20,
+								"value": ""
+							}
+						],
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "start-sweep-walls"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 2,
+						"aiid": 2,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "stop-sweeping"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 2,
+						"aiid": 3,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "pause"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 2,
+						"aiid": 4,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "start-charge"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 2,
+						"aiid": 5,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "stop-charge"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 8,
+						"aiid": 2,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "find-device"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 6,
+						"aiid": 1,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "start-point-clean"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 6,
+						"aiid": 2,
+						"parameters": [
+							{
+								"piid": 4,
+								"value": 0
+							}
+						],
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "pause-point-clean"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 6,
+						"aiid": 5,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "start-zone-clean"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 6,
+						"aiid": 6,
+						"parameters": [
+							{
+								"piid": 4,
+								"value": 0
+							}
+						],
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "pause-zone-clean"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 7,
+						"aiid": 4,
+						"parameters": [
+							{
+								"piid": 3,
+								"value": 1
+							}
+						],
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "save-new-map"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 7,
+						"aiid": 4,
+						"parameters": [
+							{
+								"piid": 3,
+								"value": 2
+							}
+						],
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "replace-saved-map"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 7,
+						"aiid": 4,
+						"parameters": [
+							{
+								"piid": 3,
+								"value": 0
+							}
+						],
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "discard-new-map"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 4,
+						"aiid": 14,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "create-new-map"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 4,
+						"aiid": 11,
+						"parameters": [
+							{
+								"piid": 19,
+								"value": 2
+							}
+						],
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "reset-side-brush"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 4,
+						"aiid": 11,
+						"parameters": [
+							{
+								"piid": 19,
+								"value": 1
+							}
+						],
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "reset-main-brush"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 4,
+						"aiid": 11,
+						"parameters": [
+							{
+								"piid": 19,
+								"value": 3
+							}
+						],
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "reset-dust-filter"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 4,
+						"aiid": 7,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "reset-map"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 4,
+						"aiid": 10,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "set-calibration"
+								}
+							]
+						}
+					}
+				],
+				"category": "cleaningrobot",
+				"tags": [
+					"Control"
+				],
+				"readmeComment": "Start cleaning sends the room cleaning command of the Mi Home app without rooms (whole area); it also resumes a paused run. Point and zone cleaning: write `target-point` or `zone-points` first, then send the start action. Save, replace or discard the new map is the answer to the new map question of the app (see `has-newmap`). Create a new map, Clean rooms in order and the voice pack download exist on newer models and firmware only. Map editing (rooms, virtual walls, restricted areas), saved map selection, schedules and voice pack download need several inputs and are not available. Value mapping `[\"start-sweep\"\u003d\"Start cleaning\",\"start-sweep-walls\"\u003d\"Start cleaning along walls\",\"stop-sweeping\"\u003d\"Stop cleaning\",\"pause\"\u003d\"Pause cleaning\",\"start-charge\"\u003d\"Go to dock\",\"stop-charge\"\u003d\"Stop returning to dock\",\"find-device\"\u003d\"Locate the robot\",\"start-point-clean\"\u003d\"Start point cleaning\",\"pause-point-clean\"\u003d\"Pause point cleaning\",\"start-zone-clean\"\u003d\"Start zone cleaning\",\"pause-zone-clean\"\u003d\"Pause zone cleaning\",\"save-new-map\"\u003d\"Save the new map\",\"replace-saved-map\"\u003d\"Replace the saved map with the new map\",\"discard-new-map\"\u003d\"Discard the new map\",\"create-new-map\"\u003d\"Create a new map\",\"reset-side-brush\"\u003d\"Reset side brush life\",\"reset-main-brush\"\u003d\"Reset main brush life\",\"reset-dust-filter\"\u003d\"Reset dust box filter life\",\"reset-map\"\u003d\"Clear the saved map\",\"set-calibration\"\u003d\"Calibrate\"]`"
+			},
+			{
+				"property": "",
+				"friendlyName": "Clean rooms",
+				"channel": "room-clean",
+				"type": "String",
+				"refresh": false,
+				"actions": [
+					{
+						"command": "action",
+						"parameterType": "STRING",
+						"siid": 4,
+						"aiid": 13,
+						"parameters": [
+							{
+								"piid": 21,
+								"value": 0
+							},
+							{
+								"piid": 22,
+								"value": 1
+							},
+							{
+								"piid": 20,
+								"value": "$value$"
+							}
+						]
+					}
+				],
+				"category": "cleaningrobot",
+				"tags": [
+					"Control"
+				],
+				"readmeComment": "Starts cleaning of the rooms with the given ids, separated by a comma (for example `1,2`), as the Mi Home app does. The room ids are the ones of the saved map."
+			},
+			{
+				"property": "",
+				"friendlyName": "Clean rooms in order",
+				"channel": "room-clean-queue",
+				"type": "String",
+				"refresh": false,
+				"actions": [
+					{
+						"command": "action",
+						"parameterType": "STRING",
+						"siid": 4,
+						"aiid": 15,
+						"parameters": [
+							{
+								"piid": 21,
+								"value": 0
+							},
+							{
+								"piid": 22,
+								"value": 1
+							},
+							{
+								"piid": 20,
+								"value": "$value$"
+							}
+						]
+					}
+				],
+				"category": "cleaningrobot",
+				"tags": [
+					"Control"
+				],
+				"readmeComment": "Cleans the rooms in the given order, ids separated by a comma (for example `3,1,2`), as the room customization of the Mi Home app. Only on newer models and firmware."
+			},
+			{
+				"property": "status",
+				"siid": 2,
+				"piid": 1,
+				"friendlyName": "Status",
+				"channel": "status",
+				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "0",
+							"label": "Sleeping"
+						},
+						{
+							"value": "1",
+							"label": "Idle"
+						},
+						{
+							"value": "2",
+							"label": "Paused"
+						},
+						{
+							"value": "3",
+							"label": "Returning to dock"
+						},
+						{
+							"value": "4",
+							"label": "Charging"
+						},
+						{
+							"value": "5",
+							"label": "Vacuuming"
+						},
+						{
+							"value": "6",
+							"label": "Vacuuming and mopping"
+						},
+						{
+							"value": "7",
+							"label": "Mopping"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "cleaningrobot",
+				"tags": [
+					"Status"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Sleeping\",\"1\"\u003d\"Idle\",\"2\"\u003d\"Paused\",\"3\"\u003d\"Returning to dock\",\"4\"\u003d\"Charging\",\"5\"\u003d\"Vacuuming\",\"6\"\u003d\"Vacuuming and mopping\",\"7\"\u003d\"Mopping\"]`"
+			},
+			{
+				"property": "fault",
+				"siid": 2,
+				"piid": 2,
+				"friendlyName": "Error",
+				"channel": "fault",
+				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "0",
+							"label": "No error"
+						},
+						{
+							"value": "500",
+							"label": "Lidar timeout"
+						},
+						{
+							"value": "501",
+							"label": "Wheels lifted"
+						},
+						{
+							"value": "502",
+							"label": "Battery level too low"
+						},
+						{
+							"value": "503",
+							"label": "Dust box or 2-in-1 tank not installed"
+						},
+						{
+							"value": "507",
+							"label": "Relocation failed"
+						},
+						{
+							"value": "508",
+							"label": "Started on a slope"
+						},
+						{
+							"value": "509",
+							"label": "Cliff sensor error"
+						},
+						{
+							"value": "510",
+							"label": "Collision sensor stuck"
+						},
+						{
+							"value": "511",
+							"label": "Return to dock failed, clear obstacles around the dock"
+						},
+						{
+							"value": "512",
+							"label": "Return to dock failed, place the robot on the dock"
+						},
+						{
+							"value": "513",
+							"label": "Navigation failed"
+						},
+						{
+							"value": "514",
+							"label": "Stuck, could not get free"
+						},
+						{
+							"value": "515",
+							"label": "Charging error, clean the charging contacts"
+						},
+						{
+							"value": "516",
+							"label": "Temperature error"
+						},
+						{
+							"value": "517",
+							"label": "System updating"
+						},
+						{
+							"value": "518",
+							"label": "Battery level insufficient"
+						},
+						{
+							"value": "521",
+							"label": "Water tank not installed"
+						},
+						{
+							"value": "522",
+							"label": "Mop not installed"
+						},
+						{
+							"value": "527",
+							"label": "Remove the mop"
+						},
+						{
+							"value": "528",
+							"label": "Paused, dust box or 2-in-1 tank missing"
+						},
+						{
+							"value": "529",
+							"label": "Paused, install mop and water tank"
+						},
+						{
+							"value": "530",
+							"label": "Paused, install 2-in-1 tank and mop"
+						},
+						{
+							"value": "531",
+							"label": "Paused, install 2-in-1 tank"
+						},
+						{
+							"value": "2101",
+							"label": "Low battery, charging before continuing"
+						},
+						{
+							"value": "2108",
+							"label": "Relocating"
+						},
+						{
+							"value": "2109",
+							"label": "Repeat cleaning in progress"
+						},
+						{
+							"value": "2110",
+							"label": "Self-checking"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "error",
+				"tags": [
+					"Status"
+				],
+				"readmeComment": "Error and status texts of the Mi Home app; codes without text are shown as number. Value mapping `[\"0\"\u003d\"No error\",\"500\"\u003d\"Lidar timeout\",\"501\"\u003d\"Wheels lifted\",\"502\"\u003d\"Battery level too low\",\"503\"\u003d\"Dust box or 2-in-1 tank not installed\",\"507\"\u003d\"Relocation failed\",\"508\"\u003d\"Started on a slope\",\"509\"\u003d\"Cliff sensor error\",\"510\"\u003d\"Collision sensor stuck\",\"511\"\u003d\"Return to dock failed, clear obstacles around the dock\",\"512\"\u003d\"Return to dock failed, place the robot on the dock\",\"513\"\u003d\"Navigation failed\",\"514\"\u003d\"Stuck, could not get free\",\"515\"\u003d\"Charging error, clean the charging contacts\",\"516\"\u003d\"Temperature error\",\"517\"\u003d\"System updating\",\"518\"\u003d\"Battery level insufficient\",\"521\"\u003d\"Water tank not installed\",\"522\"\u003d\"Mop not installed\",\"527\"\u003d\"Remove the mop\",\"528\"\u003d\"Paused, dust box or 2-in-1 tank missing\",\"529\"\u003d\"Paused, install mop and water tank\",\"530\"\u003d\"Paused, install 2-in-1 tank and mop\",\"531\"\u003d\"Paused, install 2-in-1 tank\",\"2101\"\u003d\"Low battery, charging before continuing\",\"2108\"\u003d\"Relocating\",\"2109\"\u003d\"Repeat cleaning in progress\",\"2110\"\u003d\"Self-checking\"]`"
+			},
+			{
+				"property": "battery-level",
+				"siid": 3,
+				"piid": 1,
+				"friendlyName": "Battery",
+				"channel": "battery-level",
+				"type": "Number:Dimensionless",
+				"unit": "percentage",
+				"stateDescription": {
+					"readOnly": true,
+					"minimum": 0,
+					"maximum": 100,
+					"step": 1,
+					"pattern": "%.0f %unit%"
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "battery",
+				"tags": [
+					"Measurement",
+					"StateOfCharge"
+				]
+			},
+			{
+				"property": "wdr-mode",
+				"siid": 2,
+				"piid": 11,
+				"friendlyName": "Cleaning type",
+				"channel": "cleaning-type",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "Vacuum"
+						},
+						{
+							"value": "1",
+							"label": "Vacuum and mop"
+						},
+						{
+							"value": "2",
+							"label": "Mop"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "cleaningrobot",
+				"tags": [
+					"Control",
+					"Mode"
+				],
+				"readmeComment": "The spec calls this property wdr-mode, the Mi Home app uses it as cleaning type (is_mop). Value mapping `[\"0\"\u003d\"Vacuum\",\"1\"\u003d\"Vacuum and mop\",\"2\"\u003d\"Mop\"]`"
+			},
+			{
+				"property": "sweep-type",
+				"siid": 2,
+				"piid": 4,
+				"friendlyName": "Cleaning mode",
+				"channel": "cleaning-mode",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "Whole area"
+						},
+						{
+							"value": "1",
+							"label": "Whole area (mopping)"
+						},
+						{
+							"value": "2",
+							"label": "Along walls"
+						},
+						{
+							"value": "3",
+							"label": "Zone"
+						},
+						{
+							"value": "4",
+							"label": "Point"
+						},
+						{
+							"value": "5",
+							"label": "Manual control"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "cleaningrobot",
+				"tags": [
+					"Control",
+					"Mode"
+				],
+				"readmeComment": "The Mi Home app only writes Whole area and Along walls; the other values are set by the robot when zone, point or manual control cleaning is started. Value mapping `[\"0\"\u003d\"Whole area\",\"1\"\u003d\"Whole area (mopping)\",\"2\"\u003d\"Along walls\",\"3\"\u003d\"Zone\",\"4\"\u003d\"Point\",\"5\"\u003d\"Manual control\"]`"
+			},
+			{
+				"property": "door-state",
+				"siid": 2,
+				"piid": 12,
+				"friendlyName": "Installed modules",
+				"channel": "box-type",
+				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "0",
+							"label": "None"
+						},
+						{
+							"value": "1",
+							"label": "Dust box"
+						},
+						{
+							"value": "2",
+							"label": "Water tank"
+						},
+						{
+							"value": "3",
+							"label": "2-in-1 dust box and water tank"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "status",
+				"tags": [
+					"Status"
+				],
+				"readmeComment": "The spec calls this property door-state, the Mi Home app uses it as box type. Value mapping `[\"0\"\u003d\"None\",\"1\"\u003d\"Dust box\",\"2\"\u003d\"Water tank\",\"3\"\u003d\"2-in-1 dust box and water tank\"]`"
+			},
+			{
+				"property": "contact-state",
+				"siid": 2,
+				"piid": 13,
+				"friendlyName": "Mop installed",
+				"channel": "mop-installed",
+				"type": "Switch",
+				"stateDescription": {
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "status",
+				"tags": [
+					"Status"
+				],
+				"readmeComment": "The spec calls this property contact-state, the Mi Home app uses it as mop type (1 \u003d mop cloth installed)."
+			},
+			{
+				"property": "contact-state1",
+				"siid": 2,
+				"piid": 15,
+				"friendlyName": "Cleaning time",
+				"channel": "clean-time",
+				"type": "Number:Time",
+				"unit": "minutes",
+				"stateDescription": {
+					"readOnly": true,
+					"minimum": 0,
+					"maximum": 999,
+					"step": 1,
+					"pattern": "%.0f %unit%"
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "time",
+				"tags": [
+					"Measurement",
+					"Duration"
+				],
+				"readmeComment": "Duration of the current or last cleaning run."
+			},
+			{
+				"property": "contact-state2",
+				"siid": 2,
+				"piid": 16,
+				"friendlyName": "Cleaned area",
+				"channel": "clean-area",
+				"type": "Number:Area",
+				"unit": "square_meter",
+				"stateDescription": {
+					"readOnly": true,
+					"minimum": 0,
+					"maximum": 1200,
+					"step": 1,
+					"pattern": "%.0f %unit%"
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "cleaningrobot",
+				"tags": [
+					"Measurement"
+				],
+				"readmeComment": "Area of the current or last cleaning run."
+			},
+			{
+				"property": "mute",
+				"siid": 2,
+				"piid": 17,
+				"friendlyName": "Volume",
+				"channel": "volume",
+				"type": "Number",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 10,
+					"step": 1,
+					"pattern": "%.0f"
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "soundvolume",
+				"tags": [
+					"Setpoint",
+					"SoundVolume"
+				],
+				"readmeComment": "Volume level 0 (off) to 10; the Mi Home app shows it as percent (level x 10)."
+			},
+			{
+				"property": "suction-grade",
+				"siid": 4,
+				"piid": 17,
+				"friendlyName": "Suction power",
+				"channel": "suction-grade",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "Quiet"
+						},
+						{
+							"value": "1",
+							"label": "Standard"
+						},
+						{
+							"value": "2",
+							"label": "Medium"
+						},
+						{
+							"value": "3",
+							"label": "Strong"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "fan",
+				"tags": [
+					"Control",
+					"Level"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Quiet\",\"1\"\u003d\"Standard\",\"2\"\u003d\"Medium\",\"3\"\u003d\"Strong\"]`"
+			},
+			{
+				"property": "water-grade",
+				"siid": 4,
+				"piid": 18,
+				"friendlyName": "Water level",
+				"channel": "water-grade",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "Level 1"
+						},
+						{
+							"value": "1",
+							"label": "Level 2"
+						},
+						{
+							"value": "2",
+							"label": "Level 3"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "water",
+				"tags": [
+					"Control",
+					"Level"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Level 1\",\"1\"\u003d\"Level 2\",\"2\"\u003d\"Level 3\"]`"
+			},
+			{
+				"property": "mop-route",
+				"siid": 4,
+				"piid": 6,
+				"friendlyName": "Mopping pattern",
+				"channel": "mop-route",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "S pattern"
+						},
+						{
+							"value": "1",
+							"label": "Y pattern"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "cleaningrobot",
+				"tags": [
+					"Control",
+					"Mode"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"S pattern\",\"1\"\u003d\"Y pattern\"]`"
+			},
+			{
+				"property": "repeat-state",
+				"siid": 4,
+				"piid": 1,
+				"friendlyName": "Repeat cleaning",
+				"channel": "repeat-state",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFNUMBER"
+					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch",
+					"Enabled"
+				],
+				"readmeComment": "Repeat the cleaning once; switches off after one run."
+			},
+			{
+				"property": "remember-state",
+				"siid": 4,
+				"piid": 3,
+				"friendlyName": "Remember map",
+				"channel": "remember-state",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFNUMBER"
+					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch",
+					"Enabled"
+				],
+				"readmeComment": "Memory map switch of the Mi Home app."
+			},
+			{
+				"property": "side-brush-life",
+				"siid": 4,
+				"piid": 8,
+				"friendlyName": "Side brush life",
+				"channel": "side-brush-life",
+				"type": "Number:Dimensionless",
+				"unit": "percentage",
+				"stateDescription": {
+					"readOnly": true,
+					"minimum": 0,
+					"maximum": 100,
+					"step": 1,
+					"pattern": "%.0f %unit%"
+				},
+				"refresh": true,
+				"actions": [],
+				"tags": [
+					"Measurement",
+					"Level"
+				]
+			},
+			{
+				"property": "side-brush-hours",
+				"siid": 4,
+				"piid": 9,
+				"friendlyName": "Side brush time left",
+				"channel": "side-brush-hours",
+				"type": "Number:Time",
+				"unit": "hours",
+				"stateDescription": {
+					"readOnly": true,
+					"minimum": 0,
+					"maximum": 180,
+					"step": 1,
+					"pattern": "%.0f %unit%"
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "time",
+				"tags": [
+					"Measurement",
+					"Duration"
+				]
+			},
+			{
+				"property": "main-brush-life",
+				"siid": 4,
+				"piid": 10,
+				"friendlyName": "Main brush life",
+				"channel": "main-brush-life",
+				"type": "Number:Dimensionless",
+				"unit": "percentage",
+				"stateDescription": {
+					"readOnly": true,
+					"minimum": 0,
+					"maximum": 100,
+					"step": 1,
+					"pattern": "%.0f %unit%"
+				},
+				"refresh": true,
+				"actions": [],
+				"tags": [
+					"Measurement",
+					"Level"
+				]
+			},
+			{
+				"property": "main-brush-hours",
+				"siid": 4,
+				"piid": 11,
+				"friendlyName": "Main brush time left",
+				"channel": "main-brush-hours",
+				"type": "Number:Time",
+				"unit": "hours",
+				"stateDescription": {
+					"readOnly": true,
+					"minimum": 0,
+					"maximum": 360,
+					"step": 1,
+					"pattern": "%.0f %unit%"
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "time",
+				"tags": [
+					"Measurement",
+					"Duration"
+				]
+			},
+			{
+				"property": "hypa-life",
+				"siid": 4,
+				"piid": 12,
+				"friendlyName": "Dust box filter life",
+				"channel": "hypa-life",
+				"type": "Number:Dimensionless",
+				"unit": "percentage",
+				"stateDescription": {
+					"readOnly": true,
+					"minimum": 0,
+					"maximum": 100,
+					"step": 1,
+					"pattern": "%.0f %unit%"
+				},
+				"refresh": true,
+				"actions": [],
+				"tags": [
+					"Measurement",
+					"Level"
+				]
+			},
+			{
+				"property": "hypa-hours",
+				"siid": 4,
+				"piid": 13,
+				"friendlyName": "Dust box filter time left",
+				"channel": "hypa-hours",
+				"type": "Number:Time",
+				"unit": "hours",
+				"stateDescription": {
+					"readOnly": true,
+					"minimum": 0,
+					"maximum": 180,
+					"step": 1,
+					"pattern": "%.0f %unit%"
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "time",
+				"tags": [
+					"Measurement",
+					"Duration"
+				]
+			},
+			{
+				"property": "mop-life",
+				"siid": 4,
+				"piid": 14,
+				"friendlyName": "Mop cloth life",
+				"channel": "mop-life",
+				"type": "Number:Dimensionless",
+				"unit": "percentage",
+				"stateDescription": {
+					"readOnly": true,
+					"minimum": 0,
+					"maximum": 100,
+					"step": 1,
+					"pattern": "%.0f %unit%"
+				},
+				"refresh": true,
+				"actions": [],
+				"tags": [
+					"Measurement",
+					"Level"
+				],
+				"readmeComment": "Not read by the Mi Home app; the mop cloth has no reset action."
+			},
+			{
+				"property": "mop-hours",
+				"siid": 4,
+				"piid": 15,
+				"friendlyName": "Mop cloth time left",
+				"channel": "mop-hours",
+				"type": "Number:Time",
+				"unit": "hours",
+				"stateDescription": {
+					"readOnly": true,
+					"minimum": 0,
+					"maximum": 180,
+					"step": 1,
+					"pattern": "%.0f %unit%"
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "time",
+				"tags": [
+					"Measurement",
+					"Duration"
+				],
+				"readmeComment": "Not read by the Mi Home app; the mop cloth has no reset action."
+			},
+			{
+				"property": "direction",
+				"siid": 4,
+				"piid": 16,
+				"friendlyName": "Manual control",
+				"channel": "manual-control",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "1",
+							"label": "Forward"
+						},
+						{
+							"value": "2",
+							"label": "Left"
+						},
+						{
+							"value": "3",
+							"label": "Right"
+						},
+						{
+							"value": "4",
+							"label": "Backward"
+						},
+						{
+							"value": "5",
+							"label": "Stop"
+						},
+						{
+							"value": "10",
+							"label": "Start or end remote control"
+						}
+					]
+				},
+				"refresh": false,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "cleaningrobot",
+				"tags": [
+					"Control"
+				],
+				"readmeComment": "Write only. The Mi Home app sends 1 to 4 while a direction key is pressed, 5 when it is released and 10 when the remote control page is opened or closed. Value mapping `[\"1\"\u003d\"Forward\",\"2\"\u003d\"Left\",\"3\"\u003d\"Right\",\"4\"\u003d\"Backward\",\"5\"\u003d\"Stop\",\"10\"\u003d\"Start or end remote control\"]`"
+			},
+			{
+				"property": "target-point",
+				"siid": 6,
+				"piid": 1,
+				"friendlyName": "Point cleaning target",
+				"channel": "target-point",
+				"type": "String",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "STRING"
+					}
+				],
+				"category": "cleaningrobot",
+				"tags": [
+					"Control"
+				],
+				"readmeComment": "Map coordinates `x,y`; send the action `start-point-clean` afterwards."
+			},
+			{
+				"property": "zone-points",
+				"siid": 6,
+				"piid": 2,
+				"friendlyName": "Zone cleaning corners",
+				"channel": "zone-points",
+				"type": "String",
+				"refresh": false,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "STRING"
+					}
+				],
+				"category": "cleaningrobot",
+				"tags": [
+					"Control"
+				],
+				"readmeComment": "Eight comma separated map coordinates (four corner points); send the action `start-zone-clean` afterwards."
+			},
+			{
+				"property": "map-num",
+				"siid": 4,
+				"piid": 23,
+				"friendlyName": "Saved maps",
+				"channel": "map-num",
+				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"minimum": 0,
+					"maximum": 5,
+					"step": 1,
+					"pattern": "%.0f"
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "status",
+				"tags": [
+					"Status"
+				]
+			},
+			{
+				"property": "cur-map-id",
+				"siid": 4,
+				"piid": 32,
+				"friendlyName": "Current map id",
+				"channel": "cur-map-id",
+				"type": "Number",
+				"stateDescription": {
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "status",
+				"tags": [
+					"Status",
+					"Info"
+				]
+			},
+			{
+				"property": "has-map",
+				"siid": 4,
+				"piid": 4,
+				"friendlyName": "Map available",
+				"channel": "has-map",
+				"type": "Switch",
+				"stateDescription": {
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "status",
+				"tags": [
+					"Status"
+				],
+				"readmeComment": "On when the robot has a saved (remembered) map."
+			},
+			{
+				"property": "has-newmap",
+				"siid": 4,
+				"piid": 5,
+				"friendlyName": "New map",
+				"channel": "has-newmap",
+				"type": "Switch",
+				"stateDescription": {
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "status",
+				"tags": [
+					"Status"
+				],
+				"readmeComment": "On when the robot found a new map; the Mi Home app then asks to save, replace or discard it (see the actions)."
+			},
+			{
+				"property": "clean-start-time",
+				"siid": 4,
+				"piid": 25,
+				"friendlyName": "Last clean start",
+				"channel": "last-clean-start",
+				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"pattern": "%d"
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "time",
+				"tags": [
+					"Status",
+					"Timestamp"
+				],
+				"readmeComment": "Seconds since 1970-01-01 (UTC)."
+			},
+			{
+				"property": "clean-use-time",
+				"siid": 4,
+				"piid": 26,
+				"friendlyName": "Last clean duration",
+				"channel": "last-clean-time",
+				"type": "Number:Time",
+				"unit": "seconds",
+				"stateDescription": {
+					"readOnly": true,
+					"minimum": 0,
+					"maximum": 99999,
+					"step": 1,
+					"pattern": "%.0f %unit%"
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "time",
+				"tags": [
+					"Measurement",
+					"Duration"
+				]
+			},
+			{
+				"property": "clean-area",
+				"siid": 4,
+				"piid": 27,
+				"friendlyName": "Last clean area",
+				"channel": "last-clean-area",
+				"type": "Number:Area",
+				"unit": "square_meter",
+				"stateDescription": {
+					"readOnly": true,
+					"minimum": 0,
+					"maximum": 9999,
+					"step": 1,
+					"pattern": "%.0f %unit%"
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "cleaningrobot",
+				"tags": [
+					"Measurement"
+				]
+			},
+			{
+				"property": "clean-mode",
+				"siid": 4,
+				"piid": 29,
+				"friendlyName": "Last clean mode",
+				"channel": "last-clean-mode",
+				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "0",
+							"label": "Whole area"
+						},
+						{
+							"value": "1",
+							"label": "Whole area (mopping)"
+						},
+						{
+							"value": "2",
+							"label": "Along walls"
+						},
+						{
+							"value": "3",
+							"label": "Zone"
+						},
+						{
+							"value": "4",
+							"label": "Point"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "status",
+				"tags": [
+					"Status",
+					"Mode"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Whole area\",\"1\"\u003d\"Whole area (mopping)\",\"2\"\u003d\"Along walls\",\"3\"\u003d\"Zone\",\"4\"\u003d\"Point\"]`"
+			},
+			{
+				"property": "clean-way",
+				"siid": 4,
+				"piid": 30,
+				"friendlyName": "Last clean type",
+				"channel": "last-clean-type",
+				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "0",
+							"label": "Vacuum"
+						},
+						{
+							"value": "1",
+							"label": "Vacuum and mop"
+						},
+						{
+							"value": "2",
+							"label": "Mop"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "status",
+				"tags": [
+					"Status",
+					"Mode"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Vacuum\",\"1\"\u003d\"Vacuum and mop\",\"2\"\u003d\"Mop\"]`"
+			},
+			{
+				"property": "cur-lang",
+				"siid": 4,
+				"piid": 31,
+				"friendlyName": "Voice language",
+				"channel": "cur-lang",
+				"type": "String",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "STRING"
+					}
+				],
+				"tags": [
+					"Control"
+				],
+				"readmeComment": "Language code as used by the Mi Home app, sent as typed."
+			},
+			{
+				"property": "dnd-enable",
+				"siid": 5,
+				"piid": 15,
+				"friendlyName": "Do not disturb",
+				"channel": "dnd-enable",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFNUMBER"
+					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch",
+					"Enabled"
+				],
+				"readmeComment": "The Mi Home app writes the enable, start, end and time zone values together."
+			},
+			{
+				"property": "dnd-start-hour",
+				"siid": 5,
+				"piid": 16,
+				"friendlyName": "Do not disturb start hour",
+				"channel": "dnd-start-hour",
+				"type": "Number:Time",
+				"unit": "hours",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 23,
+					"step": 1,
+					"pattern": "%.0f %unit%"
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "time",
+				"tags": [
+					"Setpoint"
+				]
+			},
+			{
+				"property": "dnd-start-minute",
+				"siid": 5,
+				"piid": 17,
+				"friendlyName": "Do not disturb start minute",
+				"channel": "dnd-start-minute",
+				"type": "Number:Time",
+				"unit": "minutes",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 59,
+					"step": 1,
+					"pattern": "%.0f %unit%"
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "time",
+				"tags": [
+					"Setpoint"
+				]
+			},
+			{
+				"property": "dnd-end-hour",
+				"siid": 5,
+				"piid": 18,
+				"friendlyName": "Do not disturb end hour",
+				"channel": "dnd-end-hour",
+				"type": "Number:Time",
+				"unit": "hours",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 23,
+					"step": 1,
+					"pattern": "%.0f %unit%"
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "time",
+				"tags": [
+					"Setpoint"
+				]
+			},
+			{
+				"property": "dnd-end-minute",
+				"siid": 5,
+				"piid": 19,
+				"friendlyName": "Do not disturb end minute",
+				"channel": "dnd-end-minute",
+				"type": "Number:Time",
+				"unit": "minutes",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 59,
+					"step": 1,
+					"pattern": "%.0f %unit%"
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "time",
+				"tags": [
+					"Setpoint"
+				]
+			},
+			{
+				"property": "dnd-timezone",
+				"siid": 5,
+				"piid": 20,
+				"friendlyName": "Do not disturb time zone offset",
+				"channel": "dnd-timezone",
+				"type": "Number:Time",
+				"unit": "seconds",
+				"stateDescription": {
+					"pattern": "%.0f %unit%"
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "time",
+				"tags": [
+					"Setpoint"
+				],
+				"readmeComment": "Offset of the local time zone in seconds as written by the Mi Home app (minus the UTC offset)."
+			},
+			{
+				"property": "orderdata",
+				"siid": 5,
+				"piid": 22,
+				"friendlyName": "Cleaning schedule",
+				"channel": "orderdata",
+				"type": "String",
+				"stateDescription": {
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "status",
+				"tags": [
+					"Status",
+					"Info"
+				],
+				"readmeComment": "Schedule list as JSON text; schedules can not be changed from here."
+			}
+		],
+		"experimental": true
+	}
+}

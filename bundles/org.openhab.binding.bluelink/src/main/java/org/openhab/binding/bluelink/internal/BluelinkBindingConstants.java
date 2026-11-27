@@ -26,6 +26,9 @@ public class BluelinkBindingConstants {
 
     public static final String BINDING_ID = "bluelink";
 
+    // the CCI token exchange sends several JWTs as headers, more than the default 4 kB request buffer holds
+    public static final int HTTP_REQUEST_BUFFER_SIZE = 32 * 1024;
+
     // Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_ACCOUNT = new ThingTypeUID(BINDING_ID, "account");
     public static final ThingTypeUID THING_TYPE_VEHICLE = new ThingTypeUID(BINDING_ID, "vehicle");

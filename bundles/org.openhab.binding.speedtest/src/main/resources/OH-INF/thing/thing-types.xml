@@ -50,7 +50,7 @@
 			<parameter-group name="config-info">
 				<label>Speedtest Configuration</label>
 			</parameter-group>
-			<parameter name="refreshInterval" type="integer" required="true" groupName="config-info">
+			<parameter name="refreshInterval" type="integer" required="true" groupName="config-info" unit="min">
 				<label>Refresh Interval</label>
 				<description>How often to test network speed</description>
 				<options>

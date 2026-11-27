@@ -1,0 +1,34 @@
+{
+  "id": 18,
+  "type": "event",
+  "event": {
+    "event_type": "state_changed",
+    "data": {
+      "entity_id": "siren.siren",
+      "old_state": null,
+      "new_state": {
+        "entity_id": "siren.siren",
+        "state": "on",
+        "attributes": {
+          "friendly_name": "Siren",
+          "supported_features": 3
+        },
+        "last_changed": "2026-09-21T12:46:27.353809+00:00",
+        "last_reported": "2026-09-21T12:46:27.353809+00:00",
+        "last_updated": "2026-09-21T12:46:27.353809+00:00",
+        "context": {
+          "id": "01M3201RGSVZ3ZX2P0NQFE1PR9",
+          "parent_id": null,
+          "user_id": null
+        }
+      }
+    },
+    "origin": "LOCAL",
+    "time_fired": "2026-09-19T00:00:00.000000+00:00",
+    "context": {
+      "id": "01HXXXXXXX",
+      "parent_id": null,
+      "user_id": null
+    }
+  }
+}

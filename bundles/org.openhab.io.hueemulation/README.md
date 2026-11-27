@@ -224,8 +224,9 @@ org.openhab.hueemulation:restrictToTagsWhiteLights=Lighting,Switchable
 org.openhab.hueemulation:restrictToTagsColorLights=ColorLighting
 ```
 
-The service tries to expose as many Items as possible (greedy), based on some criteria as explained in the section above.
-If you want to exclude Items, you need to tag them.
+In classic mapping, the service tries to expose as many Items as possible (greedy), based on some criteria as explained in the Classic Mapping section above.
+If an Item is not tagged, it is still exposed from its category ("ColorLight" as a color bulb, "Light" as a switch), even after you change `restrictToTags*`.
+To keep those Items off the Hue API, tag them with one of the ignore tags below.
 Define the tags with the following option:
 
 ```ini

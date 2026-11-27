@@ -29,7 +29,6 @@ import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
-import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.thing.type.ChannelKind;
 import org.openhab.core.types.Command;
@@ -97,7 +96,7 @@ public abstract class SensorBaseThingHandler extends DeconzBaseThingHandler {
 
         // Add some information about the sensor
         if (!sensorConfig.reachable) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "@text/offline.sensor-not-reachable");
+            updateStatus(ThingStatus.OFFLINE, "@text/offline.sensor-not-reachable");
             return;
         }
 
@@ -202,7 +201,7 @@ public abstract class SensorBaseThingHandler extends DeconzBaseThingHandler {
                     updateStatus(ThingStatus.ONLINE);
                     updateChannels(sensorConfig);
                 } else {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "@text/offline.sensor-not-reachable");
+                    updateStatus(ThingStatus.OFFLINE, "@text/offline.sensor-not-reachable");
                 }
             }
             SensorState sensorState = sensorMessage.state;

@@ -36,19 +36,13 @@ import static org.openhab.binding.wundergroundupdatereceiver.internal.Wundergrou
 import static org.openhab.binding.wundergroundupdatereceiver.internal.WundergroundUpdateReceiverBindingConstants.WIND_GROUP;
 
 import java.io.IOException;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletResponse;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jetty.http.HttpFields;
-import org.eclipse.jetty.http.HttpURI;
-import org.eclipse.jetty.http.HttpVersion;
-import org.eclipse.jetty.http.MetaData;
-import org.eclipse.jetty.server.HttpChannel;
-import org.eclipse.jetty.server.Request;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Answers;
@@ -62,6 +56,7 @@ import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.ImperialUnits;
 import org.openhab.core.library.unit.Units;
+import org.openhab.core.test.storage.VolatileStorageService;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ManagedThingProvider;
@@ -74,7 +69,11 @@ import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.thing.type.ChannelKind;
 import org.openhab.core.thing.type.ChannelTypeBuilder;
 import org.openhab.core.thing.type.ChannelTypeRegistry;
-import org.osgi.service.http.NamespaceException;
+import org.ops4j.pax.web.service.http.NamespaceException;
+
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * @author Daniel Demus - Initial contribution
@@ -221,7 +220,9 @@ class WundergroundUpdateReceiverServletTest {
                 .thenReturn(ChannelTypeBuilder.trigger(LAST_QUERY_TRIGGER_CHANNELTYPEUID, "Label").build());
         WundergroundUpdateReceiverServlet sut = new WundergroundUpdateReceiverServlet(discoveryService);
         WundergroundUpdateReceiverHandler handler = new WundergroundUpdateReceiverHandler(thing, sut, discoveryService,
-                new WundergroundUpdateReceiverUnknownChannelTypeProvider(), channelTypeRegistry, managedThingProvider);
+                new WundergroundUpdateReceiverUnknownChannelTypeProvider(new VolatileStorageService(),
+                        mock(ManagedThingProvider.class)),
+                channelTypeRegistry, managedThingProvider);
         ThingHandlerCallback mockCallback = mock(ThingHandlerCallback.class);
         handler.setCallback(mockCallback);
 
@@ -280,6 +281,12 @@ class WundergroundUpdateReceiverServletTest {
                         .create(new ChannelUID(testThingUID, TEMPERATURE_GROUP,
                                 WundergroundUpdateReceiverBindingConstants.TEMPERATURE), "Number:Temperature")
                         .withKind(ChannelKind.STATE).build(),
+                ChannelBuilder.create(new ChannelUID(testThingUID, TEMPERATURE_GROUP,
+                        WundergroundUpdateReceiverBindingConstants.WIND_CHILL), "Number:Temperature").build(),
+                ChannelBuilder
+                        .create(new ChannelUID(testThingUID, TEMPERATURE_GROUP,
+                                WundergroundUpdateReceiverBindingConstants.INDOOR_TEMPERATURE), "Number:Temperature")
+                        .build(),
                 ChannelBuilder
                         .create(new ChannelUID(testThingUID, RAIN_GROUP,
                                 WundergroundUpdateReceiverBindingConstants.RAIN_IN), "Number:Length")
@@ -319,17 +326,15 @@ class WundergroundUpdateReceiverServletTest {
                 .withChannels(channels).withConfiguration(config).build();
         ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
         WundergroundUpdateReceiverHandler handler = new WundergroundUpdateReceiverHandler(testThing, sut,
-                discoveryService, new WundergroundUpdateReceiverUnknownChannelTypeProvider(), channelTypeRegistry,
-                managedThingProvider);
+                discoveryService, new WundergroundUpdateReceiverUnknownChannelTypeProvider(new VolatileStorageService(),
+                        mock(ManagedThingProvider.class)),
+                channelTypeRegistry, managedThingProvider);
         handler.setCallback(callback);
         handler.initialize();
+        handler.dispose();
+        handler.initialize();
 
-        HttpChannel httpChannel = mock(HttpChannel.class);
-        MetaData.Request request = new MetaData.Request("GET",
-                new HttpURI("http://localhost" + WundergroundUpdateReceiverServlet.SERVLET_URL + "?" + queryString),
-                HttpVersion.HTTP_1_1, new HttpFields());
-        Request req = new Request(httpChannel, null);
-        req.setMetaData(request);
+        HttpServletRequest req = mockServletRequest(queryString);
 
         // When
         sut.doGet(req, mock(HttpServletResponse.class, Answers.RETURNS_MOCKS));
@@ -356,6 +361,14 @@ class WundergroundUpdateReceiverServletTest {
                 new ChannelUID(TEST_THING_UID, TEMPERATURE_GROUP,
                         WundergroundUpdateReceiverBindingConstants.TEMPERATURE),
                 new QuantityType<>(26.1, ImperialUnits.FAHRENHEIT));
+        verify(callback).stateUpdated(
+                new ChannelUID(TEST_THING_UID, TEMPERATURE_GROUP,
+                        WundergroundUpdateReceiverBindingConstants.WIND_CHILL),
+                new QuantityType<>(26.1, ImperialUnits.FAHRENHEIT));
+        verify(callback).stateUpdated(
+                new ChannelUID(TEST_THING_UID, TEMPERATURE_GROUP,
+                        WundergroundUpdateReceiverBindingConstants.INDOOR_TEMPERATURE),
+                new QuantityType<>(69.3, ImperialUnits.FAHRENHEIT));
         verify(callback).stateUpdated(
                 new ChannelUID(TEST_THING_UID, RAIN_GROUP, WundergroundUpdateReceiverBindingConstants.RAIN_IN),
                 new QuantityType<>(0, ImperialUnits.INCH));
@@ -433,17 +446,13 @@ class WundergroundUpdateReceiverServletTest {
                 .withChannels(channels).withConfiguration(config).build();
         ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
         WundergroundUpdateReceiverHandler handler = new WundergroundUpdateReceiverHandler(testThing, sut,
-                discoveryService, new WundergroundUpdateReceiverUnknownChannelTypeProvider(), channelTypeRegistry,
-                managedThingProvider);
+                discoveryService, new WundergroundUpdateReceiverUnknownChannelTypeProvider(new VolatileStorageService(),
+                        mock(ManagedThingProvider.class)),
+                channelTypeRegistry, managedThingProvider);
         handler.setCallback(callback);
         handler.initialize();
 
-        HttpChannel httpChannel = mock(HttpChannel.class);
-        MetaData.Request request = new MetaData.Request("GET",
-                new HttpURI("http://localhost" + WundergroundUpdateReceiverServlet.SERVLET_URL + "?" + queryString),
-                HttpVersion.HTTP_1_1, new HttpFields());
-        Request req = new Request(httpChannel, null);
-        req.setMetaData(request);
+        HttpServletRequest req = mockServletRequest(queryString);
 
         // When
         sut.doGet(req, mock(HttpServletResponse.class, Answers.RETURNS_MOCKS));
@@ -476,5 +485,22 @@ class WundergroundUpdateReceiverServletTest {
                 WundergroundUpdateReceiverBindingConstants.LAST_RECEIVED)), any(DateTimeType.class));
         verify(callback).channelTriggered(testThing, new ChannelUID(TEST_THING_UID, METADATA_GROUP,
                 WundergroundUpdateReceiverBindingConstants.LAST_QUERY_TRIGGER), queryString);
+    }
+
+    private static HttpServletRequest mockServletRequest(String queryString) {
+        HttpServletRequest req = mock(HttpServletRequest.class);
+        Map<String, String[]> params = new HashMap<>();
+        for (String param : queryString.split("&")) {
+            String[] pair = param.split("=", 2);
+            if (pair.length == 2) {
+                params.put(URLDecoder.decode(pair[0], StandardCharsets.UTF_8),
+                        new String[] { URLDecoder.decode(pair[1], StandardCharsets.UTF_8) });
+            }
+        }
+        when(req.getParameterMap()).thenReturn(params);
+        when(req.getParameter("ID")).thenReturn(params.getOrDefault("ID", new String[] { "" })[0]);
+        when(req.getQueryString()).thenReturn(queryString);
+        when(req.getRequestURI()).thenReturn(WundergroundUpdateReceiverServlet.SERVLET_URL);
+        return req;
     }
 }

@@ -13,7 +13,11 @@
 package org.openhab.binding.tapocontrol.internal.devices.dto;
 
 import static org.openhab.binding.tapocontrol.internal.constants.TapoBindingSettings.*;
+import static org.openhab.binding.tapocontrol.internal.helpers.TapoEncoder.isBase64Encoded;
 import static org.openhab.binding.tapocontrol.internal.helpers.utils.TapoUtils.*;
+
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
@@ -126,6 +130,9 @@ public class TapoBaseDeviceData {
     }
 
     public String getNickname() {
+        if (isBase64Encoded(nickname)) {
+            return new String(Base64.getDecoder().decode(nickname), StandardCharsets.UTF_8);
+        }
         return nickname;
     }
 

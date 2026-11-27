@@ -81,10 +81,13 @@ public class AwattarBestPriceHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
+        logger.warn("Thing '{}': the bestprice thing is deprecated and will be removed in a future version, "
+                + "use the Optimal Window automation add-on instead", getThing().getUID());
+
         AwattarBestPriceConfiguration config = getConfigAs(AwattarBestPriceConfiguration.class);
 
         if (config.length >= config.rangeDuration) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.length.value");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.length.value");
             return;
         }
 
@@ -127,7 +130,7 @@ public class AwattarBestPriceHandler extends BaseThingHandler {
         Bridge bridge = getBridge();
 
         if (bridge == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.bridge.missing");
+            logger.debug("Bridge unavailable for Thing: {}", thing.getUID());
             updateState(channelUID, state);
             return;
         }

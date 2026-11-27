@@ -37,6 +37,8 @@ import org.openhab.core.thing.ThingUID;
  * replaced by an anonymous in-memory implementation backed by {@link HashMap}s,
  * one per storage namespace. This gives full round-trip coverage without any
  * container dependency.
+ *
+ * @author Christoph Pfarrherr - Initial contribution
  */
 @NonNullByDefault
 class TelegramMessageStoreTest {

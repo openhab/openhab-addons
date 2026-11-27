@@ -285,7 +285,7 @@ public class VigiCruesHandler extends BaseThingHandler {
             }
             updateStatus(ThingStatus.ONLINE);
         } catch (VigiCruesException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 

@@ -9,6 +9,53 @@
 				<type>salus:it600-running-state</type>
 			</add-channel>
 		</instruction-set>
+		<instruction-set targetVersion="2">
+			<add-channel id="cooling-setpoint">
+				<type>salus:it600-cooling-setpoint</type>
+			</add-channel>
+			<add-channel id="system-mode">
+				<type>salus:it600-system-mode</type>
+			</add-channel>
+			<add-channel id="keypad-lock">
+				<type>salus:it600-keypad-lock</type>
+			</add-channel>
+			<add-channel id="allow-local-unlock">
+				<type>salus:it600-allow-local-unlock</type>
+			</add-channel>
+			<add-channel id="temperature-offset">
+				<type>salus:it600-temperature-offset</type>
+			</add-channel>
+			<add-channel id="frost-temperature">
+				<type>salus:it600-frost-temperature</type>
+			</add-channel>
+			<add-channel id="minimum-setpoint">
+				<type>salus:it600-minimum-setpoint</type>
+			</add-channel>
+			<add-channel id="maximum-setpoint">
+				<type>salus:it600-maximum-setpoint</type>
+			</add-channel>
+			<add-channel id="valve-protection">
+				<type>salus:it600-valve-protection</type>
+			</add-channel>
+			<add-channel id="display-off">
+				<type>salus:it600-display-off</type>
+			</add-channel>
+			<add-channel id="display-unit">
+				<type>salus:it600-display-unit</type>
+			</add-channel>
+			<add-channel id="clock-format">
+				<type>salus:it600-clock-format</type>
+			</add-channel>
+			<add-channel id="active-errors">
+				<type>salus:it600-active-errors</type>
+			</add-channel>
+			<add-channel id="rssi">
+				<type>salus:it600-rssi</type>
+			</add-channel>
+			<add-channel id="lqi">
+				<type>salus:it600-lqi</type>
+			</add-channel>
+		</instruction-set>
 	</thing-type>
 
 </update:update-descriptions>

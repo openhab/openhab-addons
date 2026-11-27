@@ -31,18 +31,18 @@ public abstract class WebRtcTransportDefinitionsCluster extends BaseCluster {
 
     // Structs
     /**
-     * This type shall specify the RFC 8825 compliant ICE servers used to facilitate the negotiation of peer-to-peer
-     * connections through NATs (Network Address Translators) and firewalls. It mimics the model used in the W3C WebRTC
-     * API RTCIceServer dictionary with the addition of a Matter specific field for specifying the Root Certificate of
-     * any ICE servers that require TLS.
+     * This type shall specify the RFC8825 compliant ICE servers RFC8839 used to facilitate the negotiation of
+     * peer-to-peer connections through NATs (Network Address Translators) and firewalls. It mimics the model used in
+     * the W3C WebRTC API RTCIceServer dictionary with the addition of a Matter specific field for specifying the Root
+     * Certificate of any ICE servers that require TLS.
      * There are two types of ICE Servers which help to discover the public IP address of a device and relay media
      * traffic when direct peer-to-peer communication is not possible:
-     * - STUN Servers, which help to discover the public IP address and NAT/Firewall type if any, of a device. When a
-     * WebRTC session starts, it contacts the STUN server, which returns the device's public IP and port number. This
-     * information is used to generate ICE candidates for the peer-to-peer connection setup.
-     * - TURN Servers, which are used when STUN is not sufficient to establish a peer-to-peer connection—typically such
-     * as when devices are behind symmetric NATs, which STUN cannot traverse. TURN servers act as a relay between the
-     * peers, routing the media traffic between them.
+     * - STUN RFC8489 Servers, which help to discover the public IP address and NAT/Firewall type if any, of a device.
+     * When a WebRTC session starts, it contacts the STUN server, which returns the device's public IP and port number.
+     * This information is used to generate ICE candidates for the peer-to-peer connection setup.
+     * - TURN RFC8656 Servers, which are used when STUN is not sufficient to establish a peer-to-peer
+     * connection—typically such as when devices are behind symmetric NATs, which STUN cannot traverse. TURN servers act
+     * as a relay between the peers, routing the media traffic between them.
      */
     public static class ICEServerStruct {
         /**
@@ -50,30 +50,29 @@ public abstract class WebRtcTransportDefinitionsCluster extends BaseCluster {
          * distinguishes whether it is a STUN or TURN server (stun:, stuns:, turn:, or turns: respectively). This field
          * maps to the RTCIceServer urls field.
          */
-        public List<String> urLs; // list
+        public List<String> urls; // list
         /**
-         * (Optional for STUN, usually required for TURN) The RFC 8489 compliant UTF-8 encoded username required for
+         * (Optional for STUN, usually required for TURN) The RFC8489 compliant UTF-8 encoded username required for
          * authentication with the STUN or TURN servers found in the URLs field. This field maps to the RTCIceServer
          * username field.
          */
         public String username; // string
         /**
-         * (Optional for STUN, usually required for TURN) The RFC 8489 compliant UTF-8 encoded short-term credential
+         * (Optional for STUN, usually required for TURN) The RFC8489 compliant UTF-8 encoded short-term credential
          * (password) used for authentication with the STUN or TURN servers found in the URLs field. This field maps to
          * the RTCIceServer credential field.
          */
         public String credential; // string
         /**
          * This field represents the TLSRCAC via its assigned TLSCAID (see Chapter 14, Certificate Authority ID (CAID)
-         * Mapping and TLS Certificate Management Commands sections in [[MatterCore]](#ref_MatterCore)) that will
-         * validate the certificate chain presented by the entries in the urls field. It shall be set to a valid value
-         * if a turns: or stuns: url is present in the urls field and shall be used to validate those servers' presented
-         * TLS root certificates.
+         * Mapping and TLS Certificate Management Commands sections in MatterCore) that will validate the certificate
+         * chain presented by the entries in the urls field. It shall be set to a valid value if a turns: or stuns: url
+         * is present in the urls field and shall be used to validate those servers' presented TLS root certificates.
          */
         public Integer caid; // TlsCertificateManagement.TLSCAID
 
-        public ICEServerStruct(List<String> urLs, String username, String credential, Integer caid) {
-            this.urLs = urLs;
+        public ICEServerStruct(List<String> urls, String username, String credential, Integer caid) {
+            this.urls = urls;
             this.username = username;
             this.credential = credential;
             this.caid = caid;
@@ -81,14 +80,14 @@ public abstract class WebRtcTransportDefinitionsCluster extends BaseCluster {
     }
 
     /**
-     * This type shall specify the RFC 8825 compliant ICE Candidate used to facilitate the negotiation of peer-to-peer
-     * connections through NATs (Network Address Translators) and firewalls. It mimics the model used in the W3C WebRTC
-     * API RTCIceCandidate dictionary.
+     * This type shall specify the RFC8825 compliant ICE Candidate RFC8839 used to facilitate the negotiation of
+     * peer-to-peer connections through NATs (Network Address Translators) and firewalls. It mimics the model used in
+     * the W3C WebRTC API RTCIceCandidate dictionary.
      */
     public static class ICECandidateStruct {
         /**
-         * This field shall specify the RFC 8825 compliant RFC 8839 candidate-attribute field in string form. This is
-         * the same value as the W3C WebRTC API RTCIceCandidate candidate value. The RFCs define no min or max length on
+         * This field shall specify the RFC8825 compliant RFC8839 candidate-attribute field in string form. This is the
+         * same value as the W3C WebRTC API RTCIceCandidate candidate value. The RFCs define no min or max length on
          * this value.
          * Note: This string is not the same string as doing a candidate.toString() on a RTCIceCandidate ECMAScript
          * object itself. Some browsers and ECMAScript libraries use non-standard ways to serialize sdpMid and
@@ -104,7 +103,7 @@ public abstract class WebRtcTransportDefinitionsCluster extends BaseCluster {
          */
         public String sdpMid; // string
         /**
-         * This field shall specify the zero-based index number of the media description (as defined in RFC 8866) in the
+         * This field shall specify the zero-based index number of the media description (as defined in RFC8866) in the
          * SDP with which the Candidate is associated or null if no such association exists. This is the same value as
          * the W3C WebRTC API RTCIceCandidate sdpMLineIndex value.
          */

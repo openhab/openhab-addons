@@ -22,8 +22,6 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
@@ -42,6 +40,9 @@ import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingUID;
 
+import jakarta.xml.bind.JAXBException;
+import jakarta.xml.bind.Unmarshaller;
+
 /**
  * Tests for {@link DeviceListModel}.
  *
@@ -51,6 +52,8 @@ import org.openhab.core.thing.ThingUID;
  */
 @NonNullByDefault
 public class AVMFritzDeviceListModelTest {
+
+    private static final int CALLBACK_TIMEOUT_MS = 3_000;
 
     private @NonNullByDefault({}) DeviceListModel devices;
 
@@ -1119,10 +1122,11 @@ public class AVMFritzDeviceListModelTest {
 
         bridgeHandler.onDeviceListAdded(devices.getDevicelist());
 
-        verify(thingHandler0, times(1)).onDeviceUpdated(any(), any());
-        verify(thingHandler1, times(1)).onDeviceUpdated(any(), any());
-        verify(thingHandler2, times(1)).onDeviceUpdated(any(), any());
+        verify(thingHandler0, timeout(CALLBACK_TIMEOUT_MS).times(1)).onDeviceUpdated(any(), any());
+        verify(thingHandler1, timeout(CALLBACK_TIMEOUT_MS).times(1)).onDeviceUpdated(any(), any());
+        verify(thingHandler2, timeout(CALLBACK_TIMEOUT_MS).times(1)).onDeviceUpdated(any(), any());
 
-        verify(discoveryService, times(devices.getDevicelist().size() - 3)).onDeviceAdded(any());
+        verify(discoveryService, timeout(CALLBACK_TIMEOUT_MS).times(devices.getDevicelist().size() - 3))
+                .onDeviceAdded(any());
     }
 }

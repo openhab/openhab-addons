@@ -100,6 +100,7 @@ public class BoschSHCHandlerFactory extends BaseThingHandlerFactory {
             new ThingTypeHandlerMapping(THING_TYPE_CAMERA_EYES, CameraHandler::new),
             new ThingTypeHandlerMapping(THING_TYPE_INTRUSION_DETECTION_SYSTEM, IntrusionDetectionHandler::new),
             new ThingTypeHandlerMapping(THING_TYPE_SMART_PLUG_COMPACT, PlugHandler::new),
+            new ThingTypeHandlerMapping(THING_TYPE_SMART_PLUG_COMPACT_MATTER, PlugHandler::new),
             new ThingTypeHandlerMapping(THING_TYPE_SMART_BULB, SmartBulbHandler::new),
             new ThingTypeHandlerMapping(THING_TYPE_SMOKE_DETECTOR, SmokeDetectorHandler::new),
             new ThingTypeHandlerMapping(THING_TYPE_USER_DEFINED_STATE, UserStateHandler::new),

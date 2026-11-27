@@ -7,7 +7,7 @@
 			{
 				"property": "power",
 				"friendlyName": "Power",
-				"channel": "power",
+				"channel": "on",
 				"type": "Switch",
 				"refresh": true,
 				"actions": [
@@ -26,26 +26,69 @@
 				"friendlyName": "Mode",
 				"channel": "mode",
 				"type": "String",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "auto",
+							"label": "Auto"
+						},
+						{
+							"value": "silent",
+							"label": "Night"
+						},
+						{
+							"value": "strong",
+							"label": "Strong"
+						},
+						{
+							"value": "idle",
+							"label": "Off"
+						}
+					]
+				},
 				"refresh": true,
-				"ChannelGroup": "actions",
 				"actions": [
 					{
 						"command": "set_mode",
 						"parameterType": "STRING"
 					}
 				],
+				"category": "fan",
 				"tags": [
-					"Control"
+					"Control",
+					"Mode"
+				],
+				"readmeComment": "Value mapping `[\"auto\"\u003d\"Auto\",\"silent\"\u003d\"Night\",\"strong\"\u003d\"Strong\",\"idle\"\u003d\"Off\"]`"
+			},
+			{
+				"property": "aqi",
+				"friendlyName": "PM2.5 Density",
+				"channel": "pm2_5_density",
+				"type": "Number:Density",
+				"unit": "μg/m3",
+				"stateDescription": {
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "smoke",
+				"tags": [
+					"Measurement",
+					"ParticulateMatter"
 				]
 			},
 			{
 				"property": "humidity",
-				"friendlyName": "Humidity",
-				"channel": "humidity",
+				"friendlyName": "Relative Humidity",
+				"channel": "relative_humidity",
 				"type": "Number:Dimensionless",
-				"unit": "PERCENT",
+				"unit": "percentage",
+				"stateDescription": {
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
 				"refresh": true,
-				"ChannelGroup": "Status",
 				"actions": [],
 				"category": "humidity",
 				"tags": [
@@ -54,94 +97,115 @@
 				]
 			},
 			{
-				"property": "aqi",
-				"friendlyName": "Air Quality Index",
-				"channel": "aqi",
-				"type": "Number",
+				"property": "filter1_life",
+				"friendlyName": "Filter Life Level",
+				"channel": "filter_life_level",
+				"type": "Number:Dimensionless",
+				"unit": "percentage",
+				"stateDescription": {
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
 				"refresh": true,
-				"ChannelGroup": "Status",
 				"actions": [],
+				"category": "status",
 				"tags": [
-					"Measurement"
+					"Measurement",
+					"Level"
+				]
+			},
+			{
+				"property": "f1_hour",
+				"friendlyName": "Filter Maximum Life",
+				"channel": "filter_max_time",
+				"type": "Number:Time",
+				"unit": "hours",
+				"stateDescription": {
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "time",
+				"tags": [
+					"Measurement",
+					"Duration"
 				]
 			},
 			{
 				"property": "bright",
-				"friendlyName": "Brightness",
-				"channel": "brightness",
-				"type": "Dimmer",
+				"friendlyName": "Illuminance",
+				"channel": "illuminance",
+				"type": "Number:Illuminance",
+				"unit": "lux",
+				"stateDescription": {
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
 				"refresh": true,
-				"ChannelGroup": "actions",
-				"actions": [
-					{
-						"command": "set_led_b",
-						"parameterType": "NUMBER"
-					}
-				],
+				"actions": [],
 				"category": "light",
 				"tags": [
-					"Control",
+					"Measurement",
 					"Light"
 				]
 			},
 			{
 				"property": "led",
-				"friendlyName": "LED Status",
+				"friendlyName": "Indicator Light",
 				"channel": "led",
 				"type": "Switch",
 				"refresh": true,
-				"ChannelGroup": "actions",
 				"actions": [
 					{
 						"command": "set_led",
 						"parameterType": "ONOFF"
 					}
+				],
+				"category": "light",
+				"tags": [
+					"Switch",
+					"Light"
 				]
 			},
 			{
-				"property": "act_det",
-				"friendlyName": "Air AutoDetect",
-				"channel": "act_det",
-				"type": "Switch",
-				"refresh": true,
-				"ChannelGroup": "actions",
-				"actions": []
-			},
-			{
 				"property": "buzzer",
-				"friendlyName": "Buzzer Status",
-				"channel": "buzzer",
+				"friendlyName": "Notification Sound",
+				"channel": "alarm",
 				"type": "Switch",
 				"refresh": true,
-				"ChannelGroup": "actions",
 				"actions": [
 					{
 						"command": "set_buzzer",
 						"parameterType": "ONOFF"
 					}
+				],
+				"category": "soundvolume",
+				"tags": [
+					"Switch",
+					"Enabled"
+				],
+				"readmeComment": "Not available on all firmware versions."
+			},
+			{
+				"property": "act_det",
+				"friendlyName": "Air Quality Auto Detection",
+				"channel": "act_det",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_act_det",
+						"parameterType": "ONOFF"
+					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch",
+					"Enabled"
 				]
-			},
-			{
-				"property": "f1_hour",
-				"friendlyName": "Filter Max Life",
-				"channel": "filtermaxlife",
-				"type": "Number",
-				"refresh": true,
-				"ChannelGroup": "Status",
-				"actions": []
-			},
-			{
-				"property": "filter1_life",
-				"friendlyName": "Filter Life",
-				"channel": "filterlive",
-				"type": "Number",
-				"stateDescription": {
-					"pattern": "%.0f%%"
-				},
-				"refresh": true,
-				"ChannelGroup": "Status",
-				"actions": []
 			}
-		]
+		],
+		"experimental": false
 	}
 }

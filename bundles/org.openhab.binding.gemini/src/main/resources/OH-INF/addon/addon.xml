@@ -6,6 +6,7 @@
 	<type>binding</type>
 	<name>Gemini Binding</name>
 	<description>Integrates with the Google Gemini API for AI-powered chat and smart home control.</description>
+	<keywords>human language interpreter</keywords>
 	<connection>cloud</connection>
 
 </addon:addon>

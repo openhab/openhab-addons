@@ -1,0 +1,408 @@
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+package org.openhab.binding.melcloud.internal.home.api;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.Mockito.mockStatic;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
+import java.time.Instant;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
+import java.util.Optional;
+import java.util.Properties;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
+import org.mockito.MockedStatic;
+import org.openhab.binding.melcloud.internal.exceptions.MelCloudCommException;
+import org.openhab.binding.melcloud.internal.home.api.dto.MelCloudHomeAtaControlRequest;
+import org.openhab.binding.melcloud.internal.home.api.dto.MelCloudHomeAtwScheduleWriteRequest;
+import org.openhab.binding.melcloud.internal.home.api.dto.MelCloudHomeUserContext;
+import org.openhab.core.io.net.http.HttpUtil;
+
+/**
+ * Unit tests for {@link MelCloudHomeApiClient}. {@link HttpUtil}'s static {@code executeUrl} method is
+ * mocked via Mockito's inline mock maker ({@link MockedStatic}) so the wire-level contract can be verified without
+ * any real network access.
+ *
+ * <p>
+ * {@code @SuppressWarnings("null")}: Mockito's {@code ArgumentCaptor}/{@code ArgumentMatchers} are not designed with
+ * null type annotations in mind, so combining them with this {@code @NonNullByDefault} test class produces
+ * "unsafe interpretation" compiler advisories with no null-safety benefit.
+ *
+ * @author Bernd Weymann - Initial contribution
+ */
+@NonNullByDefault
+@SuppressWarnings("null")
+class MelCloudHomeApiClientTest {
+
+    private static final String ACCESS_TOKEN = "test-access-token";
+    private static final String UNIT_ID = "unit-1";
+
+    private final MelCloudHomeApiClient client = new MelCloudHomeApiClient();
+
+    private @Nullable MockedStatic<HttpUtil> httpUtilMock;
+
+    @BeforeEach
+    void setUp() {
+        httpUtilMock = mockStatic(HttpUtil.class);
+    }
+
+    @AfterEach
+    void tearDown() {
+        MockedStatic<HttpUtil> mock = httpUtilMock;
+        if (mock != null) {
+            mock.close();
+        }
+    }
+
+    @Test
+    void whenContextResponseIsValidThenFetchUserContextParsesIt() throws MelCloudCommException {
+        // Arrange
+        String json = "{\"buildings\":[{\"id\":\"b1\",\"name\":\"Home\",\"airToAirUnits\":[{\"id\":\"" + UNIT_ID
+                + "\",\"givenDisplayName\":\"Living Room\"}],\"airToWaterUnits\":[]}],\"guestBuildings\":[]}";
+        mockGetResponse(json);
+
+        // Act
+        MelCloudHomeUserContext context = client.fetchUserContext(ACCESS_TOKEN);
+
+        // Assert
+        assertEquals(1, context.getAllAtaUnits().size());
+        assertEquals(UNIT_ID, context.getAllAtaUnits().get(0).id);
+    }
+
+    @Test
+    void whenContextResponseIsEmptyBodyThenFetchUserContextThrows() {
+        // Arrange
+        mockGetResponse("");
+
+        // Act & Assert
+        assertThrows(MelCloudCommException.class, () -> client.fetchUserContext(ACCESS_TOKEN));
+    }
+
+    @Test
+    void whenContextResponseIsMalformedJsonThenFetchUserContextThrows() {
+        // Arrange
+        mockGetResponse("{not-json");
+
+        // Act & Assert
+        assertThrows(MelCloudCommException.class, () -> client.fetchUserContext(ACCESS_TOKEN));
+    }
+
+    @Test
+    void whenServerReturnsClientErrorThenFetchUserContextThrowsCommException() {
+        // Arrange
+        mockGetError(new IOException("Server returned HTTP response code: 401 for URL"));
+
+        // Act & Assert
+        assertThrows(MelCloudCommException.class, () -> client.fetchUserContext(ACCESS_TOKEN));
+    }
+
+    @Test
+    void whenServerReturnsServerErrorThenFetchUserContextThrowsCommException() {
+        // Arrange
+        mockGetError(new IOException("Server returned HTTP response code: 500 for URL"));
+
+        // Act & Assert
+        assertThrows(MelCloudCommException.class, () -> client.fetchUserContext(ACCESS_TOKEN));
+    }
+
+    @Test
+    void whenConnectionTimesOutThenFetchUserContextThrowsCommException() {
+        // Arrange
+        mockGetError(new IOException("Read timed out"));
+
+        // Act & Assert
+        assertThrows(MelCloudCommException.class, () -> client.fetchUserContext(ACCESS_TOKEN));
+    }
+
+    @Test
+    void whenEnergyTelemetryResponseIsEmptyThenFetchLatestEnergyKwhReturnsEmpty() throws MelCloudCommException {
+        // Arrange
+        mockGetResponse("");
+
+        // Act
+        Optional<Double> latest = client.fetchLatestEnergyKwh(ACCESS_TOKEN, UNIT_ID, Instant.EPOCH, Instant.now(),
+                MelCloudHomeApiClient.MEASURE_ATA_CUMULATIVE_ENERGY_CONSUMED);
+
+        // Assert
+        assertTrue(latest.isEmpty());
+    }
+
+    @Test
+    void whenAtaCumulativeEnergyIsFetchedThenWattHoursAreConvertedToKwh() throws MelCloudCommException {
+        // Arrange: the ATA cumulative measure reports Wh on the wire
+        mockGetResponse(energyResponse("cumulative_energy_consumed_since_last_upload", currentHour(), "1500.0"));
+        Instant now = Instant.now();
+
+        // Act
+        Optional<Double> latest = client.fetchLatestEnergyKwh(ACCESS_TOKEN, UNIT_ID, now.truncatedTo(ChronoUnit.HOURS),
+                now, MelCloudHomeApiClient.MEASURE_ATA_CUMULATIVE_ENERGY_CONSUMED);
+
+        // Assert
+        assertEquals(Optional.of(1.5), latest);
+    }
+
+    @Test
+    void whenAtwIntervalEnergyIsFetchedThenKilowattHoursArePassedThrough() throws MelCloudCommException {
+        // Arrange: the ATW interval measures report kWh per bucket on the wire
+        mockGetResponse(energyResponse("interval_energy_consumed", currentHour(), "1.5"));
+        Instant now = Instant.now();
+
+        // Act
+        Optional<Double> latest = client.fetchLatestEnergyKwh(ACCESS_TOKEN, UNIT_ID, now.truncatedTo(ChronoUnit.HOURS),
+                now, MelCloudHomeApiClient.MEASURE_ATW_INTERVAL_ENERGY_CONSUMED);
+
+        // Assert
+        assertEquals(Optional.of(1.5), latest);
+    }
+
+    @Test
+    void whenTheLatestBucketBelongsToAPreviousHourThenFetchLatestEnergyKwhReturnsEmpty() throws MelCloudCommException {
+        // Arrange: the endpoint omits hours without data, so the newest bucket of the window can be older than the
+        // interval the channels advertise; publishing it would present stale energy as the latest reading.
+        Instant now = Instant.now();
+        mockGetResponse(energyResponse("interval_energy_consumed", previousHour(), "4.5"));
+
+        // Act
+        Optional<Double> latest = client.fetchLatestEnergyKwh(ACCESS_TOKEN, UNIT_ID, now.truncatedTo(ChronoUnit.HOURS),
+                now, MelCloudHomeApiClient.MEASURE_ATW_INTERVAL_ENERGY_CONSUMED);
+
+        // Assert
+        assertTrue(latest.isEmpty());
+    }
+
+    @Test
+    void whenTheBucketTimestampCannotBeParsedThenTheValueIsStillReturned() throws MelCloudCommException {
+        // Arrange: a wire format change must not silently drop energy data
+        mockGetResponse(energyResponse("interval_energy_consumed", "not-a-timestamp", "1.5"));
+        Instant now = Instant.now();
+
+        // Act
+        Optional<Double> latest = client.fetchLatestEnergyKwh(ACCESS_TOKEN, UNIT_ID, now.truncatedTo(ChronoUnit.HOURS),
+                now, MelCloudHomeApiClient.MEASURE_ATW_INTERVAL_ENERGY_CONSUMED);
+
+        // Assert
+        assertEquals(Optional.of(1.5), latest);
+    }
+
+    @Test
+    void whenTheBucketValueIsNotNumericThenFetchLatestEnergyKwhReturnsEmpty() throws MelCloudCommException {
+        // Arrange
+        mockGetResponse(energyResponse("interval_energy_consumed", currentHour(), "not-a-number"));
+        Instant now = Instant.now();
+
+        // Act
+        Optional<Double> latest = client.fetchLatestEnergyKwh(ACCESS_TOKEN, UNIT_ID, now.truncatedTo(ChronoUnit.HOURS),
+                now, MelCloudHomeApiClient.MEASURE_ATW_INTERVAL_ENERGY_CONSUMED);
+
+        // Assert
+        assertTrue(latest.isEmpty());
+    }
+
+    @Test
+    void whenAnUnknownEnergyMeasureIsFetchedThenFetchLatestEnergyKwhThrows() {
+        // Act & Assert
+        assertThrows(MelCloudCommException.class, () -> client.fetchLatestEnergyKwh(ACCESS_TOKEN, UNIT_ID,
+                Instant.EPOCH, Instant.now(), "unknown_measure"));
+    }
+
+    private static String energyResponse(String measure, String time, String value) {
+        return "{\"measureData\":[{\"type\":\"" + measure + "\",\"values\":[{\"time\":\"" + time + "\",\"value\":\""
+                + value + "\"}]}]}";
+    }
+
+    private static String currentHour() {
+        return bucketTime(Instant.now().truncatedTo(ChronoUnit.HOURS));
+    }
+
+    private static String previousHour() {
+        return bucketTime(Instant.now().truncatedTo(ChronoUnit.HOURS).minus(1, ChronoUnit.HOURS));
+    }
+
+    private static String bucketTime(Instant instant) {
+        return DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm").withZone(ZoneOffset.UTC).format(instant);
+    }
+
+    @Test
+    void whenControlAtaUnitIsCalledThenUnsetFieldsAreSerializedAsExplicitNulls()
+            throws MelCloudCommException, IOException {
+        // Arrange
+        ArgumentCaptor<InputStream> bodyCaptor = ArgumentCaptor.forClass(InputStream.class);
+        MockedStatic<HttpUtil> mock = httpUtilMock;
+        assertNotNull(mock);
+        mock.when(() -> HttpUtil.executeUrl(eq("PUT"), anyString(), any(Properties.class), bodyCaptor.capture(),
+                eq("application/json"), anyInt())).thenReturn("");
+
+        MelCloudHomeAtaControlRequest request = new MelCloudHomeAtaControlRequest();
+        request.power = true;
+
+        // Act
+        client.controlAtaUnit(ACCESS_TOKEN, UNIT_ID, request);
+
+        // Assert
+        String body = new String(bodyCaptor.getValue().readAllBytes());
+        assertTrue(body.contains("\"power\":true"));
+        assertTrue(body.contains("\"operationMode\":null"));
+    }
+
+    @Test
+    void whenCreateOrUpdateAtwScheduleIsCalledThenPostIsSentToTheScheduleUrl()
+            throws MelCloudCommException, IOException {
+        // Arrange: provisional endpoint/shape — this only verifies the client sends what it's told to,
+        // not that the server actually accepts it.
+        ArgumentCaptor<String> urlCaptor = ArgumentCaptor.forClass(String.class);
+        ArgumentCaptor<InputStream> bodyCaptor = ArgumentCaptor.forClass(InputStream.class);
+        MockedStatic<HttpUtil> mock = httpUtilMock;
+        assertNotNull(mock);
+        mock.when(() -> HttpUtil.executeUrl(eq("POST"), urlCaptor.capture(), any(Properties.class),
+                bodyCaptor.capture(), eq("application/json"), anyInt())).thenReturn("");
+
+        MelCloudHomeAtwScheduleWriteRequest request = new MelCloudHomeAtwScheduleWriteRequest();
+        request.id = "schedule-1";
+        request.power = true;
+
+        // Act
+        client.createOrUpdateAtwSchedule(ACCESS_TOKEN, UNIT_ID, request);
+
+        // Assert
+        assertTrue(urlCaptor.getValue().endsWith("/monitor/atwcloudschedule/" + UNIT_ID));
+        String body = new String(bodyCaptor.getValue().readAllBytes());
+        assertTrue(body.contains("\"id\":\"schedule-1\""));
+        assertTrue(body.contains("\"power\":true"));
+    }
+
+    @Test
+    void whenDeleteAtwScheduleIsCalledThenDeleteIsSentToTheEntryUrl() throws MelCloudCommException {
+        // Arrange
+        ArgumentCaptor<String> urlCaptor = ArgumentCaptor.forClass(String.class);
+        MockedStatic<HttpUtil> mock = httpUtilMock;
+        assertNotNull(mock);
+        mock.when(() -> HttpUtil.executeUrl(eq("DELETE"), urlCaptor.capture(), any(Properties.class), isNull(),
+                isNull(), anyInt())).thenReturn("");
+
+        // Act
+        client.deleteAtwSchedule(ACCESS_TOKEN, UNIT_ID, "schedule-1");
+
+        // Assert
+        assertTrue(urlCaptor.getValue().endsWith("/monitor/atwcloudschedule/" + UNIT_ID + "/schedule-1"));
+    }
+
+    @Test
+    void whenSetAtwScheduleEnabledIsCalledThenPutIsSentWithEnabledBody() throws MelCloudCommException, IOException {
+        // Arrange
+        ArgumentCaptor<String> urlCaptor = ArgumentCaptor.forClass(String.class);
+        ArgumentCaptor<InputStream> bodyCaptor = ArgumentCaptor.forClass(InputStream.class);
+        MockedStatic<HttpUtil> mock = httpUtilMock;
+        assertNotNull(mock);
+        mock.when(() -> HttpUtil.executeUrl(eq("PUT"), urlCaptor.capture(), any(Properties.class), bodyCaptor.capture(),
+                eq("application/json"), anyInt())).thenReturn("");
+
+        // Act
+        client.setAtwScheduleEnabled(ACCESS_TOKEN, UNIT_ID, false);
+
+        // Assert
+        assertTrue(urlCaptor.getValue().endsWith("/monitor/atwcloudschedule/" + UNIT_ID + "/enabled"));
+        String body = new String(bodyCaptor.getValue().readAllBytes());
+        assertTrue(body.contains("\"enabled\":false"));
+    }
+
+    @Test
+    void whenWebSocketHashResponseIsValidThenFetchWebSocketHashReturnsHash() throws MelCloudCommException {
+        // Arrange
+        mockGetResponse("{\"hash\":\"abc123\",\"userId\":\"u1\"}");
+
+        // Act
+        String hash = client.fetchWebSocketHash(ACCESS_TOKEN);
+
+        // Assert
+        assertEquals("abc123", hash);
+    }
+
+    @Test
+    void whenWebSocketHashResponseIsEmptyBodyThenFetchWebSocketHashThrows() {
+        // Arrange
+        mockGetResponse("");
+
+        // Act & Assert
+        assertThrows(MelCloudCommException.class, () -> client.fetchWebSocketHash(ACCESS_TOKEN));
+    }
+
+    @Test
+    void whenWebSocketHashResponseIsMalformedJsonThenFetchWebSocketHashThrows() {
+        // Arrange
+        mockGetResponse("{not-json");
+
+        // Act & Assert
+        assertThrows(MelCloudCommException.class, () -> client.fetchWebSocketHash(ACCESS_TOKEN));
+    }
+
+    @Test
+    void whenWebSocketHashResponseIsMissingHashFieldThenFetchWebSocketHashThrows() {
+        // Arrange
+        mockGetResponse("{\"userId\":\"u1\"}");
+
+        // Act & Assert
+        assertThrows(MelCloudCommException.class, () -> client.fetchWebSocketHash(ACCESS_TOKEN));
+    }
+
+    @Test
+    void whenServerRejectsWebSocketHashRequestThenFetchWebSocketHashThrowsCommException() {
+        // Arrange
+        mockGetError(new IOException("Server returned HTTP response code: 401 for URL"));
+
+        // Act & Assert
+        assertThrows(MelCloudCommException.class, () -> client.fetchWebSocketHash(ACCESS_TOKEN));
+    }
+
+    @Test
+    void whenBuildingWebSocketUriThenHashIsAppendedAsQueryParameter() {
+        // Act
+        URI uri = client.buildWebSocketUri("abc123");
+
+        // Assert
+        assertEquals("wss://ws.melcloudhome.com/?hash=abc123", uri.toString());
+    }
+
+    private void mockGetResponse(String response) {
+        MockedStatic<HttpUtil> mock = httpUtilMock;
+        assertNotNull(mock);
+        mock.when(
+                () -> HttpUtil.executeUrl(eq("GET"), anyString(), any(Properties.class), isNull(), isNull(), anyInt()))
+                .thenReturn(response);
+    }
+
+    private void mockGetError(IOException exception) {
+        MockedStatic<HttpUtil> mock = httpUtilMock;
+        assertNotNull(mock);
+        mock.when(
+                () -> HttpUtil.executeUrl(eq("GET"), anyString(), any(Properties.class), isNull(), isNull(), anyInt()))
+                .thenThrow(exception);
+    }
+}

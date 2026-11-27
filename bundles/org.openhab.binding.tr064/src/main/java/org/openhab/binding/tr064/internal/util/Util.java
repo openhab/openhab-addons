@@ -30,10 +30,6 @@ import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
 import javax.xml.soap.SOAPException;
 import javax.xml.soap.SOAPMessage;
 import javax.xml.stream.XMLInputFactory;
@@ -43,11 +39,12 @@ import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.tr064.internal.ChannelConfigException;
 import org.openhab.binding.tr064.internal.Tr064RootHandler;
+import org.openhab.binding.tr064.internal.Tr064SubHandler;
 import org.openhab.binding.tr064.internal.config.Tr064BaseThingConfiguration;
 import org.openhab.binding.tr064.internal.config.Tr064ChannelConfig;
 import org.openhab.binding.tr064.internal.config.Tr064RootConfiguration;
@@ -66,6 +63,7 @@ import org.openhab.core.cache.ExpiringCacheMap;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.thing.type.ChannelTypeUID;
@@ -73,6 +71,11 @@ import org.openhab.core.util.UIDUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.NodeList;
+
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBElement;
+import jakarta.xml.bind.JAXBException;
+import jakarta.xml.bind.Unmarshaller;
 
 /**
  * The {@link Util} is a set of helper functions
@@ -170,9 +173,15 @@ public class Util {
      */
     public static void checkAvailableChannels(Thing thing, ThingHandlerCallback callback, ThingBuilder thingBuilder,
             SCPDUtil scpdUtil, String deviceId, String deviceType, Map<ChannelUID, Tr064ChannelConfig> channels) {
-        Tr064BaseThingConfiguration thingConfig = Tr064RootHandler.SUPPORTED_THING_TYPES
-                .contains(thing.getThingTypeUID()) ? thing.getConfiguration().as(Tr064RootConfiguration.class)
-                        : thing.getConfiguration().as(Tr064SubConfiguration.class);
+        ThingHandler handler = thing.getHandler();
+        Tr064BaseThingConfiguration thingConfig;
+        if (handler instanceof Tr064RootHandler rootHandler) {
+            thingConfig = rootHandler.getConfigAs(Tr064RootConfiguration.class);
+        } else if (handler instanceof Tr064SubHandler subHandler) {
+            thingConfig = subHandler.getConfigAs(Tr064SubConfiguration.class);
+        } else {
+            throw new IllegalStateException("Unable to resolve tr064 configuration without a handler");
+        }
         channels.clear();
         CHANNEL_TYPES.stream().filter(channel -> deviceType.equals(channel.getService().getDeviceType()))
                 .forEach(channelTypeDescription -> {

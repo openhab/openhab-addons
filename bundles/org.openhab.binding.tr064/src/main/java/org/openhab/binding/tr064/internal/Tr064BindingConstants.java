@@ -34,5 +34,7 @@ public class Tr064BindingConstants {
     public static final ThingTypeUID THING_TYPE_SUBDEVICE = new ThingTypeUID(BINDING_ID, "subdevice");
     public static final ThingTypeUID THING_TYPE_SUBDEVICE_LAN = new ThingTypeUID(BINDING_ID, "subdeviceLan");
 
+    public static final String DEVICE_TYPE_LAN = "urn:dslforum-org:device:LANDevice:1";
+
     public static final List<ChannelTypeDescription> CHANNEL_TYPES = Util.readXMLChannelConfig();
 }

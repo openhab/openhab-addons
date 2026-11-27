@@ -18,12 +18,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * Represents a firewall rule on DD-WRT/OpenWrt routers.
- * 
- * For DD-WRT: Represents nvram-based GUI filter rules.
+ * Represents a DD-WRT nvram-based GUI filter rule.
+ *
  * Format: {@code $STAT:$START-$END:from:to:proto:port:description}
- * 
- * For OpenWrt: Represents nftables/iptables rules with full details.
  *
  * @author Lee Ballard - Initial contribution
  */
@@ -63,7 +60,7 @@ public class DDWRTFirewallRule {
     private @Nullable String nvramKey;
     private String rawValue = "";
 
-    // Full firewall rule fields (for OpenWrt/advanced usage)
+    // Parsed firewall rule fields
     private RuleType type = RuleType.FILTER;
     private Direction direction = Direction.ANY;
     private Protocol protocol = Protocol.ALL;
@@ -82,7 +79,7 @@ public class DDWRTFirewallRule {
         this.parentDeviceMac = Objects.requireNonNull(parentDeviceMac);
     }
 
-    // Constructor for full firewall rules
+    // Constructor for parsed firewall rules
     public DDWRTFirewallRule(String ruleId, RuleType type, Direction direction, Protocol protocol,
             @Nullable String sourceIp, @Nullable String destIp, @Nullable Integer sourcePort,
             @Nullable Integer destPort, @Nullable String interfaceName, boolean enabled, String description,
@@ -139,7 +136,7 @@ public class DDWRTFirewallRule {
         this.rawValue = rawValue;
     }
 
-    // ---- Full firewall rule getters ----
+    // ---- Parsed firewall rule getters ----
 
     public RuleType getType() {
         return type;

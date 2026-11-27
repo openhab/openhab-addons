@@ -17,9 +17,9 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.Request;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
@@ -45,53 +45,32 @@ public class TeslascopeWebTargets {
         this.httpClient = httpClient;
     }
 
-    public String getVehicleList(String apiKey, String personalAccessToken)
+    public String getVehicleList(String personalAccessToken)
             throws TeslascopeCommunicationException, TeslascopeAuthenticationException {
-        if (personalAccessToken.isBlank()) {
-            return invoke(BASE_URI + "vehicles?api_key=" + apiKey, HttpMethod.GET, "");
-        } else {
-            return invoke(BASE_URI + "vehicles", HttpMethod.GET, personalAccessToken);
-        }
+        return invoke(BASE_URI + "vehicles", HttpMethod.GET, personalAccessToken);
     }
 
-    public String getDetailedInformation(String publicID, String apiKey, String personalAccessToken)
+    public String getDetailedInformation(String publicID, String personalAccessToken)
             throws TeslascopeCommunicationException, TeslascopeAuthenticationException {
-        if (personalAccessToken.isBlank()) {
-            return invoke(BASE_VEHICLE_URI + publicID + "/detailed?api_key=" + apiKey, HttpMethod.GET, "");
-        } else {
-            return invoke(BASE_VEHICLE_URI + publicID + "/detailed", HttpMethod.GET, personalAccessToken);
-        }
+        return invoke(BASE_VEHICLE_URI + publicID + "/detailed", HttpMethod.GET, personalAccessToken);
     }
 
-    public void sendCommand(String publicID, String apiKey, String personalAccessToken, String command)
+    public void sendCommand(String publicID, String personalAccessToken, String command)
             throws TeslascopeCommunicationException, TeslascopeAuthenticationException {
-        if (personalAccessToken.isBlank()) {
-            invoke(BASE_VEHICLE_URI + publicID + "/command/" + command + "?api_key=" + apiKey, HttpMethod.POST, "");
-        } else {
-            invoke(BASE_VEHICLE_URI + publicID + "/command/" + command, HttpMethod.POST, personalAccessToken);
-        }
+        invoke(BASE_VEHICLE_URI + publicID + "/command/" + command, HttpMethod.POST, personalAccessToken);
         return;
     }
 
-    public void sendCommand(String publicID, String apiKey, String personalAccessToken, String command, String params)
+    public void sendCommand(String publicID, String personalAccessToken, String command, String params)
             throws TeslascopeCommunicationException, TeslascopeAuthenticationException {
         String cleanParams = (params == null) ? "" : params.replaceFirst("^[?&]", "");
 
-        if (personalAccessToken.isBlank()) {
-            // Legacy API Key method (needs & separator because ? is already used)
-            String url = BASE_VEHICLE_URI + publicID + "/command/" + command + "?api_key=" + apiKey;
-            if (!cleanParams.isEmpty()) {
-                url += "&" + cleanParams;
-            }
-            invoke(url, HttpMethod.POST, "");
-        } else {
-            // Personal Access Token method (needs ? separator)
-            String url = BASE_VEHICLE_URI + publicID + "/command/" + command;
-            if (!cleanParams.isEmpty()) {
-                url += "?" + cleanParams;
-            }
-            invoke(url, HttpMethod.POST, personalAccessToken);
+        // Personal Access Token method (needs ? separator)
+        String url = BASE_VEHICLE_URI + publicID + "/command/" + command;
+        if (!cleanParams.isEmpty()) {
+            url += "?" + cleanParams;
         }
+        invoke(url, HttpMethod.POST, personalAccessToken);
     }
 
     private String invoke(String uri, HttpMethod method, String personalAccessToken)
@@ -104,7 +83,7 @@ public class TeslascopeWebTargets {
             try {
                 Request request = httpClient.newRequest(uri).method(method).timeout(TIMEOUT_MS, TimeUnit.MILLISECONDS);
                 if (!personalAccessToken.isBlank()) {
-                    request.header(HttpHeader.AUTHORIZATION.asString(), "Bearer " + personalAccessToken);
+                    request.headers(h -> h.add(HttpHeader.AUTHORIZATION.asString(), "Bearer " + personalAccessToken));
                 }
                 if (logger.isTraceEnabled()) {
                     logger.trace("{} request for {}", method, uri);

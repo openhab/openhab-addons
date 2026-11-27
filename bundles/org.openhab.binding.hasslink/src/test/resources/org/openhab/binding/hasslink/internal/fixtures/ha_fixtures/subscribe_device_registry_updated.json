@@ -1,0 +1,21 @@
+{
+  "type": "event",
+  "event": {
+    "event_type": "device_registry_updated",
+    "data": {
+      "action": "update",
+      "device_id": "49bf12077f0d8d4173b1aff69dfd58f8",
+      "changes": {
+        "name_by_user": null
+      }
+    },
+    "origin": "LOCAL",
+    "time_fired": "2026-09-22T08:48:40.680590+00:00",
+    "context": {
+      "id": "01M344V37851FK4XVYRKHFASKT",
+      "parent_id": null,
+      "user_id": null
+    }
+  },
+  "id": 21
+}

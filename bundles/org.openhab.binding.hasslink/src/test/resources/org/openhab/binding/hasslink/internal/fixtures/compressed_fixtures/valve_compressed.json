@@ -1,0 +1,18 @@
+{
+  "id": 10,
+  "type": "event",
+  "event": {
+    "a": {
+      "valve.front_garden": {
+        "s": "open",
+        "a": {
+          "is_closed": false,
+          "friendly_name": "Front Garden",
+          "supported_features": 3
+        },
+        "c": "01M3201RH08P1MRBMZD5DWAAM3",
+        "lc": 1789994787.3606992
+      }
+    }
+  }
+}

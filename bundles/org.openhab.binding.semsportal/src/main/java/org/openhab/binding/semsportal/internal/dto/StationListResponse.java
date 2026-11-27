@@ -20,13 +20,17 @@ import com.google.gson.annotations.SerializedName;
  * POJO containing the response to the {@link StationListRequest}
  *
  * @author Iwan Bron - Initial contribution
+ * @author Julio Vilmar Gesser - Migrated to the SEMS+ API
  */
 public class StationListResponse extends BaseResponse {
-
     @SerializedName("data")
-    private List<Station> stations;
+    private StationList stations;
 
     public List<Station> getStations() {
-        return stations;
+        return stations == null || stations.dataList == null ? List.of() : stations.dataList;
+    }
+
+    private static class StationList {
+        private List<Station> dataList;
     }
 }

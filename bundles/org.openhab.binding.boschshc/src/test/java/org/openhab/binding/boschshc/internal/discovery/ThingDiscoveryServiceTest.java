@@ -264,11 +264,13 @@ class ThingDiscoveryServiceTest {
         device.deviceModel = "invalid";
         assertNull(fixture.getThingTypeUID(device));
 
-        // just two spot checks
+        // just a few spot checks
         device.deviceModel = "BBL";
         assertThat(fixture.getThingTypeUID(device), is(BoschSHCBindingConstants.THING_TYPE_SHUTTER_CONTROL));
         device.deviceModel = "TWINGUARD";
         assertThat(fixture.getThingTypeUID(device), is(BoschSHCBindingConstants.THING_TYPE_TWINGUARD));
+        device.deviceModel = "PLUG_COMPACT_DUAL";
+        assertThat(fixture.getThingTypeUID(device), is(BoschSHCBindingConstants.THING_TYPE_SMART_PLUG_COMPACT_MATTER));
     }
 
     @Test

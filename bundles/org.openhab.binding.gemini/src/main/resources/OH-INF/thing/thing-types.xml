@@ -45,7 +45,7 @@
 					The Google Gemini model to use (<a href="https://ai.google.dev/gemini-api/docs/models">Models</a>, <a href="https://ai.google.dev/gemini-api/docs/pricing">Pricing</a>).
 					]]>
 				</description>
-				<default>gemini-3.1-flash-lite</default>
+				<default>gemini-flash-lite-latest</default>
 			</parameter>
 			<parameter name="temperature" type="decimal" groupName="hli" min="0.0" max="1.0">
 				<label>Temperature</label>
@@ -64,6 +64,32 @@
 				<description>The maximum number of tokens to generate in the response.</description>
 				<default>2048</default>
 				<advanced>true</advanced>
+			</parameter>
+			<parameter name="maxModelTurns" type="integer" groupName="hli" min="1">
+				<label>Maximum Model Turns</label>
+				<description>The maximum number of interaction turns with the model allowed in a single request to prevent infinite
+					loops and excess resource usage.</description>
+				<default>10</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="thinkingLevel" type="text" groupName="hli">
+				<label>Thinking Level</label>
+				<description>
+					<![CDATA[
+					Controls effort on thinking for models that support it (e.g., Gemini 3+). Higher levels increase
+					thinking depth (see <a href="https://ai.google.dev/gemini-api/docs/thinking#thinking-levels">Gemini API Docs</a>).
+					]]>
+				</description>
+				<default>minimal</default>
+				<advanced>true</advanced>
+				<options>
+					<option value="unspecified">Unspecified</option>
+					<option value="minimal">Minimal</option>
+					<option value="low">Low</option>
+					<option value="medium">Medium</option>
+					<option value="high">High</option>
+				</options>
+				<limitToOptions>true</limitToOptions>
 			</parameter>
 			<!-- Connection Settings -->
 			<parameter name="requestTimeout" type="integer" min="1" unit="s" groupName="connection">
@@ -99,6 +125,24 @@
 				<label>Max Output Tokens</label>
 				<description>The maximum number of tokens to generate in the response.</description>
 				<advanced>true</advanced>
+			</parameter>
+			<parameter name="thinkingLevel" type="text">
+				<label>Thinking Level</label>
+				<description>
+					<![CDATA[
+					Controls effort on thinking for models that support it (e.g., Gemini 3+). Higher levels increase
+					thinking depth (see <a href="https://ai.google.dev/gemini-api/docs/thinking#thinking-levels">Gemini API Docs</a>).
+					]]>
+				</description>
+				<advanced>true</advanced>
+				<options>
+					<option value="unspecified">Unspecified</option>
+					<option value="minimal">Minimal</option>
+					<option value="low">Low</option>
+					<option value="medium">Medium</option>
+					<option value="high">High</option>
+				</options>
+				<limitToOptions>true</limitToOptions>
 			</parameter>
 			<parameter name="systemMessage" type="text">
 				<label>System Message</label>

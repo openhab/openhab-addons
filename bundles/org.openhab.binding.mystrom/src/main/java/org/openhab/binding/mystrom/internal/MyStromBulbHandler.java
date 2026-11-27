@@ -167,7 +167,7 @@ public class MyStromBulbHandler extends AbstractMyStromHandler {
             updateStatus(ThingStatus.ONLINE);
             return report;
         } catch (MyStromException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
             return null;
         }
     }

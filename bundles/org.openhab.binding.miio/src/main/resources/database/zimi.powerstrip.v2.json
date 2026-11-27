@@ -1,9 +1,9 @@
 {
 	"deviceMapping": {
 		"id": [
-			"qmi.powerstrip.v1",
 			"zimi.powerstrip.v2"
 		],
+		"experimental": false,
 		"channels": [
 			{
 				"property": "power",
@@ -17,29 +17,33 @@
 						"parameterType": "ONOFF"
 					}
 				],
-				"category": "switch",
+				"category": "poweroutlet",
 				"tags": [
-					"Switch"
+					"Switch",
+					"Power"
 				]
 			},
 			{
 				"property": "power_consume_rate",
-				"friendlyName": "Power Consumption",
-				"channel": "powerUsage",
-				"type": "Number",
+				"friendlyName": "Active Power",
+				"channel": "electric_power",
+				"type": "Number:Power",
+				"unit": "watt",
 				"stateDescription": {
-					"pattern": "%.0fW"
+					"pattern": "%.1f %unit%",
+					"readOnly": true
 				},
 				"refresh": true,
-				"actions": [
-					{
-						"parameterType": "EMPTY"
-					}
+				"actions": [],
+				"category": "energy",
+				"tags": [
+					"Measurement",
+					"Power"
 				]
 			},
 			{
 				"property": "wifi_led",
-				"friendlyName": "wifi LED",
+				"friendlyName": "Indicator Light",
 				"channel": "led",
 				"type": "Switch",
 				"refresh": true,
@@ -48,31 +52,52 @@
 						"command": "set_wifi_led",
 						"parameterType": "ONOFF"
 					}
+				],
+				"category": "light",
+				"tags": [
+					"Switch",
+					"Light"
 				]
 			},
 			{
 				"property": "power_price",
-				"friendlyName": "power_price",
+				"friendlyName": "Power Price",
 				"channel": "power_price",
 				"type": "Number",
+				"stateDescription": {
+					"pattern": "%.0f"
+				},
 				"refresh": true,
 				"actions": [
 					{
 						"command": "set_power_price",
 						"parameterType": "NUMBER"
 					}
-				]
+				],
+				"category": "settings",
+				"tags": [
+					"Setpoint",
+					"Price"
+				],
+				"readmeComment": "Price per kWh in hundredths of the currency unit (52 is 0.52), used by the Mi Home app for the cost statistics."
 			},
 			{
 				"property": "current",
 				"friendlyName": "Current",
-				"channel": "current",
-				"type": "Number",
+				"channel": "electric_current",
+				"type": "Number:ElectricCurrent",
+				"unit": "ampere",
 				"stateDescription": {
-					"pattern": "%.2fA"
+					"pattern": "%.2f %unit%",
+					"readOnly": true
 				},
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"category": "energy",
+				"tags": [
+					"Measurement",
+					"Current"
+				]
 			},
 			{
 				"property": "temperature",
@@ -96,25 +121,93 @@
 				"property": "lp_autooff",
 				"friendlyName": "Low Power Auto Off",
 				"channel": "lp_autooff",
-				"type": "Number",
+				"type": "Switch",
 				"refresh": true,
-				"actions": []
+				"actions": [
+					{
+						"command": "set_lowpower_autooff",
+						"parameterType": "ONOFFNUMBER",
+						"parameters": [
+							{
+								"lp_autooff": "$value$",
+								"lp_autooff_delay": "$lp_autooff_delay$",
+								"lp_threshold": "$lp_threshold$"
+							}
+						]
+					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch",
+					"Enabled"
+				],
+				"readmeComment": "When on, the power strip switches itself off when the power stays below Low Power Threshold for Low Power Delay. Sends all three low power values together, so link all three channels."
 			},
 			{
 				"property": "lp_autooff_delay",
-				"friendlyName": "Low Power Limit Time",
+				"friendlyName": "Low Power Delay",
 				"channel": "lp_autooff_delay",
-				"type": "Number",
+				"type": "Number:Time",
+				"unit": "minutes",
+				"stateDescription": {
+					"minimum": 5,
+					"maximum": 60,
+					"step": 1,
+					"pattern": "%.0f %unit%"
+				},
 				"refresh": true,
-				"actions": []
+				"actions": [
+					{
+						"command": "set_lowpower_autooff",
+						"parameterType": "NUMBER",
+						"parameters": [
+							{
+								"lp_autooff": "$lp_autooff$",
+								"lp_autooff_delay": "$value$",
+								"lp_threshold": "$lp_threshold$"
+							}
+						]
+					}
+				],
+				"category": "time",
+				"tags": [
+					"Setpoint",
+					"Duration"
+				],
+				"readmeComment": "5 to 60 minutes. Sends all three low power values together, so link all three channels."
 			},
 			{
 				"property": "lp_threshold",
 				"friendlyName": "Low Power Threshold",
 				"channel": "lp_threshold",
-				"type": "Number",
+				"type": "Number:Power",
+				"unit": "watt",
+				"stateDescription": {
+					"minimum": 2,
+					"maximum": 99,
+					"step": 1,
+					"pattern": "%.0f %unit%"
+				},
 				"refresh": true,
-				"actions": []
+				"actions": [
+					{
+						"command": "set_lowpower_autooff",
+						"parameterType": "NUMBER",
+						"parameters": [
+							{
+								"lp_autooff": "$lp_autooff$",
+								"lp_autooff_delay": "$lp_autooff_delay$",
+								"lp_threshold": "$value$"
+							}
+						]
+					}
+				],
+				"category": "energy",
+				"tags": [
+					"Setpoint",
+					"Power"
+				],
+				"readmeComment": "2 to 99 W. Sends all three low power values together, so link all three channels."
 			}
 		]
 	}

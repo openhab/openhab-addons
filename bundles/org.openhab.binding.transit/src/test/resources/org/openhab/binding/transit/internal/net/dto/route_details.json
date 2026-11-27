@@ -1,0 +1,91 @@
+{
+  "itineraries": [
+    {
+      "branch_code": "",
+      "canonical_itinerary": true,
+      "detour": null,
+      "direction_headsign": "Feuersee",
+      "direction_id": 0,
+      "headsign": "Feuersee",
+      "is_active": true,
+      "merged_headsign": "Feuersee",
+      "stops": []
+    },
+    {
+      "branch_code": "",
+      "canonical_itinerary": true,
+      "detour": null,
+      "direction_headsign": "Pragsattel",
+      "direction_id": 1,
+      "headsign": "Pragsattel",
+      "is_active": true,
+      "merged_headsign": "Pragsattel",
+      "stops": []
+    },
+    {
+      "branch_code": "",
+      "canonical_itinerary": true,
+      "detour": null,
+      "direction_headsign": "Pragsattel",
+      "direction_id": 1,
+      "headsign": "Pragsattel",
+      "is_active": true,
+      "merged_headsign": "Pragsattel",
+      "stops": []
+    },
+    {
+      "branch_code": "",
+      "canonical_itinerary": true,
+      "detour": null,
+      "direction_headsign": "Feuersee",
+      "direction_id": 0,
+      "headsign": "Rotebühlplatz",
+      "is_active": false,
+      "merged_headsign": "Rotebühlplatz",
+      "stops": []
+    }
+  ],
+  "route": {
+    "alerts": [],
+    "compact_display_short_name": {
+      "boxed_text": "",
+      "elements": [
+        null,
+        "43",
+        null
+      ],
+      "route_name_redundancy": false
+    },
+    "fares": [],
+    "global_route_id": "VVSDE:247174",
+    "mode_key": "Bus",
+    "mode_name": "Raftaxi",
+    "real_time_route_id": "de:vvs:30043_:",
+    "route_color": "c31924",
+    "route_display_short_name": {
+      "boxed_text": "",
+      "elements": [
+        null,
+        "43",
+        null
+      ],
+      "route_name_redundancy": false
+    },
+    "route_image": "",
+    "route_long_name": "Pragsattel - Rotebühlplatz (Stadtmitte) - Feuersee",
+    "route_network_id": "VVS|Stuttgart",
+    "route_network_name": "VVS",
+    "route_short_name": "43",
+    "route_text_color": "ffffff",
+    "route_timezone": "Europe/Berlin",
+    "route_type": 3,
+    "sorting_key": "43",
+    "tts_long_name": "Pragsattel - Rotebühlplatz (Stadtmitte) - Feuersee",
+    "tts_short_name": "43",
+    "vehicle": {
+      "image": "bus-new",
+      "name": "Bus",
+      "name_inflection": "m"
+    }
+  }
+}

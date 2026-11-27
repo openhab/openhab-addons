@@ -24,6 +24,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.events.EventPublisher;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.BaseDynamicStateDescriptionProvider;
 import org.openhab.core.thing.i18n.ChannelTypeI18nLocalizationService;
 import org.openhab.core.thing.link.ItemChannelLinkRegistry;
@@ -58,6 +59,11 @@ public class TuyaDynamicStateDescriptionProvider extends BaseDynamicStateDescrip
         this.itemChannelLinkRegistry = itemChannelLinkRegistry;
         this.channelTypeI18nLocalizationService = channelTypeI18nLocalizationService;
         this.bundle = FrameworkUtil.getBundle(this.getClass());
+    }
+
+    public synchronized void removeStateDescriptions(ThingUID thingUID) {
+        channelOptionsMap.keySet().removeIf(channelUID -> thingUID.equals(channelUID.getThingUID()));
+        channelPatternMap.keySet().removeIf(channelUID -> thingUID.equals(channelUID.getThingUID()));
     }
 
     public synchronized void addStateOption(ChannelUID channelUID, String option) {

@@ -82,16 +82,21 @@ public abstract class LutronHandler extends BaseThingHandler {
             initDeviceState();
 
         } else if (bridgeStatusInfo.getStatus() == ThingStatus.OFFLINE) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
             thingOfflineNotify();
         }
     }
 
     protected void sendCommand(LutronCommandNew command) {
-        LutronBridgeHandler bridgeHandler = getBridgeHandler();
+        Bridge bridge = getBridge();
+        if (bridge == null) {
+            logger.debug("Bridge unavailable while sending command for Thing: {}", thing.getUID());
+            return;
+        }
+        LutronBridgeHandler bridgeHandler = (LutronBridgeHandler) bridge.getHandler();
 
         if (bridgeHandler == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_MISSING_ERROR, "No bridge associated");
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE, "No bridge associated");
             thingOfflineNotify();
         } else {
             bridgeHandler.sendCommand(command);

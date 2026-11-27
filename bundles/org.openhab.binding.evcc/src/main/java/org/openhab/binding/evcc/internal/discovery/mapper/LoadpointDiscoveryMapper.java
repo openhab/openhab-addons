@@ -18,7 +18,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -29,6 +28,8 @@ import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.thing.ThingUID;
 import org.osgi.service.component.annotations.Component;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -42,6 +43,8 @@ import com.google.gson.JsonObject;
 @NonNullByDefault
 public class LoadpointDiscoveryMapper implements EvccDiscoveryMapper {
 
+    private final Logger logger = LoggerFactory.getLogger(LoadpointDiscoveryMapper.class);
+
     @Override
     public Collection<DiscoveryResult> discover(JsonObject state, EvccBridgeHandler bridgeHandler) {
         List<DiscoveryResult> results = new ArrayList<>();
@@ -51,15 +54,24 @@ public class LoadpointDiscoveryMapper implements EvccDiscoveryMapper {
         }
         for (int i = 0; i < loadpoints.size(); i++) {
             JsonObject lp = loadpoints.get(i).getAsJsonObject();
-            String title = lp.has(JSON_KEY_TITLE) ? lp.get(JSON_KEY_TITLE).getAsString().toLowerCase(Locale.ROOT)
-                    : "loadpoint" + i;
+            // evcc requires every loadpoint to be configured with a title, so a missing or blank
+            // title indicates the loadpoint's state has not been fully received yet. Skip it rather
+            // than fabricating a placeholder name that would not match the real device.
+            if (!lp.has(JSON_KEY_TITLE) || lp.get(JSON_KEY_TITLE).isJsonNull()
+                    || lp.get(JSON_KEY_TITLE).getAsString().isBlank()) {
+                logger.debug("Skipping discovery of loadpoint at index {} because it has no title", i);
+                continue;
+            }
+            boolean heating = lp.has(JSON_KEY_CHARGER_FEATURE_HEATING)
+                    && lp.get(JSON_KEY_CHARGER_FEATURE_HEATING).getAsBoolean();
+            String title = lp.get(JSON_KEY_TITLE).getAsString();
 
             ThingUID uid = new ThingUID("DUMMY:DUMMY:DUMMY");
             Map<String, Object> properties = new HashMap<>();
             properties.put(PROPERTY_INDEX, i);
             properties.put(PROPERTY_TITLE, title);
 
-            if (lp.has(JSON_KEY_CHARGER_FEATURE_HEATING) && lp.get(JSON_KEY_CHARGER_FEATURE_HEATING).getAsBoolean()) {
+            if (heating) {
                 uid = new ThingUID(EvccBindingConstants.THING_TYPE_HEATING, bridgeHandler.getThing().getUID(),
                         Utils.sanitizeName(title));
             } else {

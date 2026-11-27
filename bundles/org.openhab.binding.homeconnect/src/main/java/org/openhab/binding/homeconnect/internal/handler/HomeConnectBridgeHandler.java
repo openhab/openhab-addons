@@ -27,8 +27,6 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import javax.ws.rs.client.ClientBuilder;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -55,9 +53,11 @@ import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
-import org.osgi.service.jaxrs.client.SseEventSourceFactory;
+import org.osgi.service.jakartars.client.SseEventSourceFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import jakarta.ws.rs.client.ClientBuilder;
 
 /**
  * The {@link HomeConnectBridgeHandler} is responsible for handling commands, which are
@@ -137,7 +137,7 @@ public class HomeConnectBridgeHandler extends BaseBridgeHandler {
                 AccessTokenResponse accessTokenResponse = oAuthClientService.getAccessTokenResponse();
 
                 if (accessTokenResponse == null) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
+                    updateStatus(ThingStatusDetail.AUTHORIZATION_PENDING,
                             "Please authenticate your account at http(s)://[YOUROPENHAB]:[YOURPORT]/homeconnect (e.g. http://192.168.178.100:8080/homeconnect).");
                 } else {
                     apiClient.getHomeAppliances();
@@ -152,7 +152,7 @@ public class HomeConnectBridgeHandler extends BaseBridgeHandler {
                         "Home Connect service is not reachable or a problem occurred! Retrying at %s (%s). bridge=%s",
                         nextReinitializeDateTime.format(DateTimeFormatter.RFC_1123_DATE_TIME), e.getMessage(),
                         getThing().getLabel());
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, offlineMessage);
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, offlineMessage);
 
                 scheduleReinitialize();
             }

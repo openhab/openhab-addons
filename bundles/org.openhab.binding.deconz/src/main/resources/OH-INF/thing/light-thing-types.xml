@@ -208,8 +208,8 @@
 		<label>Position</label>
 		<category>Rollershutter</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>OpenLevel</tag>
+			<point>Control</point>
+			<property>OpenLevel</property>
 		</tags>
 		<state pattern="%.1f %%"/>
 	</channel-type>
@@ -225,8 +225,8 @@
 		<item-type>String</item-type>
 		<label>Effect Channel</label>
 		<tags>
-			<tag>Control</tag>
-			<tag>Mode</tag>
+			<point>Control</point>
+			<property>Mode</property>
 		</tags>
 	</channel-type>
 
@@ -234,8 +234,8 @@
 		<item-type>Number</item-type>
 		<label>Effect Speed Channel</label>
 		<tags>
-			<tag>Control</tag>
-			<tag>Speed</tag>
+			<point>Control</point>
+			<property>Speed</property>
 		</tags>
 		<state min="0" max="10" step="1"/>
 	</channel-type>
@@ -245,8 +245,8 @@
 		<label>Alert</label>
 		<category>Alarm</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>Mode</tag>
+			<point>Control</point>
+			<property>Mode</property>
 		</tags>
 		<command>
 			<options>
@@ -261,8 +261,8 @@
 		<item-type>Switch</item-type>
 		<label>Lock</label>
 		<tags>
-			<tag>Switch</tag>
-			<tag>OpenState</tag>
+			<point>Switch</point>
+			<property>OpenState</property>
 		</tags>
 	</channel-type>
 

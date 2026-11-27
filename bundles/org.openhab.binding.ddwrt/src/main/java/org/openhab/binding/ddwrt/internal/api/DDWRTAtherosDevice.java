@@ -132,11 +132,11 @@ public class DDWRTAtherosDevice extends DDWRTBaseDevice {
     }
 
     @Override
-    protected void setRadioEnabled(SshRunner runner, String iface, boolean enabled) {
+    protected void setRadioEnabled(SshRunner runner, String iface, boolean enabled) throws IOException {
         if (enabled) {
-            runner.execStdout("ifconfig " + iface + " up");
+            runner.exec("ifconfig " + iface + " up");
         } else {
-            runner.execStdout("ifconfig " + iface + " down");
+            runner.exec("ifconfig " + iface + " down");
         }
     }
 

@@ -1,0 +1,16 @@
+{
+  "retCode": "S",
+  "resCode": "0000",
+  "state": {
+    "Vehicle": {
+      "DrivingReady": 0,
+      "Electronics": {
+        "PowerSupply": {
+          "Ignition1": 0,
+          "Ignition3": 1,
+          "Accessory": 0
+        }
+      }
+    }
+  }
+}

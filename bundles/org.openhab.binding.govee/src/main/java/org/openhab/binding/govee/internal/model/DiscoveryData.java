@@ -19,7 +19,7 @@ import org.eclipse.jdt.annotation.Nullable;
  * Govee Message - Device information
  *
  * @param ip IP address of the device
- * @param device mac Address
+ * @param device Govee device identifier
  * @param sku article number
  * @param bleVersionHard Bluetooth HW version
  * @param bleVersionSoft Bluetooth SW version

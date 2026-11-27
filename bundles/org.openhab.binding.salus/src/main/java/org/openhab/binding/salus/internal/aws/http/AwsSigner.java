@@ -29,25 +29,27 @@ import uk.co.lucasweb.aws.v4.signer.hash.Sha256;
 
 /**
  * @author Martin Grześlowski - Initial contribution
+ * @author Martin Grześlowski - Sign shadow reads and writes
  */
 @NonNullByDefault
 class AwsSigner {
-    static Map<String, String> sign(String pathAndQuery, ZonedDateTime time, CogitoCredentials cogitoCredentials,
-            String region, String service, @Nullable String body) throws SalusApiException {
+    static Map<String, String> sign(String method, String host, String pathAndQuery, ZonedDateTime time,
+            CogitoCredentials cogitoCredentials, String region, String service, @Nullable String body)
+            throws SalusApiException {
         try {
             var contentSha256 = Sha256.get(body != null ? body : "", UTF_8);
-            var request = new HttpRequest("GET", pathAndQuery);
+            var request = new HttpRequest(method, pathAndQuery);
             var isoDate = DateTimeFormatter.ofPattern("yyyyMMdd'T'HHmmss'Z'").format(time);
             var signer = Signer.builder().region(region)//
                     .awsCredentials(new AwsCredentials(cogitoCredentials.accessKeyId(), cogitoCredentials.secretKey()))//
-                    .header("host", "")//
+                    .header("host", host)//
                     .header("X-Amz-Date", isoDate)//
                     .header("X-Amz-Security-Token", cogitoCredentials.sessionToken())//
                     .build(request, service, contentSha256).getSignature();
             return Map.of(//
                     "Authorization", signer, //
                     "X-Amz-Date", isoDate, //
-                    "host", "", //
+                    "host", host, //
                     "X-Amz-Security-Token", cogitoCredentials.sessionToken());
         } catch (Exception e) {
             throw new SalusApiException("Cannot build AWS signature!", e);

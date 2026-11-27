@@ -317,8 +317,14 @@ public class DDWRTNetworkCache {
             return null;
         }
         String normalizedNewMac = normalizeMac(newMac);
+        if (isDhcpHostnameUsedByOtherMac(hostname, normalizedNewMac)) {
+            return null;
+        }
         String oldMac = hostnameToMac.get(hostname.toLowerCase(Locale.ROOT));
         if (oldMac != null && !oldMac.equals(normalizedNewMac)) {
+            if (!OuiDatabase.isRandomizedMac(oldMac) && !OuiDatabase.isRandomizedMac(normalizedNewMac)) {
+                return null;
+            }
             DDWRTClient oldClient = wirelessClientsByMac.get(oldMac);
             if (oldClient != null && hostname.equalsIgnoreCase(oldClient.getHostname())) {
                 logger.debug("MAC randomization detected for '{}': old MAC={}, new MAC={}", hostname, oldMac,
@@ -359,6 +365,25 @@ public class DDWRTNetworkCache {
             }
         }
         return null;
+    }
+
+    public boolean isDhcpHostnameDuplicate(String hostname) {
+        if (hostname.isEmpty()) {
+            return false;
+        }
+        int matches = 0;
+        for (DDWRTDhcpLease lease : dhcpLeasesByMac.values()) {
+            if (hostname.equalsIgnoreCase(lease.getHostname()) && ++matches > 1) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean isDhcpHostnameUsedByOtherMac(String hostname, String mac) {
+        String normalizedMac = normalizeMac(mac);
+        return dhcpLeasesByMac.values().stream().anyMatch(
+                lease -> hostname.equalsIgnoreCase(lease.getHostname()) && !normalizedMac.equals(lease.getMac()));
     }
 
     /**

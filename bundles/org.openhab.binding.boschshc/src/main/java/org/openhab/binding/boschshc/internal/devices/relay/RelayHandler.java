@@ -23,8 +23,8 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Supplier;
 
-import javax.inject.Provider;
 import javax.measure.Unit;
 import javax.measure.quantity.Time;
 
@@ -49,7 +49,6 @@ import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
-import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.types.Command;
@@ -105,7 +104,7 @@ public class RelayHandler extends AbstractPowerSwitchHandler {
      * It is exchanged in unit tests in order to be able to assert that a certain
      * date is contained in the result.
      */
-    private Provider<Instant> currentDateTimeProvider = Instant::now;
+    private Supplier<Instant> currentDateTimeProvider = Instant::now;
 
     @Nullable
     private ImpulseSwitchServiceState currentImpulseSwitchServiceState;
@@ -177,8 +176,7 @@ public class RelayHandler extends AbstractPowerSwitchHandler {
                 .findAny();
 
         if (anyChannelMissing.isPresent()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.conf-error.relay-recreation-required");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.conf-error.relay-recreation-required");
             return false;
         }
 
@@ -312,7 +310,7 @@ public class RelayHandler extends AbstractPowerSwitchHandler {
         return null;
     }
 
-    void setCurrentDateTimeProvider(Provider<Instant> currentDateTimeProvider) {
+    void setCurrentDateTimeProvider(Supplier<Instant> currentDateTimeProvider) {
         this.currentDateTimeProvider = currentDateTimeProvider;
     }
 }

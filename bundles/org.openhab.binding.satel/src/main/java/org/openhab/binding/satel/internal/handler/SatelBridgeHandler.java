@@ -64,7 +64,7 @@ public abstract class SatelBridgeHandler extends ConfigStatusBridgeHandler imple
                 updateStatus(ThingStatus.ONLINE);
                 satelModule.sendCommand(new NewStatesCommand(satelModule.hasExtPayloadSupport()));
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, event.getReason());
+                updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, event.getReason());
             }
         }
     }

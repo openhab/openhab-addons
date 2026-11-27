@@ -1,3 +1,10 @@
+---
+children:
+  - ["doc/network", "UniFi Network"]
+  - ["doc/protect", "UniFi Protect"]
+  - ["doc/access", "UniFi Access"]
+---
+
 # UniFi Binding
 
 The UniFi Binding integrates Ubiquiti UniFi devices into openHAB, covering the UniFi Network, UniFi Protect, and UniFi Access product families.

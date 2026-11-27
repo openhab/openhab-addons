@@ -105,7 +105,7 @@ public class RokuHandler extends BaseThingHandler {
         if (host != null && !host.isBlank()) {
             this.communicator = new RokuCommunicator(httpClient, host, config.port);
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Host name must be specified");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Host name must be specified");
             return;
         }
 
@@ -165,8 +165,7 @@ public class RokuHandler extends BaseThingHandler {
                         }
                     } catch (RokuUnknownHostException e) {
                         logger.debug("{}: {}", HOST_RESOLVE_ERROR_MSG, e.getMessage(), e);
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                HOST_RESOLVE_ERROR_MSG);
+                        updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, HOST_RESOLVE_ERROR_MSG);
                         return;
                     } catch (RokuHttpException e) {
                         logger.debug("Unable to retrieve Roku device-info.", e);
@@ -204,7 +203,7 @@ public class RokuHandler extends BaseThingHandler {
                 }
             } catch (RokuUnknownHostException e) {
                 logger.debug("{}: {}", HOST_RESOLVE_ERROR_MSG, e.getMessage(), e);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, HOST_RESOLVE_ERROR_MSG);
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, HOST_RESOLVE_ERROR_MSG);
                 return;
             } catch (RokuHttpException e) {
                 logger.debug("Unable to retrieve Roku active-app info. Exception: {}", e.getMessage(), e);
@@ -294,7 +293,7 @@ public class RokuHandler extends BaseThingHandler {
             if (limitedMode < 1) {
                 updateStatus(ThingStatus.ONLINE);
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.limited");
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.limited");
             }
         }
     }
@@ -484,7 +483,7 @@ public class RokuHandler extends BaseThingHandler {
      */
     private void setStatusOffline() {
         limitedMode = -1;
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+        updateStatus(ThingStatusDetail.COMMUNICATION_ERROR);
         if (thingTypeUID.equals(THING_TYPE_ROKU_TV)) {
             updateState(POWER_STATE, new StringType(OFFLINE));
         }

@@ -393,7 +393,7 @@ public class GlobalCacheHandler extends BaseThingHandler {
         if ((isOffline() && getDetail().equals(ThingStatusDetail.NONE)) || !isOffline()) {
             logger.debug("Changing status of {} from {}({}) to OFFLINE({})", thingID(), getStatus(), getDetail(),
                     statusDetail);
-            updateStatus(ThingStatus.OFFLINE, statusDetail, statusMessage);
+            updateStatus(statusDetail, statusMessage);
             return;
         }
     }

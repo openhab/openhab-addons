@@ -31,19 +31,29 @@ import org.openhab.core.thing.ThingTypeUID;
  *
  * @author Wouter Born - Initial contribution
  * @author Wouter Born - Add temperature ranges and simplify feature definitions
+ * @author Wouter Born - Update product catalogue and light identification
  */
 @NonNullByDefault
 public enum LifxProduct {
 
     PRODUCT_1(1, "LIFX Original 1000", new Features(TR_2500_9000, COLOR)),
+    PRODUCT_2(2, "LIFX Original 1000", new Features(TR_2500_9000, COLOR)),
     PRODUCT_3(3, "LIFX Color 650", new Features(TR_2500_9000, COLOR)),
     PRODUCT_10(10, "LIFX White 800 (Low Voltage)", new Features(TR_2700_6500)),
     PRODUCT_11(11, "LIFX White 800 (High Voltage)", new Features(TR_2700_6500)),
-    PRODUCT_15(15, "LIFX Color 1000", new Features(TR_2500_9000, COLOR)),
+    PRODUCT_12(12, "LIFX White OEM A19 (Low Voltage)", new Features(TR_2700_2700)),
+    PRODUCT_13(13, "LIFX White OEM A19 (High Voltage)", new Features(TR_2700_2700)),
+    PRODUCT_14(14, "LIFX Carbon Prototype", new Features(TR_2500_9000, COLOR)),
+    PRODUCT_15(15, "LIFX Color 1000", new Features(TR_2700_6500, COLOR)),
     PRODUCT_18(18, "LIFX White 900 BR30 (Low Voltage)", new Features(TR_2700_6500)),
     PRODUCT_19(19, "LIFX White 900 BR30 (High Voltage)", new Features(TR_2700_6500)),
     PRODUCT_20(20, "LIFX Color 1000 BR30", new Features(TR_2500_9000, COLOR)),
+    PRODUCT_21(21, "LIFX GU10", new Features(TR_2500_9000, COLOR)),
     PRODUCT_22(22, "LIFX Color 1000", new Features(TR_2500_9000, COLOR)),
+    PRODUCT_23(23, "LIFX A19", new Features(TR_2500_9000, COLOR)),
+    PRODUCT_24(24, "LIFX BR30", new Features(TR_2500_9000, COLOR)),
+    PRODUCT_25(25, "LIFX A19 Night Vision", new Features(TR_2500_9000, COLOR, INFRARED)),
+    PRODUCT_26(26, "LIFX BR30 Night Vision", new Features(TR_2500_9000, COLOR, INFRARED)),
     PRODUCT_27(27, "LIFX A19", new Features(TR_2500_9000, COLOR), //
             new Upgrade(2, 80, new Features(TR_1500_9000))),
     PRODUCT_28(28, "LIFX BR30", new Features(TR_2500_9000, COLOR), //
@@ -56,6 +66,7 @@ public enum LifxProduct {
     PRODUCT_32(32, "LIFX Z", new Features(TR_2500_9000, COLOR, MULTIZONE), //
             new Upgrade(2, 77, new Features(EXTENDED_MULTIZONE)), //
             new Upgrade(2, 80, new Features(TR_1500_9000))),
+    PRODUCT_33(33, "LIFX Downlight", new Features(TR_2500_9000, COLOR)),
     PRODUCT_36(36, "LIFX Downlight", new Features(TR_2500_9000, COLOR), //
             new Upgrade(2, 80, new Features(TR_1500_9000))),
     PRODUCT_37(37, "LIFX Downlight", new Features(TR_2500_9000, COLOR), //
@@ -76,15 +87,17 @@ public enum LifxProduct {
     PRODUCT_46(46, "LIFX BR30 Night Vision", new Features(TR_2500_9000, COLOR, INFRARED), //
             new Upgrade(2, 80, new Features(TR_1500_9000))),
     PRODUCT_49(49, "LIFX Mini Color", new Features(TR_1500_9000, COLOR)),
-    PRODUCT_50(50, "LIFX Mini White to Warm", new Features(TR_1500_6500), //
+    PRODUCT_50(50, "LIFX Mini White to Warm", new Features(TR_2500_9000), //
             new Upgrade(3, 70, new Features(TR_1500_9000))),
     PRODUCT_51(51, "LIFX Mini White", new Features(TR_2700_2700)),
     PRODUCT_52(52, "LIFX GU10", new Features(TR_1500_9000, COLOR)),
     PRODUCT_53(53, "LIFX GU10", new Features(TR_1500_9000, COLOR)),
+    PRODUCT_54(54, "LIFX GU10 White", new Features(TR_2700_2700)),
     PRODUCT_55(55, "LIFX Tile", new Features(TR_2500_9000, CHAIN, COLOR, MATRIX, TILE_EFFECT)),
+    PRODUCT_56(56, "LIFX Beam", new Features(TR_2500_9000, COLOR, EXTENDED_MULTIZONE, MULTIZONE)),
     PRODUCT_57(57, "LIFX Candle", new Features(TR_1500_9000, COLOR, MATRIX)),
     PRODUCT_59(59, "LIFX Mini Color", new Features(TR_1500_9000, COLOR)),
-    PRODUCT_60(60, "LIFX Mini White to Warm", new Features(TR_1500_6500), //
+    PRODUCT_60(60, "LIFX Mini White to Warm", new Features(TR_2500_9000), //
             new Upgrade(3, 70, new Features(TR_1500_9000))),
     PRODUCT_61(61, "LIFX Mini White", new Features(TR_2700_2700)),
     PRODUCT_62(62, "LIFX A19", new Features(TR_1500_9000, COLOR)),
@@ -92,12 +105,16 @@ public enum LifxProduct {
     PRODUCT_64(64, "LIFX A19 Night Vision", new Features(TR_1500_9000, COLOR, INFRARED)),
     PRODUCT_65(65, "LIFX BR30 Night Vision", new Features(TR_1500_9000, COLOR, INFRARED)),
     PRODUCT_66(66, "LIFX Mini White", new Features(TR_2700_2700)),
+    PRODUCT_67(67, "LIFX Candle White to Warm", new Features(TR_2200_6500)),
     PRODUCT_68(68, "LIFX Candle", new Features(TR_1500_9000, COLOR, MATRIX)),
     PRODUCT_70(70, "LIFX Switch", new Features(BUTTONS, RELAYS)),
     PRODUCT_71(71, "LIFX Switch", new Features(BUTTONS, RELAYS)),
+    PRODUCT_72(72, "LIFX A19", new Features(TR_1500_9000, COLOR, EXTENDED_MULTIZONE)),
     PRODUCT_81(81, "LIFX Candle White to Warm", new Features(TR_2200_6500)),
-    PRODUCT_82(82, "LIFX Filament Clear", new Features(TR_2100_2100)),
+    PRODUCT_82(82, "LIFX Filament Clear", new Features(TR_2200_2200)),
+    PRODUCT_84(84, "LIFX Switch", new Features(BUTTONS, RELAYS)),
     PRODUCT_85(85, "LIFX Filament Amber", new Features(TR_2000_2000)),
+    PRODUCT_86(86, "LIFX Filament Smokey", new Features(TR_2200_2200)),
     PRODUCT_87(87, "LIFX Mini White", new Features(TR_2700_2700)),
     PRODUCT_88(88, "LIFX Mini White", new Features(TR_2700_2700)),
     PRODUCT_89(89, "LIFX Switch", new Features(BUTTONS, RELAYS)),
@@ -110,8 +127,9 @@ public enum LifxProduct {
     PRODUCT_97(97, "LIFX A19", new Features(TR_1500_9000, COLOR)),
     PRODUCT_98(98, "LIFX BR30", new Features(TR_1500_9000, COLOR)),
     PRODUCT_99(99, "LIFX Clean", new Features(TR_1500_9000, COLOR, HEV)),
-    PRODUCT_100(100, "LIFX Filament Clear", new Features(TR_2100_2100)),
+    PRODUCT_100(100, "LIFX Filament Clear", new Features(TR_2200_2200)),
     PRODUCT_101(101, "LIFX Filament Amber", new Features(TR_2000_2000)),
+    PRODUCT_102(102, "LIFX Filament Smokey", new Features(TR_2200_2200)),
     PRODUCT_109(109, "LIFX A19 Night Vision", new Features(TR_1500_9000, COLOR, INFRARED)),
     PRODUCT_110(110, "LIFX BR30 Night Vision", new Features(TR_1500_9000, COLOR, INFRARED)),
     PRODUCT_111(111, "LIFX A19 Night Vision", new Features(TR_1500_9000, COLOR, INFRARED)),
@@ -120,10 +138,14 @@ public enum LifxProduct {
     PRODUCT_114(114, "LIFX Mini White to Warm", new Features(TR_1500_9000)),
     PRODUCT_115(115, "LIFX Switch", new Features(BUTTONS, RELAYS)),
     PRODUCT_116(116, "LIFX Switch", new Features(BUTTONS, RELAYS)),
-    PRODUCT_117(117, "LIFX Z", new Features(TR_1500_9000, COLOR, EXTENDED_MULTIZONE, MULTIZONE)),
-    PRODUCT_118(118, "LIFX Z", new Features(TR_1500_9000, COLOR, EXTENDED_MULTIZONE, MULTIZONE)),
-    PRODUCT_119(119, "LIFX Beam", new Features(TR_1500_9000, COLOR, EXTENDED_MULTIZONE, MULTIZONE)),
-    PRODUCT_120(120, "LIFX Beam", new Features(TR_1500_9000, COLOR, EXTENDED_MULTIZONE, MULTIZONE)),
+    PRODUCT_117(117, "LIFX Z", new Features(TR_1500_9000, COLOR, EXTENDED_MULTIZONE, MULTIZONE), //
+            new Upgrade(4, 148, new Features(TR_1000_10000))),
+    PRODUCT_118(118, "LIFX Z", new Features(TR_1500_9000, COLOR, EXTENDED_MULTIZONE, MULTIZONE), //
+            new Upgrade(4, 148, new Features(TR_1000_10000))),
+    PRODUCT_119(119, "LIFX Beam", new Features(TR_1500_9000, COLOR, EXTENDED_MULTIZONE, MULTIZONE), //
+            new Upgrade(4, 148, new Features(TR_1000_10000))),
+    PRODUCT_120(120, "LIFX Beam", new Features(TR_1500_9000, COLOR, EXTENDED_MULTIZONE, MULTIZONE), //
+            new Upgrade(4, 148, new Features(TR_1000_10000))),
     PRODUCT_121(121, "LIFX Downlight", new Features(TR_1500_9000, COLOR)),
     PRODUCT_122(122, "LIFX Downlight", new Features(TR_1500_9000, COLOR)),
     PRODUCT_123(123, "LIFX Color", new Features(TR_1500_9000, COLOR)),
@@ -142,54 +164,128 @@ public enum LifxProduct {
     PRODUCT_136(136, "LIFX GU10", new Features(TR_1500_9000, COLOR)),
     PRODUCT_137(137, "LIFX Candle", new Features(TR_1500_9000, COLOR, MATRIX)),
     PRODUCT_138(138, "LIFX Candle", new Features(TR_1500_9000, COLOR, MATRIX)),
-    PRODUCT_141(141, "LIFX Neon", new Features(TR_1500_9000, COLOR, EXTENDED_MULTIZONE, MULTIZONE)),
-    PRODUCT_142(142, "LIFX Neon", new Features(TR_1500_9000, COLOR, EXTENDED_MULTIZONE, MULTIZONE)),
-    PRODUCT_143(143, "LIFX String", new Features(TR_1500_9000, COLOR, EXTENDED_MULTIZONE, MULTIZONE)),
-    PRODUCT_144(144, "LIFX String", new Features(TR_1500_9000, COLOR, EXTENDED_MULTIZONE, MULTIZONE)),
-    PRODUCT_161(161, "LIFX Outdoor Neon", new Features(TR_1500_9000, COLOR, EXTENDED_MULTIZONE, MULTIZONE)),
-    PRODUCT_162(162, "LIFX Outdoor Neon", new Features(TR_1500_9000, COLOR, EXTENDED_MULTIZONE, MULTIZONE)),
-    PRODUCT_163(163, "LIFX A19", new Features(TR_1500_9000, COLOR)),
-    PRODUCT_164(164, "LIFX BR30", new Features(TR_1500_9000, COLOR)),
-    PRODUCT_165(165, "LIFX A19", new Features(TR_1500_9000, COLOR)),
-    PRODUCT_166(166, "LIFX BR30", new Features(TR_1500_9000, COLOR)),
-    PRODUCT_167(167, "LIFX Downlight", new Features(TR_1500_9000, COLOR)),
-    PRODUCT_168(168, "LIFX Downlight", new Features(TR_1500_9000, COLOR)),
-    PRODUCT_169(169, "LIFX A21 1600lm", new Features(TR_1500_9000, COLOR)),
-    PRODUCT_170(170, "LIFX A21 1600lm", new Features(TR_1500_9000, COLOR)),
-    PRODUCT_171(171, "LIFX Round Spot", new Features(TR_1500_9000, COLOR, MATRIX)),
-    PRODUCT_173(173, "LIFX Round Path", new Features(TR_1500_9000, COLOR, MATRIX)),
-    PRODUCT_174(174, "LIFX Square Path", new Features(TR_1500_9000, COLOR, MATRIX)),
-    PRODUCT_175(175, "LIFX PAR38", new Features(TR_1500_9000, COLOR)),
-    PRODUCT_176(176, "LIFX Ceiling 15\"", new Features(TR_1500_9000, COLOR, MATRIX)),
-    PRODUCT_177(177, "LIFX Ceiling 15\"", new Features(TR_1500_9000, COLOR, MATRIX)),
-    PRODUCT_178(178, "LIFX Downlight", new Features(TR_1500_9000, COLOR)),
-    PRODUCT_179(179, "LIFX Downlight", new Features(TR_1500_9000, COLOR)),
-    PRODUCT_180(180, "LIFX Downlight", new Features(TR_1500_9000, COLOR)),
-    PRODUCT_181(181, "LIFX Color", new Features(TR_1500_9000, COLOR)),
-    PRODUCT_182(182, "LIFX Color", new Features(TR_1500_9000, COLOR)),
-    PRODUCT_185(185, "LIFX Candle", new Features(TR_1500_9000, COLOR, MATRIX)),
-    PRODUCT_186(186, "LIFX Candle", new Features(TR_1500_9000, COLOR, MATRIX)),
-    PRODUCT_187(187, "LIFX Candle", new Features(TR_1500_9000, COLOR, MATRIX)),
-    PRODUCT_188(188, "LIFX Candle", new Features(TR_1500_9000, COLOR, MATRIX)),
-    PRODUCT_201(201, "LIFX Ceiling 13x26\"", new Features(TR_1500_9000, COLOR, MATRIX)),
-    PRODUCT_202(202, "LIFX Ceiling 13x26\"", new Features(TR_1500_9000, COLOR, MATRIX)),
-    PRODUCT_203(203, "LIFX String", new Features(TR_1500_9000, COLOR, EXTENDED_MULTIZONE, MULTIZONE)),
-    PRODUCT_204(204, "LIFX String", new Features(TR_1500_9000, COLOR, EXTENDED_MULTIZONE, MULTIZONE)),
-    PRODUCT_205(205, "LIFX Neon", new Features(TR_1500_9000, COLOR, EXTENDED_MULTIZONE, MULTIZONE)),
-    PRODUCT_206(206, "LIFX Neon", new Features(TR_1500_9000, COLOR, EXTENDED_MULTIZONE, MULTIZONE)),
-    PRODUCT_213(213, "LIFX Outdoor Permanent", new Features(TR_1500_9000, COLOR, EXTENDED_MULTIZONE, MULTIZONE)),
-    PRODUCT_214(214, "LIFX Outdoor Permanent", new Features(TR_1500_9000, COLOR, EXTENDED_MULTIZONE, MULTIZONE)),
-    PRODUCT_215(215, "LIFX B10 Candle", new Features(TR_1500_9000, COLOR, MATRIX)),
-    PRODUCT_216(216, "LIFX B10 Candle", new Features(TR_1500_9000, COLOR, MATRIX)),
-    PRODUCT_217(217, "LIFX T10 Candle", new Features(TR_1500_9000, COLOR, MATRIX)),
-    PRODUCT_218(218, "LIFX T10 Candle", new Features(TR_1500_9000, COLOR, MATRIX)),
-    PRODUCT_219(219, "LIFX Luna", new Features(TR_1500_9000, COLOR, MATRIX)),
-    PRODUCT_220(220, "LIFX Luna", new Features(TR_1500_9000, COLOR, MATRIX)),
-    PRODUCT_221(221, "LIFX Round Spot", new Features(TR_1500_9000, COLOR, MATRIX)),
-    PRODUCT_222(222, "LIFX Round Path", new Features(TR_1500_9000, COLOR, MATRIX)),
-    PRODUCT_223(223, "LIFX Downlight", new Features(TR_1500_9000, COLOR)),
-    PRODUCT_224(224, "LIFX Downlight", new Features(TR_1500_9000, COLOR)),
-    PRODUCT_225(225, "LIFX PAR38", new Features(TR_1500_9000, COLOR));
+    PRODUCT_141(141, "LIFX Neon", new Features(TR_1500_9000, COLOR, EXTENDED_MULTIZONE, MULTIZONE), //
+            new Upgrade(4, 148, new Features(TR_1000_10000))),
+    PRODUCT_142(142, "LIFX Neon", new Features(TR_1500_9000, COLOR, EXTENDED_MULTIZONE, MULTIZONE), //
+            new Upgrade(4, 148, new Features(TR_1000_10000))),
+    PRODUCT_143(143, "LIFX String", new Features(TR_1500_9000, COLOR, EXTENDED_MULTIZONE, MULTIZONE), //
+            new Upgrade(4, 148, new Features(TR_1000_10000))),
+    PRODUCT_144(144, "LIFX String", new Features(TR_1500_9000, COLOR, EXTENDED_MULTIZONE, MULTIZONE), //
+            new Upgrade(4, 148, new Features(TR_1000_10000))),
+    PRODUCT_151(151, "LIFX Outdoor Neon", new Features(TR_1500_9000, COLOR, EXTENDED_MULTIZONE, MULTIZONE)),
+    PRODUCT_152(152, "LIFX Outdoor Neon", new Features(TR_1500_9000, COLOR, EXTENDED_MULTIZONE, MULTIZONE)),
+    PRODUCT_153(153, "LIFX PAR38", new Features(TR_1500_9000, COLOR)),
+    PRODUCT_154(154, "LIFX PAR38", new Features(TR_1500_9000, COLOR)),
+    PRODUCT_155(155, "LIFX Sunshine", new Features(TR_1500_9000, COLOR)),
+    PRODUCT_156(156, "LIFX A21 1000lm", new Features(TR_1500_9000, COLOR)),
+    PRODUCT_161(161, "LIFX Outdoor Neon", new Features(TR_1500_9000, COLOR, EXTENDED_MULTIZONE, MULTIZONE), //
+            new Upgrade(4, 148, new Features(TR_1000_10000))),
+    PRODUCT_162(162, "LIFX Outdoor Neon", new Features(TR_1500_9000, COLOR, EXTENDED_MULTIZONE, MULTIZONE), //
+            new Upgrade(4, 148, new Features(TR_1000_10000))),
+    PRODUCT_163(163, "LIFX A19", new Features(TR_1500_9000, COLOR), //
+            new Upgrade(4, 148, new Features(TR_1000_10000))),
+    PRODUCT_164(164, "LIFX BR30", new Features(TR_1500_9000, COLOR), //
+            new Upgrade(4, 148, new Features(TR_1000_10000))),
+    PRODUCT_165(165, "LIFX A19", new Features(TR_1500_9000, COLOR), //
+            new Upgrade(4, 148, new Features(TR_1000_10000))),
+    PRODUCT_166(166, "LIFX BR30", new Features(TR_1500_9000, COLOR), //
+            new Upgrade(4, 148, new Features(TR_1000_10000))),
+    PRODUCT_167(167, "LIFX Downlight", new Features(TR_1500_9000, COLOR), //
+            new Upgrade(4, 148, new Features(TR_1000_10000))),
+    PRODUCT_168(168, "LIFX Downlight", new Features(TR_1500_9000, COLOR), //
+            new Upgrade(4, 148, new Features(TR_1000_10000))),
+    PRODUCT_169(169, "LIFX A21 1600lm", new Features(TR_1500_9000, COLOR), //
+            new Upgrade(4, 148, new Features(TR_1000_10000))),
+    PRODUCT_170(170, "LIFX A21 1600lm", new Features(TR_1500_9000, COLOR), //
+            new Upgrade(4, 148, new Features(TR_1000_10000))),
+    PRODUCT_171(171, "LIFX Round Spot", new Features(TR_1500_9000, COLOR, MATRIX), //
+            new Upgrade(4, 148, new Features(TR_1000_10000))),
+    PRODUCT_172(172, "LIFX Round Spot", new Features(TR_1500_9000, COLOR, MATRIX)),
+    PRODUCT_173(173, "LIFX Round Path", new Features(TR_1500_9000, COLOR, MATRIX), //
+            new Upgrade(4, 148, new Features(TR_1000_10000))),
+    PRODUCT_174(174, "LIFX Square Path", new Features(TR_1500_9000, COLOR, MATRIX), //
+            new Upgrade(4, 148, new Features(TR_1000_10000))),
+    PRODUCT_175(175, "LIFX PAR38", new Features(TR_1500_9000, COLOR), //
+            new Upgrade(4, 148, new Features(TR_1000_10000))),
+    PRODUCT_176(176, "LIFX Ceiling 15\"", new Features(TR_1500_9000, COLOR, MATRIX), //
+            new Upgrade(4, 148, new Features(TR_1000_10000))),
+    PRODUCT_177(177, "LIFX Ceiling 15\"", new Features(TR_1500_9000, COLOR, MATRIX), //
+            new Upgrade(4, 148, new Features(TR_1000_10000))),
+    PRODUCT_178(178, "LIFX Downlight", new Features(TR_1500_9000, COLOR), //
+            new Upgrade(4, 148, new Features(TR_1000_10000))),
+    PRODUCT_179(179, "LIFX Downlight", new Features(TR_1500_9000, COLOR), //
+            new Upgrade(4, 148, new Features(TR_1000_10000))),
+    PRODUCT_180(180, "LIFX Downlight", new Features(TR_1500_9000, COLOR), //
+            new Upgrade(4, 148, new Features(TR_1000_10000))),
+    PRODUCT_181(181, "LIFX Color", new Features(TR_1500_9000, COLOR), //
+            new Upgrade(4, 148, new Features(TR_1000_10000))),
+    PRODUCT_182(182, "LIFX Color", new Features(TR_1500_9000, COLOR), //
+            new Upgrade(4, 148, new Features(TR_1000_10000))),
+    PRODUCT_185(185, "LIFX Candle", new Features(TR_1500_9000, COLOR, MATRIX), //
+            new Upgrade(4, 148, new Features(TR_1000_10000))),
+    PRODUCT_186(186, "LIFX Candle", new Features(TR_1500_9000, COLOR, MATRIX), //
+            new Upgrade(4, 148, new Features(TR_1000_10000))),
+    PRODUCT_187(187, "LIFX Candle", new Features(TR_1500_9000, COLOR), //
+            new Upgrade(4, 148, new Features(TR_1000_10000))),
+    PRODUCT_188(188, "LIFX Candle", new Features(TR_1500_9000, COLOR), //
+            new Upgrade(4, 148, new Features(TR_1000_10000))),
+    PRODUCT_191(191, "LIFX Everyday A19", new Features(TR_2700_6500, COLOR)),
+    PRODUCT_192(192, "LIFX Everyday A19", new Features(TR_2700_6500, COLOR)),
+    PRODUCT_201(201, "LIFX Ceiling 13x26\"", new Features(TR_1500_9000, COLOR, MATRIX), //
+            new Upgrade(4, 148, new Features(TR_1000_10000))),
+    PRODUCT_202(202, "LIFX Ceiling 13x26\"", new Features(TR_1500_9000, COLOR, MATRIX), //
+            new Upgrade(4, 148, new Features(TR_1000_10000))),
+    PRODUCT_203(203, "LIFX String", new Features(TR_1500_9000, COLOR, EXTENDED_MULTIZONE, MULTIZONE), //
+            new Upgrade(4, 148, new Features(TR_1000_10000))),
+    PRODUCT_204(204, "LIFX String", new Features(TR_1500_9000, COLOR, EXTENDED_MULTIZONE, MULTIZONE), //
+            new Upgrade(4, 148, new Features(TR_1000_10000))),
+    PRODUCT_205(205, "LIFX Neon", new Features(TR_1500_9000, COLOR, EXTENDED_MULTIZONE, MULTIZONE), //
+            new Upgrade(4, 148, new Features(TR_1000_10000))),
+    PRODUCT_206(206, "LIFX Neon", new Features(TR_1500_9000, COLOR, EXTENDED_MULTIZONE, MULTIZONE), //
+            new Upgrade(4, 148, new Features(TR_1000_10000))),
+    PRODUCT_207(207, "LIFX Everyday Lightstrip",
+            new Features(TR_2700_6500, BUTTONS, COLOR, EXTENDED_MULTIZONE, MULTIZONE)),
+    PRODUCT_208(208, "LIFX Everyday Lightstrip",
+            new Features(TR_2700_6500, BUTTONS, COLOR, EXTENDED_MULTIZONE, MULTIZONE)),
+    PRODUCT_211(211, "LIFX Everyday Outdoor Permanent",
+            new Features(TR_2700_6500, COLOR, EXTENDED_MULTIZONE, MULTIZONE)),
+    PRODUCT_213(213, "LIFX Outdoor Permanent", new Features(TR_1500_9000, COLOR, EXTENDED_MULTIZONE, MULTIZONE), //
+            new Upgrade(4, 148, new Features(TR_1000_10000))),
+    PRODUCT_214(214, "LIFX Outdoor Permanent", new Features(TR_1500_9000, COLOR, EXTENDED_MULTIZONE, MULTIZONE), //
+            new Upgrade(4, 148, new Features(TR_1000_10000))),
+    PRODUCT_215(215, "LIFX B10 Candle", new Features(TR_1500_9000, COLOR, MATRIX), //
+            new Upgrade(4, 148, new Features(TR_1000_10000))),
+    PRODUCT_216(216, "LIFX B10 Candle", new Features(TR_1500_9000, COLOR, MATRIX), //
+            new Upgrade(4, 148, new Features(TR_1000_10000))),
+    PRODUCT_217(217, "LIFX T10 Candle", new Features(TR_1500_9000, COLOR, MATRIX), //
+            new Upgrade(4, 148, new Features(TR_1000_10000))),
+    PRODUCT_218(218, "LIFX T10 Candle", new Features(TR_1500_9000, COLOR, MATRIX), //
+            new Upgrade(4, 148, new Features(TR_1000_10000))),
+    PRODUCT_219(219, "LIFX Luna", new Features(TR_1500_9000, BUTTONS, COLOR, MATRIX), //
+            new Upgrade(4, 148, new Features(TR_1000_10000))),
+    PRODUCT_220(220, "LIFX Luna", new Features(TR_1500_9000, BUTTONS, COLOR, MATRIX), //
+            new Upgrade(4, 148, new Features(TR_1000_10000))),
+    PRODUCT_221(221, "LIFX Round Spot", new Features(TR_1500_9000, COLOR, MATRIX), //
+            new Upgrade(4, 148, new Features(TR_1000_10000))),
+    PRODUCT_222(222, "LIFX Round Path", new Features(TR_1500_9000, COLOR, MATRIX), //
+            new Upgrade(4, 148, new Features(TR_1000_10000))),
+    PRODUCT_223(223, "LIFX Downlight", new Features(TR_1500_9000, COLOR), //
+            new Upgrade(4, 148, new Features(TR_1000_10000))),
+    PRODUCT_224(224, "LIFX Downlight", new Features(TR_1500_9000, COLOR), //
+            new Upgrade(4, 148, new Features(TR_1000_10000))),
+    PRODUCT_225(225, "LIFX PAR38", new Features(TR_1500_9000, COLOR), //
+            new Upgrade(4, 148, new Features(TR_1000_10000))),
+    PRODUCT_226(226, "LIFX Dimmer Switch", new Features(BUTTONS, RELAYS)),
+    PRODUCT_229(229, "LIFX Round Path", new Features(TR_1000_10000, COLOR, MATRIX)),
+    PRODUCT_265(265, "LIFX Ceiling 13\"", new Features(TR_1500_9000, COLOR, MATRIX), //
+            new Upgrade(4, 148, new Features(TR_1000_10000))),
+    PRODUCT_266(266, "LIFX Ceiling 13\"", new Features(TR_1500_9000, COLOR, MATRIX), //
+            new Upgrade(4, 148, new Features(TR_1000_10000))),
+    PRODUCT_267(267, "LIFX Mirror", new Features(TR_1500_9000, BUTTONS, COLOR, MATRIX), //
+            new Upgrade(4, 200, new Features(TR_1000_10000))),
+    PRODUCT_268(268, "LIFX Mirror", new Features(TR_1500_9000, BUTTONS, COLOR, MATRIX), //
+            new Upgrade(4, 148, new Features(TR_1000_10000))),
+    PRODUCT_300(300, "LIFX Everyday Outdoor Permanent", new Features(TR_2700_6500, COLOR, MULTIZONE));
 
     /**
      * Enumerates the product features.
@@ -241,6 +337,11 @@ public enum LifxProduct {
         NONE(0, 0),
 
         /**
+         * 1000-10000K
+         */
+        TR_1000_10000(1000, 10000),
+
+        /**
          * 1500-4000K
          */
         TR_1500_4000(1500, 4000),
@@ -264,6 +365,11 @@ public enum LifxProduct {
          * 2100-2100K
          */
         TR_2100_2100(2100, 2100),
+
+        /**
+         * 2200-2200K
+         */
+        TR_2200_2200(2200, 2200),
 
         /**
          * 2200-6500K
@@ -507,6 +613,6 @@ public enum LifxProduct {
     }
 
     public boolean isLight() {
-        return !features.hasFeature(Feature.BUTTONS) && !features.hasFeature(Feature.RELAYS);
+        return features.getTemperatureRange() != NONE;
     }
 }

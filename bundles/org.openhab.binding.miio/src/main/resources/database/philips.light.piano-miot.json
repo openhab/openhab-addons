@@ -1,0 +1,595 @@
+{
+	"deviceMapping": {
+		"id": [
+			"philips.light.piano"
+		],
+		"propertyMethod": "get_properties",
+		"maxProperties": 4,
+		"channels": [
+			{
+				"property": "on",
+				"siid": 2,
+				"piid": 1,
+				"friendlyName": "Power",
+				"channel": "on",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "switch"
+			},
+			{
+				"property": "mode",
+				"siid": 2,
+				"piid": 10,
+				"friendlyName": "Scene",
+				"channel": "mode",
+				"type": "Number",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 2,
+					"step": 1,
+					"pattern": "%.0f",
+					"options": [
+						{
+							"value": "0",
+							"label": "None"
+						},
+						{
+							"value": "1",
+							"label": "Focus"
+						},
+						{
+							"value": "2",
+							"label": "Eye Protection"
+						}
+					]
+				},
+				"category": "light",
+				"tags": [
+					"Control",
+					"Mode"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"None\",\"1\"\u003d\"Focus\",\"2\"\u003d\"Eye Protection\"]`"
+			},
+			{
+				"property": "brightness",
+				"siid": 2,
+				"piid": 2,
+				"friendlyName": "Brightness",
+				"channel": "brightness",
+				"type": "Dimmer",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "light",
+				"tags": [
+					"Control",
+					"Brightness"
+				]
+			},
+			{
+				"property": "color-temperature",
+				"siid": 2,
+				"piid": 3,
+				"friendlyName": "Color Temperature",
+				"channel": "cct",
+				"type": "Number:Temperature",
+				"unit": "kelvin",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"stateDescription": {
+					"minimum": 2700,
+					"maximum": 5500,
+					"step": 1,
+					"pattern": "%.0f K"
+				},
+				"category": "colorlight"
+			},
+			{
+				"property": "delay",
+				"siid": 4,
+				"piid": 1,
+				"friendlyName": "Delayed Turn-off",
+				"channel": "delay",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch",
+					"Enabled"
+				],
+				"readmeComment": "Turns off the light and the metronome after the delay time."
+			},
+			{
+				"property": "delay-time",
+				"siid": 4,
+				"piid": 2,
+				"friendlyName": "Delayed Turn-off Time",
+				"channel": "delayTime",
+				"type": "Number:Time",
+				"unit": "minutes",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"stateDescription": {
+					"minimum": 1,
+					"maximum": 60,
+					"step": 1,
+					"pattern": "%.0f %unit%"
+				},
+				"category": "time",
+				"tags": [
+					"Setpoint",
+					"Duration"
+				]
+			},
+			{
+				"property": "delay-remain-time",
+				"siid": 4,
+				"piid": 3,
+				"friendlyName": "Delayed Turn-off Remaining Time",
+				"channel": "delayRemainTime",
+				"type": "Number:Time",
+				"unit": "minutes",
+				"refresh": true,
+				"actions": [],
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 60,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"category": "time",
+				"tags": [
+					"Status",
+					"Duration"
+				]
+			},
+			{
+				"property": "metronome-on",
+				"siid": 3,
+				"piid": 10,
+				"friendlyName": "Metronome",
+				"channel": "metronome",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "soundvolume",
+				"tags": [
+					"Switch",
+					"Enabled"
+				]
+			},
+			{
+				"property": "metronome-beat",
+				"siid": 3,
+				"piid": 11,
+				"friendlyName": "Metronome Time Signature",
+				"channel": "metronomeBeat",
+				"type": "Number",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 6,
+					"step": 1,
+					"pattern": "%.0f",
+					"options": [
+						{
+							"value": "0",
+							"label": "-/4"
+						},
+						{
+							"value": "1",
+							"label": "1/4"
+						},
+						{
+							"value": "2",
+							"label": "2/4"
+						},
+						{
+							"value": "3",
+							"label": "3/4"
+						},
+						{
+							"value": "4",
+							"label": "4/4"
+						},
+						{
+							"value": "5",
+							"label": "3/8"
+						},
+						{
+							"value": "6",
+							"label": "6/8"
+						}
+					]
+				},
+				"category": "soundvolume",
+				"tags": [
+					"Setpoint"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"-/4\",\"1\"\u003d\"1/4\",\"2\"\u003d\"2/4\",\"3\"\u003d\"3/4\",\"4\"\u003d\"4/4\",\"5\"\u003d\"3/8\",\"6\"\u003d\"6/8\"]`"
+			},
+			{
+				"property": "metronome-bpm",
+				"siid": 3,
+				"piid": 12,
+				"friendlyName": "Metronome Tempo",
+				"channel": "metronomeBpm",
+				"type": "Number",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"stateDescription": {
+					"minimum": 30,
+					"maximum": 250,
+					"step": 1,
+					"pattern": "%.0f bpm"
+				},
+				"category": "soundvolume",
+				"tags": [
+					"Setpoint"
+				]
+			},
+			{
+				"property": "metronome-volume",
+				"siid": 3,
+				"piid": 13,
+				"friendlyName": "Metronome Volume",
+				"channel": "metronomeVolume",
+				"type": "Dimmer",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "soundvolume",
+				"tags": [
+					"Control",
+					"SoundVolume"
+				]
+			},
+			{
+				"property": "battery-status",
+				"siid": 3,
+				"piid": 15,
+				"friendlyName": "Remote Control Low Battery",
+				"channel": "remoteLowBattery",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [],
+				"stateDescription": {
+					"readOnly": true
+				},
+				"category": "lowbattery",
+				"tags": [
+					"Alarm",
+					"LowBattery"
+				]
+			},
+			{
+				"property": "radar-auto-on",
+				"siid": 3,
+				"piid": 16,
+				"friendlyName": "Sit to Turn On Light",
+				"channel": "seatAutoOn",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch",
+					"Enabled"
+				]
+			},
+			{
+				"property": "radar-auto-off",
+				"siid": 3,
+				"piid": 17,
+				"friendlyName": "Leave to Turn Off",
+				"channel": "seatAutoOff",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch",
+					"Enabled"
+				],
+				"readmeComment": "The light and the metronome turn off when the seat has been left for the set time."
+			},
+			{
+				"property": "radar-auto-off-dur",
+				"siid": 3,
+				"piid": 18,
+				"friendlyName": "Time After Leaving Seat",
+				"channel": "seatAwayTime",
+				"type": "Number:Time",
+				"unit": "minutes",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"stateDescription": {
+					"minimum": 1,
+					"maximum": 30,
+					"step": 1,
+					"pattern": "%.0f %unit%"
+				},
+				"category": "time",
+				"tags": [
+					"Setpoint",
+					"Duration"
+				]
+			},
+			{
+				"property": "auto-sensitivity",
+				"siid": 3,
+				"piid": 30,
+				"friendlyName": "Seat Detection Sensitivity",
+				"channel": "autoSensitivity",
+				"type": "Number",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 2,
+					"step": 1,
+					"pattern": "%.0f",
+					"options": [
+						{
+							"value": "0",
+							"label": "High"
+						},
+						{
+							"value": "1",
+							"label": "Medium"
+						},
+						{
+							"value": "2",
+							"label": "Low"
+						}
+					]
+				},
+				"category": "settings",
+				"tags": [
+					"Control"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"High\",\"1\"\u003d\"Medium\",\"2\"\u003d\"Low\"]`"
+			},
+			{
+				"property": "tuning-reminder-on",
+				"siid": 3,
+				"piid": 19,
+				"friendlyName": "Tuning Reminder",
+				"channel": "tuningReminder",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch",
+					"Enabled"
+				],
+				"readmeComment": "The Mi Home app sends a tuning reminder six months after the last tuning date."
+			},
+			{
+				"property": "tuning-starttime",
+				"siid": 3,
+				"piid": 20,
+				"friendlyName": "Last Tuning Date",
+				"channel": "lastTuningDate",
+				"type": "String",
+				"refresh": true,
+				"actions": [],
+				"stateDescription": {
+					"readOnly": true
+				},
+				"category": "text",
+				"tags": [
+					"Status",
+					"Info"
+				]
+			},
+			{
+				"property": "tuning-time-re",
+				"siid": 3,
+				"piid": 29,
+				"friendlyName": "Tuning Reminder Expired",
+				"channel": "tuningReminderExpired",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [],
+				"stateDescription": {
+					"readOnly": true
+				},
+				"category": "alarm",
+				"tags": [
+					"Alarm"
+				]
+			},
+			{
+				"property": "",
+				"friendlyName": "Actions",
+				"channel": "actions",
+				"type": "String",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "light-toggle",
+							"label": "Light Toggle"
+						},
+						{
+							"value": "brightness-up",
+							"label": "Brightness Up"
+						},
+						{
+							"value": "brightness-down",
+							"label": "Brightness Down"
+						},
+						{
+							"value": "cct-up",
+							"label": "Color Temperature Up"
+						},
+						{
+							"value": "cct-down",
+							"label": "Color Temperature Down"
+						}
+					]
+				},
+				"refresh": false,
+				"actions": [
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 2,
+						"aiid": 1,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "light-toggle"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 3,
+						"aiid": 1,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "brightness-up"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 3,
+						"aiid": 2,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "brightness-down"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 3,
+						"aiid": 3,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "cct-up"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 3,
+						"aiid": 4,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "cct-down"
+								}
+							]
+						}
+					}
+				],
+				"category": "light",
+				"tags": [
+					"Control",
+					"Light"
+				],
+				"readmeComment": "Value mapping `[\"light-toggle\"\u003d\"Light Toggle\",\"brightness-up\"\u003d\"Brightness Up\",\"brightness-down\"\u003d\"Brightness Down\",\"cct-up\"\u003d\"Color Temperature Up\",\"cct-down\"\u003d\"Color Temperature Down\"]`"
+			}
+		],
+		"experimental": true
+	}
+}

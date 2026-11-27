@@ -58,13 +58,12 @@ public class DaliRgbHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        Bridge bridge = getBridge();
-
-        if (bridge == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No bridge configured");
-        } else {
-            updateStatus(ThingStatus.ONLINE);
+        if (getBridge() == null) {
+            logger.debug("Bridge unavailable while initializing Thing: {}", thing.getUID());
+            return;
         }
+
+        updateStatus(ThingStatus.ONLINE);
 
         outputs = List.of(((BigDecimal) this.thing.getConfiguration().get(TARGET_ID_R)).intValueExact(),
                 ((BigDecimal) this.thing.getConfiguration().get(TARGET_ID_G)).intValueExact(),
@@ -151,7 +150,7 @@ public class DaliRgbHandler extends BaseThingHandler {
                 }
             }
         } catch (DaliException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 

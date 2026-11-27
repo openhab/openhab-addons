@@ -76,11 +76,10 @@ public class PlugwiseHAZoneHandler extends PlugwiseHABaseHandler<Location, Plugw
 
     @Override
     protected synchronized void initialize(PlugwiseHAThingConfig config, PlugwiseHABridgeHandler bridgeHandler) {
-        if (thing.getStatus() == INITIALIZING) {
+        if (thing.getStatus() == INITIALIZING || thing.getStatus() == OFFLINE) {
             logger.debug("Initializing Plugwise Home Automation zone handler with config = {}", config);
             if (!config.isValid()) {
-                updateStatus(OFFLINE, CONFIGURATION_ERROR,
-                        "Invalid configuration for Plugwise Home Automation zone handler.");
+                updateStatus(CONFIGURATION_ERROR, "Invalid configuration for Plugwise Home Automation zone handler.");
                 return;
             }
 
@@ -95,10 +94,10 @@ public class PlugwiseHAZoneHandler extends PlugwiseHABaseHandler<Location, Plugw
                         updateStatus(OFFLINE);
                     }
                 } else {
-                    updateStatus(OFFLINE, BRIDGE_OFFLINE);
+                    updateStatus(BRIDGE_OFFLINE);
                 }
             } catch (PlugwiseHAException e) {
-                updateStatus(OFFLINE, COMMUNICATION_ERROR, e.getMessage());
+                updateStatus(COMMUNICATION_ERROR, e.getMessage());
             }
         }
     }

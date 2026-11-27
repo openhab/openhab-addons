@@ -13,12 +13,14 @@
 package org.openhab.binding.bluelink.internal.api;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
+import static com.github.tomakehurst.wiremock.stubbing.Scenario.STARTED;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.openhab.binding.bluelink.internal.MockApiData.*;
 import static org.openhab.core.library.unit.SIUnits.CELSIUS;
 
 import java.time.Instant;
 import java.time.ZoneId;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
 import javax.measure.quantity.Length;
@@ -38,6 +40,7 @@ import org.openhab.core.library.types.PointType;
 import org.openhab.core.library.types.QuantityType;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
+import com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
 
@@ -76,8 +79,8 @@ public class BluelinkApiCATest {
     @Test
     void testGetVehicleStatus() throws Exception {
         final String baseUrl = "http://localhost:" + WIREMOCK_SERVER.port();
-        final AbstractBluelinkApi<?> api = new BluelinkApiCA(HTTP_CLIENT, Brand.KIA, baseUrl, timeZoneProvider,
-                TEST_USERNAME, TEST_PASSWORD, null);
+        final AbstractBluelinkApi<?> api = new BluelinkApiCA(HTTP_CLIENT, Brand.KIA, Map.of(), baseUrl,
+                timeZoneProvider, TEST_USERNAME, TEST_PASSWORD, null);
         assertTrue(api.login());
 
         final IVehicle vehicle = new Vehicle("123", "VIN1234", "Car", IVehicle.EngineType.EV, "EV9", 2022);
@@ -136,5 +139,168 @@ public class BluelinkApiCATest {
         final var lastUpdate = aLastUpdate.get();
         assertNotNull(lastUpdate);
         assertEquals(Instant.parse("2025-12-18T04:09:28Z"), lastUpdate);
+    }
+
+    @Test
+    void testGetVehicles() throws Exception {
+        stubFor(post(urlEqualTo("/vhcllst")).willReturn(json("""
+                {"responseHeader": {"responseCode": 0},
+                 "result": {"vehicles": [{"vehicleId": "123", "vin": "VIN1234", "nickName": "Car",
+                                          "modelName": "IONIQ 5", "modelYear": "2023", "fuelKindCode": "E"}]}}
+                """)));
+        final BluelinkApiCA api = new BluelinkApiCA(HTTP_CLIENT, Brand.HYUNDAI, Map.of(),
+                "http://localhost:" + WIREMOCK_SERVER.port(), timeZoneProvider, TEST_USERNAME, TEST_PASSWORD, null);
+
+        final var vehicles = api.getVehicles();
+
+        assertEquals(1, vehicles.size());
+        assertEquals("VIN1234", vehicles.getFirst().vin());
+        assertEquals(IVehicle.EngineType.EV, vehicles.getFirst().engineType());
+    }
+
+    @Test
+    void testExpiredTokenLogsInAgain() throws Exception {
+        final String user = "expired@example.com";
+        stubFor(post(urlEqualTo("/v2/login")).withRequestBody(matchingJsonPath("$.loginId", equalTo(user)))
+                .willReturn(json(TOKEN_RESPONSE_CA)));
+        stubFor(post(urlEqualTo("/lstvhclsts")).inScenario("expired").whenScenarioStateIs(STARTED).willReturn(json("""
+                {"responseHeader": {"responseCode": 1},
+                 "error": {"errorCode": "7403", "errorDesc": "Your authentication has expired."}}
+                """)).willSetStateTo("renewed"));
+        final BluelinkApiCA api = new BluelinkApiCA(HTTP_CLIENT, Brand.HYUNDAI, Map.of(),
+                "http://localhost:" + WIREMOCK_SERVER.port(), timeZoneProvider, user, TEST_PASSWORD, null);
+        final IVehicle vehicle = new Vehicle("123", "VIN1234", "Car", IVehicle.EngineType.EV, "IONIQ 5", 2023);
+
+        assertTrue(api.getVehicleStatus(vehicle, false, new NoOpCallback()));
+
+        verify(2, postRequestedFor(urlEqualTo("/v2/login"))
+                .withRequestBody(matchingJsonPath("$.loginId", equalTo(user))));
+    }
+
+    @Test
+    void testValidTokenIsNotReplaced() throws Exception {
+        final String user = "once@example.com";
+        stubFor(post(urlEqualTo("/v2/login")).withRequestBody(matchingJsonPath("$.loginId", equalTo(user)))
+                .willReturn(json(TOKEN_RESPONSE_CA)));
+        final BluelinkApiCA api = new BluelinkApiCA(HTTP_CLIENT, Brand.HYUNDAI, Map.of(),
+                "http://localhost:" + WIREMOCK_SERVER.port(), timeZoneProvider, user, TEST_PASSWORD, null);
+
+        // a second login would delete the token of the first one
+        assertTrue(api.login());
+        assertTrue(api.login());
+
+        verify(1, postRequestedFor(urlEqualTo("/v2/login"))
+                .withRequestBody(matchingJsonPath("$.loginId", equalTo(user))));
+    }
+
+    @Test
+    void testLoginWithVerificationCode() throws Exception {
+        final String user = "otp@example.com";
+        stubFor(post(urlEqualTo("/v2/login")).withRequestBody(matchingJsonPath("$.loginId", equalTo(user)))
+                .willReturn(json("""
+                        {"responseHeader": {"responseCode": 1},
+                         "error": {"errorCode": "7110", "errorDesc": "OTP required"}}
+                        """)));
+        stubFor(post(urlEqualTo("/mfa/selverifmeth")).willReturn(json("""
+                {"responseHeader": {"responseCode": 0},
+                 "result": {"userInfoUuid": "user-uuid", "emailList": ["%s"]}}
+                """.formatted(user))));
+        stubFor(post(urlEqualTo("/mfa/sendotp"))
+                .withRequestBody(matchingJsonPath("$.userInfoUuid", equalTo("user-uuid"))).willReturn(json("""
+                        {"responseHeader": {"responseCode": 0}, "result": {"otpKey": "otp-key"}}
+                        """)));
+        stubFor(post(urlEqualTo("/mfa/validateotp")).withRequestBody(matchingJsonPath("$.otpNo", equalTo("123456")))
+                .withRequestBody(matchingJsonPath("$.otpKey", equalTo("otp-key"))).willReturn(json("""
+                        {"responseHeader": {"responseCode": 0},
+                         "result": {"verifiedOtp": true, "otpValidationKey": "validation-key"}}
+                        """)));
+        stubFor(post(urlEqualTo("/mfa/genmfatkn"))
+                .withRequestBody(matchingJsonPath("$.otpValidationKey", equalTo("validation-key"))).willReturn(json("""
+                        {"responseHeader": {"responseCode": 0},
+                         "result": {"token": {"accessToken": "verified-token", "expireIn": "3600"}}}
+                        """)));
+
+        final String baseUrl = "http://localhost:" + WIREMOCK_SERVER.port();
+        final BluelinkApiCA api = new BluelinkApiCA(HTTP_CLIENT, Brand.KIA, Map.of("deviceId", "known-device"), baseUrl,
+                timeZoneProvider, user, TEST_PASSWORD, null);
+
+        LoginRejectedException e = assertThrows(LoginRejectedException.class, api::login);
+        assertEquals("@text/account-handler.login.verification-required", e.getStatusDescription());
+        // nothing is sent until the user requests the code
+        assertThrows(LoginRejectedException.class, api::login);
+        verify(0, postRequestedFor(urlEqualTo("/mfa/sendotp")));
+        verify(1, postRequestedFor(urlEqualTo("/v2/login"))
+                .withRequestBody(matchingJsonPath("$.loginId", equalTo(user))));
+
+        assertEquals(user, api.requestVerificationCode());
+        e = assertThrows(LoginRejectedException.class, api::login);
+        assertEquals("@text/account-handler.login.verification-code-sent [\"" + user + "\"]", e.getStatusDescription());
+        verify(1, postRequestedFor(urlEqualTo("/mfa/sendotp")));
+
+        assertTrue(api.verifyCode(" 123456 "));
+
+        assertEquals("verified-token", api.accessToken);
+        verify(postRequestedFor(urlEqualTo("/v2/login")).withHeader("Deviceid", equalTo("known-device")));
+        verify(postRequestedFor(urlEqualTo("/mfa/genmfatkn")).withHeader("Deviceid", equalTo("known-device")));
+        assertEquals("known-device", api.getProperties().get("deviceId"));
+    }
+
+    @Test
+    void testNoVerificationCodeForKnownDevice() throws Exception {
+        final String user = "known@example.com";
+        stubFor(post(urlEqualTo("/v2/login")).withRequestBody(matchingJsonPath("$.loginId", equalTo(user)))
+                .willReturn(json(TOKEN_RESPONSE_CA)));
+        final BluelinkApiCA api = new BluelinkApiCA(HTTP_CLIENT, Brand.HYUNDAI, Map.of(),
+                "http://localhost:" + WIREMOCK_SERVER.port(), timeZoneProvider, user, TEST_PASSWORD, null);
+
+        assertTrue(api.login());
+        assertNull(api.requestVerificationCode());
+        assertFalse(api.verifyCode("123456"));
+
+        api.accessTokenExpiry = Instant.now();
+        assertTrue(api.login());
+        verify(0, postRequestedFor(urlEqualTo("/mfa/selverifmeth"))
+                .withRequestBody(matchingJsonPath("$.userAccount", equalTo(user))));
+    }
+
+    @Test
+    void testLoginReportsInvalidCredentials() {
+        final String user = "wrong@example.com";
+        stubFor(post(urlEqualTo("/v2/login")).withRequestBody(matchingJsonPath("$.loginId", equalTo(user)))
+                .willReturn(json("""
+                        {"responseHeader": {"responseCode": 1},
+                         "error": {"errorCode": "7404", "errorDesc": "Invalid username or password"}}
+                        """)));
+        final BluelinkApiCA api = new BluelinkApiCA(HTTP_CLIENT, Brand.KIA, Map.of(),
+                "http://localhost:" + WIREMOCK_SERVER.port(), timeZoneProvider, user, TEST_PASSWORD, null);
+
+        final LoginRejectedException e = assertThrows(LoginRejectedException.class, api::login);
+        assertEquals(LoginRejectedException.Reason.INVALID_CREDENTIALS, e.getReason());
+    }
+
+    private static class NoOpCallback implements VehicleStatusCallback {
+        @Override
+        public void acceptStatus(final CommonVehicleStatus data) {
+        }
+
+        @Override
+        public void acceptLastUpdateTimestamp(final Instant lastUpdated) {
+        }
+
+        @Override
+        public void acceptSmartKeyBatteryWarning(final boolean smartKeyBattery) {
+        }
+
+        @Override
+        public void acceptLocation(final PointType location) {
+        }
+
+        @Override
+        public void acceptOdometer(final QuantityType<Length> odometer) {
+        }
+    }
+
+    private static ResponseDefinitionBuilder json(final String body) {
+        return aResponse().withStatus(200).withHeader("Content-Type", "application/json").withBody(body);
     }
 }

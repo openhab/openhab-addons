@@ -43,7 +43,7 @@ public abstract class BaseBluetoothDevice extends BluetoothDevice {
     /**
      * Current connection state
      */
-    protected ConnectionState connectionState = ConnectionState.DISCOVERING;
+    protected volatile ConnectionState connectionState = ConnectionState.DISCOVERING;
 
     /**
      * Manufacturer id

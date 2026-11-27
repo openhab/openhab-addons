@@ -28,7 +28,6 @@ import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
-import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
@@ -56,8 +55,7 @@ public class DDWRTRadioThingHandler extends DDWRTBaseHandler<DDWRTRadio, DDWRTRa
     protected boolean initialize(DDWRTRadioConfiguration config) {
         this.config = config;
         if (config.interfaceId.isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.conf-error-no-interfaceid");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.conf-error-no-interfaceid");
             return false;
         }
         // If interfaceId is just the iface name (e.g. "wl0") and parentDeviceMac is set,
@@ -77,7 +75,10 @@ public class DDWRTRadioThingHandler extends DDWRTBaseHandler<DDWRTRadio, DDWRTRa
     @Override
     protected State getChannelState(DDWRTRadio radio, String channelId) {
         return switch (channelId) {
-            case CHANNEL_ENABLED -> OnOffType.from(radio.isEnabled());
+            case CHANNEL_ENABLED -> {
+                Boolean enabled = radio.isEnabled();
+                yield enabled == null ? UnDefType.UNDEF : OnOffType.from(enabled);
+            }
             case CHANNEL_CHANNEL -> new DecimalType(radio.getChannel());
             case CHANNEL_SSID -> radio.getSsid().isEmpty() ? UnDefType.UNDEF : StringType.valueOf(radio.getSsid());
             case CHANNEL_MODE -> radio.getMode().isEmpty() ? UnDefType.UNDEF : StringType.valueOf(radio.getMode());
@@ -100,7 +101,8 @@ public class DDWRTRadioThingHandler extends DDWRTBaseHandler<DDWRTRadio, DDWRTRa
             boolean success = network.setRadioEnabled(radio.getParentDeviceMac(), radio.getIfaceName(), enabled);
             if (success) {
                 logger.debug("Radio {} command sent successfully", radio.getInterfaceId());
-                // State will be updated on next network refresh cycle
+                radio.setEnabled(enabled);
+                updateState(channelUID, onOff);
             } else {
                 logger.warn("Failed to {} radio {}", enabled ? "enable" : "disable", radio.getInterfaceId());
             }

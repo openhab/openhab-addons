@@ -1,0 +1,20 @@
+{
+  "id": 10,
+  "type": "event",
+  "event": {
+    "a": {
+      "number.volume": {
+        "s": "42.0",
+        "a": {
+          "min": 0.0,
+          "max": 100.0,
+          "step": 1.0,
+          "mode": "slider",
+          "friendly_name": "volume"
+        },
+        "c": "01M3201RGF6MRRN2W0QX914JWB",
+        "lc": 1789994787.343088
+      }
+    }
+  }
+}

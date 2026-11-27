@@ -79,19 +79,27 @@ public class MiIoAsyncCommunication {
     private int errorCounter;
     private int timeout;
     private boolean needPing = true;
+    private volatile boolean online;
     private static final int MAX_ERRORS = 3;
     private static final int MAX_ID = 15000;
     private final CloudConnector cloudConnector;
+    private final boolean cloudCommunication;
 
     private ConcurrentLinkedQueue<MiIoSendCommand> concurrentLinkedQueue = new ConcurrentLinkedQueue<>();
 
+    /**
+     * @param cloudCommunication {@code true} when the device is configured to communicate via the cloud. Only the
+     *            configured communication path determines the reported status; cloud requests for a directly
+     *            connected device (e.g. recipes or the RPC channel) do not change it.
+     */
     public MiIoAsyncCommunication(String ip, byte[] token, String did, int id, int timeout,
-            CloudConnector cloudConnector) {
+            CloudConnector cloudConnector, boolean cloudCommunication) {
         this.ip = ip;
         this.token = token;
         this.deviceId = did;
         this.timeout = timeout;
         this.cloudConnector = cloudConnector;
+        this.cloudCommunication = cloudCommunication;
         setId(id);
     }
 
@@ -180,15 +188,23 @@ public class MiIoAsyncCommunication {
                             miIoSendCommand.getCloudServer(), miIoSendCommand);
                     logger.debug("Command {} send via cloudserver {}", miIoSendCommand.getCommandString(),
                             miIoSendCommand.getCloudServer());
-                    updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
+                    if (cloudCommunication) {
+                        updateStatus(ThingStatus.ONLINE);
+                    }
                 } else {
                     String data = miIoSendCommand.getParams().toString();
                     logger.debug("Custom cloud request send to url '{}' with data '{}'", miIoSendCommand.getMethod(),
                             data);
                     decryptedResponse = cloudConnector.sendCloudCommand(miIoSendCommand.getMethod(),
                             miIoSendCommand.getCloudServer(), data);
-                    miIoSendCommand.setResponse(JsonParser.parseString(decryptedResponse).getAsJsonObject());
-                    return miIoSendCommand;
+                    JsonElement cloudResponse = JsonParser.parseString(decryptedResponse);
+                    if (cloudResponse.isJsonObject()) {
+                        miIoSendCommand.setResponse(cloudResponse.getAsJsonObject());
+                        return miIoSendCommand;
+                    }
+                    errorMsg = "Received message is not a JSON object";
+                    logger.debug("{}: {}", errorMsg, decryptedResponse);
+                    return setErrorResponse(miIoSendCommand, errorMsg);
                 }
             }
             // hack due to avoid invalid json errors from some misbehaving device firmwares
@@ -199,12 +215,18 @@ public class MiIoAsyncCommunication {
                 errorMsg = "Received message is not a JSON object ";
             } else {
                 needPing = false;
-                logger.trace("Received  JSON message {}", response.toString());
+                if (logger.isTraceEnabled()) {
+                    logger.trace("Received  JSON message {}", Utils.maskSecrets(response.toString()));
+                }
                 JsonObject resJson = response.getAsJsonObject();
                 if (resJson.has("id")) {
                     int id = resJson.get("id").getAsInt();
                     if (id == miIoSendCommand.getId()) {
                         miIoSendCommand.setResponse(response.getAsJsonObject());
+                        if (miIoSendCommand.getCloudServer().isBlank()) {
+                            // a decrypted reply to our own command proves the device is reachable with this token
+                            setOnline();
+                        }
                         return miIoSendCommand;
                     } else {
                         if (id < miIoSendCommand.getId()) {
@@ -221,21 +243,30 @@ public class MiIoAsyncCommunication {
                 }
 
             }
-            logger.debug("{}: {}", errorMsg, decryptedResponse);
+            logger.debug("{}: {}", errorMsg, Utils.sanitizeForLog(decryptedResponse));
         } catch (MiIoCryptoException | IOException e) {
             logger.debug("Send command '{}'  -> {} (Device: {}) gave error {}", miIoSendCommand.getCommandString(), ip,
                     deviceId, e.getMessage());
             errorMsg = e.getMessage();
         } catch (JsonSyntaxException e) {
-            logger.warn("Could not parse '{}' <- {} (Device: {}) gave error {}", decryptedResponse,
-                    miIoSendCommand.getCommandString(), deviceId, e.getMessage());
+            logger.warn("Could not parse '{}' <- {} (Device: {}) gave error {}",
+                    Utils.sanitizeForLog(decryptedResponse), miIoSendCommand.getCommandString(), deviceId,
+                    e.getMessage());
             errorMsg = "Received message is invalid JSON";
         } catch (MiCloudException e) {
             logger.debug("Send command '{}'  -> cloudserver '{}' (Device: {}) gave error {}",
                     miIoSendCommand.getCommandString(), miIoSendCommand.getCloudServer(), deviceId, e.getMessage());
             errorMsg = e.getMessage();
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            // a failing cloud request (e.g. no cloud login) only says something about the device connection when the
+            // device is configured to communicate via the cloud; custom cloud urls are never device communication
+            if (cloudCommunication && !miIoSendCommand.getMethod().startsWith("/")) {
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR);
+            }
         }
+        return setErrorResponse(miIoSendCommand, errorMsg);
+    }
+
+    private MiIoSendCommand setErrorResponse(MiIoSendCommand miIoSendCommand, @Nullable String errorMsg) {
         JsonObject erroResp = new JsonObject();
         erroResp.addProperty("error", errorMsg);
         miIoSendCommand.setResponse(erroResp);
@@ -329,13 +360,15 @@ public class MiIoAsyncCommunication {
         if (errorCounter > 0) {
             errorCounter = 0;
             status = ThingStatusDetail.NONE;
-            updateStatus(ThingStatus.ONLINE, status);
+            updateStatus(ThingStatus.ONLINE);
         }
         if (!connected) {
             pingSuccess();
         }
         String decryptedResponse = new String(MiIoCrypto.decrypt(miIoResponseMsg.getData(), token), "UTF-8").trim();
-        logger.trace("Received response from {}: {}", ip, decryptedResponse);
+        if (logger.isTraceEnabled()) {
+            logger.trace("Received response from {}: {}", ip, Utils.maskSecrets(decryptedResponse));
+        }
         return decryptedResponse;
     }
 
@@ -356,7 +389,7 @@ public class MiIoAsyncCommunication {
         logger.debug("Ping to device '{}' ({}) failed", deviceId, ip);
         connected = false;
         status = ThingStatusDetail.COMMUNICATION_ERROR;
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+        updateStatus(ThingStatusDetail.COMMUNICATION_ERROR);
     }
 
     private void pingSuccess() {
@@ -364,22 +397,43 @@ public class MiIoAsyncCommunication {
         if (!connected) {
             connected = true;
             status = ThingStatusDetail.NONE;
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE);
+            updateStatus(ThingStatus.OFFLINE);
         } else {
             if (ThingStatusDetail.CONFIGURATION_ERROR.equals(status)) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR);
             } else {
                 status = ThingStatusDetail.NONE;
-                updateStatus(ThingStatus.ONLINE, status);
+                updateStatus(ThingStatus.ONLINE);
             }
         }
     }
 
-    private void updateStatus(ThingStatus status, ThingStatusDetail statusDetail) {
+    private void setOnline() {
+        if (!online) {
+            errorCounter = 0;
+            status = ThingStatusDetail.NONE;
+            updateStatus(ThingStatus.ONLINE);
+        }
+    }
+
+    private void updateStatus(ThingStatus status) {
+        online = ThingStatus.ONLINE.equals(status);
         for (MiIoMessageListener listener : listeners) {
-            logger.trace("inform listener {}, data {} from {}", listener, status, statusDetail);
+            logger.trace("inform listener {}, status {}", listener, status);
             try {
-                listener.onStatusUpdated(status, statusDetail);
+                listener.onStatusUpdated(status);
+            } catch (Exception e) {
+                logger.debug("Could not inform listener {}: {}", listener, e.getMessage(), e);
+            }
+        }
+    }
+
+    private void updateStatus(ThingStatusDetail statusDetail) {
+        online = false;
+        for (MiIoMessageListener listener : listeners) {
+            logger.trace("inform listener {}, status detail {}", listener, statusDetail);
+            try {
+                listener.onStatusUpdated(statusDetail);
             } catch (Exception e) {
                 logger.debug("Could not inform listener {}: {}", listener, e.getMessage(), e);
             }

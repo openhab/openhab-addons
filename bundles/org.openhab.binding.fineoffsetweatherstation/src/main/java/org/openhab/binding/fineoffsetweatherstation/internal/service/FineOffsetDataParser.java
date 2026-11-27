@@ -43,6 +43,7 @@ import org.slf4j.LoggerFactory;
  * Class to Convert the protocol data
  *
  * @author Andreas Berger - Initial contribution
+ * @author Christopher Smith - Unidentifiable outdoor units
  */
 @NonNullByDefault
 public class FineOffsetDataParser {
@@ -61,7 +62,11 @@ public class FineOffsetDataParser {
         return null;
     }
 
-    public Map<SensorGatewayBinding, SensorDevice> getRegisteredSensors(byte[] data,
+    /**
+     * @return the paired sensors, or {@code null} if the outdoor unit at index 0 cannot be told apart (WH24 or WH65)
+     *         because {@code isUseWh24} has no answer
+     */
+    public @Nullable Map<SensorGatewayBinding, SensorDevice> getRegisteredSensors(byte[] data,
             Supplier<@Nullable Boolean> isUseWh24) {
         /*
          * Pos | Length | Description
@@ -90,27 +95,28 @@ public class FineOffsetDataParser {
                 logger.debug("unknown sensor (id={}) for index {}", id, data[idx]);
                 continue;
             }
+            if (id == 0xFFFFFFFE || id == 0xFFFFFFFF) {
+                // disabled or still registering: checked first, as the slot at index 0 is listed even without an
+                // outdoor unit and must not require telling a WH24 from a WH65
+                logger.trace("sensor at index {} is {}", data[idx], id == 0xFFFFFFFE ? "disabled" : "registering");
+                continue;
+            }
             SensorGatewayBinding sensorGatewayBinding = null;
             if (sensorCandidates.size() == 1) {
                 sensorGatewayBinding = sensorCandidates.getFirst();
             } else if (sensorCandidates.size() == 2 && data[idx] == 0) {
-                sensorGatewayBinding = Boolean.TRUE.equals(isUseWh24.get()) ? SensorGatewayBinding.WH24
-                        : SensorGatewayBinding.WH65;
+                Boolean useWh24 = isUseWh24.get();
+                if (useWh24 == null) {
+                    // reporting a WH65 for a WH24 would mark the WH24 Thing as gone
+                    return null;
+                }
+                sensorGatewayBinding = useWh24 ? SensorGatewayBinding.WH24 : SensorGatewayBinding.WH65;
             }
             if (sensorGatewayBinding == null) {
                 logger.debug("too many sensor candidates for (id={}) and index {}: {}", id, data[idx],
                         sensorCandidates);
                 continue;
             }
-            switch (id) {
-                case 0xFFFFFFFE:
-                    logger.trace("sensor {} = disabled", sensorGatewayBinding);
-                    continue;
-                case 0xFFFFFFFF:
-                    logger.trace("sensor {} = registering", sensorGatewayBinding);
-                    continue;
-            }
-
             BatteryStatus batteryStatus = sensorGatewayBinding.getBatteryStatus(data[idx + 5]);
             int signal = Utils.toUInt8(data[idx + 6]);
 

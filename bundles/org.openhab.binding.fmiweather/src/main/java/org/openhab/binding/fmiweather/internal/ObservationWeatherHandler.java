@@ -117,8 +117,7 @@ public class ObservationWeatherHandler extends AbstractWeatherHandler {
     public void initialize() {
         fmisid = Objects.toString(getConfig().get(BindingConstants.FMISID), null);
         if (fmisid == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    String.format("%s parameter not set", FMISID));
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, String.format("%s parameter not set", FMISID));
         } else {
             super.initialize();
         }
@@ -178,7 +177,7 @@ public class ObservationWeatherHandler extends AbstractWeatherHandler {
         } catch (FMIUnexpectedResponseException e) {
             // Unexpected (possibly bug) issue with response
             logger.warn("Unexpected response encountered: {}", e.getMessage());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                     String.format("Unexpected API response: %s", e.getMessage()));
         }
     }

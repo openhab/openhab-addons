@@ -9,11 +9,7 @@
 		<description>Access to Tesla Vehicle data via the Teslascope developer API</description>
 		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 		<config-description>
-			<parameter name="apiKey" type="text" required="false">
-				<label>apiKey</label>
-				<description>apiKey provided by Teslascope (Deprecated - use Personal Access Token instead)</description>
-			</parameter>
-			<parameter name="personalAccessToken" type="text" required="false">
+			<parameter name="personalAccessToken" type="text" required="true">
 				<label>Personal Access Token</label>
 				<description>Personal Access Token provided by Teslascope</description>
 			</parameter>
@@ -80,6 +76,7 @@
 			<channel id="location" typeId="location"/>
 			<channel id="min-available-temp" typeId="min-available-temp"/>
 			<channel id="max-available-temp" typeId="max-available-temp"/>
+			<channel id="miles-since-reset" typeId="miles-since-reset"/>
 			<channel id="outside-temp" typeId="outside-temp"/>
 			<channel id="passenger-front-door" typeId="passenger-front-door"/>
 			<channel id="passenger-rear-door" typeId="passenger-rear-door"/>
@@ -93,6 +90,8 @@
 			<channel id="right-temp-direction" typeId="right-temp-direction"/>
 			<channel id="scheduled-charging-pending" typeId="scheduled-charging-pending"/>
 			<channel id="scheduled-charging-start" typeId="scheduled-charging-start"/>
+			<channel id="self-driving-miles-since-reset" typeId="self-driving-miles-since-reset"/>
+			<channel id="self-driving-percentage" typeId="self-driving-percentage"/>
 			<channel id="sentry-mode" typeId="sentry-mode"/>
 			<channel id="shift-state" typeId="shift-state"/>
 			<channel id="side-mirror-heaters" typeId="side-mirror-heaters"/>
@@ -119,7 +118,7 @@
 		</channels>
 
 		<properties>
-			<property name="thingTypeVersion">2</property>
+			<property name="thingTypeVersion">3</property>
 		</properties>
 
 		<representation-property>publicID</representation-property>
@@ -167,8 +166,8 @@
 		<label>Battery Level</label>
 		<description>Vehicle Battery Level</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point>Measurement</point>
+			<property>Power</property>
 		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
@@ -201,8 +200,8 @@
 		<label>Auto Conditioning</label>
 		<description>Turns on auto-conditioning (a/c or heating)</description>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
+			<point>Switch</point>
+			<property>Mode</property>
 		</tags>
 	</channel-type>
 	<channel-type id="battery-range" advanced="true">
@@ -233,8 +232,8 @@
 		<label>Charge Limit SOC</label>
 		<description>Current charging limit of the vehicle, in %</description>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Level</tag>
+			<point>Setpoint</point>
+			<property>Level</property>
 		</tags>
 		<state pattern="%.0f %%"></state>
 	</channel-type>
@@ -243,8 +242,8 @@
 		<label>Charge Limit SOC Min</label>
 		<description>Minimum charging limit of the vehicle, in %</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Level</tag>
+			<point>Status</point>
+			<property>Level</property>
 		</tags>
 		<state pattern="%.0f %%" readOnly="true"></state>
 	</channel-type>
@@ -253,8 +252,8 @@
 		<label>Charge Limit SOC Max</label>
 		<description>Maximum charging limit of the vehicle, in %</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Level</tag>
+			<point>Status</point>
+			<property>Level</property>
 		</tags>
 		<state pattern="%.0f %%" readOnly="true"></state>
 	</channel-type>
@@ -269,8 +268,8 @@
 		<label>Charge Port</label>
 		<description>Open the Charge Port (ON) or indicates the state of the Charge Port (ON/OFF if Open/Closed)</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>OpenState</tag>
+			<point>Status</point>
+			<property>OpenState</property>
 		</tags>
 	</channel-type>
 	<channel-type id="charge-port-latch">
@@ -278,8 +277,8 @@
 		<label>Charge Port Latch</label>
 		<description>Indicates the Charge Port Latch status (ON/OFF if latched/unlatched)</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>OpenState</tag>
+			<point>Status</point>
+			<property>OpenState</property>
 		</tags>
 	</channel-type>
 	<channel-type id="charge-rate" advanced="true">
@@ -293,8 +292,8 @@
 		<label>Charger Current</label>
 		<description>Current actually delivered by the charger</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Current</tag>
+			<point>Measurement</point>
+			<property>Current</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"></state>
 	</channel-type>
@@ -303,8 +302,8 @@
 		<label>Charger Current Requested</label>
 		<description>Current requested from the charger</description>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Current</tag>
+			<point>Setpoint</point>
+			<property>Current</property>
 		</tags>
 		<state pattern="%.1f %unit%"></state>
 	</channel-type>
@@ -313,8 +312,8 @@
 		<label>Charger Current Max</label>
 		<description>Maximum current supported by the charger</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Current</tag>
+			<point>Status</point>
+			<property>Current</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"></state>
 	</channel-type>
@@ -347,8 +346,8 @@
 		<label>Door Lock</label>
 		<description>Lock or unlock the car</description>
 		<tags>
-			<tag>Switch</tag>
-			<tag>LockState</tag>
+			<point>Switch</point>
+			<property>LockState</property>
 		</tags>
 	</channel-type>
 	<channel-type id="driver-rear-door" advanced="true">
@@ -412,8 +411,8 @@
 		<label>Inside Temperature</label>
 		<description>Indicates the inside temperature of the vehicle</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"></state>
 	</channel-type>
@@ -428,8 +427,8 @@
 		<label>At Home?</label>
 		<description>Car located at Home Address</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>GeoLocation</tag>
+			<point>Status</point>
+			<property>GeoLocation</property>
 		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
@@ -438,8 +437,8 @@
 		<label>At Work?</label>
 		<description>Car located at Work Address</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>GeoLocation</tag>
+			<point>Status</point>
+			<property>GeoLocation</property>
 		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
@@ -448,8 +447,8 @@
 		<label>At Favorite?</label>
 		<description>Car located at Address listed in favorites</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>GeoLocation</tag>
+			<point>Status</point>
+			<property>GeoLocation</property>
 		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
@@ -588,8 +587,8 @@
 		<label>Speed</label>
 		<description>Vehicle speed</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Speed</tag>
+			<point>Measurement</point>
+			<property>Speed</property>
 		</tags>
 		<state pattern="%d %unit%" readOnly="true"></state>
 	</channel-type>
@@ -681,5 +680,27 @@
 		<label>Wiper Blade Heater</label>
 		<description>Indicates if the wiper blade heater is switched on</description>
 		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="self-driving-miles-since-reset" advanced="true">
+		<item-type>Number:Length</item-type>
+		<label>Self-Driving Distance</label>
+		<description>Self Driving distance since reset</description>
+		<state pattern="%.1f %unit%" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="miles-since-reset" advanced="true">
+		<item-type>Number:Length</item-type>
+		<label>Driving Distance</label>
+		<description>Driving distance since reset</description>
+		<state pattern="%.1f %unit%" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="self-driving-percentage">
+		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<label>Self-Driving Percentage</label>
+		<description>Percentage of driving that is on FSD</description>
+		<tags>
+			<point>Status</point>
+			<property>Level</property>
+		</tags>
+		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 </thing:thing-descriptions>

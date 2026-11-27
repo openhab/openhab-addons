@@ -70,9 +70,14 @@
 			</parameter>
 			<parameter name="volumeDelta" type="integer" min="1" max="10">
 				<label>Volume Delta</label>
-				<description>How much to change the zone volume for each INCREASE/DECREASE command (in dB)</description>
+				<description>How much to change the zone volume for each INCREASE/DECREASE command (in %)</description>
 				<default>1</default>
 				<advanced>true</advanced>
+			</parameter>
+			<parameter name="audioSink" type="boolean">
+				<label>Register Audio Sink</label>
+				<description>Register an audio sink for this zone, so that announcements can be played on this zone only.</description>
+				<default>false</default>
 			</parameter>
 		</config-description>
 	</thing-type>
@@ -130,8 +135,8 @@
 		<label>Source</label>
 		<description>The audio source that is played</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Channel</tag>
+			<point>Control</point>
+			<property>Channel</property>
 		</tags>
 		<state>
 			<options>

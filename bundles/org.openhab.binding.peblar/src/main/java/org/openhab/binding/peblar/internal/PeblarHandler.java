@@ -74,12 +74,12 @@ class PeblarHandler extends BaseThingHandler {
         final PeblarConfiguration config = getConfigAs(PeblarConfiguration.class);
 
         if (config.hostname.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/addon.peblar.error.configuration.invalid.hostname");
             return;
         }
         if (config.apiToken.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/addon.peblar.error.configuration.invalid.apitoken");
             return;
         }
@@ -225,10 +225,10 @@ class PeblarHandler extends BaseThingHandler {
             runner.run();
         } catch (PeblarApiAuthenticationException e) {
             logger.debug("{}", debugErrorMessage, e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
         } catch (PeblarApiException e) {
             logger.debug("{}", debugErrorMessage, e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 

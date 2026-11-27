@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="philipsair"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-group-type id="controls-ui">
+		<label>Display</label>
+		<channels>
+			<channel id="button-light" typeId="button-light"/>
+			<channel id="light-level" typeId="light-level"/>
+			<channel id="displayed-index" typeId="displayed-index"/>
+		</channels>
+	</channel-group-type>
+	<channel-group-type id="controls-basic">
+		<label>Controls</label>
+		<channels>
+			<channel id="power" typeId="power"/>
+			<channel id="fan-speed" typeId="fan-speed"/>
+			<channel id="mode" typeId="mode"/>
+			<channel id="child-lock" typeId="child-lock"/>
+		</channels>
+	</channel-group-type>
+	<channel-group-type id="controls-adv">
+		<label>Controls</label>
+		<channels>
+			<channel id="power" typeId="power"/>
+			<channel id="fan-speed" typeId="fan-speed"/>
+			<channel id="child-lock" typeId="child-lock"/>
+			<channel id="mode" typeId="mode"/>
+			<channel id="timer" typeId="timer"/>
+			<channel id="timer-remaining" typeId="timer-remaining"/>
+			<channel id="target-humidity" typeId="target-humidity"/>
+			<channel id="function" typeId="function"/>
+		</channels>
+	</channel-group-type>
+	<channel-group-type id="sensors-basic">
+		<label>Sensors</label>
+		<channels>
+			<channel id="pm25" typeId="pm25"/>
+			<channel id="allergen-index" typeId="allergen-index"/>
+			<channel id="air-quality-threshold" typeId="air-quality-threshold"/>
+			<channel id="error-code" typeId="error-code"/>
+		</channels>
+	</channel-group-type>
+	<channel-group-type id="sensors-adv">
+		<label>Sensors</label>
+		<channels>
+			<channel id="pm25" typeId="pm25"/>
+			<channel id="temperature" typeId="temperature"/>
+			<channel id="humidity" typeId="humidity"/>
+			<channel id="water-level" typeId="water-level"/>
+			<channel id="allergen-index" typeId="allergen-index"/>
+			<channel id="air-quality-threshold" typeId="air-quality-threshold"/>
+			<channel id="error-code" typeId="error-code"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="filters">
+		<label>Filters</label>
+		<channels>
+			<channel id="pre-filter-life" typeId="pre-filter-life"/>
+			<channel id="hepa-filter-life" typeId="hepa-filter-life"/>
+			<channel id="carbon-filter-life" typeId="carbon-filter-life"/>
+		</channels>
+	</channel-group-type>
+	<channel-group-type id="filters-wicks">
+		<label>Filters with Wick</label>
+		<channels>
+			<channel id="pre-filter-life" typeId="pre-filter-life"/>
+			<channel id="hepa-filter-life" typeId="hepa-filter-life"/>
+			<channel id="carbon-filter-life" typeId="carbon-filter-life"/>
+			<channel id="wick-filter-life" typeId="wick-filter-life"/>
+		</channels>
+	</channel-group-type>
+
+</thing:thing-descriptions>

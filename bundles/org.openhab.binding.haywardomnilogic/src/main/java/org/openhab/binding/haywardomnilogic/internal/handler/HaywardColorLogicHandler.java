@@ -64,8 +64,7 @@ public class HaywardColorLogicHandler extends HaywardThingHandler {
             }
             updateStatus(ThingStatus.ONLINE);
         } catch (HaywardException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Unable to set ColorLogixHandler StateDescriptions");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Unable to set ColorLogixHandler StateDescriptions");
         }
     }
 
@@ -101,7 +100,11 @@ public class HaywardColorLogicHandler extends HaywardThingHandler {
     public void setStateDescriptions() throws HaywardException {
         List<StateOption> options = new ArrayList<>();
         Bridge bridge = getBridge();
-        if (bridge != null && bridge.getHandler() instanceof HaywardBridgeHandler bridgehandler) {
+        if (bridge == null) {
+            logger.debug("Bridge unavailable for Thing: {}", thing.getUID());
+            return;
+        }
+        if (bridge.getHandler() instanceof HaywardBridgeHandler bridgehandler) {
             // Set Light Shows based on light type
             Channel ch = thing.getChannel(HaywardBindingConstants.CHANNEL_COLORLOGIC_CURRENTSHOW);
             if (ch != null) {
@@ -165,6 +168,10 @@ public class HaywardColorLogicHandler extends HaywardThingHandler {
         List<String> data = new ArrayList<>();
 
         Bridge bridge = getBridge();
+        if (bridge == null) {
+            logger.debug("Bridge unavailable for Thing: {}", thing.getUID());
+            return;
+        }
         if (bridge != null) {
             HaywardBridgeHandler bridgehandler = (HaywardBridgeHandler) bridge.getHandler();
             if (bridgehandler != null) {
@@ -207,7 +214,7 @@ public class HaywardColorLogicHandler extends HaywardThingHandler {
                 }
                 this.updateStatus(ThingStatus.ONLINE);
             } else {
-                this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
+                this.updateStatus(ThingStatus.UNKNOWN);
             }
         }
     }
@@ -225,6 +232,10 @@ public class HaywardColorLogicHandler extends HaywardThingHandler {
         String speed = null;
 
         Bridge bridge = getBridge();
+        if (bridge == null) {
+            logger.debug("Bridge unavailable for Thing: {}", thing.getUID());
+            return;
+        }
         if (bridge != null) {
             HaywardBridgeHandler bridgehandler = (HaywardBridgeHandler) bridge.getHandler();
             if (bridgehandler != null) {
@@ -350,7 +361,7 @@ public class HaywardColorLogicHandler extends HaywardThingHandler {
             } else
 
             {
-                this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
+                this.updateStatus(ThingStatus.UNKNOWN);
             }
         }
     }

@@ -19,8 +19,8 @@ import java.util.Locale;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.ContentResponse;
+import org.eclipse.jetty.client.Request;
 
 /**
  * The {@link ShellyApiResult} wraps up the API result and provides some more information like url, http code, received
@@ -84,8 +84,16 @@ public class ShellyApiResult {
         return httpCode == INTERNAL_SERVER_ERROR_500;
     }
 
-    public boolean isNotCalibrtated() {
-        return response.contains(SHELLY_APIERR_NOT_CALIBRATED);
+    /**
+     * Returns {@code true} when the device response indicates that a calibration run is required.
+     * Covers Gen1 rollers ("Not calibrated!") and Gen2 Pro Dimmers ("Output not calibrated!").
+     */
+    public boolean isNotCalibrated() {
+        return response.toLowerCase(Locale.ROOT).contains("not calibrated");
+    }
+
+    public boolean isHttpTooManyRequests() {
+        return httpCode == TOO_MANY_REQUESTS_429;
     }
 
     public ShellyApiResultBuilder modify() {

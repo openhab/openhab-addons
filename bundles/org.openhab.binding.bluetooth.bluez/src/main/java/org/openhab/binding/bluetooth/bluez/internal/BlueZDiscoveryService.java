@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.bluetooth.bluez.internal;
 
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
@@ -38,6 +39,7 @@ import com.github.hypfvieh.bluetooth.wrapper.BluetoothAdapter;
  * @author Kai Kreuzer - Initial Contribution and API
  * @author Hilbrand Bouwkamp - Moved background scan to actual background method
  * @author Connor Petty - Replaced tinyB with bluezDbus
+ * @author Mark Herwege - Ignore D-Bus objects without adapter address
  *
  */
 @NonNullByDefault
@@ -89,13 +91,26 @@ public class BlueZDiscoveryService extends AbstractDiscoveryService {
         stopBackgroundDiscovery();
         deviceManager.scanForBluetoothAdapters().stream()//
                 .map(this::createDiscoveryResult)//
+                .filter(Objects::nonNull)//
                 .forEach(this::thingDiscovered);
     }
 
-    private DiscoveryResult createDiscoveryResult(BluetoothAdapter adapter) {
+    /**
+     * The bluez-dbus library treats every D-Bus object below /org/bluez as an adapter. BlueZ can expose other objects
+     * there as well, e.g. /org/bluez/test registered by the SAP plugin dummy driver. Reading the address of such an
+     * object returns null. As the address is a required configuration parameter and the representation property, these
+     * objects must not be reported.
+     */
+    private @Nullable DiscoveryResult createDiscoveryResult(BluetoothAdapter adapter) {
+        String address = adapter.getAddress();
+        if (address == null) {
+            logger.debug("Ignoring D-Bus object '{}', it is not a Bluetooth adapter or its address cannot be read",
+                    adapter.getDbusPath());
+            return null;
+        }
         return DiscoveryResultBuilder.create(new ThingUID(BlueZAdapterConstants.THING_TYPE_BLUEZ, getId(adapter)))
                 .withLabel("Bluetooth Interface " + adapter.getName())
-                .withProperty(BlueZAdapterConstants.PROPERTY_ADDRESS, adapter.getAddress())
+                .withProperty(BlueZAdapterConstants.PROPERTY_ADDRESS, address)
                 .withRepresentationProperty(BlueZAdapterConstants.PROPERTY_ADDRESS).build();
     }
 

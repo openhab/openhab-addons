@@ -93,7 +93,6 @@ public abstract class DahuaDoorBaseHandler extends BaseThingHandler implements D
 
     private final PlayStreamServlet playStreamServlet;
     private @Nullable Go2RtcManager go2rtcManager;
-    private @Nullable SipBackchannelRtpRelay sipBackchannelRelay;
     private @Nullable SipClient sipClient;
     private @Nullable Future<?> webRtcStartupJob;
     private @Nullable Future<?> sipStartupJob;
@@ -107,6 +106,7 @@ public abstract class DahuaDoorBaseHandler extends BaseThingHandler implements D
     private final Map<String, Boolean> registrationState = new ConcurrentHashMap<>();
     private final Map<String, SipBackchannelSession> backchannelSessionsByHttpSession = new ConcurrentHashMap<>();
     private static final int SIP_BACKCHANNEL_LISTEN_PORT_OFFSET = 20000;
+    private static final int SIP_AUDIO_INGEST_PORT_OFFSET = 21000;
     private static final long SIP_INVITE_DEDUP_MS = 1500;
     private static final String CALL_SNAP_RING_STATE = "RingState";
     private static final String CALL_SNAP_IDLE_STATE = "IdleState";
@@ -178,7 +178,7 @@ public abstract class DahuaDoorBaseHandler extends BaseThingHandler implements D
     }
 
     public void errorInformer(String msgError) {
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, msgError);
+        updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, msgError);
     }
 
     @Override
@@ -190,20 +190,17 @@ public abstract class DahuaDoorBaseHandler extends BaseThingHandler implements D
 
         // Validate required configuration
         if (localConfig.hostname.isBlank() || localConfig.username.isBlank() || localConfig.password.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.conf-error-missing-credentials");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.conf-error-missing-credentials");
             return;
         }
 
         if (localConfig.snapshotPath.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.conf-error-missing-snapshot-path");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.conf-error-missing-snapshot-path");
             return;
         }
 
         if (localConfig.enableWebRTC && localConfig.go2rtcPath.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.conf-error-missing-go2rtc-path");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.conf-error-missing-go2rtc-path");
             return;
         }
 
@@ -213,10 +210,6 @@ public abstract class DahuaDoorBaseHandler extends BaseThingHandler implements D
 
         client = new DahuaEventClient(localConfig.hostname, localConfig.username, localConfig.password,
                 localConfig.useHttps, this, this::errorInformer);
-
-        if (localConfig.enableWebRTC && localConfig.enableSip) {
-            startSipBackchannelRelay(localConfig);
-        }
 
         if (localConfig.enableWebRTC) {
             startWebRtc(localConfig);
@@ -231,41 +224,6 @@ public abstract class DahuaDoorBaseHandler extends BaseThingHandler implements D
 
         // Set status to UNKNOWN - will be set to ONLINE when first DHIP event is received
         updateStatus(ThingStatus.UNKNOWN);
-    }
-
-    private void startSipBackchannelRelay(DahuaDoorConfiguration cfg) {
-        if (parseSipExtensions(cfg.sipExtension).isEmpty()) {
-            return;
-        }
-        int listenPort = cfg.go2rtcApiPort + SIP_BACKCHANNEL_LISTEN_PORT_OFFSET;
-        if (!isValidPort(listenPort)) {
-            logger.warn(
-                    "SIP backchannel relay port {} is outside valid range (go2rtcApiPort={}, offset={}) - relay disabled",
-                    listenPort, cfg.go2rtcApiPort, SIP_BACKCHANNEL_LISTEN_PORT_OFFSET);
-            return;
-        }
-        SipBackchannelRtpRelay relay = new SipBackchannelRtpRelay(getThing().getUID() + "/default", listenPort, 0);
-        try {
-            relay.start();
-            int sourcePort = relay.getSourcePort();
-            if (!isValidPort(sourcePort)) {
-                relay.stop();
-                logger.warn("SIP backchannel relay source port {} is outside valid range - relay disabled", sourcePort);
-                return;
-            }
-            sipBackchannelRelay = relay;
-        } catch (IOException e) {
-            sipBackchannelRelay = null;
-            logger.warn("Failed to start SIP backchannel RTP relay on 127.0.0.1:{}: {}", listenPort, e.getMessage(), e);
-        }
-    }
-
-    private void stopSipBackchannelRelay() {
-        SipBackchannelRtpRelay relay = sipBackchannelRelay;
-        sipBackchannelRelay = null;
-        if (relay != null) {
-            relay.stop();
-        }
     }
 
     /**
@@ -288,8 +246,9 @@ public abstract class DahuaDoorBaseHandler extends BaseThingHandler implements D
             for (int i = 0; i < extensions.size(); i++) {
                 String extension = extensions.get(i);
                 int backchannelPort = cfg.go2rtcApiPort + SIP_BACKCHANNEL_LISTEN_PORT_OFFSET + i;
+                int audioIngestPort = cfg.enableSip ? cfg.go2rtcApiPort + SIP_AUDIO_INGEST_PORT_OFFSET + i : 0;
                 String streamName = GO2RTC_STREAM_PREFIX + thingUidSafe + "_sip" + i;
-                streamEntries.add(new Go2RtcManager.StreamEntry(streamName, backchannelPort));
+                streamEntries.add(new Go2RtcManager.StreamEntry(streamName, backchannelPort, audioIngestPort));
                 outgoingStreamNames.put(extension, streamName);
             }
         }
@@ -328,8 +287,7 @@ public abstract class DahuaDoorBaseHandler extends BaseThingHandler implements D
                 logger.warn("Failed to start WebRTC streaming for {}: {}", mainStreamName, e.getMessage(), e);
                 if (!disposed && Objects.equals(go2rtcManager, manager)) {
                     updateState(CHANNEL_WEBRTC_URL, UnDefType.UNDEF);
-                    updateStatus(ThingStatus.ONLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "WebRTC startup failed: " + e.getMessage());
+                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "WebRTC startup failed: " + e.getMessage());
                 }
             }
         });
@@ -365,7 +323,6 @@ public abstract class DahuaDoorBaseHandler extends BaseThingHandler implements D
             }
             localManager.stop();
         }
-        stopSipBackchannelRelay();
     }
 
     public void saveSnapshot(byte @Nullable [] buffer) {
@@ -1232,17 +1189,7 @@ public abstract class DahuaDoorBaseHandler extends BaseThingHandler implements D
     protected void handleSIPRegisterResult(JsonObject eventList, JsonObject eventData) {
         if ("Pulse".equals(eventList.get("Action").getAsString())) {
             boolean success = eventData.get("Success").getAsBoolean();
-            DahuaDoorConfiguration localConfig = config;
-            if (success) {
-                logger.debug("Event SIPRegisterResult, Success");
-                DahuaEventClient localClient = client;
-                if (localConfig != null && localConfig.enableWebRTC && localClient != null
-                        && !parseSipExtensions(localConfig.sipExtension).isEmpty()) {
-                    scheduler.submit(localClient::fixAudioCodec);
-                }
-            } else {
-                logger.debug("Event SIPRegisterResult, Failed");
-            }
+            logger.debug("Event SIPRegisterResult, {}", success ? "Success" : "Failed");
         }
     }
 
@@ -1391,7 +1338,8 @@ public abstract class DahuaDoorBaseHandler extends BaseThingHandler implements D
                     String extension = sipExtensions.get(i);
                     int sipPort = cfg.localSipPort + i;
                     int backchannelPort = cfg.go2rtcApiPort + SIP_BACKCHANNEL_LISTEN_PORT_OFFSET + i;
-                    startOutgoingSipClient(cfg, extension, sipPort, backchannelPort, localIp);
+                    int audioIngestPort = cfg.enableWebRTC ? cfg.go2rtcApiPort + SIP_AUDIO_INGEST_PORT_OFFSET + i : 0;
+                    startOutgoingSipClient(cfg, extension, sipPort, backchannelPort, audioIngestPort, localIp);
                 }
 
                 if (outgoingSipClients.isEmpty()) {
@@ -1408,10 +1356,11 @@ public abstract class DahuaDoorBaseHandler extends BaseThingHandler implements D
     }
 
     private void startOutgoingSipClient(DahuaDoorConfiguration cfg, String extension, int sipPort, int backchannelPort,
-            String localIp) {
+            int audioIngestPort, String localIp) {
         SipBackchannelRtpRelay relay = null;
         try {
-            relay = new SipBackchannelRtpRelay(getThing().getUID() + "/" + extension, backchannelPort, 0);
+            relay = new SipBackchannelRtpRelay(getThing().getUID() + "/" + extension, backchannelPort, 0,
+                    audioIngestPort);
             relay.start();
 
             String sipPass = !cfg.sipPassword.isEmpty() ? cfg.sipPassword : cfg.password;
@@ -1476,7 +1425,6 @@ public abstract class DahuaDoorBaseHandler extends BaseThingHandler implements D
         outgoingRelays.values().forEach(SipBackchannelRtpRelay::stop);
         outgoingRelays.clear();
 
-        stopSipBackchannelRelay();
         configuredOutgoingExtensions = List.of();
         sessionToClientId.clear();
         backchannelSessionsByHttpSession.clear();
@@ -1524,9 +1472,21 @@ public abstract class DahuaDoorBaseHandler extends BaseThingHandler implements D
         if (!isValidPort(backchannelBase) || !isValidPort(backchannelMax)) {
             String detail = String.format("Invalid backchannel port range %d-%d (go2rtcApiPort=%d, sipExtensions=%d)",
                     backchannelBase, backchannelMax, cfg.go2rtcApiPort, extensions.size());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, detail);
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, detail);
             logger.warn(detail);
             return false;
+        }
+
+        if (useWebRtcBackchannel && useSipBackchannel) {
+            int ingestBase = cfg.go2rtcApiPort + SIP_AUDIO_INGEST_PORT_OFFSET;
+            int ingestMax = ingestBase + extensions.size() - 1;
+            if (!isValidPort(ingestBase) || !isValidPort(ingestMax)) {
+                String detail = String.format("Invalid audio ingest port range %d-%d (go2rtcApiPort=%d)", ingestBase,
+                        ingestMax, cfg.go2rtcApiPort);
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, detail);
+                logger.warn(detail);
+                return false;
+            }
         }
 
         if (useSipBackchannel) {
@@ -1535,7 +1495,7 @@ public abstract class DahuaDoorBaseHandler extends BaseThingHandler implements D
             if (!isValidPort(sipBase) || !isValidPort(sipMax)) {
                 String detail = String.format("Invalid SIP port range %d-%d (localSipPort=%d, sipExtensions=%d)",
                         sipBase, sipMax, cfg.localSipPort, extensions.size());
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, detail);
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, detail);
                 logger.warn(detail);
                 return false;
             }
@@ -1543,7 +1503,7 @@ public abstract class DahuaDoorBaseHandler extends BaseThingHandler implements D
             if (rangesOverlap(sipBase, sipMax, backchannelBase, backchannelMax)) {
                 String detail = String.format("SIP/backchannel port ranges overlap (sip=%d-%d, backchannel=%d-%d)",
                         sipBase, sipMax, backchannelBase, backchannelMax);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, detail);
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, detail);
                 logger.warn(detail);
                 return false;
             }

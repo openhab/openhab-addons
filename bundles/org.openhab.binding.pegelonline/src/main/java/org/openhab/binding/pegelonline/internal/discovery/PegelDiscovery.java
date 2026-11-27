@@ -16,13 +16,12 @@ import static org.openhab.binding.pegelonline.internal.PegelOnlineBindingConstan
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.api.ContentResponse;
+import org.eclipse.jetty.client.ContentResponse;
 import org.openhab.binding.pegelonline.internal.dto.Station;
 import org.openhab.binding.pegelonline.internal.handler.PegelOnlineHandler;
 import org.openhab.binding.pegelonline.internal.utils.Utils;
@@ -50,7 +49,7 @@ import org.slf4j.LoggerFactory;
 @Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.pegelonline")
 public class PegelDiscovery extends AbstractDiscoveryService implements ThingHandlerService {
     private final Logger logger = LoggerFactory.getLogger(PegelDiscovery.class);
-    private Optional<PegelOnlineHandler> handler = Optional.empty();
+    private @Nullable PegelOnlineHandler handler;
     private PointType homeLocation = UNDEF_LOCATION;
     private HttpClientFactory httpClientFactory;
 
@@ -111,12 +110,12 @@ public class PegelDiscovery extends AbstractDiscoveryService implements ThingHan
     @Override
     public void setThingHandler(ThingHandler thingHandler) {
         if (thingHandler instanceof PegelOnlineHandler pegelOnlineHandler) {
-            handler = Optional.of(pegelOnlineHandler);
+            handler = pegelOnlineHandler;
         }
     }
 
     @Override
     public @Nullable ThingHandler getThingHandler() {
-        return handler.orElse(null);
+        return handler;
     }
 }

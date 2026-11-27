@@ -1,3 +1,4 @@
+export * from "./BridgeCommissioningServer";
 export * from "./CustomColorControlServer";
 export * from "./CustomDoorLockServer";
 export * from "./CustomFanControlServer";

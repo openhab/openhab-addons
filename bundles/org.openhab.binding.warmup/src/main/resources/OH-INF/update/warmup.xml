@@ -10,23 +10,23 @@
 				<label>Fixed Temperature</label>
 			</add-channel>
 			<add-channel id="energyToday">
-				<type>system.electric-energy</type>
+				<type>system:electric-energy</type>
 				<label>Energy Today</label>
 			</add-channel>
 			<add-channel id="airTemperature">
-				<type>system.indoor-temperature</type>
+				<type>system:indoor-temperature</type>
 				<label>Air Temperature</label>
 			</add-channel>
 			<add-channel id="floor1Temperature">
-				<type>system.indoor-temperature</type>
+				<type>system:indoor-temperature</type>
 				<label>Floor 1 Temperature</label>
 			</add-channel>
 			<add-channel id="floor2Temperature">
-				<type>system.indoor-temperature</type>
+				<type>system:indoor-temperature</type>
 				<label>Floor 2 Temperature</label>
 			</add-channel>
 			<update-channel id="currentTemperature">
-				<type>system.indoor-temperature</type>
+				<type>system:indoor-temperature</type>
 			</update-channel>
 		</instruction-set>
 	</thing-type>

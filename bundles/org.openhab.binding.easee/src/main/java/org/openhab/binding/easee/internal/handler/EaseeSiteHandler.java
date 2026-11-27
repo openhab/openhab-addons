@@ -71,7 +71,13 @@ public class EaseeSiteHandler extends BaseBridgeHandler implements EaseeBridgeHa
     public EaseeSiteHandler(Bridge bridge, HttpClient httpClient) {
         super(bridge);
         this.dataPollingJobReference = new AtomicReference<>(null);
-        this.webInterface = new WebInterface(scheduler, this, httpClient, super::updateStatus);
+        this.webInterface = new WebInterface(scheduler, this, httpClient, (status, detail, description) -> {
+            if (detail == ThingStatusDetail.NONE) {
+                super.updateStatus(status, description);
+            } else {
+                super.updateStatus(detail, description);
+            }
+        });
     }
 
     @Override
@@ -80,7 +86,7 @@ public class EaseeSiteHandler extends BaseBridgeHandler implements EaseeBridgeHa
         EaseeConfiguration config = getBridgeConfiguration();
         logger.debug("Easee Site initialized with configuration: {}", config.toString());
 
-        updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, STATUS_WAITING_FOR_LOGIN);
+        updateStatus(ThingStatus.UNKNOWN, STATUS_WAITING_FOR_LOGIN);
         webInterface.start();
         startPolling();
 
@@ -157,10 +163,10 @@ public class EaseeSiteHandler extends BaseBridgeHandler implements EaseeBridgeHa
         switch (status.getHttpCode()) {
             case OK:
             case ACCEPTED:
-                super.updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
+                super.updateStatus(ThingStatus.ONLINE);
                 break;
             default:
-                super.updateStatus(ThingStatus.OFFLINE, Utils.getStatusDetailFromHttpCode(status.getHttpCode()), msg);
+                super.updateStatus(Utils.getStatusDetailFromHttpCode(status.getHttpCode()), msg);
         }
     }
 

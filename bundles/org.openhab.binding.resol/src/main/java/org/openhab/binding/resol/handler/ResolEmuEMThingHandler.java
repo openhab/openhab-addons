@@ -278,9 +278,9 @@ public class ResolEmuEMThingHandler extends ResolBaseThingHandler implements Pro
             } else if (s.contentEquals("connectionState")) {
                 ConnectionState ste = (ConnectionState) evt.getNewValue();
                 if (ste.equals(ConnectionState.CONNECTED)) {
-                    updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
+                    updateStatus(ThingStatus.ONLINE);
                 } else {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, ste.toString());
+                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, ste.toString());
                 }
             }
         }

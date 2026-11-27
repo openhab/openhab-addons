@@ -68,11 +68,11 @@ public class ApiHandler extends BaseBridgeHandler {
     private ApiConfiguration loadAndCheckConfiguration() {
         ApiConfiguration config = getConfigAs(ApiConfiguration.class);
         if (config.getApiKey() == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "apiKey is not set");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "apiKey is not set");
             return null;
         }
         if (config.getApiServer() == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "apiServer is not set");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "apiServer is not set");
             return null;
         }
         return config;

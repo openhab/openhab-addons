@@ -58,7 +58,7 @@ public abstract class BroadlinkBaseHandler extends BaseThingHandler {
                 updateStatus(ThingStatus.ONLINE);
             }
         } catch (IOException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                     "Error while authenticating broadlink device " + thing.getLabel() + ":" + e.getMessage());
         }
     }

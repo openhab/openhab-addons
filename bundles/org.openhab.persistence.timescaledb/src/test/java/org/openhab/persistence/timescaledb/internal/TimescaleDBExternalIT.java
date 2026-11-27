@@ -36,6 +36,8 @@ import com.zaxxer.hikari.HikariDataSource;
  * HOST, PORT, DBNAME, USER, PASSWORD.
  *
  * Run with: mvn test -Dgroups=external-integration -DexcludedGroups="" -pl bundles/org.openhab.persistence.timescaledb
+ *
+ * @author René Ulbricht - Initial contribution
  */
 @Tag("external-integration")
 @NonNullByDefault

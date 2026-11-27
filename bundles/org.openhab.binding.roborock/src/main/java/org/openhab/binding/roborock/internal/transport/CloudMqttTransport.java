@@ -13,11 +13,13 @@
 package org.openhab.binding.roborock.internal.transport;
 
 import java.io.UnsupportedEncodingException;
+import java.security.SecureRandom;
 import java.util.Arrays;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.roborock.internal.RoborockAccountHandler;
+import org.openhab.binding.roborock.internal.RoborockBindingConstants;
 
 /**
  * Cloud-backed command transport using existing MQTT bridge behavior.
@@ -34,6 +36,7 @@ public class CloudMqttTransport implements RoborockCommandTransport {
     private final boolean b01;
     private final boolean q7;
     private final boolean q10;
+    private final SecureRandom secureRandom = new SecureRandom();
 
     public CloudMqttTransport(RoborockAccountHandler accountHandler, String duid, byte[] nonce, boolean b01, boolean q7,
             boolean q10) {
@@ -53,7 +56,15 @@ public class CloudMqttTransport implements RoborockCommandTransport {
             // q10 b01 vacuums don't use RPCCommands.
             return -1;
         }
-        return accountHandler.sendRPCCommand(method, params, duid, localKey, nonce, requestId);
+
+        byte[] requestNonce = this.nonce;
+
+        if (!RoborockBindingConstants.COMMAND_GET_MAP.equals(method)) {
+            requestNonce = new byte[16];
+            secureRandom.nextBytes(requestNonce);
+        }
+
+        return accountHandler.sendRPCCommand(method, params, duid, localKey, requestNonce, requestId);
     }
 
     @Override

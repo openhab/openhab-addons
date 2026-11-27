@@ -30,7 +30,6 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import javax.measure.quantity.Speed;
-import javax.ws.rs.HttpMethod;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -56,7 +55,6 @@ import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
-import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
@@ -64,6 +62,8 @@ import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import jakarta.ws.rs.HttpMethod;
 
 /**
  * The {@link SynopAnalyzerHandler} is responsible for handling commands, which are
@@ -167,7 +167,7 @@ public class SynopAnalyzerHandler extends BaseThingHandler {
                     updateState(channelId, getChannelState(channelId, synop));
                 }
             });
-        }, () -> updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "No Synop message available"));
+        }, () -> updateStatus(ThingStatus.OFFLINE, "No Synop message available"));
     }
 
     private State getChannelState(String channelId, Synop synop) {

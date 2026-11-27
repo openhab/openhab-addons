@@ -19,6 +19,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.samsungtv.internal.protocol.RemoteControllerWebSocket;
@@ -87,10 +88,8 @@ public class SamsungTvAppWatchService implements WatchService.WatchEventListener
     public void processWatchEvent(WatchService.Kind kind, Path path) {
         if (path.endsWith(APPS_FILE) && kind != WatchService.Kind.DELETE) {
             logger.debug("{}: Updating Apps list from FILE {}", host, path);
-            try {
-                @SuppressWarnings("null")
-                List<String> allLines = Files.lines(path).filter(line -> !line.trim().startsWith("#"))
-                        .collect(Collectors.toList());
+            try (Stream<String> lines = Files.lines(path)) {
+                List<String> allLines = lines.filter(line -> !line.trim().startsWith("#")).collect(Collectors.toList());
                 logger.debug("{}: Updated Apps list, {} apps in list", host, allLines.size());
                 remoteControllerWebSocket.updateAppList(allLines);
             } catch (IOException e) {

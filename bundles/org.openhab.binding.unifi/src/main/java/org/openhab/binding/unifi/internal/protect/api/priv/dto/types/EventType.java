@@ -32,6 +32,9 @@ public enum EventType {
     @SerializedName("smartDetectLine")
     SMART_DETECT_LINE,
 
+    @SerializedName("smartDetectLoiterZone")
+    SMART_DETECT_LOITER_ZONE,
+
     @SerializedName("smartAudioDetect")
     SMART_AUDIO_DETECT,
 

@@ -30,6 +30,7 @@ import org.openhab.binding.melcloud.internal.api.dto.ListDevicesResponse;
 import org.openhab.binding.melcloud.internal.api.dto.LoginClientResponse;
 import org.openhab.binding.melcloud.internal.exceptions.MelCloudCommException;
 import org.openhab.binding.melcloud.internal.exceptions.MelCloudLoginException;
+import org.openhab.binding.melcloud.internal.logging.SensitiveDataMasker;
 import org.openhab.core.io.net.http.HttpUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -81,7 +82,12 @@ public class MelCloudConnection {
         try {
             String loginResponse = HttpUtil.executeUrl("POST", LOGIN_URL, null, data, "application/json",
                     TIMEOUT_MILLISECONDS);
-            logger.debug("Login response: {}", loginResponse);
+            // "Name" (the account holder's real name) is a case unique to the login response: the generic
+            // maskJson() deliberately leaves the "name" key alone since it collides with the MELCloud Home API's
+            // unrelated settings-array field name (see SensitiveDataMasker#FULL_REDACT_KEYS), so it is redacted
+            // here explicitly instead.
+            logger.debug("Login response: {}",
+                    SensitiveDataMasker.maskAdditionalField(SensitiveDataMasker.maskJson(loginResponse), "Name"));
             LoginClientResponse resp = Objects.requireNonNull(GSON.fromJson(loginResponse, LoginClientResponse.class));
             if (resp.getErrorId() != null) {
                 String errorMsg = String.format("Login failed, error code: %s", resp.getErrorId());
@@ -102,7 +108,7 @@ public class MelCloudConnection {
         try {
             String response = HttpUtil.executeUrl("GET", DEVICE_LIST_URL, getHeaderProperties(), null, null,
                     TIMEOUT_MILLISECONDS);
-            logger.debug("Device list response: {}", response);
+            logger.debug("Device list response: {}", SensitiveDataMasker.maskJson(response));
             List<Device> devices = new ArrayList<>();
             ListDevicesResponse[] buildings = GSON.fromJson(response, ListDevicesResponse[].class);
             Arrays.asList(buildings).forEach(building -> {
@@ -139,7 +145,7 @@ public class MelCloudConnection {
         String url = DEVICE_URL + String.format("/Get?id=%d&buildingID=%d", deviceId, buildingId);
         try {
             String response = HttpUtil.executeUrl("GET", url, getHeaderProperties(), null, null, TIMEOUT_MILLISECONDS);
-            logger.debug("Device status response: {}", response);
+            logger.debug("Device status response: {}", SensitiveDataMasker.maskJson(response));
             return Objects.requireNonNull(GSON.fromJson(response, DeviceStatus.class));
         } catch (IOException | JsonSyntaxException e) {
             setConnected(false);
@@ -150,12 +156,12 @@ public class MelCloudConnection {
     public DeviceStatus sendDeviceStatus(DeviceStatus deviceStatus) throws MelCloudCommException {
         assertConnected();
         String content = GSON.toJson(deviceStatus, DeviceStatus.class);
-        logger.debug("Sending device status: {}", content);
+        logger.debug("Sending device status: {}", SensitiveDataMasker.maskJson(content));
         InputStream data = new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8));
         try {
             String response = HttpUtil.executeUrl("POST", DEVICE_URL + "/SetAta", getHeaderProperties(), data,
                     "application/json", TIMEOUT_MILLISECONDS);
-            logger.debug("Device status sending response: {}", response);
+            logger.debug("Device status sending response: {}", SensitiveDataMasker.maskJson(response));
             return Objects.requireNonNull(GSON.fromJson(response, DeviceStatus.class));
         } catch (IOException | JsonSyntaxException e) {
             setConnected(false);
@@ -168,7 +174,7 @@ public class MelCloudConnection {
         String url = DEVICE_URL + String.format("/Get?id=%d&buildingID=%d", deviceId, buildingId);
         try {
             String response = HttpUtil.executeUrl("GET", url, getHeaderProperties(), null, null, TIMEOUT_MILLISECONDS);
-            logger.debug("Device heatpump status response: {}", response);
+            logger.debug("Device heatpump status response: {}", SensitiveDataMasker.maskJson(response));
             return Objects.requireNonNull(GSON.fromJson(response, HeatpumpDeviceStatus.class));
         } catch (IOException | JsonSyntaxException e) {
             setConnected(false);
@@ -180,12 +186,12 @@ public class MelCloudConnection {
             throws MelCloudCommException {
         assertConnected();
         String content = GSON.toJson(heatpumpDeviceStatus, HeatpumpDeviceStatus.class);
-        logger.debug("Sending heatpump device status: {}", content);
+        logger.debug("Sending heatpump device status: {}", SensitiveDataMasker.maskJson(content));
         InputStream data = new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8));
         try {
             String response = HttpUtil.executeUrl("POST", DEVICE_URL + "/SetAtw", getHeaderProperties(), data,
                     "application/json", TIMEOUT_MILLISECONDS);
-            logger.debug("Device heatpump status sending response: {}", response);
+            logger.debug("Device heatpump status sending response: {}", SensitiveDataMasker.maskJson(response));
             return Objects.requireNonNull(GSON.fromJson(response, HeatpumpDeviceStatus.class));
         } catch (IOException | JsonSyntaxException e) {
             setConnected(false);

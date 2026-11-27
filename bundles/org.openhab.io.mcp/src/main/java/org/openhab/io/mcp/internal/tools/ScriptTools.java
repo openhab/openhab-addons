@@ -14,6 +14,8 @@ package org.openhab.io.mcp.internal.tools;
 
 import static org.openhab.io.mcp.internal.tools.McpToolUtils.*;
 
+import java.io.InputStream;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -34,6 +36,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.automation.module.script.ScriptEngineContainer;
 import org.openhab.core.automation.module.script.ScriptEngineManager;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
 
 import io.modelcontextprotocol.json.McpJsonMapper;
 import io.modelcontextprotocol.spec.McpSchema;
@@ -50,6 +54,7 @@ import io.modelcontextprotocol.spec.McpSchema.CallToolResult;
  * after the agent has moved on.
  *
  * @author Dan Cunningham - Initial contribution
+ * @author Florian Hotze - Add {@code get_openhabjs_types} tool
  */
 @NonNullByDefault
 public class ScriptTools {
@@ -58,14 +63,19 @@ public class ScriptTools {
     private static final int DEFAULT_TIMEOUT_MS = 5000;
     private static final int MAX_TIMEOUT_MS = 30_000;
 
+    private static final String JSSCRIPTING_BUNDLE_SYMBOLIC_NAME = "org.openhab.automation.jsscripting";
+
     private final ScriptEngineManager scriptEngineManager;
     private final McpJsonMapper jsonMapper;
     private final boolean scriptingEnabled;
+    private final BundleContext bundleContext;
 
-    public ScriptTools(ScriptEngineManager scriptEngineManager, McpJsonMapper jsonMapper, boolean scriptingEnabled) {
+    public ScriptTools(ScriptEngineManager scriptEngineManager, McpJsonMapper jsonMapper, boolean scriptingEnabled,
+            BundleContext bundleContext) {
         this.scriptEngineManager = scriptEngineManager;
         this.jsonMapper = jsonMapper;
         this.scriptingEnabled = scriptingEnabled;
+        this.bundleContext = bundleContext;
     }
 
     /**
@@ -75,10 +85,12 @@ public class ScriptTools {
         Map<String, Object> properties = new LinkedHashMap<>();
         properties.put("script", Map.of("type", "string", "description",
                 "JavaScript source to execute. Has access to openhab-js globals: items, actions, things, rules, cache, time. "
-                        + "The value of the last expression is returned."));
+                        + "The value of the last expression is returned. "
+                        + "Use get_openhabjs_types to retrieve openhab-js type definitions."));
         properties.put("timeoutMs", Map.of("type", "integer", "description",
                 "Max execution time in milliseconds (default 5000, max 30000). Script is interrupted on timeout."));
 
+        // The script can do anything the openhab-js API allows.
         return McpSchema.Tool.builder().name("execute_script").description("""
                 Run a JavaScript snippet immediately against the openHAB scripting engine and return its result. \
                 Primary use: dry-run a script before adding it as a 'script' action in a scheduled rule, so \
@@ -88,7 +100,19 @@ public class ScriptTools {
                 Console output (console.log) goes to the openHAB log, not to this response - return values \
                 explicitly to see them. Requires the openhab-automation-jsscripting add-on.""")
                 .inputSchema(new McpSchema.JsonSchema("object", properties, List.of("script"), null, null, null))
-                .build();
+                .annotations(writeAnnotations(true, false)).build();
+    }
+
+    /**
+     * Returns the {@code get_openhabjs_types} tool schema.
+     */
+    public McpSchema.Tool getGetOpenhabJsTypesTool() {
+        return McpSchema.Tool.builder().name("get_openhabjs_types").description("""
+                Get TypeScript type definitions (openhab.d.ts) for openhab-js. \
+                Useful for discovering available openhab-js APIs, types, and auto-completion when writing scripts. \
+                Requires the openhab-automation-jsscripting add-on.""")
+                .inputSchema(new McpSchema.JsonSchema("object", Map.of(), List.of(), null, null, null))
+                .annotations(readOnlyAnnotations()).build();
     }
 
     /**
@@ -165,6 +189,51 @@ public class ScriptTools {
             }
         } finally {
             scriptEngineManager.removeEngine(identifier);
+        }
+    }
+
+    /**
+     * Handles a {@code get_openhabjs_types} call using OSGi Bundle APIs.
+     */
+    public CallToolResult handleGetOpenhabJsTypes(McpSchema.CallToolRequest request) {
+        if (!scriptingEnabled) {
+            return textResult(jsonMapper, errorPayload("ScriptingDisabled",
+                    "Scripting is disabled. Set the 'enableScripting' option on the MCP server config (io:mcp) to enable.",
+                    null, 0));
+        }
+
+        Bundle jsScriptingBundle = null;
+        for (Bundle bundle : bundleContext.getBundles()) {
+            if (JSSCRIPTING_BUNDLE_SYMBOLIC_NAME.equals(bundle.getSymbolicName())) {
+                jsScriptingBundle = bundle;
+            }
+        }
+        if (jsScriptingBundle == null) {
+            return textResult(jsonMapper,
+                    errorPayload("AddOnNotFound", "Install the openhab-automation-jsscripting add-on.", null, 0));
+        }
+
+        URL entry;
+        try {
+            entry = jsScriptingBundle.getEntry("node_modules/openhab.d.ts");
+        } catch (IllegalStateException e) {
+            return textResult(jsonMapper,
+                    errorPayload("AddOnNotFound", "Install the openhab-automation-jsscripting add-on.", null, 0));
+        }
+        if (entry == null) {
+            return textResult(jsonMapper, errorPayload("FileNotFound",
+                    "openhab.d.ts not found in openhab-automation-jsscripting add-on assets.", null, 0));
+        }
+
+        try (InputStream is = entry.openStream()) {
+            String content = new String(is.readAllBytes(), java.nio.charset.StandardCharsets.UTF_8);
+            Map<String, Object> payload = new LinkedHashMap<>();
+            payload.put("success", true);
+            payload.put("types", content);
+            return textResult(jsonMapper, payload);
+        } catch (Exception e) {
+            return textResult(jsonMapper,
+                    errorPayload("ReadError", "Failed to read openhab.d.ts: " + e.getMessage(), null, 0));
         }
     }
 

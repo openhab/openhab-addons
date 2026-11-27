@@ -13,9 +13,12 @@
 package org.openhab.binding.gemini.internal.hli;
 
 import static org.openhab.binding.gemini.internal.GeminiBindingConstants.BINDING_ID;
+import static org.openhab.binding.gemini.internal.GeminiBindingConstants.DEFAULT_MAX_MODEL_TURNS;
 import static org.openhab.binding.gemini.internal.GeminiBindingConstants.DEFAULT_MODEL;
 import static org.openhab.binding.gemini.internal.GeminiBindingConstants.DEFAULT_SYSTEM_MESSAGE;
+import static org.openhab.binding.gemini.internal.GeminiBindingConstants.DEFAULT_THINKING_LEVEL;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -33,6 +36,7 @@ import org.openhab.binding.gemini.internal.api.GeminiLLMToolCall;
 import org.openhab.binding.gemini.internal.api.dto.GeminiContent;
 import org.openhab.binding.gemini.internal.api.dto.GeminiFunctionCall;
 import org.openhab.binding.gemini.internal.api.dto.GeminiPart;
+import org.openhab.binding.gemini.internal.api.dto.request.GeminiThinkingLevel;
 import org.openhab.binding.gemini.internal.api.dto.response.GeminiCandidate;
 import org.openhab.binding.gemini.internal.api.dto.response.GeminiResponse;
 import org.openhab.core.i18n.TranslationProvider;
@@ -41,11 +45,13 @@ import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.voice.text.HumanLanguageInterpreter;
 import org.openhab.core.voice.text.InterpretationException;
 import org.openhab.core.voice.text.InterpreterContext;
+import org.openhab.core.voice.text.UnrecoverableInterpretationException;
 import org.openhab.core.voice.text.conversation.Conversation;
 import org.openhab.core.voice.text.conversation.ConversationException;
 import org.openhab.core.voice.text.conversation.ConversationRole;
 import org.openhab.core.voice.text.interpreter.llm.LLMTool;
 import org.openhab.core.voice.text.interpreter.llm.LLMToolException;
+import org.openhab.core.voice.text.interpreter.llm.UnrecoverableLLMToolException;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.component.annotations.Activate;
@@ -147,7 +153,8 @@ public class GeminiHLIService implements ThingHandlerService, HumanLanguageInter
         String model = config.model.isBlank() ? DEFAULT_MODEL : config.model;
         try {
             GeminiResponse geminiResponse = apiClient.sendPrompt(model, text, DEFAULT_SYSTEM_MESSAGE,
-                    config.temperature, config.topP, config.maxOutputTokens, config.requestTimeout);
+                    config.temperature, config.topP, config.maxOutputTokens, getThinkingLevel(config),
+                    config.requestTimeout);
             String response = geminiResponse.getFirstText();
             if (response != null) {
                 return response;
@@ -210,11 +217,13 @@ public class GeminiHLIService implements ThingHandlerService, HumanLanguageInter
             systemMessage = systemMessage.trim() + "\n\n" + toolGuidance;
         }
 
+        GeminiThinkingLevel thinkingLevel = getThinkingLevel(config);
+
         int loopCount = 0;
-        final int maxLoops = 10;
+        final int maxLoops = config.maxModelTurns <= 0 ? DEFAULT_MAX_MODEL_TURNS : config.maxModelTurns;
         while (true) {
             if (loopCount >= maxLoops) {
-                logger.warn("Cannot interpret: Tool execution loop limit exceeded (max {} iterations)", maxLoops);
+                logger.warn("Cannot interpret: Model turn limit exceeded (max {} turns)", maxLoops);
                 throw new InterpretationException(
                         getLocalizedMessage(ERROR_KEY_TECHNICAL_PROBLEM, DEFAULT_ERROR_TECHNICAL_PROBLEM, locale));
             }
@@ -222,7 +231,8 @@ public class GeminiHLIService implements ThingHandlerService, HumanLanguageInter
             String model = config.model.isBlank() ? DEFAULT_MODEL : config.model;
             try {
                 GeminiResponse geminiResponse = apiClient.sendPrompt(model, conversation.getMessages(), tools,
-                        systemMessage, config.temperature, config.topP, config.maxOutputTokens, config.requestTimeout);
+                        systemMessage, config.temperature, config.topP, config.maxOutputTokens, thinkingLevel,
+                        config.requestTimeout);
 
                 List<GeminiCandidate> candidates = geminiResponse.candidates();
                 if (candidates == null || candidates.isEmpty()) {
@@ -246,38 +256,48 @@ public class GeminiHLIService implements ThingHandlerService, HumanLanguageInter
                 boolean hasToolCall = false;
                 StringBuilder textBuilder = new StringBuilder();
 
+                // Parallel function calls arrive as multiple functionCall parts of a single model turn.
+                // Each call is stored as its own TOOL_CALL/TOOL_RETURN message pair (a TOOL_RETURN must
+                // directly follow its TOOL_CALL), with parallel=true marking calls 2..N as belonging to
+                // the same model turn as the preceding TOOL_CALL. The API client uses that marker to
+                // replay the batch as one model turn followed by one user turn — Gemini rejects
+                // interleaved single-call replays (e.g. missing thought_signature on split-off calls).
+                List<GeminiLLMToolCall> toolCalls = new ArrayList<>();
                 for (GeminiPart part : parts) {
                     GeminiFunctionCall fc = part.functionCall();
                     if (fc != null) {
                         hasToolCall = true;
                         String toolName = fc.name();
                         Map<String, Object> args = fc.args();
-
-                        GeminiLLMToolCall llmToolCall = new GeminiLLMToolCall(toolName != null ? toolName : "",
-                                args != null ? args : new HashMap<>(), fc.id(), part.thoughtSignature());
-                        try {
-                            conversation.addMessage(ConversationRole.TOOL_CALL, llmToolCall.toJson());
-                        } catch (ConversationException e) {
-                            logger.warn("Cannot interpret: Failed to add TOOL_CALL to conversation", e);
-                            var ex = new InterpretationException(getLocalizedMessage(ERROR_KEY_TECHNICAL_PROBLEM,
-                                    DEFAULT_ERROR_TECHNICAL_PROBLEM, locale));
-                            ex.initCause(e);
-                            throw ex;
-                        }
-
-                        String result = executeTool(tools, toolName, args, locale);
-
-                        try {
-                            conversation.addMessage(ConversationRole.TOOL_RETURN, result);
-                        } catch (ConversationException e) {
-                            logger.warn("Cannot interpret: Failed to add TOOL_RETURN to conversation", e);
-                            var ex = new InterpretationException(getLocalizedMessage(ERROR_KEY_TECHNICAL_PROBLEM,
-                                    DEFAULT_ERROR_TECHNICAL_PROBLEM, locale));
-                            ex.initCause(e);
-                            throw ex;
-                        }
+                        toolCalls.add(new GeminiLLMToolCall(toolName != null ? toolName : "",
+                                args != null ? args : new HashMap<>(), fc.id(), part.thoughtSignature(),
+                                toolCalls.isEmpty() ? null : Boolean.TRUE));
                     } else if (part.text() != null) {
                         textBuilder.append(part.text());
+                    }
+                }
+
+                for (GeminiLLMToolCall toolCall : toolCalls) {
+                    try {
+                        conversation.addMessage(ConversationRole.TOOL_CALL, toolCall.toJson());
+                    } catch (ConversationException e) {
+                        logger.warn("Cannot interpret: Failed to add TOOL_CALL to conversation", e);
+                        var ex = new InterpretationException(getLocalizedMessage(ERROR_KEY_TECHNICAL_PROBLEM,
+                                DEFAULT_ERROR_TECHNICAL_PROBLEM, locale));
+                        ex.initCause(e);
+                        throw ex;
+                    }
+
+                    String result = executeTool(tools, toolCall.tool, toolCall.params, locale);
+
+                    try {
+                        conversation.addMessage(ConversationRole.TOOL_RETURN, result);
+                    } catch (ConversationException e) {
+                        logger.warn("Cannot interpret: Failed to add TOOL_RETURN to conversation", e);
+                        var ex = new InterpretationException(getLocalizedMessage(ERROR_KEY_TECHNICAL_PROBLEM,
+                                DEFAULT_ERROR_TECHNICAL_PROBLEM, locale));
+                        ex.initCause(e);
+                        throw ex;
                     }
                 }
 
@@ -305,7 +325,7 @@ public class GeminiHLIService implements ThingHandlerService, HumanLanguageInter
     }
 
     private String executeTool(Collection<LLMTool> tools, @Nullable String toolName, @Nullable Map<String, Object> args,
-            Locale locale) {
+            Locale locale) throws UnrecoverableInterpretationException {
         if (toolName == null) {
             return "Error: Tool name is null";
         }
@@ -316,8 +336,21 @@ public class GeminiHLIService implements ThingHandlerService, HumanLanguageInter
         }
         try {
             return tool.call(args != null ? args : new HashMap<>(), locale);
+        } catch (UnrecoverableLLMToolException e) {
+            throw new UnrecoverableInterpretationException(
+                    "Execution of tool " + toolName + " failed: " + e.getMessage(), e);
         } catch (LLMToolException e) {
             return "Error: " + e.getMessage();
         }
+    }
+
+    private GeminiThinkingLevel getThinkingLevel(GeminiConfiguration config) {
+        GeminiThinkingLevel thinkingLevel = GeminiThinkingLevel.fromString(config.thinkingLevel);
+        if (thinkingLevel == null) {
+            logger.warn("Invalid thinking level configured: {} (falling back to default {})", config.thinkingLevel,
+                    DEFAULT_THINKING_LEVEL);
+            return DEFAULT_THINKING_LEVEL;
+        }
+        return thinkingLevel;
     }
 }

@@ -30,10 +30,10 @@ import javax.xml.xpath.XPathFactory;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpVersion;
@@ -119,8 +119,7 @@ public class HaywardBridgeHandler extends BaseBridgeHandler {
             clearPolling(pollAlarmsFuture);
 
             if (!(login())) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "Unable to Login to Hayward's server");
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "Unable to Login to Hayward's server");
                 clearPolling(pollTelemetryFuture);
                 clearPolling(pollAlarmsFuture);
                 commFailureCount = 50;
@@ -129,8 +128,7 @@ public class HaywardBridgeHandler extends BaseBridgeHandler {
             }
 
             if (!(getSiteList())) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "Unable to getMSP from Hayward's server");
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "Unable to getMSP from Hayward's server");
                 clearPolling(pollTelemetryFuture);
                 clearPolling(pollAlarmsFuture);
                 commFailureCount = 50;
@@ -139,7 +137,7 @@ public class HaywardBridgeHandler extends BaseBridgeHandler {
             }
 
             if (!(mspConfigUnits())) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                         "Unable to getMSPConfigUnits from Hayward's server");
                 clearPolling(pollTelemetryFuture);
                 clearPolling(pollAlarmsFuture);
@@ -150,8 +148,7 @@ public class HaywardBridgeHandler extends BaseBridgeHandler {
 
             if (logger.isTraceEnabled()) {
                 if (!(getApiDef())) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "Unable to getApiDef from Hayward's server");
+                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "Unable to getApiDef from Hayward's server");
                     clearPolling(pollTelemetryFuture);
                     clearPolling(pollAlarmsFuture);
                     commFailureCount = 50;
@@ -174,8 +171,7 @@ public class HaywardBridgeHandler extends BaseBridgeHandler {
                 initAlarmPolling(1);
             }
         } catch (HaywardException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
-                    "scheduledInitialize exception: " + e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "scheduledInitialize exception: " + e.getMessage());
             clearPolling(pollTelemetryFuture);
             clearPolling(pollAlarmsFuture);
             commFailureCount = 50;
@@ -434,14 +430,16 @@ public class HaywardBridgeHandler extends BaseBridgeHandler {
 
     private Request sendRequestBuilder(String url, HttpMethod method) {
         return this.httpClient.newRequest(url).agent("NextGenForIPhone/16565 CFNetwork/887 Darwin/17.0.0")
-                .method(method).header(HttpHeader.ACCEPT_LANGUAGE, "en-us").header(HttpHeader.ACCEPT, "*/*")
-                .header(HttpHeader.ACCEPT_ENCODING, "gzip, deflate").version(HttpVersion.HTTP_1_1)
-                .header(HttpHeader.CONNECTION, "keep-alive").header(HttpHeader.HOST, "www.haywardomnilogic.com:80")
-                .timeout(10, TimeUnit.SECONDS);
+                .method(method).headers(h -> {
+                    h.add(HttpHeader.ACCEPT_LANGUAGE, "en-us");
+                    h.add(HttpHeader.ACCEPT, "*/*");
+                    h.add(HttpHeader.ACCEPT_ENCODING, "gzip, deflate");
+                    h.add(HttpHeader.CONNECTION, "keep-alive");
+                    h.add(HttpHeader.HOST, "www.haywardomnilogic.com:80");
+                }).version(HttpVersion.HTTP_1_1).timeout(10, TimeUnit.SECONDS);
     }
 
     public synchronized String httpXmlResponse(String urlParameters) throws HaywardException, InterruptedException {
-        String urlParameterslength = Integer.toString(urlParameters.length());
         String statusMessage;
 
         if (logger.isTraceEnabled()) {
@@ -453,8 +451,7 @@ public class HaywardBridgeHandler extends BaseBridgeHandler {
         for (int retry = 0; retry <= 2; retry++) {
             try {
                 ContentResponse httpResponse = sendRequestBuilder(config.endpointUrl, HttpMethod.POST)
-                        .content(new StringContentProvider(urlParameters), "text/xml; charset=utf-8")
-                        .header(HttpHeader.CONTENT_LENGTH, urlParameterslength).send();
+                        .body(new StringRequestContent("text/xml; charset=utf-8", urlParameters)).send();
 
                 int status = httpResponse.getStatus();
                 String xmlResponse = httpResponse.getContentAsString();
@@ -481,13 +478,13 @@ public class HaywardBridgeHandler extends BaseBridgeHandler {
                     return "";
                 }
             } catch (ExecutionException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                         "Unable to resolve host.  Check Hayward hostname and your internet connection. "
                                 + e.getMessage());
                 return "";
             } catch (TimeoutException e) {
                 if (retry >= 2) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                             "Connection Timeout.  Check Hayward hostname and your internet connection. "
                                     + e.getMessage());
                     return "";

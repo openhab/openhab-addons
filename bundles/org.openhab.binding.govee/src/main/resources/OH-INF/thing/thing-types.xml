@@ -15,10 +15,10 @@
 		</channels>
 
 		<properties>
-			<property name="thingTypeVersion">1</property>
+			<property name="thingTypeVersion">2</property>
 		</properties>
 
-		<representation-property>macAddress</representation-property>
+		<representation-property>deviceId</representation-property>
 
 		<config-description-ref uri="thing-type:govee:govee-light"/>
 	</thing-type>

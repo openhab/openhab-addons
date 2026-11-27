@@ -40,7 +40,6 @@ import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
-import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.types.State;
@@ -90,13 +89,13 @@ public class OpenWeatherMapWeatherAndForecastHandler extends AbstractOpenWeather
         boolean configValid = true;
         int newForecastHours = config.forecastHours;
         if (newForecastHours < 0 || newForecastHours > 120 || newForecastHours % 3 != 0) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.conf-error-not-supported-number-of-hours");
             configValid = false;
         }
         int newForecastDays = config.forecastDays;
         if (newForecastDays < 0 || newForecastDays > 16) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.conf-error-not-supported-number-of-days");
             configValid = false;
         }

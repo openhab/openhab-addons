@@ -43,15 +43,13 @@ class TestBridgeStatus {
             ThingStatusDetail.NONE, null);
     private static final ThingStatusInfo UNKNOWN_NONE = new ThingStatusInfo(ThingStatus.UNKNOWN, ThingStatusDetail.NONE,
             null);
-    private static final ThingStatusInfo UNKNOWN_NOT_READY = new ThingStatusInfo(ThingStatus.UNKNOWN,
-            ThingStatusDetail.NOT_YET_READY, null);
     private static final ThingStatusInfo ONLINE = new ThingStatusInfo(ThingStatus.ONLINE, ThingStatusDetail.NONE, null);
     private static final ThingStatusInfo OFFLINE_CONFIG_ERROR = new ThingStatusInfo(ThingStatus.OFFLINE,
             ThingStatusDetail.CONFIGURATION_ERROR, null);
 
     private static Stream<Arguments> testBridgeStatusChanges() {
         return Stream.of(//
-                Arguments.of(UNKNOWN_NONE, INITIALIZING, UNKNOWN_NOT_READY), // Bridge not ready yet
+                Arguments.of(UNKNOWN_NONE, INITIALIZING, UNKNOWN_NONE), // Bridge not ready yet
                 Arguments.of(ONLINE, OFFLINE_CONFIG_ERROR, OFFLINE_CONFIG_ERROR), // Stay at config error, no init shall
                                                                                   // happen
                 Arguments.of(ONLINE, INITIALIZING, ONLINE) // Go from init straight to ONLINE

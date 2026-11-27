@@ -93,17 +93,17 @@ public abstract class AbstractSolaxHandler extends BaseThingHandler {
                         updateStatus(ThingStatus.ONLINE);
                     }
                 } else {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                             SolaxBindingConstants.I18N_KEY_OFFLINE_COMMUNICATION_ERROR_JSON_CANNOT_BE_RETRIEVED);
                 }
             } catch (IOException e) {
                 logger.debug("Exception received while attempting to retrieve data via HTTP", e);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             } catch (SolaxUpdateException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             } catch (JsonSyntaxException jse) {
                 logger.debug("JsonSyntaxException received.", jse);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                         SolaxBindingConstants.I18N_KEY_OFFLINE_CONFIGURATION_ERROR_JSON_CANNOT_BE_PARSED);
             } finally {
                 retrieveDataCallLock.unlock();
@@ -123,9 +123,9 @@ public abstract class AbstractSolaxHandler extends BaseThingHandler {
     }
 
     @Override
-    protected void updateStatus(ThingStatus status, ThingStatusDetail statusDetail, @Nullable String description) {
-        super.updateStatus(status, statusDetail, description);
-        if (status == ThingStatus.OFFLINE && statusDetail == ThingStatusDetail.CONFIGURATION_ERROR) {
+    protected void updateStatus(ThingStatusDetail statusDetail, @Nullable String description) {
+        super.updateStatus(statusDetail, description);
+        if (statusDetail == ThingStatusDetail.CONFIGURATION_ERROR) {
             cancelSchedule();
         }
     }

@@ -5,6 +5,7 @@
 		],
 		"propertyMethod": "get_properties",
 		"maxProperties": 1,
+		"experimental": false,
 		"channels": [
 			{
 				"property": "",
@@ -15,7 +16,7 @@
 					"options": [
 						{
 							"value": "switch-toggle",
-							"label": "Switch Toggle"
+							"label": "Toggle"
 						}
 					]
 				},
@@ -36,14 +37,19 @@
 						}
 					}
 				],
-				"readmeComment": "Value mapping `[\"switch-toggle\"\u003d\"Switch Toggle\"]`"
+				"category": "switch",
+				"tags": [
+					"Control",
+					"Power"
+				],
+				"readmeComment": "Value mapping `[\"switch-toggle\"\u003d\"Toggle\"]`"
 			},
 			{
 				"property": "on",
 				"siid": 2,
 				"piid": 1,
-				"friendlyName": "Switch - Switch Status",
-				"channel": "on",
+				"friendlyName": "Power",
+				"channel": "power",
 				"type": "Switch",
 				"refresh": true,
 				"actions": [
@@ -52,23 +58,34 @@
 						"parameterType": "ONOFFBOOL"
 					}
 				],
-				"category": "switch",
+				"category": "poweroutlet",
 				"tags": [
-					"Switch"
+					"Switch",
+					"Power"
 				]
 			},
 			{
 				"property": "default-power-on-state",
 				"siid": 2,
 				"piid": 2,
-				"friendlyName": "Switch - Default Power On State",
+				"friendlyName": "Power-On State",
 				"channel": "default_power_on_state",
 				"type": "Number",
 				"stateDescription": {
-					"minimum": 0,
-					"maximum": 2,
-					"step": 1,
-					"pattern": "%.0f"
+					"options": [
+						{
+							"value": "0",
+							"label": "Memory"
+						},
+						{
+							"value": "1",
+							"label": "On"
+						},
+						{
+							"value": "2",
+							"label": "Off"
+						}
+					]
 				},
 				"refresh": true,
 				"actions": [
@@ -76,13 +93,19 @@
 						"command": "set_properties",
 						"parameterType": "NUMBER"
 					}
-				]
+				],
+				"category": "settings",
+				"tags": [
+					"Control",
+					"Power"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Memory\",\"1\"\u003d\"On\",\"2\"\u003d\"Off\"]`"
 			},
 			{
 				"property": "fault",
 				"siid": 2,
 				"piid": 3,
-				"friendlyName": "Switch - Device Fault",
+				"friendlyName": "Fault",
 				"channel": "fault",
 				"type": "Number",
 				"stateDescription": {
@@ -104,13 +127,17 @@
 				},
 				"refresh": true,
 				"actions": [],
+				"category": "error",
+				"tags": [
+					"Status"
+				],
 				"readmeComment": "Value mapping `[\"0\"\u003d\"No Faults\",\"1\"\u003d\"Over Temperature\",\"2\"\u003d\"Overload\"]`"
 			},
 			{
 				"property": "physical-controls-locked",
 				"siid": 7,
 				"piid": 1,
-				"friendlyName": "Physical Control Locked - Physical Control Locked",
+				"friendlyName": "Child Lock",
 				"channel": "physical_controls_locked",
 				"type": "Switch",
 				"refresh": true,
@@ -119,49 +146,60 @@
 						"command": "set_properties",
 						"parameterType": "ONOFFBOOL"
 					}
+				],
+				"category": "lock",
+				"tags": [
+					"Switch",
+					"Enabled"
 				]
 			},
 			{
 				"property": "power-consumption",
 				"siid": 11,
 				"piid": 1,
-				"friendlyName": "Power Consumption - Power Consumption",
+				"friendlyName": "Energy Consumption",
 				"channel": "power_consumption",
-				"type": "Number",
+				"type": "Number:Energy",
+				"unit": "kwh",
 				"stateDescription": {
-					"minimum": 0,
-					"maximum": 65535,
-					"step": 1,
-					"pattern": "%.0f",
+					"pattern": "%.2f %unit%",
 					"readOnly": true
 				},
 				"refresh": true,
-				"actions": []
+				"transformation": "/100",
+				"actions": [],
+				"category": "energy",
+				"tags": [
+					"Measurement",
+					"Energy"
+				]
 			},
 			{
 				"property": "electric-power",
 				"siid": 11,
 				"piid": 2,
-				"friendlyName": "Power Consumption - Electric Power",
+				"friendlyName": "Active Power",
 				"channel": "electric_power",
 				"type": "Number:Power",
 				"unit": "watt",
 				"stateDescription": {
-					"minimum": 0,
-					"maximum": 5000,
-					"step": 1,
 					"pattern": "%.0f %unit%",
 					"readOnly": true
 				},
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"category": "energy",
+				"tags": [
+					"Measurement",
+					"Power"
+				]
 			},
 			{
 				"property": "on1",
 				"siid": 13,
 				"piid": 1,
-				"friendlyName": "Indicator Light - Switch Status",
-				"channel": "on1",
+				"friendlyName": "Indicator Light",
+				"channel": "led",
 				"type": "Switch",
 				"refresh": true,
 				"actions": [
@@ -170,16 +208,17 @@
 						"parameterType": "ONOFFBOOL"
 					}
 				],
-				"category": "switch",
+				"category": "light",
 				"tags": [
-					"Switch"
+					"Switch",
+					"Light"
 				]
 			},
 			{
 				"property": "delay",
 				"siid": 14,
 				"piid": 1,
-				"friendlyName": "Delay - Delay",
+				"friendlyName": "Double-Press Countdown",
 				"channel": "delay",
 				"type": "Switch",
 				"refresh": true,
@@ -188,13 +227,18 @@
 						"command": "set_properties",
 						"parameterType": "ONOFFBOOL"
 					}
+				],
+				"category": "time",
+				"tags": [
+					"Switch",
+					"Enabled"
 				]
 			},
 			{
 				"property": "delay-time",
 				"siid": 14,
 				"piid": 2,
-				"friendlyName": "Delay - Delay Time",
+				"friendlyName": "Countdown Time",
 				"channel": "delay_time",
 				"type": "Number:Time",
 				"unit": "seconds",
@@ -208,15 +252,20 @@
 				"actions": [
 					{
 						"command": "set_properties",
-						"parameterType": "STRING"
+						"parameterType": "NUMBER"
 					}
+				],
+				"category": "time",
+				"tags": [
+					"Setpoint",
+					"Duration"
 				]
 			},
 			{
 				"property": "delay-remain-time",
 				"siid": 14,
 				"piid": 3,
-				"friendlyName": "Delay - Delay Remain Time",
+				"friendlyName": "Countdown Remaining Time",
 				"channel": "delay_remain_time",
 				"type": "Number:Time",
 				"unit": "seconds",
@@ -228,14 +277,19 @@
 					"readOnly": true
 				},
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"category": "time",
+				"tags": [
+					"Status",
+					"Duration"
+				]
 			},
 			{
 				"property": "on2",
 				"siid": 4,
 				"piid": 1,
-				"friendlyName": "Charging Protection - On",
-				"channel": "on2",
+				"friendlyName": "Charging Protection",
+				"channel": "charging_protection",
 				"type": "Switch",
 				"refresh": true,
 				"actions": [
@@ -246,36 +300,44 @@
 				],
 				"category": "switch",
 				"tags": [
-					"Switch"
-				]
+					"Switch",
+					"Enabled"
+				],
+				"readmeComment": "When on, the plug switches itself off when the power stays below Charging Protection Threshold for Charging Protection Duration."
 			},
 			{
 				"property": "power",
 				"siid": 4,
 				"piid": 2,
-				"friendlyName": "Charging Protection - Power",
-				"channel": "power",
-				"type": "Number",
+				"friendlyName": "Charging Protection Threshold",
+				"channel": "charging_protection_power",
+				"type": "Number:Power",
+				"unit": "watt",
 				"stateDescription": {
 					"minimum": 2,
 					"maximum": 1200,
 					"step": 1,
-					"pattern": "%.0f"
+					"pattern": "%.0f %unit%"
 				},
 				"refresh": true,
 				"actions": [
 					{
 						"command": "set_properties",
-						"parameterType": "STRING"
+						"parameterType": "NUMBER"
 					}
+				],
+				"category": "energy",
+				"tags": [
+					"Setpoint",
+					"Power"
 				]
 			},
 			{
 				"property": "protect-time",
 				"siid": 4,
 				"piid": 3,
-				"friendlyName": "Charging Protection - Protect Time",
-				"channel": "protect_time",
+				"friendlyName": "Charging Protection Duration",
+				"channel": "charging_protection_time",
 				"type": "Number:Time",
 				"unit": "minutes",
 				"stateDescription": {
@@ -288,16 +350,21 @@
 				"actions": [
 					{
 						"command": "set_properties",
-						"parameterType": "STRING"
+						"parameterType": "NUMBER"
 					}
+				],
+				"category": "time",
+				"tags": [
+					"Setpoint",
+					"Duration"
 				]
 			},
 			{
 				"property": "status",
 				"siid": 5,
 				"piid": 1,
-				"friendlyName": "Cycle - Status",
-				"channel": "status",
+				"friendlyName": "Loop Task",
+				"channel": "loop_task",
 				"type": "Switch",
 				"refresh": true,
 				"actions": [
@@ -305,29 +372,20 @@
 						"command": "set_properties",
 						"parameterType": "ONOFFBOOL"
 					}
-				]
-			},
-			{
-				"property": "data-value",
-				"siid": 5,
-				"piid": 2,
-				"friendlyName": "Cycle - Data Value",
-				"channel": "data_value",
-				"type": "String",
-				"refresh": true,
-				"actions": [
-					{
-						"command": "set_properties",
-						"parameterType": "STRING"
-					}
-				]
+				],
+				"category": "time",
+				"tags": [
+					"Switch",
+					"Enabled"
+				],
+				"readmeComment": "When on, the plug runs the loop task set in the Mi Home app (switches itself on and off)."
 			},
 			{
 				"property": "on3",
 				"siid": 9,
 				"piid": 1,
-				"friendlyName": "Max Power Limit - On",
-				"channel": "on3",
+				"friendlyName": "Max Power Limit",
+				"channel": "max_power_limit",
 				"type": "Switch",
 				"refresh": true,
 				"actions": [
@@ -335,14 +393,20 @@
 						"command": "set_properties",
 						"parameterType": "ONOFFBOOL"
 					}
-				]
+				],
+				"category": "switch",
+				"tags": [
+					"Switch",
+					"Enabled"
+				],
+				"readmeComment": "When on, the plug switches itself off when the power is greater than Max Power."
 			},
 			{
 				"property": "power1",
 				"siid": 9,
 				"piid": 2,
-				"friendlyName": "Max Power Limit - Power",
-				"channel": "power1",
+				"friendlyName": "Max Power",
+				"channel": "max_power",
 				"type": "Number:Power",
 				"unit": "watt",
 				"stateDescription": {
@@ -355,11 +419,15 @@
 				"actions": [
 					{
 						"command": "set_properties",
-						"parameterType": "STRING"
+						"parameterType": "NUMBER"
 					}
+				],
+				"category": "energy",
+				"tags": [
+					"Setpoint",
+					"Power"
 				]
 			}
-		],
-		"experimental": false
+		]
 	}
 }

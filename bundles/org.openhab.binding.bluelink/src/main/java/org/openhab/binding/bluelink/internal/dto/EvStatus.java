@@ -14,6 +14,8 @@ package org.openhab.binding.bluelink.internal.dto;
 
 import java.util.List;
 
+import org.openhab.binding.bluelink.internal.model.PlugType;
+
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -21,26 +23,22 @@ import com.google.gson.annotations.SerializedName;
  *
  * @author Marcus Better - Initial contribution
  */
-public record EvStatus(boolean batteryCharge, int batteryStatus, @SerializedName("batteryPlugin") int rawBatteryPlugin,
-        ReserveChargeInfo reservChargeInfos, List<DrivingDistance> drvDistance, ChargeRemainingTime remainTime2) {
+public record EvStatus(boolean batteryCharge, double batteryStatus,
+        @SerializedName("batteryPlugin") int rawBatteryPlugin, ReserveChargeInfo reservChargeInfos,
+        List<DrivingDistance> drvDistance, ChargeRemainingTime remainTime2) {
 
     public boolean batteryPlugin() {
         return rawBatteryPlugin > 0;
     }
 
     public record ReserveChargeInfo(@SerializedName("targetSOClist") List<TargetSOC> targetSocList) {
-        public enum PlugType {
-            DC,
-            AC
-        }
-
         /**
          * Target state of charge setting.
          */
         public record TargetSOC(@SerializedName("plugType") int rawPlugType,
                 @SerializedName("targetSOClevel") int targetSocLevel, DrivingRange dte) {
             public PlugType plugType() {
-                return rawPlugType == 0 ? PlugType.DC : PlugType.AC;
+                return rawPlugType == PlugType.DC.ordinal() ? PlugType.DC : PlugType.AC;
             }
         }
     }

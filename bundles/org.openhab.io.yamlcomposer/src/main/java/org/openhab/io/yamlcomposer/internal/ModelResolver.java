@@ -42,8 +42,8 @@ import org.snakeyaml.engine.v2.resolver.CoreScalarResolver;
 @NonNullByDefault
 class ModelResolver extends CoreScalarResolver {
     ModelResolver() {
-        super(false);
-        addImplicitResolver(ModelConstructor.DEFERRED_MERGE_TAG, MERGE, "<");
+        super(false); // supportMerge = false. We want to handle merge keys ourselves.
+        super.addImplicitResolver(ModelConstructor.SHALLOW_MERGE_TAG, MERGE, "<");
     }
 
     @Override

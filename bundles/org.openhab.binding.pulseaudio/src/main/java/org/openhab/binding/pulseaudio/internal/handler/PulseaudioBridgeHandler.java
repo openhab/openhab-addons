@@ -82,7 +82,7 @@ public class PulseaudioBridgeHandler extends BaseBridgeHandler implements PulseA
             getClient().connect();
         } catch (IOException e) {
             logger.debug("{}", e.getMessage(), e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                     String.format("Couldn't connect to Pulsaudio server [Host '%s':'%d']: %s", host, port,
                             e.getMessage() != null ? e.getMessage() : ""));
             return;
@@ -163,7 +163,7 @@ public class PulseaudioBridgeHandler extends BaseBridgeHandler implements PulseA
                 pollingJob = scheduler.scheduleWithFixedDelay(this::update, 0, refreshInterval, TimeUnit.MILLISECONDS);
             }
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, String.format(
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, String.format(
                     "Couldn't connect to Pulseaudio server because of missing connection parameters [Host '%s':'%d']",
                     host, port));
         }

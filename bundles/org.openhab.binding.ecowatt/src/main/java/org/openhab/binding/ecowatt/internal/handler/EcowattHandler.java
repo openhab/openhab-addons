@@ -98,8 +98,7 @@ public class EcowattHandler extends BaseThingHandler {
         final String idSecret = config.idSecret;
 
         if (idClient.isBlank() || idSecret.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.config-error-unset-parameters");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.config-error-unset-parameters");
         } else {
             api = new EcowattRestApi(oAuthFactory, httpClient, thing.getUID().getAsString(), idClient, idSecret,
                     config.apiVersion);
@@ -197,8 +196,7 @@ public class EcowattHandler extends BaseThingHandler {
         EcowattApiResponse response = cachedApiResponse.getValue();
         if (response == null || !response.succeeded()) {
             CommunicationException exception = response == null ? null : response.getException();
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    exception == null ? null : exception.getRawMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, exception == null ? null : exception.getRawMessage());
 
             // Invalidate the cache to be sure the next request will trigger the API
             cachedApiResponse.invalidateValue();

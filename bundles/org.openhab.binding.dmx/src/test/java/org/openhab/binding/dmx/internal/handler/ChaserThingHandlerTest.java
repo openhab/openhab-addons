@@ -79,7 +79,6 @@ public class ChaserThingHandlerTest extends AbstractDmxThingTestParent {
     public void testThingStatusNoBridge() {
         thingProperties.put(CONFIG_CHASER_STEPS, TEST_STEPS_INFINITE);
         initialize();
-        // check that thing is offline if no bridge found
         ChaserThingHandler chaserHandlerWithoutBridge = new ChaserThingHandler(chaserThing) {
             @Override
             protected @Nullable Bridge getBridge() {

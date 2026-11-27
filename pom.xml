@@ -63,36 +63,42 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    <!-- Maven 3.10+ sets a default outputTimestamp, which makes bnd keep a literal SNAPSHOT qualifier instead of a
+      build timestamp. A single character disables reproducible builds and restores timestamped snapshot versions. -->
+    <project.build.outputTimestamp>-</project.build.outputTimestamp>
     <oh.java.version>21</oh.java.version>
     <maven.compiler.release>${oh.java.version}</maven.compiler.release>
 
     <ohc.version>5.3.0-SNAPSHOT</ohc.version>
-    <asm.version>9.9.1</asm.version>
-    <bnd.version>7.3.0</bnd.version>
-    <bouncycastle.version>1.85</bouncycastle.version>
-    <commons.codec.version>1.17.1</commons.codec.version>
-    <commons.net.version>3.9.0</commons.net.version>
+    <asm.version>9.11.1</asm.version>
+    <bnd.version>7.5.0</bnd.version>
+    <bouncycastle.version>1.87</bouncycastle.version>
+    <commons.codec.version>1.22.1</commons.codec.version>
+    <commons.net.version>3.13.0</commons.net.version>
     <eea.version>2.4.0</eea.version>
-    <jackson.annotations.version>2.21</jackson.annotations.version>
-    <jackson.version>2.21.4</jackson.version>
-    <jna.version>5.18.1</jna.version>
+    <jackson.annotations.version>2.23</jackson.annotations.version>
+    <jackson.version>2.23.0</jackson.version>
+    <jetty.version>12.1.14</jetty.version>
+    <jinjava.version>2.8.5</jinjava.version>
+    <jna.version>5.19.1</jna.version>
     <json.version>20251224</json.version>
-    <jsoup.version>1.22.2</jsoup.version>
-    <karaf.version>4.4.11</karaf.version>
+    <jsoup.version>1.24.1</jsoup.version>
+    <karaf.version>4.5.0</karaf.version>
     <mockito.version>5.23.0</mockito.version>
-    <netty.version>4.1.133.Final</netty.version>
+    <netty.version>4.1.139.Final</netty.version>
     <graalvm.version>25.0.1</graalvm.version>
+    <groovy.version>6.0.0</groovy.version>
     <okhttp3.version>4.12.0</okhttp3.version>
     <okio.version>3.17.0</okio.version>
-    <gson.version>2.13.2</gson.version>
+    <gson.version>2.15.0</gson.version>
+    <guava.version>33.8.0-jre</guava.version>
     <kotlin.version>1.9.23</kotlin.version>
     <sat.version>0.18.0</sat.version>
-    <slf4j.version>2.0.17</slf4j.version>
+    <slf4j.version>2.0.20</slf4j.version>
     <!-- WireMock testing framework currently uses the wiremock-standalone artifact; investigate wiremock-jetty12 after Jetty migration -->
     <wiremock.version>3.13.2</wiremock.version>
-    <spotless.version>2.44.3</spotless.version>
-    <!-- Eclipse Java formatter version 4.26+ does not check test files -->
-    <spotless.eclipse.version>4.25</spotless.eclipse.version>
+    <spotless.version>3.11.0</spotless.version>
+    <spotless.eclipse.version>4.41</spotless.eclipse.version>
     <spotless.eclipse.wtp.version>4.21.0</spotless.eclipse.wtp.version>
 
     <bnd.importpackage/>
@@ -249,24 +255,6 @@ Import-Package: \
           </executions>
         </plugin>
 
-        <!-- Define the version of the export plugin we use -->
-        <plugin>
-          <groupId>biz.aQute.bnd</groupId>
-          <artifactId>bnd-export-maven-plugin</artifactId>
-          <version>${bnd.version}</version>
-          <configuration>
-            <resolve>true</resolve>
-            <failOnChanges>true</failOnChanges>
-          </configuration>
-          <executions>
-            <execution>
-              <goals>
-                <goal>export</goal>
-              </goals>
-            </execution>
-          </executions>
-        </plugin>
-
         <!-- Define the version of the testing plugin that we use -->
         <plugin>
           <groupId>biz.aQute.bnd</groupId>
@@ -276,24 +264,6 @@ Import-Package: \
             <execution>
               <goals>
                 <goal>testing</goal>
-              </goals>
-            </execution>
-          </executions>
-        </plugin>
-
-        <!-- Define the version of the baseline plugin we use and avoid failing when no baseline jar exists. -->
-        <!-- (for example before the first release) -->
-        <plugin>
-          <groupId>biz.aQute.bnd</groupId>
-          <artifactId>bnd-baseline-maven-plugin</artifactId>
-          <version>${bnd.version}</version>
-          <configuration>
-            <failOnMissing>false</failOnMissing>
-          </configuration>
-          <executions>
-            <execution>
-              <goals>
-                <goal>baseline</goal>
               </goals>
             </execution>
           </executions>
@@ -310,7 +280,7 @@ Import-Package: \
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-compiler-plugin</artifactId>
-          <version>3.15.0</version>
+          <version>3.16.0</version>
           <configuration>
             <compilerId>eclipse</compilerId>
             <compilerArgs>
@@ -326,15 +296,21 @@ Import-Package: \
             <showDeprecation>true</showDeprecation>
           </configuration>
           <dependencies>
+            <!-- plexus compiler API is required as long as maven-compiler-plugin ships version 2.7.0 -->
+            <dependency>
+              <groupId>org.codehaus.plexus</groupId>
+              <artifactId>plexus-compiler-api</artifactId>
+              <version>2.17.1</version>
+            </dependency>
             <dependency>
               <groupId>org.codehaus.plexus</groupId>
               <artifactId>plexus-compiler-eclipse</artifactId>
-              <version>2.16.2</version>
+              <version>2.17.1</version>
             </dependency>
             <dependency>
               <groupId>org.eclipse.jdt</groupId>
               <artifactId>ecj</artifactId>
-              <version>3.46.0</version>
+              <version>3.46.100</version>
             </dependency>
           </dependencies>
         </plugin>
@@ -342,19 +318,19 @@ Import-Package: \
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-deploy-plugin</artifactId>
-          <version>3.1.4</version>
+          <version>3.2.0</version>
         </plugin>
 
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-enforcer-plugin</artifactId>
-          <version>3.6.3</version>
+          <version>3.7.0</version>
         </plugin>
 
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-install-plugin</artifactId>
-          <version>3.1.4</version>
+          <version>3.2.0</version>
         </plugin>
 
         <plugin>
@@ -387,21 +363,6 @@ Import-Package: \
 
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-plugin-plugin</artifactId>
-          <version>3.15.2</version>
-        </plugin>
-
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-release-plugin</artifactId>
-          <version>3.21.0</version>
-          <configuration>
-            <preparationGoals>clean install</preparationGoals>
-          </configuration>
-        </plugin>
-
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-resources-plugin</artifactId>
           <version>3.5.0</version>
         </plugin>
@@ -421,7 +382,7 @@ Import-Package: \
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-surefire-plugin</artifactId>
-          <version>3.5.6</version>
+          <version>3.6.1</version>
           <configuration>
             <argLine>--add-opens java.base/java.lang=ALL-UNNAMED
               --add-opens java.base/java.util=ALL-UNNAMED
@@ -439,13 +400,26 @@ Import-Package: \
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>build-helper-maven-plugin</artifactId>
-          <version>3.6.1</version>
+          <version>3.8.0</version>
+        </plugin>
+
+        <plugin>
+          <groupId>com.github.eirslett</groupId>
+          <artifactId>frontend-maven-plugin</artifactId>
+          <version>2.0.2</version>
+          <configuration>
+            <nodeVersion>v24.18.1</nodeVersion>
+            <npmVersion>11.16.0</npmVersion>
+            <environmentVariables>
+              <NPM_CONFIG_UPDATE_NOTIFIER>false</NPM_CONFIG_UPDATE_NOTIFIER>
+            </environmentVariables>
+          </configuration>
         </plugin>
 
         <plugin>
           <groupId>com.mycila</groupId>
           <artifactId>license-maven-plugin</artifactId>
-          <version>5.1.1</version>
+          <version>5.1.2</version>
           <configuration>
             <basedir>${basedir}</basedir>
             <quiet>false</quiet>
@@ -655,7 +629,16 @@ Import-Package: \
                   <version>3.9.6</version>
                 </requireMavenVersion>
                 <requireJavaVersion>
+                  <version>[21.0,22.0),[25.0,26.0)</version>
+                </requireJavaVersion>
+                <requireJavaVersion>
                   <version>[21.0,22.0)</version>
+                  <message>++ WARNING ++ WARNING ++ WARNING ++ WARNING ++ WARNING ++ WARNING ++
+JDK 25 compiler is in use, generating Java ${oh.java.version} bytecode.
+This is not officially supported.
+Consider using JDK 21 for building and testing.
+++ WARNING ++ WARNING ++ WARNING ++ WARNING ++ WARNING ++ WARNING ++</message>
+                  <level>WARN</level>
                 </requireJavaVersion>
               </rules>
             </configuration>
@@ -863,9 +846,10 @@ Import-Package: \
       </build>
     </profile>
     <profile>
-      <id>j17</id>
+      <!-- generate Java 25 bytecode, requires JDK 25; activate explicitly with -Pj25 -->
+      <id>j25</id>
       <properties>
-        <oh.java.version>17</oh.java.version>
+        <oh.java.version>25</oh.java.version>
         <maven.compiler.release>${oh.java.version}</maven.compiler.release>
       </properties>
     </profile>

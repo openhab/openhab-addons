@@ -22,9 +22,9 @@ import java.util.function.BiFunction;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.Request;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.tacmi.internal.json.obj.IO;
@@ -70,29 +70,29 @@ public class TACmiJsonHandler extends BaseThingHandler {
         final Config config = getConfigAs(Config.class);
 
         if (config.host.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No host configured!");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "No host configured!");
             return;
         }
         if (config.username.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No username configured!");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "No username configured!");
             return;
         }
         if (config.password.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No password configured!");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "No password configured!");
             return;
         }
         if (config.params.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No params configured!");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "No params configured!");
             return;
         }
 
         if (config.nodeId == 0) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "NodeId not configured!");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "NodeId not configured!");
             return;
         }
 
         if (config.pollInterval < 10) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Poll interval to short");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Poll interval to short");
             return;
         }
 
@@ -131,17 +131,17 @@ public class TACmiJsonHandler extends BaseThingHandler {
         try {
             final Request req = httpClient.newRequest(this.url).method(HttpMethod.GET).timeout(10000,
                     TimeUnit.MILLISECONDS);
-            req.header(HttpHeader.ACCEPT_LANGUAGE, "en");
+            req.headers(h -> h.add(HttpHeader.ACCEPT_LANGUAGE, "en"));
             final String authH = this.authHeader;
             if (authH != null) {
-                req.header(HttpHeader.AUTHORIZATION, authH);
+                req.headers(h -> h.add(HttpHeader.AUTHORIZATION, authH));
             }
 
             final ContentResponse httpResponse = req.send();
             if (httpResponse.getStatus() != 200) {
                 logger.warn("Error requesting update {} / {} \n{}", httpResponse.getStatus(), httpResponse.getReason(),
                         httpResponse.getContentAsString());
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR);
                 return;
             }
             logger.trace("Reply:\n{}", httpResponse.getContentAsString());
@@ -149,11 +149,11 @@ public class TACmiJsonHandler extends BaseThingHandler {
             JsonResponse jsonResponse = gson.fromJson(httpResponse.getContentAsString(), JsonResponse.class);
             if (jsonResponse == null) {
                 logger.warn("Response is Empty");
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR);
                 return;
             }
             if (jsonResponse.statusCode != 0) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, jsonResponse.status);
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, jsonResponse.status);
                 return;
             }
             updateChannels(jsonResponse);
@@ -162,7 +162,7 @@ public class TACmiJsonHandler extends BaseThingHandler {
             // binding shutdown is in progress
             updateStatus(ThingStatus.OFFLINE);
         } catch (final Exception e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 

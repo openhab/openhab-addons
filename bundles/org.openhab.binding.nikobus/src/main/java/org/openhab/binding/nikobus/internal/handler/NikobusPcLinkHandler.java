@@ -85,7 +85,7 @@ public class NikobusPcLinkHandler extends BaseBridgeHandler {
 
         String portName = (String) getConfig().get(NikobusBindingConstants.CONFIG_PORT_NAME);
         if (portName == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, "Port must be set!");
+            updateStatus(ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, "Port must be set!");
             return;
         }
 
@@ -291,7 +291,7 @@ public class NikobusPcLinkHandler extends BaseBridgeHandler {
         } catch (IOException e) {
             logger.debug("Sending command failed due {}", e.getMessage(), e);
             connection.close();
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         } finally {
             NikobusCommand.ResponseHandler responseHandler = command.getResponseHandler();
             if (responseHandler == null) {
@@ -340,7 +340,7 @@ public class NikobusPcLinkHandler extends BaseBridgeHandler {
                 connectIfNeeded(connection);
             } catch (IOException e) {
                 connection.close();
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                 return;
             }
         }

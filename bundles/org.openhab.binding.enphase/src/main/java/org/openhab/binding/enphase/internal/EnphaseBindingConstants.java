@@ -21,6 +21,8 @@ import org.openhab.core.thing.ThingTypeUID;
  * used across the whole binding.
  *
  * @author Hilbrand Bouwkamp - Initial contribution
+ * @author Cedric Boon - Added support for detailed inverter stats
+ * @author Cedric Boon - Added support for IQ batteries
  */
 @NonNullByDefault
 public class EnphaseBindingConstants {
@@ -31,6 +33,7 @@ public class EnphaseBindingConstants {
     public static final ThingTypeUID THING_TYPE_ENPHASE_ENVOY = new ThingTypeUID(BINDING_ID, "envoy");
     public static final ThingTypeUID THING_TYPE_ENPHASE_INVERTER = new ThingTypeUID(BINDING_ID, "inverter");
     public static final ThingTypeUID THING_TYPE_ENPHASE_RELAY = new ThingTypeUID(BINDING_ID, "relay");
+    public static final ThingTypeUID THING_TYPE_ENPHASE_BATTERY = new ThingTypeUID(BINDING_ID, "battery");
 
     // Configuration parameters
     public static final String CONFIG_SERIAL_NUMBER = "serialNumber";
@@ -47,6 +50,12 @@ public class EnphaseBindingConstants {
     public static final String ENVOY_WATT_HOURS_LIFETIME = "wattHoursLifetime";
     public static final String ENVOY_WATTS_NOW = "wattsNow";
 
+    // Envoy gateway storage channels
+    public static final String ENVOY_CHANNELGROUP_STORAGE = "storage";
+    public static final String STORAGE_CHANNEL_WATTS_NOW = "wattsNow";
+    public static final String STORAGE_CHANNEL_STATE_OF_CHARGE = "stateOfCharge";
+    public static final String STORAGE_CHANNEL_AVAILABLE_ENERGY = "availableEnergy";
+
     // Device channels
     public static final String DEVICE_CHANNEL_STATUS = "status";
     public static final String DEVICE_CHANNEL_PRODUCING = "producing";
@@ -58,6 +67,10 @@ public class EnphaseBindingConstants {
     public static final String INVERTER_CHANNEL_LAST_REPORT_WATTS = "lastReportWatts";
     public static final String INVERTER_CHANNEL_MAX_REPORT_WATTS = "maxReportWatts";
     public static final String INVERTER_CHANNEL_LAST_REPORT_DATE = "lastReportDate";
+    public static final String INVERTER_CHANNEL_WATT_HOURS_TODAY = "wattHoursToday";
+    public static final String INVERTER_CHANNEL_WATT_HOURS_SEVEN_DAYS = "wattHoursSevenDays";
+    public static final String INVERTER_CHANNEL_WATT_HOURS_LIFETIME = "wattHoursLifetime";
+    public static final String INVERTER_CHANNEL_WATTS_NOW = "wattsNow";
 
     // Relay channels
     public static final String RELAY_CHANNEL_RELAY = "relay";
@@ -66,6 +79,13 @@ public class EnphaseBindingConstants {
     public static final String RELAY_CHANNEL_LINE_3_CONNECTED = "line3Connected";
 
     public static final String RELAY_STATUS_CLOSED = "closed";
+
+    // Battery channels
+    public static final String BATTERY_CHANNEL_STATE_OF_CHARGE = "stateOfCharge";
+    public static final String BATTERY_CHANNEL_TEMPERATURE = "temperature";
+    public static final String BATTERY_CHANNEL_MAX_CELL_TEMPERATURE = "maxCellTemperature";
+    public static final String BATTERY_CHANNEL_CAPACITY = "capacity";
+    public static final String BATTERY_CHANNEL_SLEEP_ENABLED = "sleepEnabled";
 
     // Properties
     public static final String DEVICE_PROPERTY_PART_NUMBER = "partNumber";
@@ -80,6 +100,7 @@ public class EnphaseBindingConstants {
 
     public enum EnphaseDeviceType {
         ACB, // AC Battery
+        ENCHARGE, // IQ Battery
         PSU, // Inverter
         NSRB; // Network system relay controller
 

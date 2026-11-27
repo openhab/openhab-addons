@@ -100,7 +100,7 @@ public class FritzAhaReauthCallback implements FritzAhaCallback {
         if (status != 200 || "".equals(response) || ".".equals(response)) {
             validRequest = false;
             if (retries >= 1) {
-                webIface.authenticate();
+                webIface.invalidateAuthentication();
                 retries--;
                 switch (httpMethod) {
                     case GET:

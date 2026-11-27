@@ -23,8 +23,6 @@ import javax.measure.quantity.Power;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.solaredge.internal.model.AggregateDataResponsePrivateApi.Value;
-import org.openhab.binding.solaredge.internal.model.AggregateDataResponsePrivateApi.ValueAndPercent;
 import org.openhab.binding.solaredge.internal.model.AggregateDataResponsePublicApi.MeterTelemetry;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
@@ -64,11 +62,11 @@ abstract class AbstractDataResponseTransformer {
      */
     private final @Nullable Unit<Energy> determineEnergyUnit(@Nullable String unit) {
         if (unit != null) {
-            if (unit.equals(UNIT_WH)) {
+            if (unit.equalsIgnoreCase(UNIT_WH)) {
                 return Units.WATT_HOUR;
-            } else if (unit.toLowerCase().equals(UNIT_KWH.toLowerCase())) {
+            } else if (unit.equalsIgnoreCase(UNIT_KWH)) {
                 return MetricPrefix.KILO(Units.WATT_HOUR);
-            } else if (unit.equals(UNIT_MWH)) {
+            } else if (unit.equalsIgnoreCase(UNIT_MWH)) {
                 return MetricPrefix.MEGA(Units.WATT_HOUR);
             }
         }
@@ -84,11 +82,11 @@ abstract class AbstractDataResponseTransformer {
      */
     private final @Nullable Unit<Power> determinePowerUnit(@Nullable String unit) {
         if (unit != null) {
-            if (unit.equals(UNIT_W)) {
+            if (unit.equalsIgnoreCase(UNIT_W)) {
                 return Units.WATT;
-            } else if (unit.toLowerCase().equals(UNIT_KW.toLowerCase())) {
+            } else if (unit.equalsIgnoreCase(UNIT_KW)) {
                 return MetricPrefix.KILO(Units.WATT);
-            } else if (unit.equals(UNIT_MW)) {
+            } else if (unit.equalsIgnoreCase(UNIT_MW)) {
                 return MetricPrefix.MEGA(Units.WATT);
             }
         }
@@ -151,18 +149,6 @@ abstract class AbstractDataResponseTransformer {
             Unit<Energy> unit = determineEnergyUnit(unitAsString);
             putQuantityType(targetMap, channel, value, unit);
         }
-    }
-
-    /**
-     * converts the value to {@code QuantityType<Energy>} and puts it into the targetMap. If no value or unit is
-     * provided, UnDefType.UNDEF will be used
-     *
-     * @param targetMap result will be put into this map
-     * @param channel channel to assign the value
-     * @param value the value to convert
-     */
-    protected final void putEnergyType(Map<Channel, State> targetMap, @Nullable Channel channel, Value value) {
-        putEnergyType(targetMap, channel, value.value, value.unit);
     }
 
     /**
@@ -242,18 +228,6 @@ abstract class AbstractDataResponseTransformer {
     protected final void putPercentType(Map<Channel, State> targetMap, @Nullable Channel channel,
             @Nullable Double value) {
         putPercentType(targetMap, channel, value, 1);
-    }
-
-    /**
-     * put value as PercentType into targetMap.
-     *
-     * @param targetMap result will be put into this map
-     * @param channel channel to assign the value
-     * @param value the value to convert
-     */
-    protected final void putPercentType(Map<Channel, State> targetMap, @Nullable Channel channel,
-            ValueAndPercent value) {
-        putPercentType(targetMap, channel, value.percentage, 100);
     }
 
     /**

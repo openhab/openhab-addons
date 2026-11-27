@@ -14,7 +14,6 @@ package org.openhab.binding.webthing.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ChannelUID;
-import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
 
 /**
@@ -38,9 +37,9 @@ public interface ChannelHandler {
      * updates an Item state of a dedicated channel
      *
      * @param channelUID the channel identifier
-     * @param command the state update command
+     * @param state the new channel state
      */
-    void updateItemState(ChannelUID channelUID, Command command);
+    void updateItemState(ChannelUID channelUID, State state);
 
     /**
      * Listener that will be notified, if an Item state is changed

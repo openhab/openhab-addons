@@ -89,7 +89,7 @@ public class EnergyEvseCluster extends BaseCluster {
      * This attribute shall be persisted, for example a temporary power failure should not stop the vehicle from being
      * charged.
      */
-    public Integer chargingEnabledUntil; // 3 epoch-s R V
+    public Long chargingEnabledUntil; // 3 epoch-s R V
     /**
      * Indicates the time, in UTC, that the EVSE will automatically stop current flow from the EV.
      * A null value indicates the EVSE is always enabled for discharging.
@@ -98,7 +98,7 @@ public class EnergyEvseCluster extends BaseCluster {
      * This attribute shall be persisted, for example a temporary power failure should not stop the vehicle from being
      * discharged.
      */
-    public Integer dischargingEnabledUntil; // 4 epoch-s R V
+    public Long dischargingEnabledUntil; // 4 epoch-s R V
     /**
      * Indicates the capacity that the circuit that the EVSE is connected to can provide. It is intended to allow
      * implementation of a self-managed network of EVSEs. It is assumed that the device will allow the setting of such
@@ -151,21 +151,21 @@ public class EnergyEvseCluster extends BaseCluster {
      * starting at 00:30, then the EVSE must compute a random delay between 0-599s and add this to its initial planned
      * start time.
      */
-    public Integer randomizationDelayWindow; // 10 elapsed-s RW VM
+    public Long randomizationDelayWindow; // 10 elapsed-s RW VM
     /**
      * Indicates the time, in UTC, when the EVSE plans to start the next scheduled charge based on the charging
      * preferences.
      * A null value indicates that there is no scheduled charging (for example, the EVSE Mode is set to use Manual mode
      * tag), or that the vehicle is not plugged in with the SupplyState indicating that charging is enabled.
      */
-    public Integer nextChargeStartTime; // 35 epoch-s R V
+    public Long nextChargeStartTime; // 35 epoch-s R V
     /**
      * Indicates the time, in UTC, when the EVSE SHOULD complete the next scheduled charge based on the charging
      * preferences.
      * A null value indicates that there is no scheduled charging (for example, the EVSE Mode is set to use Manual mode
      * tag), or that the vehicle is not plugged in with the SupplyState indicating that charging is enabled.
      */
-    public Integer nextChargeTargetTime; // 36 epoch-s R V
+    public Long nextChargeTargetTime; // 36 epoch-s R V
     /**
      * Indicates the amount of energy that the EVSE is going to attempt to add to the vehicle in the next charging
      * target.
@@ -214,8 +214,8 @@ public class EnergyEvseCluster extends BaseCluster {
      * A null value shall indicate that this is unknown.
      */
     public String vehicleId; // 50 string R V
-    public Integer sessionId; // 64 uint32 R V
-    public Integer sessionDuration; // 65 elapsed-s R V
+    public Long sessionId; // 64 uint32 R V
+    public Long sessionDuration; // 65 elapsed-s R V
     public BigInteger sessionEnergyCharged; // 66 energy-mWh R V
     public BigInteger sessionEnergyDischarged; // 67 energy-mWh R V
 
@@ -227,9 +227,9 @@ public class EnergyEvseCluster extends BaseCluster {
         /**
          * This is the new session ID created after the vehicle is plugged in.
          */
-        public Integer sessionId; // uint32
+        public Long sessionId; // uint32
 
-        public EvConnected(Integer sessionId) {
+        public EvConnected(Long sessionId) {
             this.sessionId = sessionId;
         }
     }
@@ -242,7 +242,7 @@ public class EnergyEvseCluster extends BaseCluster {
         /**
          * This field shall indicate the current value of the SessionID attribute.
          */
-        public Integer sessionId; // uint32
+        public Long sessionId; // uint32
         /**
          * This field shall indicate the value of the State attribute prior to the EV not being detected.
          */
@@ -251,7 +251,7 @@ public class EnergyEvseCluster extends BaseCluster {
          * This field shall indicate the total duration of the session, from the start of the session when the EV was
          * plugged in, until it was unplugged.
          */
-        public Integer sessionDuration; // elapsed-s
+        public Long sessionDuration; // elapsed-s
         /**
          * This field shall indicate the total amount of energy transferred from the EVSE to the EV during the session.
          * Note that if bi-directional charging occurs during the session, then this value shall only include the sum of
@@ -266,8 +266,8 @@ public class EnergyEvseCluster extends BaseCluster {
          */
         public BigInteger sessionEnergyDischarged; // energy-mWh
 
-        public EvNotDetected(Integer sessionId, StateEnum state, Integer sessionDuration,
-                BigInteger sessionEnergyCharged, BigInteger sessionEnergyDischarged) {
+        public EvNotDetected(Long sessionId, StateEnum state, Long sessionDuration, BigInteger sessionEnergyCharged,
+                BigInteger sessionEnergyDischarged) {
             this.sessionId = sessionId;
             this.state = state;
             this.sessionDuration = sessionDuration;
@@ -285,7 +285,7 @@ public class EnergyEvseCluster extends BaseCluster {
         /**
          * This field shall indicate the value of the SessionID attribute at the time the event was generated.
          */
-        public Integer sessionId; // uint32
+        public Long sessionId; // uint32
         /**
          * This field shall indicate the value of the State attribute at the time the event was generated.
          */
@@ -304,7 +304,7 @@ public class EnergyEvseCluster extends BaseCluster {
          */
         public BigInteger maximumDischargeCurrent; // amperage-mA
 
-        public EnergyTransferStarted(Integer sessionId, StateEnum state, BigInteger maximumCurrent,
+        public EnergyTransferStarted(Long sessionId, StateEnum state, BigInteger maximumCurrent,
                 BigInteger maximumDischargeCurrent) {
             this.sessionId = sessionId;
             this.state = state;
@@ -322,7 +322,7 @@ public class EnergyEvseCluster extends BaseCluster {
         /**
          * This field shall indicate the value of the SessionID attribute prior to the energy transfer stopping.
          */
-        public Integer sessionId; // uint32
+        public Long sessionId; // uint32
         /**
          * This field shall indicate the value of the State attribute prior to the energy transfer stopping.
          */
@@ -342,7 +342,7 @@ public class EnergyEvseCluster extends BaseCluster {
          */
         public BigInteger energyDischarged; // energy-mWh
 
-        public EnergyTransferStopped(Integer sessionId, StateEnum state, EnergyTransferStoppedReasonEnum reason,
+        public EnergyTransferStopped(Long sessionId, StateEnum state, EnergyTransferStoppedReasonEnum reason,
                 BigInteger energyTransferred, BigInteger energyDischarged) {
             this.sessionId = sessionId;
             this.state = state;
@@ -366,7 +366,7 @@ public class EnergyEvseCluster extends BaseCluster {
          * This field shall indicate the value of the SessionID attribute prior to the Fault State being changed. A
          * value of null indicates no sessions have occurred before the fault occurred.
          */
-        public Integer sessionId; // uint32
+        public Long sessionId; // uint32
         /**
          * This field shall indicate the value of the State attribute prior to the Fault State being changed.
          */
@@ -380,7 +380,7 @@ public class EnergyEvseCluster extends BaseCluster {
          */
         public FaultStateEnum faultStateCurrentState; // FaultStateEnum
 
-        public Fault(Integer sessionId, StateEnum state, FaultStateEnum faultStatePreviousState,
+        public Fault(Long sessionId, StateEnum state, FaultStateEnum faultStatePreviousState,
                 FaultStateEnum faultStateCurrentState) {
             this.sessionId = sessionId;
             this.state = state;
@@ -730,7 +730,7 @@ public class EnergyEvseCluster extends BaseCluster {
      * This command allows a client to enable the EVSE to charge an EV, and to provide or update the maximum and minimum
      * charge current.
      */
-    public static ClusterCommand enableCharging(Integer chargingEnabledUntil, BigInteger minimumChargeCurrent,
+    public static ClusterCommand enableCharging(Long chargingEnabledUntil, BigInteger minimumChargeCurrent,
             BigInteger maximumChargeCurrent) {
         Map<String, Object> map = new LinkedHashMap<>();
         if (chargingEnabledUntil != null) {
@@ -749,8 +749,7 @@ public class EnergyEvseCluster extends BaseCluster {
      * Upon receipt, this shall allow a client to enable the discharge of an EV, and to provide or update the maximum
      * discharge current.
      */
-    public static ClusterCommand enableDischarging(Integer dischargingEnabledUntil,
-            BigInteger maximumDischargeCurrent) {
+    public static ClusterCommand enableDischarging(Long dischargingEnabledUntil, BigInteger maximumDischargeCurrent) {
         Map<String, Object> map = new LinkedHashMap<>();
         if (dischargingEnabledUntil != null) {
             map.put("dischargingEnabledUntil", dischargingEnabledUntil);

@@ -5,7 +5,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<channel-type id="grundfos-flow">
-		<item-type>Number:VolumetricFlowRate</item-type>
+		<item-type unitHint="m³/h,gal/min">Number:VolumetricFlowRate</item-type>
 		<label>Current Flow</label>
 		<description>Current flow</description>
 		<category>Flow</category>
@@ -13,13 +13,13 @@
 	</channel-type>
 
 	<channel-type id="grundfos-head">
-		<item-type>Number:Length</item-type>
+		<item-type unitHint="m,ft">Number:Length</item-type>
 		<label>Current Head</label>
 		<description>Current head</description>
 		<category>Water</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Water</tag>
+			<point>Measurement</point>
+			<property>Water</property>
 		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
@@ -30,10 +30,22 @@
 		<description>Current pump temperature</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+
+	<channel-type id="grundfos-energy">
+		<item-type unitHint="kWh">Number:Energy</item-type>
+		<label>Total Energy Consumption</label>
+		<description>Accumulated electrical energy consumed by the pump</description>
+		<category>Energy</category>
+		<tags>
+			<point>Measurement</point>
+			<property>Energy</property>
+		</tags>
+		<state readOnly="true" pattern="%.3f %unit%"/>
 	</channel-type>
 
 	<channel-type id="grundfos-motor-speed">
@@ -42,10 +54,84 @@
 		<description>Current rotation of the pump motor</description>
 		<category>Fan</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Frequency</tag>
+			<point>Measurement</point>
+			<property>Frequency</property>
 		</tags>
 		<state readOnly="true" pattern="%.0f rpm"/>
+	</channel-type>
+
+	<channel-type id="grundfos-motor-current">
+		<item-type unitHint="A">Number:ElectricCurrent</item-type>
+		<label>Motor Current</label>
+		<description>Current drawn by the pump motor</description>
+		<category>Energy</category>
+		<tags>
+			<point>Measurement</point>
+			<property>Current</property>
+		</tags>
+		<state readOnly="true" pattern="%.3f %unit%"/>
+	</channel-type>
+
+	<channel-type id="grundfos-operating-time">
+		<item-type unitHint="h">Number:Time</item-type>
+		<label>Operating Time</label>
+		<description>Accumulated running time of the pump</description>
+		<category>Time</category>
+		<tags>
+			<point>Measurement</point>
+			<property>Duration</property>
+		</tags>
+		<state readOnly="true" pattern="%.3f %unit%"/>
+	</channel-type>
+
+	<channel-type id="grundfos-start-count">
+		<item-type>Number</item-type>
+		<label>Start Count</label>
+		<description>Accumulated number of pump starts</description>
+		<tags>
+			<point>Measurement</point>
+		</tags>
+		<state readOnly="true" pattern="%.0f"/>
+	</channel-type>
+
+	<channel-type id="grundfos-operating-mode">
+		<item-type>String</item-type>
+		<label>Operating Mode</label>
+		<description>Pump operating mode</description>
+		<tags>
+			<point>Control</point>
+			<property>Mode</property>
+		</tags>
+		<state>
+			<options>
+				<option value="NORMAL">Normal</option>
+				<option value="STOP">Stop</option>
+				<option value="MIN">Min</option>
+				<option value="MAX">Max</option>
+			</options>
+		</state>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+
+	<channel-type id="grundfos-control-mode">
+		<item-type>String</item-type>
+		<label>Control Mode</label>
+		<description>Pump control mode</description>
+		<tags>
+			<point>Control</point>
+			<property>Mode</property>
+		</tags>
+		<state>
+			<options>
+				<option value="CONSTANT_PRESSURE">Constant pressure</option>
+				<option value="PROPORTIONAL_PRESSURE">Proportional pressure</option>
+				<option value="CONSTANT_CURVE">Constant curve</option>
+				<option value="RADIATOR">Radiator (AUTOADAPT)</option>
+				<option value="UNDERFLOOR">Underfloor (AUTOADAPT)</option>
+				<option value="RADIATOR_AND_UNDERFLOOR">Combined radiator and underfloor (AUTOADAPT)</option>
+			</options>
+		</state>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 
 	<thing-type id="mi401">
@@ -102,15 +188,22 @@
 				<label>AC Voltage</label>
 				<description>Current AC pump voltage</description>
 			</channel>
+			<channel id="motor-current" typeId="grundfos-motor-current"/>
+			<channel id="motor-speed" typeId="grundfos-motor-speed"/>
 			<channel id="power" typeId="system.electric-power">
 				<label>Power Consumption</label>
 				<description>Current pump power consumption</description>
 			</channel>
-			<channel id="motor-speed" typeId="grundfos-motor-speed"/>
+			<channel id="energy" typeId="grundfos-energy"/>
+			<channel id="operating-time" typeId="grundfos-operating-time"/>
+			<channel id="start-count" typeId="grundfos-start-count"/>
+			<channel id="control-mode" typeId="grundfos-control-mode"/>
+			<channel id="operating-mode" typeId="grundfos-operating-mode"/>
 		</channels>
 
 		<properties>
 			<property name="vendor">Grundfos</property>
+			<property name="thingTypeVersion">2</property>
 		</properties>
 
 		<representation-property>address</representation-property>

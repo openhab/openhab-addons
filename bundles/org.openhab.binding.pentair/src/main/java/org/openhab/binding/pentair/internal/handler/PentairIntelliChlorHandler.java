@@ -23,7 +23,6 @@ import org.openhab.binding.pentair.internal.parser.PentairIntelliChlorPacket;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
-import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
@@ -68,7 +67,7 @@ public class PentairIntelliChlorHandler extends PentairBaseThingHandler {
         PentairIntelliChlorHandler handler = Objects.requireNonNull(getBridgeHandler()).findIntellichlor();
 
         if (handler != null && !handler.equals(this)) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.configuration-error.duplicate-intllichlor");
             return;
         } else {

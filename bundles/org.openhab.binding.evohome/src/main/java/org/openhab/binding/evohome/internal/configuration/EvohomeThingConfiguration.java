@@ -24,4 +24,5 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class EvohomeThingConfiguration {
     public String id = "";
     public String name = "";
+    public int temporaryOverrideDuration = 120;
 }

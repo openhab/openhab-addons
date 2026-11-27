@@ -18,12 +18,16 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.websocket.client.WebSocketClient;
+import org.openhab.core.io.net.http.WebSocketFactory;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * The {@link YIOremoteHandlerFactory} is responsible for creating things and thing
@@ -37,6 +41,13 @@ public class YIOremoteHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_YIOREMOTEDOCK);
 
+    private final WebSocketClient webSocketClient;
+
+    @Activate
+    public YIOremoteHandlerFactory(@Reference WebSocketFactory webSocketFactory) {
+        this.webSocketClient = webSocketFactory.getCommonWebSocketClient();
+    }
+
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
         return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
@@ -44,12 +55,9 @@ public class YIOremoteHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
-        ThingTypeUID thingTypeUID = thing.getThingTypeUID();
-
-        if (THING_TYPE_YIOREMOTEDOCK.equals(thingTypeUID)) {
-            return new YIOremoteDockHandler(thing);
+        if (THING_TYPE_YIOREMOTEDOCK.equals(thing.getThingTypeUID())) {
+            return new YIOremoteDockHandler(thing, webSocketClient);
         }
-
         return null;
     }
 }

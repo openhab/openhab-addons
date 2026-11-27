@@ -19,6 +19,7 @@ import java.util.Set;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.leapmotion.internal.LeapMotionBindingConstants;
+import org.openhab.binding.leapmotion.internal.LeapMotionNativeLibrary;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
@@ -48,6 +49,10 @@ public class LeapMotionDiscoveryService extends AbstractDiscoveryService {
 
     @Override
     protected void activate(@Nullable Map<String, Object> configProperties) {
+        if (!LeapMotionNativeLibrary.isAvailable()) {
+            return;
+        }
+
         leapController = new Controller();
         listener = new Listener() {
             @Override
@@ -65,16 +70,18 @@ public class LeapMotionDiscoveryService extends AbstractDiscoveryService {
 
     @Override
     protected void deactivate() {
-        leapController.removeListener(listener);
+        if (leapController != null) {
+            leapController.removeListener(listener);
+            leapController.delete();
+            leapController = null;
+        }
         listener = null;
-        leapController.delete();
-        leapController = null;
         super.deactivate();
     }
 
     @Override
     protected void startScan() {
-        if (leapController.isConnected()) {
+        if (leapController != null && leapController.isConnected()) {
             createDiscoveryResult();
         }
     }
@@ -82,7 +89,9 @@ public class LeapMotionDiscoveryService extends AbstractDiscoveryService {
     @Override
     protected void startBackgroundDiscovery() {
         super.startBackgroundDiscovery();
-        leapController.addListener(listener);
+        if (leapController != null) {
+            leapController.addListener(listener);
+        }
     }
 
     private void createDiscoveryResult() {

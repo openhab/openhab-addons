@@ -126,7 +126,7 @@ public class XiaomiBridgeHandler extends ConfigStatusBridgeHandler implements Xi
             port = getConfigInteger(config, PORT);
         } catch (UnknownHostException e) {
             logger.warn("Bridge IP/PORT config is not set or not valid");
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR);
             return;
         }
         logger.debug("Init socket on Port: {}", port);

@@ -60,7 +60,7 @@ During cleaning, map refresh uses a mode-specific interval:
 - `communication=cloud`: `mapRefreshCloudCleaningInterval` (default 30s, minimum 30s)
 - `communication=direct`: `mapRefreshDirectCleaningInterval` (default 15s, minimum 15s)
 - If `communication=direct` and `cloudMapRefresh=off`, channel `cleaning#map` is explicitly set to `UNDEF` and map refresh is skipped.
-- If `communication=direct` and `cloudMetadataRefresh=off`, cloud metadata refresh tasks are skipped and metadata channels (for example routines and room mapping when present) are explicitly set to `UNDEF`.
+- If `communication=direct` and `cloudMetadataRefresh=off`, cloud metadata refresh tasks are skipped and the room and routine selection options of `actions#segment` and `actions#routine` are cleared.
 
 When `communication=direct` is selected and a capability is cloud-only (for example map retrieval/refresh), it is still routed through cloud transport. If cloud access is not available, those cloud-only capabilities will not refresh/update, while direct-mode supported operations continue to use local direct transport.
 
@@ -75,6 +75,8 @@ When `communication=direct` is selected and a capability is cloud-only (for exam
 | String               | actions#command                   | Send command via cloud                     |
 | String               | actions#rpc                       | Send command via cloud                     |
 | Switch               | actions#power                     | Power On/Off                               |
+| String               | actions#routine                   | Start a routine, selected by name          |
+| String               | actions#segment                   | Clean a room, selected by name             |
 | Switch               | status#segment-status             | Segment Status                             |
 | Number:Dimensionless | status#battery                    | Battery Status                             |
 | Number:Area          | status#clean-area                 | Total Cleaning Area                        |
@@ -85,8 +87,8 @@ When `communication=direct` is selected and a capability is cloud-only (for exam
 | Number               | status#state                      | Vacuum Status                              |
 | Switch               | status#map-status                 | Map Box Status                             |
 | Switch               | status#led-status                 | Led Box Status                             |
+| String               | status#current-room               | Current room name, resolved from the live map segment at the robot's position; while the robot is docked, the room of the charging dock |
 | String               | info#carpet-mode                  | Carpet Mode details                        |
-| String               | info#room-mapping                 | Room Mapping details                       |
 | String               | info#multi-maps-list              | Maps Listing details                       |
 | Number:Time          | consumables#main-brush-time       | Main Brush Time till Replacement           |
 | Number:Time          | consumables#side-brush-time       | Side Brush Time till Replacement           |
@@ -114,7 +116,6 @@ Additionally depending on the capabilities of your robot vacuum other channels m
 | Switch  | status#water-box-carriage-status  | Water Box Carriage Status  |
 | Switch  | status#mop-forbidden-enable       | Mop Forbidden              |
 | Switch  | status#is-locating                | Robot is locating          |
-| Number  | actions#segment                   | Room Clean  (enter room #) |
 | Switch  | actions#collect-dust              | Start collecting dust      |
 | Switch  | actions#clean-mop-start           | Start mop wash             |
 | Switch  | actions#clean-mop-stop            | Stop mop wash              |
@@ -131,7 +132,7 @@ In case your vacuum does not support one of these commands, it will show "unsupp
 
 ```java
 Bridge roborock:account:account [ email="xxxx", twofa="xxxx" ] {
-    roborock:vacuum:QrevoS [ refresh=5, cloudRefreshInterval=300 ]
+    Thing vacuum QrevoS [ refresh=5, cloudRefreshInterval=300 ]
 }
 ```
 

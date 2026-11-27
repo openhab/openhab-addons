@@ -38,7 +38,7 @@ public abstract class NhcAction {
     protected ActionType type;
     protected @Nullable String location;
 
-    protected volatile int state;
+    protected volatile long state;
     protected volatile int closeTime = 0;
     protected volatile int openTime = 0;
 
@@ -139,7 +139,7 @@ public abstract class NhcAction {
      *
      * @return action state
      */
-    public int getState() {
+    public long getState() {
         return state;
     }
 
@@ -182,7 +182,7 @@ public abstract class NhcAction {
         updateState(state);
     }
 
-    protected void updateState(int state) {
+    protected void updateState(long state) {
         NhcActionEvent eventHandler = this.eventHandler;
         if (eventHandler != null) {
             logger.debug("update channel state for {} with {}", id, state);
@@ -212,7 +212,7 @@ public abstract class NhcAction {
      *            dimmer action: between 0 and 100
      *            rollershutter action: between 0 and 100
      */
-    public abstract void setState(int state);
+    public abstract void setState(long state);
 
     /**
      * Sends action to Niko Home Control. This method is implemented in

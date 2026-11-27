@@ -1,0 +1,95 @@
+{
+	"deviceMapping": {
+		"id": [
+			"mrbond.airer.m1s",
+			"mrbond.airer.m0"
+		],
+		"propertyMethod": "get_prop",
+		"maxProperties": 2,
+		"channels": [
+			{
+				"property": "led",
+				"friendlyName": "Lamp",
+				"channel": "led",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_led",
+						"parameterType": "ONOFFNUMBER"
+					}
+				],
+				"category": "light",
+				"tags": [
+					"Switch",
+					"Light"
+				]
+			},
+			{
+				"property": "motor",
+				"friendlyName": "Motor",
+				"channel": "motor",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "Pause"
+						},
+						{
+							"value": "1",
+							"label": "Rise"
+						},
+						{
+							"value": "2",
+							"label": "Down"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_motor",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "movecontrol",
+				"tags": [
+					"Control"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Pause\",\"1\"\u003d\"Rise\",\"2\"\u003d\"Down\"]`"
+			},
+			{
+				"property": "airer_location",
+				"friendlyName": "Airer Location",
+				"channel": "airer_location",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "Normal"
+						},
+						{
+							"value": "1",
+							"label": "Highest"
+						},
+						{
+							"value": "2",
+							"label": "Lowest"
+						}
+					],
+					"readOnly": true
+				},
+				"refresh": true,
+				"category": "status",
+				"tags": [
+					"Status",
+					"Position"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Normal\",\"1\"\u003d\"Highest\",\"2\"\u003d\"Lowest\"]`"
+			}
+		],
+		"experimental": true
+	}
+}

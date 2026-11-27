@@ -41,7 +41,7 @@ env:
 
 jobs:
   rebuild:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     steps:
     - name: Info
       env:

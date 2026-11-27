@@ -63,7 +63,7 @@ public class IlluminanceMeasurementCluster extends BaseCluster {
      * Indicates the electronic type of the light sensor. This attribute shall be set to one of the non-reserved values
      * listed in LightSensorTypeEnum or null in case the sensor type is unknown.
      */
-    public Integer lightSensorType; // 4 uint8 R V
+    public LightSensorTypeEnum lightSensorType; // 4 LightSensorTypeEnum R V
 
     // Enums
     public enum LightSensorTypeEnum implements MatterEnum {

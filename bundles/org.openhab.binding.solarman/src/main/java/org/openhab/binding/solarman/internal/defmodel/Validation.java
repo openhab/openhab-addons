@@ -12,7 +12,10 @@
  */
 package org.openhab.binding.solarman.internal.defmodel;
 
+import java.math.BigDecimal;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -23,16 +26,16 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @NonNullByDefault
 public class Validation {
-    private Integer max = 0;
+    private @Nullable BigDecimal max;
     @JsonProperty("invalidate_all")
     private Object invalidateAll = new Object();
-    private Integer min = 0;
+    private @Nullable BigDecimal min;
 
-    public Integer getMax() {
+    public @Nullable BigDecimal getMax() {
         return max;
     }
 
-    public void setMax(Integer max) {
+    public void setMax(BigDecimal max) {
         this.max = max;
     }
 
@@ -44,11 +47,11 @@ public class Validation {
         this.invalidateAll = invalidateAll;
     }
 
-    public Integer getMin() {
+    public @Nullable BigDecimal getMin() {
         return min;
     }
 
-    public void setMin(Integer min) {
+    public void setMin(BigDecimal min) {
         this.min = min;
     }
 }

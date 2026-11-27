@@ -131,7 +131,11 @@ public abstract class DmxBridgeHandler extends BaseBridgeHandler {
      * @param description string giving the reason for closing the connection
      */
     protected void closeConnection(ThingStatusDetail statusDetail, String description) {
-        updateStatus(ThingStatus.OFFLINE, statusDetail, description);
+        if (ThingStatusDetail.NONE.equals(statusDetail)) {
+            updateStatus(ThingStatus.OFFLINE, description);
+        } else {
+            updateStatus(statusDetail, description);
+        }
         closeConnection();
     }
 

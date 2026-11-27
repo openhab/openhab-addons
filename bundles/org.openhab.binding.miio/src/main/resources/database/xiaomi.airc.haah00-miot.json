@@ -1,0 +1,1011 @@
+{
+	"deviceMapping": {
+		"id": [
+			"xiaomi.airc.haah00"
+		],
+		"propertyMethod": "get_properties",
+		"maxProperties": 1,
+		"channels": [
+			{
+				"property": "on",
+				"siid": 2,
+				"piid": 1,
+				"friendlyName": "Power",
+				"channel": "on",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch"
+				]
+			},
+			{
+				"property": "mode",
+				"siid": 2,
+				"piid": 2,
+				"friendlyName": "Mode",
+				"channel": "mode",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "2",
+							"label": "Cool"
+						},
+						{
+							"value": "3",
+							"label": "Dry"
+						},
+						{
+							"value": "4",
+							"label": "Fan"
+						},
+						{
+							"value": "5",
+							"label": "Heat"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "climate",
+				"tags": [
+					"Control",
+					"Mode"
+				],
+				"readmeComment": "Value mapping `[\"2\"\u003d\"Cool\",\"3\"\u003d\"Dry\",\"4\"\u003d\"Fan\",\"5\"\u003d\"Heat\"]`"
+			},
+			{
+				"property": "target-temperature",
+				"siid": 2,
+				"piid": 4,
+				"friendlyName": "Target Temperature",
+				"channel": "target_temperature",
+				"type": "Number:Temperature",
+				"unit": "celsius",
+				"stateDescription": {
+					"minimum": 16,
+					"maximum": 31,
+					"step": 0.5,
+					"pattern": "%.1f %unit%"
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "temperature",
+				"tags": [
+					"Setpoint",
+					"Temperature"
+				]
+			},
+			{
+				"property": "eco",
+				"siid": 2,
+				"piid": 7,
+				"friendlyName": "Energy Saver",
+				"channel": "eco",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch"
+				]
+			},
+			{
+				"property": "dryer",
+				"siid": 2,
+				"piid": 10,
+				"friendlyName": "Drying",
+				"channel": "dryer",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch"
+				],
+				"readmeComment": "Keeps blowing for a short time after cooling or drying to keep the inside dry"
+			},
+			{
+				"property": "sleep-mode",
+				"siid": 2,
+				"piid": 11,
+				"friendlyName": "Sleep",
+				"channel": "sleep_mode",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "moon",
+				"tags": [
+					"Switch"
+				]
+			},
+			{
+				"property": "list-soft-wind",
+				"siid": 2,
+				"piid": 18,
+				"friendlyName": "Gentle",
+				"channel": "list_soft_wind",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFNUMBER"
+					}
+				],
+				"category": "fan",
+				"tags": [
+					"Switch"
+				]
+			},
+			{
+				"property": "max-level",
+				"siid": 2,
+				"piid": 29,
+				"friendlyName": "Turbo",
+				"channel": "max_level",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "fan",
+				"tags": [
+					"Switch"
+				]
+			},
+			{
+				"property": "low-watt-level",
+				"siid": 2,
+				"piid": 30,
+				"friendlyName": "Low Watt",
+				"channel": "low_watt_level",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "Off"
+						},
+						{
+							"value": "1",
+							"label": "L1"
+						},
+						{
+							"value": "2",
+							"label": "L2"
+						},
+						{
+							"value": "3",
+							"label": "L3"
+						},
+						{
+							"value": "4",
+							"label": "L4"
+						},
+						{
+							"value": "5",
+							"label": "L5"
+						},
+						{
+							"value": "6",
+							"label": "L6"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "energy",
+				"tags": [
+					"Control",
+					"Power"
+				],
+				"readmeComment": "Limits the current, a larger number allows a higher current. Value mapping `[\"0\"\u003d\"Off\",\"1\"\u003d\"L1\",\"2\"\u003d\"L2\",\"3\"\u003d\"L3\",\"4\"\u003d\"L4\",\"5\"\u003d\"L5\",\"6\"\u003d\"L6\"]`"
+			},
+			{
+				"property": "fan-level",
+				"siid": 3,
+				"piid": 2,
+				"friendlyName": "Fan Level",
+				"channel": "fan_level",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "Auto"
+						},
+						{
+							"value": "1",
+							"label": "Level 1"
+						},
+						{
+							"value": "2",
+							"label": "Level 2"
+						},
+						{
+							"value": "3",
+							"label": "Level 3"
+						},
+						{
+							"value": "4",
+							"label": "Level 4"
+						},
+						{
+							"value": "5",
+							"label": "Level 5"
+						},
+						{
+							"value": "6",
+							"label": "Level 6"
+						},
+						{
+							"value": "7",
+							"label": "Level 7"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "fan",
+				"tags": [
+					"Control",
+					"Level"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Auto\",\"1\"\u003d\"Level 1\",\"2\"\u003d\"Level 2\",\"3\"\u003d\"Level 3\",\"4\"\u003d\"Level 4\",\"5\"\u003d\"Level 5\",\"6\"\u003d\"Level 6\",\"7\"\u003d\"Level 7\"]`"
+			},
+			{
+				"property": "horizontal-swing",
+				"siid": 3,
+				"piid": 3,
+				"friendlyName": "Left/Right Swing",
+				"channel": "horizontal_swing",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "fan",
+				"tags": [
+					"Switch",
+					"Airflow"
+				]
+			},
+			{
+				"property": "vertical-swing",
+				"siid": 3,
+				"piid": 4,
+				"friendlyName": "Up/Down Swing",
+				"channel": "vertical_swing",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "fan",
+				"tags": [
+					"Switch",
+					"Airflow"
+				]
+			},
+			{
+				"property": "wind-direction",
+				"siid": 3,
+				"piid": 11,
+				"friendlyName": "Air Flow",
+				"channel": "wind_direction",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "Off"
+						},
+						{
+							"value": "1",
+							"label": "Upward"
+						},
+						{
+							"value": "2",
+							"label": "Downward"
+						},
+						{
+							"value": "3",
+							"label": "Circulate"
+						},
+						{
+							"value": "4",
+							"label": "Indirect"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "fan",
+				"tags": [
+					"Control",
+					"Airflow"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Off\",\"1\"\u003d\"Upward\",\"2\"\u003d\"Downward\",\"3\"\u003d\"Circulate\",\"4\"\u003d\"Indirect\"]`"
+			},
+			{
+				"property": "vertical-position",
+				"siid": 3,
+				"piid": 25,
+				"friendlyName": "Up/Down Fixed Position",
+				"channel": "vertical_position",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "Off"
+						},
+						{
+							"value": "1",
+							"label": "Up"
+						},
+						{
+							"value": "2",
+							"label": "Up-center"
+						},
+						{
+							"value": "3",
+							"label": "Center"
+						},
+						{
+							"value": "4",
+							"label": "Down-center"
+						},
+						{
+							"value": "5",
+							"label": "Down"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "fan",
+				"tags": [
+					"Control",
+					"Airflow"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Off\",\"1\"\u003d\"Up\",\"2\"\u003d\"Up-center\",\"3\"\u003d\"Center\",\"4\"\u003d\"Down-center\",\"5\"\u003d\"Down\"]`"
+			},
+			{
+				"property": "horizontal-position",
+				"siid": 3,
+				"piid": 26,
+				"friendlyName": "Left/Right Fixed Position",
+				"channel": "horizontal_position",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "Off"
+						},
+						{
+							"value": "1",
+							"label": "Left"
+						},
+						{
+							"value": "2",
+							"label": "Left-center"
+						},
+						{
+							"value": "3",
+							"label": "Center"
+						},
+						{
+							"value": "4",
+							"label": "Right-center"
+						},
+						{
+							"value": "5",
+							"label": "Right"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "fan",
+				"tags": [
+					"Control",
+					"Airflow"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Off\",\"1\"\u003d\"Left\",\"2\"\u003d\"Left-center\",\"3\"\u003d\"Center\",\"4\"\u003d\"Right-center\",\"5\"\u003d\"Right\"]`"
+			},
+			{
+				"property": "temperature",
+				"siid": 4,
+				"piid": 7,
+				"friendlyName": "Temperature",
+				"channel": "temperature",
+				"type": "Number:Temperature",
+				"unit": "celsius",
+				"stateDescription": {
+					"pattern": "%.1f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "temperature",
+				"tags": [
+					"Measurement",
+					"Temperature"
+				]
+			},
+			{
+				"property": "outdoor-temp",
+				"siid": 12,
+				"piid": 7,
+				"friendlyName": "Outdoor Temperature",
+				"channel": "outdoor_temp",
+				"type": "Number:Temperature",
+				"unit": "celsius",
+				"stateDescription": {
+					"pattern": "%.1f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "temperature",
+				"tags": [
+					"Measurement",
+					"Temperature"
+				]
+			},
+			{
+				"property": "alarm",
+				"siid": 5,
+				"piid": 1,
+				"friendlyName": "Button Sounds",
+				"channel": "alarm",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "soundvolume",
+				"tags": [
+					"Switch",
+					"Enabled"
+				]
+			},
+			{
+				"property": "on1",
+				"siid": 6,
+				"piid": 1,
+				"friendlyName": "Indicator",
+				"channel": "indicator",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "screen",
+				"tags": [
+					"Switch"
+				]
+			},
+			{
+				"property": "brightness",
+				"siid": 6,
+				"piid": 2,
+				"friendlyName": "Indicator Brightness",
+				"channel": "brightness",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "Auto"
+						},
+						{
+							"value": "1",
+							"label": "Medium"
+						},
+						{
+							"value": "2",
+							"label": "High"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "screen",
+				"tags": [
+					"Control",
+					"Brightness"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Auto\",\"1\"\u003d\"Medium\",\"2\"\u003d\"High\"]`"
+			},
+			{
+				"property": "power-consumption",
+				"siid": 20,
+				"piid": 1,
+				"friendlyName": "Energy Consumption",
+				"channel": "power_consumption",
+				"type": "Number:Energy",
+				"unit": "kwh",
+				"stateDescription": {
+					"pattern": "%.2f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "energy",
+				"tags": [
+					"Measurement",
+					"Energy"
+				]
+			},
+			{
+				"property": "fan-percent",
+				"siid": 10,
+				"piid": 1,
+				"friendlyName": "Fan Speed",
+				"channel": "fan_percent",
+				"type": "Number",
+				"stateDescription": {
+					"pattern": "%.0f",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "fan",
+				"tags": [
+					"Measurement",
+					"Speed"
+				],
+				"readmeComment": "Fan speed in percent, 101 \u003d Auto"
+			},
+			{
+				"property": "timer",
+				"siid": 10,
+				"piid": 3,
+				"friendlyName": "Timer",
+				"channel": "timer",
+				"type": "String",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "STRING"
+					}
+				],
+				"category": "time",
+				"tags": [
+					"Control"
+				],
+				"readmeComment": "Write `1,<minutes>,0` to switch off (or `1,<minutes>,1` to switch on) after the given minutes, `0,0,0,0` to cancel"
+			},
+			{
+				"property": "clean",
+				"siid": 9,
+				"piid": 1,
+				"friendlyName": "Self Clean",
+				"channel": "clean",
+				"type": "String",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "1",
+							"label": "Start"
+						},
+						{
+							"value": "0",
+							"label": "Stop"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "STRING",
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "1"
+								},
+								{
+									"matchValue": "0"
+								}
+							]
+						}
+					}
+				],
+				"category": "settings",
+				"tags": [
+					"Control"
+				],
+				"readmeComment": "Start only with the AC off; takes about 40 minutes and cannot be stopped in its last steps. While cleaning the state reads `type,progress,step,can stop`"
+			},
+			{
+				"property": "fault-value",
+				"siid": 13,
+				"piid": 1,
+				"friendlyName": "Fault",
+				"channel": "fault_value",
+				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "0",
+							"label": "No Fault"
+						},
+						{
+							"value": "4",
+							"label": "F2.4"
+						},
+						{
+							"value": "5",
+							"label": "F3.2"
+						},
+						{
+							"value": "6",
+							"label": "P1"
+						},
+						{
+							"value": "7",
+							"label": "P2.1"
+						},
+						{
+							"value": "8",
+							"label": "P2.2"
+						},
+						{
+							"value": "9",
+							"label": "P2.3"
+						},
+						{
+							"value": "10",
+							"label": "P2.4"
+						},
+						{
+							"value": "11",
+							"label": "P2.5"
+						},
+						{
+							"value": "12",
+							"label": "P4"
+						},
+						{
+							"value": "13",
+							"label": "P5"
+						},
+						{
+							"value": "14",
+							"label": "P6"
+						},
+						{
+							"value": "15",
+							"label": "P8"
+						},
+						{
+							"value": "16",
+							"label": "PA"
+						},
+						{
+							"value": "17",
+							"label": "PC"
+						},
+						{
+							"value": "18",
+							"label": "U2"
+						},
+						{
+							"value": "19",
+							"label": "U3"
+						},
+						{
+							"value": "20",
+							"label": "U4"
+						},
+						{
+							"value": "21",
+							"label": "U5"
+						},
+						{
+							"value": "22",
+							"label": "U6.1"
+						},
+						{
+							"value": "23",
+							"label": "U6.2"
+						},
+						{
+							"value": "24",
+							"label": "U8"
+						},
+						{
+							"value": "25",
+							"label": "U0"
+						},
+						{
+							"value": "26",
+							"label": "C1"
+						},
+						{
+							"value": "27",
+							"label": "C2"
+						},
+						{
+							"value": "28",
+							"label": "C3"
+						},
+						{
+							"value": "29",
+							"label": "C4"
+						},
+						{
+							"value": "30",
+							"label": "C5"
+						},
+						{
+							"value": "-4",
+							"label": "F2.4 CLEAR"
+						},
+						{
+							"value": "-5",
+							"label": "F3.2 CLEAR"
+						},
+						{
+							"value": "-6",
+							"label": "P1 CLEAR"
+						},
+						{
+							"value": "-7",
+							"label": "P2.1 CLEAR"
+						},
+						{
+							"value": "-8",
+							"label": "P2.2 CLEAR"
+						},
+						{
+							"value": "-9",
+							"label": "P2.3 CLEAR"
+						},
+						{
+							"value": "-10",
+							"label": "P2.4 CLEAR"
+						},
+						{
+							"value": "-11",
+							"label": "P2.5 CLEAR"
+						},
+						{
+							"value": "-12",
+							"label": "P4 CLEAR"
+						},
+						{
+							"value": "-13",
+							"label": "P5 CLEAR"
+						},
+						{
+							"value": "-14",
+							"label": "P6 CLEAR"
+						},
+						{
+							"value": "-15",
+							"label": "P8 CLEAR"
+						},
+						{
+							"value": "-16",
+							"label": "PA CLEAR"
+						},
+						{
+							"value": "-17",
+							"label": "PC CLEAR"
+						},
+						{
+							"value": "-18",
+							"label": "U2 CLEAR"
+						},
+						{
+							"value": "-19",
+							"label": "U3 CLEAR"
+						},
+						{
+							"value": "-20",
+							"label": "U4 CLEAR"
+						},
+						{
+							"value": "-21",
+							"label": "U5 CLEAR"
+						},
+						{
+							"value": "-22",
+							"label": "U6.1 CLEAR"
+						},
+						{
+							"value": "-23",
+							"label": "U6.2 CLEAR"
+						},
+						{
+							"value": "-24",
+							"label": "U8 CLEAR"
+						},
+						{
+							"value": "-25",
+							"label": "U0 CLEAR"
+						},
+						{
+							"value": "-26",
+							"label": "C1 CLEAR"
+						},
+						{
+							"value": "-27",
+							"label": "C2 CLEAR"
+						},
+						{
+							"value": "-28",
+							"label": "C3 CLEAR"
+						},
+						{
+							"value": "-29",
+							"label": "C4 CLEAR"
+						},
+						{
+							"value": "-30",
+							"label": "C5 CLEAR"
+						},
+						{
+							"value": "31",
+							"label": "U2.1"
+						},
+						{
+							"value": "32",
+							"label": "E2.1"
+						},
+						{
+							"value": "33",
+							"label": "E2.6"
+						},
+						{
+							"value": "34",
+							"label": "E2.5"
+						},
+						{
+							"value": "35",
+							"label": "E2.2"
+						},
+						{
+							"value": "-31",
+							"label": "U2.1 CLEAR"
+						},
+						{
+							"value": "-32",
+							"label": "E2.1 CLEAR"
+						},
+						{
+							"value": "-33",
+							"label": "E2.6 CLEAR"
+						},
+						{
+							"value": "-34",
+							"label": "E2.5 CLEAR"
+						},
+						{
+							"value": "-35",
+							"label": "E2.2 CLEAR"
+						},
+						{
+							"value": "36",
+							"label": "F2.6"
+						},
+						{
+							"value": "37",
+							"label": "F7"
+						},
+						{
+							"value": "-36",
+							"label": "F2.6 CLEAR"
+						},
+						{
+							"value": "-37",
+							"label": "F7 CLEAR"
+						},
+						{
+							"value": "47",
+							"label": "F5"
+						},
+						{
+							"value": "-47",
+							"label": "F5 CLEAR"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "error",
+				"tags": [
+					"Status"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"No Fault\",\"4\"\u003d\"F2.4\",\"5\"\u003d\"F3.2\",\"6\"\u003d\"P1\",\"7\"\u003d\"P2.1\",\"8\"\u003d\"P2.2\",\"9\"\u003d\"P2.3\",\"10\"\u003d\"P2.4\",\"11\"\u003d\"P2.5\",\"12\"\u003d\"P4\",\"13\"\u003d\"P5\",\"14\"\u003d\"P6\",\"15\"\u003d\"P8\",\"16\"\u003d\"PA\",\"17\"\u003d\"PC\",\"18\"\u003d\"U2\",\"19\"\u003d\"U3\",\"20\"\u003d\"U4\",\"21\"\u003d\"U5\",\"22\"\u003d\"U6.1\",\"23\"\u003d\"U6.2\",\"24\"\u003d\"U8\",\"25\"\u003d\"U0\",\"26\"\u003d\"C1\",\"27\"\u003d\"C2\",\"28\"\u003d\"C3\",\"29\"\u003d\"C4\",\"30\"\u003d\"C5\",\"-4\"\u003d\"F2.4 CLEAR\",\"-5\"\u003d\"F3.2 CLEAR\",\"-6\"\u003d\"P1 CLEAR\",\"-7\"\u003d\"P2.1 CLEAR\",\"-8\"\u003d\"P2.2 CLEAR\",\"-9\"\u003d\"P2.3 CLEAR\",\"-10\"\u003d\"P2.4 CLEAR\",\"-11\"\u003d\"P2.5 CLEAR\",\"-12\"\u003d\"P4 CLEAR\",\"-13\"\u003d\"P5 CLEAR\",\"-14\"\u003d\"P6 CLEAR\",\"-15\"\u003d\"P8 CLEAR\",\"-16\"\u003d\"PA CLEAR\",\"-17\"\u003d\"PC CLEAR\",\"-18\"\u003d\"U2 CLEAR\",\"-19\"\u003d\"U3 CLEAR\",\"-20\"\u003d\"U4 CLEAR\",\"-21\"\u003d\"U5 CLEAR\",\"-22\"\u003d\"U6.1 CLEAR\",\"-23\"\u003d\"U6.2 CLEAR\",\"-24\"\u003d\"U8 CLEAR\",\"-25\"\u003d\"U0 CLEAR\",\"-26\"\u003d\"C1 CLEAR\",\"-27\"\u003d\"C2 CLEAR\",\"-28\"\u003d\"C3 CLEAR\",\"-29\"\u003d\"C4 CLEAR\",\"-30\"\u003d\"C5 CLEAR\",\"31\"\u003d\"U2.1\",\"32\"\u003d\"E2.1\",\"33\"\u003d\"E2.6\",\"34\"\u003d\"E2.5\",\"35\"\u003d\"E2.2\",\"-31\"\u003d\"U2.1 CLEAR\",\"-32\"\u003d\"E2.1 CLEAR\",\"-33\"\u003d\"E2.6 CLEAR\",\"-34\"\u003d\"E2.5 CLEAR\",\"-35\"\u003d\"E2.2 CLEAR\",\"36\"\u003d\"F2.6\",\"37\"\u003d\"F7\",\"-36\"\u003d\"F2.6 CLEAR\",\"-37\"\u003d\"F7 CLEAR\",\"47\"\u003d\"F5\",\"-47\"\u003d\"F5 CLEAR\"]`"
+			}
+		],
+		"experimental": true
+	}
+}

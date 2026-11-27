@@ -594,13 +594,18 @@ public class OnvifConnection {
             ptzDevice = false;
             logger.debug("Camera has no ONVIF PTZ support.");
             List<org.openhab.core.thing.Channel> removeChannels = new ArrayList<>();
-            org.openhab.core.thing.Channel channel = ipCameraHandler.getThing().getChannel(CHANNEL_PAN);
-            if (channel != null) {
-                removeChannels.add(channel);
-            }
-            channel = ipCameraHandler.getThing().getChannel(CHANNEL_TILT);
-            if (channel != null) {
-                removeChannels.add(channel);
+            org.openhab.core.thing.Channel channel;
+            // Reolink cameras behind an NVR or Home Hub can offer pan and tilt via the Reolink API instead,
+            // ReolinkHandler decides about these channels based on GetAbility.
+            if (!REOLINK_THING.equals(ipCameraHandler.getThing().getThingTypeUID().getId())) {
+                channel = ipCameraHandler.getThing().getChannel(CHANNEL_PAN);
+                if (channel != null) {
+                    removeChannels.add(channel);
+                }
+                channel = ipCameraHandler.getThing().getChannel(CHANNEL_TILT);
+                if (channel != null) {
+                    removeChannels.add(channel);
+                }
             }
             channel = ipCameraHandler.getThing().getChannel(CHANNEL_ZOOM);
             if (channel != null) {
@@ -833,6 +838,10 @@ public class OnvifConnection {
             String topic = topicElement.getFirstChild().getNodeValue().replace("tns1:", "");
 
             Element sourceElement = (Element) notificationMessageElement.getElementsByTagName("tt:Source").item(0);
+
+            if (isEventForOtherNvrChannel(sourceElement, topic)) {
+                continue;
+            }
 
             Element dataElement = (Element) notificationMessageElement.getElementsByTagName("tt:Data").item(0);
 
@@ -1075,6 +1084,13 @@ public class OnvifConnection {
     }
 
     void parsePresets(String message) {
+        if (REOLINK_THING.equals(ipCameraHandler.getThing().getThingTypeUID().getId())
+                && ipCameraHandler.reolinkPtz.isSupported()) {
+            // The presets are provided via the Reolink API. NVRs and hubs report an empty ONVIF preset list for
+            // the connected cameras, which would otherwise overwrite them.
+            logger.debug("Ignoring ONVIF presets, as PTZ is controlled via the Reolink API");
+            return;
+        }
         List<StateOption> presets = new ArrayList<>();
         int counter = 1;// Presets start at 1 not 0. HOME may be added to index 0.
         presetTokens = listOfResults(message, "<tptz:Preset", "token=\"");
@@ -1175,6 +1191,37 @@ public class OnvifConnection {
         } finally {
             connecting.unlock();
         }
+    }
+
+    /**
+     * NVRs and hubs (e.g. Reolink NVR / Home Hub) send the events of ALL connected cameras to every
+     * subscriber. The camera is identified by the first SimpleItem of tt:Source (e.g. Source=002 or
+     * VideoSourceConfigurationToken=002), which matches the 0-based nvrChannel of the Reolink thing.
+     * Stand-alone cameras send 000 and use nvrChannel 0, so they are not affected. Events without a
+     * numeric source are never filtered.
+     *
+     * @return true if the event belongs to a different NVR channel and must be ignored.
+     */
+    private boolean isEventForOtherNvrChannel(@Nullable Element sourceElement, String topic) {
+        if (sourceElement == null || !REOLINK_THING.equals(ipCameraHandler.getThing().getThingTypeUID().getId())) {
+            return false;
+        }
+        Element sourceItem = (Element) sourceElement.getElementsByTagName("tt:SimpleItem").item(0);
+        if (sourceItem == null) {
+            return false;
+        }
+        String sourceValue = sourceItem.getAttribute("Value").trim();
+        if (sourceValue.isEmpty() || sourceValue.length() > 3 || !sourceValue.chars().allMatch(Character::isDigit)) {
+            return false;
+        }
+        int sourceChannel = Integer.parseInt(sourceValue);
+        int nvrChannel = ipCameraHandler.cameraConfig.getNvrChannel();
+        if (sourceChannel != nvrChannel) {
+            logger.debug("Ignoring ONVIF event {} from NVR channel {}, thing {} uses nvrChannel {}", topic,
+                    sourceChannel, ipCameraHandler.getThing().getUID(), nvrChannel);
+            return true;
+        }
+        return false;
     }
 
     public boolean getEventsSupported() {

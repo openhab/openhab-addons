@@ -1,0 +1,82 @@
+{
+	"deviceMapping": {
+		"id": [
+			"chuangmi.plug.hmi208"
+		],
+		"experimental": false,
+		"channels": [
+			{
+				"property": "power",
+				"friendlyName": "Power",
+				"channel": "power",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_power",
+						"parameterType": "ONOFF"
+					}
+				],
+				"category": "poweroutlet",
+				"tags": [
+					"Switch",
+					"Power"
+				]
+			},
+			{
+				"property": "usb_on",
+				"friendlyName": "USB",
+				"channel": "usb",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_usb_*",
+						"parameterType": "ONOFFPARA"
+					}
+				],
+				"category": "poweroutlet",
+				"tags": [
+					"Switch",
+					"Power"
+				]
+			},
+			{
+				"property": "temperature",
+				"friendlyName": "Temperature",
+				"channel": "temperature",
+				"type": "Number:Temperature",
+				"unit": "CELSIUS",
+				"stateDescription": {
+					"pattern": "%.1f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "temperature",
+				"tags": [
+					"Measurement",
+					"Temperature"
+				]
+			},
+			{
+				"property": "wifi_led",
+				"friendlyName": "Indicator Light",
+				"channel": "led",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_wifi_led",
+						"parameterType": "ONOFF"
+					}
+				],
+				"category": "light",
+				"tags": [
+					"Switch",
+					"Light"
+				]
+			}
+		]
+	}
+}

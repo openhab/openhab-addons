@@ -17,7 +17,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 /**
  * Container class for Current Pricing, related to amberelectric
  *
- * @author Paul Smedley <paul@smedley.id.au> - Initial contribution
+ * @author Paul Smedley - Initial contribution
  *
  */
 @NonNullByDefault

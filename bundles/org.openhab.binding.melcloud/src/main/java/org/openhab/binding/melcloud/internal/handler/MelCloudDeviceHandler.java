@@ -86,8 +86,12 @@ public class MelCloudDeviceHandler extends BaseThingHandler {
         logger.debug("Initializing {} handler.", getThing().getThingTypeUID());
 
         Bridge bridge = getBridge();
-        if (bridge == null || !(bridge.getHandler() instanceof BridgeHandler bridgeHandler)) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Bridge Not set");
+        if (bridge == null) {
+            logger.debug("Bridge unavailable while initializing Thing: {}", thing.getUID());
+            return;
+        }
+        if (!(bridge.getHandler() instanceof BridgeHandler bridgeHandler)) {
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Bridge Not set");
             return;
         }
 
@@ -126,7 +130,7 @@ public class MelCloudDeviceHandler extends BaseThingHandler {
             updateStatus(ThingStatus.ONLINE);
             startAutomaticRefresh();
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
         }
     }
 
@@ -135,7 +139,12 @@ public class MelCloudDeviceHandler extends BaseThingHandler {
         logger.debug("Received command '{}' to channel {}", command, channelUID);
 
         if (command instanceof RefreshType) {
-            logger.debug("Refresh command not supported");
+            DeviceStatus cachedDeviceStatus = this.deviceStatus;
+            if (cachedDeviceStatus != null) {
+                updateChannels(channelUID.getId(), cachedDeviceStatus);
+            } else {
+                logger.debug("No cached data available yet, ignoring refresh command");
+            }
             return;
         }
         MelCloudAccountHandler melCloudHandler = this.melCloudHandler;

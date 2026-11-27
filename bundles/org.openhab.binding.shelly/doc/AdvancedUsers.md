@@ -85,6 +85,22 @@ This can be achieved by
 When the IP address changes for a device you need to delete the Thing and then re-discover the device.
 In this case channel linkage gets lost and you need to re-link the channels/items.
 
+## Custom oh-blu-scanner.js Script
+
+BLU support works via a small script, `oh-blu-scanner.js`, that the binding installs on the Shelly BLU Gateway device. The script only listens for BTHome BLE advertisements and forwards them (lightly pre-filtered, e.g. dropping redundant repeats) to the binding; the binding does the actual BTHome payload decoding. This keeps the on-device script small and avoids running out of memory on the gateway (see the BLU device discovery section in the README for the overall setup). This section covers two advanced customization options: adjusting the script's log level, and overriding the installed script for prototyping.
+
+### Log Level (DEBUG/TRACE)
+
+The script logs at these levels, each including everything more severe than itself (`TRACE` is the most verbose): `ERROR`, `WARN`, `INFO` (default), `DEBUG`, `TRACE`. Only `WARN` (e.g. failing to start, unable to decode a packet) and `INFO` (e.g. a new device found) messages are emitted for actual events during normal operation; `DEBUG` and `TRACE` exist purely for diagnostics and are otherwise silent (`TRACE` additionally dumps every received raw BTHome packet).
+To change the level at runtime without editing the script, set the KVS key `oh-blu-scanner.log_level` on the gateway device to one of these names (Web UI: Settings > Key-Value Store, or via the `KVS.Set` RPC) — this is read once when the script starts, and also survives the automatic re-sync since KVS storage is separate from the script code.
+
+### Overriding the Script
+
+Whenever the Thing is initialized (e.g. on openHAB restart, or when the Thing is disabled/re-enabled), the binding checks the script version installed on the device and only re-installs `oh-blu-scanner.js` from the JAR if it differs, which overwrites any edit made directly on the device.
+To use a modified version of the script instead, place a file with the same name in `<openHAB userdata>/shelly/oh-blu-scanner.js`. When present, the binding uploads this file to the gateway device instead of the version bundled in the JAR, and it is not touched by the automatic re-sync.
+
+Note: Use this only for specific prototyping or testing your own changes. In general, let the binding manage the script and its installation - this ensures compatibility between the binding and the script.
+
 ## Log optimization
 
 The binding provides channels (e.g. heartBeat, currentWatts), which might cause a lot of log output, especially when having multiple dozen Shellys.

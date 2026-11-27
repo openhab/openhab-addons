@@ -39,9 +39,8 @@ public interface StatusUpdateCallback {
      *
      * see {@link org.openhab.core.thing.binding.BaseThingHandler}
      * 
-     * @param status the status
      * @param statusDetail the detail of the status
      * @param description the description of the status
      */
-    void updateStatus(ThingStatus status, ThingStatusDetail statusDetail, String description);
+    void updateStatus(ThingStatusDetail statusDetail, String description);
 }

@@ -12,25 +12,24 @@
  */
 package org.openhab.binding.matter.internal;
 
-import java.math.BigInteger;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.time.Duration;
+import java.time.Instant;
 import java.util.Collections;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.matter.internal.client.dto.ws.OtaUpdateInfo;
 import org.openhab.binding.matter.internal.handler.NodeHandler;
-import org.openhab.core.cache.ExpiringCacheMap;
 import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.firmware.Firmware;
 import org.openhab.core.thing.binding.firmware.FirmwareBuilder;
 import org.openhab.core.thing.firmware.FirmwareProvider;
@@ -51,10 +50,12 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class MatterFirmwareProvider implements FirmwareProvider {
 
+    private static final Duration CACHE_EXPIRY = Duration.ofDays(1);
+    private static final Duration QUERY_RETRY_DELAY = Duration.ofMinutes(15);
+
     private final Logger logger = LoggerFactory.getLogger(MatterFirmwareProvider.class);
-    // Cache the OTA update information for 1 day
-    private final ExpiringCacheMap<BigInteger, OtaFirmwareEntry> firmwareCache = new ExpiringCacheMap<>(
-            Duration.ofDays(1));
+    private final Map<ThingUID, OtaFirmwareEntry> firmwareCache = new ConcurrentHashMap<>();
+    private final Map<ThingUID, Instant> lastQueryStarted = new ConcurrentHashMap<>();
 
     @Activate
     public MatterFirmwareProvider() {
@@ -64,6 +65,8 @@ public class MatterFirmwareProvider implements FirmwareProvider {
     @Deactivate
     protected void deactivate() {
         logger.debug("MatterFirmwareProvider deactivated");
+        firmwareCache.clear();
+        lastQueryStarted.clear();
     }
 
     @Override
@@ -91,33 +94,31 @@ public class MatterFirmwareProvider implements FirmwareProvider {
     public @Nullable Set<Firmware> getFirmwares(Thing thing, @Nullable Locale locale) {
         logger.debug("Getting firmwares for thing {}", thing.getUID());
         if (thing.getHandler() instanceof NodeHandler nodeHandler) {
-            BigInteger nodeId = nodeHandler.getNodeId();
-            OtaFirmwareEntry firmwareEntry = firmwareCache.putIfAbsentAndGet(nodeId, () -> {
-                try {
-                    OtaUpdateInfo updateInfo = nodeHandler.checkForOTAUpdate().get(30, TimeUnit.SECONDS);
-                    return new OtaFirmwareEntry(updateInfo);
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                    logger.debug("Failed to check for firmware update for device {}", nodeId, e);
-                    return new OtaFirmwareEntry(null);
-                } catch (ExecutionException | TimeoutException e) {
-                    logger.debug("Failed to check for firmware update for device {}", nodeId, e);
-                    return new OtaFirmwareEntry(null);
+            ThingUID thingUID = thing.getUID();
+            OtaFirmwareEntry firmwareEntry = firmwareCache.get(thingUID);
+            if (firmwareEntry == null || firmwareEntry.isExpired()) {
+                Instant now = Instant.now();
+                Instant lastStarted = lastQueryStarted.get(thingUID);
+                // A failed query stores nothing, so wait before asking the device again
+                if (lastStarted == null || now.isAfter(lastStarted.plus(QUERY_RETRY_DELAY))) {
+                    lastQueryStarted.put(thingUID, now);
+                    nodeHandler.checkForOTAUpdate();
                 }
-            });
+            }
 
-            if (firmwareEntry != null && firmwareEntry.updateInfo != null) {
-                OtaUpdateInfo updateInfo = firmwareEntry.updateInfo;
+            OtaUpdateInfo updateInfo = firmwareEntry != null ? firmwareEntry.updateInfo() : null;
+            if (updateInfo != null) {
                 FirmwareBuilder builder = FirmwareBuilder.create(thing.getThingTypeUID(),
                         updateInfo.softwareVersionString);
                 builder.withVendor(String.valueOf(updateInfo.vendorId))
                         .withDescription(updateInfo.softwareVersionString);
-                if (updateInfo.releaseNotesUrl != null && !updateInfo.releaseNotesUrl.isBlank()) {
+                String releaseNotesUrl = updateInfo.releaseNotesUrl;
+                if (releaseNotesUrl != null && !releaseNotesUrl.isBlank()) {
                     try {
-                        URL url = new URI(updateInfo.releaseNotesUrl).toURL();
+                        URL url = new URI(releaseNotesUrl).toURL();
                         builder.withOnlineChangelog(url);
                     } catch (URISyntaxException | MalformedURLException | IllegalArgumentException e) {
-                        logger.debug("Failed to create URL for release notes URL {}", updateInfo.releaseNotesUrl, e);
+                        logger.debug("Failed to create URL for release notes URL {}", releaseNotesUrl, e);
                     }
                 }
                 return Collections.singleton(builder.build());
@@ -135,25 +136,28 @@ public class MatterFirmwareProvider implements FirmwareProvider {
     }
 
     /**
-     * Updates the OTA update information for the given node ID.
+     * Updates the OTA update information for the given node Thing.
      * 
-     * @param nodeId the node ID to update the OTA update information for
-     * @param updateInfo the OTA update information to update
+     * @param thingUID the UID of the node Thing to update the OTA update information for
+     * @param updateInfo the OTA update information, or null if no update is available
      */
-    public void updateFirmwareInfo(BigInteger nodeId, OtaUpdateInfo updateInfo) {
-        firmwareCache.putValue(nodeId, new OtaFirmwareEntry(updateInfo));
+    public void updateFirmwareInfo(ThingUID thingUID, @Nullable OtaUpdateInfo updateInfo) {
+        firmwareCache.put(thingUID, new OtaFirmwareEntry(updateInfo, Instant.now().plus(CACHE_EXPIRY)));
     }
 
     /**
-     * OTA firmware entry for a node.
-     * We wrap the OtaUpdateInfo so we can check if the entry is expired or not and if it has update information
-     * separately.
+     * Removes the OTA update information for the given node Thing.
+     * 
+     * @param thingUID the UID of the node Thing to remove the OTA update information for
      */
-    class OtaFirmwareEntry {
-        public @Nullable OtaUpdateInfo updateInfo;
+    public void removeFirmwareInfo(ThingUID thingUID) {
+        firmwareCache.remove(thingUID);
+        lastQueryStarted.remove(thingUID);
+    }
 
-        public OtaFirmwareEntry(@Nullable OtaUpdateInfo updateInfo) {
-            this.updateInfo = updateInfo;
+    private record OtaFirmwareEntry(@Nullable OtaUpdateInfo updateInfo, Instant expiresAt) {
+        boolean isExpired() {
+            return Instant.now().isAfter(expiresAt);
         }
     }
 }

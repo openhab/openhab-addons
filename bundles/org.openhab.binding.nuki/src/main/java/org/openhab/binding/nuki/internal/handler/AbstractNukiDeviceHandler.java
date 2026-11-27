@@ -142,10 +142,11 @@ public abstract class AbstractNukiDeviceHandler<T extends NukiDeviceConfiguratio
     private void initializeHandler() {
         Bridge bridge = getBridge();
         if (bridge == null) {
-            initializeHandler(null, null);
-        } else {
-            initializeHandler(bridge.getHandler(), bridge.getStatus());
+            logger.debug("Bridge unavailable while initializing Thing: {}", thing.getUID());
+            stopReInitJob();
+            return;
         }
+        initializeHandler(bridge.getHandler(), bridge.getStatus());
     }
 
     private void initializeHandler(@Nullable ThingHandler handler, @Nullable ThingStatus bridgeStatus) {
@@ -167,11 +168,11 @@ public abstract class AbstractNukiDeviceHandler<T extends NukiDeviceConfiguratio
                     }
                 });
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+                updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
                 stopReInitJob();
             }
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
+            updateStatus(ThingStatus.UNKNOWN);
             stopReInitJob();
         }
     }
@@ -316,7 +317,7 @@ public abstract class AbstractNukiDeviceHandler<T extends NukiDeviceConfiguratio
         logger.debug("Could not handle command[{}] for channelUID[{}] on nukiId[{}]!", command, channelUID,
                 configuration.nukiId);
 
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, nukiBaseResponse.getMessage());
+        updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, nukiBaseResponse.getMessage());
 
         updateState(NukiBindingConstants.CHANNEL_SMARTLOCK_LOCK, OnOffType.OFF, Function.identity());
         updateState(NukiBindingConstants.CHANNEL_SMARTLOCK_STATE, NukiBindingConstants.LOCK_STATES_UNDEFINED,

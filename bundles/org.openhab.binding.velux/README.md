@@ -1,3 +1,11 @@
+---
+children:
+  - ["doc/things", "Examples for Things"]
+  - ["items", "Examples for Items"]
+  - ["sitemaps", "Examples for Sitemaps"]
+  - ["rules", "Examples for Rules"]
+---
+
 # Velux Binding
 
 This binding integrates the <B>Velux</B> devices with help of a gateway, the <B>Velux Bridge KLF200</B>, which is able to control 200 actuators.
@@ -351,7 +359,7 @@ then
         if (windowState == 0) {
             logWarn("rules.V_WINDOW", "V-WINDOW changed to fully open.")
             var int interval = 1
-            createTimer(now.plusMinutes(interval)) [ |
+            createTimer(now.plusMinutes(interval)) [
                     logWarn("rules.V_WINDOW:event", "event-V_WINDOW(): setting V-WINDOW to 100.")
                     sendCommand(V_WINDOW, 100)
                     V_WINDOW.postUpdate(100)
@@ -555,6 +563,7 @@ Therefore, on the one hand you can use the Web Frontend for manual control and o
 
 If you get this error first make sure that you entered the right password (the one below SSID on the back of the hub).
 If the error persists, it may be due to the temporary Wi-Fi Access Point blocking the LAN (as described above).
+The binding retries communication failures automatically, but it cannot recover a KLF 200 whose network stack remains stuck.
 To recover from this, first disable the bridge in the UI, disconnect the LAN cable, power cycle your KLF200 and wait a few minutes.
 Then reconnect the LAN cable and re-enable the bridge in the UI again.
 DO NOT try to connect anything to the temporary Wi-Fi Access Point during this process!!

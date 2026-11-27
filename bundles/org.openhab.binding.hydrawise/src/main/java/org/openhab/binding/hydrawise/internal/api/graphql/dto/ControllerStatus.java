@@ -22,5 +22,4 @@ public class ControllerStatus {
     public String name;
     public String summary;
     public Boolean online;
-    public Time lastContact;
 }

@@ -28,8 +28,10 @@ public class BooleanStateCluster extends BaseCluster {
     public static final int CLUSTER_ID = 0x0045;
     public static final String CLUSTER_NAME = "BooleanState";
     public static final String CLUSTER_PREFIX = "booleanState";
+    public static final String ATTRIBUTE_FEATURE_MAP = "featureMap";
     public static final String ATTRIBUTE_STATE_VALUE = "stateValue";
 
+    public FeatureMap featureMap; // 65532 FeatureMap
     /**
      * This represents a boolean state.
      * The semantics of this boolean state are defined by the device type using this cluster. For example, in a Contact
@@ -52,6 +54,20 @@ public class BooleanStateCluster extends BaseCluster {
         }
     }
 
+    // Bitmaps
+    public static class FeatureMap {
+        /**
+         * 
+         * This feature shall indicate that the StateChange event is supported and will be generated every time the
+         * state changes.
+         */
+        public boolean changeEvent;
+
+        public FeatureMap(boolean changeEvent) {
+            this.changeEvent = changeEvent;
+        }
+    }
+
     public BooleanStateCluster(BigInteger nodeId, int endpointId) {
         super(nodeId, endpointId, 69, "BooleanState");
     }
@@ -63,6 +79,7 @@ public class BooleanStateCluster extends BaseCluster {
     @Override
     public @NonNull String toString() {
         String str = "";
+        str += "featureMap : " + featureMap + "\n";
         str += "stateValue : " + stateValue + "\n";
         return str;
     }

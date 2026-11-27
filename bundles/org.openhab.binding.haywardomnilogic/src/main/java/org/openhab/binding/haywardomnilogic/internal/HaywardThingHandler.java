@@ -32,6 +32,8 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link HaywardThingHandler} is a subclass of the BaseThingHandler and a Super
@@ -42,6 +44,7 @@ import org.openhab.core.types.State;
 
 @NonNullByDefault
 public abstract class HaywardThingHandler extends BaseThingHandler {
+    private final Logger logger = LoggerFactory.getLogger(HaywardThingHandler.class);
 
     public HaywardThingHandler(Thing thing) {
         super(thing);
@@ -49,6 +52,10 @@ public abstract class HaywardThingHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
+        if (getBridge() == null) {
+            logger.debug("Bridge unavailable while initializing Thing: {}", thing.getUID());
+            return;
+        }
         updateStatus(ThingStatus.ONLINE);
     }
 

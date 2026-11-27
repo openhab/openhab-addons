@@ -1,0 +1,7 @@
+{"appliance_id":"11111111-1111-1111-1111-111111111111","type":101,"data":{"measurement":[
+ {"date":"2026-11-17 11:00:00","temperature":21.0,"humidity":40},
+ {"date":"2026-11-17 9:0:0","temperature":20.5,"humidity":41},
+ {"date":"2026-11-17 10:00:00","temperature":20.75},
+ {"date":"not a date","temperature":99.0,"humidity":99},
+ {"temperature":98.0}
+]}}

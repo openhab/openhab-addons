@@ -30,9 +30,9 @@ import javax.measure.quantity.Temperature;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.ContentResponse;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpMethod;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -43,6 +43,7 @@ import org.openhab.core.i18n.UnitProvider;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.ImperialUnits;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.thing.Bridge;
@@ -137,7 +138,7 @@ public class MSpaPool extends BaseThingHandler {
                     commandBody.put("device_id", config.deviceId);
                     commandBody.put("product_id", config.productId);
                     Request commandRequest = acc.getRequest(HttpMethod.POST, ENDPOINT_COMMAND);
-                    commandRequest.content(new StringContentProvider(commandBody.toString(), "utf-8"));
+                    commandRequest.body(new StringRequestContent(commandBody.toString()));
                     try {
                         ContentResponse cr = commandRequest.timeout(10, TimeUnit.SECONDS).send();
                         int status = cr.getStatus();
@@ -160,13 +161,11 @@ public class MSpaPool extends BaseThingHandler {
     public void initialize() {
         config = getConfigAs(MSpaPoolConfiguration.class);
         if (config.deviceId.isBlank() || config.productId.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/status.mspa.pool.config-parameter-missing");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/status.mspa.pool.config-parameter-missing");
             return;
         }
         if (config.refreshInterval < 5) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/status.mspa.pool.refresh-too-low");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/status.mspa.pool.refresh-too-low");
             return;
         }
 
@@ -182,16 +181,13 @@ public class MSpaPool extends BaseThingHandler {
                             TimeUnit.SECONDS);
                     setCommandOptions();
                 } else {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "@text/status.mspa.invalid-token");
+                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/status.mspa.invalid-token");
                 }
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "@text/status.mspa.pool.wrong-bridge");
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/status.mspa.pool.wrong-bridge");
             }
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/status.mspa.pool.no-bridge");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/status.mspa.pool.no-bridge");
         }
     }
 
@@ -216,12 +212,15 @@ public class MSpaPool extends BaseThingHandler {
             JSONObject body = new JSONObject();
             body.put("device_id", config.deviceId);
             body.put("product_id", config.productId);
-            dataRequest.content(new StringContentProvider(body.toString(), "utf-8"));
+            dataRequest.body(new StringRequestContent(body.toString()));
             try {
                 ContentResponse cr = dataRequest.timeout(10, TimeUnit.SECONDS).send();
                 int status = cr.getStatus();
                 String response = cr.getContentAsString();
                 if (status == 200) {
+                    if (logger.isTraceEnabled()) {
+                        logger.trace("Device shadow {}", response);
+                    }
                     distributeData(response);
                 } else {
                     logger.info("Failed to get data - reason {}", response);
@@ -240,7 +239,7 @@ public class MSpaPool extends BaseThingHandler {
         }
         Optional<JSONArray> deviceListOpt = acc.getDeviceList();
         if (deviceListOpt.isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/status.mspa.pool.request-failed [\"" + "@text/status.mspa.pool-no-devices" + "\"]");
             return false;
         } else {
@@ -262,7 +261,7 @@ public class MSpaPool extends BaseThingHandler {
                                 if (online) {
                                     updateStatus(ThingStatus.ONLINE);
                                 } else {
-                                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                                             "@text/status.mspa.pool.offline");
                                 }
                                 return online;
@@ -271,9 +270,21 @@ public class MSpaPool extends BaseThingHandler {
                     }
                 }
             }
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "@text/status.mspa.pool-missing");
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/status.mspa.pool-missing");
             return false;
         }
+    }
+
+    /**
+     * Updates the {@code fault} channel from the device shadow's {@code fault} code. A missing or blank code is
+     * reported as {@link org.openhab.binding.mspa.internal.MSpaConstants#FAULT_STATE_NONE}.
+     *
+     * @param rawData the "data" object of a device shadow response
+     */
+    private void updateFaultState(JSONObject rawData) {
+        String fault = rawData.optString("fault", EMPTY);
+        String faultText = fault.isBlank() ? FAULT_STATE_NONE : fault;
+        updateState(CHANNEL_FAULT, new StringType(faultText));
     }
 
     public void distributeData(String response) {
@@ -281,6 +292,7 @@ public class MSpaPool extends BaseThingHandler {
         dataCache = data.toString();
         if (data.has("data")) {
             JSONObject rawData = data.getJSONObject("data");
+            updateFaultState(rawData);
             if (rawData.has("heater_state")) {
                 updateState(CHANNEL_HEATER, OnOffType.from(rawData.getInt("heater_state") == 1));
             }

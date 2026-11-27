@@ -21,10 +21,10 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpMethod;
 import org.json.JSONObject;
 import org.openhab.binding.mspa.internal.MSpaConstants.ServiceRegion;
@@ -66,7 +66,7 @@ public class MSpaVisitorAccount extends MSpaBaseAccount {
         }
         // check for configuration errors
         if (config.grantCode.isBlank() || config.region.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/status.mspa.visitor-account.config-parameter-missing");
             return;
         }
@@ -113,7 +113,7 @@ public class MSpaVisitorAccount extends MSpaBaseAccount {
                 body.put("registration_id", "");
                 body.put("vercode", configuredGrants[i]);
                 body.put("binding_type", "home");
-                grantRequest.content(new StringContentProvider(body.toString(), "utf-8"));
+                grantRequest.body(new StringRequestContent(body.toString()));
                 try {
                     ContentResponse cr = grantRequest.timeout(10000, TimeUnit.MILLISECONDS).send();
                     int status = cr.getStatus();
@@ -147,7 +147,7 @@ public class MSpaVisitorAccount extends MSpaBaseAccount {
         body.put("registration_id", "");
         body.put("push_type", "android");
         body.put("lan_code", "EN");
-        tokenRequest.content(new StringContentProvider(body.toString(), "utf-8"));
+        tokenRequest.body(new StringRequestContent(body.toString()));
         String failReason = null;
         try {
             ContentResponse cr = tokenRequest.timeout(10000, TimeUnit.MILLISECONDS).send();
@@ -175,7 +175,7 @@ public class MSpaVisitorAccount extends MSpaBaseAccount {
             handlePossibleInterrupt(e);
         }
         if (failReason != null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/status.mspa.token-request-error [\"" + failReason + "\"]");
         } else {
             updateStatus(ThingStatus.ONLINE);

@@ -1,0 +1,239 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="bydbatterybox"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-type id="state-of-charge">
+		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<label>State of Charge</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>StateOfCharge</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f %%"/>
+	</channel-type>
+
+	<channel-type id="state-of-health">
+		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<label>State of Health</label>
+		<description>Remaining capacity relative to the nominal capacity, as estimated by the battery.</description>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
+		<state readOnly="true" pattern="%.0f %%"/>
+	</channel-type>
+
+	<channel-type id="voltage">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Voltage</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Voltage</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="voltage-calculated">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Voltage</label>
+		<description>Calculated from the cell voltages.</description>
+		<tags>
+			<tag>Calculation</tag>
+			<tag>Voltage</tag>
+		</tags>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+
+	<channel-type id="current">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>Current</label>
+		<description>Battery current. Positive while discharging, negative while charging.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Current</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="power">
+		<item-type>Number:Power</item-type>
+		<label>Power</label>
+		<description>Current multiplied by output voltage. Positive while discharging, negative while charging.</description>
+		<tags>
+			<tag>Calculation</tag>
+			<tag>Power</tag>
+		</tags>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+
+	<channel-type id="cell-voltage">
+		<item-type unitHint="mV">Number:ElectricPotential</item-type>
+		<label>Cell Voltage</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Voltage</tag>
+		</tags>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+
+	<channel-type id="cell-voltage-calculated">
+		<item-type unitHint="mV">Number:ElectricPotential</item-type>
+		<label>Cell Voltage</label>
+		<description>Calculated from the cell voltages.</description>
+		<tags>
+			<tag>Calculation</tag>
+			<tag>Voltage</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="cell-number">
+		<item-type>Number</item-type>
+		<label>Cell Number</label>
+		<description>1-based number of the cell or sensor within the tower.</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="true" pattern="%d"/>
+	</channel-type>
+
+	<channel-type id="temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+
+	<channel-type id="temperature-calculated">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature</label>
+		<tags>
+			<tag>Calculation</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="energy">
+		<item-type unitHint="kWh">Number:Energy</item-type>
+		<label>Energy</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="energy-calculated">
+		<item-type unitHint="kWh">Number:Energy</item-type>
+		<label>Energy</label>
+		<tags>
+			<tag>Calculation</tag>
+			<tag>Energy</tag>
+		</tags>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+
+	<channel-type id="efficiency">
+		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<label>Efficiency</label>
+		<description>Lifetime discharged energy divided by lifetime charged energy.</description>
+		<tags>
+			<tag>Calculation</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f %%"/>
+	</channel-type>
+
+	<channel-type id="tower-efficiency" advanced="true">
+		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<label>Efficiency</label>
+		<description>Lifetime discharged energy of the tower divided by its lifetime charged energy.</description>
+		<tags>
+			<tag>Calculation</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f %%"/>
+	</channel-type>
+
+	<channel-type id="module-balancing-cells" advanced="true">
+		<item-type>Number</item-type>
+		<label>Balancing Cells</label>
+		<description>Number of cells of the module currently being balanced.</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="true" pattern="%d"/>
+	</channel-type>
+
+	<channel-type id="balancing-cell-numbers" advanced="true">
+		<item-type>String</item-type>
+		<label>Balancing Cell Numbers</label>
+		<description>Numbers of the cells of the module currently being balanced, e.g. "5, 17", or "None".</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="balancing-cells">
+		<item-type>Number</item-type>
+		<label>Balancing Cells</label>
+		<description>Number of cells currently being balanced.</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="true" pattern="%d"/>
+	</channel-type>
+
+	<channel-type id="alarm">
+		<item-type>Switch</item-type>
+		<label>Alarm</label>
+		<tags>
+			<tag>Alarm</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="status-text">
+		<item-type>String</item-type>
+		<label>Status Text</label>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="timestamp">
+		<item-type>DateTime</item-type>
+		<label>Timestamp</label>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="clock-offset">
+		<item-type unitHint="s">Number:Time</item-type>
+		<label>BMU Clock Offset</label>
+		<description>Deviation of the battery clock, read as UTC, from the openHAB clock. Positive if the battery clock is
+			ahead.</description>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+
+	<channel-type id="event">
+		<kind>trigger</kind>
+		<label>Event</label>
+		<description>Fired once for every new event log entry. The payload is the source and the event code, e.g. BMU:32 or
+			BMS1:7.</description>
+		<event/>
+	</channel-type>
+
+</thing:thing-descriptions>

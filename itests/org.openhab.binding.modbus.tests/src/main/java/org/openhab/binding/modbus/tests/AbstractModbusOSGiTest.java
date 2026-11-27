@@ -156,6 +156,7 @@ public abstract class AbstractModbusOSGiTest extends JavaOSGiTest {
         assertThat("Could not get ItemRegistry", itemRegistry, is(notNullValue()));
         itemChannelLinkRegistry = getService(ItemChannelLinkRegistry.class);
         assertThat("Could not get ItemChannelLinkRegistry", itemChannelLinkRegistry, is(notNullValue()));
+        itemChannelLinkRegistry.waitForCompletedAsyncActivationTasks();
 
         coreItemFactory = new CoreItemFactory(mockedUnitProvider);
 

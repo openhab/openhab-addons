@@ -21,6 +21,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.slf4j.Logger;
 
 /**
@@ -163,7 +164,10 @@ public final class IwinfoParser {
                     }
                 }
 
-                radio.setEnabled(true);
+                Boolean enabled = isInterfaceEnabled(logger, runner, currentIface);
+                if (enabled != null) {
+                    radio.setEnabled(enabled);
+                }
 
                 // Get channel info
                 String chStr = runner
@@ -181,5 +185,16 @@ public final class IwinfoParser {
             }
         }
         return radios;
+    }
+
+    private static @Nullable Boolean isInterfaceEnabled(Logger logger, SshRunner runner, String iface) {
+        String flags = runner.execStdout("cat /sys/class/net/" + iface + "/flags").trim();
+        try {
+            // IFF_UP is the least-significant bit of the Linux network-interface flags.
+            return (Long.decode(flags) & 1) != 0;
+        } catch (NumberFormatException e) {
+            logger.debug("Could not read interface flags for {}; enabled state remains unknown", iface);
+            return null;
+        }
     }
 }

@@ -23,9 +23,9 @@ import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.Request;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.energyforecast.internal.config.EnergyForecastConfiguration;
 import org.openhab.binding.energyforecast.internal.dto.PriceInfo;
@@ -109,7 +109,7 @@ public class EnergyForecastHandler extends BaseThingHandler {
     }
 
     private void configError(String reason) {
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, reason);
+        updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, reason);
     }
 
     @Override
@@ -216,15 +216,15 @@ public class EnergyForecastHandler extends BaseThingHandler {
             } else {
                 String reason = response.getReason();
                 String statusMessage = "HTTP " + status + (!reason.isEmpty() ? " " + reason : "");
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, statusMessage);
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, statusMessage);
                 return false;
             }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt(); // restore interrupt status
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             return false;
         } catch (ExecutionException | TimeoutException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             return false;
         }
     }

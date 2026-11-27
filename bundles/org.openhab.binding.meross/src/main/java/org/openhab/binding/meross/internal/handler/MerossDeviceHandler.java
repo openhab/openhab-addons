@@ -85,7 +85,7 @@ public class MerossDeviceHandler extends BaseThingHandler implements MerossDevic
         }
         ThingStatus bridgeStatus = bridge.getStatus();
         if (bridgeStatus.equals(ThingStatus.OFFLINE)) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
             return;
         }
 
@@ -107,7 +107,7 @@ public class MerossDeviceHandler extends BaseThingHandler implements MerossDevic
         }
         String deviceUUID = config.uuid;
         if (deviceUUID.isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                     "No device found with name " + config.name + ", UUID not set");
             return;
         }
@@ -119,7 +119,7 @@ public class MerossDeviceHandler extends BaseThingHandler implements MerossDevic
                 manager.initialize();
                 initializeDevice();
             } catch (MqttException | InterruptedException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                         "Communication error for device with name " + config.name);
             }
         });
@@ -148,7 +148,7 @@ public class MerossDeviceHandler extends BaseThingHandler implements MerossDevic
         if (bridge != null && bridge.getHandler() != null) {
             ThingStatus bridgeStatus = bridge.getStatus();
             if (ThingStatus.OFFLINE.equals(bridgeStatus)) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+                updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
             } else if (ThingStatus.ONLINE.equals(bridgeStatus) && !(ThingStatus.ONLINE.equals(thing.getStatus()))) {
                 initializeCommunication();
             }
@@ -236,10 +236,9 @@ public class MerossDeviceHandler extends BaseThingHandler implements MerossDevic
 
                 manager.sendCommand(channel, namespace, command);
             } catch (MqttException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "Cannot send command, " + e.getMessage());
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "Cannot send command, " + e.getMessage());
             } catch (InterruptedException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Connection interrupted");
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "Connection interrupted");
             }
         });
     }

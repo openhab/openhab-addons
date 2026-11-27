@@ -1,0 +1,4 @@
+{
+  "idToken": "eyJhbGciOiAibm9uZSIsICJ0eXAiOiAiSldUIn0.eyJzdWIiOiAiNDQ0NDQ0NDQtNDQ0NC00NDQ0LTg0NDQtNDQ0NDQ0NDQ0NDQ0IiwgImV4cCI6IDQxMDI0NDQ4MDB9.signature",
+  "refreshToken": "test-refresh-token"
+}

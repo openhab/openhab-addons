@@ -66,17 +66,21 @@ public class PowermaxThingHandler extends BaseThingHandler implements PowermaxPa
         logger.debug("Initializing handler for thing {}", getThing().getUID());
         Bridge bridge = getBridge();
         if (bridge == null) {
-            initializeThingState(null, null);
-        } else {
-            initializeThingState(bridge.getHandler(), bridge.getStatus());
+            logger.debug("Bridge unavailable while initializing Thing: {}", thing.getUID());
+            return;
         }
+        initializeThingState(bridge.getHandler(), bridge.getStatus());
     }
 
     @Override
     public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
         logger.debug("Bridge status changed to {} for thing {}", bridgeStatusInfo, getThing().getUID());
         Bridge bridge = getBridge();
-        initializeThingState((bridge == null) ? null : bridge.getHandler(), bridgeStatusInfo.getStatus());
+        if (bridge == null) {
+            logger.debug("Bridge unavailable for Thing: {}", thing.getUID());
+            return;
+        }
+        initializeThingState(bridge.getHandler(), bridgeStatusInfo.getStatus());
     }
 
     private void initializeThingState(@Nullable ThingHandler bridgeHandler, @Nullable ThingStatus bridgeStatus) {
@@ -112,16 +116,15 @@ public class PowermaxThingHandler extends BaseThingHandler implements PowermaxPa
                     powermaxBridgeHandler.registerPanelSettingsListener(this);
                     onPanelSettingsUpdated(powermaxBridgeHandler.getPanelSettings());
                 } else {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, errorMsg);
+                    updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, errorMsg);
                 }
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+                updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
                 setAllChannelsOffline();
                 logger.debug("Set handler status to OFFLINE for thing {} (bridge OFFLINE)", getThing().getUID());
             }
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
-            logger.debug("Set handler status to OFFLINE for thing {}", getThing().getUID());
+            logger.debug("Bridge handler is null for thing {}", getThing().getUID());
         }
     }
 
@@ -227,7 +230,7 @@ public class PowermaxThingHandler extends BaseThingHandler implements PowermaxPa
                 }
             } else if (deviceSettings == null || !deviceSettings.isEnabled()) {
                 if (getThing().getStatus() != ThingStatus.OFFLINE) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "@text/offline.disabled-device");
+                    updateStatus(ThingStatus.OFFLINE, "@text/offline.disabled-device");
                     logger.debug("Set handler status to OFFLINE for thing {} (X10 device {} disabled)",
                             getThing().getUID(), config.deviceNumber);
                 }
@@ -257,7 +260,7 @@ public class PowermaxThingHandler extends BaseThingHandler implements PowermaxPa
                     }
                 } else if (zoneSettings == null) {
                     if (getThing().getStatus() != ThingStatus.OFFLINE) {
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "@text/offline.zone-not-paired");
+                        updateStatus(ThingStatus.OFFLINE, "@text/offline.zone-not-paired");
                         logger.debug("Set handler status to OFFLINE for thing {} (zone number {} not paired)",
                                 getThing().getUID(), config.zoneNumber);
                     }
@@ -274,10 +277,11 @@ public class PowermaxThingHandler extends BaseThingHandler implements PowermaxPa
     }
 
     private boolean isNotReadyForThingStatusUpdate() {
-        return (getThing().getStatus() == ThingStatus.OFFLINE)
-                && ((getThing().getStatusInfo().getStatusDetail() == ThingStatusDetail.CONFIGURATION_ERROR)
-                        || (getThing().getStatusInfo().getStatusDetail() == ThingStatusDetail.BRIDGE_OFFLINE)
-                        || (getThing().getStatusInfo().getStatusDetail() == ThingStatusDetail.BRIDGE_UNINITIALIZED));
+        ThingStatusInfo statusInfo = getThing().getStatusInfo();
+        ThingStatusDetail detail = statusInfo.getStatusDetail();
+        return (statusInfo.getStatus() == ThingStatus.UNINITIALIZED && detail == ThingStatusDetail.BRIDGE_UNINITIALIZED)
+                || (statusInfo.getStatus() == ThingStatus.OFFLINE && (detail == ThingStatusDetail.CONFIGURATION_ERROR
+                        || detail == ThingStatusDetail.BRIDGE_OFFLINE));
     }
 
     public PowermaxZoneConfiguration getZoneConfiguration() {

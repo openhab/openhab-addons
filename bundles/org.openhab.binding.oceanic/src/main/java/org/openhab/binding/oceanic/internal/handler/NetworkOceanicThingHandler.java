@@ -72,12 +72,12 @@ public class NetworkOceanicThingHandler extends OceanicThingHandler {
         } catch (UnknownHostException e) {
             logger.error("An exception occurred while resolving host {}:{} : '{}'", config.ipAddress, config.portNumber,
                     e.getMessage());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                     "Could not resolve host " + config.ipAddress + ": " + e.getMessage());
         } catch (IOException e) {
             logger.debug("An exception occurred while connecting to host {}:{} : '{}'", config.ipAddress,
                     config.portNumber, e.getMessage());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                     "Could not connect to host " + config.ipAddress + ": " + e.getMessage());
             reconnectJob = scheduler.schedule(reconnectRunnable, RECONNECT_INTERVAL, TimeUnit.SECONDS);
         }
@@ -204,7 +204,7 @@ public class NetworkOceanicThingHandler extends OceanicThingHandler {
                 } catch (IOException e) {
                     logger.debug("An exception occurred while quering host {}:{} : '{}'", config.ipAddress,
                             config.portNumber, e.getMessage(), e);
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                     reconnectJob = scheduler.schedule(reconnectRunnable, RECONNECT_INTERVAL, TimeUnit.SECONDS);
                 } finally {
                     Throttler.unlock(config.ipAddress);

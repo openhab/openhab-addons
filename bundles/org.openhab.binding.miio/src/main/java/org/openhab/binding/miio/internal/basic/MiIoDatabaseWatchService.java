@@ -29,7 +29,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.miio.internal.MiIoBindingConstants;
 import org.openhab.binding.miio.internal.Utils;
-import org.openhab.core.OpenHAB;
 import org.openhab.core.service.WatchService;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
@@ -55,23 +54,22 @@ import com.google.gson.JsonParseException;
 @NonNullByDefault
 public class MiIoDatabaseWatchService implements WatchService.WatchEventListener {
     private static final String DATABASE_FILES = ".json";
+    // relative to the base path of the config watcher
+    private static final Path WATCH_PATH = Path.of("misc", "miio");
     private static final Gson GSON = new GsonBuilder().serializeNulls().create();
 
     private final Logger logger = LoggerFactory.getLogger(MiIoDatabaseWatchService.class);
     private final WatchService watchService;
-    private Map<String, URL> databaseList = new HashMap<>();
-    private final Path watchPath;
+    private volatile Map<String, URL> databaseList = new HashMap<>();
 
     @Activate
     public MiIoDatabaseWatchService(@Reference(target = WatchService.CONFIG_WATCHER_FILTER) WatchService watchService) {
         this.watchService = watchService;
-        this.watchPath = Path.of(BINDING_DATABASE_PATH).relativize(Path.of(OpenHAB.getConfigFolder()));
-        watchService.registerListener(this, watchPath);
+        watchService.registerListener(this, WATCH_PATH, false);
 
         logger.debug(
                 "Started miio basic devices local databases watch service. Watching for database files at path: {}",
                 BINDING_DATABASE_PATH);
-        processWatchEvent(WatchService.Kind.CREATE, watchPath);
         populateDatabase();
         if (logger.isTraceEnabled()) {
             for (String device : databaseList.keySet()) {
@@ -119,10 +117,10 @@ public class MiIoDatabaseWatchService implements WatchService.WatchEventListener
                     workingDatabaseList.put(id, db);
                 }
             } catch (JsonParseException | IOException | URISyntaxException e) {
-                logger.debug("Error while processing database '{}': {}", db, e.getMessage());
+                logger.warn("Skipping database file '{}': {}", db, e.getMessage());
             }
-            databaseList = workingDatabaseList;
         }
+        databaseList = workingDatabaseList;
     }
 
     private List<URL> findDatabaseFiles() {

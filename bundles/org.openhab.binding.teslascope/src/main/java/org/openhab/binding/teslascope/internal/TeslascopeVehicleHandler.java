@@ -73,7 +73,7 @@ public class TeslascopeVehicleHandler extends BaseThingHandler {
     public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
         if (bridgeStatusInfo.getStatus() == ThingStatus.OFFLINE) {
             stopPoll();
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
         } else if (bridgeStatusInfo.getStatus() == ThingStatus.ONLINE) {
             updateStatus(ThingStatus.ONLINE);
             stopPoll();
@@ -94,7 +94,7 @@ public class TeslascopeVehicleHandler extends BaseThingHandler {
             throws TeslascopeCommunicationException, TeslascopeAuthenticationException {
         TeslascopeAccountHandler localBridge = bridgeHandler;
         if (localBridge == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "@text/offline.conf-error.no-bridge");
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE, "@text/offline.conf-error.no-bridge");
             return;
         }
         localBridge.sendCommand(publicID, command);
@@ -104,7 +104,7 @@ public class TeslascopeVehicleHandler extends BaseThingHandler {
             throws TeslascopeCommunicationException, TeslascopeAuthenticationException {
         TeslascopeAccountHandler localBridge = bridgeHandler;
         if (localBridge == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "@text/offline.conf-error.no-bridge");
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE, "@text/offline.conf-error.no-bridge");
             return;
         }
         localBridge.sendCommand(publicID, command, params);
@@ -162,14 +162,17 @@ public class TeslascopeVehicleHandler extends BaseThingHandler {
     public void initialize() {
         config = getConfigAs(TeslascopeVehicleConfiguration.class);
         if (config.publicID.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.conf-error.no-public-id");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.conf-error.no-public-id");
             return;
         }
 
-        if (!(getBridge() instanceof Bridge bridge
-                && bridge.getHandler() instanceof TeslascopeAccountHandler accountHandler)) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "@text/offline.conf-error.no-bridge");
+        Bridge bridge = getBridge();
+        if (bridge == null) {
+            logger.debug("Bridge unavailable while initializing Thing: {}", thing.getUID());
+            return;
+        }
+        if (!(bridge.getHandler() instanceof TeslascopeAccountHandler accountHandler)) {
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE, "@text/offline.conf-error.no-bridge");
             return;
         }
         bridgeHandler = accountHandler;
@@ -201,8 +204,7 @@ public class TeslascopeVehicleHandler extends BaseThingHandler {
         try {
             String response = getDetailedInformation(config.publicID);
             if (response == null || response.isBlank()) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "@text/offline.comm-error.empty-response");
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/offline.comm-error.empty-response");
                 return;
             }
             DetailedInformation detailedInformation = gson.fromJson(response, DetailedInformation.class);
@@ -333,6 +335,12 @@ public class TeslascopeVehicleHandler extends BaseThingHandler {
                             new StringType(detailedInformation.driveState.shiftState));
                     updateState(TeslascopeBindingConstants.CHANNEL_SPEED,
                             new QuantityType<>(detailedInformation.driveState.speed, ImperialUnits.MILES_PER_HOUR));
+                    updateState(TeslascopeBindingConstants.CHANNEL_SELF_DRIVING_MILES_SINCE_RESET, new QuantityType<>(
+                            detailedInformation.driveState.selfDrivingMilesSinceReset, ImperialUnits.MILE));
+                    updateState(TeslascopeBindingConstants.CHANNEL_MILES_SINCE_RESET,
+                            new QuantityType<>(detailedInformation.driveState.milesSinceReset, ImperialUnits.MILE));
+                    updateState(TeslascopeBindingConstants.CHANNEL_SELF_DRIVING_PERCENTAGE,
+                            new DecimalType(detailedInformation.driveState.selfDrivingPercentage));
                 }
 
                 // vehicle state
@@ -394,15 +402,14 @@ public class TeslascopeVehicleHandler extends BaseThingHandler {
                 updateState(TeslascopeBindingConstants.CHANNEL_FLASH_LIGHTS, OnOffType.OFF);
             }
         } catch (TeslascopeAuthenticationException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
         } catch (TeslascopeCommunicationException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         } catch (IllegalStateException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, e.getMessage());
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE, e.getMessage());
         } catch (JsonSyntaxException e) {
             logger.debug("Failed to parse vehicle details: {}", e.getMessage(), e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/offline.comm-error.no-json");
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/offline.comm-error.no-json");
         }
     }
 
@@ -410,11 +417,11 @@ public class TeslascopeVehicleHandler extends BaseThingHandler {
         try {
             sendCommand(config.publicID, b ? "startAC" : "stopAC", "");
         } catch (TeslascopeAuthenticationException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
         } catch (TeslascopeCommunicationException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         } catch (IllegalStateException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, e.getMessage());
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE, e.getMessage());
         } catch (Exception e) {
             logger.debug("Failed to send setAutoConditioning command: {}", e.getMessage(), e);
         }
@@ -424,11 +431,11 @@ public class TeslascopeVehicleHandler extends BaseThingHandler {
         try {
             sendCommand(config.publicID, b ? "startCharging" : "stopCharging", "");
         } catch (TeslascopeAuthenticationException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
         } catch (TeslascopeCommunicationException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         } catch (IllegalStateException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, e.getMessage());
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE, e.getMessage());
         } catch (Exception e) {
             logger.debug("Failed to send charge command: {}", e.getMessage(), e);
         }
@@ -438,11 +445,11 @@ public class TeslascopeVehicleHandler extends BaseThingHandler {
         try {
             sendCommand(config.publicID, b ? "openChargeDoor" : "closeChargeDoor", "");
         } catch (TeslascopeAuthenticationException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
         } catch (TeslascopeCommunicationException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         } catch (IllegalStateException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, e.getMessage());
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE, e.getMessage());
         } catch (Exception e) {
             logger.debug("Failed to send chargeDoor command: {}", e.getMessage(), e);
         }
@@ -453,11 +460,11 @@ public class TeslascopeVehicleHandler extends BaseThingHandler {
             sendCommand(config.publicID, "flashLights");
             updateState(TeslascopeBindingConstants.CHANNEL_FLASH_LIGHTS, OnOffType.OFF);
         } catch (TeslascopeAuthenticationException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
         } catch (TeslascopeCommunicationException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         } catch (IllegalStateException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, e.getMessage());
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE, e.getMessage());
         } catch (Exception e) {
             logger.debug("Failed to send flashLights command: {}", e.getMessage(), e);
         }
@@ -468,11 +475,11 @@ public class TeslascopeVehicleHandler extends BaseThingHandler {
             sendCommand(config.publicID, "honkHorn");
             updateState(TeslascopeBindingConstants.CHANNEL_HONK_HORN, OnOffType.OFF);
         } catch (TeslascopeAuthenticationException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
         } catch (TeslascopeCommunicationException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         } catch (IllegalStateException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, e.getMessage());
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE, e.getMessage());
         } catch (Exception e) {
             logger.debug("Failed to send honkHorn command: {}", e.getMessage(), e);
         }
@@ -482,11 +489,11 @@ public class TeslascopeVehicleHandler extends BaseThingHandler {
         try {
             sendCommand(config.publicID, b ? "lock" : "unlock");
         } catch (TeslascopeAuthenticationException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
         } catch (TeslascopeCommunicationException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         } catch (IllegalStateException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, e.getMessage());
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE, e.getMessage());
         } catch (Exception e) {
             logger.debug("Failed to send lock command: {}", e.getMessage(), e);
         }
@@ -496,11 +503,11 @@ public class TeslascopeVehicleHandler extends BaseThingHandler {
         try {
             sendCommand(config.publicID, "openFrunk");
         } catch (TeslascopeAuthenticationException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
         } catch (TeslascopeCommunicationException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         } catch (IllegalStateException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, e.getMessage());
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE, e.getMessage());
         } catch (Exception e) {
             logger.debug("Failed to send openFrunk command: {}", e.getMessage(), e);
         }
@@ -510,11 +517,11 @@ public class TeslascopeVehicleHandler extends BaseThingHandler {
         try {
             sendCommand(config.publicID, "openTrunk");
         } catch (TeslascopeAuthenticationException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
         } catch (TeslascopeCommunicationException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         } catch (IllegalStateException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, e.getMessage());
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE, e.getMessage());
         } catch (Exception e) {
             logger.debug("Failed to send openTrunk command: {}", e.getMessage(), e);
         }
@@ -524,11 +531,11 @@ public class TeslascopeVehicleHandler extends BaseThingHandler {
         try {
             sendCommand(config.publicID, b ? "enableSentryMode" : "disableSentryMode");
         } catch (TeslascopeAuthenticationException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
         } catch (TeslascopeCommunicationException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         } catch (IllegalStateException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, e.getMessage());
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE, e.getMessage());
         } catch (Exception e) {
             logger.debug("Failed to send sentry command: {}", e.getMessage(), e);
         }
@@ -538,11 +545,11 @@ public class TeslascopeVehicleHandler extends BaseThingHandler {
         try {
             sendCommand(config.publicID, "setChargeLimit", "limit=" + chargeLimit.toBigDecimal().intValue());
         } catch (TeslascopeAuthenticationException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
         } catch (TeslascopeCommunicationException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         } catch (IllegalStateException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, e.getMessage());
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE, e.getMessage());
         } catch (Exception e) {
             logger.debug("Failed to send setChargeLimit command: {}", e.getMessage(), e);
         }

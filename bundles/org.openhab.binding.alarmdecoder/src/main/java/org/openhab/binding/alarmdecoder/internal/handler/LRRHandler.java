@@ -22,7 +22,6 @@ import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
-import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.types.Command;
 import org.slf4j.Logger;
@@ -50,7 +49,7 @@ public class LRRHandler extends ADThingHandler {
         config = getConfigAs(LRRConfig.class);
 
         if (config.partition < 0) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR);
             return;
         }
         logger.debug("LRR handler initializing for partition {}", config.partition);

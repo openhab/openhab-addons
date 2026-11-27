@@ -158,7 +158,7 @@ public abstract class DaikinBaseHandler extends BaseThingHandler {
             logger.debug("Received command ({}) of wrong type for thing '{}' on channel {}", command,
                     thing.getUID().getAsString(), channelUID.getId());
         } catch (DaikinCommunicationException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 
@@ -168,7 +168,7 @@ public abstract class DaikinBaseHandler extends BaseThingHandler {
         config = getConfigAs(DaikinConfiguration.class);
 
         if (config.host == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Host address must be set");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Host address must be set");
         } else {
             if (config.uuid != null) {
                 config.uuid = config.uuid.replaceAll("\\s|-", "");
@@ -219,12 +219,11 @@ public abstract class DaikinBaseHandler extends BaseThingHandler {
                 registerUuid(config.key);
                 uuidRegistrationAttempted = true;
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "Access denied. Check uuid/key.");
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Access denied. Check uuid/key.");
                 logger.warn("{} access denied by adapter. Check uuid/key.", thing.getUID());
             }
         } catch (DaikinCommunicationException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 

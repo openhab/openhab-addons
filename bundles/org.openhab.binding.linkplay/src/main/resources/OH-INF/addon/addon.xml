@@ -5,11 +5,17 @@
 
 	<type>binding</type>
 	<name>LinkPlay Binding</name>
-	<description>This is the binding for LinkPlay.</description>
+	<description>This is the binding for audio devices based on the LinkPlay platform.</description>
 	<connection>local</connection>
 	<discovery-methods>
 		<discovery-method>
 			<service-type>upnp</service-type>
+			<match-properties>
+				<match-property>
+					<name>manufacturer</name>
+					<regex>(?i)Linkplay.*</regex>
+				</match-property>
+			</match-properties>
 		</discovery-method>
 	</discovery-methods>
 </addon:addon>

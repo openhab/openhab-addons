@@ -1,0 +1,119 @@
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+package org.openhab.binding.ocpp.internal.transport;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.junit.jupiter.api.Test;
+
+import eu.chargetime.ocpp.model.core.ChargingProfile;
+import eu.chargetime.ocpp.model.core.ChargingProfileKindType;
+import eu.chargetime.ocpp.model.core.ChargingProfilePurposeType;
+import eu.chargetime.ocpp.model.core.ChargingRateUnitType;
+import eu.chargetime.ocpp.model.core.ChargingSchedulePeriod;
+import eu.chargetime.ocpp.model.smartcharging.ClearChargingProfileRequest;
+import eu.chargetime.ocpp.model.smartcharging.SetChargingProfileRequest;
+
+/**
+ * Tests the TxProfile / TxDefaultProfile decision and schedule shape of {@link ChargingProfileBuilder}.
+ *
+ * @author Stamate Viorel - Initial contribution
+ */
+@NonNullByDefault
+class ChargingProfileBuilderTest {
+
+    @Test
+    void noTransactionGivesATxDefaultProfile() {
+        SetChargingProfileRequest request = ChargingProfileBuilder.limit(1, ChargingRateUnitType.A, 16.0, null, false,
+                null);
+        assertEquals(1, request.getConnectorId().intValue());
+
+        ChargingProfile profile = request.getCsChargingProfiles();
+        assertEquals(ChargingProfileBuilder.profileId(1, false), profile.getChargingProfileId().intValue());
+        assertEquals(ChargingProfilePurposeType.TxDefaultProfile, profile.getChargingProfilePurpose());
+        // Absolute without startSchedule is invalid in OCPP 1.6; a fixed cap is Relative.
+        assertEquals(ChargingProfileKindType.Relative, profile.getChargingProfileKind());
+        assertNull(profile.getTransactionId());
+        assertEquals(0, profile.getStackLevel().intValue());
+
+        assertEquals(ChargingRateUnitType.A, profile.getChargingSchedule().getChargingRateUnit());
+        ChargingSchedulePeriod[] periods = profile.getChargingSchedule().getChargingSchedulePeriod();
+        assertEquals(1, periods.length);
+        assertEquals(0, periods[0].getStartPeriod().intValue());
+        assertEquals(16.0, periods[0].getLimit().doubleValue());
+    }
+
+    @Test
+    void activeTransactionGivesATxProfileCarryingTheTransactionId() {
+        SetChargingProfileRequest request = ChargingProfileBuilder.limit(2, ChargingRateUnitType.A, 10.0, null, false,
+                42);
+        ChargingProfile profile = request.getCsChargingProfiles();
+        assertEquals(ChargingProfileBuilder.profileId(2, true), profile.getChargingProfileId().intValue());
+        assertEquals(ChargingProfilePurposeType.TxProfile, profile.getChargingProfilePurpose());
+        assertEquals(42, profile.getTransactionId().intValue());
+    }
+
+    @Test
+    void distinctConnectorsAndPurposesGetDistinctProfileIds() {
+        // A profile id is charge-point-wide and reinstalls replace by id, so connectors/purposes must not
+        // share ids.
+        int c1Default = ChargingProfileBuilder.limit(1, ChargingRateUnitType.A, 16.0, null, false, null)
+                .getCsChargingProfiles().getChargingProfileId();
+        int c2Default = ChargingProfileBuilder.limit(2, ChargingRateUnitType.A, 16.0, null, false, null)
+                .getCsChargingProfiles().getChargingProfileId();
+        int c1Tx = ChargingProfileBuilder.limit(1, ChargingRateUnitType.A, 16.0, null, false, 5).getCsChargingProfiles()
+                .getChargingProfileId();
+        assertNotEquals(c1Default, c2Default);
+        assertNotEquals(c1Default, c1Tx);
+    }
+
+    @Test
+    void forceTxDefaultKeepsTheDefaultProfileEvenDuringATransaction() {
+        SetChargingProfileRequest request = ChargingProfileBuilder.limit(1, ChargingRateUnitType.A, 6.0, null, true,
+                42);
+        ChargingProfile profile = request.getCsChargingProfiles();
+        assertEquals(ChargingProfilePurposeType.TxDefaultProfile, profile.getChargingProfilePurpose());
+        assertNull(profile.getTransactionId());
+    }
+
+    @Test
+    void zeroAmpsPausesViaLimitZero() {
+        SetChargingProfileRequest request = ChargingProfileBuilder.limit(1, ChargingRateUnitType.A, 0.0, null, true,
+                null);
+        ChargingSchedulePeriod period = request.getCsChargingProfiles().getChargingSchedule()
+                .getChargingSchedulePeriod()[0];
+        assertEquals(0.0, period.getLimit().doubleValue());
+    }
+
+    @Test
+    void clearLimitRemovesOurCapByConnectorAndStackLevel() {
+        // Clearing by connector+stack level (not id/purpose) removes whichever purpose set the cap; 0 A would
+        // suspend.
+        ClearChargingProfileRequest request = ChargingProfileBuilder.clearLimit(2);
+        assertEquals(2, request.getConnectorId().intValue());
+        assertEquals(0, request.getStackLevel().intValue());
+        assertNull(request.getId());
+        assertNull(request.getChargingProfilePurpose());
+    }
+
+    @Test
+    void aLimitIsSentWithOneDecimal() {
+        eu.chargetime.ocpp.model.smartcharging.SetChargingProfileRequest request = ChargingProfileBuilder.limit(1,
+                eu.chargetime.ocpp.model.core.ChargingRateUnitType.A, 6.333, null, false, null);
+        assertEquals(6.3, request.getCsChargingProfiles().getChargingSchedule().getChargingSchedulePeriod()[0]
+                .getLimit().doubleValue());
+    }
+}

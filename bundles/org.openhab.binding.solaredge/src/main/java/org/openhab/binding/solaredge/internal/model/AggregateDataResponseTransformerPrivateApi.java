@@ -19,14 +19,13 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.solaredge.internal.handler.ChannelProvider;
-import org.openhab.binding.solaredge.internal.model.AggregateDataResponsePrivateApi.UtilizationMeasures;
-import org.openhab.binding.solaredge.internal.model.AggregateDataResponsePrivateApi.Value;
-import org.openhab.binding.solaredge.internal.model.AggregateDataResponsePrivateApi.ValueAndPercent;
+import org.openhab.binding.solaredge.internal.model.AggregateDataResponsePrivateApi.ConsumptionDistribution;
+import org.openhab.binding.solaredge.internal.model.AggregateDataResponsePrivateApi.Summary;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.types.State;
 
 /**
- * transforms the http response into the openhab datamodel (instances of State)
+ * transforms the energy dashboard response into the openHAB datamodel (instances of State)
  *
  * @author Alexander Friese - initial contribution
  */
@@ -40,45 +39,34 @@ public class AggregateDataResponseTransformerPrivateApi extends AbstractDataResp
 
     public Map<Channel, State> transform(AggregateDataResponsePrivateApi response, AggregatePeriod period) {
         Map<Channel, State> result = new HashMap<>(20);
-        UtilizationMeasures utilizationMeasures = response.getUtilizationMeasures();
+        Summary summary = response.getSummary();
 
         String group = convertPeriodToGroup(period);
 
-        if (utilizationMeasures != null) {
-            Value production = utilizationMeasures.production;
-            if (production != null) {
-                putEnergyType(result, channelProvider.getChannel(group, CHANNEL_ID_PRODUCTION), production);
-            }
+        if (summary != null) {
+            putEnergyType(result, channelProvider.getChannel(group, CHANNEL_ID_PRODUCTION), summary.production,
+                    UNIT_WH);
 
-            Value consumption = utilizationMeasures.consumption;
-            if (consumption != null) {
-                putEnergyType(result, channelProvider.getChannel(group, CHANNEL_ID_CONSUMPTION), consumption);
-            }
+            putEnergyType(result, channelProvider.getChannel(group, CHANNEL_ID_CONSUMPTION), summary.consumption,
+                    UNIT_WH);
 
-            ValueAndPercent selfConsumptionForConsumption = utilizationMeasures.selfConsumptionForConsumption;
-            if (selfConsumptionForConsumption != null) {
+            putEnergyType(result, channelProvider.getChannel(group, CHANNEL_ID_IMPORT), summary.imported, UNIT_WH);
+
+            putEnergyType(result, channelProvider.getChannel(group, CHANNEL_ID_EXPORT), summary.export, UNIT_WH);
+
+            ConsumptionDistribution consumptionDistribution = summary.consumptionDistribution;
+            if (consumptionDistribution != null) {
                 putEnergyType(result, channelProvider.getChannel(group, CHANNEL_ID_SELF_CONSUMPTION_FOR_CONSUMPTION),
-                        selfConsumptionForConsumption);
+                        consumptionDistribution.consumptionFromSolar, UNIT_WH);
+
                 putPercentType(result, channelProvider.getChannel(group, CHANNEL_ID_SELF_CONSUMPTION_COVERAGE),
-                        selfConsumptionForConsumption);
-            }
+                        consumptionDistribution.consumptionFromSolarPercentage);
 
-            Value batterySelfConsumption = utilizationMeasures.batterySelfConsumption;
-            if (batterySelfConsumption != null) {
                 putEnergyType(result, channelProvider.getChannel(group, CHANNEL_ID_BATTERY_SELF_CONSUMPTION),
-                        batterySelfConsumption);
-            }
-
-            Value imported = utilizationMeasures.imported;
-            if (imported != null) {
-                putEnergyType(result, channelProvider.getChannel(group, CHANNEL_ID_IMPORT), imported);
-            }
-
-            Value export = utilizationMeasures.export;
-            if (export != null) {
-                putEnergyType(result, channelProvider.getChannel(group, CHANNEL_ID_EXPORT), export);
+                        consumptionDistribution.consumptionFromBattery, UNIT_WH);
             }
         }
+
         return result;
     }
 }

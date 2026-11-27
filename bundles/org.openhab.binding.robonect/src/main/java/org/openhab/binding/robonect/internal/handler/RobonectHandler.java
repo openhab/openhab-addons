@@ -99,7 +99,7 @@ public class RobonectHandler extends BaseThingHandler {
             updateStatus(ThingStatus.ONLINE);
         } catch (RobonectCommunicationException rce) {
             logger.debug("Failed to communicate with the mower. Taking it offline.", rce);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, rce.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, rce.getMessage());
         }
     }
 
@@ -438,7 +438,7 @@ public class RobonectHandler extends BaseThingHandler {
                     offlineTimeoutTriggered = true;
                 }
                 logger.debug("Failed to communicate with the mower. Taking it offline.", rce);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, rce.getMessage());
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, rce.getMessage());
                 loadVersionInfo = true;
             } catch (JsonSyntaxException jse) {
                 // the module sporadically sends invalid json responses. As this is usually recovered with the

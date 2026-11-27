@@ -39,6 +39,12 @@
 		<state min="-10" max="10" step="1" readOnly="false" pattern="%d"/>
 	</channel-type>
 
+	<channel-type id="buttonlock" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Button Lock</label>
+		<description>Lock or unlock the buttons on the Sonos device</description>
+	</channel-type>
+
 	<channel-type id="clearqueue" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Clear Queue</label>
@@ -80,8 +86,8 @@
 		<label>Current Album</label>
 		<description>Name of the album currently playing</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -98,8 +104,8 @@
 		<label>Current Album Cover Art URL</label>
 		<description>Cover art URL of the album currently playing</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -109,8 +115,8 @@
 		<label>Current Track</label>
 		<description>Name of the current track or radio station currently playing</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>

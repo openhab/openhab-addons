@@ -14,6 +14,9 @@ package org.openhab.binding.enocean.internal.eep.A5_3F;
 
 import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.*;
 
+import java.util.ArrayList;
+import java.util.EnumSet;
+import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
 
@@ -29,10 +32,12 @@ import org.openhab.binding.enocean.internal.statemachine.BlindAction;
 import org.openhab.binding.enocean.internal.statemachine.BlindState;
 import org.openhab.binding.enocean.internal.statemachine.STMStateMachine;
 import org.openhab.binding.enocean.internal.statemachine.STMTransitionConfiguration;
+import org.openhab.binding.enocean.internal.statemachine.STMWatchdog;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.StopMoveType;
+import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.types.UpDownType;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -40,6 +45,7 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
+import org.openhab.core.util.HexUtils;
 
 /**
  *
@@ -60,6 +66,15 @@ public class A5_3F_7F_EltakoFSB extends _4BSMessage implements StateMachineProvi
 
     static final byte CMD_100MSEC = 0x0A;
 
+    // The FAM14 forwards feedback in its polling cycle (about 5.7 s observed), so allow for more than two cycles.
+    static final long FEEDBACK_MARGIN_MS = 15000;
+
+    // in 100 ms units
+    static final int INTERRUPTION_TOLERANCE = 10;
+
+    // a wall switch runs until the run time set at the actuator elapses
+    static final long MANUAL_MOVEMENT_TIMEOUT_MS = 300000;
+
     public A5_3F_7F_EltakoFSB() {
     }
 
@@ -79,6 +94,9 @@ public class A5_3F_7F_EltakoFSB extends _4BSMessage implements StateMachineProvi
 
         if (duration != 0) {
             setData(duration_msb, duration_lsb, direction, CMD_100MSEC);
+            // the gateway sometimes drops a telegram
+            stm.setRetryCommand(CHANNEL_DIMMER, new StringType(
+                    HexUtils.bytesToHex(new byte[] { duration_msb, duration_lsb, direction, CMD_100MSEC })));
             stm.apply(BlindAction.SLATS_POS_REQUEST);
             return;
         } else {
@@ -128,6 +146,7 @@ public class A5_3F_7F_EltakoFSB extends _4BSMessage implements StateMachineProvi
 
             if (duration != 0) {
                 setData(duration_msb, duration_lsb, direction_b, (CMD_100MSEC));
+                stm.startMovement(duration);
 
                 if (direction) {
                     stm.apply(BlindAction.POSITION_REQUEST_UP);
@@ -152,12 +171,23 @@ public class A5_3F_7F_EltakoFSB extends _4BSMessage implements StateMachineProvi
                     setData(ZERO, shutTimeByte, MOVE_UP, TEACHIN_BIT); // => move completely up
                     stm.apply(BlindAction.CALIBRATION_REQUEST_UP);
                     break;
+                case MOVEMENT_CALIBRATION_UP, MOVEMENT_CALIBRATION_DOWN:
+                    if (isDimmerRequestWaiting(stm) && stm.getStoredCommand() instanceof PercentType angle) {
+                        setDimmerState(thing, angle);
+                    }
+                    stm.storeCommand(CHANNEL_ROLLERSHUTTER, percentCommand);
+                    break;
+                case MOVEMENT_SLATS, MOVEMENT_SLATS_RETRY, POSITION_REACHED:
+                    stm.storeCommand(CHANNEL_ROLLERSHUTTER, percentCommand);
+                    break;
                 case IDLE:
                     if (percentCommand.intValue() == PercentType.ZERO.intValue()) {
                         setData(ZERO, shutTimeByte, MOVE_UP, TEACHIN_BIT); // => move completely up
+                        stm.startMovement(fullTravelRuntime(shutTimeByte));
                         stm.apply(BlindAction.POSITION_REQUEST_UP);
                     } else if (percentCommand.intValue() == PercentType.HUNDRED.intValue()) {
                         setData(ZERO, shutTimeByte, MOVE_DOWN, TEACHIN_BIT); // => move completely down
+                        stm.startMovement(fullTravelRuntime(shutTimeByte));
                         stm.apply(BlindAction.POSITION_REQUEST_DOWN);
                     } else {
                         convertPosition(percentCommand, config, getCurrentStateFunc, stm);
@@ -203,6 +233,7 @@ public class A5_3F_7F_EltakoFSB extends _4BSMessage implements StateMachineProvi
                 if (upDownCommand == UpDownType.UP) {
                     setData(ZERO, shutTimeByte, MOVE_UP, TEACHIN_BIT); // => 0 percent
                     if (stm.getState() == BlindState.IDLE) {
+                        stm.startMovement(fullTravelRuntime(shutTimeByte));
                         stm.apply(BlindAction.POSITION_REQUEST_UP);
                     } else {
                         stm.storeCommand(CHANNEL_ROLLERSHUTTER, StopMoveType.MOVE);
@@ -212,6 +243,7 @@ public class A5_3F_7F_EltakoFSB extends _4BSMessage implements StateMachineProvi
                 } else if (upDownCommand == UpDownType.DOWN) {
                     setData(ZERO, shutTimeByte, MOVE_DOWN, TEACHIN_BIT); // => 100 percent
                     if (stm.getState() == BlindState.IDLE) {
+                        stm.startMovement(fullTravelRuntime(shutTimeByte));
                         stm.apply(BlindAction.POSITION_REQUEST_DOWN);
                     } else {
                         stm.apply(BlindAction.CALIBRATION_REQUEST_DOWN);
@@ -234,6 +266,9 @@ public class A5_3F_7F_EltakoFSB extends _4BSMessage implements StateMachineProvi
         if (stm != null) {
             if (stopMoveCommand == StopMoveType.STOP) {
                 setData(ZERO, (byte) 0xFF, STOP, TEACHIN_BIT);
+                // a request that waited for the calibration must not run after a later calibration
+                stm.clearStoredCommand();
+                stm.requestStop();
                 stm.apply(BlindAction.INVALID_REQUEST);
             } else if (stopMoveCommand == StopMoveType.MOVE) {
                 if (stm.getState() == BlindState.POSITION_REACHED) {
@@ -248,6 +283,11 @@ public class A5_3F_7F_EltakoFSB extends _4BSMessage implements StateMachineProvi
                         } else {
                             convertDimmerImpl(currentDimmer.intValue(), PercentType.HUNDRED.intValue(), config, stm);
                         }
+                    } else {
+                        logger.warn(
+                                "Cannot adjust slats of {}: the dimmer channel is not linked or has no value. Skipping slat adjustment.",
+                                thing.getUID());
+                        stm.apply(BlindAction.SLATS_POS_DONE);
                     }
                 }
             }
@@ -271,13 +311,42 @@ public class A5_3F_7F_EltakoFSB extends _4BSMessage implements StateMachineProvi
         }
     }
 
+    private static boolean isDimmerRequestWaiting(STMStateMachine<BlindAction, BlindState> stm) {
+        return CHANNEL_DIMMER.equals(stm.getStoredChannel()) && stm.getStoredCommand() instanceof PercentType;
+    }
+
+    private static boolean isPositionRequestWaiting(STMStateMachine<BlindAction, BlindState> stm) {
+        return CHANNEL_ROLLERSHUTTER.equals(stm.getStoredChannel()) && stm.getStoredCommand() instanceof PercentType;
+    }
+
+    private void setDimmerState(Thing thing, PercentType angle) {
+        Channel channel = thing.getChannel(CHANNEL_DIMMER);
+        if (channel != null && thing.getHandler() instanceof EnOceanBaseActuatorHandler myHandler) {
+            myHandler.setState(channel.getUID(), angle);
+        }
+    }
+
     void processChannelDimmer(Thing thing, Command command, Configuration config,
             Function<String, State> getCurrentStateFunc, @Nullable STMStateMachine<BlindAction, BlindState> stm) {
 
         Channel channel = null;
         if (command instanceof PercentType decimalCommand) {
             if (stm != null) {
-                switch (stm.getState()) {
+                BlindState state = stm.getState();
+                if (state == BlindState.INVALID) {
+                    byte shutTimeByte = (byte) Math.min(255,
+                            Math.max(0, config.as(EnOceanChannelRollershutterConfig.class).shutTime));
+                    stm.storeCommand(CHANNEL_DIMMER, decimalCommand);
+                    setData(ZERO, shutTimeByte, MOVE_UP, TEACHIN_BIT); // => move completely up
+                    stm.apply(BlindAction.CALIBRATION_REQUEST_UP);
+                    return;
+                }
+                if ((state == BlindState.MOVEMENT_CALIBRATION_UP || state == BlindState.MOVEMENT_CALIBRATION_DOWN)
+                        && isDimmerRequestWaiting(stm)) {
+                    stm.storeCommand(CHANNEL_DIMMER, decimalCommand);
+                    return;
+                }
+                switch (state) {
                     case IDLE:
                         convertDimmer(decimalCommand, config, getCurrentStateFunc, stm);
                         if (thing.getHandler() instanceof EnOceanBaseActuatorHandler myHandler) {
@@ -288,8 +357,8 @@ public class A5_3F_7F_EltakoFSB extends _4BSMessage implements StateMachineProvi
                             }
                         }
                         break;
-                    case MOVEMENT_POSITION_UP, MOVEMENT_POSITION_DOWN, MOVEMENT_CALIBRATION_UP,
-                            MOVEMENT_CALIBRATION_DOWN, POSITION_REACHED, INVALID:
+                    case MOVEMENT_POSITION_UP, MOVEMENT_POSITION_DOWN, MOVEMENT_MANUAL_UP, MOVEMENT_MANUAL_DOWN,
+                            MOVEMENT_CALIBRATION_UP, MOVEMENT_CALIBRATION_DOWN, POSITION_REACHED:
                         // we avoid update during MOVEMENT_SLATS, all other cases are allowed.
                         if (thing.getHandler() instanceof EnOceanBaseActuatorHandler myHandler) {
                             channel = thing.getChannel(CHANNEL_DIMMER);
@@ -302,6 +371,9 @@ public class A5_3F_7F_EltakoFSB extends _4BSMessage implements StateMachineProvi
                     default:
                 }
             }
+        } else if (command instanceof StringType retryTelegram && stm != null
+                && stm.getState() == BlindState.MOVEMENT_SLATS_RETRY) {
+            setData(HexUtils.hexToBytes(retryTelegram.toString()));
         }
     }
 
@@ -339,8 +411,8 @@ public class A5_3F_7F_EltakoFSB extends _4BSMessage implements StateMachineProvi
         if (CHANNEL_ROLLERSHUTTER.equals(channelId)) {
             State currentState = getCurrentStateFunc.apply(channelId);
             if (currentState != null) {
-                int duration = ((getDB3Value() << 8) + getDB2Value()) / 10; // => Time in DB3 and DB2 is given
-                                                                            // in ms
+                int runtime = (getDB3Value() << 8) + getDB2Value(); // => time in 100 ms
+                int duration = runtime / 10; // => time in s
                 EnOceanChannelRollershutterConfig c = config.as(EnOceanChannelRollershutterConfig.class);
                 boolean move_up = getDB1() == MOVE_UP;
                 if (duration == c.shutTime) {
@@ -350,11 +422,24 @@ public class A5_3F_7F_EltakoFSB extends _4BSMessage implements StateMachineProvi
                                 // StopMoveType.MOVE is used as command for adjustment of slats
                                 blindStm.storeCommand(CHANNEL_ROLLERSHUTTER, StopMoveType.MOVE);
                                 break;
+                            case MOVEMENT_CALIBRATION_UP, MOVEMENT_CALIBRATION_DOWN:
+                                if (c.getConfigMode() == ConfigMode.BLINDS && !isPositionRequestWaiting(blindStm)) {
+                                    blindStm.updateChannel(CHANNEL_DIMMER,
+                                            move_up ? PercentType.ZERO : PercentType.HUNDRED);
+                                }
+                                break;
+                            case MOVEMENT_MANUAL_UP, MOVEMENT_MANUAL_DOWN:
+                                if (c.getConfigMode() == ConfigMode.BLINDS) {
+                                    blindStm.updateChannel(CHANNEL_DIMMER,
+                                            move_up ? PercentType.ZERO : PercentType.HUNDRED);
+                                }
+                                break;
                             default:
                         }
                         blindStm.apply(BlindAction.POSITION_DONE);// will launch new command for adjustment of slats
                         blindStm.apply(BlindAction.CALIBRATION_DONE); // will launch new command for setting the
                                                                       // position
+                        blindStm.apply(BlindAction.MANUAL_DONE);
                     }
                     return move_up ? PercentType.ZERO : PercentType.HUNDRED;
                 } else {
@@ -365,22 +450,33 @@ public class A5_3F_7F_EltakoFSB extends _4BSMessage implements StateMachineProvi
 
                     int direction = getDB1() == MOVE_UP ? -1 : 1;
                     if (current != null && c.shutTime != -1 && c.shutTime != 0) {
+                        int travelled = Math
+                                .round(runtime * (float) PercentType.HUNDRED.intValue() / (c.shutTime * 10));
+                        PercentType newPosition = new PercentType(
+                                Math.min(100, Math.max(0, current.intValue() + direction * travelled)));
                         if (blindStm != null) {
                             switch (blindStm.getState()) {
                                 case MOVEMENT_POSITION_UP, MOVEMENT_POSITION_DOWN:
+                                    if (isInterruptedByUser(blindStm, runtime)) {
+                                        blindStm.apply(BlindAction.POSITION_INTERRUPTED);
+                                        return trackMovement(blindStm, c, getCurrentStateFunc, current, runtime,
+                                                direction > 0);
+                                    }
                                     blindStm.storeCommand(CHANNEL_ROLLERSHUTTER, StopMoveType.MOVE);
                                     blindStm.apply(BlindAction.POSITION_DONE); // will execute MOVE command, when we use
                                     // blinds
-                                    return new PercentType(Math.min(100, (Math.max(0, current.intValue() + direction
-                                            * ((duration * PercentType.HUNDRED.intValue()) / c.shutTime)))));
-                                case MOVEMENT_SLATS:
+                                    return newPosition;
+                                case MOVEMENT_MANUAL_UP, MOVEMENT_MANUAL_DOWN:
+                                    blindStm.apply(BlindAction.MANUAL_DONE);
+                                    return trackMovement(blindStm, c, getCurrentStateFunc, current, runtime,
+                                            direction > 0);
+                                case MOVEMENT_SLATS, MOVEMENT_SLATS_RETRY:
                                     blindStm.apply(BlindAction.SLATS_POS_DONE);
                                     return new PercentType(current.intValue()); // do not change the position
                                 default:
                             }
                         } else { // Legacy
-                            return new PercentType(Math.min(100, (Math.max(0, current.intValue()
-                                    + direction * ((duration * PercentType.HUNDRED.intValue()) / c.shutTime)))));
+                            return newPosition;
                         }
                     }
                 }
@@ -388,6 +484,54 @@ public class A5_3F_7F_EltakoFSB extends _4BSMessage implements StateMachineProvi
             return UnDefType.UNDEF;
         }
         return UnDefType.UNDEF;
+    }
+
+    private static int fullTravelRuntime(byte shutTimeByte) {
+        return (shutTimeByte & 0xFF) * 10;
+    }
+
+    record Travel(int position, @Nullable Integer angle) {
+    }
+
+    /** Moving down the slats close first, moving up they open first. */
+    static Travel travel(int position, @Nullable Integer angle, boolean down, int runtime, int shutTime, int swapTime) {
+        int endAngle = down ? 100 : 0;
+        int slatsTime = 0;
+        Integer newAngle = angle;
+        if (swapTime > 0) {
+            if (angle != null) {
+                int remaining = down ? 100 - angle : angle;
+                slatsTime = Math.round(remaining * (float) swapTime / 100);
+                if (runtime < slatsTime) {
+                    int turned = Math.round(runtime * 100f / swapTime);
+                    return new Travel(position, Math.min(100, Math.max(0, angle + (down ? turned : -turned))));
+                }
+                newAngle = endAngle;
+            } else if (runtime >= swapTime) {
+                newAngle = endAngle;
+            }
+        }
+        int moved = Math.round((runtime - slatsTime) * 100f / (shutTime * 10));
+        return new Travel(Math.min(100, Math.max(0, position + (down ? moved : -moved))), newAngle);
+    }
+
+    private PercentType trackMovement(STMStateMachine<BlindAction, BlindState> stm, EnOceanChannelRollershutterConfig c,
+            Function<String, @Nullable State> getCurrentStateFunc, PercentType position, int runtime, boolean down) {
+        int swapTime = c.getConfigMode() == ConfigMode.BLINDS ? Math.max(0, c.swapTime) : 0;
+        State dimmer = getCurrentStateFunc.apply(CHANNEL_DIMMER);
+        PercentType angle = dimmer == null ? null : dimmer.as(PercentType.class);
+        Travel travel = travel(position.intValue(), angle == null ? null : angle.intValue(), down, runtime, c.shutTime,
+                swapTime);
+        Integer newAngle = travel.angle();
+        if (swapTime > 0 && newAngle != null) {
+            stm.updateChannel(CHANNEL_DIMMER, new PercentType(newAngle));
+        }
+        return new PercentType(travel.position());
+    }
+
+    private static boolean isInterruptedByUser(STMStateMachine<BlindAction, BlindState> stm, int runtime) {
+        int expectedRuntime = stm.getExpectedRuntime();
+        return !stm.isStopRequested() && expectedRuntime > 0 && runtime < expectedRuntime - INTERRUPTION_TOLERANCE;
     }
 
     // StateMachineProvider interface implementation
@@ -424,10 +568,43 @@ public class A5_3F_7F_EltakoFSB extends _4BSMessage implements StateMachineProvi
 
     @Override
     public @Nullable BlindState getStateOnStartup(@Nullable BlindState persistedState) {
-        if (persistedState == BlindState.MOVEMENT_POSITION_UP || persistedState == BlindState.MOVEMENT_POSITION_DOWN) {
-            return BlindState.INVALID;
+        // a movement or adjustment that was running at shutdown cannot be completed any more
+        if (persistedState == null || persistedState == BlindState.IDLE || persistedState == BlindState.INVALID) {
+            return persistedState;
         }
-        return persistedState;
+        return BlindState.INVALID;
+    }
+
+    @Override
+    public List<STMWatchdog<BlindAction, BlindState>> getWatchdogs(Thing thing) {
+        Channel channel = thing.getChannel(CHANNEL_ROLLERSHUTTER);
+        ConfigMode mode = getConfigMode(thing);
+        if (channel == null || mode == null || mode == ConfigMode.LEGACY) {
+            return List.of();
+        }
+        EnOceanChannelRollershutterConfig c = channel.getConfiguration().as(EnOceanChannelRollershutterConfig.class);
+        long slatsTimeMs = mode == ConfigMode.BLINDS ? Math.max(0, c.swapTime) * 100L : 0;
+        long timeoutMs = Math.max(0, c.shutTime) * 1000L + slatsTimeMs + FEEDBACK_MARGIN_MS;
+        List<STMWatchdog<BlindAction, BlindState>> watchdogs = new ArrayList<>();
+        watchdogs.add(new STMWatchdog<>(
+                EnumSet.of(BlindState.MOVEMENT_POSITION_UP, BlindState.MOVEMENT_POSITION_DOWN,
+                        BlindState.MOVEMENT_CALIBRATION_UP, BlindState.MOVEMENT_CALIBRATION_DOWN),
+                BlindAction.MOVEMENT_TIMEOUT, timeoutMs));
+        watchdogs.add(new STMWatchdog<>(EnumSet.of(BlindState.MOVEMENT_MANUAL_UP, BlindState.MOVEMENT_MANUAL_DOWN),
+                BlindAction.MOVEMENT_TIMEOUT, MANUAL_MOVEMENT_TIMEOUT_MS));
+        if (mode == ConfigMode.BLINDS) {
+            long slatsTimeoutMs = slatsTimeMs + FEEDBACK_MARGIN_MS;
+            watchdogs.add(new STMWatchdog<>(EnumSet.of(BlindState.MOVEMENT_SLATS), BlindAction.SLATS_TIMEOUT,
+                    slatsTimeoutMs, true));
+            watchdogs.add(new STMWatchdog<>(EnumSet.of(BlindState.MOVEMENT_SLATS_RETRY),
+                    BlindAction.SLATS_RETRY_TIMEOUT, slatsTimeoutMs, true));
+        }
+        return watchdogs;
+    }
+
+    @Override
+    public Set<BlindAction> getRetryActions(Thing thing) {
+        return getConfigMode(thing) == ConfigMode.BLINDS ? Set.of(BlindAction.SLATS_TIMEOUT) : Set.of();
     }
 
     @Override
@@ -439,7 +616,8 @@ public class A5_3F_7F_EltakoFSB extends _4BSMessage implements StateMachineProvi
         return switch (mode) {
             case LEGACY -> Set.of();
             case ROLLERSHUTTER -> Set.of(BlindAction.CALIBRATION_DONE);
-            case BLINDS -> Set.of(BlindAction.CALIBRATION_DONE, BlindAction.POSITION_DONE);
+            case BLINDS -> Set.of(BlindAction.CALIBRATION_DONE, BlindAction.POSITION_DONE, BlindAction.SLATS_POS_DONE,
+                    BlindAction.SLATS_RETRY_TIMEOUT);
         };
     }
 

@@ -94,28 +94,28 @@ public class ElectricalEnergyMeasurementConverter extends GenericConverter<Elect
                 case ElectricalEnergyMeasurementCluster.ATTRIBUTE_CUMULATIVE_ENERGY_IMPORTED: {
                     if (energyMeasurement.energy != null) {
                         updateState(CHANNEL_ID_ELECTRICALENERGYMEASUREMENT_CUMULATIVEENERGYIMPORTED_ENERGY,
-                                activePowerToWatts(energyMeasurement.energy));
+                                milliWattHoursToWattHours(energyMeasurement.energy));
                     }
                 }
                     break;
                 case ElectricalEnergyMeasurementCluster.ATTRIBUTE_CUMULATIVE_ENERGY_EXPORTED: {
                     if (energyMeasurement.energy != null) {
                         updateState(CHANNEL_ID_ELECTRICALENERGYMEASUREMENT_CUMULATIVEENERGYEXPORTED_ENERGY,
-                                activePowerToWatts(energyMeasurement.energy));
+                                milliWattHoursToWattHours(energyMeasurement.energy));
                     }
                 }
                     break;
                 case ElectricalEnergyMeasurementCluster.ATTRIBUTE_PERIODIC_ENERGY_IMPORTED: {
                     if (energyMeasurement.energy != null) {
                         updateState(CHANNEL_ID_ELECTRICALENERGYMEASUREMENT_PERIODICENERGYIMPORTED_ENERGY,
-                                activePowerToWatts(energyMeasurement.energy));
+                                milliWattHoursToWattHours(energyMeasurement.energy));
                     }
                 }
                     break;
                 case ElectricalEnergyMeasurementCluster.ATTRIBUTE_PERIODIC_ENERGY_EXPORTED: {
                     if (energyMeasurement.energy != null) {
                         updateState(CHANNEL_ID_ELECTRICALENERGYMEASUREMENT_PERIODICENERGYEXPORTED_ENERGY,
-                                activePowerToWatts(energyMeasurement.energy));
+                                milliWattHoursToWattHours(energyMeasurement.energy));
                     }
                 }
                     break;
@@ -129,34 +129,38 @@ public class ElectricalEnergyMeasurementConverter extends GenericConverter<Elect
         if (initializingCluster.cumulativeEnergyImported != null
                 && initializingCluster.cumulativeEnergyImported.energy != null) {
             updateState(CHANNEL_ID_ELECTRICALENERGYMEASUREMENT_CUMULATIVEENERGYIMPORTED_ENERGY,
-                    activePowerToWatts(initializingCluster.cumulativeEnergyImported.energy));
+                    milliWattHoursToWattHours(initializingCluster.cumulativeEnergyImported.energy));
         } else {
             updateState(CHANNEL_ID_ELECTRICALENERGYMEASUREMENT_CUMULATIVEENERGYIMPORTED_ENERGY, UnDefType.NULL);
         }
         if (initializingCluster.cumulativeEnergyExported != null
                 && initializingCluster.cumulativeEnergyExported.energy != null) {
-            updateState(CHANNEL_ID_ELECTRICALENERGYMEASUREMENT_CUMULATIVEENERGYIMPORTED_ENERGY,
-                    activePowerToWatts(initializingCluster.cumulativeEnergyExported.energy));
+            updateState(CHANNEL_ID_ELECTRICALENERGYMEASUREMENT_CUMULATIVEENERGYEXPORTED_ENERGY,
+                    milliWattHoursToWattHours(initializingCluster.cumulativeEnergyExported.energy));
         } else {
             updateState(CHANNEL_ID_ELECTRICALENERGYMEASUREMENT_CUMULATIVEENERGYEXPORTED_ENERGY, UnDefType.NULL);
         }
         if (initializingCluster.periodicEnergyImported != null
                 && initializingCluster.periodicEnergyImported.energy != null) {
             updateState(CHANNEL_ID_ELECTRICALENERGYMEASUREMENT_PERIODICENERGYIMPORTED_ENERGY,
-                    activePowerToWatts(initializingCluster.periodicEnergyImported.energy));
+                    milliWattHoursToWattHours(initializingCluster.periodicEnergyImported.energy));
         } else {
             updateState(CHANNEL_ID_ELECTRICALENERGYMEASUREMENT_PERIODICENERGYIMPORTED_ENERGY, UnDefType.NULL);
         }
         if (initializingCluster.periodicEnergyExported != null
                 && initializingCluster.periodicEnergyExported.energy != null) {
             updateState(CHANNEL_ID_ELECTRICALENERGYMEASUREMENT_PERIODICENERGYEXPORTED_ENERGY,
-                    activePowerToWatts(initializingCluster.periodicEnergyExported.energy));
+                    milliWattHoursToWattHours(initializingCluster.periodicEnergyExported.energy));
         } else {
             updateState(CHANNEL_ID_ELECTRICALENERGYMEASUREMENT_PERIODICENERGYEXPORTED_ENERGY, UnDefType.NULL);
         }
     }
 
-    private QuantityType<Energy> activePowerToWatts(Number number) {
-        return new QuantityType<Energy>(new BigDecimal(number.intValue() / 1000), Units.WATT_HOUR);
+    private QuantityType<Energy> milliWattHoursToWattHours(Number number) {
+        return new QuantityType<Energy>(milliToUnit(number), Units.WATT_HOUR);
+    }
+
+    private BigDecimal milliToUnit(Number number) {
+        return new BigDecimal(number.toString()).movePointLeft(3);
     }
 }

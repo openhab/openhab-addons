@@ -75,12 +75,12 @@ public class OpenUVReportHandler extends BaseThingHandler {
         ReportConfiguration config = getConfigAs(ReportConfiguration.class);
 
         if (config.refresh < 3) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.config-error-invalid-refresh");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.config-error-invalid-refresh");
         } else {
             Bridge bridge = getBridge();
             if (bridge == null) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
+                logger.debug("Bridge unavailable for Thing {}", getThing().getUID());
+                return;
             } else {
                 bridgeHandler = (OpenUVBridgeHandler) bridge.getHandler();
                 updateStatus(ThingStatus.UNKNOWN);
@@ -137,8 +137,12 @@ public class OpenUVReportHandler extends BaseThingHandler {
                         .forEach(channel -> updateState(channel.getUID(), getState(channel, openUVData)));
                 updateStatus(ThingStatus.ONLINE);
             } else {
-                updateStatus(ThingStatus.OFFLINE, bridgeStatusInfo.getStatusDetail(),
-                        bridgeStatusInfo.getDescription());
+                ThingStatusDetail detail = bridgeStatusInfo.getStatusDetail();
+                if (detail == ThingStatusDetail.NONE) {
+                    updateStatus(ThingStatus.OFFLINE, bridgeStatusInfo.getDescription());
+                } else {
+                    updateStatus(detail, bridgeStatusInfo.getDescription());
+                }
             }
         }
     }

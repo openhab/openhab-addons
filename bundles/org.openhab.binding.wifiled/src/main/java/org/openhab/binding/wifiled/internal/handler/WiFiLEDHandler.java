@@ -84,7 +84,7 @@ public class WiFiLEDHandler extends BaseThingHandler {
 
             logger.debug("Found a WiFi LED device '{}'", getThing().getUID());
         } catch (IOException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, e.getMessage());
             return;
         }
         updateStatus(ThingStatus.ONLINE);
@@ -130,7 +130,7 @@ public class WiFiLEDHandler extends BaseThingHandler {
                 handleProgramSpeedCommand(command);
             }
         } catch (IOException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 
@@ -221,11 +221,11 @@ public class WiFiLEDHandler extends BaseThingHandler {
                 updateStatus(ThingStatus.ONLINE);
             }
         } catch (IOException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 
     public void reportCommunicationError(IOException e) {
-        this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+        this.updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
     }
 }

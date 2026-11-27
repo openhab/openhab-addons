@@ -172,6 +172,9 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
      */
     private int bridgeGeneration;
 
+    // set of resource ids that require the OFF transition work around
+    private final Set<String> idsRequiringOffTransitionWorkaround = ConcurrentHashMap.newKeySet();
+
     public Clip2BridgeHandler(Bridge bridge, HttpClientFactory httpClientFactory, ThingRegistry thingRegistry,
             LocaleProvider localeProvider, TranslationProvider i18nProvider) {
         super(bridge);
@@ -230,7 +233,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
                 logger.debug("checkConnection() {}", unauthorizedException.getMessage(), unauthorizedException);
             }
             if (applKeyRetriesRemaining > 0) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                         "@text/offline.api2.conf-error.press-pairing-button");
                 try {
                     registerApplicationKey();
@@ -240,17 +243,15 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
                 } catch (ApiException e) {
                     setStatusOfflineWithCommunicationError(e);
                 } catch (IllegalStateException e) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                            "@text/offline.api2.conf-error.read-only");
+                    updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.api2.conf-error.read-only");
                 } catch (AssetNotLoadedException e) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                             "@text/offline.api2.conf-error.assets-not-loaded");
                 } catch (InterruptedException e) {
                     return;
                 }
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "@text/offline.api2.conf-error.not-authorized");
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.api2.conf-error.not-authorized");
             }
         } catch (ApiException e) {
             if (isUpdatingOwnFirmware()) {
@@ -263,8 +264,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
             retryConnection = connectRetriesRemaining > 0;
         } catch (AssetNotLoadedException e) {
             logger.debug("checkConnection() {}", e.getMessage(), e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/offline.api2.conf-error.assets-not-loaded");
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/offline.api2.conf-error.assets-not-loaded");
         } catch (InterruptedException e) {
             return;
         }
@@ -298,10 +298,10 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
         Throwable cause = e.getCause();
         String causeMessage = cause == null ? null : cause.getMessage();
         if (causeMessage == null || causeMessage.isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/offline.api2.comm-error.exception [\"" + e.getMessage() + "\"]");
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/offline.api2.comm-error.exception [\"" + e.getMessage() + " -> " + causeMessage + "\"]");
         }
     }
@@ -499,8 +499,8 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
                     Resources resources = getClip2Bridge().putResource(new Resource(ResourceType.BEHAVIOR_INSTANCE)
                             .setId(channelUID.getIdWithoutGroup()).setEnabled(command));
                     if (resources.hasErrors()) {
-                        logger.warn("handleCommand({}, {}) succeeded with errors: {}", channelUID, command,
-                                String.join("; ", resources.getErrors()));
+                        logger.warn("handleCommand({}, {}) succeeded with errors: {}", channelUID, command, resources
+                                .getErrors().stream().map(e -> e.getDescription()).collect(Collectors.joining("; ")));
                     }
                 }
             } catch (ApiException | AssetNotLoadedException e) {
@@ -537,14 +537,13 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
 
             String ipAddress = config.ipAddress;
             if (ipAddress.isBlank()) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "@text/offline.conf-error-no-ip-address");
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.conf-error-no-ip-address");
                 return;
             }
 
             try {
                 if (!Clip2Bridge.isClip2Supported(ipAddress)) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                             "@text/offline.api2.conf-error.clip2-not-supported");
                     return;
                 }
@@ -558,8 +557,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
                     config.useSelfSignedCertificate);
 
             if (Objects.isNull(trustManagerProvider.getPEMTrustManager())) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "@text/offline.api2.conf-error.certificate-load");
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.api2.conf-error.certificate-load");
                 return;
             }
 
@@ -701,6 +699,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
             connectRetriesRemaining = RECONNECT_MAX_TRIES;
             updateStatus(ThingStatus.ONLINE);
             loadAutomationScriptIds();
+            loadOffTransitionWorkaroundIds();
             updateAutomationChannelsNow();
             updateThingsScheduled(500);
             Clip2ThingDiscoveryService discoveryService = this.discoveryService;
@@ -719,14 +718,11 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
      */
     private void updateProperties() throws ApiException, AssetNotLoadedException, InterruptedException {
         logger.debug("updateProperties()");
-        Map<String, String> properties = new HashMap<>(thing.getProperties());
+        Map<String, String> props = new HashMap<>(thing.getProperties());
 
         for (Resource bridge : getClip2Bridge().getResources(BRIDGE).getResources()) {
             // set the serial number
-            String bridgeId = bridge.getBridgeId();
-            if (Objects.nonNull(bridgeId)) {
-                properties.put(Thing.PROPERTY_SERIAL_NUMBER, bridgeId);
-            }
+            Setters.putIfExists(props, Thing.PROPERTY_SERIAL_NUMBER, bridge.getBridgeId());
             break;
         }
 
@@ -734,39 +730,35 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
             MetaData metaData = device.getMetaData();
             if (Objects.nonNull(metaData) && Archetype.BRIDGES.contains(metaData.getArchetype())) {
                 // set resource properties
-                properties.put(PROPERTY_RESOURCE_ID, device.getId());
-                properties.put(PROPERTY_RESOURCE_TYPE, device.getType().toString());
+                Setters.putIfExists(props, PROPERTY_RESOURCE_ID, device.getId());
+                Setters.putIfExists(props, PROPERTY_RESOURCE_TYPE, device.getTypeAsString());
 
                 // set metadata properties
-                String metaDataName = metaData.getName();
-                if (Objects.nonNull(metaDataName)) {
-                    properties.put(PROPERTY_RESOURCE_NAME, metaDataName);
-                }
-                properties.put(PROPERTY_RESOURCE_ARCHETYPE, metaData.getArchetype().toString());
+                Setters.putIfExists(props, PROPERTY_RESOURCE_NAME, metaData.getName());
+                Setters.putIfExists(props, PROPERTY_RESOURCE_ARCHETYPE, metaData.getArchetypeAsString());
 
                 // set product data properties
-                ProductData productData = device.getProductData();
-                if (Objects.nonNull(productData)) {
+                ProductData prodData = device.getProductData();
+                if (Objects.nonNull(prodData)) {
+                    String modelId = prodData.getModelId();
+
                     // set generic thing properties
-                    properties.put(Thing.PROPERTY_MODEL_ID, productData.getModelId());
-                    properties.put(Thing.PROPERTY_VENDOR, productData.getManufacturerName());
-                    properties.put(Thing.PROPERTY_FIRMWARE_VERSION, productData.getSoftwareVersion());
-                    String hardwarePlatformType = productData.getHardwarePlatformType();
-                    if (Objects.nonNull(hardwarePlatformType)) {
-                        properties.put(Thing.PROPERTY_HARDWARE_VERSION, hardwarePlatformType);
-                    }
+                    Setters.putIfExists(props, Thing.PROPERTY_MODEL_ID, modelId);
+                    Setters.putIfExists(props, Thing.PROPERTY_VENDOR, prodData.getManufacturerName());
+                    Setters.putIfExists(props, Thing.PROPERTY_FIRMWARE_VERSION, prodData.getSoftwareVersion());
+                    Setters.putIfExists(props, Thing.PROPERTY_HARDWARE_VERSION, prodData.getHardwarePlatformType());
 
                     // set hue specific properties
-                    properties.put(PROPERTY_PRODUCT_NAME, productData.getProductName());
-                    properties.put(PROPERTY_PRODUCT_ARCHETYPE, productData.getProductArchetype().toString());
-                    properties.put(PROPERTY_PRODUCT_CERTIFIED, productData.getCertified().toString());
+                    Setters.putIfExists(props, PROPERTY_PRODUCT_NAME, prodData.getProductName());
+                    Setters.putIfExists(props, PROPERTY_PRODUCT_ARCHETYPE, prodData.getProductArchetypeAsString());
+                    Setters.putIfExists(props, PROPERTY_PRODUCT_CERTIFIED, prodData.getCertifiedAsString());
 
-                    bridgeGeneration = HueBridgeModel.getGeneration(productData.getModelId());
+                    bridgeGeneration = HueBridgeModel.getGeneration(modelId);
                 }
                 break; // we only needed the BRIDGE_V2 or BRIDGE_V3 resource
             }
         }
-        thing.setProperties(properties);
+        thing.setProperties(props);
     }
 
     /**
@@ -784,8 +776,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
             onConnectionOffline();
         } catch (AssetNotLoadedException e) {
             logger.trace("updateSelf() {}", e.getMessage(), e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.api2.conf-error.assets-not-loaded");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.api2.conf-error.assets-not-loaded");
         } catch (InterruptedException e) {
         }
     }
@@ -949,7 +940,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
             boolean newSentFlagValue = false;
             switch (status) {
                 case INSTALLING:
-                    updateStatus(ThingStatus.ONLINE, ThingStatusDetail.FIRMWARE_UPDATING, status.i18nKey());
+                    updateStatus(ThingStatusDetail.FIRMWARE_UPDATING, status.i18nKey());
                     break;
                 case NO_UPDATE, UPDATE_AVAILABLE, UPDATE_PENDING:
                     /*
@@ -959,7 +950,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
                      */
                     String description = (statusInfo.getStatusDetail() == ThingStatusDetail.FIRMWARE_UPDATING) ? null
                             : statusInfo.getDescription();
-                    updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, description);
+                    updateStatus(ThingStatus.ONLINE, description);
                     break;
                 case READY_TO_INSTALL:
                     if (!softwareUpdateReadyNotificationSent) {
@@ -969,7 +960,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
                     // note: fall through to set Thing status, status detail, and status description
                 case INSTALL_FAILED:
                 default:
-                    updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, status.i18nKey());
+                    updateStatus(ThingStatus.ONLINE, status.i18nKey());
                     break;
             }
             softwareUpdateReadyNotificationSent = newSentFlagValue;
@@ -1151,14 +1142,14 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
         boolean doBridge = softwareStatusMap.get(BridgeConfig.V1_BRIDGE) == UpdateStatusV2.READY_TO_INSTALL;
         if (doBridge) {
             putSoftwareStatus(BridgeConfig.V1_BRIDGE, installingStatus);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.FIRMWARE_UPDATING, installingKey);
+            updateStatus(ThingStatusDetail.FIRMWARE_UPDATING, installingKey);
         }
 
         boolean doDevices = softwareStatusMap.get(BridgeConfig.V1_ANY_DEVICE) == UpdateStatusV2.READY_TO_INSTALL;
         if (doDevices) {
             putSoftwareStatus(BridgeConfig.V1_ANY_DEVICE, installingStatus);
             if (!doBridge) {
-                updateStatus(ThingStatus.ONLINE, ThingStatusDetail.FIRMWARE_UPDATING, installingKey);
+                updateStatus(ThingStatusDetail.FIRMWARE_UPDATING, installingKey);
             }
         }
 
@@ -1215,5 +1206,103 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
     public boolean isUpdatingOwnFirmware() {
         return thing.getStatus() == ThingStatus.OFFLINE
                 && thing.getStatusInfo().getStatusDetail() == ThingStatusDetail.FIRMWARE_UPDATING;
+    }
+
+    /**
+     * Check if the given device requires the off transition work-around. If it does, add its resource id
+     * to the set of ids requiring the off transition work-around.
+     *
+     * @param device the device resource to check.
+     * @param tempWorkaroundIds working set of ids requiring the off transition work-around
+     */
+    private void checkDevice(Resource device, Set<String> tempWorkaroundIds) {
+        ProductData productData = device.getProductData();
+        if (productData != null) {
+            String modelId = productData.getModelId();
+            if (Clip2ThingHandler.OFF_TRANSITION_WORK_AROUND_PATTERN.matcher(modelId).matches()) {
+                tempWorkaroundIds.add(device.getId());
+                logger.debug("Enabled off transition work-around for '{}', id '{}'", modelId, device.getId());
+            }
+        }
+    }
+
+    /**
+     * Recursively check all children of the given room/zone for any device requiring the off transition
+     * work- around. If so, add the parent room/zone id to the set of ids requiring it.
+     * 
+     * @param parentRoomZone the ultimate parent room/zone resource.
+     * @param roomZone the room/zone resource to check.
+     * @param mapRoomsZones a map of all rooms/zones by their id.
+     * @param tempWorkaroundIds working set of ids requiring the off transition work-around
+     */
+    private void checkChildren(Resource parentRoomZone, Resource roomZone, Map<String, Resource> mapRoomsZones,
+            Set<String> tempWorkaroundIds) {
+        for (ResourceReference childRef : roomZone.getChildren()) {
+            switch (childRef.getType()) {
+                case ROOM, ZONE:
+                    if (mapRoomsZones.get(childRef.getId()) instanceof Resource childRoomZone) {
+                        // recurse into nested room/zone
+                        checkChildren(parentRoomZone, childRoomZone, mapRoomsZones, tempWorkaroundIds);
+                    }
+                    break;
+                case DEVICE:
+                    if (tempWorkaroundIds.contains(childRef.getId())) {
+                        tempWorkaroundIds.add(parentRoomZone.getId());
+                        logger.debug("Enabled off transition work-around for '{}', id '{}'", parentRoomZone.getName(),
+                                parentRoomZone.getId());
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+
+    /**
+     * Load the set of resource ids that require the off transition work-around. This is determined by
+     * checking all devices and all rooms/zones and their children for any device that matches the off
+     * transition work- around pattern.
+     *
+     * @throws ApiException if a communication error occurred.
+     * @throws InterruptedException if the thread was interrupted while waiting for a response.
+     * @throws AssetNotLoadedException if one of the assets is not loaded.
+     */
+    private void loadOffTransitionWorkaroundIds() {
+        try {
+            Set<String> workaroundIds = ConcurrentHashMap.newKeySet();
+            // Load all devices and check for direct matches
+            getClip2Bridge().getResources(DEVICE).getResources().stream().forEach(d -> checkDevice(d, workaroundIds));
+
+            // Load all rooms and zones
+            Map<String, Resource> roomZoneMap = new HashMap<>();
+            Stream<Resource> rooms = getClip2Bridge().getResources(ROOM).getResources().stream();
+            Stream<Resource> zones = getClip2Bridge().getResources(ZONE).getResources().stream();
+            Stream<Resource> home = getClip2Bridge().getResources(BRIDGE_HOME).getResources().stream();
+
+            roomZoneMap.putAll(rooms.collect(Collectors.toMap(r -> r.getId(), r -> r)));
+            roomZoneMap.putAll(zones.collect(Collectors.toMap(r -> r.getId(), r -> r)));
+            roomZoneMap.putAll(home.collect(Collectors.toMap(r -> r.getId(), r -> r)));
+
+            // Recursively check if rooms and zones have child devices requiring the work-around
+            roomZoneMap.values().forEach(rz -> checkChildren(rz, rz, roomZoneMap, workaroundIds));
+
+            idsRequiringOffTransitionWorkaround.clear();
+            idsRequiringOffTransitionWorkaround.addAll(workaroundIds);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        } catch (ApiException | AssetNotLoadedException e) {
+            logger.warn("loadOffTransitionWorkaroundIds() unexpected exception {}", e.getMessage(),
+                    logger.isDebugEnabled() ? e : null);
+        }
+    }
+
+    /**
+     * Returns true if the given resource id requires the off transition work-around.
+     *
+     * @param resourceId the resource id to check.
+     * @return true if the given resource id requires the off transition work-around, false otherwise.
+     */
+    public boolean requiresOffTransitionWorkAround(String resourceId) {
+        return idsRequiringOffTransitionWorkaround.contains(resourceId);
     }
 }

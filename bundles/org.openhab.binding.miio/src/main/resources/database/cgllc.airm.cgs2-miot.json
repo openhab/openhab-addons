@@ -1,0 +1,351 @@
+{
+	"deviceMapping": {
+		"id": [
+			"cgllc.airm.cgs2"
+		],
+		"propertyMethod": "get_properties",
+		"maxProperties": 1,
+		"experimental": true,
+		"channels": [
+			{
+				"property": "relative-humidity",
+				"siid": 3,
+				"piid": 1,
+				"friendlyName": "Relative Humidity",
+				"channel": "relative_humidity",
+				"type": "Number:Dimensionless",
+				"unit": "percentage",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 100,
+					"step": 0.1,
+					"pattern": "%.1f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "humidity",
+				"tags": [
+					"Measurement",
+					"Humidity"
+				]
+			},
+			{
+				"property": "pm2.5-density",
+				"siid": 3,
+				"piid": 4,
+				"friendlyName": "PM2.5 Density",
+				"channel": "pm2_5_density",
+				"type": "Number:Density",
+				"unit": "μg/m3",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 1000,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "smoke",
+				"tags": [
+					"Measurement",
+					"ParticulateMatter"
+				]
+			},
+			{
+				"property": "pm10-density",
+				"siid": 3,
+				"piid": 5,
+				"friendlyName": "PM10 Density",
+				"channel": "pm10_density",
+				"type": "Number:Density",
+				"unit": "μg/m3",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 1000,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "smoke",
+				"tags": [
+					"Measurement",
+					"ParticulateMatter"
+				]
+			},
+			{
+				"property": "temperature",
+				"siid": 3,
+				"piid": 7,
+				"friendlyName": "Temperature",
+				"channel": "temperature",
+				"type": "Number:Temperature",
+				"unit": "celsius",
+				"stateDescription": {
+					"minimum": -30,
+					"maximum": 100,
+					"step": 0.1,
+					"pattern": "%.1f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "temperature",
+				"tags": [
+					"Measurement",
+					"Temperature"
+				]
+			},
+			{
+				"property": "co2-density",
+				"siid": 3,
+				"piid": 8,
+				"friendlyName": "CO2 Density",
+				"channel": "co2_density",
+				"type": "Number:Dimensionless",
+				"unit": "ppm",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 10000,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "carbondioxide",
+				"tags": [
+					"Measurement",
+					"CO2"
+				]
+			},
+			{
+				"property": "tvoc-density",
+				"siid": 3,
+				"piid": 9,
+				"friendlyName": "TVOC Density",
+				"channel": "tvoc_density",
+				"type": "Number",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 65535,
+					"step": 1,
+					"pattern": "%.0f",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "smoke",
+				"tags": [
+					"Measurement",
+					"VOC"
+				],
+				"readmeComment": "The unit is given by the TVOC Unit channel."
+			},
+			{
+				"property": "battery-level",
+				"siid": 4,
+				"piid": 1,
+				"friendlyName": "Battery Level",
+				"channel": "battery_level",
+				"type": "Number:Dimensionless",
+				"unit": "percentage",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 100,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "battery",
+				"tags": [
+					"Measurement",
+					"StateOfCharge"
+				]
+			},
+			{
+				"property": "charging-state",
+				"siid": 4,
+				"piid": 2,
+				"friendlyName": "Charging State",
+				"channel": "charging_state",
+				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "1",
+							"label": "Charging"
+						},
+						{
+							"value": "2",
+							"label": "Not charging"
+						},
+						{
+							"value": "3",
+							"label": "Not chargeable"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "battery",
+				"tags": [
+					"Status"
+				],
+				"readmeComment": "Value mapping `[\"1\"\u003d\"Charging\",\"2\"\u003d\"Not charging\",\"3\"\u003d\"Not chargeable\"]`"
+			},
+			{
+				"property": "noise-decibel",
+				"siid": 10,
+				"piid": 2,
+				"friendlyName": "Noise Level",
+				"channel": "noise_decibel",
+				"type": "Number",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 200,
+					"step": 1,
+					"pattern": "%.0f dB",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "soundvolume",
+				"tags": [
+					"Measurement",
+					"Noise"
+				]
+			},
+			{
+				"property": "temperature-unit",
+				"siid": 12,
+				"piid": 1,
+				"friendlyName": "Temperature Unit",
+				"channel": "temperature_unit",
+				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "12289",
+							"label": "Celsius"
+						},
+						{
+							"value": "12290",
+							"label": "Fahrenheit"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "temperature",
+				"tags": [
+					"Status"
+				],
+				"readmeComment": "Value mapping `[\"12289\"\u003d\"Celsius\",\"12290\"\u003d\"Fahrenheit\"]`"
+			},
+			{
+				"property": "tvoc-unit",
+				"siid": 12,
+				"piid": 2,
+				"friendlyName": "TVOC Unit",
+				"channel": "tvoc_unit",
+				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "12296",
+							"label": "VOC index"
+						},
+						{
+							"value": "12293",
+							"label": "ppb"
+						},
+						{
+							"value": "12292",
+							"label": "mg/m3"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "smoke",
+				"tags": [
+					"Status"
+				],
+				"readmeComment": "Value mapping `[\"12296\"\u003d\"VOC index\",\"12293\"\u003d\"ppb\",\"12292\"\u003d\"mg/m3\"]`"
+			},
+			{
+				"property": "time-mode",
+				"siid": 12,
+				"piid": 3,
+				"friendlyName": "24-Hour Clock",
+				"channel": "time_mode",
+				"type": "Switch",
+				"stateDescription": {
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "time",
+				"tags": [
+					"Status"
+				],
+				"readmeComment": "ON when the screen clock uses the 24-hour format."
+			},
+			{
+				"property": "standard",
+				"siid": 12,
+				"piid": 5,
+				"friendlyName": "Air Quality Grading Standard",
+				"channel": "standard",
+				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "16384",
+							"label": "China"
+						},
+						{
+							"value": "16385",
+							"label": "US"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "smoke",
+				"tags": [
+					"Status"
+				],
+				"readmeComment": "Value mapping `[\"16384\"\u003d\"China\",\"16385\"\u003d\"US\"]`"
+			},
+			{
+				"property": "sensor-states",
+				"siid": 12,
+				"piid": 6,
+				"friendlyName": "Sensor States",
+				"channel": "sensor_states",
+				"type": "String",
+				"stateDescription": {
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "status",
+				"tags": [
+					"Status"
+				],
+				"readmeComment": "JSON text with the state of each sensor, for example InitializingState, DisableState, NotInstallState or AbnormalState."
+			}
+		]
+	}
+}

@@ -32,6 +32,8 @@ import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link ElroConnectsDeviceHandler} represents the thing handler for an ELRO Connects device.
@@ -40,6 +42,7 @@ import org.openhab.core.types.State;
  */
 @NonNullByDefault
 public class ElroConnectsDeviceHandler extends BaseThingHandler {
+    private final Logger logger = LoggerFactory.getLogger(ElroConnectsDeviceHandler.class);
 
     protected int deviceId;
 
@@ -54,7 +57,6 @@ public class ElroConnectsDeviceHandler extends BaseThingHandler {
 
         ElroConnectsBridgeHandler bridgeHandler = getBridgeHandler();
         if (bridgeHandler == null) {
-            // Thing status has already been updated in getBridgeHandler()
             return;
         }
 
@@ -64,7 +66,7 @@ public class ElroConnectsDeviceHandler extends BaseThingHandler {
                 ElroDeviceType deviceType = TYPE_MAP.get(device.getDeviceType());
                 if ((deviceType == null) || !thing.getThingTypeUID().equals(THING_TYPE_MAP.get(deviceType))) {
                     String msg = String.format("@text/offline.invalid-device-type [ \"%s\" ]", deviceType);
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, msg);
+                    updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, msg);
                 } else {
                     bridgeHandler.setDeviceHandler(deviceId, this);
                     updateProperties(bridgeHandler);
@@ -73,10 +75,10 @@ public class ElroConnectsDeviceHandler extends BaseThingHandler {
                 }
             } else {
                 String msg = String.format("@text/offline.invalid-device-id [ \"%d\" ]", deviceId);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, msg);
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, msg);
             }
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
         }
     }
 
@@ -97,15 +99,14 @@ public class ElroConnectsDeviceHandler extends BaseThingHandler {
     protected @Nullable ElroConnectsBridgeHandler getBridgeHandler() {
         Bridge bridge = getBridge();
         if (bridge == null) {
-            String msg = String.format("@text/offline.no-bridge [ \"%d\" ]", deviceId);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, msg);
+            logger.debug("Bridge unavailable for Thing: {}", thing.getUID());
             return null;
         }
 
         ElroConnectsBridgeHandler bridgeHandler = (ElroConnectsBridgeHandler) bridge.getHandler();
         if (bridgeHandler == null) {
             String msg = String.format("@text/offline.no-bridge-handler [ \"%d\" ]", deviceId);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, msg);
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, msg);
             return null;
         }
 
@@ -117,7 +118,7 @@ public class ElroConnectsDeviceHandler extends BaseThingHandler {
         if (bridgeStatusInfo.getStatus() == ThingStatus.ONLINE) {
             initialize();
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
         }
     }
 
@@ -171,9 +172,13 @@ public class ElroConnectsDeviceHandler extends BaseThingHandler {
     }
 
     @Override
-    public void updateStatus(ThingStatus thingStatus, ThingStatusDetail thingStatusDetail,
-            @Nullable String description) {
-        super.updateStatus(thingStatus, thingStatusDetail, description);
+    public void updateStatus(ThingStatus thingStatus, @Nullable String description) {
+        super.updateStatus(thingStatus, description);
+    }
+
+    @Override
+    public void updateStatus(ThingStatusDetail thingStatusDetail, @Nullable String description) {
+        super.updateStatus(thingStatusDetail, description);
     }
 
     @Override

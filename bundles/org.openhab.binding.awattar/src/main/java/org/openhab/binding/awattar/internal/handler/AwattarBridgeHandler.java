@@ -91,7 +91,7 @@ public class AwattarBridgeHandler extends BaseBridgeHandler {
             dataRefresher = scheduler.scheduleWithFixedDelay(this::refreshIfNeeded, 0, DATA_REFRESH_INTERVAL * 1000L,
                     TimeUnit.MILLISECONDS);
         } catch (IllegalArgumentException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.unsupported.country");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.unsupported.country");
         }
     }
 
@@ -140,7 +140,7 @@ public class AwattarBridgeHandler extends BaseBridgeHandler {
 
             updateStatus(ThingStatus.ONLINE);
         } catch (AwattarApiException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 

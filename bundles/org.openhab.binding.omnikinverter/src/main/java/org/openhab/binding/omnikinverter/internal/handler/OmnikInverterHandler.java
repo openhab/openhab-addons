@@ -180,10 +180,10 @@ public class OmnikInverterHandler extends BaseThingHandler {
                         new QuantityType<>(message.getHoursTotal(), Units.HOUR));
             }
         } catch (UnknownHostException | NoRouteToHostException | ConnectException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         } catch (IOException e) {
             logger.debug("Unknown exception when pulling data from the inverter: {}", e.getMessage());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Unknown error: " + e.getMessage());
+            updateStatus(ThingStatus.OFFLINE, "Unknown error: " + e.getMessage());
         }
     }
 }

@@ -12,7 +12,8 @@
  */
 package org.openhab.binding.hue.internal.api.dto.clip2.helper;
 
-import java.math.BigDecimal;
+import static org.openhab.binding.hue.internal.HueBindingConstants.*;
+
 import java.time.Duration;
 import java.util.Collection;
 import java.util.HashMap;
@@ -20,7 +21,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -29,14 +29,15 @@ import org.openhab.binding.hue.internal.api.dto.clip2.ColorTemperature;
 import org.openhab.binding.hue.internal.api.dto.clip2.ColorXy;
 import org.openhab.binding.hue.internal.api.dto.clip2.Dimming;
 import org.openhab.binding.hue.internal.api.dto.clip2.Effects;
+import org.openhab.binding.hue.internal.api.dto.clip2.Gradient;
 import org.openhab.binding.hue.internal.api.dto.clip2.MetaData;
 import org.openhab.binding.hue.internal.api.dto.clip2.MirekSchema;
 import org.openhab.binding.hue.internal.api.dto.clip2.OnState;
+import org.openhab.binding.hue.internal.api.dto.clip2.PairXy;
 import org.openhab.binding.hue.internal.api.dto.clip2.Resource;
 import org.openhab.binding.hue.internal.api.dto.clip2.TimedEffects;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.ActionType;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.EffectType;
-import org.openhab.binding.hue.internal.api.dto.clip2.enums.ResourceType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.PercentType;
@@ -55,8 +56,6 @@ import org.openhab.core.util.ColorUtil.Gamut;
  */
 @NonNullByDefault
 public class Setters {
-
-    private static final Set<ResourceType> LIGHT_TYPES = Set.of(ResourceType.LIGHT, ResourceType.GROUPED_LIGHT);
 
     /**
      * Setter for Alert field:
@@ -110,7 +109,7 @@ public class Setters {
             double min = schema.getMirekMinimum();
             double max = schema.getMirekMaximum();
             double val = Math.max(min, Math.min(max, mirekQuantity.doubleValue()));
-            target.setColorTemperature(colorTemperature.setMirek(val));
+            target.setColorTemperature(colorTemperature.setMirek(Math.round(val)));
         }
         return target;
     }
@@ -136,7 +135,7 @@ public class Setters {
             double min = schema.getMirekMinimum();
             double max = schema.getMirekMaximum();
             double val = min + ((max - min) * mirek.doubleValue() / 100f);
-            target.setColorTemperature(colorTemperature.setMirek(val));
+            target.setColorTemperature(colorTemperature.setMirek(Math.round(val)));
         }
         return target;
     }
@@ -157,36 +156,51 @@ public class Setters {
         if (command instanceof HSBType hsb) {
             hsb = new HSBType(hsb.getHue(), hsb.getSaturation(), PercentType.HUNDRED);
             ColorXy color = target.getColorXy();
-            target.setColorXy((Objects.nonNull(color) ? color : new ColorXy()).setXY(ColorUtil.hsbToXY(hsb)));
+            Gamut gamut = target.getGamut();
+            gamut = Objects.nonNull(gamut) ? gamut : Objects.nonNull(source) ? source.getGamut() : null;
+            gamut = Objects.nonNull(gamut) ? gamut : ColorUtil.DEFAULT_GAMUT;
+            target.setColorXy((Objects.nonNull(color) ? color : new ColorXy()).setXY(ColorUtil.hsbToXY(hsb, gamut)));
         }
         return target;
     }
 
     /**
-     * Setter for Dimming field:
+     * Setter for a gradient point color xy field:
      * Use the given command value to set the target resource DTO value based on the attributes of the source resource
-     * (if any).
+     * (if any). Use the HS parts of the HSB value to set the value of the 'ColorXy' JSON element, and ignore the 'B'
+     * part.
      *
      * @param target the target resource.
-     * @param command the new state command should be a PercentType with the new dimming parameter.
-     * @param source another resource containing the minimum dimming level.
-     *
-     * @return the target resource.
+     * @param command the new state command should be an HSBType with the new color XY value.
+     * @param cache another (cached) resource containing the color Gamut and the Gradient.
+     * @return the target resource or null if the command cannot be applied.
      */
-    public static Resource setDimming(Resource target, Command command, @Nullable Resource source) {
-        if (command instanceof PercentType brightness) {
-            Double min = target.getMinimumDimmingLevel();
-            min = Objects.nonNull(min) ? min : Objects.nonNull(source) ? source.getMinimumDimmingLevel() : null;
-            min = Objects.nonNull(min) ? min : Dimming.DEFAULT_MINIMUM_DIMMIMG_LEVEL;
-            if (brightness.doubleValue() < min.doubleValue()) {
-                brightness = new PercentType(new BigDecimal(min, Resource.PERCENT_MATH_CONTEXT));
+    public static @Nullable Resource setGradientPointColorXy(Resource target, Command command, int index,
+            @Nullable Resource cache) {
+        if (command instanceof HSBType hsb && cache != null && cache.getGradient() instanceof Gradient cacheGradient) {
+            HSBType hsb2 = new HSBType(hsb.getHue(), hsb.getSaturation(), PercentType.HUNDRED);
+            Gamut gamut = cache.getGamut();
+            gamut = Objects.nonNull(gamut) ? gamut : ColorUtil.DEFAULT_GAMUT;
+            int capable = cacheGradient.getPointsCapable();
+            if (capable > 0 && index >= capable) {
+                return null; // beyond light capability
             }
-            Dimming dimming = target.getDimming();
-            dimming = Objects.nonNull(dimming) ? dimming : new Dimming();
-            dimming.setBrightness(brightness.doubleValue());
-            target.setDimming(dimming);
+            Gradient copy;
+            try {
+                copy = cacheGradient.copy();
+            } catch (IllegalStateException e) {
+                copy = new Gradient(); // invalid cached point: repair by sending a full set
+            }
+            try {
+                int capacity = capable > 0 ? capable : Gradient.MAX_POINTS;
+                PairXy point = new PairXy().setXY(ColorUtil.hsbToXY(hsb2, gamut));
+                target.setGradient(copy.setPointXy(index, point, capacity));
+            } catch (IndexOutOfBoundsException | IllegalStateException e) {
+                return null; // beyond light capability
+            }
+            return target;
         }
-        return target;
+        return null;
     }
 
     /**
@@ -244,14 +258,6 @@ public class Setters {
             targetDimming = target.getDimming();
         }
 
-        // minimum dimming level
-        if (Objects.nonNull(targetDimming)) {
-            Double sourceMinDimLevel = Objects.isNull(sourceDimming) ? null : sourceDimming.getMinimumDimmingLevel();
-            if (Objects.nonNull(sourceMinDimLevel)) {
-                targetDimming.setMinimumDimmingLevel(sourceMinDimLevel);
-            }
-        }
-
         // color
         ColorXy targetColor = target.getColorXy();
         ColorXy sourceColor = source.getColorXy();
@@ -261,9 +267,12 @@ public class Setters {
         }
 
         // color gamut
-        Gamut sourceGamut = Objects.isNull(sourceColor) ? null : sourceColor.getGamut();
-        if (Objects.nonNull(targetColor) && Objects.nonNull(sourceGamut)) {
-            targetColor.setGamut(sourceGamut);
+        if (Objects.nonNull(sourceColor) && Objects.nonNull(targetColor)) {
+            Gamut targetGamut = targetColor.getGamut();
+            Gamut sourceGamut = sourceColor.getGamut();
+            if (Objects.isNull(targetGamut) && Objects.nonNull(sourceGamut)) {
+                targetColor.setGamut(sourceGamut);
+            }
         }
 
         // color temperature
@@ -275,9 +284,10 @@ public class Setters {
         }
 
         // mirek schema
-        if (Objects.nonNull(targetColorTemp)) {
-            MirekSchema sourceMirekSchema = Objects.isNull(sourceColorTemp) ? null : sourceColorTemp.getMirekSchema();
-            if (Objects.nonNull(sourceMirekSchema)) {
+        if (Objects.nonNull(targetColorTemp) && Objects.nonNull(sourceColorTemp)) {
+            MirekSchema targetMirekSchema = targetColorTemp.getMirekSchema();
+            MirekSchema sourceMirekSchema = sourceColorTemp.getMirekSchema();
+            if (Objects.isNull(targetMirekSchema) && Objects.nonNull(sourceMirekSchema)) {
                 targetColorTemp.setMirekSchema(sourceMirekSchema);
             }
         }
@@ -331,6 +341,25 @@ public class Setters {
                 targetTimedEffects.setDuration(duration);
             }
         }
+
+        // gradient
+        Gradient targetGradient = target.getGradient();
+        Gradient sourceGradient = source.getGradient();
+        if (Objects.nonNull(sourceGradient)) {
+            if (Objects.isNull(targetGradient)) {
+                Gradient newGradient;
+                try {
+                    newGradient = sourceGradient.copy();
+                } catch (IllegalStateException e) {
+                    newGradient = new Gradient(); // invalid cached point: take over capacity only
+                }
+                newGradient.takeOverMissingFields(sourceGradient);
+                target.setGradient(newGradient);
+            } else {
+                targetGradient.takeOverMissingFields(sourceGradient);
+            }
+        }
+
         return target;
     }
 
@@ -375,6 +404,11 @@ public class Setters {
                 indexedResource.setColorXy(colorXy);
                 resource.setColorXy(null);
             }
+            Gradient gradient = resource.getGradient();
+            if (gradient != null) {
+                indexedResource.setGradient(gradient);
+                resource.setGradient(null);
+            }
 
             if (!resource.hasAnyRelevantField()) {
                 iterator.remove();
@@ -382,5 +416,14 @@ public class Setters {
         }
 
         return resources;
+    }
+
+    /**
+     * Add a key-value pair to the given map only if the value is not null.
+     */
+    public static void putIfExists(Map<String, String> map, String key, @Nullable String value) {
+        if (value != null) {
+            map.put(key, value);
+        }
     }
 }

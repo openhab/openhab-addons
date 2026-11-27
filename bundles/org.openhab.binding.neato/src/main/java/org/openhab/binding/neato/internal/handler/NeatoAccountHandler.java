@@ -80,7 +80,7 @@ public class NeatoAccountHandler extends BaseBridgeHandler {
             return accountInformation.getRobots();
         } catch (IOException e) {
             logger.debug("Error attempting to find robots registered to account", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                     "Error attempting to find robots registered to account");
             return new ArrayList<>();
         }
@@ -109,8 +109,7 @@ public class NeatoAccountHandler extends BaseBridgeHandler {
             authenticationResponse = sendAuthRequestToNeato(gson.toJson(req));
         } catch (IOException e) {
             logger.debug("Error when sending Authentication request to Neato.", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Error when sending Authentication request to Neato.");
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "Error when sending Authentication request to Neato.");
         }
 
         BeehiveAuthentication authenticationObject = gson.fromJson(authenticationResponse, BeehiveAuthentication.class);

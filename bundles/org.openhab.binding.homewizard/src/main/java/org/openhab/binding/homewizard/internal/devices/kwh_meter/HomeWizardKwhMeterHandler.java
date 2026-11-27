@@ -14,6 +14,8 @@ package org.openhab.binding.homewizard.internal.devices.kwh_meter;
 
 import java.util.Arrays;
 
+import javax.naming.CommunicationException;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.homewizard.internal.HomeWizardBindingConstants;
 import org.openhab.binding.homewizard.internal.devices.HomeWizardBatteriesSubHandler;
@@ -25,7 +27,6 @@ import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
-import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
@@ -36,6 +37,7 @@ import com.google.gson.JsonSyntaxException;
  * The {@link HomeWizardKwhMeterHandler} implements functionality to handle a HomeWizard kWh Meter.
  *
  * @author Gearrel Welvaart - Initial contribution
+ * @author Leo Siepel - Guard battery polling across lifecycle changes
  *
  */
 @NonNullByDefault
@@ -57,25 +59,34 @@ public class HomeWizardKwhMeterHandler extends HomeWizardDeviceHandler {
     }
 
     @Override
-    protected void retrieveData() {
-        super.retrieveData();
+    protected boolean retrieveData(long generation) {
+        if (!super.retrieveData(generation)) {
+            return false;
+        }
 
         try {
             if (config.isUsingApiVersion2()) {
-                handleBatteriesData(getBatteriesData());
+                String batteriesData = getBatteriesData();
+                synchronized (this) {
+                    if (generation != lifecycleGeneration.get()) {
+                        return false;
+                    }
+                    handleBatteriesData(batteriesData);
+                }
             }
-        } catch (JsonSyntaxException ex) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+            return true;
+        } catch (JsonSyntaxException | CommunicationException ex) {
+            updateStatusIfCurrent(generation, ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/offline.comm-error-device-offline");
             logger.debug("Unable to get data from the API", ex);
-            return;
+            return false;
         }
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
-            retrieveData();
+            retrieveData(lifecycleGeneration.get());
             return;
         }
 

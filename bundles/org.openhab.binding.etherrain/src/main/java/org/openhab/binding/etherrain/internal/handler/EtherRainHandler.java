@@ -88,7 +88,7 @@ public class EtherRainHandler extends BaseThingHandler {
         try {
             device.commandStatus();
         } catch (EtherRainException | IOException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+            updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                     "Could not create a connection to the EtherRain");
             logger.debug("Could not open API connection to the EtherRain device. Exception received: {}",
                     e.getMessage());
@@ -138,7 +138,7 @@ public class EtherRainHandler extends BaseThingHandler {
         try {
             response = device.commandStatus();
         } catch (EtherRainException | IOException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+            updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                     "Could not create a connection to the EtherRain");
             logger.debug("Could not open API connection to the EtherRain device. Exception received: {}",
                     e.getMessage());

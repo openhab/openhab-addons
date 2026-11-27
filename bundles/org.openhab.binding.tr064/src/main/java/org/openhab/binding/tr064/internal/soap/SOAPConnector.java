@@ -16,6 +16,7 @@ import static org.openhab.binding.tr064.internal.util.Util.getSOAPElement;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.EOFException;
 import java.io.IOException;
 import java.net.URI;
 import java.time.Duration;
@@ -37,11 +38,12 @@ import javax.xml.soap.SOAPMessage;
 import javax.xml.soap.SOAPPart;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.Authentication;
+import org.eclipse.jetty.client.BytesRequestContent;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.Authentication;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.BytesContentProvider;
+import org.eclipse.jetty.client.Request;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.tr064.internal.Tr064CommunicationException;
@@ -120,11 +122,11 @@ public class SOAPConnector {
         Request request = httpClient.newRequest(endpointBaseURL + soapRequest.service.getControlURL())
                 .method(HttpMethod.POST);
         soapMessage.getMimeHeaders().getAllHeaders()
-                .forEachRemaining(header -> request.header(header.getName(), header.getValue()));
+                .forEachRemaining(header -> request.headers(h -> h.add(header.getName(), header.getValue())));
         try (final ByteArrayOutputStream os = new ByteArrayOutputStream()) {
             soapMessage.writeTo(os);
             byte[] content = os.toByteArray();
-            request.content(new BytesContentProvider(content));
+            request.body(new BytesRequestContent(content));
         }
 
         return request;
@@ -141,7 +143,7 @@ public class SOAPConnector {
         try {
             SOAPMessage soapMessage = Objects.requireNonNull(soapMessageCache.putIfAbsentAndGet(soapRequest, () -> {
                 try {
-                    SOAPMessage newValue = doSOAPRequestUncached(soapRequest);
+                    SOAPMessage newValue = doSOAPRequestRetryOnClosedConnection(soapRequest);
                     logger.trace("Storing in cache: {}", newValue);
                     return newValue;
                 } catch (Tr064CommunicationException e) {
@@ -162,6 +164,39 @@ public class SOAPConnector {
     }
 
     /**
+     * execute a read-only SOAP request and repeat it once if the remote host has closed the re-used connection in the
+     * meantime (the failed connection is dropped by the HTTP client, so the repetition uses a new one)
+     *
+     * @param soapRequest the request itself
+     * @return the SOAPMessage answer from the remote host
+     * @throws Tr064CommunicationException if an error occurs during the request
+     */
+    private SOAPMessage doSOAPRequestRetryOnClosedConnection(SOAPRequest soapRequest)
+            throws Tr064CommunicationException {
+        try {
+            return doSOAPRequestUncached(soapRequest);
+        } catch (Tr064CommunicationException e) {
+            if (!isConnectionClosed(e)) {
+                throw e;
+            }
+            logger.debug("Connection closed by remote host, retrying {}", soapRequest);
+            return doSOAPRequestUncached(soapRequest);
+        }
+    }
+
+    private static boolean isConnectionClosed(Throwable throwable) {
+        @Nullable
+        Throwable cause = throwable.getCause();
+        while (cause != null) {
+            if (cause instanceof EOFException) {
+                return true;
+            }
+            cause = cause.getCause();
+        }
+        return false;
+    }
+
+    /**
      * execute a SOAP request without cache
      *
      * @param soapRequest the request itself
@@ -171,10 +206,6 @@ public class SOAPConnector {
     public synchronized SOAPMessage doSOAPRequestUncached(SOAPRequest soapRequest) throws Tr064CommunicationException {
         try {
             Request request = prepareSOAPRequest(soapRequest).timeout(timeout, TimeUnit.SECONDS);
-            if (logger.isTraceEnabled()) {
-                request.getContent().forEach(buffer -> logger.trace("Request: {}", new String(buffer.array())));
-            }
-
             ContentResponse response = request.send();
             if (response.getStatus() == HttpStatus.UNAUTHORIZED_401) {
                 // retry once if authentication expired
@@ -270,9 +301,11 @@ public class SOAPConnector {
             SOAPMessage soapResponse = doSOAPRequest(
                     new SOAPRequest(channelConfig.getService(), getAction.getName(), arguments));
             String argumentName = channelConfig.getChannelTypeDescription().getGetAction().getArgument();
-            // find all other channels with the same action that are already in cache, so we can update them
+            // find all other channels with the same action and the same parameter that are already in cache, so we
+            // can update them (channels with a different parameter, e.g. another MAC, are answered by another response)
             Map<ChannelUID, Tr064ChannelConfig> channelsInRequest = channelConfigMap.entrySet().stream()
                     .filter(map -> getAction.equals(map.getValue().getGetAction())
+                            && Objects.equals(parameter, map.getValue().getParameter())
                             && stateCache.containsKey(map.getKey())
                             && !argumentName
                                     .equals(map.getValue().getChannelTypeDescription().getGetAction().getArgument()))

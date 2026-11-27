@@ -24,8 +24,14 @@ import org.eclipse.jdt.annotation.Nullable;
 public class GoveeConfiguration {
 
     public String hostname = "";
+    public String deviceId = "";
+    public String macAddress = "";
     public int refreshInterval = 5; // in seconds
 
     public @Nullable Integer minKelvin;
     public @Nullable Integer maxKelvin;
+
+    public String getDeviceId() {
+        return deviceId.isBlank() ? macAddress : deviceId;
+    }
 }

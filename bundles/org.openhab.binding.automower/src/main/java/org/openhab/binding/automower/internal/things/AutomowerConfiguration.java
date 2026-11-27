@@ -24,9 +24,21 @@ import org.eclipse.jdt.annotation.Nullable;
 @NonNullByDefault
 public class AutomowerConfiguration {
     public @Nullable String mowerZoneId;
+    public @Nullable Double minCuttingHeightCm;
+    public @Nullable Double maxCuttingHeightCm;
 
     @Nullable
     public String getMowerZoneId() {
         return mowerZoneId;
+    }
+
+    @Nullable
+    public Double getMinCuttingHeightCm() {
+        return minCuttingHeightCm;
+    }
+
+    @Nullable
+    public Double getMaxCuttingHeightCm() {
+        return maxCuttingHeightCm;
     }
 }

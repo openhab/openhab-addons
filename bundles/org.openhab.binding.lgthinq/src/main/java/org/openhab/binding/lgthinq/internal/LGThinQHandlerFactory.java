@@ -23,6 +23,7 @@ import org.openhab.binding.lgthinq.internal.handler.LGThinQBridgeHandler;
 import org.openhab.binding.lgthinq.internal.handler.LGThinQDishWasherHandler;
 import org.openhab.binding.lgthinq.internal.handler.LGThinQFridgeHandler;
 import org.openhab.binding.lgthinq.internal.handler.LGThinQWasherDryerHandler;
+import org.openhab.binding.lgthinq.lgservices.api.RestUtils;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
@@ -33,8 +34,10 @@ import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
 import org.openhab.core.thing.link.ItemChannelLinkRegistry;
+import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -83,6 +86,15 @@ public class LGThinQHandlerFactory extends BaseThingHandlerFactory {
         this.stateDescriptionProvider = stateDescriptionProvider;
         this.httpClientFactory = httpClientFactory;
         this.itemChannelLinkRegistry = itemChannelLinkRegistry;
+        RestUtils.enableTlsFallback();
+    }
+
+    @Override
+    @Deactivate
+    protected void deactivate(ComponentContext componentContext) {
+        super.deactivate(componentContext);
+        // The TLS fallback client is shared by all bridges, so it is released only with the factory.
+        RestUtils.disableTlsFallback();
     }
 
     /**

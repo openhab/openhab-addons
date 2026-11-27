@@ -88,7 +88,7 @@ public class FeneconHandler extends BaseThingHandler {
                 updateStatus(ThingStatus.ONLINE);
             } catch (FeneconException err) {
                 logger.trace("FENECON - connection problem on FENECON channel {}", eachComponentRequest, err);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, err.getMessage());
+                updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, err.getMessage());
                 return;
             }
         }

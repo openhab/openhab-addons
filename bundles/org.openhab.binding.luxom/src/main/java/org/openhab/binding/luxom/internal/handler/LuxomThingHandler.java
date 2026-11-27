@@ -42,8 +42,7 @@ public abstract class LuxomThingHandler extends BaseThingHandler {
     public void initialize() {
         String id = (String) getConfig().get("address");
         if (id == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/status.thing-address-missing");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/status.thing-address-missing");
             address = "noaddress";
             return;
         }
@@ -88,18 +87,22 @@ public abstract class LuxomThingHandler extends BaseThingHandler {
                 && getThing().getStatusInfo().getStatusDetail() == ThingStatusDetail.BRIDGE_OFFLINE) {
             initDeviceState();
         } else if (bridgeStatusInfo.getStatus() == ThingStatus.OFFLINE) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
             thingOfflineNotify();
         }
     }
 
     protected void sendCommands(List<CommandExecutionSpecification> commands) {
+        Bridge bridge = getBridge();
+        if (bridge == null) {
+            logger.debug("Bridge unavailable for Thing: {}", thing.getUID());
+            return;
+        }
         @Nullable
-        LuxomBridgeHandler bridgeHandler = getBridgeHandler();
+        LuxomBridgeHandler bridgeHandler = (LuxomBridgeHandler) bridge.getHandler();
 
         if (bridgeHandler == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_MISSING_ERROR,
-                    "@text/status.bridge-handler-missing");
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE, "@text/status.bridge-handler-missing");
             thingOfflineNotify();
         } else {
             bridgeHandler.sendCommands(commands);

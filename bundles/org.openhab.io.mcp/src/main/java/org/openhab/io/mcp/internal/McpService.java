@@ -12,6 +12,8 @@
  */
 package org.openhab.io.mcp.internal;
 
+import static org.openhab.io.mcp.internal.tools.McpToolUtils.adminByDefault;
+
 import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -20,11 +22,10 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-
-import javax.servlet.Servlet;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -48,6 +49,7 @@ import org.openhab.core.net.HttpServiceUtil;
 import org.openhab.core.thing.ThingRegistry;
 import org.openhab.core.thing.link.ItemChannelLinkRegistry;
 import org.openhab.io.mcp.internal.auth.McpAuthenticator;
+import org.openhab.io.mcp.internal.auth.McpUser;
 import org.openhab.io.mcp.internal.servlet.JavaxStreamableServerTransportProvider;
 import org.openhab.io.mcp.internal.servlet.OAuthMetadataServlet;
 import org.openhab.io.mcp.internal.servlet.OAuthRegisterServlet;
@@ -79,8 +81,8 @@ import org.osgi.service.component.annotations.Modified;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
-import org.osgi.service.http.whiteboard.HttpWhiteboardConstants;
 import org.osgi.service.log.LogReaderService;
+import org.osgi.service.servlet.whiteboard.HttpWhiteboardConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -90,8 +92,10 @@ import io.modelcontextprotocol.json.McpJsonMapper;
 import io.modelcontextprotocol.json.jackson2.JacksonMcpJsonMapper;
 import io.modelcontextprotocol.json.schema.jackson2.DefaultJsonSchemaValidator;
 import io.modelcontextprotocol.server.McpServer;
+import io.modelcontextprotocol.server.McpServerFeatures.SyncToolSpecification;
 import io.modelcontextprotocol.server.McpSyncServer;
 import io.modelcontextprotocol.spec.McpSchema;
+import jakarta.servlet.Servlet;
 
 /**
  * Main OSGi component for the MCP server addon. Registers an MCP Streamable-HTTP
@@ -111,6 +115,11 @@ public class McpService {
     private static final String SERVER_VERSION = "1.0.0";
     private static final String HTTPCLIENT_NAME = "mcp-api";
     private static final String LOCAL_BASE_URL_DEFAULT = "http://localhost:8080";
+    /** Tools any user may call. Every other tool needs an admin, like its REST equivalent. */
+    private static final Set<String> USER_TOOLS = Set.of("get_semantic_model", "search_items", "get_item", "set_item",
+            "get_rules", "manage_rule", "get_system_info", "get_home_status", "watch_items", "get_events",
+            "list_api_endpoints", "describe_api_endpoint", "call_api", "list_widgets", "describe_widget",
+            "get_page_skeleton", "manage_ui_component", "validate_ui_component");
 
     private final Logger logger = LoggerFactory.getLogger(McpService.class);
 
@@ -300,6 +309,14 @@ public class McpService {
                     .add(registerServlet(metadataServlet, OAuthMetadataServlet.PATH_AUTH_SERVER, "mcp-oauth-asmd"));
             serviceRegistrations.add(registerServlet(metadataServlet, OAuthMetadataServlet.PATH_AUTH_SERVER_OIDC,
                     "mcp-oauth-asmd-oidc"));
+            // Same documents at the RFC 8414 / RFC 9728 locations, where a client that
+            // discovers metadata on its own instead of following our 401 will look.
+            serviceRegistrations.add(registerServlet(metadataServlet, OAuthMetadataServlet.PATH_ROOT_PROTECTED_RESOURCE,
+                    "mcp-oauth-prm-root"));
+            serviceRegistrations.add(registerServlet(metadataServlet, OAuthMetadataServlet.PATH_ROOT_AUTH_SERVER,
+                    "mcp-oauth-asmd-root"));
+            serviceRegistrations.add(registerServlet(metadataServlet, OAuthMetadataServlet.PATH_ROOT_AUTH_SERVER_OIDC,
+                    "mcp-oauth-asmd-oidc-root"));
 
             OAuthTokenProxyServlet tokenProxy = new OAuthTokenProxyServlet(httpClient, localBaseUrl);
             serviceRegistrations.add(registerServlet(tokenProxy, OAuthTokenProxyServlet.PATH, "mcp-oauth-token-proxy"));
@@ -311,11 +328,12 @@ public class McpService {
             transport.setSubscriptionManager(subscriptions);
 
             ItemTools itemTools = new ItemTools(itemRegistry, itemBuilderFactory, metadataRegistry, eventPublisher,
-                    transport::getSessionUsername, jsonMapper);
+                    jsonMapper, config.maxItemsPerPage);
             SemanticTools semanticTools = new SemanticTools(itemRegistry, metadataRegistry, jsonMapper,
                     config.exposeUntaggedItems);
-            ThingTools thingTools = new ThingTools(thingRegistry, linkRegistry, jsonMapper);
-            RuleTools ruleTools = new RuleTools(ruleRegistry, ruleManager, jsonMapper, config.enableScripting);
+            ThingTools thingTools = new ThingTools(thingRegistry, linkRegistry, jsonMapper, config.maxItemsPerPage);
+            RuleTools ruleTools = new RuleTools(ruleRegistry, ruleManager, jsonMapper, config.enableScripting,
+                    config.maxItemsPerPage);
             LinkTools linkTools = new LinkTools(linkRegistry, itemRegistry, thingRegistry, jsonMapper);
             SystemTools systemTools = new SystemTools(itemRegistry, thingRegistry, ruleRegistry, jsonMapper);
             ResourceProvider resourceProvider = new ResourceProvider(itemRegistry, metadataRegistry, thingRegistry,
@@ -325,77 +343,98 @@ public class McpService {
             McpSchema.ServerCapabilities capabilities = McpSchema.ServerCapabilities.builder().tools(true)
                     .resources(true, true).build();
 
-            var builder = McpServer.sync(transport).jsonMapper(jsonMapper)
-                    .jsonSchemaValidator(new DefaultJsonSchemaValidator()).serverInfo(SERVER_NAME, SERVER_VERSION)
-                    .capabilities(capabilities).resources(resourceProvider.resources())
-                    .resourceTemplates(resourceProvider.templates()).instructions(buildInstructions())
-                    .rootsChangeHandlers(List.of((exchange, roots) -> logger.debug("Roots list changed: {}", roots)))
-                    .toolCall(semanticTools.getSemanticModelTool(),
-                            (exchange, req) -> semanticTools.handleGetSemanticModel(req))
-                    .toolCall(itemTools.getSearchItemsTool(), (exchange, req) -> itemTools.handleSearchItems(req))
-                    .toolCall(itemTools.getItemTool(), (exchange, req) -> itemTools.handleGetItem(req))
-                    .toolCall(itemTools.getManageItemTool(), (exchange, req) -> itemTools.handleManageItem(req))
-                    .toolCall(itemTools.getSetItemTool(), (exchange, req) -> itemTools.handleSetItem(exchange, req))
-                    .toolCall(thingTools.getThingsTool(), (exchange, req) -> thingTools.handleGetThings(req))
-                    .toolCall(thingTools.getThingDetailsTool(),
-                            (exchange, req) -> thingTools.handleGetThingDetails(req))
-                    .toolCall(ruleTools.getRulesTool(), (exchange, req) -> ruleTools.handleGetRules(req))
-                    .toolCall(ruleTools.getCreateRuleTool(), (exchange, req) -> ruleTools.handleCreateRule(req))
-                    .toolCall(ruleTools.getUpdateRuleTool(), (exchange, req) -> ruleTools.handleUpdateRule(req))
-                    .toolCall(ruleTools.getManageRuleTool(), (exchange, req) -> ruleTools.handleManageRule(req))
-                    .toolCall(linkTools.getManageLinkTool(), (exchange, req) -> linkTools.handleManageLink(req))
-                    .toolCall(systemTools.getSystemInfoTool(), (exchange, req) -> systemTools.handleGetSystemInfo(req))
-                    .toolCall(systemTools.getHomeStatusTool(), (exchange, req) -> systemTools.handleGetHomeStatus(req))
-                    .toolCall(watchTools.getWatchItemsTool(),
-                            (exchange, req) -> watchTools.handleWatchItems(exchange, req))
-                    .toolCall(watchTools.getEventsTool(), (exchange, req) -> watchTools.handleGetEvents(exchange, req));
+            List<SyncToolSpecification> tools = new ArrayList<>(List.of(
+                    new SyncToolSpecification(semanticTools.getSemanticModelTool(),
+                            (exchange, req) -> semanticTools.handleGetSemanticModel(req)),
+                    new SyncToolSpecification(itemTools.getSearchItemsTool(),
+                            (exchange, req) -> itemTools.handleSearchItems(req)),
+                    new SyncToolSpecification(itemTools.getItemTool(), (exchange, req) -> itemTools.handleGetItem(req)),
+                    new SyncToolSpecification(itemTools.getManageItemTool(),
+                            (exchange, req) -> itemTools.handleManageItem(req)),
+                    new SyncToolSpecification(itemTools.getSetItemTool(),
+                            (exchange, req) -> itemTools.handleSetItem(exchange, req)),
+                    new SyncToolSpecification(thingTools.getThingsTool(),
+                            (exchange, req) -> thingTools.handleGetThings(req)),
+                    new SyncToolSpecification(thingTools.getThingDetailsTool(),
+                            (exchange, req) -> thingTools.handleGetThingDetails(req)),
+                    new SyncToolSpecification(ruleTools.getRulesTool(),
+                            (exchange, req) -> ruleTools.handleGetRules(req)),
+                    new SyncToolSpecification(ruleTools.getCreateRuleTool(),
+                            (exchange, req) -> ruleTools.handleCreateRule(req)),
+                    new SyncToolSpecification(ruleTools.getUpdateRuleTool(),
+                            (exchange, req) -> ruleTools.handleUpdateRule(req)),
+                    new SyncToolSpecification(ruleTools.getManageRuleTool(),
+                            (exchange, req) -> ruleTools.handleManageRule(req, McpUser.isAdmin(exchange))),
+                    new SyncToolSpecification(linkTools.getManageLinkTool(),
+                            (exchange, req) -> linkTools.handleManageLink(req)),
+                    new SyncToolSpecification(systemTools.getSystemInfoTool(),
+                            (exchange, req) -> systemTools.handleGetSystemInfo(req, McpUser.isAdmin(exchange))),
+                    new SyncToolSpecification(systemTools.getHomeStatusTool(),
+                            (exchange, req) -> systemTools.handleGetHomeStatus(req, McpUser.isAdmin(exchange))),
+                    new SyncToolSpecification(watchTools.getWatchItemsTool(),
+                            (exchange, req) -> watchTools.handleWatchItems(exchange, req)),
+                    new SyncToolSpecification(watchTools.getEventsTool(),
+                            (exchange, req) -> watchTools.handleGetEvents(exchange, req))));
 
             if (config.enableFullApiAccess) {
                 ApiTools apiTools = new ApiTools(httpClient, localBaseUrl, transport::getSessionToken, jsonMapper);
-                builder = builder
-                        .toolCall(apiTools.getListApiEndpointsTool(),
-                                (exchange, req) -> apiTools.handleListApiEndpoints(exchange, req))
-                        .toolCall(apiTools.getDescribeApiEndpointTool(),
-                                (exchange, req) -> apiTools.handleDescribeApiEndpoint(exchange, req))
-                        .toolCall(apiTools.getCallApiTool(), (exchange, req) -> apiTools.handleCallApi(exchange, req));
+                tools.addAll(List.of(
+                        new SyncToolSpecification(apiTools.getListApiEndpointsTool(),
+                                (exchange, req) -> apiTools.handleListApiEndpoints(exchange, req)),
+                        new SyncToolSpecification(apiTools.getDescribeApiEndpointTool(),
+                                (exchange, req) -> apiTools.handleDescribeApiEndpoint(exchange, req)),
+                        new SyncToolSpecification(apiTools.getCallApiTool(),
+                                (exchange, req) -> apiTools.handleCallApi(exchange, req))));
             }
 
             if (config.enableScripting) {
-                ScriptTools scriptTools = new ScriptTools(scriptEngineManager, jsonMapper, true);
-                builder = builder.toolCall(scriptTools.getExecuteScriptTool(),
-                        (exchange, req) -> scriptTools.handleExecuteScript(req));
+                ScriptTools scriptTools = new ScriptTools(scriptEngineManager, jsonMapper, true, bundleContext);
+                tools.addAll(List.of(
+                        new SyncToolSpecification(scriptTools.getExecuteScriptTool(),
+                                (exchange, req) -> scriptTools.handleExecuteScript(req)),
+                        new SyncToolSpecification(scriptTools.getGetOpenhabJsTypesTool(),
+                                (exchange, req) -> scriptTools.handleGetOpenhabJsTypes(req))));
             }
 
             if (config.enableLoggingAccess) {
                 LoggingTools logTools = new LoggingTools(logReaderService, httpClient, localBaseUrl,
                         transport::getSessionToken, scheduler, jsonMapper);
                 this.loggingTools = logTools;
-                builder = builder.toolCall(logTools.getReadLogsTool(), (exchange, req) -> logTools.handleGetLogs(req))
-                        .toolCall(logTools.getManageLogLevelTool(),
-                                (exchange, req) -> logTools.handleManageLogLevel(exchange, req));
+                tools.addAll(List.of(
+                        new SyncToolSpecification(logTools.getReadLogsTool(),
+                                (exchange, req) -> logTools.handleGetLogs(req)),
+                        new SyncToolSpecification(logTools.getManageLogLevelTool(),
+                                (exchange, req) -> logTools.handleManageLogLevel(exchange, req))));
             }
 
             if (config.enableUiDesign) {
                 UiTools uiTools = new UiTools(httpClient, localBaseUrl, transport::getSessionToken, jsonMapper);
-                builder = builder
-                        .toolCall(uiTools.getListWidgetsTool(), (exchange, req) -> uiTools.handleListWidgets(req))
-                        .toolCall(uiTools.getDescribeWidgetTool(), (exchange, req) -> uiTools.handleDescribeWidget(req))
-                        .toolCall(uiTools.getPageSkeletonTool(), (exchange, req) -> uiTools.handleGetPageSkeleton(req))
-                        .toolCall(uiTools.getManageUiComponentTool(),
-                                (exchange, req) -> uiTools.handleManageUiComponent(exchange, req))
-                        .toolCall(uiTools.getValidateUiComponentTool(),
-                                (exchange, req) -> uiTools.handleValidateUiComponent(req));
+                tools.addAll(List.of(
+                        new SyncToolSpecification(uiTools.getListWidgetsTool(),
+                                (exchange, req) -> uiTools.handleListWidgets(req)),
+                        new SyncToolSpecification(uiTools.getDescribeWidgetTool(),
+                                (exchange, req) -> uiTools.handleDescribeWidget(req)),
+                        new SyncToolSpecification(uiTools.getPageSkeletonTool(),
+                                (exchange, req) -> uiTools.handleGetPageSkeleton(req)),
+                        new SyncToolSpecification(uiTools.getManageUiComponentTool(),
+                                (exchange, req) -> uiTools.handleManageUiComponent(exchange, req)),
+                        new SyncToolSpecification(uiTools.getValidateUiComponentTool(),
+                                (exchange, req) -> uiTools.handleValidateUiComponent(req))));
             }
 
             if (config.enableStaticAssets) {
                 Path htmlRoot = Path.of(OpenHAB.getConfigFolder(), "html");
-                StaticAssetTools assetTools = new StaticAssetTools(htmlRoot, localBaseUrl, httpClient,
-                        transport::getSessionToken, jsonMapper);
-                builder = builder.toolCall(assetTools.getManageStaticAssetTool(),
-                        (exchange, req) -> assetTools.handleManageStaticAsset(exchange, req));
+                StaticAssetTools assetTools = new StaticAssetTools(htmlRoot, localBaseUrl, jsonMapper);
+                tools.add(new SyncToolSpecification(assetTools.getManageStaticAssetTool(),
+                        (exchange, req) -> assetTools.handleManageStaticAsset(req)));
             }
 
-            McpSyncServer server = builder.build();
+            McpSyncServer server = McpServer.sync(transport).jsonMapper(jsonMapper)
+                    .jsonSchemaValidator(new DefaultJsonSchemaValidator()).serverInfo(SERVER_NAME, SERVER_VERSION)
+                    .capabilities(capabilities).resources(resourceProvider.resources())
+                    .resourceTemplates(resourceProvider.templates()).instructions(buildInstructions())
+                    .rootsChangeHandlers(List.of((exchange, roots) -> logger.debug("Roots list changed: {}", roots)))
+                    .tools(adminByDefault(tools, USER_TOOLS)).build();
 
             this.mcpServer = server;
 

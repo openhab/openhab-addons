@@ -169,17 +169,21 @@ public class NikoHomeControlCarChargerHandler extends NikoHomeControlBaseHandler
         NikoHomeControlCarChargerConfig config = getConfig().as(NikoHomeControlCarChargerConfig.class);
         deviceId = config.carChargerId;
 
-        NikoHomeControlBridgeHandler bridgeHandler = getBridgeHandler();
+        Bridge bridge = getBridge();
+        if (bridge == null) {
+            logger.debug("Bridge unavailable while initializing Thing: {}", thing.getUID());
+            return;
+        }
+        NikoHomeControlBridgeHandler bridgeHandler = (NikoHomeControlBridgeHandler) bridge.getHandler();
         if (bridgeHandler == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.configuration-error.invalid-bridge-handler");
             return;
         }
 
         updateStatus(ThingStatus.UNKNOWN);
 
-        Bridge bridge = getBridge();
-        if (bridge != null && ThingStatus.ONLINE.equals(bridge.getStatus())) {
+        if (ThingStatus.ONLINE.equals(bridge.getStatus())) {
             // We need to do this in a separate thread because we may have to wait for the
             // communication to become active
             commStartThread = scheduler.submit(this::startCommunication);
@@ -195,15 +199,13 @@ public class NikoHomeControlCarChargerHandler extends NikoHomeControlBaseHandler
         }
 
         if (!nhcComm.communicationActive()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/offline.communication-error");
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/offline.communication-error");
             return;
         }
 
         NhcCarCharger nhcCarCharger = nhcComm.getCarChargerDevices().get(deviceId);
         if (nhcCarCharger == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.configuration-error.deviceId");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.configuration-error.deviceId");
             return;
         }
 
@@ -218,8 +220,7 @@ public class NikoHomeControlCarChargerHandler extends NikoHomeControlBaseHandler
         try {
             LocalDateTime.parse(startDate);
         } catch (DateTimeParseException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.configuration-error.meterStartDate");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.configuration-error.meterStartDate");
             return;
         }
 
@@ -282,7 +283,7 @@ public class NikoHomeControlCarChargerHandler extends NikoHomeControlBaseHandler
 
     @Override
     public void chargingStatusEvent(boolean status, @Nullable String chargingStatus, @Nullable String evStatus,
-            @Nullable String couplingStatus, @Nullable Integer electricalPower) {
+            @Nullable String couplingStatus, @Nullable Long electricalPower) {
         NhcCarCharger nhcCarCharger = this.nhcCarCharger;
         if (nhcCarCharger == null) {
             logger.debug("car charger device with ID {} not initialized", deviceId);
@@ -306,8 +307,8 @@ public class NikoHomeControlCarChargerHandler extends NikoHomeControlBaseHandler
     }
 
     @Override
-    public void chargingModeEvent(@Nullable String chargingMode, float targetDistance, @Nullable String targetTime,
-            boolean boost, float reachableDistance, @Nullable String nextChargingTime) {
+    public void chargingModeEvent(@Nullable String chargingMode, double targetDistance, @Nullable String targetTime,
+            boolean boost, double reachableDistance, @Nullable String nextChargingTime) {
         NhcCarCharger nhcCarCharger = this.nhcCarCharger;
         if (nhcCarCharger == null) {
             logger.debug("car charger device with ID {} not initialized", deviceId);

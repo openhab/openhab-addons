@@ -17,7 +17,9 @@ import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.openhab.binding.shelly.internal.api1.Shelly1CoapServer;
 import org.openhab.binding.shelly.internal.config.ShellyBindingRuntimeConfig;
+import org.openhab.binding.shelly.internal.provider.ShellyStateDescriptionProvider;
 import org.openhab.binding.shelly.internal.provider.ShellyTranslationProvider;
+import org.openhab.core.i18n.LocationProvider;
 import org.openhab.core.thing.Thing;
 
 /**
@@ -39,8 +41,10 @@ public class ShellyProtectedHandler extends ShellyBaseHandler {
      */
     public ShellyProtectedHandler(final Thing thing, final ShellyTranslationProvider translationProvider,
             final ShellyBindingRuntimeConfig bindingConfig, ShellyThingTable thingTable,
-            final Shelly1CoapServer coapService, final HttpClient httpClient, WebSocketClient webSocketClient) {
-        super(thing, translationProvider, bindingConfig, thingTable, coapService, httpClient, webSocketClient);
+            final Shelly1CoapServer coapService, final HttpClient httpClient, WebSocketClient webSocketClient,
+            final LocationProvider locationProvider, ShellyStateDescriptionProvider stateDescriptionProvider) {
+        super(thing, translationProvider, bindingConfig, thingTable, coapService, httpClient, webSocketClient,
+                locationProvider, stateDescriptionProvider);
     }
 
     @Override

@@ -1,0 +1,1376 @@
+fin_or_vin: "ANONYMIZED"
+full_update: true
+average_speed_reset {
+  value: 50.800000000000004
+  metadata {
+    timestamp {
+      seconds: 1786941843
+      nanos: 287000000
+    }
+  }
+  unit: KM_PER_HOUR
+  display_value: "51"
+}
+average_speed_start {
+  value: 52.2
+  metadata {
+    timestamp {
+      seconds: 1786942622
+      nanos: 909000000
+    }
+  }
+  unit: KM_PER_HOUR
+  display_value: "52"
+}
+charge_flaps {
+  value {
+    id: 1
+    position_state: CHARGE_FLAPS_POSITION_STATE_CLOSED
+  }
+  metadata {
+    timestamp {
+      seconds: 1786941120
+      nanos: 207000000
+    }
+  }
+}
+charge_inlets {
+  value {
+    id: 1
+    coupler_state: CHARGE_INLETS_COUPLER_STATE_VEHICLE_NOT_PLUGGED
+    lock_state: CHARGE_INLETS_LOCK_STATE_UNLOCKED
+  }
+  metadata {
+    timestamp {
+      seconds: 1786941114
+      nanos: 121000000
+    }
+  }
+}
+charging_compatibility_error {
+  metadata {
+    timestamp {
+      seconds: 1785911310
+      nanos: 844000000
+    }
+  }
+}
+charging_coupler_error_details {
+  metadata {
+    timestamp {
+      seconds: 1785911310
+      nanos: 844000000
+    }
+  }
+}
+charging_error_details {
+  value: CHARGING_ERROR_DETAILS_NO_INFO_OR_ERROR_MESSAGE
+  metadata {
+    timestamp {
+      seconds: 1785911310
+      nanos: 844000000
+    }
+  }
+}
+charging_error_impossible_change_to400_v {
+  metadata {
+    timestamp {
+      seconds: 1785911310
+      nanos: 844000000
+    }
+    status: VALUE_INVALID
+  }
+}
+charging_error_impossible_change_to800_v {
+  metadata {
+    timestamp {
+      seconds: 1785911310
+      nanos: 844000000
+    }
+  }
+}
+charging_error_vehicle_no_support400_v {
+  metadata {
+    timestamp {
+      seconds: 1785911310
+      nanos: 844000000
+    }
+  }
+}
+charging_flap_error_details {
+  metadata {
+    timestamp {
+      seconds: 1785911310
+      nanos: 844000000
+    }
+  }
+}
+charging_power {
+  metadata {
+    timestamp {
+      seconds: 1786886061
+      nanos: 856000000
+    }
+  }
+}
+charging_power_eco_limit {
+  value: 169
+  metadata {
+    timestamp {
+      seconds: 1786945160
+      nanos: 690000000
+    }
+  }
+}
+charging_power_restriction {
+  value: CHARGING_POWER_RESTRICTION_STATE_OF_CHARGE_TOO_HIGH
+  metadata {
+    timestamp {
+      seconds: 1786886061
+      nanos: 856000000
+    }
+  }
+}
+charging_prediction_departure_time {
+  metadata {
+    timestamp {
+      seconds: 1785937552
+      nanos: 837000000
+    }
+    status: VALUE_NOT_RECEIVED
+  }
+}
+charging_prediction_max_soc {
+  value {
+    predicted_electrical_energy_range: 658
+  }
+  metadata {
+    timestamp {
+      seconds: 1786942629
+      nanos: 804000000
+    }
+  }
+}
+charging_schedule_active {
+  value {
+    start_time {
+    }
+    offline_mode: CHARGING_SCHEDULE_ACTIVE_OFFLINE_MODE_OFF
+    schedule {
+    }
+    schedule {
+    }
+    schedule {
+    }
+    schedule {
+    }
+    schedule {
+    }
+    schedule {
+    }
+    schedule {
+    }
+    schedule {
+    }
+    schedule {
+    }
+    schedule {
+    }
+    schedule {
+    }
+    schedule {
+    }
+    schedule {
+    }
+    schedule {
+    }
+    schedule {
+    }
+    schedule {
+    }
+  }
+  metadata {
+    timestamp {
+      seconds: 1785911310
+      nanos: 844000000
+    }
+  }
+}
+charging_schedule_requested {
+  value {
+  }
+  metadata {
+    timestamp {
+      seconds: 1785911310
+      nanos: 844000000
+    }
+  }
+}
+charging_stop_error_details {
+  metadata {
+    timestamp {
+      seconds: 1786553111
+      nanos: 913000000
+    }
+  }
+}
+chargingactive {
+  metadata {
+    timestamp {
+      seconds: 1786886061
+      nanos: 856000000
+    }
+  }
+}
+chargingstatus {
+  value: CHARGINGSTATUS_CHARGE_CABLE_UNPLUGGED
+  metadata {
+    timestamp {
+      seconds: 1786941114
+      nanos: 121000000
+    }
+  }
+}
+decklidstatus {
+  metadata {
+    timestamp {
+      seconds: 1786945160
+      nanos: 745000000
+    }
+  }
+}
+distance_reset {
+  value: 8299.4
+  metadata {
+    timestamp {
+      seconds: 1786942595
+      nanos: 342000000
+    }
+  }
+  unit: KILOMETERS
+  display_value: "8299.4"
+}
+distance_start {
+  value: 21.400000000000002
+  metadata {
+    timestamp {
+      seconds: 1786942605
+      nanos: 288000000
+    }
+  }
+  unit: KILOMETERS
+  display_value: "21.4"
+}
+doorlockstatusdecklid {
+  metadata {
+    timestamp {
+      seconds: 1786945160
+      nanos: 901000000
+    }
+  }
+}
+doorlockstatusfrontleft {
+  metadata {
+    timestamp {
+      seconds: 1786945160
+      nanos: 901000000
+    }
+  }
+}
+doorlockstatusfrontright {
+  metadata {
+    timestamp {
+      seconds: 1786945160
+      nanos: 901000000
+    }
+  }
+}
+doorlockstatusgas {
+  metadata {
+    timestamp {
+      seconds: 1786945160
+      nanos: 901000000
+    }
+  }
+}
+doorlockstatusrearleft {
+  metadata {
+    timestamp {
+      seconds: 1786945160
+      nanos: 901000000
+    }
+  }
+}
+doorlockstatusrearright {
+  metadata {
+    timestamp {
+      seconds: 1786945160
+      nanos: 901000000
+    }
+  }
+}
+doorlockstatusvehicle {
+  value: DOORLOCKSTATUSVEHICLE_EXTERNAL_LOCKED
+  metadata {
+    timestamp {
+      seconds: 1786945160
+      nanos: 901000000
+    }
+  }
+}
+doorstatusfrontleft {
+  metadata {
+    timestamp {
+      seconds: 1786945160
+      nanos: 690000000
+    }
+  }
+}
+doorstatusfrontright {
+  metadata {
+    timestamp {
+      seconds: 1786945160
+      nanos: 690000000
+    }
+  }
+}
+doorstatusgas {
+  metadata {
+    timestamp {
+      seconds: 1786943797
+      nanos: 150000000
+    }
+    status: VALUE_NOT_AVAILABLE
+  }
+}
+doorstatusrearleft {
+  metadata {
+    timestamp {
+      seconds: 1786945160
+      nanos: 690000000
+    }
+  }
+}
+doorstatusrearright {
+  metadata {
+    timestamp {
+      seconds: 1786945160
+      nanos: 690000000
+    }
+  }
+}
+driven_time_reset {
+  value: 9749
+  metadata {
+    timestamp {
+      seconds: 1786942612
+      nanos: 305000000
+    }
+  }
+}
+driven_time_start {
+  value: 24
+  metadata {
+    timestamp {
+      seconds: 1786942587
+      nanos: 889000000
+    }
+  }
+}
+ecoscoreaccel {
+  value: 85
+  metadata {
+    timestamp {
+      seconds: 1786942546
+      nanos: 755000000
+    }
+  }
+  unit: PERCENT
+  display_value: "85"
+}
+ecoscorebonusrange {
+  value: 4.4
+  metadata {
+    timestamp {
+      seconds: 1786942571
+      nanos: 187000000
+    }
+  }
+  unit: KILOMETERS
+  display_value: "4.4"
+}
+ecoscoreconst {
+  value: 82
+  metadata {
+    timestamp {
+      seconds: 1786942606
+      nanos: 13000000
+    }
+  }
+  unit: PERCENT
+  display_value: "82"
+}
+ecoscorefreewhl {
+  value: 100
+  metadata {
+    timestamp {
+      seconds: 1786942477
+      nanos: 901000000
+    }
+  }
+  unit: PERCENT
+  display_value: "100"
+}
+electricconsumptionreset {
+  value: 16.448
+  metadata {
+    timestamp {
+      seconds: 1786941167
+      nanos: 473000000
+    }
+  }
+  unit: KWH_PER_100KM
+  display_value: "16.4"
+}
+electricconsumptionstart {
+  value: 16.4
+  metadata {
+    timestamp {
+      seconds: 1786942525
+      nanos: 189000000
+    }
+  }
+  unit: KWH_PER_100KM
+  display_value: "16.4"
+}
+engine_hood_status {
+  metadata {
+    timestamp {
+      seconds: 1786945161
+      nanos: 346000000
+    }
+  }
+}
+ev_range_assist_drive_on_s_o_c {
+  metadata {
+    timestamp {
+      seconds: 1786945160
+      nanos: 690000000
+    }
+    status: VALUE_INVALID
+  }
+  unit: PERCENT
+}
+ev_range_assist_drive_on_time {
+  metadata {
+    timestamp {
+      seconds: 1786945160
+      nanos: 690000000
+    }
+    status: VALUE_INVALID
+  }
+}
+filter_particle_loading {
+  metadata {
+    timestamp {
+      seconds: 1786943793
+      nanos: 590000000
+    }
+  }
+}
+flip_window_status {
+  metadata {
+    timestamp {
+      seconds: 1786945160
+      nanos: 745000000
+    }
+    status: VALUE_NOT_AVAILABLE
+  }
+}
+gained_range_since_start_of_charging {
+  metadata {
+    timestamp {
+      seconds: 1786941148
+      nanos: 419000000
+    }
+  }
+  unit: KILOMETERS
+  display_value: "0"
+}
+hv_battery_precond_duration {
+  metadata {
+    timestamp {
+      seconds: 1785911311
+      nanos: 534000000
+    }
+  }
+}
+hv_battery_precond_request_state {
+  value {
+    main_category: MAIN_CATEGORY_HMI
+    sub_category: 155
+    specific_category: 265
+    status: STATE_CONDITIONING_NOT_NECESSARY
+  }
+  metadata {
+    timestamp {
+      seconds: 1785937522
+      nanos: 935000000
+    }
+  }
+}
+hv_battery_precond_state {
+  metadata {
+    timestamp {
+      seconds: 1782310577
+      nanos: 599000000
+    }
+    status: VALUE_NOT_RECEIVED
+  }
+}
+hv_battery_state_of_health {
+  value: 100
+  metadata {
+    timestamp {
+      seconds: 1786945160
+      nanos: 690000000
+    }
+  }
+}
+hv_battery_state_of_health_distance_update {
+  value: 140
+  metadata {
+    timestamp {
+      seconds: 1786945160
+      nanos: 690000000
+    }
+  }
+}
+hv_battery_state_of_health_reserve_capacity {
+  metadata {
+    timestamp {
+      seconds: 1786943787
+      nanos: 490000000
+    }
+    status: VALUE_INVALID
+  }
+}
+hv_battery_thermal_propagation_event {
+  metadata {
+    timestamp {
+      seconds: 1786943790
+      nanos: 826000000
+    }
+  }
+}
+hybrid_warnings {
+  metadata {
+    timestamp {
+      seconds: 1785911310
+      nanos: 844000000
+    }
+  }
+}
+ignitionstate {
+  metadata {
+    timestamp {
+      seconds: 1786945160
+      nanos: 690000000
+    }
+  }
+}
+liquid_range_skip_indication {
+  metadata {
+    timestamp {
+      seconds: 1786942625
+      nanos: 5000000
+    }
+    status: VALUE_NOT_AVAILABLE
+  }
+}
+liquidconsumptionreset {
+  metadata {
+    timestamp {
+      seconds: 1786860983
+      nanos: 521000000
+    }
+    status: VALUE_NOT_AVAILABLE
+  }
+  unit: LITER_PER_100KM
+}
+liquidconsumptionstart {
+  metadata {
+    timestamp {
+      seconds: 1786860983
+      nanos: 521000000
+    }
+    status: VALUE_NOT_AVAILABLE
+  }
+  unit: LITER_PER_100KM
+}
+max_soc {
+  value: 100
+  metadata {
+    timestamp {
+      seconds: 1785911310
+      nanos: 844000000
+    }
+  }
+  unit: PERCENT
+  display_value: "100"
+}
+max_soc_lower_limit {
+  value: 30
+  metadata {
+    timestamp {
+      seconds: 1785911310
+      nanos: 844000000
+    }
+  }
+  unit: PERCENT
+  display_value: "30"
+}
+max_soc_upper_limit {
+  value: 100
+  metadata {
+    timestamp {
+      seconds: 1785911310
+      nanos: 844000000
+    }
+  }
+  unit: PERCENT
+  display_value: "100"
+}
+next_departure_time {
+  metadata {
+    timestamp {
+      seconds: 1785937522
+      nanos: 510000000
+    }
+    status: VALUE_INVALID
+  }
+  unit: T24H
+}
+next_departure_time_weekday {
+  metadata {
+    timestamp {
+      seconds: 1785937522
+      nanos: 510000000
+    }
+    status: VALUE_INVALID
+  }
+}
+odo {
+  value: 8337
+  metadata {
+    timestamp {
+      seconds: 1786942595
+      nanos: 97000000
+    }
+  }
+  unit: KILOMETERS
+  display_value: "8337"
+}
+oil_level {
+  metadata {
+    timestamp {
+      seconds: 1771933558
+    }
+    status: VALUE_NOT_AVAILABLE
+  }
+  unit: PERCENT
+}
+oil_warning_level {
+  metadata {
+    timestamp {
+      seconds: 1786860983
+      nanos: 521000000
+    }
+    status: VALUE_NOT_AVAILABLE
+  }
+}
+parkbrakestatus {
+  value: PARKBRAKESTATUS_ENGAGED
+  metadata {
+    timestamp {
+      seconds: 1786945160
+      nanos: 690000000
+    }
+  }
+}
+position_heading {
+  value: 274.3
+  metadata {
+    timestamp {
+      seconds: 1786942623
+      nanos: 824000000
+    }
+  }
+}
+position_lat {
+  value: 1.23
+  metadata {
+    timestamp {
+      seconds: 1786942622
+      nanos: 801000000
+    }
+  }
+}
+position_long {
+  value: 4.56
+  metadata {
+    timestamp {
+      seconds: 1786942623
+      nanos: 824000000
+    }
+  }
+}
+precond_active {
+  metadata {
+    timestamp {
+      seconds: 1785911310
+      nanos: 844000000
+    }
+  }
+}
+precond_error {
+  metadata {
+    timestamp {
+      seconds: 1785911312
+      nanos: 220000000
+    }
+  }
+}
+precond_now {
+  metadata {
+    timestamp {
+      seconds: 1786468024
+      nanos: 645000000
+    }
+  }
+}
+precond_now_error {
+  metadata {
+    timestamp {
+      seconds: 1786942629
+      nanos: 88000000
+    }
+  }
+}
+precond_operability_state {
+  value {
+    precond_available: true
+  }
+  metadata {
+    timestamp {
+      seconds: 1786942629
+      nanos: 187000000
+    }
+  }
+}
+precond_operating_mode {
+  metadata {
+    timestamp {
+      seconds: 1786468024
+      nanos: 645000000
+    }
+  }
+}
+precond_seat_front_left {
+  metadata {
+    timestamp {
+      seconds: 1785937513
+      nanos: 462000000
+    }
+  }
+}
+precond_seat_front_right {
+  metadata {
+    timestamp {
+      seconds: 1785937513
+      nanos: 462000000
+    }
+  }
+}
+precond_seat_rear_left {
+  metadata {
+    timestamp {
+      seconds: 1785937513
+      nanos: 462000000
+    }
+    status: VALUE_NOT_AVAILABLE
+  }
+}
+precond_seat_rear_right {
+  metadata {
+    timestamp {
+      seconds: 1785937513
+      nanos: 462000000
+    }
+    status: VALUE_NOT_AVAILABLE
+  }
+}
+precond_state {
+  value {
+    precond_immediate_support: true
+  }
+  metadata {
+    timestamp {
+      seconds: 1786468024
+      nanos: 645000000
+    }
+  }
+}
+range_electric_wltp {
+  metadata {
+    timestamp {
+      seconds: 1785911310
+      nanos: 844000000
+    }
+    status: VALUE_NOT_AVAILABLE
+  }
+  unit: KILOMETERS
+}
+rangeelectric {
+  value: 306
+  metadata {
+    timestamp {
+      seconds: 1786945161
+      nanos: 346000000
+    }
+  }
+  unit: KILOMETERS
+  display_value: "306"
+}
+rangeliquid {
+  metadata {
+    timestamp {
+      seconds: 1771933558
+    }
+    status: VALUE_NOT_AVAILABLE
+  }
+  unit: KILOMETERS
+}
+remote_start_temperature {
+  metadata {
+    timestamp {
+      seconds: 1786943787
+      nanos: 490000000
+    }
+    status: VALUE_INVALID
+  }
+  unit: CELSIUS
+}
+rooftopstatus {
+  metadata {
+    timestamp {
+      seconds: 1771933558
+    }
+    status: VALUE_NOT_AVAILABLE
+  }
+}
+selected_charge_program {
+  value: SELECTED_CHARGE_PROGRAM_AC_DC_STANDARD
+  metadata {
+    timestamp {
+      seconds: 1786619411
+      nanos: 343000000
+    }
+  }
+}
+serviceintervaldays {
+  metadata {
+    timestamp {
+      seconds: 1786941112
+      nanos: 210000000
+    }
+    status: VALUE_INVALID
+  }
+}
+serviceintervaldistance {
+  value: 21914
+  metadata {
+    timestamp {
+      seconds: 1786942438
+      nanos: 117000000
+    }
+  }
+  unit: KILOMETERS
+  display_value: "21914"
+}
+soc {
+  value: 46
+  metadata {
+    timestamp {
+      seconds: 1786945160
+      nanos: 690000000
+    }
+  }
+  unit: PERCENT
+  display_value: "46"
+}
+soc_calibration_request {
+  metadata {
+    timestamp {
+      seconds: 1785911311
+      nanos: 977000000
+    }
+  }
+}
+soh_calibration_notifications {
+  metadata {
+    timestamp {
+      seconds: 1785937492
+      nanos: 731000000
+    }
+  }
+}
+soh_calibration_planned {
+  metadata {
+    timestamp {
+      seconds: 1785911311
+      nanos: 977000000
+    }
+  }
+}
+soh_calibration_request {
+  metadata {
+    timestamp {
+      seconds: 1785911311
+      nanos: 977000000
+    }
+  }
+}
+soh_calibration_required {
+  metadata {
+    timestamp {
+      seconds: 1785911311
+      nanos: 977000000
+    }
+  }
+}
+soh_calibration_state {
+  metadata {
+    timestamp {
+      seconds: 1785911311
+      nanos: 977000000
+    }
+  }
+}
+soh_charge_time_extension {
+  metadata {
+    timestamp {
+      seconds: 1785937511
+      nanos: 929000000
+    }
+  }
+}
+soh_favorable_conditions {
+  value: SOH_FAVORABLE_CONDITIONS_FAVOURABLE_LEVEL_1
+  metadata {
+    timestamp {
+      seconds: 1786941109
+      nanos: 624000000
+    }
+  }
+}
+sunroof_event {
+  metadata {
+    timestamp {
+      seconds: 1786943793
+      nanos: 590000000
+    }
+  }
+}
+sunroof_event_active {
+  metadata {
+    timestamp {
+      seconds: 1786945160
+      nanos: 690000000
+    }
+  }
+}
+tank_level_ad_blue {
+  metadata {
+    timestamp {
+      seconds: 1771933558
+    }
+    status: VALUE_NOT_AVAILABLE
+  }
+  unit: PERCENT
+}
+tanklevelpercent {
+  metadata {
+    timestamp {
+      seconds: 1771933558
+    }
+    status: VALUE_NOT_AVAILABLE
+  }
+  unit: PERCENT
+}
+tcu_connection_state_low_channel {
+  value: TCU_CONNECTION_STATE_LOW_CHANNEL_INITIALLY_CONNECTED
+  metadata {
+    timestamp {
+      seconds: 1786943912
+      nanos: 566000000
+    }
+  }
+}
+tcu_thermo_shut_down {
+  metadata {
+    timestamp {
+      seconds: 1786943790
+      nanos: 826000000
+    }
+  }
+}
+temperature_points {
+  value {
+    zone: FRONT_CENTER
+    temperature {
+      value: 22.0
+      unit: CELSIUS
+      display_value: "22.0"
+    }
+    active: true
+  }
+  metadata {
+    timestamp {
+      seconds: 1786945161
+      nanos: 767000000
+    }
+  }
+}
+temperature_unit_h_u {
+  metadata {
+    timestamp {
+      seconds: 1785909866
+      nanos: 55000000
+    }
+  }
+}
+tire_marker_front_left {
+  metadata {
+    timestamp {
+      seconds: 1786942639
+      nanos: 784000000
+    }
+  }
+}
+tire_marker_front_right {
+  metadata {
+    timestamp {
+      seconds: 1786942639
+      nanos: 784000000
+    }
+  }
+}
+tire_marker_rear_left {
+  metadata {
+    timestamp {
+      seconds: 1786942639
+      nanos: 784000000
+    }
+  }
+}
+tire_marker_rear_right {
+  metadata {
+    timestamp {
+      seconds: 1786942639
+      nanos: 784000000
+    }
+  }
+}
+tire_sensor_available {
+  metadata {
+    timestamp {
+      seconds: 1786942619
+      nanos: 739000000
+    }
+  }
+}
+tire_warning_level_prw {
+  metadata {
+    timestamp {
+      seconds: 1786942619
+      nanos: 894000000
+    }
+    status: VALUE_NOT_AVAILABLE
+  }
+}
+tirepressure_front_left {
+  value: 302.5
+  metadata {
+    timestamp {
+      seconds: 1786942602
+      nanos: 839000000
+    }
+  }
+  unit: BAR
+  display_value: "3.0"
+}
+tirepressure_front_right {
+  value: 290.0
+  metadata {
+    timestamp {
+      seconds: 1786942603
+      nanos: 713000000
+    }
+  }
+  unit: BAR
+  display_value: "2.9"
+}
+tirepressure_rear_left {
+  value: 307.5
+  metadata {
+    timestamp {
+      seconds: 1786942087
+      nanos: 785000000
+    }
+  }
+  unit: BAR
+  display_value: "3.1"
+}
+tirepressure_rear_right {
+  value: 292.5
+  metadata {
+    timestamp {
+      seconds: 1786942465
+      nanos: 794000000
+    }
+  }
+  unit: BAR
+  display_value: "2.9"
+}
+tirewarninglamp {
+  metadata {
+    timestamp {
+      seconds: 1786942619
+      nanos: 739000000
+    }
+  }
+}
+tirewarningsprw {
+  metadata {
+    timestamp {
+      seconds: 1786942619
+      nanos: 894000000
+    }
+    status: VALUE_NOT_AVAILABLE
+  }
+}
+tirewarningsrdk {
+  metadata {
+    timestamp {
+      seconds: 1786942639
+      nanos: 838000000
+    }
+  }
+}
+tracking_state_h_u {
+  value: TRACKING_STATE_HU_ON
+  metadata {
+    timestamp {
+      seconds: 1786943797
+      nanos: 130000000
+    }
+  }
+}
+turn_off_engine_pre_warning {
+  metadata {
+    timestamp {
+      seconds: 1786945160
+      nanos: 690000000
+    }
+  }
+}
+turn_off_engine_pre_warning_time {
+  metadata {
+    timestamp {
+      seconds: 1786945160
+      nanos: 690000000
+    }
+  }
+}
+vehicle_data_connection_state {
+  value: VEHICLE_DATA_CONNECTION_STATE_CONNECTED
+  metadata {
+    timestamp {
+      seconds: 1786943912
+      nanos: 566000000
+    }
+  }
+}
+vtime {
+  value: 1786952357
+  metadata {
+    timestamp {
+      seconds: 1786945160
+      nanos: 338000000
+    }
+  }
+}
+warningbrakefluid {
+  metadata {
+    timestamp {
+      seconds: 1786943791
+      nanos: 130000000
+    }
+    status: VALUE_INVALID
+  }
+}
+warningbrakeliningwear {
+  metadata {
+    timestamp {
+      seconds: 1786860480
+      nanos: 727000000
+    }
+  }
+}
+warningcoolantlevellow {
+  metadata {
+    timestamp {
+      seconds: 1786942619
+      nanos: 581000000
+    }
+    status: VALUE_NOT_AVAILABLE
+  }
+}
+warningwashwater {
+  metadata {
+    timestamp {
+      seconds: 1786942619
+      nanos: 581000000
+    }
+  }
+}
+weekly_profile {
+  value {
+    single_time_profile_entries_activatable: true
+    max_number_of_weekly_time_profile_slots: 112
+    max_number_of_time_profiles: 16
+    max_number_of_time_profiles_user: 10
+    current_number_of_time_profile_slots: 4
+    current_number_of_time_profiles: 1
+    time_profiles {
+      id: 1
+      hour: 6
+      minute: 40
+      days: MONDAY
+      days: WEDNESDAY
+      days: THURSDAY
+      days: FRIDAY
+      application_identifier: 1
+      action_list {
+        precond: true
+      }
+      schedule_type: WEEKLY_PROFILE_SCHEDULE_TYPE_RECURRING
+    }
+  }
+  metadata {
+    timestamp {
+      seconds: 1786857613
+      nanos: 458000000
+    }
+  }
+}
+windowstatusfrontleft {
+  value: WINDOWSTATUS_COMPLETELY_CLOSED
+  metadata {
+    timestamp {
+      seconds: 1786945160
+      nanos: 901000000
+    }
+  }
+}
+windowstatusfrontright {
+  value: WINDOWSTATUS_COMPLETELY_CLOSED
+  metadata {
+    timestamp {
+      seconds: 1786945160
+      nanos: 901000000
+    }
+  }
+}
+windowstatusrearleft {
+  value: WINDOWSTATUS_COMPLETELY_CLOSED
+  metadata {
+    timestamp {
+      seconds: 1786945160
+      nanos: 901000000
+    }
+  }
+}
+windowstatusrearright {
+  value: WINDOWSTATUS_COMPLETELY_CLOSED
+  metadata {
+    timestamp {
+      seconds: 1786945160
+      nanos: 901000000
+    }
+  }
+}
+door_status_overall {
+  value: DOOR_STATUS_OVERALL_ALL_DOORS_CLOSED
+  metadata {
+    timestamp {
+      seconds: 1786945160
+      nanos: 690000000
+    }
+  }
+}
+overall_range {
+  value: 306.0
+  metadata {
+    timestamp {
+      seconds: 1786945161
+      nanos: 346000000
+    }
+  }
+  unit: KILOMETERS
+  display_value: "306"
+}
+proximity_calculation_for_vehicle_position_required {
+  metadata {
+    timestamp {
+      seconds: 1786942623
+      nanos: 824000000
+    }
+  }
+}
+starter_battery_state {
+  metadata {
+    timestamp {
+      seconds: 1786945165
+      nanos: 667000000
+    }
+  }
+}
+tire_press_meas_timestamp {
+  value: 1786942639
+  metadata {
+    timestamp {
+      seconds: 1786942639
+      nanos: 838000000
+    }
+  }
+}
+vehicle_position_error_code {
+  value: VEHICLE_POSITION_ERROR_CODE_OK
+  metadata {
+    timestamp {
+      seconds: 1786945160
+      nanos: 690000000
+    }
+  }
+}
+window_status_overall {
+  value: WINDOW_STATUS_OVERALL_CLOSED
+  metadata {
+    timestamp {
+      seconds: 1786945160
+      nanos: 901000000
+    }
+  }
+}

@@ -274,7 +274,7 @@ public class ModbusDataThingHandler extends BaseThingHandler {
             Optional<Boolean> commandAsBoolean = ModbusBitUtilities.translateCommand2Boolean(transformedCommand);
             if (commandAsBoolean.isEmpty()) {
                 logger.warn(
-                        "Cannot process command {} with channel {} since command is not OnOffType, OpenClosedType or Decimal trying to write to coil. Do not know how to convert to 0/1. Transformed command was '{}'",
+                        "Cannot process command {} with channel {} because transformed command '{}' cannot be converted to 0/1 for a coil",
                         origCommand, channelUID, transformedCommand);
                 return null;
             }

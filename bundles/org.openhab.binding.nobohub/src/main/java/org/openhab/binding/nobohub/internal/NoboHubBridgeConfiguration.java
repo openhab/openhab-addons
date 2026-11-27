@@ -36,7 +36,7 @@ public class NoboHubBridgeConfiguration {
     public String hostName;
 
     /**
-     * Polling interval (seconds)
+     * Keepalive/polling interval (seconds)
      */
-    public int pollingInterval;
+    public int keepaliveInterval;
 }

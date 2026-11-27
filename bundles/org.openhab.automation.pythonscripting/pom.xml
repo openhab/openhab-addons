@@ -15,7 +15,7 @@
   <name>openHAB Add-ons :: Bundles :: Automation :: Python Scripting</name>
 
   <properties>
-    <helperlib.version>1.0.19</helperlib.version>
+    <helperlib.version>1.0.20</helperlib.version>
   </properties>
 
   <dependencies>
@@ -34,7 +34,7 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>properties-maven-plugin</artifactId>
-        <version>1.3.0</version>
+        <version>1.4.0</version>
         <executions>
           <execution>
             <goals>

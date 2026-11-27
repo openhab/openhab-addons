@@ -1,0 +1,21 @@
+{
+  "id": 10,
+  "type": "event",
+  "event": {
+    "a": {
+      "fan.ceiling_fan": {
+        "s": "off",
+        "a": {
+          "preset_modes": null,
+          "percentage": null,
+          "percentage_step": 33.333333333333336,
+          "preset_mode": null,
+          "friendly_name": "Ceiling Fan",
+          "supported_features": 49
+        },
+        "c": "01M3201RG7NSWKR28YQ14JQ71X",
+        "lc": 1789994787.3357034
+      }
+    }
+  }
+}

@@ -1,7 +1,8 @@
 # Modbus Sungrow Binding
 
-This binding integrates the Sungrow inverters into openHAB.
-It is based on the Sungrow specification [Communication Protocol of Residential Hybrid Inverter V1.1.15](https://github.com/Gnarfoz/Sungrow-Inverter/blob/main/Modbus%20Information/TI_20240924_Communication%20Protocol%20of%20Residential%20Hybrid%20Inverter-V1.1.5.pdf).
+This binding integrates the Sungrow inverters and iHomeManager into openHAB.
+It is based on the Sungrow specification [Communication Protocol of Residential Hybrid Inverter V1.1.5](https://github.com/Gnarfoz/Sungrow-Inverter/blob/main/Modbus%20Information/TI_20240924_Communication%20Protocol%20of%20Residential%20Hybrid%20Inverter-V1.1.5.pdf)
+and the [iHM Communication Protocol](https://github.com/Jam3s97/sungrow_ihomemanager/blob/main/Modbus%20Information/iHM.Communication.Protocol-20260121-test.pdf).
 
 ## Supported Inverters
 
@@ -19,13 +20,16 @@ Some values may not work, depending on
 - the connection type (internal LAN vs. WiNet-S Communication Module)
 - the inverter setup (amount of used MPPTs, usage of backup port, ...)
 
+This binding also supports the iHomeManager, the intelligent home energy management system of Sungrow.
+
 ## Supported Things
 
-The binding supports only one Thing:
+The binding supports the following Things:
 
 - `sungrow-inverter`: The Sungrow inverter
+- `sungrow-ihome-manager`: The Sungrow iHomeManager
 
-## Preparation
+## Preparation of the Inverter
 
 The data from the inverter is read via Modbus. So you need to configure a Modbus Serial Slave `serial` or Modbus TCP Slave `tcp` as bridge first.
 If you are using a Modbus TCP Slave and the WiNet-S Communication Module please ensure:
@@ -38,12 +42,25 @@ If you are using a Modbus TCP Slave and the WiNet-S Communication Module please 
 Enabling modbus and whitelist setting can be done in WiNet-S Web-UI as shown below:
 <img src="./doc/WiNet-S_Modbus.png" alt="WiNet-S Modbus configuration"/>
 
+## Preparation of the iHomeManager
+
+The data from the iHomeManager is read via Modbus. So you need to configure a Modbus Serial Slave `serial` or Modbus TCP Slave `tcp` as bridge first.
+Within the iHomeManager, the Modbus TCP must be enabled.
+Complete documentation on how to configure the Modbus TCP can be found within GitHub for [Sungrow iHomeManager for Home Assistant](https://github.com/Jam3s97/sungrow_ihomemanager#-installation).
+
 ## Thing Configuration
 
 Once you've configured the Modbus TCP Slave or Modbus Serial Slave as Bridge you can configure the Sungrow inverter Thing.
 You just have to select the configured bridge and optional configure the polling interval.
 
 ### Sungrow Inverter (`sungrow-inverter`)
+
+| Name          | Type    | Description                                                                                                                                          | Default | Required | Advanced |
+|---------------|---------|------------------------------------------------------------------------------------------------------------------------------------------------------|---------|----------|----------|
+| pollInterval  | integer | Interval the device is polled in ms.                                                                                                                 | 5000    | yes      | no       |
+| maxTries      | integer | Specifies how many times the binding should retry reading data if a read attempt fails. <br/>Set to `1` to disable retries and use a single attempt. | 3       | yes      | no       |
+
+### Sungrow iHomeManager (`sungrow-ihome-manager`)
 
 | Name          | Type    | Description                                                                                                                                          | Default | Required | Advanced |
 |---------------|---------|------------------------------------------------------------------------------------------------------------------------------------------------------|---------|----------|----------|
@@ -133,6 +150,43 @@ The `sungrow-inverter` Thing has channels that serve the current state of the Su
 | sg-power-flow-status-feed-in-power       | Switch                   | Feed in power to grid                     | yes         | Power Flow Information    |
 | sg-power-flow-status-import-from-grid    | Switch                   | Import power from grid                    | yes         | Power Flow Information    |
 | sg-power-flow-status-negative-load-power | Switch                   | Power generated from Load                 | yes         | Power Flow Information    |
+
+### Sungrow iHomeManager Channels
+
+| Channel Type ID                     | Item Type                | Description                        | Advanced | Channel Group       |
+|-------------------------------------|--------------------------|------------------------------------|----------|---------------------|
+| sg-total-devices-connected          | Number                   | Total Devices Connected            | no       | Overview            |
+| sg-devices-in-fault                 | Number                   | Devices in Fault                   | no       | Overview            |
+| sg-total-nominal-active-power       | Number:Power             | Total Nominal Active Power         | yes      | Overview            |
+| sg-total-active-power               | Number:Power             | Total Active Power                 | no       | Overview            |
+| sg-total-battery-rated-capacity     | Number:Energy            | Total Battery Rated Capacity       | no       | Battery Information |
+| sg-battery-charge-discharge-limit   | Number:Power             | Battery Charge/Discharge Limit     | no       | Battery Information |
+| sg-battery-max-charge-power         | Number:Power             | Battery Max Charge Power           | no       | Battery Information |
+| sg-battery-min-charge-power         | Number:Power             | Battery Min Charge Power           | no       | Battery Information |
+| sg-battery-max-discharge-power      | Number:Power             | Battery Max Discharge Power        | no       | Battery Information |
+| sg-battery-min-discharge-power      | Number:Power             | Battery Min Discharge Power        | no       | Battery Information |
+| sg-battery-power                    | Number:Power             | Battery Power                      | no       | Battery Information |
+| sg-battery-level                    | Number:Dimensionless     | Battery Level                      | no       | Battery Information |
+| sg-grid-import-energy               | Number:Energy            | Grid Import Energy                 | no       | Grid Information    |
+| sg-grid-export-energy               | Number:Energy            | Grid Export Energy                 | no       | Grid Information    |
+| sg-load-power                       | Number:Power             | Load Power                         | no       | Load Information    |
+| sg-meter-power                      | Number:Power             | Meter Power                        | no       | Meter Information   |
+| sg-phase-a-voltage                  | Number:ElectricPotential | Phase A Voltage                    | yes      | Meter Information   |
+| sg-phase-b-voltage                  | Number:ElectricPotential | Phase B Voltage                    | yes      | Meter Information   |
+| sg-phase-c-voltage                  | Number:ElectricPotential | Phase C Voltage                    | yes      | Meter Information   |
+| sg-grid-frequency                   | Number:Frequency         | Grid Frequency                     | yes      | Meter Information   |
+| sg-phase-a-active-power             | Number:Power             | Phase A Active Power               | no       | Meter Information   |
+| sg-phase-b-active-power             | Number:Power             | Phase B Active Power               | no       | Meter Information   |
+| sg-phase-c-active-power             | Number:Power             | Phase C Active Power               | no       | Meter Information   |
+| sg-phase-a-voltage-ch2              | Number:ElectricPotential | Phase A Voltage CH2                | no       | Meter Information   |
+| sg-phase-b-voltage-ch2              | Number:ElectricPotential | Phase B Voltage CH2                | no       | Meter Information   |
+| sg-phase-c-voltage-ch2              | Number:ElectricPotential | Phase C Voltage CH2                | no       | Meter Information   |
+| sg-grid-frequency-ch2               | Number:Frequency         | Grid Frequency CH2                 | no       | Meter Information   |
+| sg-phase-a-active-power-ch2         | Number:Power             | Phase A Active Power CH2           | no       | Meter Information   |
+| sg-phase-b-active-power-ch2         | Number:Power             | Phase B Active Power CH2           | no       | Meter Information   |
+| sg-phase-c-active-power-ch2         | Number:Power             | Phase C Active Power CH2           | no       | Meter Information   |
+| sg-output-type                      | String                   | Output Type                        | yes      | Charger Information |
+| sg-charger-status                   | String                   | Charger Status                     | no       | Charger Information |
 
 ## Full Example
 

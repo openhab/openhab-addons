@@ -76,7 +76,7 @@ public class BridgeSedifWebHandler extends BaseBridgeHandler {
     public BridgeSedifWebHandler(Bridge bridge, final @Reference HttpClientFactory httpClientFactory, Gson gson) {
         super(bridge);
 
-        SslContextFactory sslContextFactory = new SslContextFactory.Client();
+        SslContextFactory.Client sslContextFactory = new SslContextFactory.Client();
         try {
             SSLContext sslContext = SSLContext.getInstance("SSL");
             sslContext.init(null, new TrustManager[] { TrustAllTrustManager.getInstance() }, null);
@@ -98,7 +98,7 @@ public class BridgeSedifWebHandler extends BaseBridgeHandler {
         try {
             httpClient.start();
         } catch (Exception e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
 
         this.sedifApi = new SedifHttpApi(gson, this.httpClient);
@@ -133,16 +133,16 @@ public class BridgeSedifWebHandler extends BaseBridgeHandler {
                 if (sedifApi.isConnected()) {
                     updateStatus(ThingStatus.ONLINE);
                 } else {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Connection failed");
+                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "Connection failed");
                 }
             } catch (SedifException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
         }, delay, TimeUnit.SECONDS);
     }
 
     public void scheduleReconnect() {
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+        updateStatus(ThingStatusDetail.COMMUNICATION_ERROR);
         sedifApi.disconnect();
         scheduleConnection(30);
     }

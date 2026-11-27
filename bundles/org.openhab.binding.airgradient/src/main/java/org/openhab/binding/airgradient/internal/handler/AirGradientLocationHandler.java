@@ -27,6 +27,8 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
+import org.openhab.core.thing.binding.ThingHandlerCallback;
+import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
@@ -92,7 +94,7 @@ public class AirGradientLocationHandler extends BaseThingHandler {
                     handler.getApiController().setLedMode(getSerialNo(), mode);
                     updateStatus(ThingStatus.ONLINE);
                 } catch (AirGradientCommunicationException agce) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, agce.getMessage());
+                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, agce.getMessage());
                 }
             }
         }
@@ -106,7 +108,7 @@ public class AirGradientLocationHandler extends BaseThingHandler {
                     handler.getApiController().calibrateCo2(getSerialNo());
                     updateStatus(ThingStatus.ONLINE);
                 } catch (AirGradientCommunicationException agce) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, agce.getMessage());
+                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, agce.getMessage());
                 }
             }
         }
@@ -114,17 +116,17 @@ public class AirGradientLocationHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        // set the thing status to UNKNOWN temporarily and let the background task decide for the real status.
-        // the framework is then able to reuse the resources from the thing handler initialization.
-        // we set this upfront to reliably check status updates in unit tests.
-        updateStatus(ThingStatus.UNKNOWN);
         locationConfig = getConfigAs(AirGradientLocationConfiguration.class);
 
-        Bridge controller = getBridge();
-        if (controller == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
-        } else if (ThingStatus.OFFLINE.equals(controller.getStatus())) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+        Bridge bridge = getBridge();
+        if (bridge == null) {
+            logger.debug("Bridge unavailable while initializing Thing: {}", thing.getUID());
+            return;
+        }
+
+        updateStatus(ThingStatus.UNKNOWN);
+        if (ThingStatus.OFFLINE.equals(bridge.getStatus())) {
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
         } else {
             updateStatus(ThingStatus.ONLINE);
         }
@@ -135,6 +137,15 @@ public class AirGradientLocationHandler extends BaseThingHandler {
     }
 
     public void setMeasurment(Measure measure) {
+        ThingHandlerCallback callback = getCallback();
+        if (callback != null) {
+            ThingBuilder builder = DynamicChannelHelper.updateThingWithMeasurementChannels(thing, callback, null,
+                    this::editThing, measure);
+            if (builder != null) {
+                updateThing(builder.build());
+            }
+        }
+
         updateProperties(MeasureHelper.createProperties(measure));
         Map<String, State> states = MeasureHelper.createStates(measure);
         for (Map.Entry<String, State> entry : states.entrySet()) {

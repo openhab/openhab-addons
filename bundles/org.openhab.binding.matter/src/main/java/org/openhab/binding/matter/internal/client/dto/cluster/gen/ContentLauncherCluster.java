@@ -138,7 +138,7 @@ public class ContentLauncherCluster extends BaseCluster {
     public static class StyleInformationStruct {
         /**
          * This field shall indicate the URL of image used for Styling different Video Player sections like Logo,
-         * Watermark etc. The syntax of this field shall follow the syntax as specified in RFC 1738 and shall use the
+         * Watermark etc. The syntax of this field shall follow the syntax as specified in RFC1738 and shall use the
          * https scheme.
          */
         public String imageUrl; // string
@@ -248,7 +248,7 @@ public class ContentLauncherCluster extends BaseCluster {
      */
     public static class TrackPreferenceStruct {
         /**
-         * This field shall contain one of the standard Tags for Identifying Languages RFC 5646, which identifies the
+         * This field shall contain one of the standard Tags for Identifying Languages RFC5646, which identifies the
          * primary language used in the Track.
          */
         public String languageCode; // string
@@ -388,17 +388,17 @@ public class ContentLauncherCluster extends BaseCluster {
         /**
          * 
          * Enables clients to implement more advanced media seeking behavior in their user interface, such as for
-         * example a "seek bar".
+         * example a "seek bar"
          */
         public boolean advancedSeek;
         /**
          * 
-         * Device or app supports Text Tracks.
+         * Device or app supports Text Tracks
          */
         public boolean textTracks;
         /**
          * 
-         * Device or app supports Audio Tracks.
+         * Device or app supports Audio Tracks
          */
         public boolean audioTracks;
 

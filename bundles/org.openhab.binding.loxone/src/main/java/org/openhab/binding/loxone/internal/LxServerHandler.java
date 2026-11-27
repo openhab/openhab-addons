@@ -31,6 +31,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+import org.eclipse.jetty.client.transport.HttpClientTransportDynamic;
+import org.eclipse.jetty.io.ClientConnector;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
@@ -52,6 +54,7 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.BaseThingHandler;
+import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
@@ -68,6 +71,7 @@ import com.google.gson.GsonBuilder;
  * objects (controls) configured in the Miniserver over channels.
  *
  * @author Pawel Pieczul - Initial contribution
+ * @author Robert Pollai - Added channel configuration handling
  */
 public class LxServerHandler extends BaseThingHandler implements LxServerHandlerApi {
 
@@ -164,6 +168,38 @@ public class LxServerHandler extends BaseThingHandler implements LxServerHandler
     }
 
     @Override
+    public void thingUpdated(Thing thing) {
+        if (!getThing().getConfiguration().equals(thing.getConfiguration())) {
+            // Connection settings changed - the handler has to reconnect using the new configuration
+            super.thingUpdated(thing);
+            return;
+        }
+        // Only channels (or properties) were updated, so apply their configurations without dropping the connection
+        setThing(thing);
+        applyChannelConfigurations(thing);
+    }
+
+    /**
+     * Propagates current channel configurations to their controls and republishes their states, so that a changed
+     * channel configuration is reflected immediately, for example a changed window position convention.
+     *
+     * @param thing thing with the current channels and their configurations
+     */
+    private void applyChannelConfigurations(Thing thing) {
+        thing.getChannels().forEach(channel -> {
+            ChannelUID channelId = channel.getUID();
+            LxControl control = channels.get(channelId);
+            if (control != null) {
+                control.setChannelConfiguration(channelId, channel.getConfiguration());
+                State state = control.getChannelState(channelId);
+                if (state != null) {
+                    updateState(channelId, state);
+                }
+            }
+        });
+    }
+
+    @Override
     public void initialize() {
         threadLock.lock();
         try {
@@ -174,7 +210,7 @@ public class LxServerHandler extends BaseThingHandler implements LxServerHandler
             try {
                 this.host = InetAddress.getByName(bindingConfig.host);
             } catch (UnknownHostException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Unknown host");
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Unknown host");
                 return;
             }
             reconnectDelay.set(bindingConfig.firstConDelay);
@@ -184,8 +220,13 @@ public class LxServerHandler extends BaseThingHandler implements LxServerHandler
             jettyThreadPool.setDaemon(true);
 
             socket = new LxWebSocket(debugId, this, bindingConfig, host);
-            wsClient = new WebSocketClient(new SslContextFactory.Client(true));
-            wsClient.setExecutor(jettyThreadPool);
+            SslContextFactory.Client sslContextFactory = new SslContextFactory.Client(true);
+            ClientConnector clientConnector = new ClientConnector();
+            clientConnector.setSslContextFactory(sslContextFactory);
+            org.eclipse.jetty.client.HttpClient internalHttpClient = new org.eclipse.jetty.client.HttpClient(
+                    new HttpClientTransportDynamic(clientConnector));
+            internalHttpClient.setExecutor(jettyThreadPool);
+            wsClient = new WebSocketClient(internalHttpClient);
             if (debugId > 1) {
                 reconnectDelay.set(0);
             }
@@ -529,8 +570,29 @@ public class LxServerHandler extends BaseThingHandler implements LxServerHandler
      */
     private void addThingChannels(List<Channel> newChannels, boolean purge) {
         List<Channel> channels = newChannels;
+        Map<ChannelUID, Configuration> currentConfigurations = new HashMap<>();
+        getThing().getChannels()
+                .forEach(channel -> currentConfigurations.put(channel.getUID(), channel.getConfiguration()));
         if (!purge) {
             channels.addAll(getThing().getChannels());
+        }
+        for (int i = 0; i < channels.size(); i++) {
+            Channel channel = channels.get(i);
+            ChannelUID channelId = channel.getUID();
+            // Recreated channels must keep the configuration the user has set on them, for example during a reconnect
+            Configuration currentConfiguration = currentConfigurations.get(channelId);
+            if (currentConfiguration != null && !currentConfiguration.getProperties().isEmpty()) {
+                Configuration configuration = new Configuration(channel.getConfiguration());
+                currentConfiguration.getProperties().forEach(configuration::put);
+                if (!configuration.equals(channel.getConfiguration())) {
+                    channel = ChannelBuilder.create(channel).withConfiguration(configuration).build();
+                    channels.set(i, channel);
+                }
+            }
+            LxControl control = this.channels.get(channelId);
+            if (control != null) {
+                control.setChannelConfiguration(channelId, channel.getConfiguration());
+            }
         }
         channels.sort((c1, c2) -> {
             String label1 = c1.getLabel();
@@ -733,7 +795,7 @@ public class LxServerHandler extends BaseThingHandler implements LxServerHandler
         if (status == ThingStatus.OFFLINE) {
             logger.debug("[{}] received offline request with code {}, but thing already offline.", debugId, code);
         } else {
-            updateStatus(ThingStatus.OFFLINE, code, reason);
+            updateStatus(code, reason);
         }
     }
 

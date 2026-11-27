@@ -100,6 +100,7 @@ public class Sensor extends AbstractComponent<Sensor.Configuration> {
         value.setNullValue(PAYLOAD_NONE);
 
         buildChannel(SENSOR_CHANNEL_ID, type, value, "Sensor", getListener(componentContext, value))
+                .withUnitHint(UnitUtils.parseUnit(config.getUnitOfMeasurement()))
                 .stateTopic(config.getStateTopic(), config.getValueTemplate())
                 .withTemplateDefault(HomeAssistantChannelTransformation.PAYLOAD_SENTINEL_DEFAULT).build();
 

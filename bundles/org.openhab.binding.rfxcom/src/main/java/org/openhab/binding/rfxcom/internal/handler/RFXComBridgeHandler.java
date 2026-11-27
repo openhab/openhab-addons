@@ -172,8 +172,7 @@ public class RFXComBridgeHandler extends BaseBridgeHandler {
 
         if (configuration.serialPort != null && configuration.serialPort.startsWith("rfc2217")) {
             logger.debug("Please use the Transceiver over TCP/IP bridge type for a serial over IP connection.");
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.config-error-invalid-thing-type");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.config-error-invalid-thing-type");
             return;
         }
 
@@ -250,7 +249,7 @@ public class RFXComBridgeHandler extends BaseBridgeHandler {
             transmitQueue.enqueue(baseMsg);
         } catch (IOException e) {
             logger.error("I/O Error", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 
@@ -355,7 +354,7 @@ public class RFXComBridgeHandler extends BaseBridgeHandler {
         @Override
         public void errorOccurred(String error) {
             logger.error("Error occurred: {}", error);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR);
         }
     }
 

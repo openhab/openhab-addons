@@ -150,7 +150,7 @@ public abstract class AbstractBrokerHandler extends BaseBridgeHandler implements
             if (error == null) {
                 updateStatus(ThingStatus.OFFLINE);
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, error.getMessage());
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, error.getMessage());
             }
         }
     }

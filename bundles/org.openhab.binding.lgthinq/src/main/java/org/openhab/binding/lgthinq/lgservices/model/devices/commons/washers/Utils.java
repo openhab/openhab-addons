@@ -48,7 +48,11 @@ public class Utils {
                     // map all course functions here
                     CourseFunction f = new CourseFunction();
                     f.setValue(fNode.path("value").textValue());
-                    f.setDefaultValue(fNode.path("default").textValue());
+                    // numeric defaults (e.g. reserveTimeHour) are already part of the command templates
+                    JsonNode defaultNode = fNode.path("default");
+                    if (defaultNode.isTextual()) {
+                        f.setDefaultValue(defaultNode.textValue());
+                    }
                     JsonNode selectableNode = fNode.path("selectable");
                     // only Courses (not SmartCourses or DownloadedCourses) can have selectable functions
                     f.setSelectable(

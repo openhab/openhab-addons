@@ -53,8 +53,8 @@ public abstract class UnifiAccessBaseHandler extends BaseThingHandler {
     }
 
     @Override
-    protected void updateStatus(ThingStatus status, ThingStatusDetail statusDetail, @Nullable String description) {
-        super.updateStatus(status, statusDetail, description);
+    protected void updateStatus(ThingStatusDetail statusDetail, @Nullable String description) {
+        super.updateStatus(statusDetail, description);
     }
 
     @Override
@@ -62,7 +62,7 @@ public abstract class UnifiAccessBaseHandler extends BaseThingHandler {
         if (bridgeStatusInfo.getStatus() == ThingStatus.ONLINE) {
             updateStatus(ThingStatus.UNKNOWN);
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
         }
     }
 
@@ -71,6 +71,16 @@ public abstract class UnifiAccessBaseHandler extends BaseThingHandler {
      */
     void setOnline() {
         updateStatus(ThingStatus.ONLINE);
+    }
+
+    /**
+     * Clears a GONE status when an authoritative topology proves the device exists again;
+     * connectivity handling then refines UNKNOWN to ONLINE/OFFLINE as information arrives.
+     */
+    void clearGone() {
+        if (getThing().getStatusInfo().getStatusDetail() == ThingStatusDetail.GONE) {
+            updateStatus(ThingStatus.UNKNOWN);
+        }
     }
 
     protected void refreshState(String channelId) {
@@ -97,19 +107,29 @@ public abstract class UnifiAccessBaseHandler extends BaseThingHandler {
     protected void handleDeviceUpdate(DeviceUpdateData updateData) {
         updateState(UnifiAccessBindingConstants.CHANNEL_DEVICE_ONLINE,
                 updateData.isConnected ? OnOffType.ON : OnOffType.OFF);
-        if (!updateData.isConnected) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                    "@text/offline.device-offline");
-        }
+        applyOnlineState(updateData.isConnected);
     }
 
     protected void handleDeviceUpdateV2(Notification.DeviceUpdateV2Data updateData) {
+        // A partial update without the online field says nothing about connectivity
         Boolean online = updateData.online;
-        updateState(UnifiAccessBindingConstants.CHANNEL_DEVICE_ONLINE,
-                Boolean.TRUE.equals(online) ? OnOffType.ON : OnOffType.OFF);
-        if (!Boolean.TRUE.equals(online)) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                    "@text/offline.device-offline");
+        if (online == null) {
+            return;
+        }
+        updateState(UnifiAccessBindingConstants.CHANNEL_DEVICE_ONLINE, online ? OnOffType.ON : OnOffType.OFF);
+        applyOnlineState(online);
+    }
+
+    private void applyOnlineState(boolean online) {
+        if (getThing().getStatusInfo().getStatusDetail() == ThingStatusDetail.GONE) {
+            return;
+        }
+        if (online) {
+            if (getThing().getStatus() != ThingStatus.ONLINE) {
+                updateStatus(ThingStatus.ONLINE);
+            }
+        } else {
+            updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, "@text/offline.device-offline");
         }
     }
 

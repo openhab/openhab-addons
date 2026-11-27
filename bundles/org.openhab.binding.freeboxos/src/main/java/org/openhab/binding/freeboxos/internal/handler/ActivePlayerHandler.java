@@ -31,7 +31,6 @@ import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
-import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -88,7 +87,7 @@ public class ActivePlayerHandler extends PlayerHandler implements FreeDeviceIntf
             if (player.reachable()) {
                 updateStatus(ThingStatus.ONLINE);
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "@text/info-player-not-reachable");
+                updateStatus(ThingStatus.OFFLINE, "@text/info-player-not-reachable");
             }
             if (player.reachable()) {
                 if (anyChannelLinked(GROUP_PLAYER_STATUS, Set.of(PLAYER_STATUS, PACKAGE))) {
@@ -111,7 +110,7 @@ public class ActivePlayerHandler extends PlayerHandler implements FreeDeviceIntf
             updateChannelQuantity(GROUP_SYS_INFO, UPTIME, uptime, Units.SECOND);
         } else {
             logger.debug("{}: poll with reachable={}", thing.getUID(), reachable);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "@text/info-player-not-reachable");
+            updateStatus(ThingStatus.OFFLINE, "@text/info-player-not-reachable");
         }
     }
 

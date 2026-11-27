@@ -15,16 +15,12 @@ package org.openhab.binding.ipcamera.internal.servlet;
 import static org.openhab.binding.ipcamera.internal.IpCameraBindingConstants.HLS_STARTUP_DELAY_MS;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Dictionary;
 import java.util.Hashtable;
 import java.util.Map;
-
-import javax.servlet.AsyncContext;
-import javax.servlet.ServletInputStream;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -33,17 +29,24 @@ import org.openhab.binding.ipcamera.internal.Ffmpeg;
 import org.openhab.binding.ipcamera.internal.InstarHandler;
 import org.openhab.binding.ipcamera.internal.IpCameraBindingConstants.FFmpegFormat;
 import org.openhab.binding.ipcamera.internal.handler.IpCameraHandler;
-import org.osgi.service.http.HttpService;
+import org.ops4j.pax.web.service.http.HttpService;
+
+import jakarta.servlet.AsyncContext;
+import jakarta.servlet.ServletInputStream;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * The {@link CameraServlet} is responsible for serving files for a single camera back to the Jetty server normally
  * found on port 8080
  *
  * @author Matthew Skinner - Initial contribution
+ * @author Kai Kreuzer - Clean up MJPEG client streams
  */
 @NonNullByDefault
 public class CameraServlet extends IpCameraServlet {
     private static final long serialVersionUID = -134658667574L;
+    private static final int MAX_ONVIF_EVENT_SIZE = 1024 * 1024;
     private static final Dictionary<Object, Object> INIT_PARAMETERS = new Hashtable<>(
             Map.of("async-supported", "true"));
 
@@ -79,8 +82,19 @@ public class CameraServlet extends IpCameraServlet {
                 snapshotData.close();
                 break;
             case "/OnvifEvent":
-                ServletInputStream inputStream = req.getInputStream();
-                String xmlData = new String(inputStream.readAllBytes(), "UTF-8");
+                if (!isOnvifEventRequestAllowed(req)) {
+                    resp.sendError(HttpServletResponse.SC_FORBIDDEN);
+                    return;
+                }
+                byte[] eventData;
+                try (ServletInputStream inputStream = req.getInputStream()) {
+                    eventData = inputStream.readNBytes(MAX_ONVIF_EVENT_SIZE + 1);
+                }
+                if (eventData.length > MAX_ONVIF_EVENT_SIZE) {
+                    resp.sendError(HttpServletResponse.SC_REQUEST_ENTITY_TOO_LARGE);
+                    return;
+                }
+                String xmlData = new String(eventData, StandardCharsets.UTF_8);
                 handler.onvifCamera.eventReceived(xmlData);
                 break;
             default:
@@ -99,12 +113,8 @@ public class CameraServlet extends IpCameraServlet {
             return;
         }
         logger.debug("GET:{}, received from {}", pathInfo, req.getRemoteHost());
-        if (!"DISABLE".equals(handler.getWhiteList())) {
-            String requestIP = "(" + req.getRemoteHost() + ")";
-            if (!handler.getWhiteList().contains(requestIP)) {
-                logger.warn("The request made from {} was not in the whiteList and will be ignored.", requestIP);
-                return;
-            }
+        if (!isRequestAllowed(req)) {
+            return;
         }
         switch (pathInfo) {
             case "/ipcamera.m3u8":
@@ -165,23 +175,27 @@ public class CameraServlet extends IpCameraServlet {
                 handler.startSnapshotPolling();
                 StreamOutput output = new StreamOutput(resp);
                 openSnapshotStreams.addStream(output);
-                do {
-                    try {
+                try {
+                    do {
                         output.sendSnapshotBasedFrame(handler.getSnapshot());
                         Thread.sleep(handler.cameraConfig.getPollTime());
-                    } catch (InterruptedException | IOException e) {
-                        // Never stop streaming until IOException. Occurs when browser stops the stream.
-                        openSnapshotStreams.removeStream(output);
-                        logger.debug("Now there are {} snapshots.mjpeg streams open.",
-                                openSnapshotStreams.getNumberOfStreams());
-                        if (openSnapshotStreams.isEmpty()) {
-                            handler.streamingSnapshotMjpeg = false;
-                            handler.stopSnapshotPolling();
-                            logger.debug("All snapshots.mjpeg streams have stopped.");
-                        }
-                        return;
+                    } while (true);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                } catch (IOException e) {
+                    logger.debug("Snapshot MJPEG client disconnected.");
+                } finally {
+                    output.close();
+                    openSnapshotStreams.removeStream(output);
+                    logger.debug("Now there are {} snapshots.mjpeg streams open.",
+                            openSnapshotStreams.getNumberOfStreams());
+                    if (openSnapshotStreams.isEmpty()) {
+                        handler.streamingSnapshotMjpeg = false;
+                        handler.stopSnapshotPolling();
+                        logger.debug("All snapshots.mjpeg streams have stopped.");
                     }
-                } while (true);
+                }
+                return;
             case "/ipcamera.mjpeg":
                 if (openStreams.isEmpty()) {
                     logger.debug("First stream requested, opening up stream from camera");
@@ -202,37 +216,41 @@ public class CameraServlet extends IpCameraServlet {
                     output = new StreamOutput(resp, handler.mjpegContentType);
                 }
                 openStreams.addStream(output);
-                do {
-                    try {
+                try {
+                    while (!openStreams.isEmpty()) {
                         output.sendFrame();
-                    } catch (InterruptedException | IOException e) {
-                        // Never stop streaming until IOException. Occurs when browser stops the stream.
-                        openStreams.removeStream(output);
-                        logger.debug("Now there are {} ipcamera.mjpeg streams open.", openStreams.getNumberOfStreams());
-                        if (openStreams.isEmpty()) {
-                            if (output.isSnapshotBased) {
-                                Ffmpeg localMjpeg = handler.ffmpegMjpeg;
-                                if (localMjpeg != null) {
-                                    localMjpeg.stopConverting();
-                                    // Set reference to ffmpegMjpeg to null to prevent automatic reconnection
-                                    // in handler's pollCameraRunnable() check for frozen camera
-                                    handler.ffmpegMjpeg = null;
-                                }
-                            } else {
-                                handler.closeChannel(handler.getTinyUrl(handler.mjpegUri));
-                            }
-                            logger.debug("All ipcamera.mjpeg streams have stopped.");
-                        }
-                        return;
                     }
-                } while (!openStreams.isEmpty());
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                } catch (IOException e) {
+                    logger.debug("MJPEG client disconnected or camera stream became idle.");
+                } finally {
+                    output.close();
+                    openStreams.removeStream(output);
+                    logger.debug("Now there are {} ipcamera.mjpeg streams open.", openStreams.getNumberOfStreams());
+                    if (openStreams.isEmpty()) {
+                        if (output.isSnapshotBased) {
+                            Ffmpeg localMjpeg = handler.ffmpegMjpeg;
+                            if (localMjpeg != null) {
+                                localMjpeg.stopConverting();
+                                // Set reference to ffmpegMjpeg to null to prevent automatic reconnection
+                                // in handler's pollCameraRunnable() check for frozen camera
+                                handler.ffmpegMjpeg = null;
+                            }
+                        } else {
+                            handler.closeChannel(handler.getTinyUrl(handler.mjpegUri));
+                        }
+                        logger.debug("All ipcamera.mjpeg streams have stopped.");
+                    }
+                }
+                return;
             case "/autofps.mjpeg":
                 handler.streamingAutoFps = true;
                 output = new StreamOutput(resp);
                 openAutoFpsStreams.addStream(output);
                 int counter = 0;
-                do {
-                    try {
+                try {
+                    do {
                         if (handler.motionDetected) {
                             output.sendSnapshotBasedFrame(handler.getSnapshot());
                         } // every 8 seconds if no motion or the first three snapshots to fill any FIFO
@@ -241,18 +259,22 @@ public class CameraServlet extends IpCameraServlet {
                         }
                         counter++;
                         Thread.sleep(1000);
-                    } catch (InterruptedException | IOException e) {
-                        // Never stop streaming until IOException. Occurs when browser stops the stream.
-                        openAutoFpsStreams.removeStream(output);
-                        logger.debug("Now there are {} autofps.mjpeg streams open.",
-                                openAutoFpsStreams.getNumberOfStreams());
-                        if (openAutoFpsStreams.isEmpty()) {
-                            handler.streamingAutoFps = false;
-                            logger.debug("All autofps.mjpeg streams have stopped.");
-                        }
-                        return;
+                    } while (true);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                } catch (IOException e) {
+                    logger.debug("Auto-FPS MJPEG client disconnected.");
+                } finally {
+                    output.close();
+                    openAutoFpsStreams.removeStream(output);
+                    logger.debug("Now there are {} autofps.mjpeg streams open.",
+                            openAutoFpsStreams.getNumberOfStreams());
+                    if (openAutoFpsStreams.isEmpty()) {
+                        handler.streamingAutoFps = false;
+                        logger.debug("All autofps.mjpeg streams have stopped.");
                     }
-                } while (true);
+                }
+                return;
             case "/instar":
                 InstarHandler instar = new InstarHandler(handler);
                 instar.alarmTriggered(pathInfo + "?" + req.getQueryString());
@@ -270,6 +292,23 @@ public class CameraServlet extends IpCameraServlet {
                 }
                 return;
         }
+    }
+
+    private boolean isRequestAllowed(HttpServletRequest req) {
+        String ipWhitelist = handler.getWhiteList();
+        if ("DISABLE".equals(ipWhitelist)) {
+            return true;
+        }
+        String requestIP = "(" + req.getRemoteAddr() + ")";
+        if (!ipWhitelist.contains(requestIP)) {
+            logger.warn("The request made from {} was not in the whiteList and will be ignored.", requestIP);
+            return false;
+        }
+        return true;
+    }
+
+    private boolean isOnvifEventRequestAllowed(HttpServletRequest req) {
+        return handler.cameraConfig.getIp().equals(req.getRemoteAddr()) || isRequestAllowed(req);
     }
 
     @Override

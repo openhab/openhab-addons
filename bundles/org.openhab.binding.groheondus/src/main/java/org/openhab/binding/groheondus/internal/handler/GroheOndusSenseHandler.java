@@ -14,171 +14,110 @@ package org.openhab.binding.groheondus.internal.handler;
 
 import static org.openhab.binding.groheondus.internal.GroheOndusBindingConstants.CHANNEL_BATTERY;
 import static org.openhab.binding.groheondus.internal.GroheOndusBindingConstants.CHANNEL_HUMIDITY;
-import static org.openhab.binding.groheondus.internal.GroheOndusBindingConstants.CHANNEL_NAME;
 import static org.openhab.binding.groheondus.internal.GroheOndusBindingConstants.CHANNEL_PAUSE;
 import static org.openhab.binding.groheondus.internal.GroheOndusBindingConstants.CHANNEL_TEMPERATURE;
 
-import java.io.IOException;
+import java.time.Duration;
 import java.time.Instant;
-import java.time.temporal.ChronoUnit;
-import java.util.Collections;
-import java.util.Comparator;
+import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.groheondus.internal.GroheOndusBindingConstants;
+import org.openhab.binding.groheondus.internal.api.ApplianceInfo;
+import org.openhab.binding.groheondus.internal.api.ApplianceStatus;
+import org.openhab.binding.groheondus.internal.api.GroheOndusApi;
+import org.openhab.binding.groheondus.internal.api.GroheOndusApiException;
+import org.openhab.binding.groheondus.internal.api.SenseSample;
+import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.DecimalType;
-import org.openhab.core.library.types.QuantityType;
-import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
-import org.openhab.core.thing.ThingStatus;
-import org.openhab.core.thing.ThingStatusDetail;
-import org.openhab.core.types.Command;
-import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.github.floriansw.ondus.api.OndusService;
-import io.github.floriansw.ondus.api.model.ApplianceStatus;
-import io.github.floriansw.ondus.api.model.BaseApplianceData;
-import io.github.floriansw.ondus.api.model.sense.Appliance;
-import io.github.floriansw.ondus.api.model.sense.ApplianceData;
-import io.github.floriansw.ondus.api.model.sense.ApplianceData.Measurement;
-
 /**
+ * Handler for the GROHE Sense water and climate sensor.
+ *
  * @author Florian Schmidt - Initial contribution
+ * @author Arne Seime - Publish historic measurements as time series, use own API client
  */
 @NonNullByDefault
-public class GroheOndusSenseHandler<T, M> extends GroheOndusBaseHandler<Appliance, Measurement> {
+public class GroheOndusSenseHandler extends GroheOndusBaseHandler<GroheOndusSenseHandler.Snapshot> {
+
+    // The Sense uploads its measurements once a day at best
+    private static final int DATA_WINDOW_DAYS = 2;
+    private static final Duration MAX_SILENCE = Duration.ofHours(48);
 
     private final Logger logger = LoggerFactory.getLogger(GroheOndusSenseHandler.class);
 
-    public GroheOndusSenseHandler(Thing thing, int thingCounter) {
-        super(thing, Appliance.TYPE, thingCounter);
+    record Snapshot(List<SenseSample> samples, ApplianceStatus status) {
+        @Nullable
+        SenseSample latest() {
+            return samples.isEmpty() ? null : samples.get(samples.size() - 1);
+        }
+    }
+
+    public GroheOndusSenseHandler(Thing thing, int thingCounter, TimeZoneProvider timeZoneProvider) {
+        super(thing, ApplianceInfo.TYPE_SENSE, thingCounter, timeZoneProvider);
     }
 
     @Override
-    protected int getPollingInterval(Appliance appliance) {
-        if (config.pollingInterval > 0) {
-            return config.pollingInterval;
-        }
-        return GroheOndusBindingConstants.DEFAULT_POLLING_INTERVAL;
+    protected Snapshot fetch(GroheOndusApi api, ApplianceInfo appliance) throws GroheOndusApiException {
+        LocalDate today = LocalDate.now(timeZoneProvider.getTimeZone());
+        LocalDate from = today.minusDays(DATA_WINDOW_DAYS);
+        LocalDate to = today.plusDays(1);
+        logger.debug("Fetching data for {} from {} to {}", thing.getUID(), from, to);
+        List<SenseSample> samples = api.getSenseSamples(appliance.ref(), from, to);
+        logger.debug("Received {} samples for {}", samples.size(), thing.getUID());
+        return new Snapshot(samples, api.getStatus(appliance.ref()));
     }
 
     @Override
-    protected void updateChannel(ChannelUID channelUID, Appliance appliance, Measurement measurement) {
-        String channelId = channelUID.getIdWithoutGroup();
-        State newState = UnDefType.UNDEF;
-        switch (channelId) {
-            case CHANNEL_NAME:
-                newState = new StringType(appliance.getName());
-                break;
-            case CHANNEL_TEMPERATURE:
-                if (measurement.getTemperature() != null) {
-                    newState = new QuantityType<>(measurement.getTemperature(), SIUnits.CELSIUS);
-                }
-                break;
-            case CHANNEL_HUMIDITY:
-                if (measurement.getHumidity() != null) {
-                    newState = new QuantityType<>(measurement.getHumidity(), Units.PERCENT);
-                }
-                break;
-            case CHANNEL_BATTERY:
-                Integer batteryStatus = getBatteryStatus(appliance);
-                if (batteryStatus != null) {
-                    newState = new DecimalType(batteryStatus);
-                }
-                break;
-            case CHANNEL_PAUSE:
-                newState = getPauseState();
-                break;
-            default:
-                throw new IllegalArgumentException("Channel " + channelUID + " not supported.");
-        }
+    protected void updateChannel(ChannelUID channelUID, ApplianceInfo appliance, Snapshot snapshot) {
+        SenseSample latest = snapshot.latest();
+        State newState = switch (channelUID.getIdWithoutGroup()) {
+            case CHANNEL_TEMPERATURE -> {
+                sendHistory(channelUID, snapshot.samples(), SenseSample::timestamp, SenseSample::temperature,
+                        SIUnits.CELSIUS);
+                yield toState(latest == null ? null : latest.temperature(), SIUnits.CELSIUS);
+            }
+            case CHANNEL_HUMIDITY -> {
+                sendHistory(channelUID, snapshot.samples(), SenseSample::timestamp, SenseSample::humidity,
+                        Units.PERCENT);
+                yield toState(latest == null ? null : latest.humidity(), Units.PERCENT);
+            }
+            case CHANNEL_BATTERY -> {
+                // The cloud keeps reporting the last known battery level of a device that has gone silent
+                Integer batteryLevel = snapshot.status().batteryLevel();
+                yield batteryLevel == null || isDeviceSilent() ? UnDefType.UNDEF : new DecimalType(batteryLevel);
+            }
+            case CHANNEL_PAUSE -> getPauseState();
+            default -> {
+                logger.debug("Channel {} not supported", channelUID);
+                yield UnDefType.UNDEF;
+            }
+        };
         updateState(channelUID, newState);
     }
 
     @Override
-    protected Measurement getLastDataPoint(Appliance appliance) {
-        if (getOndusService() == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "@text/error.noservice");
-            return new Measurement();
-        }
-
-        ApplianceData applianceData = getApplianceData(appliance);
-        if (applianceData == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "@text/error.empty.response");
-            return new Measurement();
-        }
-        List<Measurement> measurementList = applianceData.getData().getMeasurement();
-        Collections.sort(measurementList, Comparator.comparing(e -> e.date));
-        return measurementList.isEmpty() ? new Measurement() : measurementList.get(measurementList.size() - 1);
-    }
-
-    private @Nullable Integer getBatteryStatus(Appliance appliance) {
-        OndusService ondusService = getOndusService();
-        if (ondusService == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "@text/error.noservice");
-            return null;
-        }
-
-        Optional<ApplianceStatus> applianceStatusOptional;
-        try {
-            applianceStatusOptional = ondusService.applianceStatus(appliance);
-            if (applianceStatusOptional.isEmpty()) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "@text/error.empty.response");
-                return null;
-            }
-
-            return applianceStatusOptional.get().getBatteryStatus();
-        } catch (IOException e) {
-            logger.debug("Could not load appliance status", e);
-        }
-        return null;
-    }
-
-    private @Nullable ApplianceData getApplianceData(Appliance appliance) {
-        // Dates are stripped of time part inside library
-        Instant now = Instant.now();
-        Instant twoDaysAgo = now.minus(2, ChronoUnit.DAYS); // Devices only report once a day - at best
-        Instant tomorrow = now.plus(1, ChronoUnit.DAYS);
-        OndusService service = getOndusService();
-        if (service == null) {
-            return null;
-        }
-        try {
-            logger.debug("Fetching data for {} from {} to {}", thing.getUID(), twoDaysAgo, tomorrow);
-            BaseApplianceData applianceData = service.applianceData(appliance, twoDaysAgo, tomorrow).orElse(null);
-            if (applianceData != null) {
-                if (applianceData.getType() != Appliance.TYPE) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.notsense");
-                    return null;
-                }
-                return (ApplianceData) applianceData;
-            } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "@text/error.failedtoloaddata");
-            }
-        } catch (IOException e) {
-            logger.debug("Could not load appliance data for {}", thing.getUID(), e);
-        }
-        return null;
+    protected Duration getMaxSilence() {
+        return MAX_SILENCE;
     }
 
     @Override
-    public void handleCommand(ChannelUID channelUID, Command command) {
-        if (command instanceof RefreshType) {
-            updateChannels();
-            return;
-        }
+    protected @Nullable Boolean isConnected(Snapshot snapshot) {
+        return snapshot.status().connected();
+    }
 
-        handlePauseCommand(channelUID, command);
+    @Override
+    protected @Nullable Instant getNewestSampleTime(Snapshot snapshot) {
+        SenseSample latest = snapshot.latest();
+        return latest == null ? null : latest.timestamp();
     }
 }

@@ -188,13 +188,13 @@ public class MQ2200InverterHandler extends BaseModbusThingHandler {
         final MQ2200InverterConfiguration config = getConfigAs(MQ2200InverterConfiguration.class);
 
         if (config.pollInterval <= 0) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                     getTranslation("offline.config.poll_interval", config.pollInterval));
             return;
         }
 
         if (config.maxTries <= 0) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                     getTranslation("offline.config.max_tries", config.maxTries));
             return;
         }
@@ -417,7 +417,7 @@ public class MQ2200InverterHandler extends BaseModbusThingHandler {
     private void readError(AsyncModbusFailure<ModbusReadRequestBlueprint> error) {
         // TODO improve error handling, stop regular polling on repeated errors, sporadic polling only
         this.logger.debug("Failed to get Modbus data", error.getCause());
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+        updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                 getTranslation("offline.communication_error", error.getCause().getMessage()));
     }
 

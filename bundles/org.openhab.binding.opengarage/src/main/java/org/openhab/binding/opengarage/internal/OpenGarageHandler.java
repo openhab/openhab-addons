@@ -107,7 +107,7 @@ public class OpenGarageHandler extends BaseThingHandler {
                 }
             }
         } catch (OpenGarageCommunicationException ex) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, ex.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, ex.getMessage());
         }
     }
 
@@ -116,7 +116,7 @@ public class OpenGarageHandler extends BaseThingHandler {
         this.config = getConfigAs(OpenGarageConfiguration.class);
         logger.debug("config.hostname = {}, refresh = {}, port = {}", config.hostname, config.refresh, config.port);
         if (config.hostname.isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Hostname/IP address must be set");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Hostname/IP address must be set");
         } else {
             updateStatus(ThingStatus.UNKNOWN);
             int requestTimeout = Math.max(OpenGarageWebTargets.DEFAULT_TIMEOUT_MS, config.refresh * 1000);
@@ -192,11 +192,10 @@ public class OpenGarageHandler extends BaseThingHandler {
             }
         } catch (IOException e) {
             logger.debug("Could not connect to OpenGarage controller", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Could not connect to OpenGarage controller");
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "Could not connect to OpenGarage controller");
         } catch (RuntimeException e) {
             logger.debug("Unexpected error connecting to OpenGarage controller", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 

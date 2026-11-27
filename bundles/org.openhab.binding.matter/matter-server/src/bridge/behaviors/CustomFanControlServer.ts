@@ -1,4 +1,4 @@
-import { ActionContext, MaybePromise } from "@matter/main";
+import { ActionContext } from "@matter/main";
 import { FanControl } from "@matter/main/clusters";
 import { FanControlServer } from "@matter/node/behaviors";
 import { DeviceFunctions } from "../DeviceFunctions";
@@ -36,7 +36,7 @@ export class CustomFanControlServer extends FanControlServer {
         return feats;
     }
 
-    override initialize(): MaybePromise {
+    override initialize(): void {
         super.initialize();
         const events: any = this.endpoint.events;
         events.fanControl.fanMode$Changed.on((v: any, _o: any, ctx?: ActionContext) => {

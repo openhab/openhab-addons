@@ -29,6 +29,7 @@ import org.openhab.binding.hdpowerview.internal.HDPowerViewJUnitTests;
 import org.openhab.binding.hdpowerview.internal.database.ShadeCapabilitiesDatabase;
 import org.openhab.binding.hdpowerview.internal.database.ShadeCapabilitiesDatabase.Capabilities;
 import org.openhab.binding.hdpowerview.internal.dto.CoordinateSystem;
+import org.openhab.binding.hdpowerview.internal.dto.gen3.PowerType;
 import org.openhab.binding.hdpowerview.internal.dto.gen3.Scene;
 import org.openhab.binding.hdpowerview.internal.dto.gen3.SceneEvent;
 import org.openhab.binding.hdpowerview.internal.dto.gen3.Shade;
@@ -237,6 +238,107 @@ public class Generation3DtoTest {
         assertEquals("3.0.359", handlerThing.getProperties().get("firmwareVersion"));
         assertEquals(new QuantityType<>(-51, Units.DECIBEL_MILLIWATTS), shadeData.getSignalStrength());
         assertEquals(3, handlerThing.getChannels().size());
+    }
+
+    /**
+     * Test JSON shades response for shades with the fixed (built-in) power types.
+     */
+    @Test
+    public void testShadesFixedPowerTypesParsing() throws IOException {
+        String json = loadJson("gen3/shades-fixed-power.json");
+        List<Shade> shadeList = List.of(gson.fromJson(json, Shade[].class));
+        assertNotNull(shadeList);
+        assertEquals(2, shadeList.size());
+
+        Shade shadeData = shadeList.get(0);
+        assertEquals(PowerType.FIXED_RECHARGEABLE, shadeData.getPowerType());
+        assertFalse(shadeData.isMainsPowered());
+        assertEquals(new DecimalType(100), shadeData.getBatteryLevel());
+        assertEquals(OnOffType.OFF, shadeData.getLowBattery());
+
+        shadeData = shadeList.get(1);
+        assertEquals(PowerType.FIXED_HARDWIRED, shadeData.getPowerType());
+        assertTrue(shadeData.isMainsPowered());
+    }
+
+    private Shade parseShade(String json) {
+        Shade shade = gson.fromJson(json, Shade.class);
+        assertNotNull(shade);
+        return shade;
+    }
+
+    /**
+     * Test mapping of the power type values reported by the gateway.
+     */
+    @Test
+    public void testPowerTypeValues() {
+        assertEquals(PowerType.BATTERY, parseShade("{\"powerType\": 0}").getPowerType());
+        assertEquals(PowerType.HARDWIRED, parseShade("{\"powerType\": 1}").getPowerType());
+        assertEquals(PowerType.RECHARGEABLE, parseShade("{\"powerType\": 2}").getPowerType());
+        assertEquals(PowerType.FIXED_RECHARGEABLE, parseShade("{\"powerType\": 11}").getPowerType());
+        assertEquals(PowerType.FIXED_HARDWIRED, parseShade("{\"powerType\": 12}").getPowerType());
+        assertEquals(PowerType.BATTERY, parseShade("{}").getPowerType());
+
+        Shade unknown = parseShade("{\"powerType\": 99}");
+        assertEquals(PowerType.UNKNOWN, unknown.getPowerType());
+        assertFalse(unknown.isMainsPowered());
+    }
+
+    /**
+     * Test sending properties and dynamic channel values to a shade handler, for shades with the fixed
+     * (built-in) power types.
+     */
+    @Test
+    public void testShadeHandlerFixedPowerTypes() throws IOException {
+        ThingTypeUID thingTypeUID = new ThingTypeUID("hdpowerview:shade");
+        ThingUID thingUID = new ThingUID(thingTypeUID, "test");
+
+        List<Channel> channels = new ArrayList<>();
+        for (String channelId : Set.of(CHANNEL_SHADE_POSITION, CHANNEL_SHADE_SECONDARY_POSITION, CHANNEL_SHADE_VANE,
+                CHANNEL_SHADE_BATTERY_LEVEL, CHANNEL_SHADE_LOW_BATTERY, CHANNEL_SHADE_SIGNAL_STRENGTH)) {
+            ChannelUID channelUID = new ChannelUID(thingUID, channelId);
+            channels.add(ChannelBuilder.create(channelUID).build());
+        }
+
+        String json = loadJson("gen3/shades-fixed-power.json");
+        List<Shade> shadeList = List.of(gson.fromJson(json, Shade[].class));
+        assertNotNull(shadeList);
+        assertEquals(2, shadeList.size());
+
+        Thing thing = ThingBuilder.create(thingTypeUID, thingUID).withChannels(channels).build();
+        ShadeThingHandler shadeThingHandler;
+        Shade shadeData;
+
+        /*
+         * Use the first JSON Shade entry (fixed rechargeable).
+         * It should keep its battery channels.
+         */
+        shadeThingHandler = new ShadeThingHandler(thing);
+        shadeThingHandler.setCallback(mock(ThingHandlerCallback.class));
+        shadeData = shadeList.get(0).setId(0);
+        assertTrue(shadeData.hasFullState());
+        shadeThingHandler.notify(shadeData);
+        Thing handlerThing = shadeThingHandler.getThing();
+        assertEquals("fixed_rechargeable", handlerThing.getProperties().get("powerType"));
+        assertEquals("3.0.428", handlerThing.getProperties().get("firmwareVersion"));
+        assertEquals(4, handlerThing.getChannels().size());
+        assertNotNull(handlerThing.getChannel(CHANNEL_SHADE_BATTERY_LEVEL));
+        assertNotNull(handlerThing.getChannel(CHANNEL_SHADE_LOW_BATTERY));
+
+        /*
+         * Use the second JSON Shade entry (fixed hardwired).
+         * It should lose its battery channels.
+         */
+        shadeThingHandler = new ShadeThingHandler(thing);
+        shadeThingHandler.setCallback(mock(ThingHandlerCallback.class));
+        shadeData = shadeList.get(1).setId(0);
+        assertTrue(shadeData.hasFullState());
+        shadeThingHandler.notify(shadeData);
+        handlerThing = shadeThingHandler.getThing();
+        assertEquals("fixed_hardwired", handlerThing.getProperties().get("powerType"));
+        assertEquals(2, handlerThing.getChannels().size());
+        assertNull(handlerThing.getChannel(CHANNEL_SHADE_BATTERY_LEVEL));
+        assertNull(handlerThing.getChannel(CHANNEL_SHADE_LOW_BATTERY));
     }
 
     /**

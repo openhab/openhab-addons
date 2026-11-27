@@ -49,10 +49,11 @@ public abstract class CacheCapability<T extends RestManager> extends RestCapabil
         if (!stillValid(now)) {
             logger.debug("{} requesting fresh data for {}", getClass().getSimpleName(), thingUID);
             List<NAObject> result = getFreshData(api);
-            if (!result.isEmpty()) {
-                lastResult = result;
-                requestTS = now;
+            if (result.isEmpty()) {
+                return result;
             }
+            lastResult = result;
+            requestTS = now;
         }
 
         return lastResult;

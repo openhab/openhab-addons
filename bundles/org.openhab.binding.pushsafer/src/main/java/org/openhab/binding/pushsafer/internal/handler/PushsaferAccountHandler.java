@@ -71,14 +71,12 @@ public class PushsaferAccountHandler extends BaseThingHandler {
         boolean configValid = true;
         final String apikey = config.apikey;
         if (apikey == null || apikey.isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.conf-error-missing-apikey");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.conf-error-missing-apikey");
             configValid = false;
         }
         final String user = config.user;
         if (user == null || user.isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.conf-error-missing-user");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.conf-error-missing-user");
             configValid = false;
         }
 
@@ -106,7 +104,7 @@ public class PushsaferAccountHandler extends BaseThingHandler {
         } catch (PushsaferCommunicationException e) {
             // do nothing, causing exception is already logged
         } catch (PushsaferConfigurationException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
         }
         return List.of();
     }
@@ -122,7 +120,7 @@ public class PushsaferAccountHandler extends BaseThingHandler {
         } catch (PushsaferCommunicationException e) {
             // do nothing, causing exception is already logged
         } catch (PushsaferConfigurationException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
         }
         return List.of();
     }
@@ -204,7 +202,7 @@ public class PushsaferAccountHandler extends BaseThingHandler {
             } catch (PushsaferCommunicationException e) {
                 // do nothing, causing exception is already logged
             } catch (PushsaferConfigurationException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
             }
             return false;
         } else {
@@ -219,7 +217,7 @@ public class PushsaferAccountHandler extends BaseThingHandler {
             } catch (PushsaferCommunicationException e) {
                 // do nothing, causing exception is already logged
             } catch (PushsaferConfigurationException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
             }
             return "";
         } else {
@@ -234,7 +232,7 @@ public class PushsaferAccountHandler extends BaseThingHandler {
             } catch (PushsaferCommunicationException e) {
                 // do nothing, causing exception is already logged
             } catch (PushsaferConfigurationException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
             }
             return false;
         } else {
@@ -248,7 +246,7 @@ public class PushsaferAccountHandler extends BaseThingHandler {
             connection.validateUser();
             updateStatus(ThingStatus.ONLINE);
         } catch (PushsaferCommunicationException | PushsaferConfigurationException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
         }
     }
 }

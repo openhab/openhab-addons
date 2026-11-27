@@ -17,7 +17,7 @@ import com.google.gson.annotations.SerializedName;
 /**
  * The {@link UserInfo} DTO for representing Ondilo user infos.
  *
- * @author MikeTheTux - Initial contribution
+ * @author Michael Weger - Initial contribution
  */
 public class UserInfo {
     /*

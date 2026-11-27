@@ -19,6 +19,7 @@ import static org.openhab.binding.zwavejs.internal.BindingConstants.*;
 import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -40,7 +41,6 @@ import org.openhab.core.config.core.Configuration;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
-import org.openhab.core.thing.ThingRegistry;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
@@ -93,10 +93,8 @@ public class ZwaveJSNodeHandlerMock extends ZwaveJSNodeHandler {
             final String filename, boolean configAsChannel) {
         ZwaveJSChannelTypeProvider channelTypeProvider = new ZwaveJSChannelTypeInMemmoryProvider();
         ZwaveJSConfigDescriptionProvider configDescriptionProvider = new ZwaveJSConfigDescriptionProviderImpl();
-        ThingRegistry thingRegistry = mock(ThingRegistry.class);
-        when(thingRegistry.get(any())).thenReturn(thing);
         ZwaveJSTypeGenerator typeGenerator = new ZwaveJSTypeGeneratorImpl(channelTypeProvider,
-                configDescriptionProvider, thingRegistry);
+                configDescriptionProvider);
 
         final ZwaveJSNodeHandlerMock handler = spy(
                 new ZwaveJSNodeHandlerMock(thing, typeGenerator, filename, configAsChannel));
@@ -122,6 +120,15 @@ public class ZwaveJSNodeHandlerMock extends ZwaveJSNodeHandler {
             ((Runnable) invocation.getArguments()[0]).run();
             return null;
         }).when(executorService).execute(any(Runnable.class));
+
+        doAnswer((InvocationOnMock invocation) -> {
+            ((Runnable) invocation.getArguments()[0]).run();
+            return mock(ScheduledFuture.class);
+        }).when(executorService).schedule(any(Runnable.class), anyLong(), any(TimeUnit.class));
+    }
+
+    public void setExecutorService(ScheduledExecutorService executorService) {
+        this.executorService = executorService;
     }
 
     public boolean isLinked(ChannelUID channelUID) {
@@ -175,7 +182,7 @@ public class ZwaveJSNodeHandlerMock extends ZwaveJSNodeHandler {
                     ZwaveJSChannelConfiguration config = channel.getConfiguration()
                             .as(ZwaveJSChannelConfiguration.class);
                     config.isUpDownInverted = isUpDownInverted;
-                    when(this.getChannelConfiguration(any())).thenReturn(config);
+                    doReturn(config).when(this).getChannelConfiguration(channel);
                 });
     }
 }

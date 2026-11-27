@@ -27,16 +27,21 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicLong;
+
+import javax.naming.CommunicationException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.StringRequestContent;
+import org.eclipse.jetty.client.transport.HttpClientTransportOverHTTP;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
+import org.eclipse.jetty.io.ClientConnector;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.openhab.binding.homewizard.internal.HomeWizardBindingConstants;
 import org.openhab.binding.homewizard.internal.HomeWizardConfiguration;
@@ -69,6 +74,7 @@ import com.google.gson.JsonSyntaxException;
  *
  * @author Daniël van Os - Initial contribution
  * @author Gearrel Welvaart - changes to API calls and support for APi v2 (beta).
+ * @author Leo Siepel - Guard polling updates across lifecycle changes
  *
  */
 @NonNullByDefault
@@ -95,12 +101,16 @@ public abstract class HomeWizardDeviceHandler extends BaseThingHandler {
 
     protected ScheduledExecutorService executorService = this.scheduler;
     protected HomeWizardConfiguration config = new HomeWizardConfiguration();
-    private @Nullable ScheduledFuture<?> pollingJob;
+    private @Nullable ScheduledFuture<?> dataPollingJob;
+    private @Nullable ScheduledFuture<?> firmwarePollingJob;
     private HttpClient httpClient = new HttpClient();
 
     protected List<String> supportedTypes = new ArrayList<String>();
     protected List<Integer> supportedApiVersions = Arrays.asList(API_V1);
     private String apiURL = "";
+    // Lifecycle changes and poll results use the handler monitor to keep generation checks and updates ordered.
+    protected final AtomicLong lifecycleGeneration = new AtomicLong();
+    private volatile long validatedGeneration = -1;
 
     /**
      * Constructor
@@ -116,6 +126,10 @@ public abstract class HomeWizardDeviceHandler extends BaseThingHandler {
      */
     @Override
     public void initialize() {
+        long generation;
+        synchronized (this) {
+            generation = lifecycleGeneration.incrementAndGet();
+        }
         config = getConfigAs(HomeWizardConfiguration.class);
 
         if (config.isUsingApiVersion2()) {
@@ -137,14 +151,18 @@ public abstract class HomeWizardDeviceHandler extends BaseThingHandler {
                 sslContextFactory.setTrustStore(keyStore);
                 sslContextFactory.setEndpointIdentificationAlgorithm(null);
                 sslContextFactory.setHostnameVerifier((hostname, sslSession) -> true);
-                httpClient = new HttpClient(sslContextFactory);
+                ClientConnector clientConnector = new ClientConnector();
+                clientConnector.setSslContextFactory(sslContextFactory);
+                httpClient = new HttpClient(new HttpClientTransportOverHTTP(clientConnector));
             }
         }
 
-        if (configure() && processDeviceInformation()) {
+        if (configure()) {
             updateStatus(ThingStatus.UNKNOWN);
-            pollingJob = executorService.scheduleWithFixedDelay(this::retrieveData, 0, config.refreshDelay,
-                    TimeUnit.SECONDS);
+            dataPollingJob = executorService.scheduleWithFixedDelay(() -> retrieveData(generation), 0,
+                    config.refreshDelay, TimeUnit.SECONDS);
+            firmwarePollingJob = executorService.scheduleWithFixedDelay(() -> retrieveFirmwareVersion(generation), 1, 1,
+                    TimeUnit.DAYS);
         }
     }
 
@@ -155,18 +173,15 @@ public abstract class HomeWizardDeviceHandler extends BaseThingHandler {
      */
     private boolean configure() {
         if (config.ipAddress.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.config-error-missing-host");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.config-error-missing-host");
             return false;
         }
         if (!supportedApiVersions.contains(config.apiVersion)) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.config-error-invalid-api-version");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.config-error-invalid-api-version");
             return false;
         }
         if (config.isUsingApiVersion2() && config.bearerToken.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.config-error-missing-bearer-token");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.config-error-missing-bearer-token");
             return false;
         }
 
@@ -180,8 +195,7 @@ public abstract class HomeWizardDeviceHandler extends BaseThingHandler {
             httpClient.setConnectTimeout(30000);
             httpClient.start();
         } catch (Exception ex) { // No specific exception is thrown by the start method
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/offline.comm-error-device-offline");
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/offline.comm-error-device-offline");
             logger.debug("Unable to reach device", ex);
             return false;
         }
@@ -220,17 +234,132 @@ public abstract class HomeWizardDeviceHandler extends BaseThingHandler {
     }
 
     /**
-     * The actual polling loop
+     * The data polling loop
+     *
+     * @return true if data was retrieved and published for the current generation
      */
-    protected void retrieveData() {
+    protected boolean retrieveData(long generation) {
+        if (generation != lifecycleGeneration.get()) {
+            return false;
+        }
+        if (validatedGeneration != generation && !checkDeviceConfiguration(generation)) {
+            return false;
+        }
+
         try {
-            handleSystemData(getSystemData());
-            handleMeasurementData(getMeasurementData());
-            updateStatus(ThingStatus.ONLINE);
-        } catch (JsonSyntaxException ex) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+            String systemData = getSystemData();
+            synchronized (this) {
+                if (generation != lifecycleGeneration.get()) {
+                    return false;
+                }
+                handleSystemData(systemData);
+            }
+            String measurementData = getMeasurementData();
+            synchronized (this) {
+                if (generation != lifecycleGeneration.get()) {
+                    return false;
+                }
+                handleMeasurementData(measurementData);
+                updateStatus(ThingStatus.ONLINE);
+            }
+            return true;
+        } catch (JsonSyntaxException | SecurityException | CommunicationException ex) {
+            updateStatusIfCurrent(generation, ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/offline.comm-error-device-offline");
             logger.debug("Unable to get data from the API", ex);
+            return false;
+        }
+    }
+
+    /**
+     * Checks whether device information can be retrieved and the device is supported.
+     *
+     * @return true if the current generation was validated
+     */
+    private boolean checkDeviceConfiguration(long generation) {
+        String deviceInformation = "";
+
+        try {
+            deviceInformation = getDeviceInformationData();
+        } catch (SecurityException | CommunicationException ex) {
+            updateStatusIfCurrent(generation, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/offline.comm-error-device-offline");
+            logger.debug("Unable to get device information", ex);
+            return false;
+        }
+
+        HomeWizardDeviceInformationPayload payload = null;
+        try {
+            payload = gson.fromJson(deviceInformation, HomeWizardDeviceInformationPayload.class);
+        } catch (JsonSyntaxException ex) {
+            payload = null;
+        }
+
+        if (payload == null) {
+            updateStatusIfCurrent(generation, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/offline.comm-error-no-data");
+            return false;
+        } else {
+            if ("".equals(payload.getProductType())) {
+                updateStatusIfCurrent(generation, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "@text/offline.comm-error-no-data");
+                return false;
+            }
+
+            if (!supportedTypes.contains(payload.getProductType().toLowerCase(Locale.ROOT))) {
+                updateStatusIfCurrent(generation, ThingStatusDetail.CONFIGURATION_ERROR,
+                        "@text/offline.comm-error-device-not-compatible");
+                return false;
+            }
+
+            synchronized (this) {
+                if (generation != lifecycleGeneration.get()) {
+                    return false;
+                }
+                var properties = editProperties();
+                properties.put(PRODUCT_NAME, payload.getProductName());
+                properties.put(PRODUCT_TYPE, payload.getProductType());
+                properties.put(FIRMWARE_VERSION, payload.getFirmwareVersion());
+                properties.put(API_VERSION, payload.getApiVersion());
+                updateProperties(properties);
+                validatedGeneration = generation;
+            }
+            return true;
+        }
+    }
+
+    protected final void updateStatusIfCurrent(long generation, ThingStatusDetail statusDetail, String description) {
+        synchronized (this) {
+            if (generation == lifecycleGeneration.get()) {
+                updateStatus(statusDetail, description);
+            }
+        }
+    }
+
+    private void retrieveFirmwareVersion(long generation) {
+        if (generation != lifecycleGeneration.get()) {
+            return;
+        }
+        String deviceInformation = "";
+
+        try {
+            deviceInformation = getDeviceInformationData();
+            var payload = gson.fromJson(deviceInformation, HomeWizardDeviceInformationPayload.class);
+            if (payload == null) {
+                // Only log a warning here. Updating the firmware version will be attempted again when the device is
+                // polled next time.
+                logger.warn("Unable to update the firmare version. No device information available.");
+                return;
+            }
+            synchronized (this) {
+                if (generation == lifecycleGeneration.get()) {
+                    updateProperty(FIRMWARE_VERSION, payload.getFirmwareVersion());
+                }
+            }
+        } catch (SecurityException | JsonSyntaxException | CommunicationException ex) {
+            // Only log a warning here. Updating the firmware version will be attempted again when the device is polled
+            // next time.
+            logger.warn("Unable to update the firmare version. No device information available.");
             return;
         }
     }
@@ -243,60 +372,24 @@ public abstract class HomeWizardDeviceHandler extends BaseThingHandler {
         }
     }
 
-    private boolean processDeviceInformation() {
-        String deviceInformation = "";
-
-        try {
-            deviceInformation = getDeviceInformationData();
-        } catch (SecurityException ex) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/offline.comm-error-device-offline");
-            logger.debug("Unable to get device information", ex);
-            return false;
-        }
-
-        if (deviceInformation.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/offline.comm-error-no-data");
-            return false;
-        }
-
-        var payload = gson.fromJson(deviceInformation, HomeWizardDeviceInformationPayload.class);
-
-        if (payload == null) {
-            return false;
-        } else {
-            if ("".equals(payload.getProductType())) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "@text/offline.comm-error-no-data");
-                return false;
-            }
-
-            if (!supportedTypes.contains(payload.getProductType().toLowerCase(Locale.ROOT))) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
-                        "@text/offline.comm-error-device-not-compatible");
-                return false;
-            }
-
-            updateProperty(PRODUCT_NAME, payload.getProductName());
-            updateProperty(PRODUCT_TYPE, payload.getProductType());
-            updateProperty(FIRMWARE_VERSION, payload.getFirmwareVersion());
-            updateProperty(API_VERSION, payload.getApiVersion());
-
-            return true;
-        }
-    }
-
     /**
      * dispose: stop the poller
      */
     @Override
     public void dispose() {
-        var job = pollingJob;
-        if (job != null) {
-            job.cancel(true);
+        synchronized (this) {
+            lifecycleGeneration.incrementAndGet();
         }
-        pollingJob = null;
+        var dataJob = dataPollingJob;
+        if (dataJob != null) {
+            dataJob.cancel(true);
+        }
+        dataPollingJob = null;
+        var firmwareJob = firmwarePollingJob;
+        if (firmwareJob != null) {
+            firmwareJob.cancel(true);
+        }
+        firmwarePollingJob = null;
         try {
             httpClient.stop();
         } catch (Exception ex) { // No specific exception is thrown by the stop method
@@ -377,19 +470,48 @@ public abstract class HomeWizardDeviceHandler extends BaseThingHandler {
     }
 
     protected @Nullable ContentResponse putDataTo(String url, String data) {
-        var request = httpClient.newRequest(url).method(HttpMethod.PUT).content(new StringContentProvider(data));
-
-        return sendRequest(request);
+        var request = httpClient.newRequest(url).method(HttpMethod.PUT).body(new StringRequestContent(data));
+        ContentResponse response = null;
+        try {
+            response = sendRequest(request);
+        } catch (CommunicationException ex) {
+            logger.warn("Failed to send request to {}", url);
+        }
+        return response;
     }
 
-    public @Nullable ContentResponse getResponseFrom(String url) {
-        return sendRequest(httpClient.newRequest(url));
+    /**
+     * Get the content of the response from the given url. If the bearer token is invalid a SecurityException is thrown.
+     * 
+     * @param url
+     * @return the content of the response from the given url
+     * @throws SecurityException when the bearer token is invalid
+     * @throws CommunicationException when no data is available
+     */
+    public String getContentFrom(String url) throws SecurityException, CommunicationException {
+        var response = sendRequest(httpClient.newRequest(url));
+
+        if (response == null) {
+            logger.warn("No valid data available from {}", url);
+            throw new CommunicationException("No valid response from the device");
+        }
+        if (response.getStatus() == HttpStatus.UNAUTHORIZED_401) {
+            throw new SecurityException("Bearer token is invalid.");
+        }
+        if (response.getStatus() != HttpStatus.OK_200) {
+            logger.warn("No valid data available from {}", url);
+            throw new CommunicationException("No valid response from the device");
+        }
+
+        return response.getContentAsString();
     }
 
-    private @Nullable ContentResponse sendRequest(Request request) {
+    private @Nullable ContentResponse sendRequest(Request request) throws CommunicationException {
         if (config.isUsingApiVersion2()) {
-            request.header(HttpHeader.AUTHORIZATION, BEARER + " " + config.bearerToken);
-            request.header(API_VERSION_HEADER, "2");
+            request.headers(headers -> {
+                headers.put(HttpHeader.AUTHORIZATION, BEARER + " " + config.bearerToken);
+                headers.put(API_VERSION_HEADER, "2");
+            });
         }
         try {
             return request.timeout(20, TimeUnit.SECONDS).send();
@@ -398,43 +520,27 @@ public abstract class HomeWizardDeviceHandler extends BaseThingHandler {
             return null;
         } catch (TimeoutException | ExecutionException ex) {
             logger.debug("Error sending request", ex);
-            return null;
+            throw new CommunicationException("Error sending request");
         }
     }
 
     /**
      * @return json response from the device information api or an empty string if no data is available
-     * @throws SecurityException
+     * @throws SecurityException when the bearer token is invalid
+     * @throws CommunicationException when no data is available
      */
-    public String getDeviceInformationData() throws SecurityException {
-        var response = getResponseFrom(apiURL);
-        if (response == null) {
-            logger.warn("No Device Information data available");
-            return "";
-        }
-        if (response.getStatus() == HttpStatus.UNAUTHORIZED_401) {
-            throw new SecurityException("Bearer token is invalid.");
-        }
-        if (response.getStatus() == HttpStatus.OK_200) {
-            return response.getContentAsString();
-        } else {
-            logger.warn("No Device Information data available");
-            return "";
-        }
+    public String getDeviceInformationData() throws SecurityException, CommunicationException {
+        return getContentFrom(apiURL);
     }
 
     /**
-     * @return json response from the system api or an empty string if no data is available
+     * @return json response from the system api
+     * @throws SecurityException when the bearer token is invalid
+     * @throws CommunicationException when no data is available
      *
      */
-    public String getSystemData() {
-        var response = getResponseFrom(getApiUrl() + SYSTEM_URL);
-        if (response != null && response.getStatus() == HttpStatus.OK_200) {
-            return response.getContentAsString();
-        } else {
-            logger.warn("No System data available");
-            return "";
-        }
+    public String getSystemData() throws SecurityException, CommunicationException {
+        return getContentFrom(getApiUrl() + SYSTEM_URL);
     }
 
     public void sendSystemCommand(String command) {
@@ -449,36 +555,28 @@ public abstract class HomeWizardDeviceHandler extends BaseThingHandler {
 
     /**
      * @return json response from the measurement api or an empty string if no data is available
+     * @throws SecurityException when the bearer token is invalid
+     * @throws CommunicationException when no data is available
      * 
      */
-    public String getMeasurementData() {
+    public String getMeasurementData() throws SecurityException, CommunicationException {
         var url = getApiUrl();
         if (config.isUsingApiVersion2()) {
             url += "measurement";
         } else {
             url += "data";
         }
-        var response = getResponseFrom(url);
-        if (response != null && response.getStatus() == HttpStatus.OK_200) {
-            return response.getContentAsString();
-        } else {
-            logger.warn("No Measurements data available");
-            return "";
-        }
+        return getContentFrom(url);
     }
 
     /**
      * @return json response from the batteries api or an empty string if no data is available
+     * @throws SecurityException when the bearer token is invalid
+     * @throws CommunicationException when no data is available
      * 
      */
-    public String getBatteriesData() {
-        var response = getResponseFrom(getApiUrl() + BATTERIES_URL);
-        if (response != null && response.getStatus() == HttpStatus.OK_200) {
-            return response.getContentAsString();
-        } else {
-            logger.warn("No Batteries data available");
-            return "";
-        }
+    public String getBatteriesData() throws SecurityException, CommunicationException {
+        return getContentFrom(getApiUrl() + BATTERIES_URL);
     }
 
     protected void sendBatteriesCommand(String command) {

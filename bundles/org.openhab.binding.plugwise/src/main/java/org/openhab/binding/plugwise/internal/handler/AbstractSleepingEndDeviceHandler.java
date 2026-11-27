@@ -103,7 +103,7 @@ public abstract class AbstractSleepingEndDeviceHandler extends AbstractPlugwiseT
     @Override
     protected void updateOnlineState() {
         if (thing.getStatus() == ONLINE && getWakeupDuration().minus(durationSinceLastSeen()).isNegative()) {
-            updateStatus(OFFLINE, getThingStatusDetail());
+            updateStatus(OFFLINE);
         }
     }
 }

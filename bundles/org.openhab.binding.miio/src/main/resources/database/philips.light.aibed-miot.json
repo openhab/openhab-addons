@@ -1,0 +1,816 @@
+{
+	"deviceMapping": {
+		"id": [
+			"philips.light.aibed"
+		],
+		"propertyMethod": "get_properties",
+		"maxProperties": 4,
+		"channels": [
+			{
+				"property": "on",
+				"siid": 2,
+				"piid": 1,
+				"friendlyName": "Power",
+				"channel": "on",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "switch"
+			},
+			{
+				"property": "brightness",
+				"siid": 2,
+				"piid": 2,
+				"friendlyName": "Brightness",
+				"channel": "brightness",
+				"type": "Dimmer",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "light",
+				"tags": [
+					"Control",
+					"Brightness"
+				]
+			},
+			{
+				"property": "color-temperature",
+				"siid": 2,
+				"piid": 3,
+				"friendlyName": "Color Temperature",
+				"channel": "cct",
+				"type": "Number:Temperature",
+				"unit": "kelvin",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"stateDescription": {
+					"minimum": 1800,
+					"maximum": 4000,
+					"step": 1,
+					"pattern": "%.0f K"
+				},
+				"category": "colorlight"
+			},
+			{
+				"property": "color",
+				"siid": 2,
+				"piid": 4,
+				"friendlyName": "Color",
+				"channel": "color",
+				"type": "Color",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "COLOR",
+						"condition": {
+							"name": "HSBOnly"
+						}
+					}
+				],
+				"category": "colorlight",
+				"tags": [
+					"Control",
+					"Color"
+				]
+			},
+			{
+				"property": "sta",
+				"siid": 3,
+				"piid": 47,
+				"friendlyName": "Color Mode",
+				"channel": "colorMode",
+				"type": "Number",
+				"refresh": true,
+				"actions": [],
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 1,
+					"step": 1,
+					"pattern": "%.0f",
+					"options": [
+						{
+							"value": "0",
+							"label": "Color Temperature"
+						},
+						{
+							"value": "1",
+							"label": "Color"
+						}
+					],
+					"readOnly": true
+				},
+				"category": "colorlight",
+				"tags": [
+					"Status",
+					"Mode"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Color Temperature\",\"1\"\u003d\"Color\"]`"
+			},
+			{
+				"property": "mode-main",
+				"siid": 3,
+				"piid": 63,
+				"friendlyName": "Mode",
+				"channel": "modeMain",
+				"type": "Number",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 2,
+					"step": 1,
+					"pattern": "%.0f",
+					"options": [
+						{
+							"value": "0",
+							"label": "Light Mode"
+						},
+						{
+							"value": "1",
+							"label": "Sleep Mode"
+						},
+						{
+							"value": "2",
+							"label": "Scene Mode"
+						}
+					]
+				},
+				"category": "light",
+				"tags": [
+					"Control",
+					"Mode"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Light Mode\",\"1\"\u003d\"Sleep Mode\",\"2\"\u003d\"Scene Mode\"]`"
+			},
+			{
+				"property": "mode-light",
+				"siid": 3,
+				"piid": 64,
+				"friendlyName": "Light Mode Preset",
+				"channel": "modeLight",
+				"type": "Number",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 5,
+					"step": 1,
+					"pattern": "%.0f"
+				},
+				"category": "light",
+				"tags": [
+					"Control",
+					"Mode"
+				],
+				"readmeComment": "Index of the light mode preset; the presets are configured in the Mi Home app."
+			},
+			{
+				"property": "mode-sleep",
+				"siid": 3,
+				"piid": 65,
+				"friendlyName": "Sleep Mode Preset",
+				"channel": "modeSleep",
+				"type": "Number",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 3,
+					"step": 1,
+					"pattern": "%.0f",
+					"options": [
+						{
+							"value": "0",
+							"label": "Sunset"
+						},
+						{
+							"value": "1",
+							"label": "Cozy Bonfire"
+						},
+						{
+							"value": "2",
+							"label": "Wonderful Journey"
+						},
+						{
+							"value": "3",
+							"label": "Hill Rain"
+						}
+					]
+				},
+				"category": "light",
+				"tags": [
+					"Control",
+					"Mode"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Sunset\",\"1\"\u003d\"Cozy Bonfire\",\"2\"\u003d\"Wonderful Journey\",\"3\"\u003d\"Hill Rain\"]`"
+			},
+			{
+				"property": "mode-scene",
+				"siid": 3,
+				"piid": 66,
+				"friendlyName": "Scene Mode Preset",
+				"channel": "modeScene",
+				"type": "Number",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 9,
+					"step": 1,
+					"pattern": "%.0f",
+					"options": [
+						{
+							"value": "0",
+							"label": "Wonderful Journey"
+						},
+						{
+							"value": "1",
+							"label": "Cozy Bonfire"
+						},
+						{
+							"value": "2",
+							"label": "Breathing and Meditation"
+						},
+						{
+							"value": "3",
+							"label": "Hill Rain"
+						},
+						{
+							"value": "4",
+							"label": "Northern European Aurora"
+						},
+						{
+							"value": "5",
+							"label": "Beach Walk"
+						},
+						{
+							"value": "6",
+							"label": "Early Spring"
+						},
+						{
+							"value": "7",
+							"label": "Midsummer Lime"
+						},
+						{
+							"value": "8",
+							"label": "Late Fall"
+						},
+						{
+							"value": "9",
+							"label": "Winter Sunshine"
+						}
+					]
+				},
+				"category": "light",
+				"tags": [
+					"Control",
+					"Mode"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Wonderful Journey\",\"1\"\u003d\"Cozy Bonfire\",\"2\"\u003d\"Breathing and Meditation\",\"3\"\u003d\"Hill Rain\",\"4\"\u003d\"Northern European Aurora\",\"5\"\u003d\"Beach Walk\",\"6\"\u003d\"Early Spring\",\"7\"\u003d\"Midsummer Lime\",\"8\"\u003d\"Late Fall\",\"9\"\u003d\"Winter Sunshine\"]`"
+			},
+			{
+				"property": "dvalue",
+				"siid": 3,
+				"piid": 69,
+				"friendlyName": "Delayed Turn-off",
+				"channel": "dv",
+				"type": "Number:Time",
+				"unit": "seconds",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 21600,
+					"step": 1,
+					"pattern": "%.0f %unit%"
+				},
+				"category": "time",
+				"tags": [
+					"Setpoint",
+					"Duration"
+				]
+			},
+			{
+				"property": "sleep-duration",
+				"siid": 3,
+				"piid": 1,
+				"friendlyName": "Sleep Mode Duration",
+				"channel": "sleepDuration",
+				"type": "Number:Time",
+				"unit": "minutes",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"stateDescription": {
+					"minimum": 5,
+					"maximum": 120,
+					"step": 1,
+					"pattern": "%.0f %unit%"
+				},
+				"category": "time",
+				"tags": [
+					"Setpoint",
+					"Duration"
+				],
+				"readmeComment": "In sleep mode the brightness decreases progressively until the light turns off after this time."
+			},
+			{
+				"property": "sleep-dvalue",
+				"siid": 3,
+				"piid": 77,
+				"friendlyName": "Sleep Mode Remaining Time",
+				"channel": "sleepRemainTime",
+				"type": "Number:Time",
+				"unit": "minutes",
+				"refresh": true,
+				"actions": [],
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 120,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"category": "time",
+				"tags": [
+					"Status",
+					"Duration"
+				]
+			},
+			{
+				"property": "sleep-startbri",
+				"siid": 3,
+				"piid": 75,
+				"friendlyName": "Sleep Mode Starting Brightness",
+				"channel": "sleepStartBrightness",
+				"type": "Number:Dimensionless",
+				"unit": "percentage",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"stateDescription": {
+					"minimum": 1,
+					"maximum": 100,
+					"step": 1,
+					"pattern": "%.0f %unit%"
+				},
+				"category": "light",
+				"tags": [
+					"Setpoint"
+				]
+			},
+			{
+				"property": "sleep-volume",
+				"siid": 3,
+				"piid": 74,
+				"friendlyName": "Sleep Mode Volume",
+				"channel": "sleepVolume",
+				"type": "Dimmer",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "soundvolume",
+				"tags": [
+					"Control",
+					"SoundVolume"
+				]
+			},
+			{
+				"property": "scene-volume",
+				"siid": 3,
+				"piid": 76,
+				"friendlyName": "Scene Mode Volume",
+				"channel": "sceneVolume",
+				"type": "Dimmer",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "soundvolume",
+				"tags": [
+					"Control",
+					"SoundVolume"
+				]
+			},
+			{
+				"property": "night-en",
+				"siid": 3,
+				"piid": 22,
+				"friendlyName": "Night Light Mode",
+				"channel": "nightLight",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch",
+					"Enabled"
+				],
+				"readmeComment": "The lamp switches to night light mode (2200 K, 1%) when turned on between the start and end time."
+			},
+			{
+				"property": "nl-hour-s",
+				"siid": 3,
+				"piid": 32,
+				"friendlyName": "Night Light Start Hour",
+				"channel": "nightStartHour",
+				"type": "Number",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 23,
+					"step": 1,
+					"pattern": "%.0f"
+				},
+				"category": "time",
+				"tags": [
+					"Setpoint"
+				]
+			},
+			{
+				"property": "nl-minute-s",
+				"siid": 3,
+				"piid": 36,
+				"friendlyName": "Night Light Start Minute",
+				"channel": "nightStartMinute",
+				"type": "Number",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 59,
+					"step": 1,
+					"pattern": "%.0f"
+				},
+				"category": "time",
+				"tags": [
+					"Setpoint"
+				]
+			},
+			{
+				"property": "nl-hour-e",
+				"siid": 3,
+				"piid": 33,
+				"friendlyName": "Night Light End Hour",
+				"channel": "nightEndHour",
+				"type": "Number",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 23,
+					"step": 1,
+					"pattern": "%.0f"
+				},
+				"category": "time",
+				"tags": [
+					"Setpoint"
+				]
+			},
+			{
+				"property": "nl-minute-e",
+				"siid": 3,
+				"piid": 35,
+				"friendlyName": "Night Light End Minute",
+				"channel": "nightEndMinute",
+				"type": "Number",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 59,
+					"step": 1,
+					"pattern": "%.0f"
+				},
+				"category": "time",
+				"tags": [
+					"Setpoint"
+				]
+			},
+			{
+				"property": "awake-enable-first",
+				"siid": 3,
+				"piid": 83,
+				"friendlyName": "Wake-up Alarm 1",
+				"channel": "wakeupAlarm1",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch",
+					"Enabled"
+				],
+				"readmeComment": "The alarms themselves are set in the Mi Home app."
+			},
+			{
+				"property": "awake-enable-second",
+				"siid": 3,
+				"piid": 84,
+				"friendlyName": "Wake-up Alarm 2",
+				"channel": "wakeupAlarm2",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch",
+					"Enabled"
+				]
+			},
+			{
+				"property": "awake-enable-third",
+				"siid": 3,
+				"piid": 85,
+				"friendlyName": "Wake-up Alarm 3",
+				"channel": "wakeupAlarm3",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch",
+					"Enabled"
+				]
+			},
+			{
+				"property": "sleep-state",
+				"siid": 3,
+				"piid": 61,
+				"friendlyName": "Sleep State",
+				"channel": "sleepState",
+				"type": "Number",
+				"refresh": true,
+				"actions": [],
+				"stateDescription": {
+					"minimum": -1,
+					"maximum": 1,
+					"step": 1,
+					"pattern": "%.0f",
+					"options": [
+						{
+							"value": "-1",
+							"label": "Sleep Break"
+						},
+						{
+							"value": "0",
+							"label": "Sleep End"
+						},
+						{
+							"value": "1",
+							"label": "Sleep Start"
+						}
+					],
+					"readOnly": true
+				},
+				"category": "bedroom",
+				"tags": [
+					"Status"
+				],
+				"readmeComment": "Value mapping `[\"-1\"\u003d\"Sleep Break\",\"0\"\u003d\"Sleep End\",\"1\"\u003d\"Sleep Start\"]`"
+			},
+			{
+				"property": "wakeup-state",
+				"siid": 3,
+				"piid": 92,
+				"friendlyName": "Wake-up State",
+				"channel": "wakeupState",
+				"type": "Number",
+				"refresh": true,
+				"actions": [],
+				"stateDescription": {
+					"minimum": -1,
+					"maximum": 1,
+					"step": 1,
+					"pattern": "%.0f",
+					"options": [
+						{
+							"value": "-1",
+							"label": "Wake-up Break"
+						},
+						{
+							"value": "0",
+							"label": "Wake-up End"
+						},
+						{
+							"value": "1",
+							"label": "Wake-up Start"
+						}
+					],
+					"readOnly": true
+				},
+				"category": "bedroom",
+				"tags": [
+					"Status"
+				],
+				"readmeComment": "Value mapping `[\"-1\"\u003d\"Wake-up Break\",\"0\"\u003d\"Wake-up End\",\"1\"\u003d\"Wake-up Start\"]`"
+			},
+			{
+				"property": "",
+				"friendlyName": "Actions",
+				"channel": "actions",
+				"type": "String",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "light-toggle",
+							"label": "Light Toggle"
+						},
+						{
+							"value": "brightness-up",
+							"label": "Brightness Up"
+						},
+						{
+							"value": "brightness-down",
+							"label": "Brightness Down"
+						},
+						{
+							"value": "cct-up",
+							"label": "Color Temperature Up"
+						},
+						{
+							"value": "cct-down",
+							"label": "Color Temperature Down"
+						}
+					]
+				},
+				"refresh": false,
+				"actions": [
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 2,
+						"aiid": 5,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "light-toggle"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 3,
+						"aiid": 14,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "brightness-up"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 3,
+						"aiid": 15,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "brightness-down"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 3,
+						"aiid": 16,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "cct-up"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 3,
+						"aiid": 17,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "cct-down"
+								}
+							]
+						}
+					}
+				],
+				"category": "light",
+				"tags": [
+					"Control",
+					"Light"
+				],
+				"readmeComment": "Value mapping `[\"light-toggle\"\u003d\"Light Toggle\",\"brightness-up\"\u003d\"Brightness Up\",\"brightness-down\"\u003d\"Brightness Down\",\"cct-up\"\u003d\"Color Temperature Up\",\"cct-down\"\u003d\"Color Temperature Down\"]`"
+			}
+		],
+		"experimental": true
+	}
+}

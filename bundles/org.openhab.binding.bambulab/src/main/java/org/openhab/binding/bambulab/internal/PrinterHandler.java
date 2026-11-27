@@ -27,7 +27,6 @@ import static org.openhab.binding.bambulab.internal.BambuLabBindingConstants.Ams
 import static org.openhab.binding.bambulab.internal.BambuLabBindingConstants.PrinterChannel.*;
 import static org.openhab.binding.bambulab.internal.PrinterConfiguration.CLOUD_MODE_HOSTNAME;
 import static org.openhab.binding.bambulab.internal.StateParserHelper.*;
-import static org.openhab.core.thing.ThingStatus.OFFLINE;
 import static org.openhab.core.thing.ThingStatus.ONLINE;
 import static org.openhab.core.thing.ThingStatus.UNKNOWN;
 import static org.openhab.core.thing.ThingStatusDetail.*;
@@ -58,7 +57,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.openhab.binding.bambulab.internal.BambuLabBindingConstants.PrinterChannel;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.StringType;
@@ -177,7 +176,7 @@ public class PrinterHandler extends BaseBridgeHandler
         try {
             internalInitialize();
         } catch (InitializationException e) {
-            updateStatus(OFFLINE, e.getThingStatusDetail(), e.getDescription());
+            updateStatus(e.getThingStatusDetail(), e.getDescription());
         }
     }
 
@@ -226,11 +225,9 @@ public class PrinterHandler extends BaseBridgeHandler
             }
             var duration = between(now.toInstant(UTC), parse.toInstant(UTC));
             try {
-                validateAccessCodeSchedule = scheduler
-                        .schedule(
-                                () -> updateStatus(OFFLINE, CONFIGURATION_ERROR,
-                                        "@text/printer.handler.init.accessCodeExpired"),
-                                duration.getSeconds(), SECONDS);
+                validateAccessCodeSchedule = scheduler.schedule(
+                        () -> updateStatus(CONFIGURATION_ERROR, "@text/printer.handler.init.accessCodeExpired"),
+                        duration.getSeconds(), SECONDS);
             } catch (RejectedExecutionException ex) {
                 logger.debug("Task was rejected", ex);
                 throw new InitializationException(CONFIGURATION_ERROR, ex);
@@ -249,7 +246,7 @@ public class PrinterHandler extends BaseBridgeHandler
             // update to online done in `connectComplete`
         } catch (Exception e) {
             logger.debug("Cannot connect to MQTT client", e);
-            updateStatus(OFFLINE, COMMUNICATION_ERROR, e.getLocalizedMessage());
+            updateStatus(COMMUNICATION_ERROR, e.getLocalizedMessage());
             reconnect(config);
         }
     }
@@ -268,7 +265,7 @@ public class PrinterHandler extends BaseBridgeHandler
         logger.debug("Connection lost. Restarting thing", throwable);
         var message = throwable != null ? throwable.getLocalizedMessage() : "<no message" + INTERNAL_COMMAND_PREFIX;
         var description = "@text/printer.handler.init.connectionLost [\"%s\"]".formatted(message);
-        updateStatus(OFFLINE, COMMUNICATION_ERROR, description);
+        updateStatus(COMMUNICATION_ERROR, description);
         reconnect(null);
     }
 
@@ -287,16 +284,20 @@ public class PrinterHandler extends BaseBridgeHandler
         logger.debug("Will reconnect in {} seconds...", configNotNull.reconnectTime);
         try {
             reconnectSchedule.set(//
-                    scheduler.schedule(() -> {
-                        logger.debug("Reconnecting...");
-                        reconnectSchedule.set(null);
-                        dispose();
-                        initialize();
-                    }, configNotNull.reconnectTime, SECONDS));
+                    scheduler.schedule(this::reconnectNow, configNotNull.reconnectTime, SECONDS));
         } catch (RejectedExecutionException ex) {
             logger.debug("Task was rejected", ex);
-            updateStatus(OFFLINE, COMMUNICATION_ERROR, ex.getLocalizedMessage());
+            updateStatus(COMMUNICATION_ERROR, ex.getLocalizedMessage());
         }
+    }
+
+    void reconnectNow() {
+        logger.debug("Reconnecting...");
+        reconnectSchedule.set(null);
+        // not dispose(): the AMS things stay ONLINE through a reconnect, so childHandlerInitialized() is not
+        // called again and a cleared list would never be filled - their channels would stop updating
+        disconnect();
+        initialize();
     }
 
     private PrinterClient buildLocalClient(URI uri, PrinterConfiguration config) throws InitializationException {
@@ -316,10 +317,17 @@ public class PrinterHandler extends BaseBridgeHandler
 
     @Override
     public void dispose() {
+        disconnect();
+        amses.clear();
+    }
+
+    /**
+     * Everything {@link #dispose()} does except forgetting the AMS handlers, which a reconnect must keep.
+     */
+    private void disconnect() {
         try {
             latestPrinterState.set(null);
             printerWatcher.close();
-            amses.clear();
             closeConfig();
             closeReconnectSchedule();
             closeCamera();
@@ -544,7 +552,7 @@ public class PrinterHandler extends BaseBridgeHandler
         try {
             localClient.getChannel().sendCommand(command);
         } catch (Exception e) {
-            updateStatus(OFFLINE, COMMUNICATION_ERROR, e.getLocalizedMessage());
+            updateStatus(COMMUNICATION_ERROR, e.getLocalizedMessage());
         }
     }
 
@@ -553,8 +561,8 @@ public class PrinterHandler extends BaseBridgeHandler
     }
 
     @Override
-    public void updateStatus(ThingStatus status, ThingStatusDetail statusDetail, @Nullable String description) {
-        super.updateStatus(status, statusDetail, description);
+    public void updateStatus(ThingStatusDetail statusDetail, @Nullable String description) {
+        super.updateStatus(statusDetail, description);
     }
 
     @Override
@@ -623,7 +631,7 @@ public class PrinterHandler extends BaseBridgeHandler
         var request = httpClient.POST(LOGIN_URL);
         request.timeout(3, SECONDS);
         request.accept("application/json");
-        request.content(new StringContentProvider("application/json",
+        request.body(new StringRequestContent("application/json",
                 jsonMapper.toJson(new BambuPasswordRequest(username, password)), UTF_8));
         try {
             var response = request.send();
@@ -653,7 +661,7 @@ public class PrinterHandler extends BaseBridgeHandler
         var request = httpClient.POST(LOGIN_URL);
         request.timeout(3, SECONDS);
         request.accept("application/json");
-        request.content(new StringContentProvider("application/json",
+        request.body(new StringRequestContent("application/json",
                 jsonMapper.toJson(new BambuCodeRequest(username, code)), UTF_8));
         try {
             var response = request.send();

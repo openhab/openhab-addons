@@ -121,11 +121,19 @@ public class HueLightHandler extends BaseThingHandler implements HueLightActions
     public void initialize() {
         logger.debug("Initializing Hue light handler.");
         Bridge bridge = getBridge();
-        initializeThing((bridge == null) ? null : bridge.getStatus());
+        if (bridge == null) {
+            logger.debug("Bridge unavailable while initializing Thing: {}", thing.getUID());
+            return;
+        }
+        initializeThing(bridge.getStatus());
     }
 
     @Override
     public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
+        if (getBridge() == null) {
+            logger.debug("Bridge unavailable for Thing: {}", thing.getUID());
+            return;
+        }
         logger.debug("bridgeStatusChanged {}", bridgeStatusInfo);
         initializeThing(bridgeStatusInfo.getStatus());
     }
@@ -149,14 +157,13 @@ public class HueLightHandler extends BaseThingHandler implements HueLightActions
                     initializeCapabilities(fullLight);
                     updateStatus(ThingStatus.ONLINE);
                 } else {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+                    updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
                 }
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
+                updateStatus(ThingStatus.UNKNOWN);
             }
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.conf-error-no-light-id");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.conf-error-no-light-id");
         }
     }
 
@@ -252,8 +259,7 @@ public class HueLightHandler extends BaseThingHandler implements HueLightActions
         final FullLight light = lastFullLight == null ? bridgeHandler.getLightById(lightId) : lastFullLight;
         if (light == null) {
             logger.debug("Hue light not known on bridge. Cannot handle command.");
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.conf-error-wrong-light-id");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.conf-error-wrong-light-id");
             return;
         }
 
@@ -528,7 +534,7 @@ public class HueLightHandler extends BaseThingHandler implements HueLightActions
         } else {
             // we assume OFFLINE without any error (NONE), as this is an
             // expected state (when bulb powered off)
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "@text/offline.light-not-reachable");
+            updateStatus(ThingStatus.OFFLINE, "@text/offline.light-not-reachable");
         }
 
         logger.debug("onLightStateChanged Light {}: on {} bri {} hue {} sat {} temp {} mode {} XY {}",
@@ -573,12 +579,12 @@ public class HueLightHandler extends BaseThingHandler implements HueLightActions
 
     @Override
     public void onLightRemoved() {
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "@text/offline.light-removed");
+        updateStatus(ThingStatus.OFFLINE, "@text/offline.light-removed");
     }
 
     @Override
     public void onLightGone() {
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.GONE, "@text/offline.light-not-reachable");
+        updateStatus(ThingStatusDetail.GONE, "@text/offline.light-not-reachable");
     }
 
     @Override

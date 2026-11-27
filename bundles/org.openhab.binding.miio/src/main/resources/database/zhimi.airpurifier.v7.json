@@ -7,7 +7,7 @@
 			{
 				"property": "power",
 				"friendlyName": "Power",
-				"channel": "power",
+				"channel": "on",
 				"type": "Switch",
 				"refresh": true,
 				"actions": [
@@ -26,26 +26,107 @@
 				"friendlyName": "Mode",
 				"channel": "mode",
 				"type": "String",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "auto",
+							"label": "Auto"
+						},
+						{
+							"value": "silent",
+							"label": "Night"
+						},
+						{
+							"value": "favorite",
+							"label": "Manual"
+						}
+					]
+				},
 				"refresh": true,
-				"ChannelGroup": "actions",
 				"actions": [
 					{
 						"command": "set_mode",
 						"parameterType": "STRING"
 					}
 				],
+				"category": "fan",
 				"tags": [
-					"Control"
+					"Control",
+					"Mode"
+				],
+				"readmeComment": "Value mapping `[\"auto\"\u003d\"Auto\",\"silent\"\u003d\"Night\",\"favorite\"\u003d\"Manual\"]`"
+			},
+			{
+				"property": "favorite_level",
+				"friendlyName": "Favorite Mode Level",
+				"channel": "favorite_level",
+				"type": "Number",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 16,
+					"step": 1,
+					"pattern": "%.0f"
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_level_favorite",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "fan",
+				"tags": [
+					"Control",
+					"Level"
+				],
+				"readmeComment": "Fan level in Manual mode."
+			},
+			{
+				"property": "aqi",
+				"friendlyName": "PM2.5 Density",
+				"channel": "pm2_5_density",
+				"type": "Number:Density",
+				"unit": "μg/m3",
+				"stateDescription": {
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "smoke",
+				"tags": [
+					"Measurement",
+					"ParticulateMatter"
+				]
+			},
+			{
+				"property": "average_aqi",
+				"friendlyName": "Average AQI",
+				"channel": "average_aqi",
+				"type": "Number",
+				"stateDescription": {
+					"pattern": "%.0f",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "smoke",
+				"tags": [
+					"Measurement",
+					"AQI"
 				]
 			},
 			{
 				"property": "humidity",
-				"friendlyName": "Humidity",
-				"channel": "humidity",
+				"friendlyName": "Relative Humidity",
+				"channel": "relative_humidity",
 				"type": "Number:Dimensionless",
-				"unit": "PERCENT",
+				"unit": "percentage",
+				"stateDescription": {
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
 				"refresh": true,
-				"ChannelGroup": "Status",
 				"actions": [],
 				"category": "humidity",
 				"tags": [
@@ -54,150 +135,17 @@
 				]
 			},
 			{
-				"property": "aqi",
-				"friendlyName": "Air Quality Index",
-				"channel": "aqi",
-				"type": "Number",
-				"refresh": true,
-				"ChannelGroup": "Status",
-				"actions": [],
-				"tags": [
-					"Measurement"
-				]
-			},
-			{
-				"property": "average_aqi",
-				"friendlyName": "Average Air Quality Index",
-				"channel": "averageaqi",
-				"type": "Number",
-				"refresh": true,
-				"ChannelGroup": "Status",
-				"actions": [],
-				"tags": [
-					"Measurement"
-				]
-			},
-			{
-				"property": "volume",
-				"friendlyName": "Volume",
-				"channel": "volume",
-				"type": "Number",
-				"refresh": true,
-				"ChannelGroup": "Status",
-				"actions": []
-			},
-			{
-				"property": "led",
-				"friendlyName": "LED Status",
-				"channel": "led",
-				"type": "Switch",
-				"refresh": true,
-				"ChannelGroup": "actions",
-				"actions": [
-					{
-						"command": "set_led",
-						"parameterType": "ONOFF"
-					}
-				]
-			},
-			{
-				"property": "bright",
-				"friendlyName": "Illuminance",
-				"channel": "illuminance",
-				"type": "Number",
-				"refresh": true,
-				"ChannelGroup": "actions",
-				"actions": [],
-				"category": "light",
-				"tags": [
-					"Control",
-					"Light"
-				]
-			},
-			{
-				"property": "f1_hour",
-				"friendlyName": "Filter Max Life",
-				"channel": "filtermaxlife",
-				"type": "Number",
-				"refresh": true,
-				"ChannelGroup": "Status",
-				"actions": []
-			},
-			{
-				"property": "f1_hour_used",
-				"friendlyName": "Filter Hours used",
-				"channel": "filterhours",
-				"type": "Number:Time",
-				"unit": "hours",
-				"stateDescription": {
-					"pattern": "%.0f %unit%"
-				},
-				"refresh": true,
-				"transformation": "SecondsToHours",
-				"ChannelGroup": "Status",
-				"actions": [],
-				"category": "time"
-			},
-			{
-				"property": "motor1_speed",
-				"friendlyName": "Motor Speed",
-				"channel": "motorspeed",
-				"type": "Number",
-				"stateDescription": {
-					"pattern": "%.0f rpm"
-				},
-				"refresh": true,
-				"ChannelGroup": "Status",
-				"actions": []
-			},
-			{
-				"property": "motor2_speed",
-				"friendlyName": "Motor Speed 2",
-				"channel": "motorspeed2",
-				"type": "Number",
-				"refresh": true,
-				"ChannelGroup": "Status",
-				"actions": []
-			},
-			{
-				"property": "filter1_life",
-				"friendlyName": "Filter Life",
-				"channel": "filterlife",
-				"type": "Number",
-				"refresh": true,
-				"ChannelGroup": "Status",
-				"actions": []
-			},
-			{
-				"property": "favorite_level",
-				"friendlyName": "Favorite Level",
-				"channel": "favoritelevel",
-				"type": "Number",
-				"stateDescription": {
-					"pattern": "%.0f"
-				},
-				"refresh": true,
-				"ChannelGroup": "Status",
-				"actions": [
-					{
-						"command": "set_level_favorite",
-						"parameterType": "NUMBER"
-					}
-				]
-			},
-			{
 				"property": "temp_dec",
 				"friendlyName": "Temperature",
 				"channel": "temperature",
 				"type": "Number:Temperature",
-				"unit": "CELSIUS",
+				"unit": "celsius",
 				"stateDescription": {
 					"pattern": "%.1f %unit%",
 					"readOnly": true
 				},
 				"refresh": true,
 				"transformation": "/10",
-				"ChannelGroup": "Status",
 				"actions": [],
 				"category": "temperature",
 				"tags": [
@@ -206,19 +154,180 @@
 				]
 			},
 			{
-				"property": "child_lock",
-				"friendlyName": "Child Lock",
-				"channel": "childlock",
+				"property": "filter1_life",
+				"friendlyName": "Filter Life Level",
+				"channel": "filter_life_level",
+				"type": "Number:Dimensionless",
+				"unit": "percentage",
+				"stateDescription": {
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "status",
+				"tags": [
+					"Measurement",
+					"Level"
+				]
+			},
+			{
+				"property": "f1_hour",
+				"friendlyName": "Filter Maximum Life",
+				"channel": "filter_max_time",
+				"type": "Number:Time",
+				"unit": "hours",
+				"stateDescription": {
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "time",
+				"tags": [
+					"Measurement",
+					"Duration"
+				]
+			},
+			{
+				"property": "f1_hour_used",
+				"friendlyName": "Filter Used Time",
+				"channel": "filter_used_time",
+				"type": "Number:Time",
+				"unit": "hours",
+				"stateDescription": {
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "time",
+				"tags": [
+					"Measurement",
+					"Duration"
+				]
+			},
+			{
+				"property": "motor1_speed",
+				"friendlyName": "Motor Speed",
+				"channel": "motor_speed_rpm",
+				"type": "Number",
+				"stateDescription": {
+					"pattern": "%.0f",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "fan",
+				"tags": [
+					"Measurement",
+					"Speed"
+				]
+			},
+			{
+				"property": "motor2_speed",
+				"friendlyName": "Motor 2 Speed",
+				"channel": "motor2_speed_rpm",
+				"type": "Number",
+				"stateDescription": {
+					"pattern": "%.0f",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "fan",
+				"tags": [
+					"Measurement",
+					"Speed"
+				]
+			},
+			{
+				"property": "bright",
+				"friendlyName": "Illuminance",
+				"channel": "illuminance",
+				"type": "Number:Illuminance",
+				"unit": "lux",
+				"stateDescription": {
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "light",
+				"tags": [
+					"Measurement",
+					"Light"
+				]
+			},
+			{
+				"property": "led",
+				"friendlyName": "Indicator Light",
+				"channel": "led",
 				"type": "Switch",
 				"refresh": true,
-				"ChannelGroup": "Status",
+				"actions": [
+					{
+						"command": "set_led",
+						"parameterType": "ONOFF"
+					}
+				],
+				"category": "light",
+				"tags": [
+					"Switch",
+					"Light"
+				]
+			},
+			{
+				"property": "volume",
+				"friendlyName": "Notification Sound",
+				"channel": "alarm",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_volume",
+						"parameterType": "NUMBER",
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "ON",
+									"returnValue": 100
+								},
+								{
+									"matchValue": "OFF",
+									"returnValue": 0
+								}
+							]
+						}
+					}
+				],
+				"category": "soundvolume",
+				"tags": [
+					"Switch",
+					"Enabled"
+				],
+				"readmeComment": "Sets the volume to 100 (on) or 0 (off), as the app does."
+			},
+			{
+				"property": "child_lock",
+				"friendlyName": "Child Lock",
+				"channel": "physical_controls_locked",
+				"type": "Switch",
+				"refresh": true,
 				"actions": [
 					{
 						"command": "set_child_lock",
 						"parameterType": "ONOFF"
 					}
+				],
+				"category": "lock",
+				"tags": [
+					"Switch",
+					"Enabled"
 				]
 			}
-		]
+		],
+		"experimental": false
 	}
 }

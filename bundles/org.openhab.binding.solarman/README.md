@@ -58,6 +58,7 @@ Possible values:
 | kstar_hybrid       | KSTAR Hybrid inverters                             |                                                                  |
 | sofar_wifikit      | SOFAR WiFi Kit                                     |                                                                  |
 | zcs_azzurro-ktl-v3 | ZCS Azzurro KTL-V3 inverters                       | ZCS Azzurro 3.3/4.4/5.5/6.6 KTL-V3 (rebranded Sofar KTLX-G3)     |
+| sunwoda_hybrid     | SUNWODA Hybrid Three-Phase inverters               | e.g. SW10KH3UT with LSW-5 stick                                  |
 
 The `additionalRequests` allows the user to specify additional address ranges to be polled. The format of the value is `mb_functioncode1:start1-end1, mb_functioncode2:start2-end2,...`
 For example `"0x03:0x27D-0x27E"` will issue an additional read for Holding Registers between `0x27D` and `0x27E`.
@@ -77,8 +78,11 @@ If you have one of those inverters and it works, please drop me a message, if it
 ## Channels
 
 The list of channels is not static, it is generated dynamically based on the inverter type selected.
+The default channels on a Thing come from the configured `inverterType` definition; custom channels can also be added.
+The tables below cover `deye_sg04lp3` and `deye_2mppt`; for other inverter types, see the [inverter definitions](https://github.com/openhab/openhab-addons/tree/main/bundles/org.openhab.binding.solarman/src/main/resources/definitions).
+Channel IDs are based on the definition's group and item names; for example, `Inverter` and `Total AC Output Power (Active)` become `inverter-total-ac-output-power--active-`.
 
-This is the list you get for the `deye_sg04lp3` inverter type:
+### `deye_sg04lp3` channels
 
 | Channel                                  | Type   | Read/Write | Description                                                                                                                              |
 |------------------------------------------|--------|------------|------------------------------------------------------------------------------------------------------------------------------------------|
@@ -167,6 +171,51 @@ This is the list you get for the `deye_sg04lp3` inverter type:
 | tou-charge-enable-4                      | String | R/W        | Time Of Use Charge Enable 4 \[0x00AF\] (one of `Charge disabled`, `Grid charge`, `Generator charge` or `Grid charge + Generator charge`) |
 | tou-charge-enable-5                      | String | R/W        | Time Of Use Charge Enable 5 \[0x00B0\] (one of `Charge disabled`, `Grid charge`, `Generator charge` or `Grid charge + Generator charge`) |
 | tou-charge-enable-6                      | String | R/W        | Time Of Use Charge Enable 6 \[0x00B1\] (one of `Charge disabled`, `Grid charge`, `Generator charge` or `Grid charge + Generator charge`) |
+
+### `deye_2mppt` channels
+
+The `deye_2mppt` definition provides the following read-only channels.
+For example, use `inverter-total-ac-output-power--active-` for AC output power; `grid-total-grid-power` is available only with inverter types whose definitions include it.
+
+| Channel                                              | Type   | Description                                     |
+|------------------------------------------------------|--------|-------------------------------------------------|
+| solar-pv1-voltage                                    | Number | PV1 Voltage                                     |
+| solar-pv2-voltage                                    | Number | PV2 Voltage                                     |
+| solar-pv1-current                                    | Number | PV1 Current                                     |
+| solar-pv2-current                                    | Number | PV2 Current                                     |
+| solar-daily-production                               | Number | Daily Production                                |
+| solar-daily-production-1                             | Number | Daily Production 1                              |
+| solar-daily-production-2                             | Number | Daily Production 2                              |
+| solar-total-production                               | Number | Total Production                                |
+| solar-total-production-1                             | Number | Total Production 1                              |
+| solar-total-production-2                             | Number | Total Production 2                              |
+| solar-active-power-regulations                       | Number | Active Power Regulations                        |
+| grid-ac-voltage                                      | Number | AC Voltage                                      |
+| grid-grid-current                                    | Number | Grid Current                                    |
+| grid-ac-output-frequency                             | Number | AC Output Frequency                             |
+| grid-grid-voltage-upp-limit                          | Number | Grid Voltage Upp Limit                          |
+| grid-grid-voltage-lower-limit                        | Number | Grid Voltage Lower Limit                        |
+| grid-grid-frequency-upper-limit                      | Number | Grid Frequency Upper Limit                      |
+| grid-grid-frequency-lower-limit                      | Number | Grid Frequency Lower Limit                      |
+| grid-overfrequency-and-load-reduction-starting-point | Number | Overfrequency And Load Reduction Starting Point |
+| grid-overfrequency-and-load-reduction-percentage     | Number | Overfrequency And Load Reduction Percentage     |
+| grid-on-off-enable                                   | String | ON-OFF Enable                                   |
+| grid-island-protection-enable                        | String | Island Protection Enable                        |
+| grid-overfrequency-load-shedding-enable              | String | Overfrequency&Load-shedding Enable              |
+| inverter-running-status                              | String | Running Status                                  |
+| inverter-total-ac-output-power--active-              | Number | Total AC Output Power (Active)                  |
+| inverter-radiator-temperature                        | Number | Radiator Temperature                            |
+| inverter-inverter-id                                 | String | Inverter ID                                     |
+| inverter-hardware-version                            | String | Hardware Version                                |
+| inverter-dc-master-firmware-version                  | String | DC Master Firmware Version                      |
+| inverter-ac-version--number                          | String | AC Version. Number                              |
+| inverter-rated-power                                 | Number | Rated Power                                     |
+| inverter-communication-protocol-version              | String | Communication Protocol Version                  |
+| inverter-start-up-self-checking-time                 | Number | Start-up Self-checking Time                     |
+| inverter-update-time                                 | String | Update Time                                     |
+| inverter-soft-start-enable                           | String | Soft Start Enable                               |
+| inverter-power-factor-regulation                     | Number | Power Factor Regulation                         |
+| inverter-restore-factory-settings                    | String | Restore Factory Settings                        |
 
 ## Writable Channels
 

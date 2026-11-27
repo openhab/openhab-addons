@@ -278,9 +278,11 @@ public class ColorControlCluster extends BaseCluster {
     public Integer enhancedCurrentHue; // 16384 uint16 R V
     /**
      * Indicates which attributes are currently determining the color of the device.
-     * To provide compatibility with clients not supporting EHUE, the original ColorMode attribute shall indicate
-     * CurrentHue and CurrentSaturation when the light uses the EnhancedCurrentHue attribute. If the ColorMode attribute
-     * is changed, its new value shall be copied to the EnhancedColorMode attribute.
+     * To provide compatibility with clients not supporting EHUE, the ColorMode attribute shall indicate
+     * CurrentHueAndCurrentSaturation when the EnhancedCurrentHue attribute indicates
+     * EnhancedCurrentHueAndCurrentSaturation. For other values of the EnhancedCurrentHue attribute, the value of the
+     * ColorMode attribute shall be the same as the value of the EnhancedCurrentHue attribute. If the ColorMode
+     * attribute is changed, its new value shall be copied to the EnhancedColorMode attribute.
      */
     public EnhancedColorModeEnum enhancedColorMode; // 16385 EnhancedColorModeEnum R V
     /**
@@ -689,7 +691,7 @@ public class ColorControlCluster extends BaseCluster {
 
     // commands
     /**
-     * This command will move the device to the requested hue value using a transition.
+     * This command will move the device to the requested hue using a transition.
      */
     public static ClusterCommand moveToHue(Integer hue, DirectionEnum direction, Integer transitionTime,
             OptionsBitmap optionsMask, OptionsBitmap optionsOverride) {
@@ -713,7 +715,7 @@ public class ColorControlCluster extends BaseCluster {
     }
 
     /**
-     * This command will move the device to the requested hue value using a step rate.
+     * This command will change the hue of the device with a requested rate.
      */
     public static ClusterCommand moveHue(MoveModeEnum moveMode, Integer rate, OptionsBitmap optionsMask,
             OptionsBitmap optionsOverride) {
@@ -734,7 +736,7 @@ public class ColorControlCluster extends BaseCluster {
     }
 
     /**
-     * This command will change the device to the requested hue value using a step and transition.
+     * This command will change the hue of the device using a step and transition.
      */
     public static ClusterCommand stepHue(StepModeEnum stepMode, Integer stepSize, Integer transitionTime,
             OptionsBitmap optionsMask, OptionsBitmap optionsOverride) {
@@ -758,7 +760,7 @@ public class ColorControlCluster extends BaseCluster {
     }
 
     /**
-     * This command will move the device to the requested saturation value using a transition.
+     * This command will move the device to the requested saturation using a transition.
      */
     public static ClusterCommand moveToSaturation(Integer saturation, Integer transitionTime, OptionsBitmap optionsMask,
             OptionsBitmap optionsOverride) {
@@ -779,7 +781,7 @@ public class ColorControlCluster extends BaseCluster {
     }
 
     /**
-     * This command will move the device to the requested saturation value using a rate.
+     * This command will change the saturation of the device with a requested rate.
      */
     public static ClusterCommand moveSaturation(MoveModeEnum moveMode, Integer rate, OptionsBitmap optionsMask,
             OptionsBitmap optionsOverride) {
@@ -800,7 +802,7 @@ public class ColorControlCluster extends BaseCluster {
     }
 
     /**
-     * This command will change the device to the requested saturation value using a step transition.
+     * This command will change the saturation of the device using a step and transition.
      */
     public static ClusterCommand stepSaturation(StepModeEnum stepMode, Integer stepSize, Integer transitionTime,
             OptionsBitmap optionsMask, OptionsBitmap optionsOverride) {
@@ -824,7 +826,7 @@ public class ColorControlCluster extends BaseCluster {
     }
 
     /**
-     * This command will move the device to the requested hue and saturation value using a transition.
+     * This command will move the device to the requested hue and saturation using a transition.
      */
     public static ClusterCommand moveToHueAndSaturation(Integer hue, Integer saturation, Integer transitionTime,
             OptionsBitmap optionsMask, OptionsBitmap optionsOverride) {
@@ -848,7 +850,7 @@ public class ColorControlCluster extends BaseCluster {
     }
 
     /**
-     * This command will move the device to the requested color value using a transition.
+     * This command will move the device to the requested color using a transition.
      */
     public static ClusterCommand moveToColor(Integer colorX, Integer colorY, Integer transitionTime,
             OptionsBitmap optionsMask, OptionsBitmap optionsOverride) {
@@ -872,7 +874,7 @@ public class ColorControlCluster extends BaseCluster {
     }
 
     /**
-     * This command will move the device to the requested color using a step rate.
+     * This command will change the color of the device with a requested rate.
      */
     public static ClusterCommand moveColor(Integer rateX, Integer rateY, OptionsBitmap optionsMask,
             OptionsBitmap optionsOverride) {
@@ -893,7 +895,7 @@ public class ColorControlCluster extends BaseCluster {
     }
 
     /**
-     * This command will move the device to the requested color using a step transition.
+     * This command will change the color of the device using a step and transition.
      */
     public static ClusterCommand stepColor(Integer stepX, Integer stepY, Integer transitionTime,
             OptionsBitmap optionsMask, OptionsBitmap optionsOverride) {
@@ -917,7 +919,7 @@ public class ColorControlCluster extends BaseCluster {
     }
 
     /**
-     * This command will move the device to the requested color temperate using a transition.
+     * This command will move the device to the requested color temperature using a transition.
      */
     public static ClusterCommand moveToColorTemperature(Integer colorTemperatureMireds, Integer transitionTime,
             OptionsBitmap optionsMask, OptionsBitmap optionsOverride) {
@@ -984,8 +986,7 @@ public class ColorControlCluster extends BaseCluster {
     }
 
     /**
-     * This command allows the light to be moved in a stepped transition from their current hue, resulting in a linear
-     * transition through XY space.
+     * This command allows the device to be moved in a stepped transition from their current hue.
      */
     public static ClusterCommand enhancedStepHue(StepModeEnum stepMode, Integer stepSize, Integer transitionTime,
             OptionsBitmap optionsMask, OptionsBitmap optionsOverride) {

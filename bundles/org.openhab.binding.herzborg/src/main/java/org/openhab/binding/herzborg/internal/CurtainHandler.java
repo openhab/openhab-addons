@@ -15,10 +15,9 @@ package org.openhab.binding.herzborg.internal;
 import static org.openhab.binding.herzborg.internal.HerzborgBindingConstants.*;
 
 import java.io.IOException;
+import java.util.HexFormat;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-
-import javax.xml.bind.DatatypeConverter;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -107,7 +106,7 @@ public class CurtainHandler extends BaseThingHandler {
 
                 if (reply != null) {
                     logger.trace("Function {} addr {} reply {}", p.getFunction(), p.getDataAddress(),
-                            DatatypeConverter.printHexBinary(reply.getBuffer()));
+                            HexFormat.of().withUpperCase().formatHex(reply.getBuffer()));
                 }
             }, 0, TimeUnit.MILLISECONDS);
         }
@@ -130,14 +129,14 @@ public class CurtainHandler extends BaseThingHandler {
         Bridge bridge = getBridge();
 
         if (bridge == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR, "Bridge not present");
+            logger.debug("Bridge unavailable while initializing Thing: {}", thing.getUID());
             return;
         }
 
         BridgeHandler handler = bridge.getHandler();
 
         if (handler == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR, "Bridge has no handler");
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE, "Bridge has no handler");
             return;
         }
 
@@ -176,7 +175,7 @@ public class CurtainHandler extends BaseThingHandler {
             Packet reply = bus.doPacket(pkt);
 
             if (reply == null) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+                updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
                 return null;
             }
 
@@ -184,13 +183,13 @@ public class CurtainHandler extends BaseThingHandler {
                 updateStatus(ThingStatus.ONLINE);
                 return reply;
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "Invalid response received: " + DatatypeConverter.printHexBinary(reply.getBuffer()));
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
+                        "Invalid response received: " + HexFormat.of().withUpperCase().formatHex(reply.getBuffer()));
                 bus.flush();
             }
 
         } catch (IOException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
 
         return null;

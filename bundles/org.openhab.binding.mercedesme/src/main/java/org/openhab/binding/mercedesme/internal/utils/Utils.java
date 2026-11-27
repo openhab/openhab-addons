@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.regex.Pattern;
 
 import javax.measure.Unit;
 
@@ -51,7 +52,6 @@ import com.daimler.mbcarkit.proto.VehicleEvents;
 import com.daimler.mbcarkit.proto.VehicleEvents.ChargeProgramParameters;
 import com.daimler.mbcarkit.proto.VehicleEvents.ChargeProgramsValue;
 import com.daimler.mbcarkit.proto.VehicleEvents.TemperaturePointsValue;
-import com.daimler.mbcarkit.proto.VehicleEvents.VEPUpdate;
 import com.daimler.mbcarkit.proto.VehicleEvents.VVRTimeProfile;
 import com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus;
 import com.daimler.mbcarkit.proto.VehicleEvents.WeeklyProfileValue;
@@ -64,6 +64,7 @@ import com.google.protobuf.Descriptors.FieldDescriptor;
  * {@link Utils} provides several helper functions used from different classes
  *
  * @author Bernd Weymann - Initial contribution
+ * @author Bernd Weymann - Added VIN masking for log output
  */
 @NonNullByDefault
 public class Utils {
@@ -71,6 +72,10 @@ public class Utils {
     private static final List<CommandOption> FAHRENHEIT_COMMAND_OPTIONS = new ArrayList<>();
     private static final List<CommandOption> CELSIUS_COMMAND_OPTIONS = new ArrayList<>();
     private static final int R = 6371; // Radius of the earth
+    // number of trailing characters of a VIN which remain visible in log output
+    private static final int VIN_VISIBLE_CHARS = 4;
+    // VIN with 17 characters, letters I, O and Q are not used - needed to mask VINs embedded in texts like URLs
+    private static final Pattern VIN_PATTERN = Pattern.compile("[A-HJ-NPR-Z0-9]{17}", Pattern.CASE_INSENSITIVE);
 
     public static TimeZoneProvider timeZoneProvider = new TimeZoneProvider() {
         @Override
@@ -94,6 +99,31 @@ public class Utils {
         localeProvider = lp;
         INVALID_TOKEN.setAccessToken(Constants.NOT_SET);
         INVALID_TOKEN.setRefreshToken(Constants.NOT_SET);
+    }
+
+    /**
+     * Masks a VIN for log output: only the last 4 characters remain visible, all characters before are replaced by
+     * stars. VINs shorter than 4 characters are returned unchanged.
+     *
+     * @param vin vehicle identification number
+     * @return masked VIN, safe to be logged
+     */
+    public static String maskVin(String vin) {
+        if (vin.length() <= VIN_VISIBLE_CHARS) {
+            return vin;
+        }
+        return "*".repeat(vin.length() - VIN_VISIBLE_CHARS) + vin.substring(vin.length() - VIN_VISIBLE_CHARS);
+    }
+
+    /**
+     * Masks all VINs inside the given text. Needed for texts which embed a VIN without knowing it as a value, e.g.
+     * request paths, URLs, exception messages or protobuf dumps.
+     *
+     * @param text text which may contain VINs
+     * @return text with all VINs masked
+     */
+    public static String maskVinsIn(String text) {
+        return VIN_PATTERN.matcher(text).replaceAll(match -> maskVin(match.group()));
     }
 
     /**
@@ -221,6 +251,7 @@ public class Utils {
         return switch (region) {
             case Constants.REGION_APAC -> Constants.WEBSOCKET_USER_AGENT_PA;
             case Constants.REGION_CHINA -> Constants.WEBSOCKET_USER_AGENT_CN;
+            case Constants.REGION_NORAM -> Constants.WEBSOCKET_USER_AGENT_US;
             default -> Constants.WEBSOCKET_USER_AGENT;
         };
     }
@@ -269,16 +300,15 @@ public class Utils {
     }
 
     /**
-     * Converts a protobuf update into JSON String
+     * Converts a vehicle attribute map into JSON String
      *
-     * @param protoUpdate - proto update
+     * @param m - attribute key to value map
      * @param uid - thing type uid for identification
      * @return JSON as String
      */
     @SuppressWarnings({ "unused", "null" })
-    public static String proto2Json(VEPUpdate protoUpdate, ThingTypeUID uid) {
+    public static String proto2Json(Map<String, VehicleAttributeStatus> m, ThingTypeUID uid) {
         JSONObject protoJson = new JSONObject();
-        Map<String, VehicleAttributeStatus> m = protoUpdate.getAttributesMap();
         m.forEach((key, value) -> {
             Map<FieldDescriptor, Object> attMap = value.getAllFields();
             JSONObject attributesJson = getJsonObject(attMap);
@@ -479,15 +509,19 @@ public class Utils {
     }
 
     /**
-     * Checks proto VehicleAttributeStatus is nil
+     * Checks proto VehicleAttributeStatus has no usable value: nil_value is set, or status is not
+     * VALUE_VALID (the backend may then send a default 0 that must not be forwarded as a reading).
      *
      * @param value - proto value
-     * @return true if nil value is present, false otherwise
+     * @return true if no usable value is present, false otherwise
      */
     public static boolean isNil(@Nullable VehicleAttributeStatus value) {
         if (value != null) {
-            if (value.hasNilValue()) {
-                return value.getNilValue();
+            if (value.hasNilValue() && value.getNilValue()) {
+                return true;
+            }
+            if (value.getStatus() != VehicleEvents.AttributeStatus.VALUE_VALID_VALUE) {
+                return true;
             }
         }
         return false;

@@ -105,7 +105,7 @@ public class HydrawiseControllerHandler extends BaseThingHandler implements Hydr
                 if (bridge.getStatus() == ThingStatus.ONLINE) {
                     updateStatus(ThingStatus.ONLINE);
                 } else {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+                    updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
                 }
             }
         }
@@ -258,8 +258,7 @@ public class HydrawiseControllerHandler extends BaseThingHandler implements Hydr
 
             // update values with what the cloud tells us even though the controller may be offline
             if (!controller.status.online) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "Service reports controller as offline");
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "Service reports controller as offline");
             } else if (getThing().getStatus() != ThingStatus.ONLINE) {
                 updateStatus(ThingStatus.ONLINE);
             }
@@ -277,13 +276,16 @@ public class HydrawiseControllerHandler extends BaseThingHandler implements Hydr
         updateGroupState(CHANNEL_GROUP_CONTROLLER_SYSTEM, CHANNEL_CONTROLLER_SUMMARY,
                 new StringType(controller.status.summary));
         updateGroupState(CHANNEL_GROUP_CONTROLLER_SYSTEM, CHANNEL_CONTROLLER_LAST_CONTACT,
-                controller.status.lastContact != null ? secondsToDateTime(controller.status.lastContact.timestamp)
+                controller.lastContactTime != null ? secondsToDateTime(controller.lastContactTime.timestamp)
                         : UnDefType.NULL);
     }
 
     private void updateZones(List<Zone> zones, int maxZones) {
         AtomicReference<Boolean> anyRunning = new AtomicReference<>(false);
         AtomicReference<Boolean> anySuspended = new AtomicReference<>(false);
+        // tracks whether every zone is suspended to the same time
+        Integer commonSuspendedUntil = null;
+        boolean allZonesSuspendedSameTime = !zones.isEmpty();
         for (Zone zone : zones) {
             // for expansion modules who zones numbers are > 99
             // there are maxZones relays per expander, expanders will have a zoneNumber like:
@@ -328,15 +330,24 @@ public class HydrawiseControllerHandler extends BaseThingHandler implements Hydr
                 updateGroupState(group, CHANNEL_ZONE_SUSPENDUNTIL,
                         secondsToDateTime(zone.status.suspendedUntil.timestamp));
                 anySuspended.set(true);
+                Integer suspendedUntil = zone.status.suspendedUntil.timestamp;
+                if (commonSuspendedUntil == null) {
+                    commonSuspendedUntil = suspendedUntil;
+                } else if (!commonSuspendedUntil.equals(suspendedUntil)) {
+                    allZonesSuspendedSameTime = false;
+                }
             } else {
                 updateGroupState(group, CHANNEL_ZONE_SUSPEND, OnOffType.OFF);
                 updateGroupState(group, CHANNEL_ZONE_SUSPENDUNTIL, UnDefType.UNDEF);
+                allZonesSuspendedSameTime = false;
             }
         }
         updateGroupState(CHANNEL_GROUP_ALLZONES, CHANNEL_ZONE_RUN, anyRunning.get() ? OnOffType.ON : OnOffType.OFF);
         updateGroupState(CHANNEL_GROUP_ALLZONES, CHANNEL_ZONE_SUSPEND,
                 anySuspended.get() ? OnOffType.ON : OnOffType.OFF);
-        updateGroupState(CHANNEL_GROUP_ALLZONES, CHANNEL_ZONE_SUSPENDUNTIL, UnDefType.UNDEF);
+        updateGroupState(CHANNEL_GROUP_ALLZONES, CHANNEL_ZONE_SUSPENDUNTIL,
+                allZonesSuspendedSameTime && commonSuspendedUntil != null ? secondsToDateTime(commonSuspendedUntil)
+                        : UnDefType.UNDEF);
     }
 
     private void updateSensors(List<Sensor> sensors) {

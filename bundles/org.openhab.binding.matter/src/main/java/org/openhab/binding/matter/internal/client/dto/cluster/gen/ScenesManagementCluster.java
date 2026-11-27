@@ -112,18 +112,18 @@ public class ScenesManagementCluster extends BaseCluster {
          * The AttributeID field shall NOT refer to an attribute without the Scenes ("S") designation in the Quality
          * column of the cluster specification.
          */
-        public Integer attributeId; // attrib-id
+        public Long attributeId; // attrib-id
         public Integer valueUnsigned8; // uint8
         public Integer valueSigned8; // int8
         public Integer valueUnsigned16; // uint16
         public Integer valueSigned16; // int16
-        public Integer valueUnsigned32; // uint32
+        public Long valueUnsigned32; // uint32
         public Integer valueSigned32; // int32
         public BigInteger valueUnsigned64; // uint64
         public BigInteger valueSigned64; // int64
 
-        public AttributeValuePairStruct(Integer attributeId, Integer valueUnsigned8, Integer valueSigned8,
-                Integer valueUnsigned16, Integer valueSigned16, Integer valueUnsigned32, Integer valueSigned32,
+        public AttributeValuePairStruct(Long attributeId, Integer valueUnsigned8, Integer valueSigned8,
+                Integer valueUnsigned16, Integer valueSigned16, Long valueUnsigned32, Integer valueSigned32,
                 BigInteger valueUnsigned64, BigInteger valueSigned64) {
             this.attributeId = attributeId;
             this.valueUnsigned8 = valueUnsigned8;
@@ -144,7 +144,7 @@ public class ScenesManagementCluster extends BaseCluster {
         /**
          * This field shall indicate the cluster-id of the cluster whose attributes are in the AttributeValueList field.
          */
-        public Integer clusterId; // cluster-id
+        public Long clusterId; // cluster-id
         /**
          * This field shall indicate a set of attributes and their values which are stored as part of a scene.
          * Attributes which do not have the Scenes ("S") designation in the Quality column of their cluster
@@ -152,7 +152,7 @@ public class ScenesManagementCluster extends BaseCluster {
          */
         public List<AttributeValuePairStruct> attributeValueList; // list
 
-        public ExtensionFieldSetStruct(Integer clusterId, List<AttributeValuePairStruct> attributeValueList) {
+        public ExtensionFieldSetStruct(Long clusterId, List<AttributeValuePairStruct> attributeValueList) {
             this.clusterId = clusterId;
             this.attributeValueList = attributeValueList;
         }
@@ -187,7 +187,7 @@ public class ScenesManagementCluster extends BaseCluster {
          * This field is the amount of time, in milliseconds, it will take for a cluster to change from its current
          * state to the requested state.
          */
-        public Integer sceneTransitionTime; // uint32
+        public Long sceneTransitionTime; // uint32
         /**
          * See the Scene Table Extensions subsections of individual clusters. A Scene Table Extension shall only use
          * attributes with the Scene quality. Each ExtensionFieldSetStruct holds a set of values of these attributes for
@@ -196,7 +196,7 @@ public class ScenesManagementCluster extends BaseCluster {
          */
         public List<ExtensionFieldSetStruct> extensionFields; // list
 
-        public LogicalSceneTable(Integer sceneGroupId, Integer sceneId, String sceneName, Integer sceneTransitionTime,
+        public LogicalSceneTable(Integer sceneGroupId, Integer sceneId, String sceneName, Long sceneTransitionTime,
                 List<ExtensionFieldSetStruct> extensionFields) {
             this.sceneGroupId = sceneGroupId;
             this.sceneId = sceneId;
@@ -242,7 +242,7 @@ public class ScenesManagementCluster extends BaseCluster {
      * that has a defined extension field set. Extension field sets may be omitted, including the case of no extension
      * field sets at all.
      */
-    public static ClusterCommand addScene(Integer groupId, Integer sceneId, Integer transitionTime, String sceneName,
+    public static ClusterCommand addScene(Integer groupId, Integer sceneId, Long transitionTime, String sceneName,
             List<ExtensionFieldSetStruct> extensionFieldSetStructs) {
         Map<String, Object> map = new LinkedHashMap<>();
         if (groupId != null) {
@@ -319,7 +319,7 @@ public class ScenesManagementCluster extends BaseCluster {
     /**
      * This command will cause the specified scene to be recalled.
      */
-    public static ClusterCommand recallScene(Integer groupId, Integer sceneId, Integer transitionTime) {
+    public static ClusterCommand recallScene(Integer groupId, Integer sceneId, Long transitionTime) {
         Map<String, Object> map = new LinkedHashMap<>();
         if (groupId != null) {
             map.put("groupId", groupId);

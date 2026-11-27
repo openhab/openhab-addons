@@ -17,6 +17,8 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -37,6 +39,11 @@ public class SonosXMLParserTest {
     @Test
     public void buildThingTypeIdFromModelWithSpace() {
         assertEquals("RoamSL", SonosXMLParser.buildThingTypeIdFromModelName("Sonos Roam SL"));
+    }
+
+    @Test
+    public void buildThingTypeIdFromModelWithSpaceAndDigit() {
+        assertEquals("Roam2", SonosXMLParser.buildThingTypeIdFromModelName("Sonos Roam 2"));
     }
 
     @Test
@@ -86,6 +93,35 @@ public class SonosXMLParserTest {
     }
 
     @Test
+    public void getZoneGroupFromXMLListsTheSatellitesOfAHomeTheater() throws IOException {
+        InputStream resourceStream = getClass().getResourceAsStream("/ZoneGroupState-home-theater.xml");
+        assertNotNull(resourceStream);
+        final String xml = new String(resourceStream.readAllBytes(), StandardCharsets.UTF_8);
+        List<SonosZoneGroup> groups = SonosXMLParser.getZoneGroupFromXML(xml);
+        assertEquals(3, groups.size());
+        assertEquals(List.of("RINCON_00000000000301400", "RINCON_00000000000201400"), groups.get(0).getSatellites());
+        assertEquals(List.of("RINCON_00000000000701400", "RINCON_00000000000601400", "RINCON_00000000000501400"),
+                groups.get(1).getSatellites());
+        assertEquals(List.of(), groups.get(2).getSatellites());
+    }
+
+    @Test
+    public void getZoneGroupFromXMLListsNoSatellitesForTheHiddenSpeakersOfAStereoPair() {
+        String channelMap = "RINCON_00000000000A01400:LF,LF;RINCON_00000000000B01400:RF,RF;RINCON_00000000000C01400:SW,SW";
+        String xml = """
+                <ZoneGroupState><ZoneGroups>\
+                <ZoneGroup Coordinator="RINCON_00000000000B01400" ID="RINCON_00000000000B01400:1">\
+                <ZoneGroupMember UUID="RINCON_00000000000A01400" ZoneName="Office" Invisible="1" ChannelMapSet="%1$s"/>\
+                <ZoneGroupMember UUID="RINCON_00000000000B01400" ZoneName="Office" ChannelMapSet="%1$s"/>\
+                <ZoneGroupMember UUID="RINCON_00000000000C01400" ZoneName="Office" Invisible="1" ChannelMapSet="%1$s"/>\
+                </ZoneGroup></ZoneGroups></ZoneGroupState>\
+                """.formatted(channelMap);
+        List<SonosZoneGroup> groups = SonosXMLParser.getZoneGroupFromXML(xml);
+        assertEquals(1, groups.size());
+        assertEquals(List.of(), groups.get(0).getSatellites());
+    }
+
+    @Test
     public void getMetaDataFromXML() throws IOException {
         InputStream resourceStream = getClass().getResourceAsStream("/MetaData.xml");
         assertNotNull(resourceStream);
@@ -102,6 +138,57 @@ public class SonosXMLParserTest {
         assertEquals(
                 "/getaa?s=1&u=x-sonosapi-hls-static%3alibrarytrack%253ai.eoD8VQ5SZOB8QX7%3fsid%3d204%26flags%3d8232%26sn%3d9",
                 sonosMetaData.getAlbumArtUri());
+    }
+
+    @Test
+    public void getMetaDataFromXMLRejectsXXE() throws IOException {
+        Path canary = Files.createTempFile("sonos-xxe-canary", ".txt");
+        try {
+            Files.writeString(canary, "XXE_CANARY");
+            String xxe = """
+                    <?xml version="1.0"?>
+                    <!DOCTYPE root [ <!ENTITY xxe SYSTEM "%s"> ]>
+                    <DIDL-Lite><item><dc:title>&xxe;</dc:title></item></DIDL-Lite>
+                    """.formatted(canary.toUri());
+            SonosMetaData metaData = SonosXMLParser.getMetaDataFromXML(xxe);
+            assertEquals("", metaData.getTitle());
+        } finally {
+            Files.deleteIfExists(canary);
+        }
+    }
+
+    @Test
+    public void getZoneGroupFromXMLRejectsXXE() throws IOException {
+        Path canary = Files.createTempFile("sonos-xxe-canary", ".txt");
+        try {
+            Files.writeString(canary, "XXE_CANARY");
+            String xxe = """
+                    <?xml version="1.0"?>
+                    <!DOCTYPE root [ <!ENTITY xxe SYSTEM "%s"> ]>
+                    <ZoneGroups><ZoneGroup>&xxe;</ZoneGroup></ZoneGroups>
+                    """.formatted(canary.toUri());
+            assertTrue(SonosXMLParser.getZoneGroupFromXML(xxe).isEmpty());
+        } finally {
+            Files.deleteIfExists(canary);
+        }
+    }
+
+    @Test
+    public void getRoomNameRejectsXXE() throws IOException {
+        Path canary = Files.createTempFile("sonos-xxe-canary", ".txt");
+        Path descriptor = Files.createTempFile("sonos-descriptor", ".xml");
+        try {
+            Files.writeString(canary, "XXE_CANARY");
+            Files.writeString(descriptor, """
+                    <?xml version="1.0"?>
+                    <!DOCTYPE root [ <!ENTITY xxe SYSTEM "%s"> ]>
+                    <root><roomName>&xxe;</roomName></root>
+                    """.formatted(canary.toUri()));
+            assertNull(SonosXMLParser.getRoomName(descriptor.toUri().toURL()));
+        } finally {
+            Files.deleteIfExists(canary);
+            Files.deleteIfExists(descriptor);
+        }
     }
 
     @Test

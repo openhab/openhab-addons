@@ -307,7 +307,11 @@ public class HyperionHandler extends BaseThingHandler {
         ThingStatus current = thing.getStatus();
         ThingStatusDetail currentDetail = thing.getStatusInfo().getStatusDetail();
         if (!current.equals(status) || !currentDetail.equals(detail)) {
-            updateStatus(status, detail, message);
+            if (detail == ThingStatusDetail.NONE) {
+                updateStatus(status, message);
+            } else {
+                updateStatus(detail, message);
+            }
         }
     }
 }

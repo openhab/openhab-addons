@@ -1,0 +1,390 @@
+{
+	"deviceMapping": {
+		"id": [
+			"philips.light.ce130c",
+			"philips.light.ce130x",
+			"philips.light.ce13zx",
+			"philips.light.ce36c",
+			"philips.light.ce36x",
+			"philips.light.ce48c",
+			"philips.light.ce48x",
+			"philips.light.ce80c",
+			"philips.light.ce80yc",
+			"philips.light.ceilfi"
+		],
+		"propertyMethod": "get_properties",
+		"maxProperties": 4,
+		"channels": [
+			{
+				"property": "on",
+				"siid": 2,
+				"piid": 1,
+				"friendlyName": "Power",
+				"channel": "on",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "switch"
+			},
+			{
+				"property": "brightness",
+				"siid": 2,
+				"piid": 2,
+				"friendlyName": "Brightness",
+				"channel": "brightness",
+				"type": "Dimmer",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "light",
+				"tags": [
+					"Control",
+					"Brightness"
+				]
+			},
+			{
+				"property": "color-temperature",
+				"siid": 2,
+				"piid": 3,
+				"friendlyName": "Color Temperature",
+				"channel": "cct",
+				"type": "Number:Temperature",
+				"unit": "kelvin",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"stateDescription": {
+					"minimum": 2700,
+					"maximum": 5700,
+					"step": 1,
+					"pattern": "%.0f K"
+				},
+				"category": "colorlight"
+			},
+			{
+				"property": "mode",
+				"siid": 2,
+				"piid": 7,
+				"friendlyName": "Scene",
+				"channel": "mode",
+				"type": "Number",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 3,
+					"step": 1,
+					"pattern": "%.0f",
+					"options": [
+						{
+							"value": "0",
+							"label": "Manual"
+						},
+						{
+							"value": "1",
+							"label": "Reading"
+						},
+						{
+							"value": "2",
+							"label": "Leisure"
+						},
+						{
+							"value": "3",
+							"label": "Night Light"
+						}
+					]
+				},
+				"category": "light",
+				"tags": [
+					"Control",
+					"Mode"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Manual\",\"1\"\u003d\"Reading\",\"2\"\u003d\"Leisure\",\"3\"\u003d\"Night Light\"]`"
+			},
+			{
+				"property": "default-power-on-state",
+				"siid": 2,
+				"piid": 9,
+				"friendlyName": "Default Power On State",
+				"channel": "defaultPowerOnState",
+				"type": "Number",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 1,
+					"step": 1,
+					"pattern": "%.0f",
+					"options": [
+						{
+							"value": "0",
+							"label": "Default"
+						},
+						{
+							"value": "1",
+							"label": "On"
+						}
+					]
+				},
+				"category": "switch",
+				"tags": [
+					"Control",
+					"Power"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Default\",\"1\"\u003d\"On\"]`"
+			},
+			{
+				"property": "night-light-switch",
+				"siid": 2,
+				"piid": 13,
+				"friendlyName": "Smart Night Light",
+				"channel": "nightLightSwitch",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "light",
+				"tags": [
+					"Switch",
+					"Enabled"
+				],
+				"readmeComment": "During the set time period, turning the light on with the app starts the Night Light scene."
+			},
+			{
+				"property": "enable-time-period",
+				"siid": 2,
+				"piid": 14,
+				"friendlyName": "Smart Night Light Time Period",
+				"channel": "nightLightPeriod",
+				"type": "String",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "STRING"
+					}
+				],
+				"category": "time",
+				"tags": [
+					"Setpoint"
+				],
+				"readmeComment": "Format `HH:MM:SS-HH:MM:SS`, e.g. `22:00:00-06:00:00`."
+			},
+			{
+				"property": "delay",
+				"siid": 3,
+				"piid": 1,
+				"friendlyName": "Delayed Turn-off",
+				"channel": "delay",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "time",
+				"tags": [
+					"Switch",
+					"Enabled"
+				]
+			},
+			{
+				"property": "delay-time",
+				"siid": 3,
+				"piid": 2,
+				"friendlyName": "Delayed Turn-off Time",
+				"channel": "delayTime",
+				"type": "Number:Time",
+				"unit": "minutes",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"stateDescription": {
+					"minimum": 1,
+					"maximum": 120,
+					"step": 1,
+					"pattern": "%.0f %unit%"
+				},
+				"category": "time",
+				"tags": [
+					"Setpoint",
+					"Duration"
+				]
+			},
+			{
+				"property": "delay-remain-time",
+				"siid": 3,
+				"piid": 3,
+				"friendlyName": "Delayed Turn-off Remaining Time",
+				"channel": "delayRemainTime",
+				"type": "Number:Time",
+				"unit": "minutes",
+				"refresh": true,
+				"actions": [],
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 120,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"category": "time",
+				"tags": [
+					"Status",
+					"Duration"
+				]
+			},
+			{
+				"property": "wall-switch-en",
+				"siid": 5,
+				"piid": 1,
+				"friendlyName": "Wall Switch Scenes",
+				"channel": "WallSceneEn",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch",
+					"Enabled"
+				]
+			},
+			{
+				"property": "wall-switch-first",
+				"siid": 5,
+				"piid": 2,
+				"friendlyName": "Wall Switch Scene 1",
+				"channel": "wallScene1",
+				"type": "String",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "STRING"
+					}
+				],
+				"category": "text",
+				"tags": [
+					"Control"
+				],
+				"readmeComment": "Format `mode-brightness-colortemperature`, e.g. `1-100-4000`; mode `0` uses the given brightness and color temperature."
+			},
+			{
+				"property": "wall-switch-sec",
+				"siid": 5,
+				"piid": 3,
+				"friendlyName": "Wall Switch Scene 2",
+				"channel": "wallScene2",
+				"type": "String",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "STRING"
+					}
+				],
+				"category": "text",
+				"tags": [
+					"Control"
+				],
+				"readmeComment": "Format `mode-brightness-colortemperature`, e.g. `1-100-4000`; mode `0` uses the given brightness and color temperature."
+			},
+			{
+				"property": "wall-switch-th",
+				"siid": 5,
+				"piid": 4,
+				"friendlyName": "Wall Switch Scene 3",
+				"channel": "wallScene3",
+				"type": "String",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "STRING"
+					}
+				],
+				"category": "text",
+				"tags": [
+					"Control"
+				],
+				"readmeComment": "Format `mode-brightness-colortemperature`, e.g. `1-100-4000`; mode `0` uses the given brightness and color temperature."
+			},
+			{
+				"property": "",
+				"friendlyName": "Actions",
+				"channel": "actions",
+				"type": "String",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "light-toggle",
+							"label": "Light Toggle"
+						}
+					]
+				},
+				"refresh": false,
+				"actions": [
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 2,
+						"aiid": 1,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "light-toggle"
+								}
+							]
+						}
+					}
+				],
+				"category": "light",
+				"tags": [
+					"Control",
+					"Light"
+				],
+				"readmeComment": "Value mapping `[\"light-toggle\"\u003d\"Light Toggle\"]`"
+			}
+		],
+		"experimental": true
+	}
+}

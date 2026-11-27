@@ -24,6 +24,8 @@ import org.openhab.binding.wled.internal.handlers.WLedBridgeHandler;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Channel;
 
+import com.google.gson.JsonSyntaxException;
+
 /**
  * The {@link WledApiV0130} is the json Api methods for firmware version 0.13.0 and newer
  * as newer firmwares come out with breaking changes, extend this class into a newer firmware version class.
@@ -62,11 +64,38 @@ public class WledApiV0130 extends WledApiV0110 {
     }
 
     @Override
+    public void deletePreset(int position) throws ApiException {
+        if (position < 1) {
+            logger.warn("Preset position {} can not be deleted", position);
+            return;
+        }
+        postState("{\"pdel\":" + position + "}");
+        try {
+            getPresets();
+        } catch (JsonSyntaxException e) {
+            logger.debug("Could not refresh the presets after deleting one:{}", e.getMessage());
+        }
+    }
+
+    @Override
+    public void reboot() throws ApiException {
+        try {
+            postState("{\"rb\":true}");
+        } catch (ApiException e) {
+            // The device resets the connection while it is rebooting, so an error here is expected
+            logger.debug("WLED is rebooting:{}", e.getMessage());
+        }
+    }
+
+    @Override
     public List<String> getSegmentNames() {
         // segment names was only first added in 0.13.0 firmware
         List<String> segmentNames = new ArrayList<>(state.stateResponse.seg.length);
-        for (SegmentState state : state.stateResponse.seg) {
-            segmentNames.add(state.n);
+        int index = 0;
+        for (SegmentState segment : state.stateResponse.seg) {
+            String name = segment.n;
+            segmentNames.add(name == null || name.isBlank() ? "Segment " + index : name);
+            index++;
         }
         return segmentNames;
     }

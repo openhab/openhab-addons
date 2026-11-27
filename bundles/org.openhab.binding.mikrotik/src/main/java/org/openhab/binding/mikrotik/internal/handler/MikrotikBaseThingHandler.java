@@ -112,14 +112,13 @@ public abstract class MikrotikBaseThingHandler<C extends ConfigValidation> exten
     public void initialize() {
         cancelRefreshJob();
         if (getVerifiedBridgeHandler() == null) {
-            updateStatus(OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "This thing requires a RouterOS bridge");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "This thing requires a RouterOS bridge");
             return;
         }
 
         var superKlass = (ParameterizedType) getClass().getGenericSuperclass();
         if (superKlass == null) {
-            updateStatus(OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "getGenericSuperclass failed for thing handler");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "getGenericSuperclass failed for thing handler");
             return;
         }
         Class<?> klass = (Class<?>) (superKlass.getActualTypeArguments()[0]);
@@ -128,7 +127,7 @@ public abstract class MikrotikBaseThingHandler<C extends ConfigValidation> exten
         this.config = localConfig;
 
         if (!localConfig.isValid()) {
-            updateStatus(OFFLINE, CONFIGURATION_ERROR, String.format("%s is invalid", klass.getSimpleName()));
+            updateStatus(CONFIGURATION_ERROR, String.format("%s is invalid", klass.getSimpleName()));
             return;
         }
 
@@ -137,18 +136,39 @@ public abstract class MikrotikBaseThingHandler<C extends ConfigValidation> exten
 
     @Override
     protected void updateStatus(ThingStatus status, ThingStatusDetail statusDetail, @Nullable String description) {
-        if (status == ONLINE || (status == OFFLINE && statusDetail == ThingStatusDetail.COMMUNICATION_ERROR)) {
-            scheduleRefreshJob();
-        } else if (status == OFFLINE
-                && (statusDetail == ThingStatusDetail.CONFIGURATION_ERROR || statusDetail == ThingStatusDetail.GONE)) {
-            cancelRefreshJob();
-        }
-
         // update the status only if it's changed
         ThingStatusInfo statusInfo = ThingStatusInfoBuilder.create(status, statusDetail).withDescription(description)
                 .build();
         if (!statusInfo.equals(getThing().getStatusInfo())) {
             super.updateStatus(status, statusDetail, description);
+        }
+        statusUpdated(status, statusDetail);
+    }
+
+    @Override
+    protected void updateStatus(ThingStatus status) {
+        super.updateStatus(status);
+        statusUpdated(status, ThingStatusDetail.NONE);
+    }
+
+    @Override
+    protected void updateStatus(ThingStatus status, @Nullable String description) {
+        super.updateStatus(status, description);
+        statusUpdated(status, ThingStatusDetail.NONE);
+    }
+
+    @Override
+    protected void updateStatus(ThingStatusDetail detail, @Nullable String description) {
+        super.updateStatus(detail, description);
+        statusUpdated(getThing().getStatus(), detail);
+    }
+
+    protected void statusUpdated(ThingStatus status, ThingStatusDetail detail) {
+        if (status == ONLINE || (status == OFFLINE && detail == ThingStatusDetail.COMMUNICATION_ERROR)) {
+            scheduleRefreshJob();
+        } else if (status == OFFLINE
+                && (detail == ThingStatusDetail.CONFIGURATION_ERROR || detail == ThingStatusDetail.GONE)) {
+            cancelRefreshJob();
         }
     }
 
@@ -158,7 +178,7 @@ public abstract class MikrotikBaseThingHandler<C extends ConfigValidation> exten
             if (refreshJob == null) {
                 var bridgeHandler = getVerifiedBridgeHandler();
                 if (bridgeHandler == null) {
-                    updateStatus(OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Cannot obtain bridge handler");
+                    updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Cannot obtain bridge handler");
                     return;
                 }
                 RouterosThingConfig bridgeConfig = bridgeHandler.getBridgeConfig();
@@ -188,12 +208,12 @@ public abstract class MikrotikBaseThingHandler<C extends ConfigValidation> exten
     private void scheduledRun() {
         MikrotikRouterosBridgeHandler bridgeHandler = getVerifiedBridgeHandler();
         if (bridgeHandler == null) {
-            updateStatus(OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "Failed reaching out to RouterOS bridge");
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE, "Failed reaching out to RouterOS bridge");
             return;
         }
         Bridge bridge = getBridge();
         if (bridge != null && bridge.getStatus() == OFFLINE) {
-            updateStatus(OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "The RouterOS bridge is currently offline");
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE, "The RouterOS bridge is currently offline");
             return;
         }
 
@@ -207,7 +227,7 @@ public abstract class MikrotikBaseThingHandler<C extends ConfigValidation> exten
             } catch (RuntimeException e) {
                 logger.warn("Unhandled exception while refreshing the channel {} of {} Mikrotik thing:{}",
                         channel.getUID(), getThing().getUID(), e.getMessage());
-                updateStatus(OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
         }
     }

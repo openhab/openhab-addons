@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.evohome.internal.api.models.v2.dto.response;
 
+import org.eclipse.jdt.annotation.Nullable;
+
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -23,12 +25,16 @@ import com.google.gson.annotations.SerializedName;
 public class TemperatureStatus {
 
     @SerializedName("temperature")
-    private double temperature;
+    private @Nullable Double temperature;
 
     @SerializedName("isAvailable")
     private boolean isAvailable;
 
-    public double getTemperature() {
+    public @Nullable Double getTemperature() {
         return temperature;
+    }
+
+    public boolean isAvailable() {
+        return isAvailable;
     }
 }

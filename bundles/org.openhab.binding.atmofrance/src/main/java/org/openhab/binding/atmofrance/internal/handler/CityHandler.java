@@ -70,7 +70,7 @@ public class CityHandler extends BaseThingHandler implements HandlerUtils {
         ConfigurationLevel configLevel = localConfig.check();
 
         if (configLevel != ConfigurationLevel.COMPLETED) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, configLevel.message);
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, configLevel.message);
             return;
         }
 
@@ -103,7 +103,7 @@ public class CityHandler extends BaseThingHandler implements HandlerUtils {
                 updateStatus(ThingStatus.ONLINE);
             } else {
                 if (getBridgeHandler(AtmoFranceApiHandler.class) != null) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "@text/no-data");
+                    updateStatus(ThingStatus.OFFLINE, "@text/no-data");
                 } else {
                     // the call to getBridgeHandler will already have put me on OFFLINE/BRIDGE_OFFLINE
                     return;
@@ -141,7 +141,7 @@ public class CityHandler extends BaseThingHandler implements HandlerUtils {
                 updateStatus(ThingStatus.ONLINE);
             } else {
                 if (getBridgeHandler(AtmoFranceApiHandler.class) != null) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "@text/no-pollens");
+                    updateStatus(ThingStatus.OFFLINE, "@text/no-pollens");
                 } else {
                     // the call to getBridgeHandler will already have put me on OFFLINE/BRIDGE_OFFLINE
                     return;
@@ -179,8 +179,13 @@ public class CityHandler extends BaseThingHandler implements HandlerUtils {
     }
 
     @Override
-    public void updateStatus(ThingStatus status, ThingStatusDetail statusDetail, @Nullable String description) {
-        super.updateStatus(status, statusDetail, description);
+    public void updateStatus(ThingStatusDetail statusDetail) {
+        super.updateStatus(statusDetail);
+    }
+
+    @Override
+    public void updateStatus(ThingStatusDetail statusDetail, @Nullable String description) {
+        super.updateStatus(statusDetail, description);
     }
 
     @Override

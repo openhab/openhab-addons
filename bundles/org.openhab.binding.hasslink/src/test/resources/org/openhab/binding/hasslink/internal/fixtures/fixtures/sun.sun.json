@@ -1,0 +1,42 @@
+{
+  "id": 18,
+  "type": "event",
+  "event": {
+    "event_type": "state_changed",
+    "data": {
+      "entity_id": "sun.sun",
+      "old_state": null,
+      "new_state": {
+        "entity_id": "sun.sun",
+        "state": "above_horizon",
+        "attributes": {
+          "next_dawn": "2026-09-23T04:53:32.269577+00:00",
+          "next_dusk": "2026-09-22T18:13:23.320170+00:00",
+          "next_midnight": "2026-09-22T23:32:50+00:00",
+          "next_noon": "2026-09-22T11:33:21+00:00",
+          "next_rising": "2026-09-23T05:28:12.321014+00:00",
+          "next_setting": "2026-09-22T17:38:49.321675+00:00",
+          "elevation": 1.68,
+          "azimuth": 91.26,
+          "rising": true,
+          "friendly_name": "Sun"
+        },
+        "last_changed": "2026-09-22T05:25:50.231784+00:00",
+        "last_reported": "2026-09-22T05:41:02.974057+00:00",
+        "last_updated": "2026-09-22T05:40:32.186240+00:00",
+        "context": {
+          "id": "01M33T2K9T43T8N66NFN98DN31",
+          "parent_id": null,
+          "user_id": null
+        }
+      }
+    },
+    "origin": "LOCAL",
+    "time_fired": "2026-09-19T00:00:00.000000+00:00",
+    "context": {
+      "id": "01HXXXXXXX",
+      "parent_id": null,
+      "user_id": null
+    }
+  }
+}

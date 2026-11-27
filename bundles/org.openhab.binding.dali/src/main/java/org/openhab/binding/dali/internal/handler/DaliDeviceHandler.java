@@ -55,13 +55,12 @@ public class DaliDeviceHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        Bridge bridge = getBridge();
-
-        if (bridge == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No bridge configured");
-        } else {
-            updateStatus(ThingStatus.ONLINE);
+        if (getBridge() == null) {
+            logger.debug("Bridge unavailable while initializing Thing: {}", thing.getUID());
+            return;
         }
+
+        updateStatus(ThingStatus.ONLINE);
 
         final Configuration conf = this.thing.getConfiguration();
         targetId = ((BigDecimal) conf.get(TARGET_ID)).intValueExact();
@@ -143,7 +142,7 @@ public class DaliDeviceHandler extends BaseThingHandler {
                 }
             }
         } catch (DaliException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 

@@ -1,0 +1,24 @@
+{
+  "id": 10,
+  "type": "event",
+  "event": {
+    "a": {
+      "cover.living_room_window": {
+        "s": "open",
+        "a": {
+          "supported_speeds": [
+            "slow",
+            "default"
+          ],
+          "is_closed": false,
+          "current_position": 70,
+          "current_tilt_position": 50,
+          "friendly_name": "Living Room Window",
+          "supported_features": 511
+        },
+        "c": "01M3201RG507PBT07PTCPB41RK",
+        "lc": 1789994787.333386
+      }
+    }
+  }
+}

@@ -21,6 +21,8 @@ import org.openhab.binding.enocean.internal.eep.EEPType;
 
 /**
  * Registry for send-only datagram profiles.
+ *
+ * @author Sven Schad - Initial contribution
  */
 @NonNullByDefault
 public enum InjectorProfileType {

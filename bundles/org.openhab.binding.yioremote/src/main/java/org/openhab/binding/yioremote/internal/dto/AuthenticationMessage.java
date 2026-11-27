@@ -12,41 +12,21 @@
  */
 package org.openhab.binding.yioremote.internal.dto;
 
+import static org.openhab.binding.yioremote.internal.YIOremoteBindingConstants.MESSAGE_TYPE_AUTH;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
-import com.google.gson.JsonObject;
-
 /**
- * The {@link AuthenticationMessage} the AuthenticationMessage DTO
- *
+ * The {@link AuthenticationMessage} is sent to the YIO Dock to authenticate the connection.
  *
  * @author Michael Loercher - Initial contribution
  */
 @NonNullByDefault
 public class AuthenticationMessage {
-    private String type = "auth";
-    private String token = "0";
+    public final String type = MESSAGE_TYPE_AUTH;
+    public final String token;
 
-    public String getType() {
-        return type;
-    }
-
-    public String getToken() {
-        return token;
-    }
-
-    public void setToken(String token) {
+    public AuthenticationMessage(String token) {
         this.token = token;
-    }
-
-    public JsonObject getAuthenticationMessageJsonObject() {
-        JsonObject authenticationMessage = new JsonObject();
-        authenticationMessage.addProperty("type", type);
-        authenticationMessage.addProperty("token", token);
-        return authenticationMessage;
-    }
-
-    public String getAuthenticationMessageString() {
-        return getAuthenticationMessageJsonObject().toString();
     }
 }

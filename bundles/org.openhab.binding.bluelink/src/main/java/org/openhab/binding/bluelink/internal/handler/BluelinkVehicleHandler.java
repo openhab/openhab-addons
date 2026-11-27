@@ -34,7 +34,6 @@ import org.openhab.binding.bluelink.internal.api.BluelinkApiException;
 import org.openhab.binding.bluelink.internal.api.VehicleStatusCallback;
 import org.openhab.binding.bluelink.internal.config.BluelinkVehicleConfiguration;
 import org.openhab.binding.bluelink.internal.dto.CommonVehicleStatus;
-import org.openhab.binding.bluelink.internal.dto.EvStatus;
 import org.openhab.binding.bluelink.internal.model.IVehicle;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
@@ -44,6 +43,7 @@ import org.openhab.core.library.types.PointType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.ImperialUnits;
 import org.openhab.core.library.unit.Units;
+import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -99,8 +99,7 @@ public class BluelinkVehicleHandler extends BaseThingHandler implements VehicleS
         final BluelinkVehicleConfiguration config = getConfigAs(BluelinkVehicleConfiguration.class);
         final String vin = config.vin;
         if (vin == null || vin.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/vehicle-handler.initialize.vin-required");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/vehicle-handler.initialize.vin-required");
             return;
         }
 
@@ -127,27 +126,26 @@ public class BluelinkVehicleHandler extends BaseThingHandler implements VehicleS
     }
 
     private void loadVehicle(final String vin) {
-        final var bridgeHnd = getBridgeHandler();
-        if (bridgeHnd == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
+        if (!(getBridge() instanceof Bridge bridge
+                && bridge.getHandler() instanceof BluelinkAccountHandler bridgeHandler)) {
+            logger.debug("Bridge unavailable while initializing Thing: {}", thing.getUID());
             return;
         }
 
         try {
-            bridgeHnd.getVehicles().stream().filter(v -> vin.equals(v.vin())).findFirst().ifPresentOrElse(v -> {
+            bridgeHandler.getVehicles().stream().filter(v -> vin.equals(v.vin())).findFirst().ifPresentOrElse(v -> {
                 this.vehicle = v;
                 updateProperty(PROPERTY_MODEL, v.model());
                 updateProperty(PROPERTY_ENGINE_TYPE, v.engineType().name());
                 createDynamicChannels();
                 updateStatus(ThingStatus.ONLINE);
-            }, () -> updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+            }, () -> updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/vehicle-handler.initialize.vehicle-not-found")
 
             );
         } catch (final BluelinkApiException e) {
             logger.debug("error loading vehicle: {}", e.getMessage());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/vehicle-handler.initialize.vehicle-data-error");
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/vehicle-handler.initialize.vehicle-data-error");
         }
     }
 
@@ -366,7 +364,7 @@ public class BluelinkVehicleHandler extends BaseThingHandler implements VehicleS
             }
         } catch (final BluelinkApiException e) {
             logger.debug("Failed to refresh {}vehicle status: {}", forceRefresh ? "forced " : "", e.getMessage());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getStatusDescription());
         } finally {
             lock.unlock();
         }
@@ -456,13 +454,11 @@ public class BluelinkVehicleHandler extends BaseThingHandler implements VehicleS
             final var reservChargeInfos = evStatus.reservChargeInfos();
             if (reservChargeInfos != null && reservChargeInfos.targetSocList() != null) {
                 for (final var target : reservChargeInfos.targetSocList()) {
-                    if (target.plugType() == EvStatus.ReserveChargeInfo.PlugType.DC) {
-                        updateState(GROUP_CHARGING, CHANNEL_CHARGE_LIMIT_DC,
-                                new QuantityType<>(target.targetSocLevel(), Units.PERCENT));
-                    } else if (target.plugType() == EvStatus.ReserveChargeInfo.PlugType.AC) {
-                        updateState(GROUP_CHARGING, CHANNEL_CHARGE_LIMIT_AC,
-                                new QuantityType<>(target.targetSocLevel(), Units.PERCENT));
-                    }
+                    final String channel = switch (target.plugType()) {
+                        case DC -> CHANNEL_CHARGE_LIMIT_DC;
+                        case AC -> CHANNEL_CHARGE_LIMIT_AC;
+                    };
+                    updateState(GROUP_CHARGING, channel, new QuantityType<>(target.targetSocLevel(), Units.PERCENT));
                 }
             }
 
@@ -503,15 +499,15 @@ public class BluelinkVehicleHandler extends BaseThingHandler implements VehicleS
         updateState(GROUP_WARNINGS, CHANNEL_BRAKE_FLUID_WARNING, OnOffType.from(data.brakeOilStatus()));
         final var tirePressureWarning = data.tirePressureWarning();
         if (tirePressureWarning != null) {
-            updateState(GROUP_WARNINGS, CHANNEL_TIRE_PRESSURE_WARNING, OnOffType.from(tirePressureWarning.all() > 0));
+            updateState(GROUP_WARNINGS, CHANNEL_TIRE_PRESSURE_WARNING, OnOffType.from(tirePressureWarning.all()));
             updateState(GROUP_WARNINGS, CHANNEL_TIRE_PRESSURE_WARNING_FR,
-                    OnOffType.from(tirePressureWarning.frontRight() > 0));
+                    OnOffType.from(tirePressureWarning.frontRight()));
             updateState(GROUP_WARNINGS, CHANNEL_TIRE_PRESSURE_WARNING_FL,
-                    OnOffType.from(tirePressureWarning.frontLeft() > 0));
+                    OnOffType.from(tirePressureWarning.frontLeft()));
             updateState(GROUP_WARNINGS, CHANNEL_TIRE_PRESSURE_WARNING_RR,
-                    OnOffType.from(tirePressureWarning.rearRight() > 0));
+                    OnOffType.from(tirePressureWarning.rearRight()));
             updateState(GROUP_WARNINGS, CHANNEL_TIRE_PRESSURE_WARNING_RL,
-                    OnOffType.from(tirePressureWarning.rearLeft() > 0));
+                    OnOffType.from(tirePressureWarning.rearLeft()));
         }
     }
 

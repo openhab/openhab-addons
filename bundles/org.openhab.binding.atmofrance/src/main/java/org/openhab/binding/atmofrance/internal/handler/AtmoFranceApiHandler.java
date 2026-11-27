@@ -28,14 +28,12 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import javax.ws.rs.core.MediaType;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
@@ -62,6 +60,8 @@ import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import jakarta.ws.rs.core.MediaType;
 
 /**
  * The {@link AtmoFranceApiHandler} is responsible for handling commands, which are
@@ -95,7 +95,7 @@ public class AtmoFranceApiHandler extends BaseBridgeHandler implements HandlerUt
         ConfigurationLevel configLevel = localConfig.check();
 
         if (configLevel != ConfigurationLevel.COMPLETED) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, configLevel.message);
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, configLevel.message);
             return;
         }
         this.config = localConfig;
@@ -120,9 +120,9 @@ public class AtmoFranceApiHandler extends BaseBridgeHandler implements HandlerUt
             schedule("token refresh", this::initiateConnection, TOKEN_VALIDITY);
         } catch (AtmoFranceException e) {
             if (e.getStatusDetail() instanceof ThingStatusDetail statusDetail) {
-                updateStatus(ThingStatus.OFFLINE, statusDetail, e.getMessage());
+                updateStatus(statusDetail, e.getMessage());
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                 schedule("reconnect", this::initiateConnection, Duration.ofHours(1));
             }
         }
@@ -143,7 +143,7 @@ public class AtmoFranceApiHandler extends BaseBridgeHandler implements HandlerUt
         logger.debug("executeUrl: {} ", uri);
 
         Request request = httpClient.newRequest(uri).method(method).timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS)
-                .header(HttpHeader.ACCEPT, MediaType.APPLICATION_JSON);
+                .headers(headers -> headers.put(HttpHeader.ACCEPT, MediaType.APPLICATION_JSON));
 
         handleBearer(request, bearer);
         handlePayload(request, payload);
@@ -175,16 +175,14 @@ public class AtmoFranceApiHandler extends BaseBridgeHandler implements HandlerUt
             return;
         }
 
-        StringContentProvider contentProvider = new StringContentProvider(MediaType.APPLICATION_JSON, payload,
-                DEFAULT_CHARSET);
-        request.content(contentProvider, MediaType.APPLICATION_JSON);
+        request.body(new StringRequestContent(MediaType.APPLICATION_JSON, payload, DEFAULT_CHARSET));
     }
 
     private void handleBearer(Request request, @Nullable String bearer) {
         if (bearer == null) {
             return;
         }
-        request.header(HttpHeader.AUTHORIZATION, "Bearer %s".formatted(bearer));
+        request.headers(headers -> headers.put(HttpHeader.AUTHORIZATION, "Bearer %s".formatted(bearer)));
     }
 
     @Override
@@ -193,8 +191,13 @@ public class AtmoFranceApiHandler extends BaseBridgeHandler implements HandlerUt
     }
 
     @Override
-    public void updateStatus(ThingStatus status, ThingStatusDetail statusDetail, @Nullable String description) {
-        super.updateStatus(status, statusDetail, description);
+    public void updateStatus(ThingStatusDetail statusDetail) {
+        super.updateStatus(statusDetail);
+    }
+
+    @Override
+    public void updateStatus(ThingStatusDetail statusDetail, @Nullable String description) {
+        super.updateStatus(statusDetail, description);
     }
 
     @Override
@@ -227,7 +230,7 @@ public class AtmoFranceApiHandler extends BaseBridgeHandler implements HandlerUt
             if (detail == null) {
                 detail = ThingStatusDetail.COMMUNICATION_ERROR;
             }
-            updateStatus(ThingStatus.OFFLINE, detail, e.getMessage());
+            updateStatus(detail, e.getMessage());
         }
         return null;
     }

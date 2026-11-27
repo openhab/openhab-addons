@@ -21,7 +21,6 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.Serial;
 import java.net.URI;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -34,14 +33,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 import java.util.stream.Collectors;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 import javax.sound.sampled.AudioFileFormat;
 import javax.sound.sampled.AudioInputStream;
@@ -56,11 +57,11 @@ import org.openhab.core.audio.ByteArrayAudioStream;
 import org.openhab.core.common.ThreadPoolManager;
 import org.openhab.core.config.core.ConfigurableService;
 import org.openhab.core.config.core.Configuration;
-import org.openhab.core.voice.AbstractCachedTTSService;
-import org.openhab.core.voice.TTSCache;
-import org.openhab.core.voice.TTSException;
-import org.openhab.core.voice.TTSService;
-import org.openhab.core.voice.Voice;
+import org.openhab.core.voice.tts.AbstractCachedTTSService;
+import org.openhab.core.voice.tts.TTSCache;
+import org.openhab.core.voice.tts.TTSException;
+import org.openhab.core.voice.tts.TTSService;
+import org.openhab.core.voice.tts.Voice;
 import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -79,6 +80,7 @@ import io.github.jvoiceproject.piperjni.PiperVoice;
  * The {@link PiperTTSService} class is a service implementation to use Piper for Text-to-Speech.
  *
  * @author Miguel Álvarez - Initial contribution
+ * @author Florian Hotze - Add support for raw PCM audio format
  */
 @NonNullByDefault
 @Component(service = TTSService.class, configurationPid = SERVICE_PID, property = Constants.SERVICE_PID + "="
@@ -87,42 +89,44 @@ import io.github.jvoiceproject.piperjni.PiperVoice;
         + " Text-to-Speech", description_uri = SERVICE_CATEGORY + ":" + SERVICE_ID)
 public class PiperTTSService extends AbstractCachedTTSService {
     // piper-jni version from pom.xml
-    private static final String PIPER_VERSION = "1.4.1";
+    private static final String PIPER_VERSION = "1.8.0.1";
     private static final Path PIPER_FOLDER = Path.of(OpenHAB.getUserDataFolder(), "piper");
     private static final Path LIB_FOLDER = PIPER_FOLDER.resolve("lib-" + PIPER_VERSION);
+    private static final Path ESPEAK_DATA_FOLDER = LIB_FOLDER.resolve("espeak-ng-data");
     private static final Path JAR_FILE = PIPER_FOLDER.resolve("piper-jni-" + PIPER_VERSION + ".jar");
     private static final String JAR_URL = "https://openhab.jfrog.io/artifactory/libs-online-deps/io/github/jvoice-project/piper-jni/"
             + PIPER_VERSION + "/piper-jni-" + PIPER_VERSION + ".jar";
+
     private final Logger logger = LoggerFactory.getLogger(PiperTTSService.class);
     private final Object modelLock = new Object();
     private final ExecutorService executor = ThreadPoolManager.getPool("voice-pipertts");
+
     private PiperTTSConfiguration config = new PiperTTSConfiguration();
+    private volatile boolean ready = false;
+    private final Future<?> activateTask;
+
     private Map<String, List<Voice>> cachedVoicesByModel = new HashMap<>();
-    private boolean ready = false;
     private @Nullable VoiceModel preloadedModel;
-    private @Nullable PiperJNI piper;
-    private @Nullable Future<?> activateTask;
-    static {
-        System.setProperty("io.github.jvoiceproject.piperjni.libdir", LIB_FOLDER.toAbsolutePath().toString());
-    }
 
     @Activate
-    public PiperTTSService(final @Reference TTSCache ttsCache) {
+    public PiperTTSService(final @Reference TTSCache ttsCache, Map<String, Object> config) {
         super(ttsCache);
-    }
 
-    @Activate
-    protected void activate(Map<String, Object> config) {
         tryCreatePiperDirectory();
         activateTask = executor.submit(() -> {
             try {
+                logger.debug("Setting Piper native library path to: {}", LIB_FOLDER);
+                System.setProperty("piper.library.path", LIB_FOLDER.toAbsolutePath().toString());
+                logger.debug("Setting Piper eSpeak NG data path to: {}", ESPEAK_DATA_FOLDER);
+                System.setProperty("piper.espeak.data.path", ESPEAK_DATA_FOLDER.toAbsolutePath().toString());
+                logger.debug("Setting up Piper native dependencies...");
                 setupNativeDependencies();
-                PiperJNI piper = this.piper = new PiperJNI();
-                piper.initialize(true);
-                logger.debug("Using Piper version {}", piper.getPiperVersion());
+                logger.debug("Initializing Piper...");
+                PiperJNI.loadLibrary();
+                logger.debug("Using Piper version {}", PiperJNI.getPiperVersion());
                 ready = true;
-            } catch (IOException e) {
-                logger.warn("Piper registration failed, the add-on will not work: {}", e.getMessage());
+            } catch (Throwable t) {
+                logger.error("Piper registration failed, the add-on will not work: {}", t.getMessage(), t);
             }
         });
         configChange(config);
@@ -131,67 +135,100 @@ public class PiperTTSService extends AbstractCachedTTSService {
     @Deactivate
     private void deactivate() {
         Future<?> activateTask = this.activateTask;
-        if (activateTask != null && !activateTask.isDone()) {
+        if (!activateTask.isDone()) {
             activateTask.cancel(true);
         }
     }
 
     private void setupNativeDependencies() throws IOException {
-        String folderName = "";
-        String osName = System.getProperty("os.name").toLowerCase();
-        String osArch = System.getProperty("os.arch").toLowerCase();
+        String osName = System.getProperty("os.name", "").toLowerCase(Locale.ROOT);
+        String osArch = System.getProperty("os.arch", "").toLowerCase(Locale.ROOT);
+        String os;
         if (osName.contains("win")) {
-            if (osArch.contains("amd64") || osArch.contains("x86_64")) {
-                folderName = "win-amd64";
-            }
+            os = "windows";
         } else if (osName.contains("nix") || osName.contains("nux") || osName.contains("aix")) {
-            if (osArch.contains("amd64") || osArch.contains("x86_64")) {
-                folderName = "debian-amd64";
-            } else if (osArch.contains("aarch64") || osArch.contains("arm64")) {
-                folderName = "debian-arm64";
-            }
+            os = "linux";
         } else if (osName.contains("mac") || osName.contains("darwin")) {
-            if (osArch.contains("amd64") || osArch.contains("x86_64")) {
-                folderName = "macos-amd64";
-            } else if (osArch.contains("aarch64") || osArch.contains("arm64")) {
-                folderName = "macos-arm64";
-            }
-        }
-        if (folderName.isBlank()) {
+            os = "macos";
+        } else {
             throw new IOException("Incompatible platform, unable to setup add-on");
         }
+        String arch;
+        if (osArch.contains("amd64") || osArch.contains("x86_64") || osArch.contains("x86-64")) {
+            arch = "x86-64";
+        } else if (osArch.contains("aarch64") || osArch.contains("arm64")) {
+            arch = "aarch64";
+        } else {
+            throw new IOException("Incompatible platform, unable to setup add-on");
+        }
+        String nativePrefix = "native/" + os + "-" + arch + "/";
+
         if (!Files.exists(LIB_FOLDER)) {
             Files.createDirectory(LIB_FOLDER);
         }
         if (!Files.exists(JAR_FILE)) {
             logger.debug("Downloading file: {}", JAR_URL);
-            InputStream in = URI.create(JAR_URL).toURL().openStream();
-            Files.copy(in, JAR_FILE, StandardCopyOption.REPLACE_EXISTING);
+            try (InputStream in = URI.create(JAR_URL).toURL().openStream()) {
+                Files.copy(in, JAR_FILE, StandardCopyOption.REPLACE_EXISTING);
+            }
         }
-        try (java.util.jar.JarFile jar = new java.util.jar.JarFile(JAR_FILE.toFile())) {
+        Path normalizedLibFolder = LIB_FOLDER.toAbsolutePath().normalize();
+        try (JarFile jar = new JarFile(JAR_FILE.toFile())) {
             Enumeration<JarEntry> enumEntries = jar.entries();
             while (enumEntries.hasMoreElements()) {
-                java.util.jar.JarEntry file = enumEntries.nextElement();
+                JarEntry file = enumEntries.nextElement();
                 String filename = file.getName();
-                if (!filename.startsWith(folderName) && !"espeak-ng-data.zip".equals(filename)
-                        && !"libtashkeel_model.ort".equals(filename)) {
+                if ("espeak-ng-data.zip".equals(filename)) {
+                    if (Files.isDirectory(ESPEAK_DATA_FOLDER)) {
+                        logger.debug("Found piper eSpeak NG data: {}", ESPEAK_DATA_FOLDER);
+                    } else {
+                        logger.debug("Extracting piper eSpeak NG data to: {}", ESPEAK_DATA_FOLDER);
+                        try (ZipInputStream zis = new ZipInputStream(jar.getInputStream(file))) {
+                            extractZipStream(zis, ESPEAK_DATA_FOLDER);
+                        }
+                    }
                     continue;
                 }
-                Path targetPath = LIB_FOLDER.resolve(file.getName());
+                if (!filename.startsWith(nativePrefix) || file.isDirectory()) {
+                    continue;
+                }
+                String relativeName = filename.substring(nativePrefix.length());
+                if (relativeName.isEmpty()) {
+                    continue;
+                }
+                Path targetPath = normalizedLibFolder.resolve(relativeName).normalize();
+                if (!targetPath.startsWith(normalizedLibFolder)) {
+                    throw new IOException("Bad jar entry: " + filename);
+                }
                 if (Files.exists(targetPath)) {
-                    logger.debug("Found piper native dependency: {}", file.getName());
+                    logger.debug("Found piper native dependency: {}", relativeName);
                     continue;
                 }
-                if (file.isDirectory()) {
-                    logger.debug("Creating dir: {}", targetPath);
-                    Files.createDirectory(targetPath);
-                    continue;
-                }
-                logger.debug("Extracting piper native dependency: {}", file.getName());
+                logger.debug("Extracting piper native dependency: {}", relativeName);
+                Files.createDirectories(targetPath.getParent());
                 try (var is = jar.getInputStream(file)) {
                     Files.copy(is, targetPath, StandardCopyOption.REPLACE_EXISTING);
                 }
             }
+        }
+    }
+
+    private void extractZipStream(ZipInputStream zis, Path destDir) throws IOException {
+        Files.createDirectories(destDir);
+        Path normalizedDest = destDir.toAbsolutePath().normalize();
+        ZipEntry entry;
+        while ((entry = zis.getNextEntry()) != null) {
+            Path entryDest = normalizedDest.resolve(entry.getName()).normalize();
+            if (!entryDest.startsWith(normalizedDest)) {
+                throw new IOException("Bad zip entry: " + entry.getName());
+            }
+            if (entry.isDirectory()) {
+                Files.createDirectories(entryDest);
+            } else {
+                Files.createDirectories(entryDest.getParent());
+                Files.copy(zis, entryDest, StandardCopyOption.REPLACE_EXISTING);
+            }
+            zis.closeEntry();
         }
     }
 
@@ -204,11 +241,8 @@ public class PiperTTSService extends AbstractCachedTTSService {
     protected void deactivate(Map<String, Object> config) {
         try {
             unloadModel();
-            getPiper().close();
-            piper = null;
         } catch (IOException e) {
             logger.warn("Exception unloading model: {}", e.getMessage());
-        } catch (LibraryNotLoaded ignored) {
         }
     }
 
@@ -219,14 +253,6 @@ public class PiperTTSService extends AbstractCachedTTSService {
         } catch (IOException e) {
             logger.warn("IOException unloading model: {}", e.getMessage());
         }
-    }
-
-    private PiperJNI getPiper() throws LibraryNotLoaded {
-        PiperJNI piper = this.piper;
-        if (piper == null) {
-            throw new LibraryNotLoaded();
-        }
-        return piper;
     }
 
     private void tryCreatePiperDirectory() {
@@ -308,7 +334,7 @@ public class PiperTTSService extends AbstractCachedTTSService {
                             languageRegion, //
                             modelPath, //
                             configFile, //
-                            Optional.of(id.longValue())));
+                            Optional.of(id)));
                 });
                 return voices;
             }
@@ -322,8 +348,11 @@ public class PiperTTSService extends AbstractCachedTTSService {
 
     @Override
     public Set<AudioFormat> getSupportedFormats() {
-        return Set.of(new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_SIGNED, false, null, null, null,
-                null));
+        return Set.of(
+                new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_SIGNED, false, null, null, null,
+                        null),
+                new AudioFormat(AudioFormat.CONTAINER_NONE, AudioFormat.CODEC_PCM_SIGNED, false, null, null, null,
+                        null));
     }
 
     @Override
@@ -333,6 +362,9 @@ public class PiperTTSService extends AbstractCachedTTSService {
         }
         if (!(voice instanceof PiperTTSVoice ttsVoice)) {
             throw new TTSException("No piper voice provided");
+        }
+        if (!isSupportedFormat(audioFormat)) {
+            throw new TTSException("The requested AudioFormat is unsupported: " + audioFormat);
         }
         VoiceModel voiceModel = null;
         boolean usingPreloadedModel = false;
@@ -359,13 +391,13 @@ public class PiperTTSService extends AbstractCachedTTSService {
             }
             try {
                 logger.debug("Generating audio for: '{}'", text);
-                buffer = getPiper().textToAudio(voiceModel.piperVoice, text);
+                buffer = voiceModel.piperVoice.textToAudio(text);
                 sampleRate = voiceModel.sampleRate;
                 logger.debug("Generated {} samples of audio", buffer.length);
             } catch (IOException e) {
                 throw new TTSException("Voice generation failed: " + e.getMessage());
             }
-        } catch (PiperJNI.NotInitialized | LibraryNotLoaded e) {
+        } catch (IllegalStateException e) {
             throw new TTSException("Piper not initialized, try restarting the add-on.");
         } catch (RuntimeException e) {
             logger.warn("RuntimeException running text to audio: {}", e.getMessage());
@@ -389,15 +421,15 @@ public class PiperTTSService extends AbstractCachedTTSService {
         }
     }
 
-    private VoiceModel loadModel(PiperTTSVoice voice) throws IOException, PiperJNI.NotInitialized, LibraryNotLoaded {
+    private VoiceModel loadModel(PiperTTSVoice voice) throws IllegalStateException, IOException {
         if (!Files.exists(voice.voiceModelPath()) || !Files.exists(voice.voiceModelConfigPath())) {
             throw new IOException("Missing voice files");
         }
-        PiperJNI piper = getPiper();
         PiperVoice piperVoice;
         VoiceModel voiceModel;
-        piperVoice = piper.loadVoice(voice.voiceModelPath(), voice.voiceModelConfigPath(), voice.speakerId.orElse(-1L));
-        voiceModel = new VoiceModel(voice, piperVoice, piperVoice.getSampleRate(), new AtomicInteger(1), logger);
+        piperVoice = PiperJNI.loadVoice(voice.voiceModelPath(), voice.voiceModelConfigPath(),
+                voice.speakerId.orElse(-1));
+        voiceModel = new VoiceModel(voice, piperVoice, piperVoice.getSampleRate(), new AtomicInteger(1));
         if (config.preloadModel) {
             synchronized (modelLock) {
                 if (preloadedModel == null) {
@@ -430,35 +462,51 @@ public class PiperTTSService extends AbstractCachedTTSService {
 
     private ByteArrayAudioStream getAudioStream(short[] samples, long sampleRate, AudioFormat targetFormat)
             throws IOException {
-        // Convert the i16 samples returned by piper to a byte buffer
-        ByteBuffer byteBuffer;
-        int numSamples = samples.length;
-        byteBuffer = ByteBuffer.allocate(numSamples * 2).order(ByteOrder.LITTLE_ENDIAN);
-        for (var sample : samples) {
-            byteBuffer.putShort(sample);
-        }
-        // Initialize a Java audio stream using the Piper output format with the byte buffer created.
+        // Convert the 16-bit signed PCM samples from Piper JNI to a little-endian byte array
+        ByteBuffer byteBuffer = ByteBuffer.allocate(samples.length * Short.BYTES).order(ByteOrder.LITTLE_ENDIAN);
+        byteBuffer.asShortBuffer().put(samples);
         byte[] bytes = byteBuffer.array();
+
+        // Resolve target audio parameters, falling back to Piper voice model defaults (native rate, 16-bit, mono).
+        Long formatFrequency = targetFormat.getFrequency();
+        long targetFrequency = formatFrequency != null ? formatFrequency : sampleRate;
+        Integer formatBitDepth = targetFormat.getBitDepth();
+        int targetBitDepth = formatBitDepth != null ? formatBitDepth : 16;
+        Integer formatChannels = targetFormat.getChannels();
+        int targetChannels = formatChannels != null ? formatChannels : 1;
+
+        // Piper's native output format
         javax.sound.sampled.AudioFormat jAudioFormat = new javax.sound.sampled.AudioFormat(sampleRate, 16, 1, true,
                 false);
-        long audioLength = (long) Math.ceil(((double) bytes.length) / jAudioFormat.getFrameSize());
-        AudioInputStream audioInputStreamTemp = new AudioInputStream(new ByteArrayInputStream(bytes), jAudioFormat,
-                audioLength);
-        // Move the audio data to another Java audio stream in the target format so the Java AudioSystem encoded it as
-        // needed.
-        javax.sound.sampled.AudioFormat jTargetFormat = new javax.sound.sampled.AudioFormat(
-                Objects.requireNonNull(targetFormat.getFrequency()), Objects.requireNonNull(targetFormat.getBitDepth()),
-                Objects.requireNonNull(targetFormat.getChannels()), true, false);
-        AudioInputStream convertedInputStream = AudioSystem.getAudioInputStream(jTargetFormat, audioInputStreamTemp);
-        // It's required to add the wav header to the byte array stream returned for it to work with all the sink
-        // implementations.
-        // It can not be done with the AudioInputStream returned by AudioSystem::getAudioInputStream because it missed
-        // the length property.
-        // Therefore, the following method creates another AudioInputStream instance and uses the Java AudioSystem to
-        // prepend
-        // the wav header bytes,
-        // and finally initializes an OpenHAB audio stream.
-        return getAudioStreamWithRIFFHeader(convertedInputStream.readAllBytes(), jTargetFormat, targetFormat);
+        // Requested output format
+        javax.sound.sampled.AudioFormat jTargetFormat = new javax.sound.sampled.AudioFormat(targetFrequency,
+                targetBitDepth, targetChannels, true, false);
+
+        // Resample/convert via Java AudioSystem only when the target format differs from Piper's native output
+        byte[] audioBytes;
+        if (jAudioFormat.matches(jTargetFormat)) {
+            audioBytes = bytes;
+        } else {
+            AudioInputStream sourceStream = new AudioInputStream(new ByteArrayInputStream(bytes), jAudioFormat,
+                    samples.length);
+            audioBytes = AudioSystem.getAudioInputStream(jTargetFormat, sourceStream).readAllBytes();
+        }
+
+        AudioFormat streamFormat = new AudioFormat(targetFormat.getContainer(), targetFormat.getCodec(), false,
+                targetBitDepth, targetFormat.getBitRate(), targetFrequency, targetChannels);
+
+        // Prepend a RIFF/WAVE header if requested, otherwise return raw PCM
+        if (AudioFormat.CONTAINER_WAVE.equals(targetFormat.getContainer())) {
+            return getAudioStreamWithRIFFHeader(audioBytes, jTargetFormat, streamFormat);
+        }
+        return new ByteArrayAudioStream(audioBytes, streamFormat);
+    }
+
+    private boolean isSupportedFormat(AudioFormat audioFormat) {
+        return (AudioFormat.CONTAINER_WAVE.equals(audioFormat.getContainer())
+                || AudioFormat.CONTAINER_NONE.equals(audioFormat.getContainer()))
+                && AudioFormat.CODEC_PCM_SIGNED.equals(audioFormat.getCodec())
+                && !Boolean.TRUE.equals(audioFormat.isBigEndian());
     }
 
     private String capitalize(String text) {
@@ -467,16 +515,16 @@ public class PiperTTSService extends AbstractCachedTTSService {
 
     private ByteArrayAudioStream getAudioStreamWithRIFFHeader(byte[] audioBytes,
             javax.sound.sampled.AudioFormat jAudioFormat, AudioFormat audioFormat) throws IOException {
-        AudioInputStream audioInputStreamTemp = new AudioInputStream(new ByteArrayInputStream(audioBytes), jAudioFormat,
-                (long) Math.ceil(((double) audioBytes.length) / jAudioFormat.getFrameSize()));
+        AudioInputStream audioInputStream = new AudioInputStream(new ByteArrayInputStream(audioBytes), jAudioFormat,
+                (long) Math.ceil((double) audioBytes.length / jAudioFormat.getFrameSize()));
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        AudioSystem.write(audioInputStreamTemp, AudioFileFormat.Type.WAVE, outputStream);
+        AudioSystem.write(audioInputStream, AudioFileFormat.Type.WAVE, outputStream);
         return new ByteArrayAudioStream(outputStream.toByteArray(), audioFormat);
     }
 
     private record PiperTTSVoice(String voiceId, String voiceName, String quality, String languageFamily,
             String languageRegion, Path voiceModelPath, Path voiceModelConfigPath,
-            Optional<Long> speakerId) implements Voice {
+            Optional<Integer> speakerId) implements Voice {
         @Override
         public String getUID() {
             // Voice uid should be prefixed by service id to be listed properly on the UI.
@@ -494,17 +542,8 @@ public class PiperTTSService extends AbstractCachedTTSService {
         }
     }
 
-    private static class LibraryNotLoaded extends Exception {
-        @Serial
-        private static final long serialVersionUID = 538222631776595180L;
-
-        private LibraryNotLoaded() {
-            super("Library not loaded");
-        }
-    }
-
-    private record VoiceModel(PiperTTSVoice ttsVoice, PiperVoice piperVoice, int sampleRate, AtomicInteger consumers,
-            Logger logger) implements AutoCloseable {
+    private record VoiceModel(PiperTTSVoice ttsVoice, PiperVoice piperVoice, int sampleRate,
+            AtomicInteger consumers) implements AutoCloseable {
 
         @Override
         public void close() {

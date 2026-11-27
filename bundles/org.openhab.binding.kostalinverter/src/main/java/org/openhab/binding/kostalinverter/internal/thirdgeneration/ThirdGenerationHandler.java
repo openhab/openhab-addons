@@ -42,8 +42,8 @@ import javax.crypto.spec.SecretKeySpec;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
@@ -333,11 +333,11 @@ public class ThirdGenerationHandler extends BaseThingHandler {
     }
 
     private void setOffline(ThingStatusDetail detail, String message) {
-        updateStatus(ThingStatus.OFFLINE, detail, message);
+        updateStatus(detail, message);
     }
 
     private void setOffline(ThingStatusDetail detail) {
-        updateStatus(ThingStatus.OFFLINE, detail);
+        updateStatus(detail);
     }
 
     private @Nullable JsonObject getJsonObjectOrOffline(ContentResponse response) {

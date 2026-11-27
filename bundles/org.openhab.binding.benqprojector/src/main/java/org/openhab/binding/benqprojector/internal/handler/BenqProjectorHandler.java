@@ -92,7 +92,7 @@ public class BenqProjectorHandler extends BaseThingHandler {
         } else if (THING_TYPE_PROJECTOR_TCP.equals(thing.getThingTypeUID())) {
             device = Optional.of(new BenqProjectorDevice(config));
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR);
             return;
         }
 
@@ -215,6 +215,16 @@ public class BenqProjectorHandler extends BaseThingHandler {
                 case POWER:
                     remoteController.setPower((OnOffType) command);
                     isPowerOn = (OnOffType) command == OnOffType.ON;
+
+                    // Set Freeze and Blank states to Off when power switched Off
+                    if ((OnOffType) command == OnOffType.OFF) {
+                        if (isLinked(CHANNEL_TYPE_FREEZE)) {
+                            updateState(CHANNEL_TYPE_FREEZE, OnOffType.OFF);
+                        }
+                        if (isLinked(CHANNEL_TYPE_BLANK)) {
+                            updateState(CHANNEL_TYPE_BLANK, OnOffType.OFF);
+                        }
+                    }
                     break;
                 case SOURCE:
                     remoteController.setSource(command.toString());

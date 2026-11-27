@@ -5794,6 +5794,12 @@ components:
           type: integer
           description: Output volume in dB
           default: -79
+        vol_f:
+          title: Vol F
+          maximum: 1.0
+          minimum: 0.0
+          type: number
+          description: Output volume as a fraction of the volume range (0.0 - 1.0)
         disabled:
           title: Disabled
           type: boolean
@@ -5840,6 +5846,18 @@ components:
           minimum: -79.0
           type: integer
           description: Output volume in dB
+        vol_f:
+          title: Vol F
+          maximum: 1.0
+          minimum: 0.0
+          type: number
+          description: Output volume as a fraction of the volume range (0.0 - 1.0)
+        vol_delta_f:
+          title: Vol Delta F
+          maximum: 1.0
+          minimum: -1.0
+          type: number
+          description: Change in output volume as a fraction of the volume range (-1.0 - 1.0)
         disabled:
           title: Disabled
           type: boolean

@@ -23,10 +23,10 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HexFormat;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.zip.CRC32;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -38,6 +38,7 @@ import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
+import org.eclipse.paho.client.mqttv3.MqttSecurityException;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 import org.openhab.binding.roborock.internal.api.GetUrlByEmail;
 import org.openhab.binding.roborock.internal.api.Home;
@@ -74,6 +75,7 @@ import com.google.gson.JsonParser;
  * sent to one of the channels.
  *
  * @author Paul Smedley - Initial contribution
+ * @author Leo Siepel - Fix MQTT connection lifecycle
  */
 @NonNullByDefault
 public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCallbackExtended {
@@ -92,7 +94,9 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
     private final SchedulerTask mqttWatchdogTask;
     private final RoborockWebTargets webTargets;
     private final MqttInboundLivenessWatchdog mqttWatchdog;
-    private @Nullable MqttClient mqttClient;
+    private volatile @Nullable MqttClient mqttClient;
+    // Guarded by this; invalidates connection attempts when the client is replaced or disconnected.
+    private long mqttClientGeneration;
     private volatile boolean disposed = false;
     private String country = "";
     private String countryCode = "";
@@ -102,9 +106,15 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
     private final SecureRandom secureRandom = new SecureRandom();
     private String mqttUser = "";
     protected final Map<String, RoborockVacuumHandler> childDevices = new ConcurrentHashMap<>();
+    private final Set<String> ignoredDestinations = ConcurrentHashMap.newKeySet();
     private final ExpiringCache<Home> homeCache = new ExpiringCache<>(Duration.ofMinutes(10), this::refreshHome);
     private final ExpiringCache<HomeData> homeDataCache = new ExpiringCache<>(Duration.ofMinutes(10),
             this::refreshHomeData);
+    private final AtomicInteger cloudSequenceCounter = new AtomicInteger(1);
+
+    private int nextCloudSequence() {
+        return cloudSequenceCounter.updateAndGet(current -> current >= Integer.MAX_VALUE ? 2 : current + 1);
+    }
 
     private final Gson gson = new Gson();
 
@@ -141,12 +151,33 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
         return homeCache.getValue();
     }
 
+    /**
+     * Validates a captured snapshot of credentials.
+     * Decoupled from ThingStatus to allow recovery from transient connection drops.
+     */
+    private boolean hasValidCredentials(String localToken, Rriot localRriot) {
+        return !localToken.isBlank() && localRriot.r != null && localRriot.r.m != null && !localRriot.r.m.isBlank()
+                && localRriot.r.a != null && !localRriot.r.a.isBlank() && localRriot.u != null
+                && !localRriot.u.isBlank() && localRriot.s != null && !localRriot.s.isBlank() && localRriot.k != null
+                && !localRriot.k.isBlank();
+    }
+
     @Nullable
     public Home refreshHome() {
+        String localToken = this.token;
+        Rriot localRriot = this.rriot;
+
+        if (!hasValidCredentials(localToken, localRriot)) {
+            return null;
+        }
         try {
-            return webTargets.getHomeDetail(baseUri, token);
+            return webTargets.getHomeDetail(baseUri, localToken);
         } catch (RoborockException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Error " + e.getMessage());
+            if ("invalid token".equalsIgnoreCase(e.getMessage())) {
+                handleSessionExpired();
+                return null;
+            }
+            logger.warn("Transient API error while refreshing home: {}", e.getMessage());
             return null;
         }
     }
@@ -158,34 +189,64 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
 
     @Nullable
     public HomeData refreshHomeData() {
+        String localToken = this.token;
+        Rriot localRriot = this.rriot;
+
+        if (!hasValidCredentials(localToken, localRriot)) {
+            return null;
+        }
         try {
             Home home = homeCache.getValue();
             if (home == null || home.data == null) {
-                return new HomeData();
+                return null;
             }
-            return webTargets.getHomeData(Integer.toString(home.data.rrHomeId), rriot);
+            return webTargets.getHomeData(Integer.toString(home.data.rrHomeId), localRriot);
         } catch (RoborockException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Error " + e.getMessage());
-            return new HomeData();
+            if ("invalid token".equalsIgnoreCase(e.getMessage())) {
+                handleSessionExpired();
+                return null;
+            }
+            logger.warn("Transient API error while refreshing home data: {}", e.getMessage());
+            return null;
         }
     }
 
     @Nullable
     public String getRoutines(String deviceId) {
+        String localToken = this.token;
+        Rriot localRriot = this.rriot;
+
+        if (!hasValidCredentials(localToken, localRriot)) {
+            return "";
+        }
         try {
-            return webTargets.getRoutines(deviceId, rriot);
+            return webTargets.getRoutines(deviceId, localRriot);
         } catch (RoborockException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Error " + e.getMessage());
+            if ("invalid token".equalsIgnoreCase(e.getMessage())) {
+                handleSessionExpired();
+                return "";
+            }
+            logger.warn("Transient API error while fetching routines: {}", e.getMessage());
             return "";
         }
     }
 
     @Nullable
     public String setRoutine(String sceneID) {
+        String localToken = this.token;
+        Rriot localRriot = this.rriot;
+
+        if (!hasValidCredentials(localToken, localRriot)) {
+            return "";
+        }
         try {
-            return webTargets.setRoutine(sceneID, rriot);
+            return webTargets.setRoutine(sceneID, localRriot);
         } catch (RoborockException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Error " + e.getMessage());
+            if ("invalid token".equalsIgnoreCase(e.getMessage())) {
+                handleSessionExpired();
+                return "";
+            }
+            logger.warn("Transient API error while executing routine: {}", e.getMessage());
             return "";
         }
     }
@@ -200,8 +261,7 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
         disposed = false;
         RoborockAccountConfiguration localConfig = config = getConfigAs(RoborockAccountConfiguration.class);
         if (localConfig.email.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.conf-error.no-email");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.conf-error.no-email");
             return;
         }
         updateStatus(ThingStatus.UNKNOWN);
@@ -226,6 +286,7 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
             String routingKey = buildRoutingKey(childThing.getConfiguration().get(THING_CONFIG_DUID),
                     childThing.getUID().getId());
             childDevices.put(routingKey, vacuumHandler);
+            ignoredDestinations.remove(routingKey);
             if (!routingKey.equals(childThing.getUID().getId())) {
                 childDevices.put(childThing.getUID().getId(), vacuumHandler);
             }
@@ -256,6 +317,42 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
         return fallbackThingId;
     }
 
+    /**
+     * Atomically invalidates an expired cloud session (code 2010), stops background MQTT tasks,
+     * purges persistent storage, clears stale 2fa config, and schedules 2FA re-authentication.
+     */
+
+    public synchronized void handleSessionExpired() {
+        if (token.isEmpty() && rriot.r == null) {
+            return;
+        }
+
+        logger.warn("Roborock session expired (code 2010). Invalidating credentials and requesting new 2FA code.");
+
+        mqttConnectTask.cancel();
+        mqttWatchdogTask.cancel();
+        disconnectMqttClient();
+
+        updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Session expired. Requesting new 2FA code...");
+
+        sessionStorage.remove("token");
+        sessionStorage.remove("rriot");
+        token = "";
+        rriot = new Rriot();
+
+        Configuration configuration = editConfiguration();
+        if (configuration.get("twofa") != null && !configuration.get("twofa").toString().isBlank()) {
+            configuration.put("twofa", "");
+            updateConfiguration(configuration);
+        }
+
+        if (config != null) {
+            config.twofa = "";
+        }
+
+        initTask.submit();
+    }
+
     private void initAPI() {
         if (disposed) {
             logger.debug("Handler disposed, aborting API init");
@@ -277,13 +374,12 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
                     baseUri = EU_IOT_BASE_URL;
                 }
             } catch (RoborockException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Error " + e.getMessage());
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Error " + e.getMessage());
                 return;
             }
         }
         String sessionStoreToken = sessionStorage.get("token");
         String sessionStoreRriot = sessionStorage.get("rriot");
-
         if (sessionStoreToken != null && sessionStoreRriot != null) {
             logger.debug("Retrieved token and rriot values from sessionStorage");
             token = sessionStoreToken;
@@ -301,7 +397,8 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
                     } else {
                         webTargets.requestCode(baseUri, localConfig.email);
                     }
-                    updateStatus(ThingStatus.UNKNOWN);
+                    updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
+                            "A new 2FA verification code has been sent to your email. Please enter it in the 'twofa' configuration setting.");
                     return;
                 } else {
                     String response = "";
@@ -330,7 +427,7 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
                     if (code == 200) {
                         Login loginResponse = gson.fromJson(response, Login.class);
                         if (loginResponse == null) {
-                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                                     "@text/offline.comm-error.login-failed " + message);
                             return;
                         }
@@ -339,13 +436,13 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
                         token = loginResponse.data.token;
                         rriot = loginResponse.data.rriot;
                     } else {
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                                 "@text/offline.comm-error.login-failed " + message);
                         return;
                     }
                 }
             } catch (RoborockException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Error " + e.getMessage());
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Error " + e.getMessage());
                 return;
             }
         }
@@ -359,6 +456,7 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
         mqttConnectTask.cancel();
         mqttWatchdogTask.cancel();
         disconnectMqttClient();
+        ignoredDestinations.clear();
     }
 
     private void establishMQTTConnection() {
@@ -366,20 +464,15 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
             logger.debug("Handler disposed, aborting MQTT connection");
             return;
         }
-        if (token.isBlank() || rriot.r == null || rriot.r.m.isBlank() || rriot.k.isBlank() || rriot.s.isBlank()
-                || rriot.u.isBlank()) {
-            logger.debug("token and/or rriot are empty, delay connection to MQTT server");
+
+        String localToken = this.token;
+        Rriot localRriot = this.rriot;
+
+        if (!hasValidCredentials(localToken, localRriot)) {
+            logger.debug("Credentials incomplete; delaying MQTT connection.");
             return;
         }
-
-        try {
-            connectMqttClient();
-            logger.debug("Bridge connected to MQTT");
-            updateStatus(ThingStatus.ONLINE);
-        } catch (MqttException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/offline.comm-error.no-mqtt");
-        }
+        connectMqttClient(localRriot);
     }
 
     @Override
@@ -388,63 +481,120 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
         teardown();
     }
 
-    public void connectMqttClient() throws MqttException {
+    private void connectMqttClient(Rriot localRriot) {
+        long generation;
+        synchronized (this) {
+            generation = mqttClientGeneration;
+            if (!isCurrentMqttSession(localRriot, generation)) {
+                return;
+            }
+        }
+        @Nullable
+        MqttClient localMqttClient = null;
         try {
-            URI mqttURL = new URI(rriot.r.m);
-            mqttUser = ProtocolUtils.md5Hex(rriot.u + ':' + rriot.k).substring(2, 10);
-            String mqttPassword = ProtocolUtils.md5Hex(rriot.s + ':' + rriot.k).substring(16);
-
+            URI mqttURL = new URI(localRriot.r.m);
+            String localMqttUser = ProtocolUtils.md5Hex(localRriot.u + ':' + localRriot.k).substring(2, 10);
+            String mqttPassword = ProtocolUtils.md5Hex(localRriot.s + ':' + localRriot.k).substring(16);
             String serverURI = "ssl://" + mqttURL.getHost() + ":" + mqttURL.getPort();
-            String clientId = mqttUser;
-
-            MqttClient localMqttClient = mqttClient = new MqttClient(serverURI, clientId, new MemoryPersistence());
+            localMqttClient = new MqttClient(serverURI, localMqttUser, new MemoryPersistence());
             localMqttClient.setCallback(this);
-
             MqttConnectOptions connOpts = new MqttConnectOptions();
             connOpts.setCleanSession(true);
-            connOpts.setUserName(mqttUser);
+            connOpts.setUserName(localMqttUser);
             connOpts.setPassword(mqttPassword.toCharArray());
             connOpts.setAutomaticReconnect(true);
             connOpts.setConnectionTimeout(60);
             connOpts.setKeepAliveInterval(30);
-
+            @Nullable
+            MqttClient previousClient;
+            boolean current;
+            synchronized (this) {
+                current = isCurrentMqttSession(localRriot, generation);
+                previousClient = mqttClient;
+                if (current) {
+                    mqttClient = localMqttClient;
+                    mqttUser = localMqttUser;
+                    generation = ++mqttClientGeneration;
+                }
+            }
+            if (!current) {
+                closeMqttClient(localMqttClient);
+                return;
+            }
+            closeMqttClient(previousClient);
             localMqttClient.connect(connOpts);
-            mqttWatchdog.reset(Instant.now());
+            synchronized (this) {
+                current = isCurrentMqttSession(localRriot, generation) && localMqttClient.equals(mqttClient);
+                if (current) {
+                    mqttWatchdog.reset(Instant.now());
+                    updateStatus(ThingStatus.ONLINE);
+                }
+            }
+            if (!current) {
+                closeMqttClient(localMqttClient);
+            }
         } catch (URISyntaxException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.comm-error.mqtt-url-bad");
-            throw new MqttException(e);
+            synchronized (this) {
+                if (isCurrentMqttSession(localRriot, generation)) {
+                    updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.comm-error.mqtt-url-bad");
+                }
+            }
+        } catch (MqttSecurityException e) {
+            mqttConnectionFailed(localMqttClient, localRriot, generation, false);
         } catch (MqttException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/offline.comm-error.mqtt-login-fail");
-            throw e;
+            mqttConnectionFailed(localMqttClient, localRriot, generation, true);
+        }
+    }
+
+    private boolean isCurrentMqttSession(Rriot localRriot, long generation) {
+        return !disposed && generation == mqttClientGeneration && localRriot.equals(rriot)
+                && hasValidCredentials(token, localRriot);
+    }
+
+    private void mqttConnectionFailed(@Nullable MqttClient failedClient, Rriot localRriot, long generation,
+            boolean retry) {
+        synchronized (this) {
+            if (failedClient != null && failedClient.equals(mqttClient)) {
+                mqttClient = null;
+            }
+        }
+        closeMqttClient(failedClient);
+        synchronized (this) {
+            if (isCurrentMqttSession(localRriot, generation) && mqttClient == null) {
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/offline.comm-error.mqtt-login-fail");
+                // Paho only retries after an established connection is lost.
+                if (retry && isCurrentMqttSession(localRriot, generation)) {
+                    mqttConnectTask.schedule(60);
+                }
+            }
         }
     }
 
     @Override
     public void connectComplete(boolean reconnect, @Nullable String serverURI) {
         if (disposed) {
-            logger.debug("Handler disposed, ignoring MQTT connectComplete");
             return;
         }
+        Rriot localRriot = this.rriot;
+        if (!hasValidCredentials(this.token, localRriot)) {
+            return;
+        }
+
         if (reconnect) {
             logger.info("MQTT reconnection completed for server URI: {}", serverURI);
         } else {
             logger.debug("MQTT connection established. Server URI: {}", serverURI);
         }
-
-        // Subscribe to topics after a successful connection
         try {
-            String mqttUser = ProtocolUtils.md5Hex(rriot.u + ':' + rriot.k).substring(2, 10);
-            String topic = "rr/m/o/" + rriot.u + "/" + mqttUser + "/#";
+            String mqttUser = ProtocolUtils.md5Hex(localRriot.u + ':' + localRriot.k).substring(2, 10);
+            String topic = "rr/m/o/" + localRriot.u + "/" + mqttUser + "/#";
             MqttClient localMqttClient = mqttClient;
             if (localMqttClient != null) {
                 localMqttClient.subscribe(topic, 0);
             }
             updateStatus(ThingStatus.ONLINE);
         } catch (MqttException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/offline.comm-error.mqtt-subscribe-fail");
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/offline.comm-error.mqtt-subscribe-fail");
         }
     }
 
@@ -455,7 +605,8 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
             return;
         }
         String causeMessage = cause != null ? cause.getMessage() : "unknown";
-        logger.warn("MQTT connection lost: {}. Attempting automatic reconnection...", causeMessage);
+        logger.debug("MQTT connection lost: {}. Attempting automatic reconnection...", causeMessage);
+        updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/offline.comm-error.no-mqtt");
     }
 
     @Override
@@ -478,12 +629,17 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
         mqttWatchdog.noteInboundMessage(Instant.now());
         logger.debug("Received MQTT message for device {}", destination);
 
-        // Check list of child handlers and send message to the right one
         RoborockVacuumHandler handler = childDevices.get(destination);
         if (handler != null) {
             handler.handleMessage(payload);
         } else {
-            logger.warn("Received MQTT message for unknown device destination: {}", destination);
+            // The subscription covers all devices on the account; devices without a Thing are expected
+            if (ignoredDestinations.add(destination)) {
+                logger.debug("Ignoring MQTT messages for device {}: no Thing configured for it on this account",
+                        destination);
+            } else {
+                logger.trace("Ignoring MQTT message for unconfigured device {}", destination);
+            }
         }
     }
 
@@ -492,30 +648,48 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
     }
 
     public void disconnectMqttClient() {
+        closeMqttClient(detachMqttClient());
+    }
+
+    private synchronized @Nullable MqttClient detachMqttClient() {
+        ++mqttClientGeneration;
+        @Nullable
         MqttClient localMqttClient = mqttClient;
-        if (localMqttClient != null) {
+        mqttClient = null;
+        return localMqttClient;
+    }
+
+    private void closeMqttClient(@Nullable MqttClient client) {
+        if (client != null) {
             try {
-                if (localMqttClient.isConnected()) {
-                    localMqttClient.disconnect();
+                if (client.isConnected()) {
+                    client.disconnect();
                 }
-                localMqttClient.close();
+                client.close();
             } catch (MqttException e) {
-                logger.error("Error while disconnecting MQTT client.", e);
+                logger.debug("Error while closing MQTT client: {}", e.getMessage(), e);
             }
         }
-        this.mqttClient = null;
     }
 
     public int sendRPCCommand(String method, String params, String thingID, String localKey, byte[] nonce, int id)
             throws UnsupportedEncodingException {
+
+        String localToken = this.token;
+        Rriot localRriot = this.rriot;
+
+        if (!hasValidCredentials(localToken, localRriot)) {
+            logger.debug("Cannot send RPC command {} as session credentials are invalid.", method);
+            return -1;
+        }
+
         int timestamp = (int) Instant.now().getEpochSecond();
         int protocol = 101;
         MqttClient localMqttClient = mqttClient;
-
-        String nonceHex = HexFormat.of().formatHex(nonce);
+        String nonceHex = java.util.HexFormat.of().formatHex(nonce);
 
         Map<String, Object> security = new HashMap<>();
-        security.put("endpoint", ProtocolUtils.getEndpoint(rriot));
+        security.put("endpoint", ProtocolUtils.getEndpoint(localRriot));
         security.put("nonce", nonceHex.toLowerCase());
 
         JsonElement paramsElement = JsonParser.parseString(params);
@@ -531,14 +705,12 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
         Map<String, Object> payloadMap = new HashMap<>();
         payloadMap.put("t", timestamp);
         payloadMap.put("dps", dps);
-
         String payload = gson.toJson(payloadMap);
+
         logger.trace("MQTT payload = {}", payload);
-
         byte[] messageBytes = build(localKey, protocol, timestamp, payload.getBytes(StandardCharsets.UTF_8));
-        // now send message via mqtt
-        String topic = "rr/m/i/" + rriot.u + "/" + mqttUser + "/" + thingID;
 
+        String topic = "rr/m/i/" + localRriot.u + "/" + mqttUser + "/" + thingID;
         if (localMqttClient != null && localMqttClient.isConnected()) {
             logger.debug("Publishing {} message to {}", method, topic);
             try {
@@ -549,12 +721,11 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
                 mqttWatchdog.noteOutboundPublish(Instant.now());
                 return id;
             } catch (MqttException e) {
-                // Connection reset during router reboot or brief outage — transient, not a bug
                 logger.debug("MQTT publish failed (transient): {}", e.getMessage(), e);
                 return -1;
             }
         } else {
-            logger.debug("Failed to publish {} message to {}, this.mqttClient == null", method, topic);
+            logger.debug("Failed to publish {} message to {}, mqttClient not connected", method, topic);
             return -1;
         }
     }
@@ -565,31 +736,25 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
             byte[] encryptedPayload = ProtocolUtils.encrypt(payload, key);
 
             int randomInt = secureRandom.nextInt(90000) + 10000;
-            int seq = secureRandom.nextInt(900000) + 100000;
+            int seq = nextCloudSequence();
 
             int totalLength = HEADER_LENGTH_WITHOUT_CRC + encryptedPayload.length + CRC_LENGTH;
             byte[] message = new byte[totalLength];
 
-            // Write fixed string '1.0'
             message[0] = '1';
             message[1] = '.';
             message[2] = '0';
 
-            // Write integer fields
             ProtocolUtils.writeInt32BE(message, seq, SEQ_OFFSET);
             ProtocolUtils.writeInt32BE(message, randomInt, RANDOM_OFFSET);
             ProtocolUtils.writeInt32BE(message, timestamp, TIMESTAMP_OFFSET);
             ProtocolUtils.writeInt16BE(message, protocol, PROTOCOL_OFFSET);
             ProtocolUtils.writeInt16BE(message, encryptedPayload.length, PAYLOAD_OFFSET);
 
-            // Copy encrypted payload
             System.arraycopy(encryptedPayload, 0, message, HEADER_LENGTH_WITHOUT_CRC, encryptedPayload.length);
 
-            // Calculate CRC32 and write to the end
             CRC32 crc32 = new CRC32();
-            crc32.update(message, 0, message.length - CRC_LENGTH); // Calculate CRC for all bytes except the last 4 (CRC
-                                                                   // field
-            // itself)
+            crc32.update(message, 0, message.length - CRC_LENGTH);
             ProtocolUtils.writeInt32BE(message, (int) crc32.getValue(), message.length - CRC_LENGTH);
             return message;
         } catch (Exception e) {
@@ -608,41 +773,42 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
     }
 
     void checkMqttInboundLiveness() {
-        if (disposed) {
+        String localToken = this.token;
+        Rriot localRriot = this.rriot;
+
+        if (disposed || !hasValidCredentials(localToken, localRriot)) {
             return;
         }
-
         MqttClient localMqttClient = mqttClient;
         boolean connected = localMqttClient != null && localMqttClient.isConnected();
         Instant now = Instant.now();
         MqttInboundLivenessWatchdog.Decision decision = mqttWatchdog.evaluate(now, connected);
-
         if (decision == MqttInboundLivenessWatchdog.Decision.STALE) {
             @Nullable
             Instant lastInbound = mqttWatchdog.getLastInboundMessageAt();
             String lastInboundAge = lastInbound == null ? "never"
                     : Duration.between(lastInbound, now).toSeconds() + "s";
             logger.debug(
-                    "MQTT inbound watchdog detected possible silent cloud downlink stall (connection may appear alive but no inbound traffic; last inbound: {}). Recycling MQTT client as recovery.",
+                    "MQTT inbound watchdog detected possible silent cloud downlink stall (last inbound: {}). Recycling MQTT client.",
                     lastInboundAge);
             mqttWatchdog.noteRecycleAttempt(now);
-            recycleMqttClient();
+            recycleMqttClient(localRriot);
         } else if (decision != MqttInboundLivenessWatchdog.Decision.HEALTHY) {
             logger.debug("MQTT inbound watchdog check skipped: {}", decision);
         }
     }
 
-    void recycleMqttClient() {
-        disconnectMqttClient();
-        try {
-            connectMqttClient();
-            logger.debug("MQTT client recycled after inbound liveness watchdog trigger");
-            updateStatus(ThingStatus.ONLINE);
-        } catch (MqttException e) {
-            logger.warn("MQTT recycle attempt failed", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/offline.comm-error.no-mqtt");
+    void recycleMqttClient(Rriot localRriot) {
+        @Nullable
+        MqttClient localMqttClient;
+        synchronized (this) {
+            if (disposed || !localRriot.equals(rriot) || !hasValidCredentials(token, localRriot)) {
+                return;
+            }
+            localMqttClient = detachMqttClient();
         }
+        closeMqttClient(localMqttClient);
+        connectMqttClient(localRriot);
     }
 
     @Override
@@ -887,7 +1053,7 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
             int timestamp = JsonParser.parseString(new String(payload, StandardCharsets.UTF_8)).getAsJsonObject()
                     .get("t").getAsInt();
             int randomInt = secureRandom.nextInt(90000) + 10000;
-            int seq = secureRandom.nextInt(900000) + 100000;
+            int seq = nextCloudSequence();
             int protocol = 101;
 
             byte[] encryptedPayload = ProtocolUtils.encryptB01(payload, localKey, randomInt);

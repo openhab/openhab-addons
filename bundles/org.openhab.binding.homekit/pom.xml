@@ -19,6 +19,7 @@
       <groupId>org.bouncycastle</groupId>
       <artifactId>bcprov-jdk18on</artifactId>
       <version>${bouncycastle.version}</version>
+      <scope>provided</scope>
     </dependency>
   </dependencies>
 

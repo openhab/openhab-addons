@@ -16,6 +16,7 @@ import static org.openhab.binding.verisure.internal.VerisureBindingConstants.THI
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.verisure.internal.dto.VerisureSmartLockConfigurationDTO.Configuration;
 import org.openhab.core.thing.ThingTypeUID;
 
 import com.google.gson.annotations.SerializedName;
@@ -29,14 +30,14 @@ import com.google.gson.annotations.SerializedName;
 @NonNullByDefault
 public class VerisureSmartLocksDTO extends VerisureBaseThingDTO {
 
-    private @Nullable VerisureSmartLockDTO smartLockJSON;
+    private @Nullable Configuration configuration;
 
-    public @Nullable VerisureSmartLockDTO getSmartLockJSON() {
-        return smartLockJSON;
+    public @Nullable Configuration getConfiguration() {
+        return configuration;
     }
 
-    public void setSmartLockJSON(@Nullable VerisureSmartLockDTO smartLockJSON) {
-        this.smartLockJSON = smartLockJSON;
+    public void setConfiguration(@Nullable Configuration configuration) {
+        this.configuration = configuration;
     }
 
     @Override
@@ -48,8 +49,8 @@ public class VerisureSmartLocksDTO extends VerisureBaseThingDTO {
     public int hashCode() {
         final int prime = 31;
         int result = super.hashCode();
-        VerisureSmartLockDTO localSmartLockJSON = smartLockJSON;
-        result = prime * result + ((localSmartLockJSON == null) ? 0 : localSmartLockJSON.hashCode());
+        Configuration localConfiguration = configuration;
+        result = prime * result + ((localConfiguration == null) ? 0 : localConfiguration.hashCode());
         return result;
     }
 
@@ -68,12 +69,12 @@ public class VerisureSmartLocksDTO extends VerisureBaseThingDTO {
             return false;
         }
         VerisureSmartLocksDTO other = (VerisureSmartLocksDTO) obj;
-        VerisureSmartLockDTO localSmartLockJSON = smartLockJSON;
-        if (localSmartLockJSON == null) {
-            if (other.smartLockJSON != null) {
+        Configuration localConfiguration = configuration;
+        if (localConfiguration == null) {
+            if (other.configuration != null) {
                 return false;
             }
-        } else if (!localSmartLockJSON.equals(other.smartLockJSON)) {
+        } else if (!localConfiguration.equals(other.configuration)) {
             return false;
         }
         return true;
@@ -81,7 +82,7 @@ public class VerisureSmartLocksDTO extends VerisureBaseThingDTO {
 
     @Override
     public String toString() {
-        return "VerisureSmartLocksDTO [smartLockJSON=" + smartLockJSON + "]";
+        return "VerisureSmartLocksDTO [configuration=" + configuration + "]";
     }
 
     public static class Doorlock {

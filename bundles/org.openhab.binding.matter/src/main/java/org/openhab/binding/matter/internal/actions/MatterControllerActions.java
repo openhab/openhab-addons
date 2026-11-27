@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.matter.internal.actions;
 
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -73,7 +74,12 @@ public class MatterControllerActions implements ThingActions {
         ControllerHandler handler = this.handler;
         if (handler != null) {
             try {
-                handler.startScan(code).get();
+                List<String> warnings = handler.pairDevice(code).get();
+                if (!warnings.isEmpty()) {
+                    return translationService.getTranslation(
+                            MatterBindingConstants.THING_ACTION_RESULT_DEVICE_ADDED_WITH_WARNINGS,
+                            String.join(", ", warnings));
+                }
                 return translationService.getTranslation(MatterBindingConstants.THING_ACTION_RESULT_DEVICE_ADDED);
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();

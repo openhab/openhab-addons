@@ -26,6 +26,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Map;
@@ -41,13 +42,15 @@ import javax.sound.sampled.AudioSystem;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.InputStreamContentProvider;
-import org.eclipse.jetty.client.util.MultiPartContentProvider;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.MultiPartRequestContent;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.StringRequestContent;
+import org.eclipse.jetty.http.HttpFields;
 import org.eclipse.jetty.http.HttpMethod;
+import org.eclipse.jetty.http.MultiPart;
+import org.eclipse.jetty.io.content.InputStreamContentSource;
 import org.openhab.core.OpenHAB;
 import org.openhab.core.audio.AudioFormat;
 import org.openhab.core.audio.AudioStream;
@@ -57,14 +60,14 @@ import org.openhab.core.config.core.ConfigurableService;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.io.rest.LocaleService;
-import org.openhab.core.voice.RecognitionStartEvent;
-import org.openhab.core.voice.RecognitionStopEvent;
-import org.openhab.core.voice.STTException;
-import org.openhab.core.voice.STTListener;
-import org.openhab.core.voice.STTService;
-import org.openhab.core.voice.STTServiceHandle;
-import org.openhab.core.voice.SpeechRecognitionErrorEvent;
-import org.openhab.core.voice.SpeechRecognitionEvent;
+import org.openhab.core.voice.stt.RecognitionStartEvent;
+import org.openhab.core.voice.stt.RecognitionStopEvent;
+import org.openhab.core.voice.stt.STTException;
+import org.openhab.core.voice.stt.STTListener;
+import org.openhab.core.voice.stt.STTService;
+import org.openhab.core.voice.stt.STTServiceHandle;
+import org.openhab.core.voice.stt.SpeechRecognitionErrorEvent;
+import org.openhab.core.voice.stt.SpeechRecognitionEvent;
 import org.openhab.voice.whisperstt.internal.WhisperSTTConfiguration.Mode;
 import org.openhab.voice.whisperstt.internal.utils.VAD;
 import org.osgi.framework.Constants;
@@ -76,7 +79,6 @@ import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.github.givimad.libfvadjni.VoiceActivityDetector;
 import io.github.givimad.whisperjni.WhisperContext;
 import io.github.givimad.whisperjni.WhisperContextParams;
 import io.github.givimad.whisperjni.WhisperFullParams;
@@ -122,7 +124,6 @@ public class WhisperSTTService implements STTService {
             }
             this.config = new Configuration(config).as(WhisperSTTConfiguration.class);
             loadWhisperLibraryIfNeeded();
-            VoiceActivityDetector.loadLibrary();
             whisper = new WhisperJNI();
         } catch (IOException | RuntimeException e) {
             logger.warn("Unable to register native library: {}", e.getMessage());
@@ -284,14 +285,13 @@ public class WhisperSTTService implements STTService {
     }
 
     @Override
-    public STTServiceHandle recognize(STTListener sttListener, AudioStream audioStream, Locale locale, Set<String> set)
+    public STTServiceHandle recognize(STTListener sttListener, AudioStream audioStream, Locale locale)
             throws STTException {
         AtomicBoolean aborted = new AtomicBoolean(false);
         try {
             logger.debug("Creating VAD instance...");
             final int nSamplesStep = (int) (config.stepSeconds * WHISPER_SAMPLE_RATE);
-            VAD vad = new VAD(VoiceActivityDetector.Mode.valueOf(config.vadMode), WHISPER_SAMPLE_RATE, nSamplesStep,
-                    config.vadStep, config.vadSensitivity);
+            VAD vad = new VAD(config.vadSensitivity, config.vadThreshold);
             logger.debug("VAD instance created");
             sttListener.sttEventReceived(new RecognitionStartEvent());
             backgroundRecognize(nSamplesStep, locale, sttListener, audioStream, vad, aborted);
@@ -376,7 +376,7 @@ public class WhisperSTTService implements STTService {
         logger.debug("Max transcription samples {}", nSamplesMax);
         logger.debug("Max init silence samples {}", nInitSilenceSamples);
         logger.debug("Max silence samples {}", nMaxSilenceSamples);
-        // used to store the step samples in libfvad wanted format 16-bit int
+        // used to store the step samples as 16-bit int
         final short[] stepAudioSamples = new short[nSamplesStep];
         // used to store the full retained samples for whisper
         final short[] audioSamples = new short[nSamplesMax];
@@ -385,11 +385,11 @@ public class WhisperSTTService implements STTService {
             int silenceSamplesCounter = 0;
             int nProcessedSamples = 0;
             boolean voiceDetected = false;
+            boolean endOfAudio = false;
             String transcription = "";
             VAD.@Nullable VADResult firstConsecutiveSilenceVADResult = null;
             try {
-                try (audioStream; //
-                        vad) {
+                try (audioStream) {
                     if (AudioFormat.CONTAINER_WAVE.equals(audioStream.getFormat().getContainer())) {
                         AudioWaveUtils.removeFMT(audioStream);
                     }
@@ -401,112 +401,134 @@ public class WhisperSTTService implements STTService {
                         // read until no remaining so we get the complete step samples
                         int numBytesRead = audioStream.read(captureBuffer.array(), captureBuffer.capacity() - remaining,
                                 remaining);
-                        if (aborted.get() || numBytesRead == -1) {
+                        if (aborted.get()) {
                             break;
                         }
-                        if (numBytesRead != remaining) {
-                            remaining = remaining - numBytesRead;
-                            continue;
+                        if (numBytesRead == -1) {
+                            if (!voiceDetected || audioSamplesOffset == 0) {
+                                break;
+                            }
+                            logger.debug("End of audio, transcribing what was captured");
+                            // keep the samples of the incomplete step
+                            int partialSamples = Math.min((captureBuffer.capacity() - remaining) / 2,
+                                    audioSamples.length - audioSamplesOffset);
+                            for (int i = 0; i < partialSamples; i++) {
+                                audioSamples[audioSamplesOffset++] = captureBuffer.getShort(i * 2);
+                            }
+                            endOfAudio = true;
                         }
-                        // reset remaining to full capacity
-                        remaining = captureBuffer.capacity();
-                        // encode step samples and copy them to the audio buffers
-                        var shortBuffer = captureBuffer.asShortBuffer();
-                        while (shortBuffer.hasRemaining()) {
-                            var position = shortBuffer.position();
-                            short i16BitSample = shortBuffer.get();
-                            stepAudioSamples[position] = i16BitSample;
-                            audioSamples[audioSamplesOffset++] = i16BitSample;
-                            nProcessedSamples++;
-                        }
-                        // run vad
-                        if (nProcessedSamples + nSamplesStep > nSamplesMax - nSamplesStep) {
-                            logger.debug("VAD: Skipping, max length reached");
-                        } else {
-                            VAD.@Nullable VADResult lastVADResult = vad.analyze(stepAudioSamples);
-                            if (lastVADResult.isVoice()) {
-                                voiceDetected = true;
-                                logger.debug("VAD: voice detected");
-                                silenceSamplesCounter = 0;
-                                firstConsecutiveSilenceVADResult = null;
+                        if (!endOfAudio) {
+                            if (numBytesRead != remaining) {
+                                remaining = remaining - numBytesRead;
                                 continue;
-                            } else {
-                                if (firstConsecutiveSilenceVADResult == null) {
-                                    firstConsecutiveSilenceVADResult = lastVADResult;
+                            }
+                            // reset remaining to full capacity
+                            remaining = captureBuffer.capacity();
+                            // encode step samples and copy them to the audio buffers
+                            var shortBuffer = captureBuffer.asShortBuffer();
+                            while (shortBuffer.hasRemaining()) {
+                                var position = shortBuffer.position();
+                                short i16BitSample = shortBuffer.get();
+                                stepAudioSamples[position] = i16BitSample;
+                                audioSamples[audioSamplesOffset++] = i16BitSample;
+                                nProcessedSamples++;
+                            }
+                            // run vad
+                            if (nProcessedSamples + nSamplesStep > nSamplesMax - nSamplesStep) {
+                                if (!voiceDetected) {
+                                    logger.debug("VAD: max length reached without voice");
+                                    break;
                                 }
-                                silenceSamplesCounter += nSamplesStep;
-                                int maxSilenceSamples = voiceDetected ? nMaxSilenceSamples : nInitSilenceSamples;
-                                if (silenceSamplesCounter < maxSilenceSamples) {
-                                    if (logger.isDebugEnabled()) {
-                                        int totalSteps = maxSilenceSamples / nSamplesStep;
-                                        int currentSteps = totalSteps
-                                                - ((maxSilenceSamples - silenceSamplesCounter) / nSamplesStep);
-                                        logger.debug("VAD: silence detected {}/{}", currentSteps, totalSteps);
-                                    }
-                                    if (!voiceDetected && config.removeSilence) {
-                                        logger.debug("removing start silence");
-                                        int samplesToKeep = lastVADResult.voiceSamplesInTail();
-                                        if (samplesToKeep > 0) {
-                                            for (int i = 0; i < samplesToKeep; i++) {
-                                                audioSamples[i] = audioSamples[audioSamplesOffset
-                                                        - (samplesToKeep - i)];
-                                            }
-                                            audioSamplesOffset = samplesToKeep;
-                                            logger.debug("some audio was kept");
-                                        } else {
-                                            audioSamplesOffset = 0;
-                                        }
-                                    }
+                                logger.debug("VAD: max length reached, transcribing what was captured");
+                                endOfAudio = true;
+                            } else {
+                                VAD.@Nullable VADResult lastVADResult = vad.analyze(stepAudioSamples);
+                                if (lastVADResult.isVoice()) {
+                                    voiceDetected = true;
+                                    logger.debug("VAD: voice detected");
+                                    silenceSamplesCounter = 0;
+                                    firstConsecutiveSilenceVADResult = null;
                                     continue;
                                 } else {
-                                    logger.debug("VAD: silence detected");
-                                    if (audioSamplesOffset < nSamplesMin) {
-                                        logger.debug("Not enough samples, continue");
+                                    if (firstConsecutiveSilenceVADResult == null) {
+                                        firstConsecutiveSilenceVADResult = lastVADResult;
+                                    }
+                                    silenceSamplesCounter += nSamplesStep;
+                                    int maxSilenceSamples = voiceDetected ? nMaxSilenceSamples : nInitSilenceSamples;
+                                    if (silenceSamplesCounter < maxSilenceSamples) {
+                                        if (logger.isDebugEnabled()) {
+                                            int totalSteps = maxSilenceSamples / nSamplesStep;
+                                            int currentSteps = totalSteps
+                                                    - ((maxSilenceSamples - silenceSamplesCounter) / nSamplesStep);
+                                            logger.debug("VAD: silence detected {}/{}", currentSteps, totalSteps);
+                                        }
+                                        if (!voiceDetected && config.removeSilence) {
+                                            logger.debug("removing start silence");
+                                            int samplesToKeep = lastVADResult.voiceSamplesInTail();
+                                            if (samplesToKeep > 0) {
+                                                for (int i = 0; i < samplesToKeep; i++) {
+                                                    audioSamples[i] = audioSamples[audioSamplesOffset
+                                                            - (samplesToKeep - i)];
+                                                }
+                                                audioSamplesOffset = samplesToKeep;
+                                                logger.debug("some audio was kept");
+                                            } else {
+                                                audioSamplesOffset = 0;
+                                            }
+                                        }
+                                        continue;
+                                    } else {
+                                        logger.debug("VAD: silence detected");
+                                        if (audioSamplesOffset < nSamplesMin) {
+                                            logger.debug("Not enough samples, continue");
+                                            continue;
+                                        }
+                                        if (config.singleUtteranceMode) {
+                                            // close the audio stream to avoid keep getting audio we don't need
+                                            try {
+                                                audioStream.close();
+                                            } catch (IOException ignored) {
+                                            }
+                                        }
+                                    }
+                                }
+                                if (config.removeSilence) {
+                                    if (voiceDetected) {
+                                        logger.debug("removing end silence");
+                                        int samplesToKeep = firstConsecutiveSilenceVADResult.voiceSamplesInHead();
+                                        if (samplesToKeep > 0) {
+                                            logger.debug("some audio was kept");
+                                        }
+                                        var samplesToRemove = silenceSamplesCounter - samplesToKeep;
+                                        if (audioSamplesOffset - samplesToRemove < nSamplesMin) {
+                                            logger.debug("avoid removing under min audio seconds");
+                                            samplesToRemove = audioSamplesOffset - nSamplesMin;
+                                        }
+                                        if (samplesToRemove > 0) {
+                                            audioSamplesOffset -= samplesToRemove;
+                                        }
+                                    } else {
+                                        audioSamplesOffset = 0;
+                                    }
+                                }
+                                if (audioSamplesOffset == 0) {
+                                    if (config.singleUtteranceMode) {
+                                        logger.debug("no audio to transcribe, ending");
+                                        break;
+                                    } else {
+                                        logger.debug("no audio to transcribe, continue listening");
                                         continue;
                                     }
-                                    if (config.singleUtteranceMode) {
-                                        // close the audio stream to avoid keep getting audio we don't need
-                                        try {
-                                            audioStream.close();
-                                        } catch (IOException ignored) {
-                                        }
-                                    }
-                                }
-                            }
-                            if (config.removeSilence) {
-                                if (voiceDetected) {
-                                    logger.debug("removing end silence");
-                                    int samplesToKeep = firstConsecutiveSilenceVADResult.voiceSamplesInHead();
-                                    if (samplesToKeep > 0) {
-                                        logger.debug("some audio was kept");
-                                    }
-                                    var samplesToRemove = silenceSamplesCounter - samplesToKeep;
-                                    if (audioSamplesOffset - samplesToRemove < nSamplesMin) {
-                                        logger.debug("avoid removing under min audio seconds");
-                                        samplesToRemove = audioSamplesOffset - nSamplesMin;
-                                    }
-                                    if (samplesToRemove > 0) {
-                                        audioSamplesOffset -= samplesToRemove;
-                                    }
-                                } else {
-                                    audioSamplesOffset = 0;
-                                }
-                            }
-                            if (audioSamplesOffset == 0) {
-                                if (config.singleUtteranceMode) {
-                                    logger.debug("no audio to transcribe, ending");
-                                    break;
-                                } else {
-                                    logger.debug("no audio to transcribe, continue listening");
-                                    continue;
                                 }
                             }
                         }
-                        // run whisper, either locally or by remote API
-                        String tempTranscription = (switch (config.mode) {
-                            case LOCAL -> recognizeLocal(audioSamplesOffset, audioSamples, locale.getLanguage());
-                            case API -> recognizeAPI(audioSamplesOffset, audioSamples, locale.getLanguage());
-                        });
+                        int minSamples = Math.min(nSamplesMin, audioSamples.length);
+                        if (audioSamplesOffset < minSamples) {
+                            logger.debug("padding audio with silence up to min audio seconds");
+                            Arrays.fill(audioSamples, audioSamplesOffset, minSamples, (short) 0);
+                            audioSamplesOffset = minSamples;
+                        }
+                        String tempTranscription = transcribe(audioSamplesOffset, audioSamples, locale.getLanguage());
 
                         if (tempTranscription != null && !tempTranscription.isBlank()) {
                             if (config.createWAVRecord) {
@@ -522,6 +544,9 @@ public class WhisperSTTService implements STTService {
                             break;
                         }
 
+                        if (endOfAudio) {
+                            break;
+                        }
                         // reset state to start with next segment
                         voiceDetected = false;
                         silenceSamplesCounter = 0;
@@ -548,6 +573,17 @@ public class WhisperSTTService implements STTService {
                 emitSpeechRecognitionError(sttListener);
             }
         });
+    }
+
+    /**
+     * Runs whisper, either locally or by remote API.
+     */
+    @Nullable
+    String transcribe(int audioSamplesOffset, short[] audioSamples, String language) throws STTException {
+        return switch (config.mode) {
+            case LOCAL -> recognizeLocal(audioSamplesOffset, audioSamples, language);
+            case API -> recognizeAPI(audioSamplesOffset, audioSamples, language);
+        };
     }
 
     @Nullable
@@ -630,20 +666,24 @@ public class WhisperSTTService implements STTService {
 
             // prepare HTTP request
             HttpClient commonHttpClient = httpClientFactory.getCommonHttpClient();
-            MultiPartContentProvider multiPartContentProvider = new MultiPartContentProvider();
-            multiPartContentProvider.addFilePart("file", "audio.wav",
-                    new InputStreamContentProvider(byteArrayInputStream), null);
-            multiPartContentProvider.addFieldPart("model", new StringContentProvider(this.config.apiModelName), null);
-            multiPartContentProvider.addFieldPart("response_format", new StringContentProvider("text"), null);
-            multiPartContentProvider.addFieldPart("temperature",
-                    new StringContentProvider(Float.toString(this.config.temperature)), null);
+            MultiPartRequestContent multiPartContentProvider = new MultiPartRequestContent();
+            multiPartContentProvider.addPart(new MultiPart.ContentSourcePart("file", "audio.wav", HttpFields.EMPTY,
+                    new InputStreamContentSource(byteArrayInputStream)));
+            multiPartContentProvider.addPart(new MultiPart.ContentSourcePart("model", null, HttpFields.EMPTY,
+                    new StringRequestContent(this.config.apiModelName)));
+            multiPartContentProvider.addPart(new MultiPart.ContentSourcePart("response_format", null, HttpFields.EMPTY,
+                    new StringRequestContent("text")));
+            multiPartContentProvider.addPart(new MultiPart.ContentSourcePart("temperature", null, HttpFields.EMPTY,
+                    new StringRequestContent(Float.toString(this.config.temperature))));
             if (!language.isBlank()) {
-                multiPartContentProvider.addFieldPart("language", new StringContentProvider(language), null);
+                multiPartContentProvider.addPart(new MultiPart.ContentSourcePart("language", null, HttpFields.EMPTY,
+                        new StringRequestContent(language)));
             }
+            multiPartContentProvider.close();
             Request request = commonHttpClient.newRequest(config.apiUrl).method(HttpMethod.POST)
-                    .content(multiPartContentProvider);
+                    .body(multiPartContentProvider);
             if (!config.apiKey.isBlank()) {
-                request = request.header("Authorization", "Bearer " + config.apiKey);
+                request = request.headers(headers -> headers.put("Authorization", "Bearer " + config.apiKey));
             }
             // execute the request
             ContentResponse response = request.send();

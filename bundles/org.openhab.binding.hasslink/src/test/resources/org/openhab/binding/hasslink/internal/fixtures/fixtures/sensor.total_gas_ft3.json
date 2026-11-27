@@ -1,0 +1,36 @@
+{
+  "id": 18,
+  "type": "event",
+  "event": {
+    "event_type": "state_changed",
+    "data": {
+      "entity_id": "sensor.total_gas_ft3",
+      "old_state": null,
+      "new_state": {
+        "entity_id": "sensor.total_gas_ft3",
+        "state": "5.720003011584",
+        "attributes": {
+          "state_class": "total",
+          "unit_of_measurement": "m\u00b3",
+          "device_class": "gas",
+          "friendly_name": "Total gas 2"
+        },
+        "last_changed": "2026-09-22T05:36:27.506225+00:00",
+        "last_reported": "2026-09-22T05:36:27.506225+00:00",
+        "last_updated": "2026-09-22T05:36:27.506225+00:00",
+        "context": {
+          "id": "01M33SV4BJBNEGDPD19P6AH1FA",
+          "parent_id": null,
+          "user_id": null
+        }
+      }
+    },
+    "origin": "LOCAL",
+    "time_fired": "2026-09-19T00:00:00.000000+00:00",
+    "context": {
+      "id": "01HXXXXXXX",
+      "parent_id": null,
+      "user_id": null
+    }
+  }
+}

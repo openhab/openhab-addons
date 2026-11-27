@@ -29,6 +29,7 @@ import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.gemini.internal.action.GeminiActions;
 import org.openhab.binding.gemini.internal.api.GeminiApiClient;
 import org.openhab.binding.gemini.internal.api.GeminiApiException;
+import org.openhab.binding.gemini.internal.api.dto.request.GeminiThinkingLevel;
 import org.openhab.binding.gemini.internal.api.dto.response.GeminiModel;
 import org.openhab.binding.gemini.internal.api.dto.response.GeminiResponse;
 import org.openhab.binding.gemini.internal.hli.GeminiHLIService;
@@ -93,6 +94,8 @@ public class GeminiHandler extends BaseThingHandler {
                 double temp = config != null ? config.temperature : DEFAULT_TEMPERATURE;
                 double topP = config != null ? config.topP : DEFAULT_TOP_P;
                 int maxTokens = config != null ? config.maxOutputTokens : DEFAULT_MAX_OUTPUT_TOKENS;
+                GeminiThinkingLevel thinkingLevel = config != null ? parseThinkingLevel(config.thinkingLevel)
+                        : DEFAULT_THINKING_LEVEL;
                 String systemMessage = DEFAULT_SYSTEM_MESSAGE;
 
                 GeminiChannelConfiguration channelConfig = channel.getConfiguration()
@@ -118,6 +121,11 @@ public class GeminiHandler extends BaseThingHandler {
                     maxTokens = channelMaxTokens;
                 }
 
+                String channelThinkingLevel = channelConfig.thinkingLevel;
+                if (channelThinkingLevel != null && !channelThinkingLevel.isBlank()) {
+                    thinkingLevel = parseThinkingLevel(channelThinkingLevel);
+                }
+
                 String channelSystemMessage = channelConfig.systemMessage;
                 if (channelSystemMessage != null && !channelSystemMessage.isBlank()) {
                     systemMessage = channelSystemMessage;
@@ -125,16 +133,26 @@ public class GeminiHandler extends BaseThingHandler {
 
                 try {
                     GeminiResponse response = client.sendPrompt(model, lastPrompt, systemMessage, temp, topP, maxTokens,
-                            timeout);
+                            thinkingLevel, timeout);
                     processChatResponse(channelUID, response);
                     updateStatus(ThingStatus.ONLINE);
                 } catch (GeminiApiException e) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                             "Could not connect to Gemini API: " + e.getMessage());
                     logger.debug("Request to Gemini failed: {}", e.getMessage(), e);
                 }
             }
         }
+    }
+
+    private GeminiThinkingLevel parseThinkingLevel(String thinkingLevel) {
+        GeminiThinkingLevel level = GeminiThinkingLevel.fromString(thinkingLevel);
+        if (level == null) {
+            logger.warn("Invalid thinking level configured: {} (falling back to default {})", thinkingLevel,
+                    DEFAULT_THINKING_LEVEL);
+            return DEFAULT_THINKING_LEVEL;
+        }
+        return level;
     }
 
     private void processChatResponse(ChannelUID channelUID, GeminiResponse response) {
@@ -160,14 +178,12 @@ public class GeminiHandler extends BaseThingHandler {
         String apiKey = c.apiKey;
 
         if (apiKey.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.configuration-error");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.configuration-error");
             return;
         }
 
-        if (invalidTimeout(c.requestTimeout)) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/requestTimeout.configuration-error");
+        if (!isValidTimeout(c.requestTimeout)) {
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/requestTimeout.configuration-error");
             return;
         }
 
@@ -180,8 +196,7 @@ public class GeminiHandler extends BaseThingHandler {
                 GeminiApiClient client = this.apiClient;
                 GeminiConfiguration currentConfig = this.config;
                 if (client == null || currentConfig == null) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                            "@text/offline.configuration-error");
+                    updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.configuration-error");
                     return;
                 }
                 List<GeminiModel> apiModels = client.fetchModels(currentConfig.requestTimeout);
@@ -206,11 +221,10 @@ public class GeminiHandler extends BaseThingHandler {
                     this.models = List.copyOf(modelList);
                     updateStatus(ThingStatus.ONLINE);
                 } else {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "@text/offline.communication-error");
+                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/offline.communication-error");
                 }
             } catch (GeminiApiException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
         }, 0, TimeUnit.MILLISECONDS);
     }
@@ -230,7 +244,7 @@ public class GeminiHandler extends BaseThingHandler {
         return List.of(GeminiModelOptionProvider.class, GeminiActions.class, GeminiHLIService.class);
     }
 
-    private boolean invalidTimeout(int timeout) {
-        return timeout <= 0;
+    public static boolean isValidTimeout(@Nullable Integer timeout) {
+        return timeout == null || timeout > 0;
     }
 }

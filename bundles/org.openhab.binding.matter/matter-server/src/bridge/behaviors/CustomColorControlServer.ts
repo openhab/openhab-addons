@@ -12,6 +12,8 @@ export class CustomColorControlServer extends ColorControlServer {
         colorTempPhysicalMaxMireds: 667,
         coupleColorTempToLevelMinMireds: 154,
         coupleColorTempToLevelMaxMireds: 667,
+        // required by the Extended Color Light device type, matter.js updates it during transitions
+        remainingTime: 0,
     } as const;
 
     override async moveToColorTemperatureLogic(targetMireds: number, transitionTime: number) {
@@ -19,6 +21,13 @@ export class CustomColorControlServer extends ColorControlServer {
             .get(DeviceFunctions)
             .sendAttributeChangedEvent(this.endpoint.id, "colorControl", "colorTemperatureMireds", targetMireds);
         return super.moveToColorTemperatureLogic(targetMireds, transitionTime);
+    }
+
+    override async moveToColorLogic(targetX: number, targetY: number, transitionTime: number) {
+        const deviceFunctions = this.env.get(DeviceFunctions);
+        deviceFunctions.sendAttributeChangedEvent(this.endpoint.id, "colorControl", "currentX", targetX);
+        deviceFunctions.sendAttributeChangedEvent(this.endpoint.id, "colorControl", "currentY", targetY);
+        return super.moveToColorLogic(targetX, targetY, transitionTime);
     }
 
     override async moveToHueAndSaturationLogic(h: number, s: number, t: number) {

@@ -20,6 +20,13 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
 
+/**
+ * Unit tests for {@link Shelly2ApiRpc#resetCountersMethod}: verifies the correct RPC reset-counters
+ * method is picked per meter/component combination (EM, EM1-clamp, PM1, switch, cover), including the
+ * priority between overlapping capability flags on the same profile.
+ *
+ * @author Markus Michels - Initial contribution
+ */
 @NonNullByDefault
 public class Shelly2ApiRpcResetCountersTest {
 
@@ -67,6 +74,15 @@ public class Shelly2ApiRpcResetCountersTest {
         profile.hasRelays = true;
 
         assertEquals(SHELLYRPC_METHOD_COVER_RESETCOUNTERS, Shelly2ApiRpc.resetCountersMethod(profile));
+    }
+
+    @Test
+    void dimmerPmUsesLightReset() {
+        ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYPLUS1PM);
+        profile.isDimmer = true;
+        profile.hasRelays = true;
+
+        assertEquals(SHELLYRPC_METHOD_LIGHT_RESETCOUNTERS, Shelly2ApiRpc.resetCountersMethod(profile));
     }
 
     @Test

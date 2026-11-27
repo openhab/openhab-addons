@@ -14,7 +14,9 @@ package org.openhab.binding.enphase.internal.handler;
 
 import java.net.URI;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -22,37 +24,45 @@ import java.util.function.Function;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.Authentication;
+import org.eclipse.jetty.client.Authentication.Result;
+import org.eclipse.jetty.client.AuthenticationStore;
+import org.eclipse.jetty.client.ContentResponse;
+import org.eclipse.jetty.client.DigestAuthentication;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.HttpResponseException;
-import org.eclipse.jetty.client.api.Authentication;
-import org.eclipse.jetty.client.api.Authentication.Result;
-import org.eclipse.jetty.client.api.AuthenticationStore;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.DigestAuthentication;
+import org.eclipse.jetty.client.Request;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.enphase.internal.EnphaseBindingConstants;
 import org.openhab.binding.enphase.internal.EnvoyConfiguration;
+import org.openhab.binding.enphase.internal.dto.EnsemblePowerDTO;
+import org.openhab.binding.enphase.internal.dto.EnsembleSecctrlDTO;
 import org.openhab.binding.enphase.internal.dto.EnvoyEnergyDTO;
 import org.openhab.binding.enphase.internal.dto.EnvoyErrorDTO;
 import org.openhab.binding.enphase.internal.dto.InventoryJsonDTO;
 import org.openhab.binding.enphase.internal.dto.InverterDTO;
+import org.openhab.binding.enphase.internal.dto.PdmDeviceDataDTO;
 import org.openhab.binding.enphase.internal.dto.ProductionJsonDTO;
 import org.openhab.binding.enphase.internal.exception.EnphaseException;
 import org.openhab.binding.enphase.internal.exception.EnvoyConnectionException;
 import org.openhab.binding.enphase.internal.exception.EnvoyNoHostnameException;
+import org.openhab.binding.enphase.internal.exception.EnvoyUnsupportedEndpointException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 
 /**
  * Methods to make API calls to the Envoy gateway.
  *
  * @author Hilbrand Bouwkamp - Initial contribution
+ * @author Cedric Boon - Added support for detailed inverter stats
+ * @author Cedric Boon - Added support for IQ batteries
  */
 @NonNullByDefault
 public class EnvoyConnector {
@@ -65,7 +75,12 @@ public class EnvoyConnector {
     private static final String PRODUCTION_URL = "/api/v1/production";
     private static final String CONSUMPTION_URL = "/api/v1/consumption";
     private static final String INVERTERS_URL = PRODUCTION_URL + "/inverters";
+    private static final String DEVICE_DATA_URL = "/ivp/pdm/device_data";
+    private static final String ENSEMBLE_INVENTORY_URL = "/ivp/ensemble/inventory";
+    private static final String ENSEMBLE_SECCTRL_URL = "/ivp/ensemble/secctrl";
+    private static final String ENSEMBLE_POWER_URL = "/ivp/ensemble/power";
     private static final String INFO_XML = "/info.xml";
+    private static final String JSON_KEY_SERIAL_NUMBER = "sn";
 
     private static final String INFO_SOFTWARE_BEGIN = "<software>";
     private static final String INFO_SOFTWARE_END = "</software>";
@@ -184,6 +199,27 @@ public class EnvoyConnector {
         return retrieveData(INVENTORY_JSON_URL, this::jsonToEnvoyInventoryJson);
     }
 
+    /**
+     * @return Returns the inventory of the ensemble devices (e.g. IQ Batteries) from the Envoy gateway.
+     */
+    public List<InventoryJsonDTO> getEnsembleInventory() throws EnphaseException {
+        return retrieveData(ENSEMBLE_INVENTORY_URL, this::jsonToEnvoyInventoryJson);
+    }
+
+    /**
+     * @return Returns the aggregated IQ Battery data (state of charge, available energy) from the Envoy gateway.
+     */
+    public EnsembleSecctrlDTO getEnsembleSecctrl() throws EnphaseException {
+        return retrieveData(ENSEMBLE_SECCTRL_URL, json -> gson.fromJson(json, EnsembleSecctrlDTO.class));
+    }
+
+    /**
+     * @return Returns the power of each IQ Battery from the Envoy gateway.
+     */
+    public EnsemblePowerDTO getEnsemblePower() throws EnphaseException {
+        return retrieveData(ENSEMBLE_POWER_URL, json -> gson.fromJson(json, EnsemblePowerDTO.class));
+    }
+
     private @Nullable List<InventoryJsonDTO> jsonToEnvoyInventoryJson(final String json) {
         final InventoryJsonDTO @Nullable [] list = gson.fromJson(json, InventoryJsonDTO[].class);
 
@@ -205,6 +241,36 @@ public class EnvoyConnector {
         return retrieveData(INVERTERS_URL, json -> Arrays.asList(gson.fromJson(json, InverterDTO[].class)));
     }
 
+    /**
+     * @return Returns the per-device energy data (watt-hours today/7-days, lifetime and current watts) for the
+     *         inverters and other Envoy devices, keyed by serial number.
+     */
+    public Map<String, PdmDeviceDataDTO> getDeviceData() throws EnphaseException {
+        return retrieveData(DEVICE_DATA_URL, this::jsonToDeviceData);
+    }
+
+    private @Nullable Map<String, PdmDeviceDataDTO> jsonToDeviceData(final String json) {
+        final JsonElement parsed = JsonParser.parseString(json);
+
+        if (!parsed.isJsonObject()) {
+            return null;
+        }
+        final Map<String, PdmDeviceDataDTO> result = new HashMap<>();
+
+        for (final Map.Entry<String, JsonElement> entry : parsed.getAsJsonObject().entrySet()) {
+            final JsonElement value = entry.getValue();
+
+            if (value.isJsonObject() && value.getAsJsonObject().has(JSON_KEY_SERIAL_NUMBER)) {
+                final @Nullable PdmDeviceDataDTO dto = gson.fromJson(value, PdmDeviceDataDTO.class);
+
+                if (dto != null) {
+                    result.put(dto.sn, dto);
+                }
+            }
+        }
+        return result;
+    }
+
     protected synchronized <T> T retrieveData(final String urlPath, final Function<String, @Nullable T> jsonConverter)
             throws EnphaseException {
         final Request request = createRequest(configuration.hostname + urlPath);
@@ -221,6 +287,8 @@ public class EnvoyConnector {
                     throw new EnvoyConnectionException("No data received");
                 }
                 return result;
+            } else if (response.getStatus() == HttpStatus.NOT_FOUND_404) {
+                throw new EnvoyUnsupportedEndpointException("Endpoint not supported by the Envoy: " + urlPath);
             } else {
                 final @Nullable EnvoyErrorDTO error = gson.fromJson(content, EnvoyErrorDTO.class);
 

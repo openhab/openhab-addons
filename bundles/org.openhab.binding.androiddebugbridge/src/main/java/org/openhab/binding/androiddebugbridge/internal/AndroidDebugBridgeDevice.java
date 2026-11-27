@@ -712,7 +712,23 @@ public class AndroidDebugBridgeDevice {
         return currentSocket != null && currentSocket.isConnected();
     }
 
+    /**
+     * Establish a connection, replacing any current one. Serialized with shell commands because it
+     * starts by disconnecting. {@link #disconnect()} stays outside the lock, since aborting a
+     * running command is what some of its callers need.
+     */
     public void connect() throws AndroidDebugBridgeDeviceException, InterruptedException {
+        // Interruptible: dispose() interrupts the connection checker, and a plain lock() would let
+        // it acquire the lock afterwards and build a connection on a disposed handler.
+        commandLock.lockInterruptibly();
+        try {
+            connectInternal();
+        } finally {
+            commandLock.unlock();
+        }
+    }
+
+    private void connectInternal() throws AndroidDebugBridgeDeviceException, InterruptedException {
         this.disconnect();
         AdbConnection adbConnection;
         Socket sock;
@@ -749,38 +765,55 @@ public class AndroidDebugBridgeDevice {
 
     private String runAdbShell(int commandTimeout, String... args)
             throws InterruptedException, AndroidDebugBridgeDeviceException, TimeoutException, ExecutionException {
-        var adb = connection;
-        if (adb == null) {
-            throw new AndroidDebugBridgeDeviceException("Device not connected");
-        }
-        AtomicReference<@Nullable Exception> streamError = new AtomicReference<>();
+        // Tracked separately: only a failed open can mean the command never started.
+        AtomicReference<@Nullable Exception> openError = new AtomicReference<>();
+        AtomicReference<@Nullable Exception> readError = new AtomicReference<>();
+        // Interruptible for the same reason as connect().
+        commandLock.lockInterruptibly();
         try {
-            commandLock.lock();
+            // Read under the lock: a reconnect could otherwise close it while we waited.
+            var adb = connection;
+            if (adb == null) {
+                throw new AndroidDebugBridgeDeviceException("Device not connected");
+            }
             var commandFuture = scheduler.submit(() -> {
                 var byteArrayOutputStream = new ByteArrayOutputStream();
                 String cmd = String.join(" ", args);
                 logger.debug("{} - shell:{}", ip, cmd);
-                try (AdbStream stream = adb.open("shell:" + cmd)) {
+                AdbStream stream;
+                try {
+                    stream = adb.open("shell:" + cmd);
+                } catch (IllegalStateException | IOException e) {
+                    if (!"Stream closed".equals(e.getMessage())) {
+                        // Captured rather than thrown: escaping the scheduled task would log a noisy
+                        // stacktrace for an expected condition. Re-thrown on the caller below.
+                        openError.set(e);
+                    }
+                    return "";
+                }
+                try (stream) {
                     do {
                         byteArrayOutputStream.writeBytes(stream.read());
                     } while (!stream.isClosed());
                 } catch (IllegalStateException | IOException e) {
                     if (!"Stream closed".equals(e.getMessage())) {
-                        // Capture rather than throw: letting it escape the scheduled task makes openHAB's
-                        // WrappedScheduledExecutorService log a noisy "Scheduled runnable ended with an
-                        // exception" stacktrace for an expected condition (a standby adbd rejecting the
-                        // shell stream). It is re-surfaced as a typed exception on the calling thread below.
-                        streamError.set(e);
+                        readError.set(e);
                     }
                 }
                 return byteArrayOutputStream.toString(StandardCharsets.US_ASCII);
             });
             this.commandFuture = commandFuture;
             String result = commandFuture.get(commandTimeout, TimeUnit.SECONDS);
-            Exception error = streamError.get();
-            if (error != null) {
+            Exception failedOpen = openError.get();
+            if (failedOpen != null) {
+                throw new AndroidDebugBridgeDeviceStreamRejectedException(
+                        "Error opening adb shell stream " + ip + ":" + port + ": " + failedOpen.getMessage());
+            }
+            Exception failedRead = readError.get();
+            if (failedRead != null) {
+                // The stream was open, so the command reached the device: never retryable.
                 throw new AndroidDebugBridgeDeviceException(
-                        "Error opening adb shell stream " + ip + ":" + port + ": " + error.getMessage());
+                        "Error reading adb shell stream " + ip + ":" + port + ": " + failedRead.getMessage());
             }
             return result;
         } finally {
@@ -827,6 +860,14 @@ public class AndroidDebugBridgeDevice {
             c.saveAdbKeyPair(privKey.toFile(), pubKey.toFile());
         }
         return c;
+    }
+
+    /**
+     * Reconnect for a retry. Named separately from {@link #connect()} because calling
+     * {@link #disconnect()} here directly would cancel another operation's in-flight command.
+     */
+    public void reconnectForRetry() throws AndroidDebugBridgeDeviceException, InterruptedException {
+        connect();
     }
 
     public void disconnect() {

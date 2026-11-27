@@ -13,20 +13,22 @@
 package org.openhab.binding.yioremote.internal.utils;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * The {@link WebsocketInterface} is responsible for interfacing the Websocket.
+ * The {@link WebsocketInterface} receives the events of a {@link Websocket} connection. The source connection is
+ * passed along so that events of an outdated connection can be ignored.
  *
  * @author Michael Loercher - Initial contribution
  */
 @NonNullByDefault
 public interface WebsocketInterface {
 
-    void onConnect(boolean connected);
+    void onConnect(Websocket source);
 
-    void onClose();
+    void onClose(Websocket source, int statusCode, @Nullable String reason);
 
-    void onMessage(String decodedmessage);
+    void onMessage(Websocket source, String message);
 
-    void onError(Throwable cause);
+    void onError(Websocket source, Throwable cause);
 }

@@ -79,6 +79,7 @@ import com.google.gson.JsonObject;
  *
  * @author Michael Ochel - Initial contribution
  * @author Matthias Siegele - Initial contribution
+ * @author Leo Siepel - Preserve fractional values during metering aggregation
  */
 public class DeviceStatusManagerImpl implements DeviceStatusManager {
 
@@ -1182,15 +1183,16 @@ public class DeviceStatusManagerImpl implements DeviceStatusManager {
         List<CachedMeteringValue> cachedConsumptionMeteringValues = digitalSTROMClient
                 .getLatest(connMan.getSessionToken(), MeteringTypeEnum.CONSUMPTION, DsAPI.ALL_METERS, null);
         if (cachedConsumptionMeteringValues != null) {
-            tempConsumption = 0;
+            double total = 0;
             for (CachedMeteringValue value : cachedConsumptionMeteringValues) {
-                tempConsumption += value.getValue();
+                total += value.getValue();
                 if (strucMan.getCircuitByDSID(value.getDsid()) != null) {
                     strucMan.getCircuitByDSID(value.getDsid()).addMeteringValue(value);
                 } else if (strucMan.getCircuitByDSUID(value.getDsuid()) != null) {
                     strucMan.getCircuitByDSUID(value.getDsuid()).addMeteringValue(value);
                 }
             }
+            tempConsumption = (int) total;
         }
         return tempConsumption;
     }
@@ -1211,15 +1213,16 @@ public class DeviceStatusManagerImpl implements DeviceStatusManager {
         List<CachedMeteringValue> cachedEnergyMeteringValues = digitalSTROMClient.getLatest(connMan.getSessionToken(),
                 MeteringTypeEnum.ENERGY, DsAPI.ALL_METERS, null);
         if (cachedEnergyMeteringValues != null) {
-            tempEnergyMeter = 0;
+            double total = 0;
             for (CachedMeteringValue value : cachedEnergyMeteringValues) {
-                tempEnergyMeter += value.getValue();
+                total += value.getValue();
                 if (strucMan.getCircuitByDSID(value.getDsid()) != null) {
                     strucMan.getCircuitByDSID(value.getDsid()).addMeteringValue(value);
                 } else if (strucMan.getCircuitByDSUID(value.getDsuid()) != null) {
                     strucMan.getCircuitByDSUID(value.getDsuid()).addMeteringValue(value);
                 }
             }
+            tempEnergyMeter = (int) total;
         }
         return tempEnergyMeter;
     }
@@ -1229,15 +1232,16 @@ public class DeviceStatusManagerImpl implements DeviceStatusManager {
         List<CachedMeteringValue> cachedEnergyMeteringValues = digitalSTROMClient.getLatest(connMan.getSessionToken(),
                 MeteringTypeEnum.ENERGY, DsAPI.ALL_METERS, MeteringUnitsEnum.WS);
         if (cachedEnergyMeteringValues != null) {
-            tempEnergyMeterWs = 0;
+            double total = 0;
             for (CachedMeteringValue value : cachedEnergyMeteringValues) {
-                tempEnergyMeterWs += value.getValue();
+                total += value.getValue();
                 if (strucMan.getCircuitByDSID(value.getDsid()) != null) {
                     strucMan.getCircuitByDSID(value.getDsid()).addMeteringValue(value);
                 } else if (strucMan.getCircuitByDSUID(value.getDsuid()) != null) {
                     strucMan.getCircuitByDSUID(value.getDsuid()).addMeteringValue(value);
                 }
             }
+            tempEnergyMeterWs = (int) total;
         }
         return tempEnergyMeterWs;
     }

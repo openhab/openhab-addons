@@ -396,7 +396,13 @@ public class ViessmannApi {
             } else if ("PACKAGE_NOT_PAID_FOR".equals(viError.getErrorType())) {
                 logger.warn("ViError: User does not have access to given feature.");
             } else {
-                switch (viError.getStatusCode()) {
+                Integer statusCode = viError.getStatusCode();
+                if (statusCode == null) {
+                    logger.warn("ViError: {} | Error response without status code, errorType: {}", viError.getMessage(),
+                            viError.getErrorType());
+                    return;
+                }
+                switch (statusCode) {
                     case HttpStatus.TOO_MANY_REQUESTS_429:
                         logger.warn("ViError: {} | Resetting Limit at {}", viError.getMessage(),
                                 viError.getExtendedPayload().getLimitResetDateTime());

@@ -84,7 +84,7 @@ public class MyUplinkGenericDeviceHandler extends BaseThingHandler
     public void initialize() {
         logger.debug("About to initialize myUplink Generic Device with id: {}", getDeviceId());
 
-        updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, STATUS_WAITING_FOR_BRIDGE);
+        updateStatus(ThingStatus.UNKNOWN, STATUS_WAITING_FOR_BRIDGE);
         startPolling();
     }
 
@@ -103,12 +103,12 @@ public class MyUplinkGenericDeviceHandler extends BaseThingHandler
 
             String connectionStatus = Utils.getAsString(deviceFound, JSON_KEY_CONNECTION_STATE, GENERIC_NO_VAL);
             if (connectionStatus.equals(JSON_VAL_CONNECTION_CONNECTED)) {
-                super.updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
+                super.updateStatus(ThingStatus.ONLINE);
             } else {
-                super.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, STATUS_NO_CONNECTION);
+                super.updateStatus(ThingStatus.OFFLINE, STATUS_NO_CONNECTION);
             }
         } else {
-            super.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, STATUS_DEVICE_NOT_FOUND);
+            super.updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, STATUS_DEVICE_NOT_FOUND);
         }
     }
 
@@ -204,10 +204,10 @@ public class MyUplinkGenericDeviceHandler extends BaseThingHandler
             case BAD_REQUEST:
             case UNAUTHORIZED:
             case FORBIDDEN:
-                super.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, msg);
+                super.updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, msg);
                 break;
             default:
-                super.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, msg);
+                super.updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, msg);
         }
     }
 

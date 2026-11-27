@@ -55,6 +55,7 @@ class BoschSHCHandlerFactoryTest {
         assertTrue(fixture.supportsThingType(BoschSHCBindingConstants.THING_TYPE_CAMERA_EYES));
         assertTrue(fixture.supportsThingType(BoschSHCBindingConstants.THING_TYPE_INTRUSION_DETECTION_SYSTEM));
         assertTrue(fixture.supportsThingType(BoschSHCBindingConstants.THING_TYPE_SMART_PLUG_COMPACT));
+        assertTrue(fixture.supportsThingType(BoschSHCBindingConstants.THING_TYPE_SMART_PLUG_COMPACT_MATTER));
         assertTrue(fixture.supportsThingType(BoschSHCBindingConstants.THING_TYPE_SMART_BULB));
         assertTrue(fixture.supportsThingType(BoschSHCBindingConstants.THING_TYPE_SMOKE_DETECTOR));
 

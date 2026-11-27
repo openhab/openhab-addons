@@ -13,6 +13,8 @@
 package org.openhab.binding.mqtt.awtrixlight.internal.handler;
 
 import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.*;
+import static org.openhab.binding.mqtt.awtrixlight.internal.ng.AwtrixNgBindingConstants.THING_TYPE_NG_CLOCK;
+import static org.openhab.binding.mqtt.awtrixlight.internal.ng.AwtrixNgBindingConstants.TOPIC_STATE_DEVICE;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -26,14 +28,18 @@ import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mqtt.awtrixlight.internal.BridgeConfigOptions;
+import org.openhab.binding.mqtt.awtrixlight.internal.FirmwareSwitchConfiguration;
 import org.openhab.binding.mqtt.awtrixlight.internal.Helper;
 import org.openhab.binding.mqtt.awtrixlight.internal.action.AwtrixActions;
 import org.openhab.binding.mqtt.awtrixlight.internal.app.AwtrixNotification;
 import org.openhab.binding.mqtt.awtrixlight.internal.discovery.AwtrixLightBridgeDiscoveryService;
+import org.openhab.binding.mqtt.awtrixlight.internal.ng.AwtrixNgHelper;
+import org.openhab.binding.mqtt.awtrixlight.internal.ng.dto.DeviceState;
 import org.openhab.binding.mqtt.handler.AbstractBrokerHandler;
 import org.openhab.core.io.transport.mqtt.MqttBrokerConnection;
 import org.openhab.core.io.transport.mqtt.MqttMessageSubscriber;
@@ -65,6 +71,7 @@ import org.slf4j.LoggerFactory;
  * have been locked onto the clock.
  *
  * @author Thomas Lauterbach - Initial contribution
+ * @author Keith T. Garner - Detection of AWTRIX NG clocks and the change to the AWTRIX NG thing types
  */
 @NonNullByDefault
 public class AwtrixLightBridgeHandler extends BaseBridgeHandler implements MqttMessageSubscriber {
@@ -82,6 +89,10 @@ public class AwtrixLightBridgeHandler extends BaseBridgeHandler implements MqttM
     private boolean discoverDefaultApps = false;
     private boolean deviceOnline = false;
     private int lowBatteryThreshold = 25;
+
+    // The uptime of the first AWTRIX NG device state after subscribing, which may be a leftover on the broker
+    private volatile @Nullable Long firstNgUptimeSeconds;
+    private final AtomicBoolean changingToNg = new AtomicBoolean();
 
     private Map<String, AwtrixLightAppHandler> appHandlers = new HashMap<String, AwtrixLightAppHandler>();
 
@@ -177,6 +188,8 @@ public class AwtrixLightBridgeHandler extends BaseBridgeHandler implements MqttM
         this.discoverDefaultApps = config.discoverDefaultApps;
         this.lowBatteryThreshold = config.lowBatteryThreshold;
         this.channelPrefix = thing.getUID() + ":";
+        // The handler is initialized again after a change of the configuration, which is a new start for the detection
+        this.changingToNg.set(false);
         logger.debug(
                 "Configured handler with baseTopic {}, channelPrefix {}, appLockTimeout {}, discoverDefaultApps {}",
                 this.basetopic, this.channelPrefix, this.appLockTimeout, this.discoverDefaultApps);
@@ -186,10 +199,10 @@ public class AwtrixLightBridgeHandler extends BaseBridgeHandler implements MqttM
     @Override
     public void processMessage(String topic, byte[] payload) {
         String payloadString = new String(payload, StandardCharsets.UTF_8);
-        if (topic.endsWith(TOPIC_STATS)) {
-            ThingStatusInfo statusInfo = getThing().getStatusInfo();
-            if (ThingStatus.UNKNOWN == statusInfo.getStatus()
-                    && ThingStatusDetail.CONFIGURATION_PENDING == statusInfo.getStatusDetail()) {
+        if ((this.basetopic + TOPIC_STATE_DEVICE).equals(topic)) {
+            handleNgDeviceState(payloadString);
+        } else if (topic.endsWith(TOPIC_STATS)) {
+            if (ThingStatus.UNKNOWN == getThing().getStatus()) {
                 // Obviously the device is online. We just haven't received a LWT message yet.
                 this.deviceOnline = true;
                 updateStatus(ThingStatus.ONLINE);
@@ -213,6 +226,30 @@ public class AwtrixLightBridgeHandler extends BaseBridgeHandler implements MqttM
         }
     }
 
+    /**
+     * AWTRIX NG keeps its device state on the broker, so a message of it may be a leftover of a clock that was flashed
+     * back to AWTRIX 3 or is switched off. The first message after subscribing is taken as such. The clock sends its
+     * state every few seconds, and the uptime in it changes, so a later message with another uptime comes from a clock
+     * that runs AWTRIX NG right now.
+     */
+    private void handleNgDeviceState(String payload) {
+        DeviceState state = AwtrixNgHelper.fromJson(payload, DeviceState.class);
+        Long uptimeSeconds = state == null ? null : state.uptimeSeconds;
+        if (uptimeSeconds == null) {
+            logger.debug("Ignoring the AWTRIX NG device state of {} without an uptime", basetopic);
+            return;
+        }
+        Long firstUptimeSeconds = this.firstNgUptimeSeconds;
+        if (firstUptimeSeconds == null) {
+            this.firstNgUptimeSeconds = uptimeSeconds;
+        } else if (!firstUptimeSeconds.equals(uptimeSeconds) && changingToNg.compareAndSet(false, true)) {
+            // The thing manager does not check for a change that is already under way, and a second one would take
+            // down the handler that the first one created
+            logger.info("The clock {} runs AWTRIX NG, changing the thing to the AWTRIX NG clock", thing.getUID());
+            changeThingType(THING_TYPE_NG_CLOCK, FirmwareSwitchConfiguration.forClock(getConfig()));
+        }
+    }
+
     public ThingStatusInfo getBridgeStatus() {
         Bridge b = getBridge();
         if (b != null) {
@@ -225,19 +262,18 @@ public class AwtrixLightBridgeHandler extends BaseBridgeHandler implements MqttM
     @Override
     public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
         if (bridgeStatusInfo.getStatus() == ThingStatus.OFFLINE) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
             connection = null;
             return;
         }
         if (bridgeStatusInfo.getStatus() != ThingStatus.ONLINE) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR);
             return;
         }
 
         Bridge localBridge = this.getBridge();
         if (localBridge == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED,
-                    "Bridge is missing or offline, you need to setup a working MQTT broker first.");
+            logger.debug("Bridge unavailable for Thing {}", getThing().getUID());
             return;
         }
         ThingHandler handler = localBridge.getHandler();
@@ -247,16 +283,19 @@ public class AwtrixLightBridgeHandler extends BaseBridgeHandler implements MqttM
             try {
                 connection = abh.getConnectionAsync().get(500, TimeUnit.MILLISECONDS);
             } catch (InterruptedException | ExecutionException | TimeoutException ignored) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED,
-                        "Bridge handler has no valid broker connection!");
+                updateStatus(ThingStatus.UNKNOWN, "Bridge handler has no valid broker connection!");
                 return;
             }
             this.connection = connection;
             if (this.deviceOnline) {
                 updateStatus(ThingStatus.ONLINE);
             } else {
-                updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_PENDING, "Waiting for LWT message.");
+                updateStatus(ThingStatus.UNKNOWN);
             }
+            // The retained state of the clock is delivered again, which may be a leftover. A change of the thing
+            // type that is under way stays, as a second one would take down the handler that the first one creates.
+            this.firstNgUptimeSeconds = null;
+            connection.subscribe(this.basetopic + TOPIC_STATE_DEVICE, this);
             connection.subscribe(this.basetopic + TOPIC_LWT, this);
             connection.subscribe(this.basetopic + TOPIC_STATS + "/#", this);
             connection.subscribe(this.basetopic + TOPIC_STATS_CURRENT_APP + "/#", this);
@@ -277,6 +316,7 @@ public class AwtrixLightBridgeHandler extends BaseBridgeHandler implements MqttM
         leaveAppControlMode();
         MqttBrokerConnection localConnection = connection;
         if (localConnection != null) {
+            localConnection.unsubscribe(this.basetopic + TOPIC_STATE_DEVICE, this);
             localConnection.unsubscribe(this.basetopic + TOPIC_LWT, this);
             localConnection.unsubscribe(this.basetopic + TOPIC_STATS + "/#", this);
             localConnection.unsubscribe(this.basetopic + TOPIC_STATS_CURRENT_APP + "/#", this);
@@ -350,6 +390,10 @@ public class AwtrixLightBridgeHandler extends BaseBridgeHandler implements MqttM
         notification.setLoopSound(loopSound);
         String notificationMessage = notification.getAppConfig();
         this.sendMQTT(this.basetopic + TOPIC_NOTIFY, notificationMessage, false);
+    }
+
+    public void dismissNotification() {
+        this.sendMQTT(this.basetopic + TOPIC_NOTIFY_DISMISS, "", false);
     }
 
     public void setAppDiscoveryCallback(AwtrixLightBridgeDiscoveryService awtrixLightBridgeDiscoveryService) {

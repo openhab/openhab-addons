@@ -124,7 +124,7 @@ public abstract class BoschSHCHandler extends BaseThingHandler {
         try {
             this.initializeServices();
         } catch (BoschSHCException e) {
-            this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+            this.updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
             return;
         }
 
@@ -231,11 +231,11 @@ public abstract class BoschSHCHandler extends BaseThingHandler {
             BridgeHandler bridgeHandler = this.getBridgeHandler();
             return bridgeHandler.getState(deviceId, stateName, classOfT);
         } catch (TimeoutException | ExecutionException | BoschSHCException e) {
-            this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+            this.updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                     String.format("Error when trying to refresh state from service %s: %s", stateName, e.getMessage()));
             return null;
         } catch (InterruptedException e) {
-            this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+            this.updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                     String.format("Interrupted refresh state from service %s: %s", stateName, e.getMessage()));
             Thread.currentThread().interrupt();
             return null;
@@ -403,11 +403,11 @@ public abstract class BoschSHCHandler extends BaseThingHandler {
         try {
             service.setState(state);
         } catch (TimeoutException | ExecutionException | BoschSHCException e) {
-            this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, String.format(
+            this.updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, String.format(
                     "Error while trying to update state for service %s: %s", service.getServiceName(), e.getMessage()));
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, String
+            this.updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, String
                     .format("Interrupted state update for service %s: %s", service.getServiceName(), e.getMessage()));
         }
     }
@@ -427,11 +427,11 @@ public abstract class BoschSHCHandler extends BaseThingHandler {
         try {
             service.setState(state);
         } catch (TimeoutException | ExecutionException e) {
-            this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, String.format(
+            this.updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, String.format(
                     "Error while trying to post state for service %s: %s", service.getServiceName(), e.getMessage()));
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, String
+            this.updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, String
                     .format("Interrupted state update for service %s: %s", service.getServiceName(), e.getMessage()));
         }
     }
@@ -456,7 +456,7 @@ public abstract class BoschSHCHandler extends BaseThingHandler {
                 this.updateServiceState(service, state);
             }
         } catch (BoschSHCException e) {
-            this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+            this.updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                     String.format("Error when service %s should handle command %s: %s", service.getServiceName(),
                             command.getClass().getName(), e.getMessage()));
         }
@@ -476,11 +476,11 @@ public abstract class BoschSHCHandler extends BaseThingHandler {
         try {
             service.refreshState();
         } catch (TimeoutException | ExecutionException | BoschSHCException e) {
-            this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+            this.updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                     String.format("Error when trying to refresh state from service %s: %s", service.getServiceName(),
                             e.getMessage()));
         } catch (InterruptedException e) {
-            this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, String
+            this.updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, String
                     .format("Interrupted refresh state from service %s: %s", service.getServiceName(), e.getMessage()));
             Thread.currentThread().interrupt();
         }
@@ -508,11 +508,11 @@ public abstract class BoschSHCHandler extends BaseThingHandler {
         try {
             service.postAction();
         } catch (ExecutionException | TimeoutException e) {
-            this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+            this.updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                     String.format("Error while triggering action %s", service.getEndpoint()));
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+            this.updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                     String.format("Error while triggering action %s", service.getEndpoint()));
         }
     }
@@ -530,11 +530,11 @@ public abstract class BoschSHCHandler extends BaseThingHandler {
         try {
             service.postAction(request);
         } catch (ExecutionException | TimeoutException e) {
-            this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+            this.updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                     String.format("Error while triggering action %s", service.getEndpoint()));
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+            this.updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                     String.format("Error while triggering action %s", service.getEndpoint()));
         }
     }

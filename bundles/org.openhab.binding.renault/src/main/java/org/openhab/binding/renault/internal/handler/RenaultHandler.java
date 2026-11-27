@@ -41,6 +41,7 @@ import org.openhab.binding.renault.internal.api.Car.ChargingMode;
 import org.openhab.binding.renault.internal.api.Car.LockStatus;
 import org.openhab.binding.renault.internal.api.MyRenaultHttpSession;
 import org.openhab.binding.renault.internal.api.exceptions.RenaultException;
+import org.openhab.binding.renault.internal.api.exceptions.RenaultForbiddenException;
 import org.openhab.binding.renault.internal.api.exceptions.RenaultNotImplementedException;
 import org.openhab.core.cache.ExpiringCache;
 import org.openhab.core.library.types.DateTimeType;
@@ -112,27 +113,26 @@ public class RenaultHandler extends BaseThingHandler {
 
         // Validate configuration
         if (this.config.myRenaultUsername.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/thing-type.config.renault.car.error.username_empty");
             return;
         }
         if (this.config.myRenaultPassword.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/thing-type.config.renault.car.error.password_empty");
             return;
         }
         if (this.config.locale.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/thing-type.config.renault.car.error.location_empty");
             return;
         }
         if (this.config.vin.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/thing-type.config.renault.car.error.vin_empty");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/thing-type.config.renault.car.error.vin_empty");
             return;
         }
         if (this.config.refreshInterval < 1) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/thing-type.config.renault.car.error.refresh_interval_to_low");
             return;
         }
@@ -307,7 +307,7 @@ public class RenaultHandler extends BaseThingHandler {
                 }, "all");
             } catch (RuntimeException e) {
                 logger.warn("Runtime exception during refresh car", e);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
             return car;
         }
@@ -340,8 +340,7 @@ public class RenaultHandler extends BaseThingHandler {
     private void updateStatus(Car car) {
         if (car.getImageURL() == null && car.isDisableHvac() && car.isDisableLocation() && car.isDisableCockpit()
                 && car.isDisableBattery() && car.isDisableLockStatus()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/thing-type.renault.car.error.no_data");
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/thing-type.renault.car.error.no_data");
         } else {
             updateStatus(ThingStatus.ONLINE);
         }
@@ -457,7 +456,7 @@ public class RenaultHandler extends BaseThingHandler {
         run(() -> {
             try {
                 handler.run();
-            } catch (RenaultNotImplementedException e) {
+            } catch (RenaultNotImplementedException | RenaultForbiddenException e) {
                 logger.debug("Disabling unsupported {} status update", type, e);
                 disabler.run();
             }
@@ -474,7 +473,7 @@ public class RenaultHandler extends BaseThingHandler {
         } catch (RenaultException | ExecutionException | TimeoutException e) {
             logger.warn("{}", logWarnMessage, e);
             if (setOffline) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
         }
         return false;

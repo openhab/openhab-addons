@@ -24,6 +24,9 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -34,9 +37,11 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -47,6 +52,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
@@ -56,10 +62,10 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.http.HttpHeader;
+import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants;
 import org.openhab.binding.amazonechocontrol.internal.ConnectionException;
 import org.openhab.binding.amazonechocontrol.internal.dto.AscendingAlarmModelTO;
-import org.openhab.binding.amazonechocontrol.internal.dto.CookieTO;
 import org.openhab.binding.amazonechocontrol.internal.dto.DeviceNotificationStateTO;
 import org.openhab.binding.amazonechocontrol.internal.dto.DeviceTO;
 import org.openhab.binding.amazonechocontrol.internal.dto.DoNotDisturbDeviceStatusTO;
@@ -89,14 +95,12 @@ import org.openhab.binding.amazonechocontrol.internal.dto.response.CustomerHisto
 import org.openhab.binding.amazonechocontrol.internal.dto.response.CustomerHistoryRecordsTO;
 import org.openhab.binding.amazonechocontrol.internal.dto.response.DeviceListTO;
 import org.openhab.binding.amazonechocontrol.internal.dto.response.DeviceNotificationStatesTO;
+import org.openhab.binding.amazonechocontrol.internal.dto.response.DeviceWifiDetailsTO;
 import org.openhab.binding.amazonechocontrol.internal.dto.response.DoNotDisturbDeviceStatusesTO;
 import org.openhab.binding.amazonechocontrol.internal.dto.response.EndpointTO;
-import org.openhab.binding.amazonechocontrol.internal.dto.response.ListItemTO;
 import org.openhab.binding.amazonechocontrol.internal.dto.response.ListMediaSessionTO;
 import org.openhab.binding.amazonechocontrol.internal.dto.response.MediaSessionTO;
 import org.openhab.binding.amazonechocontrol.internal.dto.response.MusicProviderTO;
-import org.openhab.binding.amazonechocontrol.internal.dto.response.NamedListsInfoTO;
-import org.openhab.binding.amazonechocontrol.internal.dto.response.NamedListsItemsTO;
 import org.openhab.binding.amazonechocontrol.internal.dto.response.NotificationListResponseTO;
 import org.openhab.binding.amazonechocontrol.internal.dto.response.NotificationSoundResponseTO;
 import org.openhab.binding.amazonechocontrol.internal.dto.response.PlayerStateTO;
@@ -129,11 +133,22 @@ import com.google.gson.JsonObject;
  *
  * @author Michael Geramb - Initial contribution
  * @author Jan N. Klug - Refactored to use jetty client, add {@link HttpRequestBuilder}
+ * @author Jens Erat - Authorization code + PKCE login flow
  */
 @NonNullByDefault
 public class Connection {
     private static final String THING_THREADPOOL_NAME = "thingHandler";
     private static final long EXPIRES_IN = 432000; // five days
+    private static final double RENEW_AFTER_FRACTION_OF_LIFETIME = 0.8;
+    private static final String SIGN_IN_URL = "https://" + AmazonEchoControlBindingConstants.SIGN_IN_HOST;
+    // Amazon answers /api/notifications with 400 ThrottlingException for the AmazonWebView app agent, and with 200
+    // for a browser agent; a quiet window of hours does not clear the 400.
+    private static final String NOTIFICATIONS_USER_AGENT = "Mozilla/5.0 (iPhone; CPU iPhone OS 16_6 like Mac OS X) "
+            + "AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.6 Mobile/15E148 Safari/604.1";
+    private static final String AUTH_USER_AGENT = "AmazonWebView/Amazon Alexa/"
+            + AmazonEchoControlBindingConstants.API_VERSION + "/iOS/" + AmazonEchoControlBindingConstants.DI_OS_VERSION
+            + "/iPhone";
+    private static final SecureRandom SECURE_RANDOM = new SecureRandom();
 
     private final Logger logger = LoggerFactory.getLogger(Connection.class);
 
@@ -142,13 +157,19 @@ public class Connection {
     private final Gson gson;
 
     private LoginData loginData;
-    private CookieManager cookieManager = new CookieManager();
+    // The request builder holds this exact instance, so it must never be replaced, only cleared.
+    private final CookieManager cookieManager = new CookieManager();
     private final HttpRequestBuilder requestBuilder;
     private @Nullable Date verifyTime;
-    private long connectionExpiryTime = 0;
-    private long accessTokenExpiryTime = 0;
+    private volatile boolean closed = false;
+    private long connectionRenewalTime = 0;
+    private long accessTokenRenewalTime = 0;
     private @Nullable String customerName;
     private @Nullable String accessToken;
+    // Per login attempt, never persisted; set in getLoginPage() and consumed by registerConnectionAsApp().
+    // A concurrent login for the same account would overwrite it between the two calls, so login attempts
+    // for one account must not run concurrently.
+    private @Nullable String codeVerifier;
 
     private final Map<Integer, AnnouncementWrapper> announcements = Collections.synchronizedMap(new LinkedHashMap<>());
     private final Map<Integer, TextWrapper> textToSpeeches = Collections.synchronizedMap(new LinkedHashMap<>());
@@ -157,6 +178,7 @@ public class Connection {
     private final Map<Integer, Volume> volumes = Collections.synchronizedMap(new LinkedHashMap<>());
     private final Map<String, LinkedBlockingQueue<QueueObject>> devices = Collections
             .synchronizedMap(new LinkedHashMap<>());
+    private final AtomicLong loginGeneration = new AtomicLong();
 
     private final Map<TimerType, ScheduledFuture<?>> timers = new ConcurrentHashMap<>();
     private final Map<TimerType, Lock> locks = new ConcurrentHashMap<>();
@@ -175,14 +197,16 @@ public class Connection {
         this.requestBuilder = new HttpRequestBuilder(httpClient, cookieManager, gson);
         if (oldConnection != null) {
             LoginData oldLoginData = oldConnection.getLoginData();
-            this.loginData = new LoginData(cookieManager, oldLoginData.getDeviceId(), oldLoginData.getFrc(),
-                    oldLoginData.getSerial());
+            this.loginData = new LoginData(cookieManager, oldLoginData.getFrc(), oldLoginData.getSerial());
         } else {
             this.loginData = new LoginData(cookieManager);
         }
 
-        replaceTimer(TimerType.DEVICES,
-                scheduler.scheduleWithFixedDelay(this::handleExecuteSequenceNode, 0, 500, TimeUnit.MILLISECONDS));
+        ensureSequenceNodeDispatcherIsRunning();
+    }
+
+    public void setUserAgent(String userAgent) {
+        requestBuilder.setUserAgent(userAgent);
     }
 
     public HttpRequestBuilder getRequestBuilder() {
@@ -215,8 +239,10 @@ public class Connection {
     }
 
     public boolean isSequenceNodeQueueRunning() {
-        return devices.values().stream().anyMatch(
-                (queueObjects) -> (queueObjects.stream().anyMatch(queueObject -> queueObject.future != null)));
+        synchronized (devices) {
+            return devices.values().stream().anyMatch(
+                    (queueObjects) -> (queueObjects.stream().anyMatch(queueObject -> queueObject.future != null)));
+        }
     }
 
     public boolean restoreLogin(@Nullable String data, @Nullable String overloadedDomain) {
@@ -278,35 +304,47 @@ public class Connection {
         }
     }
 
-    private String normalizeRetailDomain(@Nullable String domain) {
-        if (domain != null && !domain.isBlank()) {
-            try {
-                URI uri = new URI(domain.trim());
-                String host = uri.getHost();
-                if (host != null && !host.isBlank()) {
-                    return host.toLowerCase();
-                }
-            } catch (URISyntaxException ignored) {
-            }
+    static String normalizeRetailDomain(@Nullable String domainOrUrl) {
+        if (domainOrUrl == null || domainOrUrl.isBlank()) {
+            return AmazonEchoControlBindingConstants.DEFAULT_RETAIL_DOMAIN;
         }
-        return AmazonEchoControlBindingConstants.DEFAULT_RETAIL_DOMAIN;
+        String host = domainOrUrl.trim();
+        try {
+            String uriHost = new URI(host).getHost();
+            if (uriHost != null && !uriHost.isBlank()) {
+                host = uriHost;
+            }
+        } catch (URISyntaxException ignored) {
+        }
+        host = host.toLowerCase(Locale.ROOT);
+        return host.startsWith("www.") ? host.substring(4) : host;
     }
 
-    public boolean registerConnectionAsApp(String accessToken) {
+    public boolean registerConnectionAsApp(@Nullable String authorizationCode, @Nullable String accessToken) {
         try {
-            List<CookieTO> webSiteCookies = cookieManager.getCookieStore().get(URI.create("https://www.amazon.com"))
-                    .stream().map(TOMapper::mapCookie).toList();
-
             AuthRegisterTO registerAppRequest = new AuthRegisterTO();
             registerAppRequest.registrationData.deviceSerial = loginData.getSerial();
-            registerAppRequest.authData.accessToken = accessToken;
+            if (authorizationCode != null) {
+                registerAppRequest.authData.clientId = loginData.getDeviceId();
+                registerAppRequest.authData.authorizationCode = authorizationCode;
+                registerAppRequest.authData.codeVerifier = this.codeVerifier;
+                registerAppRequest.authData.codeAlgorithm = "SHA-256";
+                registerAppRequest.authData.clientDomain = "DeviceLegacy";
+            } else {
+                registerAppRequest.authData.accessToken = accessToken;
+            }
             registerAppRequest.userContextMap = Map.of("frc", loginData.getFrc());
-            registerAppRequest.cookies.webSiteCookies = webSiteCookies;
+            // Amazon rejects non-empty website cookies with InvalidValue; the working reference for this
+            // app flow (alexapy) always registers with an empty cookie list, so keep the default here.
+            registerAppRequest.cookies.webSiteCookies = List.of();
 
-            AuthRegisterResponseTO registerAppResponse = requestBuilder.post("https://api.amazon.com/auth/register")
+            // Fail fast instead of retrying a rejected registration payload; a failed login is retried manually.
+            org.openhab.binding.amazonechocontrol.internal.dto.response.AuthRegisterTO registerResponse = requestBuilder
+                    .post("https://api.amazon.com/auth/register").withHeader("User-Agent", AUTH_USER_AGENT)
                     .withContent(registerAppRequest)
-                    .withHeaders(Map.of("x-amzn-identity-auth-domain", "api.amazon.com")).syncSend(
-                            org.openhab.binding.amazonechocontrol.internal.dto.response.AuthRegisterTO.class).response;
+                    .withHeaders(Map.of("x-amzn-identity-auth-domain", "api.amazon.com")).retry(false)
+                    .syncSend(org.openhab.binding.amazonechocontrol.internal.dto.response.AuthRegisterTO.class);
+            AuthRegisterResponseTO registerAppResponse = registerResponse.response;
 
             AuthRegisterTokensTO tokens = registerAppResponse.success.tokens;
             String refreshToken = tokens.bearer.refreshToken;
@@ -314,7 +352,8 @@ public class Connection {
             this.loginData.setRefreshToken(refreshToken);
 
             if (refreshToken == null || refreshToken.isBlank()) {
-                logger.warn("Could not determine refreshToken while trying to register as app.");
+                logger.warn("Could not determine refreshToken while trying to register as app, requestId: {}",
+                        registerResponse.requestId);
                 return false;
             }
 
@@ -333,7 +372,7 @@ public class Connection {
 
             HttpRequestBuilder.HttpResponse response = requestBuilder
                     .put("https://api.amazonalexa.com/v1/devices/@self/capabilities")
-                    .withContent(CAPABILITY_REGISTRATION)
+                    .withHeader("User-Agent", AUTH_USER_AGENT).withContent(CAPABILITY_REGISTRATION)
                     .withHeaders(Map.of(HttpHeader.AUTHORIZATION.toString(), "Bearer " + tokens.bearer.accessToken))
                     .retry(false).syncSend();
             if (response.statusCode() != NO_CONTENT_204 && response.statusCode() != OK_200) {
@@ -352,7 +391,7 @@ public class Connection {
     }
 
     private void exchangeToken(String cookieDomain) throws ConnectionException {
-        this.connectionExpiryTime = 0;
+        this.connectionRenewalTime = 0;
         String cookiesJson = "{\"cookies\":{\"." + cookieDomain + "\":[]}}";
         String cookiesBase64 = Base64.getEncoder().encodeToString(cookiesJson.getBytes());
 
@@ -370,8 +409,8 @@ public class Connection {
 
         String url = getRetailUrl() + "/ap/exchangetoken";
 
-        ExchangeTokenTO exchangeToken = requestBuilder.post(url).withContent(exchangePostData).withHeader("Cookie", "")
-                .syncSend(ExchangeTokenTO.class);
+        ExchangeTokenTO exchangeToken = requestBuilder.post(url).withHeader("User-Agent", AUTH_USER_AGENT)
+                .withContent(exchangePostData).withHeader("Cookie", "").syncSend(ExchangeTokenTO.class);
 
         CookieStore cookieStore = cookieManager.getCookieStore();
         exchangeToken.response.tokens.cookies
@@ -382,8 +421,7 @@ public class Connection {
             throw new ConnectionException("Verify login failed after token exchange");
         }
 
-        // renew at 80% expired
-        this.connectionExpiryTime = System.currentTimeMillis() + (long) (Connection.EXPIRES_IN * 1000d / 0.8d);
+        this.connectionRenewalTime = renewalTime(System.currentTimeMillis(), EXPIRES_IN);
     }
 
     public String getAccessToken() throws ConnectionException {
@@ -394,19 +432,9 @@ public class Connection {
         return accessToken;
     }
 
-    /**
-     * Check if tokens need to be renewed
-     * <p />
-     * The {@link #accessToken} is renewed when the current nextAlarmTime is above
-     * {@link #accessTokenExpiryTime}, additionally the session tokens/cookies are renewed when the current
-     * nextAlarmTime is
-     * above {@link #connectionExpiryTime}
-     *
-     * @return {@code true} when the session tokens have been renewed, {@code false} otherwise
-     * @throws ConnectionException when an error occurred
-     */
-    public boolean renewTokens() throws ConnectionException {
-        if (System.currentTimeMillis() >= this.accessTokenExpiryTime) {
+    /** Renews the access token, and with it the session, once their renewal times have passed. */
+    public void renewTokens() throws ConnectionException {
+        if (System.currentTimeMillis() >= this.accessTokenRenewalTime) {
             String renewTokenPostData = "app_name=Amazon%20Alexa" //
                     + "&app_version=" + AmazonEchoControlBindingConstants.API_VERSION //
                     + "&di.sdk.version=" + AmazonEchoControlBindingConstants.DI_SDK_VERSION //
@@ -421,7 +449,8 @@ public class Connection {
                     + "&current_version=6.12.4";
 
             AuthTokenTO tokenResponse = requestBuilder.post("https://api.amazon.com/auth/token")
-                    .withContent(renewTokenPostData).syncSend(AuthTokenTO.class);
+                    .withHeader("User-Agent", AUTH_USER_AGENT).withContent(renewTokenPostData)
+                    .syncSend(AuthTokenTO.class);
 
             String accessToken = tokenResponse.accessToken;
             this.accessToken = accessToken;
@@ -429,35 +458,53 @@ public class Connection {
                 throw new ConnectionException("Failed to renew access token, no token received.");
             }
 
-            // renew at 80% expired
-            this.accessTokenExpiryTime = System.currentTimeMillis() + (long) ((tokenResponse.expiresIn * 1000.0) / 0.8);
+            this.accessTokenRenewalTime = renewalTime(System.currentTimeMillis(), tokenResponse.expiresIn);
 
-            if (System.currentTimeMillis() > this.connectionExpiryTime) {
+            if (System.currentTimeMillis() > this.connectionRenewalTime) {
                 exchangeToken(loginData.getRetailDomain());
             }
         }
-        return false;
+    }
+
+    static long renewalTime(long nowMillis, long lifetimeSeconds) {
+        return nowMillis + (long) (lifetimeSeconds * 1000 * RENEW_AFTER_FRACTION_OF_LIFETIME);
     }
 
     public boolean isLoggedIn() {
         return loginData.getLoginTime() != null;
     }
 
-    public String getLoginPage() throws ConnectionException {
+    private static String newCodeVerifier() {
+        byte[] bytes = new byte[32];
+        SECURE_RANDOM.nextBytes(bytes);
+        return Base64.getUrlEncoder().withoutPadding().encodeToString(bytes);
+    }
+
+    private static String codeChallenge(String verifier) {
+        try {
+            byte[] digest = MessageDigest.getInstance("SHA-256").digest(verifier.getBytes(StandardCharsets.US_ASCII));
+            return Base64.getUrlEncoder().withoutPadding().encodeToString(digest);
+        } catch (NoSuchAlgorithmException e) {
+            throw new IllegalStateException("SHA-256 algorithm not available", e);
+        }
+    }
+
+    public String getLoginPage(Map<String, String> browserHeaders) throws ConnectionException {
         // clear session data
         logout(false);
+        String codeVerifier = newCodeVerifier();
+        this.codeVerifier = codeVerifier;
 
         logger.debug("Start Login to {}", getAlexaServer());
 
         String mapMdJson = "{\"device_user_dictionary\":[],\"device_registration_data\":{\"software_version\":\"1\"},\"app_identifier\":{\"app_version\":\"2.2.443692\",\"bundle_id\":\"com.amazon.echo\"}}";
         String mapMdCookie = Base64.getEncoder().encodeToString(mapMdJson.getBytes());
 
-        cookieManager.getCookieStore().add(URI.create("https://www.amazon.com"), new HttpCookie("map-md", mapMdCookie));
-        cookieManager.getCookieStore().add(URI.create("https://www.amazon.com"),
-                new HttpCookie("frc", loginData.getFrc()));
+        cookieManager.getCookieStore().add(URI.create(SIGN_IN_URL), new HttpCookie("map-md", mapMdCookie));
+        cookieManager.getCookieStore().add(URI.create(SIGN_IN_URL), new HttpCookie("frc", loginData.getFrc()));
 
-        String url = "https://www.amazon.com/ap/signin" //
-                + "?openid.return_to=https://www.amazon.com/ap/maplanding" //
+        String url = SIGN_IN_URL + "/ap/signin" //
+                + "?openid.return_to=" + SIGN_IN_URL + "/ap/maplanding" //
                 + "&openid.assoc_handle=amzn_dp_project_dee_ios" //
                 + "&openid.identity=http://specs.openid.net/auth/2.0/identifier_select" //
                 + "&pageId=amzn_dp_project_dee_ios" //
@@ -467,15 +514,18 @@ public class Connection {
                 + "&openid.ns.oa2=http://www.amazon.com/ap/ext/oauth/2" //
                 + "&openid.oa2.client_id=device:" + loginData.getDeviceId() //
                 + "&openid.ns.pape=http://specs.openid.net/extensions/pape/1.0" //
-                + "&openid.oa2.response_type=token" //
+                + "&openid.oa2.response_type=code" //
+                + "&openid.oa2.code_challenge_method=S256" //
+                + "&openid.oa2.code_challenge=" + codeChallenge(codeVerifier) //
                 + "&openid.ns=http://specs.openid.net/auth/2.0&openid.pape.max_auth_age=0" //
                 + "&openid.oa2.scope=device_auth_access";
 
-        return requestBuilder.get(url).withHeader("authority", "www.amazon.com").syncSend(String.class);
+        return requestBuilder.get(url).withHeaders(browserHeaders)
+                .withHeader("authority", AmazonEchoControlBindingConstants.SIGN_IN_HOST).syncSend(String.class);
     }
 
     public boolean verifyLogin() throws ConnectionException {
-        if (this.loginData.getRefreshToken() == null || !tryGetCustomerData()) {
+        if (closed || this.loginData.getRefreshToken() == null || !tryGetCustomerData()) {
             verifyTime = null;
             return false;
         }
@@ -483,7 +533,41 @@ public class Connection {
         if (loginData.getLoginTime() == null) {
             loginData.setLoginTime(verifyTime);
         }
+        ensureSequenceNodeDispatcherIsRunning();
         return true;
+    }
+
+    void ensureSequenceNodeDispatcherIsRunning() {
+        // scheduling inside compute keeps at-most-one-dispatcher atomic; the task never touches timers
+        timers.compute(TimerType.DEVICES, (type, dispatcher) -> {
+            if (closed || isLive(dispatcher)) {
+                return dispatcher;
+            }
+            return scheduler.scheduleWithFixedDelay(this::handleExecuteSequenceNode, 0, 500, TimeUnit.MILLISECONDS);
+        });
+    }
+
+    private static boolean isLive(@Nullable ScheduledFuture<?> dispatcher) {
+        return dispatcher != null && !dispatcher.isCancelled() && !dispatcher.isDone();
+    }
+
+    boolean isSequenceNodeDispatcherRunning() {
+        return isLive(timers.get(TimerType.DEVICES));
+    }
+
+    @Nullable
+    ScheduledFuture<?> sequenceNodeDispatcher() {
+        return timers.get(TimerType.DEVICES);
+    }
+
+    long currentLoginGeneration() {
+        return loginGeneration.get();
+    }
+
+    int queuedSequenceNodeCount() {
+        synchronized (devices) {
+            return devices.values().stream().mapToInt(LinkedBlockingQueue::size).sum();
+        }
     }
 
     // current value in compute can be null
@@ -496,40 +580,61 @@ public class Connection {
         });
     }
 
+    public void close() {
+        closed = true;
+        logout(false);
+    }
+
+    public boolean isClosed() {
+        return closed;
+    }
+
     public void logout(boolean reset) {
+        cookieManager.getCookieStore().removeAll();
         if (reset) {
-            cookieManager = new CookieManager();
             loginData = new LoginData(cookieManager);
         } else {
-            cookieManager.getCookieStore().removeAll();
             // reset all members
             loginData.setRefreshToken(null);
             loginData.setLoginTime(null);
         }
 
         verifyTime = null;
-        connectionExpiryTime = 0;
-        accessTokenExpiryTime = 0;
+        connectionRenewalTime = 0;
+        accessTokenRenewalTime = 0;
         customerName = null;
         accessToken = null;
 
-        replaceTimer(TimerType.ANNOUNCEMENT, null);
-        announcements.clear();
-        replaceTimer(TimerType.TTS, null);
-        textToSpeeches.clear();
-        replaceTimer(TimerType.VOLUME, null);
-        volumes.clear();
-        replaceTimer(TimerType.DEVICES, null);
-        textCommands.clear();
-        replaceTimer(TimerType.TTS, null);
+        loginGeneration.incrementAndGet();
+        cancelPendingWork(TimerType.ANNOUNCEMENT, announcements::clear);
+        cancelPendingWork(TimerType.TTS, textToSpeeches::clear);
+        cancelPendingWork(TimerType.VOLUME, volumes::clear);
+        cancelPendingWork(TimerType.TEXT_COMMAND, textCommands::clear);
+        cancelPendingWork(TimerType.DEVICES, this::drainDeviceQueues);
+    }
 
-        devices.values().forEach((queueObjects) -> queueObjects.forEach((queueObject) -> {
-            Future<?> future = queueObject.future;
-            if (future != null) {
-                future.cancel(true);
-                queueObject.future = null;
-            }
-        }));
+    private void drainDeviceQueues() {
+        synchronized (devices) {
+            devices.values().forEach((queueObjects) -> queueObjects.forEach((queueObject) -> {
+                Future<?> future = queueObject.future;
+                if (future != null) {
+                    future.cancel(true);
+                    queueObject.future = null;
+                }
+            }));
+            devices.clear();
+        }
+    }
+
+    private void cancelPendingWork(TimerType type, Runnable clearRegistrations) {
+        Lock lock = Objects.requireNonNull(locks.computeIfAbsent(type, k -> new ReentrantLock()));
+        lock.lock();
+        try {
+            replaceTimer(type, null);
+            clearRegistrations.run();
+        } finally {
+            lock.unlock();
+        }
     }
 
     // commands and states
@@ -552,27 +657,46 @@ public class Connection {
                 .toList();
     }
 
+    public @Nullable String getDeviceMacAddress(DeviceTO device) {
+        String serialNumber = device.serialNumber;
+        String deviceType = device.deviceType;
+        if (serialNumber == null || deviceType == null) {
+            return null;
+        }
+
+        try {
+            return requestBuilder.get(getAlexaServer() + "/api/device-wifi-details?deviceSerialNumber=" + serialNumber
+                    + "&deviceType=" + deviceType).syncSend(DeviceWifiDetailsTO.class).macAddress;
+        } catch (ConnectionException e) {
+            logger.debug("Getting Wi-Fi details failed for device {}", serialNumber, e);
+            return null;
+        }
+    }
+
     public Map<String, JsonArray> getSmartHomeDeviceStatesJson(Set<SmartHomeBaseDevice> devices)
             throws ConnectionException {
         JsonObject requestObject = new JsonObject();
         JsonArray stateRequests = new JsonArray();
         Map<String, String> mergedApplianceMap = new HashMap<>();
+        Set<String> pendingEntityIds = new HashSet<>();
         for (SmartHomeBaseDevice device : devices) {
             String applianceId = device.findId();
             if (applianceId != null) {
                 JsonObject stateRequest;
-                if (device instanceof JsonSmartHomeDevice
-                        && ((JsonSmartHomeDevice) device).mergedApplianceIds != null) {
-                    List<String> mergedApplianceIds = Objects
-                            .requireNonNullElse(((JsonSmartHomeDevice) device).mergedApplianceIds, List.of());
+                List<String> mergedApplianceIds = device instanceof JsonSmartHomeDevice smartHomeDevice
+                        ? Objects.requireNonNullElse(smartHomeDevice.mergedApplianceIds, List.<String> of())
+                        : List.of();
+                if (!mergedApplianceIds.isEmpty()) {
                     for (String idToMerge : mergedApplianceIds) {
                         mergedApplianceMap.put(idToMerge, applianceId);
+                        pendingEntityIds.add(idToMerge);
                         stateRequest = new JsonObject();
                         stateRequest.addProperty("entityId", idToMerge);
                         stateRequest.addProperty("entityType", "APPLIANCE");
                         stateRequests.add(stateRequest);
                     }
                 } else {
+                    pendingEntityIds.add(applianceId);
                     stateRequest = new JsonObject();
                     stateRequest.addProperty("entityId", applianceId);
                     stateRequest.addProperty("entityType", "APPLIANCE");
@@ -581,10 +705,24 @@ public class Connection {
             }
         }
         requestObject.add("stateRequests", stateRequests);
+        if (logger.isTraceEnabled()) {
+            logger.trace("Requesting smart home states for entities {}", pendingEntityIds);
+        } else {
+            logger.debug("Requesting smart home states for {} entities", pendingEntityIds.size());
+        }
         JsonObject responseObject = requestBuilder.post(getAlexaServer() + "/api/phoenix/state")
                 .withContent(requestObject).syncSend(JsonObject.class);
 
-        JsonArray deviceStates = (JsonArray) responseObject.get("deviceStates");
+        JsonElement deviceStatesElement = responseObject.get("deviceStates");
+        if (deviceStatesElement == null || !deviceStatesElement.isJsonArray()) {
+            if (logger.isTraceEnabled()) {
+                logger.trace("Answer without device states: {}", responseObject);
+            } else {
+                logger.debug("Amazon answered the state request for {} without device states", pendingEntityIds);
+            }
+            return Map.of();
+        }
+        JsonArray deviceStates = deviceStatesElement.getAsJsonArray();
         Map<String, JsonArray> result = new HashMap<>();
         for (JsonElement deviceState : deviceStates) {
             JsonObject deviceStateObject = deviceState.getAsJsonObject();
@@ -592,6 +730,7 @@ public class Connection {
             String applianceId = entity.get("entityId").getAsString();
             JsonElement capabilityState = deviceStateObject.get("capabilityStates");
             if (capabilityState != null && capabilityState.isJsonArray()) {
+                pendingEntityIds.remove(applianceId);
                 String realApplianceId = mergedApplianceMap.get(applianceId);
                 if (realApplianceId != null) {
                     var capabilityArray = result.get(realApplianceId);
@@ -605,6 +744,9 @@ public class Connection {
                     result.put(applianceId, capabilityState.getAsJsonArray());
                 }
             }
+        }
+        if (!pendingEntityIds.isEmpty()) {
+            logger.debug("Amazon returned no state for requested entities {}", pendingEntityIds);
         }
         return result;
     }
@@ -625,39 +767,14 @@ public class Connection {
         return List.of();
     }
 
-    public List<CustomerHistoryRecordTO> getActivities(long startTime, long endTime) {
-        try {
-            String url = getRetailUrl() + "/alexa-privacy/apd/rvh/customer-history-records?startTime=" + startTime
-                    + "&endTime=" + endTime + "&maxRecordSize=1";
-            CustomerHistoryRecordsTO customerHistoryRecords = requestBuilder.get(url)
-                    .syncSend(CustomerHistoryRecordsTO.class);
-            return customerHistoryRecords.customerHistoryRecords.stream()
-                    .filter(r -> !"DEVICE_ARBITRATION".equals(r.utteranceType))
-                    .sorted(Comparator.comparing(r -> r.timestamp)).toList();
-        } catch (ConnectionException e) {
-            logger.info("getting activities failed", e);
-        }
-        return List.of();
-    }
-
-    public @Nullable NamedListsInfoTO getNamedListInfo(String listId) {
-        try {
-            String url = getAlexaServer() + "/api/namedLists/" + listId + "?_=" + System.currentTimeMillis();
-            return requestBuilder.get(url).syncSend(NamedListsInfoTO.class);
-        } catch (ConnectionException e) {
-            logger.info("getting information for list {} failed", listId, e);
-        }
-        return null;
-    }
-
-    public List<ListItemTO> getNamedListItems(String listId) {
-        try {
-            String url = getAlexaServer() + "/api/namedLists/" + listId + "/items?_=" + System.currentTimeMillis();
-            return requestBuilder.get(url).syncSend(NamedListsItemsTO.class).list;
-        } catch (ConnectionException e) {
-            logger.info("getting items from list '{}' failed", listId, e);
-        }
-        return List.of();
+    public List<CustomerHistoryRecordTO> getActivities(long startTime, long endTime) throws ConnectionException {
+        String url = getRetailUrl() + "/alexa-privacy/apd/rvh/customer-history-records?startTime=" + startTime
+                + "&endTime=" + endTime;
+        CustomerHistoryRecordsTO customerHistoryRecords = requestBuilder.get(url)
+                .syncSend(CustomerHistoryRecordsTO.class);
+        return customerHistoryRecords.customerHistoryRecords.stream()
+                .filter(r -> !"DEVICE_ARBITRATION".equals(r.utteranceType))
+                .sorted(Comparator.comparing(r -> r.timestamp)).toList();
     }
 
     public List<BluetoothStateTO> getBluetoothConnectionStates() {
@@ -1019,6 +1136,7 @@ public class Connection {
     private void executeSequenceCommandWithVolume(List<DeviceTO> devices, @Nullable String command,
             Map<String, Object> parameters, List<@Nullable Integer> ttsVolumes,
             List<@Nullable Integer> standardVolumes) {
+        long generation = loginGeneration.get();
         JsonArray serialNodesToExecute = new JsonArray();
 
         JsonArray ttsVolumeNodesToExecute = new JsonArray();
@@ -1073,11 +1191,12 @@ public class Connection {
         }
 
         if (!serialNodesToExecute.isEmpty()) {
-            executeSequenceNodes(devices.stream().map(d -> d.serialNumber).toList(), serialNodesToExecute, false);
+            executeSequenceNodes(devices.stream().map(d -> d.serialNumber).toList(), serialNodesToExecute, false,
+                    generation);
 
             if (!standardVolumeNodesToExecute.isEmpty() && "AlexaAnnouncement".equals(command)) {
                 executeSequenceNodes(devices.stream().map(d -> d.serialNumber).toList(), standardVolumeNodesToExecute,
-                        true);
+                        true, generation);
             }
         }
     }
@@ -1087,11 +1206,12 @@ public class Connection {
     // Alexa.SingASong.Play, Alexa.TellStory.Play, Alexa.Speak (textToSpeach)
     public void executeSequenceCommand(DeviceTO device, String command, Map<String, Object> parameters) {
         JsonObject nodeToExecute = createExecutionNode(device.deviceType, device.serialNumber, command, parameters);
-        executeSequenceNode(List.of(device.serialNumber), nodeToExecute);
+        executeSequenceNode(List.of(device.serialNumber), nodeToExecute, loginGeneration.get());
     }
 
-    private void executeSequenceNode(List<String> serialNumbers, JsonObject nodeToExecute) {
+    void executeSequenceNode(List<String> serialNumbers, JsonObject nodeToExecute, long generation) {
         QueueObject queueObject = new QueueObject();
+        queueObject.generation = generation;
         queueObject.deviceSerialNumbers = serialNumbers;
         queueObject.nodeToExecute = nodeToExecute;
         List<String> serials = new ArrayList<>();
@@ -1105,15 +1225,25 @@ public class Connection {
         logger.debug("Added {} device(s) {} to queue", queueObject.hashCode(), serials);
     }
 
-    private void handleExecuteSequenceNode() {
+    void handleExecuteSequenceNode() {
         Lock lock = Objects.requireNonNull(locks.computeIfAbsent(TimerType.DEVICES, k -> new ReentrantLock()));
         if (lock.tryLock()) {
             try {
-                for (String serialNumber : devices.keySet()) {
+                List<String> serialNumbers;
+                synchronized (devices) {
+                    serialNumbers = List.copyOf(devices.keySet());
+                }
+                for (String serialNumber : serialNumbers) {
                     LinkedBlockingQueue<QueueObject> queueObjects = devices.get(serialNumber);
                     if (queueObjects != null) {
                         QueueObject queueObject = queueObjects.peek();
                         if (queueObject != null) {
+                            if (queueObject.future == null && queueObject.generation != loginGeneration.get()) {
+                                queueObjects.poll();
+                                logger.debug("Dropped {} device(s) {} queued before the last logout",
+                                        queueObject.hashCode(), queueObject.deviceSerialNumbers);
+                                continue;
+                            }
                             Future<?> future = queueObject.future;
                             if (future == null || future.isDone()) {
                                 boolean execute = true;
@@ -1145,6 +1275,8 @@ public class Connection {
                         }
                     }
                 }
+            } catch (RuntimeException e) {
+                logger.warn("Dispatching sequence nodes failed, the dispatcher stays alive", e);
             } finally {
                 lock.unlock();
             }
@@ -1156,7 +1288,7 @@ public class Connection {
         ExecutionNodeObject executionNodeObject = getExecutionNodeObject(nodeToExecute);
         List<String> types = executionNodeObject.types;
         long delay = types.contains("Alexa.DeviceControls.Volume") ? 2000 : 0;
-        delay += types.contains("Announcement") ? 3000 : 2000;
+        delay += types.contains("AlexaAnnouncement") ? 3000 : 2000;
 
         try {
             JsonObject sequenceJson = new JsonObject();
@@ -1174,8 +1306,15 @@ public class Connection {
             requestBuilder.post(getAlexaServer() + "/api/behaviors/preview").withContent(request).syncSend();
 
             Thread.sleep(delay);
-        } catch (ConnectionException | InterruptedException e) {
-            logger.warn("execute sequence node fails with unexpected error", e);
+        } catch (ConnectionException e) {
+            if (logger.isDebugEnabled()) {
+                logger.debug("Sequence node for {} failed: {}", queueObject.deviceSerialNumbers, e.getMessage(), e);
+            } else {
+                logger.warn("Sequence node for {} failed: {}", queueObject.deviceSerialNumbers, e.getMessage());
+            }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            logger.debug("Sequence node execution interrupted");
         } finally {
             removeObjectFromQueueAfterExecutionCompletion(queueObject);
         }
@@ -1193,7 +1332,8 @@ public class Connection {
         logger.debug("Removed {} device(s) {} from queue", queueObject.hashCode(), serials);
     }
 
-    private void executeSequenceNodes(List<String> serialNumbers, JsonArray nodesToExecute, boolean parallel) {
+    private void executeSequenceNodes(List<String> serialNumbers, JsonArray nodesToExecute, boolean parallel,
+            long generation) {
         JsonObject serialNode = new JsonObject();
         if (parallel) {
             serialNode.addProperty("@type", "com.amazon.alexa.behaviors.model.ParallelNode");
@@ -1203,7 +1343,7 @@ public class Connection {
 
         serialNode.add("nodesToExecute", nodesToExecute);
 
-        executeSequenceNode(serialNumbers, serialNode);
+        executeSequenceNode(serialNumbers, serialNode, generation);
     }
 
     private JsonObject createExecutionNode(String deviceType, String serialNumber, String command,
@@ -1390,19 +1530,18 @@ public class Connection {
         }
     }
 
-    public List<NotificationTO> getNotifications() {
-        try {
-            return requestBuilder.get(getAlexaServer() + "/api/notifications")
-                    .syncSend(NotificationListResponseTO.class).notifications;
-        } catch (ConnectionException e) {
-            logger.warn("Failed to get notifications: {}", e.getMessage());
-        }
-        return List.of();
+    private HttpRequestBuilder.Builder notificationsRequest(HttpMethod method, String subPath) {
+        return requestBuilder.builder(method, getAlexaServer() + "/api/notifications" + subPath)
+                .withHeader("User-Agent", NOTIFICATIONS_USER_AGENT);
+    }
+
+    public List<NotificationTO> getNotifications() throws ConnectionException {
+        // propagates the exception: an empty list is indistinguishable from "no notifications set"
+        return notificationsRequest(HttpMethod.GET, "").syncSend(NotificationListResponseTO.class).notifications;
     }
 
     public NotificationTO getNotification(String notificationId) throws ConnectionException {
-        String url = getAlexaServer() + "/api/notifications/" + notificationId;
-        return requestBuilder.get(url).syncSend(NotificationTO.class);
+        return notificationsRequest(HttpMethod.GET, "/" + notificationId).syncSend(NotificationTO.class);
     }
 
     public @Nullable NotificationTO createNotification(DeviceTO device, String type, @Nullable String label,
@@ -1428,13 +1567,13 @@ public class Connection {
         request.isSaveInFlight = true;
         request.isRecurring = false;
 
-        String url = getAlexaServer() + "/api/notifications/createReminder";
-        return requestBuilder.put(url).withContent(request).syncSend(NotificationTO.class);
+        return notificationsRequest(HttpMethod.PUT, "/createReminder").withContent(request)
+                .syncSend(NotificationTO.class);
     }
 
     public void deleteNotification(String notificationId) {
         try {
-            requestBuilder.delete(getAlexaServer() + "/api/notifications/" + notificationId).syncSend();
+            notificationsRequest(HttpMethod.DELETE, "/" + notificationId).syncSend();
         } catch (ConnectionException e) {
             logger.warn("Failed to delete notification {}: {}", notificationId, e.getMessage());
         }
@@ -1516,6 +1655,7 @@ public class Connection {
 
     private static class QueueObject {
         public @Nullable Future<?> future;
+        public long generation;
         public List<String> deviceSerialNumbers = List.of();
         public JsonObject nodeToExecute = new JsonObject();
     }

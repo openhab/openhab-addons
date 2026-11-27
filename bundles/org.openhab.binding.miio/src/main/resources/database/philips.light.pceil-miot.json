@@ -1,0 +1,448 @@
+{
+	"deviceMapping": {
+		"id": [
+			"philips.light.pceil"
+		],
+		"propertyMethod": "get_properties",
+		"maxProperties": 4,
+		"channels": [
+			{
+				"property": "on",
+				"siid": 2,
+				"piid": 1,
+				"friendlyName": "Power",
+				"channel": "on",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "switch"
+			},
+			{
+				"property": "mode",
+				"siid": 2,
+				"piid": 2,
+				"friendlyName": "Scene",
+				"channel": "mode",
+				"type": "Number",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 4,
+					"step": 1,
+					"pattern": "%.0f",
+					"options": [
+						{
+							"value": "0",
+							"label": "None"
+						},
+						{
+							"value": "1",
+							"label": "Bright"
+						},
+						{
+							"value": "2",
+							"label": "TV"
+						},
+						{
+							"value": "3",
+							"label": "Warm"
+						},
+						{
+							"value": "4",
+							"label": "Night Light"
+						}
+					]
+				},
+				"category": "light",
+				"tags": [
+					"Control",
+					"Mode"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"None\",\"1\"\u003d\"Bright\",\"2\"\u003d\"TV\",\"3\"\u003d\"Warm\",\"4\"\u003d\"Night Light\"]`"
+			},
+			{
+				"property": "brightness",
+				"siid": 2,
+				"piid": 3,
+				"friendlyName": "Brightness",
+				"channel": "brightness",
+				"type": "Dimmer",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "light",
+				"tags": [
+					"Control",
+					"Brightness"
+				]
+			},
+			{
+				"property": "color-temperature",
+				"siid": 2,
+				"piid": 5,
+				"friendlyName": "Color Temperature",
+				"channel": "cct",
+				"type": "Number:Temperature",
+				"unit": "kelvin",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"stateDescription": {
+					"minimum": 2700,
+					"maximum": 6000,
+					"step": 1,
+					"pattern": "%.0f K"
+				},
+				"category": "colorlight"
+			},
+			{
+				"property": "default-power-on-state",
+				"siid": 2,
+				"piid": 6,
+				"friendlyName": "Power-on State",
+				"channel": "powerOnState",
+				"type": "Number",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"stateDescription": {
+					"minimum": 1,
+					"maximum": 2,
+					"step": 1,
+					"pattern": "%.0f",
+					"options": [
+						{
+							"value": "1",
+							"label": "Default"
+						},
+						{
+							"value": "2",
+							"label": "On"
+						}
+					]
+				},
+				"category": "settings",
+				"tags": [
+					"Control",
+					"Mode"
+				],
+				"readmeComment": "Value mapping `[\"1\"\u003d\"Default\",\"2\"\u003d\"On\"]`"
+			},
+			{
+				"property": "multi-light-work-mode",
+				"siid": 2,
+				"piid": 7,
+				"friendlyName": "Light Work Mode",
+				"channel": "workMode",
+				"type": "Number",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"stateDescription": {
+					"minimum": 1,
+					"maximum": 2,
+					"step": 1,
+					"pattern": "%.0f",
+					"options": [
+						{
+							"value": "1",
+							"label": "Multi Lighting"
+						},
+						{
+							"value": "2",
+							"label": "Atmosphere"
+						}
+					]
+				},
+				"category": "light",
+				"tags": [
+					"Control",
+					"Mode"
+				],
+				"readmeComment": "Value mapping `[\"1\"\u003d\"Multi Lighting\",\"2\"\u003d\"Atmosphere\"]`"
+			},
+			{
+				"property": "delay",
+				"siid": 5,
+				"piid": 1,
+				"friendlyName": "Delayed Turn-off",
+				"channel": "delay",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "time",
+				"tags": [
+					"Switch",
+					"Enabled"
+				]
+			},
+			{
+				"property": "delay-time",
+				"siid": 5,
+				"piid": 2,
+				"friendlyName": "Delayed Turn-off Time",
+				"channel": "delayTime",
+				"type": "Number:Time",
+				"unit": "minutes",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"stateDescription": {
+					"minimum": 1,
+					"maximum": 120,
+					"step": 1,
+					"pattern": "%.0f %unit%"
+				},
+				"category": "time",
+				"tags": [
+					"Setpoint",
+					"Duration"
+				]
+			},
+			{
+				"property": "delay-remain-time",
+				"siid": 5,
+				"piid": 3,
+				"friendlyName": "Delayed Turn-off Remaining Time",
+				"channel": "delayRemainTime",
+				"type": "Number:Time",
+				"unit": "minutes",
+				"refresh": true,
+				"actions": [],
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 120,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"category": "time",
+				"tags": [
+					"Status",
+					"Duration"
+				]
+			},
+			{
+				"property": "wall-scene-en",
+				"siid": 4,
+				"piid": 2,
+				"friendlyName": "Wall Switch Scenes",
+				"channel": "WallSceneEn",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch",
+					"Enabled"
+				]
+			},
+			{
+				"property": "wall-scene-f",
+				"siid": 4,
+				"piid": 3,
+				"friendlyName": "Wall Switch Scene 1",
+				"channel": "WallScene1",
+				"type": "String",
+				"refresh": true,
+				"actions": [],
+				"stateDescription": {
+					"readOnly": true
+				},
+				"category": "text",
+				"tags": [
+					"Status",
+					"Info"
+				],
+				"readmeComment": "Set it in the Mi Home app. Format `work mode-brightness-color temperature`, a brightness of 0 means the preset scene in the last field."
+			},
+			{
+				"property": "wall-scene-s",
+				"siid": 4,
+				"piid": 4,
+				"friendlyName": "Wall Switch Scene 2",
+				"channel": "WallScene2",
+				"type": "String",
+				"refresh": true,
+				"actions": [],
+				"stateDescription": {
+					"readOnly": true
+				},
+				"category": "text",
+				"tags": [
+					"Status",
+					"Info"
+				]
+			},
+			{
+				"property": "wall-scene-t",
+				"siid": 4,
+				"piid": 5,
+				"friendlyName": "Wall Switch Scene 3",
+				"channel": "WallScene3",
+				"type": "String",
+				"refresh": true,
+				"actions": [],
+				"stateDescription": {
+					"readOnly": true
+				},
+				"category": "text",
+				"tags": [
+					"Status",
+					"Info"
+				]
+			},
+			{
+				"property": "",
+				"friendlyName": "Actions",
+				"channel": "actions",
+				"type": "String",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "light-toggle",
+							"label": "Light Toggle"
+						},
+						{
+							"value": "brightness-up",
+							"label": "Brightness Up"
+						},
+						{
+							"value": "brightness-down",
+							"label": "Brightness Down"
+						},
+						{
+							"value": "cct-up",
+							"label": "Color Temperature Up"
+						},
+						{
+							"value": "cct-down",
+							"label": "Color Temperature Down"
+						}
+					]
+				},
+				"refresh": false,
+				"actions": [
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 2,
+						"aiid": 1,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "light-toggle"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 4,
+						"aiid": 1,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "brightness-up"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 4,
+						"aiid": 2,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "brightness-down"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 4,
+						"aiid": 3,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "cct-up"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 4,
+						"aiid": 4,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "cct-down"
+								}
+							]
+						}
+					}
+				],
+				"category": "light",
+				"tags": [
+					"Control",
+					"Light"
+				],
+				"readmeComment": "Value mapping `[\"light-toggle\"\u003d\"Light Toggle\",\"brightness-up\"\u003d\"Brightness Up\",\"brightness-down\"\u003d\"Brightness Down\",\"cct-up\"\u003d\"Color Temperature Up\",\"cct-down\"\u003d\"Color Temperature Down\"]`"
+			}
+		],
+		"experimental": true
+	}
+}

@@ -1,0 +1,21 @@
+{
+  "id": 10,
+  "type": "event",
+  "event": {
+    "a": {
+      "device_tracker.demo_paulus": {
+        "s": "not_home",
+        "a": {
+          "source_type": "gps",
+          "latitude": 32.878195,
+          "longitude": 117.23167,
+          "gps_accuracy": 50,
+          "battery": 80,
+          "friendly_name": "Paulus"
+        },
+        "c": "01M3201RETS9W71MRM7M8948G2",
+        "lc": 1789994787.2908044
+      }
+    }
+  }
+}

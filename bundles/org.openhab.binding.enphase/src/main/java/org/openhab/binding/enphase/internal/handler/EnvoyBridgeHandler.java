@@ -14,16 +14,21 @@ package org.openhab.binding.enphase.internal.handler;
 
 import static org.openhab.binding.enphase.internal.EnphaseBindingConstants.CONFIG_HOSTNAME;
 import static org.openhab.binding.enphase.internal.EnphaseBindingConstants.ENVOY_CHANNELGROUP_CONSUMPTION;
+import static org.openhab.binding.enphase.internal.EnphaseBindingConstants.ENVOY_CHANNELGROUP_STORAGE;
 import static org.openhab.binding.enphase.internal.EnphaseBindingConstants.ENVOY_WATTS_NOW;
 import static org.openhab.binding.enphase.internal.EnphaseBindingConstants.ENVOY_WATT_HOURS_LIFETIME;
 import static org.openhab.binding.enphase.internal.EnphaseBindingConstants.ENVOY_WATT_HOURS_SEVEN_DAYS;
 import static org.openhab.binding.enphase.internal.EnphaseBindingConstants.ENVOY_WATT_HOURS_TODAY;
 import static org.openhab.binding.enphase.internal.EnphaseBindingConstants.PROPERTY_VERSION;
+import static org.openhab.binding.enphase.internal.EnphaseBindingConstants.STORAGE_CHANNEL_AVAILABLE_ENERGY;
+import static org.openhab.binding.enphase.internal.EnphaseBindingConstants.STORAGE_CHANNEL_STATE_OF_CHARGE;
+import static org.openhab.binding.enphase.internal.EnphaseBindingConstants.STORAGE_CHANNEL_WATTS_NOW;
 
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
@@ -42,14 +47,20 @@ import org.openhab.binding.enphase.internal.EnphaseBindingConstants;
 import org.openhab.binding.enphase.internal.EnvoyConfiguration;
 import org.openhab.binding.enphase.internal.EnvoyHostAddressCache;
 import org.openhab.binding.enphase.internal.discovery.EnphaseDevicesDiscoveryService;
+import org.openhab.binding.enphase.internal.dto.EnsemblePowerDTO;
+import org.openhab.binding.enphase.internal.dto.EnsemblePowerDTO.DevicePowerDTO;
+import org.openhab.binding.enphase.internal.dto.EnsembleSecctrlDTO;
 import org.openhab.binding.enphase.internal.dto.EnvoyEnergyDTO;
+import org.openhab.binding.enphase.internal.dto.InventoryJsonDTO;
 import org.openhab.binding.enphase.internal.dto.InventoryJsonDTO.DeviceDTO;
 import org.openhab.binding.enphase.internal.dto.InverterDTO;
+import org.openhab.binding.enphase.internal.dto.PdmDeviceDataDTO;
 import org.openhab.binding.enphase.internal.exception.EnphaseException;
 import org.openhab.binding.enphase.internal.exception.EntrezConnectionException;
 import org.openhab.binding.enphase.internal.exception.EntrezJwtInvalidException;
 import org.openhab.binding.enphase.internal.exception.EnvoyConnectionException;
 import org.openhab.binding.enphase.internal.exception.EnvoyNoHostnameException;
+import org.openhab.binding.enphase.internal.exception.EnvoyUnsupportedEndpointException;
 import org.openhab.core.cache.ExpiringCache;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.QuantityType;
@@ -77,6 +88,8 @@ import org.slf4j.LoggerFactory;
  *
  * @author Thomas Hentschel - Initial contribution
  * @author Hilbrand Bouwkamp - Initial contribution
+ * @author Cedric Boon - Added support for detailed inverter stats
+ * @author Cedric Boon - Added support for IQ batteries
  */
 @NonNullByDefault
 public class EnvoyBridgeHandler extends BaseBridgeHandler {
@@ -103,10 +116,16 @@ public class EnvoyBridgeHandler extends BaseBridgeHandler {
     private int consecutiveConnectionErrors;
     private @Nullable ExpiringCache<Map<String, @Nullable InverterDTO>> invertersCache;
     private @Nullable ExpiringCache<Map<String, @Nullable DeviceDTO>> devicesCache;
+    private @Nullable ExpiringCache<Map<String, PdmDeviceDataDTO>> deviceDataCache;
     private @Nullable EnvoyEnergyDTO productionDTO;
     private @Nullable EnvoyEnergyDTO consumptionDTO;
+    private @Nullable EnsembleSecctrlDTO storageSecctrlDTO;
+    private @Nullable EnsemblePowerDTO storagePowerDTO;
     private FeatureStatus consumptionSupported = FeatureStatus.UNKNOWN;
     private FeatureStatus jsonSupported = FeatureStatus.UNKNOWN;
+    private FeatureStatus deviceDataSupported = FeatureStatus.UNKNOWN;
+    private FeatureStatus ensembleSupported = FeatureStatus.UNKNOWN;
+    private FeatureStatus storageSupported = FeatureStatus.UNKNOWN;
 
     public EnvoyBridgeHandler(final Bridge thing, final HttpClient httpClient,
             final EnvoyHostAddressCache envoyHostAddressCache) {
@@ -123,6 +142,10 @@ public class EnvoyBridgeHandler extends BaseBridgeHandler {
     }
 
     private void refresh(final ChannelUID channelUID) {
+        if (ENVOY_CHANNELGROUP_STORAGE.equals(channelUID.getGroupId())) {
+            refreshStorage(channelUID);
+            return;
+        }
         final EnvoyEnergyDTO data = ENVOY_CHANNELGROUP_CONSUMPTION.equals(channelUID.getGroupId()) ? consumptionDTO
                 : productionDTO;
 
@@ -146,6 +169,45 @@ public class EnvoyBridgeHandler extends BaseBridgeHandler {
         }
     }
 
+    private void refreshStorage(final ChannelUID channelUID) {
+        final EnsembleSecctrlDTO secctrl = storageSecctrlDTO;
+
+        switch (channelUID.getIdWithoutGroup()) {
+            case STORAGE_CHANNEL_WATTS_NOW:
+                updateState(channelUID, storagePowerState(storagePowerDTO));
+                break;
+            case STORAGE_CHANNEL_STATE_OF_CHARGE:
+                updateState(channelUID, toState(secctrl == null ? null : secctrl.encAggSoc, Units.PERCENT));
+                break;
+            case STORAGE_CHANNEL_AVAILABLE_ENERGY:
+                updateState(channelUID, toState(secctrl == null ? null : secctrl.encAggAvailEnergy, Units.WATT_HOUR));
+                break;
+        }
+    }
+
+    /**
+     * @return the summed power of all IQ Batteries, or {@link UnDefType#UNDEF} if no battery reported its power.
+     */
+    private State storagePowerState(final @Nullable EnsemblePowerDTO power) {
+        final DevicePowerDTO[] devices = power == null ? null : power.devices;
+
+        if (devices == null) {
+            return UnDefType.UNDEF;
+        }
+        long milliWatts = 0;
+        boolean hasData = false;
+
+        for (final DevicePowerDTO device : devices) {
+            final Long realPowerMw = device.realPowerMw;
+
+            if (realPowerMw != null) {
+                milliWatts += realPowerMw;
+                hasData = true;
+            }
+        }
+        return hasData ? new QuantityType<>(Math.round(milliWatts / 1000.0), Units.WATT) : UnDefType.UNDEF;
+    }
+
     /**
      * Converts a possibly {@code null} measured value to a {@link QuantityType} state, or {@link UnDefType#UNDEF} when
      * the value is not available (e.g. energy buckets that the meter readings endpoint does not provide).
@@ -163,16 +225,21 @@ public class EnvoyBridgeHandler extends BaseBridgeHandler {
     public void initialize() {
         configuration = getConfigAs(EnvoyConfiguration.class);
         if (!EnphaseBindingConstants.isValidSerial(configuration.serialNumber)) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Serial number is not valid");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Serial number is not valid");
             return;
         }
         updateStatus(ThingStatus.UNKNOWN);
         consumptionSupported = FeatureStatus.UNKNOWN;
         jsonSupported = FeatureStatus.UNKNOWN;
+        deviceDataSupported = FeatureStatus.UNKNOWN;
+        ensembleSupported = FeatureStatus.UNKNOWN;
+        storageSupported = FeatureStatus.UNKNOWN;
         invertersCache = new ExpiringCache<>(Duration.of(configuration.refresh, ChronoUnit.MINUTES),
                 this::refreshInverters);
         devicesCache = new ExpiringCache<>(Duration.of(configuration.refresh, ChronoUnit.MINUTES),
                 this::refreshDevices);
+        deviceDataCache = new ExpiringCache<>(Duration.of(configuration.refresh, ChronoUnit.MINUTES),
+                this::refreshDeviceData);
         connectorWrapper.setVersion(getVersion());
         updataDataFuture = scheduler.scheduleWithFixedDelay(() -> updateData(false), 0, configuration.refresh,
                 TimeUnit.MINUTES);
@@ -193,22 +260,18 @@ public class EnvoyBridgeHandler extends BaseBridgeHandler {
         } catch (final EnvoyConnectionException e) {
             logger.trace("refreshInverters connection problem", e);
         } catch (final EnphaseException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
         return null;
     }
 
     private @Nullable final Map<String, @Nullable DeviceDTO> refreshDevices() {
+        final Map<String, @Nullable DeviceDTO> devicesData = new HashMap<>();
+
         try {
             if (jsonSupported != FeatureStatus.UNSUPPORTED) {
-                final Map<String, @Nullable DeviceDTO> devicesData = connectorWrapper.getConnector().getInventoryJson()
-                        .stream().flatMap(inv -> Stream.of(inv.devices).map(d -> {
-                            d.type = inv.type;
-                            return d;
-                        })).collect(Collectors.toMap(DeviceDTO::getSerialNumber, Function.identity()));
-
+                devicesData.putAll(toDevicesMap(connectorWrapper.getConnector().getInventoryJson()));
                 jsonSupported = FeatureStatus.SUPPORTED;
-                return devicesData;
             }
         } catch (final EnvoyNoHostnameException e) {
             // ignore hostname exception here. It's already handled by others.
@@ -225,7 +288,81 @@ public class EnvoyBridgeHandler extends BaseBridgeHandler {
                 logger.trace("refreshDevices connection problem", e);
             }
         } catch (final EnphaseException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            return null;
+        }
+        // Ensemble devices (IQ Batteries) are added to the same map, so they are handled like the other devices.
+        devicesData.putAll(refreshEnsembleDevices());
+        return devicesData.isEmpty() ? null : devicesData;
+    }
+
+    /**
+     * Retrieves the ensemble inventory, which contains the IQ Batteries. This data is not available on all envoy
+     * devices.
+     *
+     * @return the ensemble devices keyed by serial number, or an empty map if no data is available.
+     */
+    private Map<String, @Nullable DeviceDTO> refreshEnsembleDevices() {
+        try {
+            if (ensembleSupported != FeatureStatus.UNSUPPORTED) {
+                final Map<String, @Nullable DeviceDTO> ensembleData = toDevicesMap(
+                        connectorWrapper.getConnector().getEnsembleInventory());
+
+                ensembleSupported = FeatureStatus.SUPPORTED;
+                return ensembleData;
+            }
+        } catch (final EnvoyNoHostnameException e) {
+            // ignore hostname exception here. It's already handled by others.
+        } catch (final EnvoyUnsupportedEndpointException e) {
+            logger.debug(
+                    "This Enphase Envoy device ({}) doesn't support ensemble data. So no battery things are available.",
+                    getThing().getUID());
+            ensembleSupported = FeatureStatus.UNSUPPORTED;
+        } catch (final EnvoyConnectionException e) {
+            // Transient problem (e.g. timeout); retried on the next refresh.
+            logger.trace("refreshEnsembleDevices connection problem", e);
+        } catch (final EnphaseException e) {
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+        }
+        return Map.of();
+    }
+
+    private static Map<String, @Nullable DeviceDTO> toDevicesMap(final List<InventoryJsonDTO> inventory) {
+        // Entries without devices, like the grid profile entry in the ensemble inventory, are skipped.
+        return inventory.stream().filter(inv -> inv.devices != null).flatMap(inv -> Stream.of(inv.devices).map(d -> {
+            d.type = inv.type;
+            return d;
+        })).collect(Collectors.toMap(DeviceDTO::getSerialNumber, Function.identity()));
+    }
+
+    /**
+     * Method called by the ExpiringCache when no per-device energy data is present to get the data from the Envoy
+     * gateway. This data is not available on all envoy devices.
+     *
+     * @return the per-device energy data from the Envoy gateway, keyed by serial number, or null if no data is
+     *         available.
+     */
+    private @Nullable Map<String, PdmDeviceDataDTO> refreshDeviceData() {
+        try {
+            if (deviceDataSupported != FeatureStatus.UNSUPPORTED) {
+                final Map<String, PdmDeviceDataDTO> data = connectorWrapper.getConnector().getDeviceData();
+
+                deviceDataSupported = FeatureStatus.SUPPORTED;
+                return data;
+            }
+        } catch (final EnvoyNoHostnameException e) {
+            // ignore hostname exception here. It's already handled by others.
+        } catch (final EnvoyConnectionException e) {
+            if (deviceDataSupported == FeatureStatus.UNKNOWN) {
+                logger.debug(
+                        "This Enphase Envoy device ({}) doesn't seem to support per-device energy data. So no inverter energy channels are set.",
+                        getThing().getUID());
+                deviceDataSupported = FeatureStatus.UNSUPPORTED;
+            } else {
+                logger.trace("refreshDeviceData connection problem", e);
+            }
+        } catch (final EnphaseException e) {
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
         return null;
     }
@@ -271,6 +408,26 @@ public class EnvoyBridgeHandler extends BaseBridgeHandler {
     }
 
     /**
+     * Returns the per-device energy data. It get the data from cache or updates the cache if possible in case no
+     * data is available.
+     *
+     * @param force force a cache refresh
+     * @return data if present or null
+     */
+    public @Nullable Map<String, PdmDeviceDataDTO> getDeviceData(final boolean force) {
+        final ExpiringCache<Map<String, PdmDeviceDataDTO>> deviceDataCache = this.deviceDataCache;
+
+        if (deviceDataCache == null || !isOnline()) {
+            return null;
+        } else {
+            if (force) {
+                deviceDataCache.invalidateValue();
+            }
+            return deviceDataCache.getValue();
+        }
+    }
+
+    /**
      * Method called by the refresh thread.
      */
     public synchronized void updateData(final boolean forceUpdate) {
@@ -296,21 +453,21 @@ public class EnvoyBridgeHandler extends BaseBridgeHandler {
                         consecutiveConnectionErrors, MAX_TRANSIENT_CONNECTION_ERRORS, getThing().getUID(),
                         e.getMessage());
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                 scheduleHostnameUpdate(false);
             }
         } catch (final EntrezConnectionException e) {
             logger.debug("EntrezConnectionException in Enphase thing {}: ", getThing().getUID(), e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         } catch (final EntrezJwtInvalidException e) {
             logger.debug("EntrezJwtInvalidException in Enphase thing {}: ", getThing().getUID(), e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
         } catch (final EnphaseException e) {
             logger.debug("EnphaseException in Enphase thing {}: ", getThing().getUID(), e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         } catch (final RuntimeException e) {
             logger.debug("Unexpected error in Enphase thing {}: ", getThing().getUID(), e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 
@@ -333,7 +490,7 @@ public class EnvoyBridgeHandler extends BaseBridgeHandler {
             logger.trace("Configuration OK.");
             return true;
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, configurationError);
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, configurationError);
             return false;
         }
     }
@@ -360,6 +517,7 @@ public class EnvoyBridgeHandler extends BaseBridgeHandler {
     private void updateEnvoy() throws EnphaseException {
         productionDTO = connectorWrapper.getConnector().getProduction();
         setConsumptionDTOData();
+        setStorageDTOData();
         getThing().getChannels().stream().map(Channel::getUID).filter(this::isLinked).forEach(this::refresh);
         if (isInitialized() && !isOnline()) {
             updateStatus(ThingStatus.ONLINE);
@@ -390,28 +548,70 @@ public class EnvoyBridgeHandler extends BaseBridgeHandler {
     }
 
     /**
+     * Retrieve the aggregated battery storage data if supported and any storage channel is linked, and keep track if
+     * this feature is supported by the device.
+     */
+    private void setStorageDTOData() throws EnphaseException {
+        if (storageSupported == FeatureStatus.UNSUPPORTED || !isOnline()
+                || getThing().getChannelsOfGroup(ENVOY_CHANNELGROUP_STORAGE).stream().map(Channel::getUID)
+                        .noneMatch(this::isLinked)) {
+            return;
+        }
+        try {
+            final EnvoyConnector connector = connectorWrapper.getConnector();
+            final EnsembleSecctrlDTO secctrl = connector.getEnsembleSecctrl();
+            final EnsemblePowerDTO power = connector.getEnsemblePower();
+
+            storageSecctrlDTO = secctrl;
+            storagePowerDTO = power;
+            storageSupported = FeatureStatus.SUPPORTED;
+        } catch (final EnvoyNoHostnameException e) {
+            // ignore hostname exception here. It's already handled by others.
+        } catch (final EnvoyUnsupportedEndpointException e) {
+            clearStorageData();
+            logger.info(
+                    "This Enphase Envoy device ({}) doesn't support battery storage data. So no storage channels are set.",
+                    getThing().getUID());
+            storageSupported = FeatureStatus.UNSUPPORTED;
+        } catch (final EnvoyConnectionException e) {
+            // Transient problem (e.g. timeout); retried on the next refresh.
+            clearStorageData();
+            logger.trace("setStorageDTOData connection problem", e);
+        }
+    }
+
+    private void clearStorageData() {
+        storageSecctrlDTO = null;
+        storagePowerDTO = null;
+    }
+
+    /**
      * Updates channels of the inverter things with inverter specific data.
      *
      * @param forceUpdate if true forces to update the data, otherwise gets the data from the cache
      */
     private void updateInverters(final boolean forceUpdate) {
         final Map<String, @Nullable InverterDTO> inverters = getInvertersData(forceUpdate);
+        final Map<String, PdmDeviceDataDTO> deviceData = getDeviceData(forceUpdate);
 
         if (inverters != null) {
             getThing().getThings().stream().map(Thing::getHandler).filter(h -> h instanceof EnphaseInverterHandler)
                     .map(EnphaseInverterHandler.class::cast)
-                    .forEach(invHandler -> updateInverter(inverters, invHandler));
+                    .forEach(invHandler -> updateInverter(inverters, deviceData, invHandler));
         }
     }
 
     private void updateInverter(final @Nullable Map<String, @Nullable InverterDTO> inverters,
-            final EnphaseInverterHandler invHandler) {
+            final @Nullable Map<String, PdmDeviceDataDTO> deviceData, final EnphaseInverterHandler invHandler) {
         if (inverters == null) {
             return;
         }
         final InverterDTO inverterDTO = inverters.get(invHandler.getSerialNumber());
 
         invHandler.refreshInverterChannels(inverterDTO);
+        if (deviceData != null) {
+            invHandler.refreshInverterEnergyChannels(deviceData.get(invHandler.getSerialNumber()));
+        }
         if (jsonSupported == FeatureStatus.UNSUPPORTED) {
             // if inventory json is supported device status is set in #updateDevices
             invHandler.refreshDeviceStatus(inverterDTO != null);
@@ -449,7 +649,7 @@ public class EnvoyBridgeHandler extends BaseBridgeHandler {
     @Override
     public void childHandlerInitialized(final ThingHandler childHandler, final Thing childThing) {
         if (childHandler instanceof EnphaseInverterHandler handler) {
-            updateInverter(getInvertersData(false), handler);
+            updateInverter(getInvertersData(false), getDeviceData(false), handler);
         }
         if (childHandler instanceof EnphaseDeviceHandler handler) {
             final Map<String, @Nullable DeviceDTO> devices = getDevices(false);
@@ -479,7 +679,7 @@ public class EnvoyBridgeHandler extends BaseBridgeHandler {
             updateHostnameFuture = null;
             updateData(true);
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                     "No ip address known of the Envoy gateway. If this isn't updated in a few minutes run discovery scan or check your connection.");
             scheduleHostnameUpdate(true);
         }

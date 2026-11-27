@@ -55,7 +55,7 @@ import org.slf4j.LoggerFactory;
  *
  * A typical scan response looks as follows
  *
- * <pre>{@code
+ * <pre>
  * {
  *   "msg":{
  *     "cmd":"scan",
@@ -70,7 +70,6 @@ import org.slf4j.LoggerFactory;
  *     }
  *   }
  * }
- * }
  * </pre>
  *
  * Note that it uses the same port for receiving data like when receiving devices status updates.
@@ -79,6 +78,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Stefan Höhn - Initial Contribution
  * @author Danny Baumann - Thread-Safe design refactoring
+ * @author Lee Ballard - Network MAC discovery enrichment
  */
 @NonNullByDefault
 @Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.govee")
@@ -123,15 +123,15 @@ public class GoveeDiscoveryService extends AbstractDiscoveryService implements G
         }
 
         final DiscoveryData data = msg.data();
-        final String macAddress = data.device();
-        if (macAddress == null || macAddress.isEmpty()) {
-            logger.warn("Missing Mac address received during discovery - ignoring {}", response);
+        final String deviceId = data.device();
+        if (deviceId == null || deviceId.isEmpty()) {
+            logger.warn("Missing device ID received during discovery - ignoring {}", response);
             return null;
         }
 
         final String ipAddress = data.ip();
         if (ipAddress == null || ipAddress.isEmpty()) {
-            logger.warn("Missing IP address received during discovery - ignoring {}", response);
+            logger.debug("Ignoring scan response without IP address (device not reachable over LAN) - {}", response);
             return null;
         }
 
@@ -151,10 +151,10 @@ public class GoveeDiscoveryService extends AbstractDiscoveryService implements G
         }
         String nameForLabel = productName != null ? productName + " " + sku : sku;
 
-        ThingUID thingUid = new ThingUID(GoveeBindingConstants.THING_TYPE_LIGHT, macAddress.replace(":", "_"));
+        ThingUID thingUid = new ThingUID(GoveeBindingConstants.THING_TYPE_LIGHT, deviceId.replace(":", "_"));
         DiscoveryResultBuilder builder = DiscoveryResultBuilder.create(thingUid)
-                .withRepresentationProperty(GoveeBindingConstants.MAC_ADDRESS)
-                .withProperty(GoveeBindingConstants.MAC_ADDRESS, macAddress)
+                .withRepresentationProperty(GoveeBindingConstants.DEVICE_ID)
+                .withProperty(GoveeBindingConstants.DEVICE_ID, deviceId)
                 .withProperty(GoveeBindingConstants.IP_ADDRESS, ipAddress)
                 .withProperty(GoveeBindingConstants.DEVICE_TYPE, sku)
                 .withLabel(String.format("Govee %s (%s)", nameForLabel, ipAddress));
@@ -195,7 +195,7 @@ public class GoveeDiscoveryService extends AbstractDiscoveryService implements G
     }
 
     /**
-     * Command the {@link CommunicationManager) to run the scans.
+     * Command the {@link CommunicationManager} to run the scans.
      */
     private void doDiscovery() {
         communicationManager.runDiscoveryForInterfaces(getLocalNetworkInterfaces(), this);

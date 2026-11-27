@@ -110,8 +110,7 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler implemen
         final AVMFritzDeviceConfiguration config = getConfigAs(AVMFritzDeviceConfiguration.class);
         final String newIdentifier = config.ain;
         if (newIdentifier == null || newIdentifier.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "The 'ain' parameter must be configured.");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "The 'ain' parameter must be configured.");
         } else {
             this.identifier = newIdentifier;
             updateStatus(ThingStatus.UNKNOWN);
@@ -130,7 +129,7 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler implemen
             if (device.getPresent() == 1) {
                 updateStatus(ThingStatus.ONLINE);
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Device not present");
+                updateStatus(ThingStatus.OFFLINE, "Device not present");
             }
             currentDevice = device;
 
@@ -412,7 +411,7 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler implemen
     @Override
     public void onDeviceGone(ThingUID thingUID) {
         if (thing.getUID().equals(thingUID)) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.GONE, "Device not present in response");
+            updateStatus(ThingStatusDetail.GONE, "Device not present in response");
         }
     }
 
@@ -474,11 +473,12 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler implemen
                 } else if (command instanceof OnOffType) {
                     fritzBox.setSwitch(ain, OnOffType.ON.equals(command));
                 } else if (command instanceof IncreaseDecreaseType) {
-                    brightness = currentDevice.getLevelControlModel().getLevelPercentage();
-                    if (IncreaseDecreaseType.INCREASE.equals(command)) {
-                        brightness.add(BigDecimal.TEN);
-                    } else {
-                        brightness.subtract(BigDecimal.TEN);
+                    LevelControlModel levelControlModel = currentDevice.getLevelControlModel();
+                    if (levelControlModel != null) {
+                        brightness = levelControlModel.getLevelPercentage();
+                        brightness = IncreaseDecreaseType.INCREASE.equals(command) ? brightness.add(BigDecimal.TEN)
+                                : brightness.subtract(BigDecimal.TEN);
+                        brightness = brightness.max(BigDecimal.ZERO).min(PercentType.HUNDRED.toBigDecimal());
                     }
                 }
                 if (brightness != null) {
@@ -520,33 +520,31 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler implemen
                 }
                 break;
             case CHANNEL_SETTEMP:
-                BigDecimal temperature = null;
+                BigDecimal fritzTemperature = null;
                 if (command instanceof DecimalType decimalCommand) {
-                    temperature = normalizeCelsius(decimalCommand.toBigDecimal());
+                    fritzTemperature = fromCelsius(normalizeCelsius(decimalCommand.toBigDecimal()));
                 } else if (command instanceof QuantityType quantityCommand) {
                     @SuppressWarnings("unchecked")
                     QuantityType<Temperature> convertedCommand = ((QuantityType<Temperature>) command)
                             .toUnit(SIUnits.CELSIUS);
                     if (convertedCommand != null) {
-                        temperature = normalizeCelsius(convertedCommand.toBigDecimal());
+                        fritzTemperature = fromCelsius(normalizeCelsius(convertedCommand.toBigDecimal()));
                     } else {
                         logger.warn("Unable to convert unit from '{}' to '{}'. Skipping command.",
                                 quantityCommand.getUnit(), SIUnits.CELSIUS);
                     }
                 } else if (command instanceof IncreaseDecreaseType) {
-                    temperature = currentDevice.getHkr().getTsoll();
-                    if (IncreaseDecreaseType.INCREASE.equals(command)) {
-                        temperature.add(BigDecimal.ONE);
-                    } else {
-                        temperature.subtract(BigDecimal.ONE);
-                    }
+                    BigDecimal temperature = toCelsius(currentDevice.getHkr().getTsoll());
+                    temperature = IncreaseDecreaseType.INCREASE.equals(command) ? temperature.add(BigDecimal.ONE)
+                            : temperature.subtract(BigDecimal.ONE);
+                    fritzTemperature = fromCelsius(temperature);
                 } else if (command instanceof OnOffType) {
-                    temperature = OnOffType.ON.equals(command) ? TEMP_FRITZ_ON : TEMP_FRITZ_OFF;
+                    fritzTemperature = OnOffType.ON.equals(command) ? TEMP_FRITZ_ON : TEMP_FRITZ_OFF;
                 }
-                if (temperature != null) {
-                    fritzBox.setSetTemp(ain, fromCelsius(temperature));
+                if (fritzTemperature != null) {
+                    fritzBox.setSetTemp(ain, fritzTemperature);
                     HeatingModel heatingModel = currentDevice.getHkr();
-                    heatingModel.setTsoll(temperature);
+                    heatingModel.setTsoll(fritzTemperature);
                     updateState(CHANNEL_RADIATOR_MODE, new StringType(heatingModel.getRadiatorMode()));
                 }
                 break;

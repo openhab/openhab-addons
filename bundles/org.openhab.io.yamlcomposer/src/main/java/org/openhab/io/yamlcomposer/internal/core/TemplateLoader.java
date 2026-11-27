@@ -13,8 +13,8 @@
 package org.openhab.io.yamlcomposer.internal.core;
 
 import java.nio.file.Path;
+import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -48,20 +48,15 @@ public class TemplateLoader {
      * Extracts templates from the given map and stores them into the templates map.
      *
      * @param templatesSection the section of the YAML model containing templates
+     * @param context the current evaluation context
      */
-    public void extractTemplates(@Nullable Object templatesSection) {
+    public void extractTemplates(@Nullable Object templatesSection, EvaluationContext context) {
         if (templatesSection instanceof java.util.Map<?, ?> templatesMap) {
-            templatesMap.keySet().removeIf(Objects::isNull);
-            recursiveTransformer.resolveMergeKeys(templatesMap, ProcessingPhase.STANDARD);
-            templatesMap.forEach((key, value) -> {
-                // Only resolve the key so we can look up the template name in the templates map.
-                // The value substitutions must NOT be resolved here!
-                // They will be resolved at insertion-time using insertion context instead of the main variables.
-                Object resolvedKey = recursiveTransformer.transform(key, ProcessingPhase.SUBSTITUTION);
-                if (resolvedKey != null) {
-                    templates.put(resolvedKey, value);
-                }
-            });
+            StructuralMerger structuralMerger = recursiveTransformer.getStructuralMerger();
+            Map<Object, @Nullable Object> resolvedTemplates = new LinkedHashMap<>(templatesMap.size());
+
+            structuralMerger.composeMapPreservingValues(templatesMap, resolvedTemplates, recursiveTransformer, context);
+            templates.putAll(resolvedTemplates);
         } else if (templatesSection != null) {
             var position = locator.findPosition(ComposerConfig.TEMPLATES_KEY);
             logger.warn("{}:{} 'templates' is not a map", relativePath, position);

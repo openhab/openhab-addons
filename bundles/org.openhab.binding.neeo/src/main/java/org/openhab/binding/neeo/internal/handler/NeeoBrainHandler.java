@@ -30,8 +30,6 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import javax.servlet.ServletException;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -49,12 +47,14 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.types.Command;
-import org.osgi.service.http.HttpService;
-import org.osgi.service.http.NamespaceException;
+import org.ops4j.pax.web.service.http.HttpService;
+import org.ops4j.pax.web.service.http.NamespaceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+
+import jakarta.servlet.ServletException;
 
 /**
  * A subclass of {@link BaseBridgeHandler} is responsible for handling commands and discovery for a
@@ -166,8 +166,7 @@ public class NeeoBrainHandler extends BaseBridgeHandler {
 
             final String ipAddress = config.getIpAddress();
             if (ipAddress == null || ipAddress.isEmpty()) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "Brain IP Address must be specified");
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Brain IP Address must be specified");
                 return;
             }
             final NeeoBrainApi api = new NeeoBrainApi(ipAddress, httpClient);
@@ -237,12 +236,11 @@ public class NeeoBrainHandler extends BaseBridgeHandler {
             }
         } catch (IOException e) {
             logger.debug("Exception occurred connecting to brain: {}", e.getMessage(), e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                     "Exception occurred connecting to brain: " + e.getMessage());
         } catch (InterruptedException e) {
             logger.debug("Initialization was interrupted", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
-                    "Initialization was interrupted");
+            updateStatus(ThingStatus.UNKNOWN, "Initialization was interrupted");
         } finally {
             writerLock.unlock();
         }
@@ -318,7 +316,7 @@ public class NeeoBrainHandler extends BaseBridgeHandler {
             if (getThing().getStatus() == ThingStatus.ONLINE) {
                 logger.debug("Checking connectivity to {}:{} - unsuccessful - going offline: {}", ipAddress,
                         NeeoConstants.DEFAULT_BRAIN_PORT, e.getMessage(), e);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                         "Exception occurred connecting to brain: " + e.getMessage());
             } else {
                 logger.debug("Checking connectivity to {}:{} - unsuccessful - still offline", ipAddress,

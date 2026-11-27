@@ -374,6 +374,44 @@ public class SVDRPClientImpl implements SVDRPClient {
     }
 
     /**
+     * Change current Audio Track on SVDRP Client
+     *
+     * @param number Track to be set
+     * @throws SVDRPConnectionException thrown if connection to VDR failed or was not possible
+     * @throws SVDRPParseResponseException thrown if something's not OK with SVDRP response
+     */
+    @Override
+    public void setSVDRPAudio(int number) throws SVDRPConnectionException, SVDRPParseResponseException {
+        SVDRPResponse res = null;
+
+        res = execute(String.format("AUDI %s", number));
+
+        if (res.getCode() != 250) {
+            throw new SVDRPParseResponseException(res);
+        }
+    }
+
+    /**
+     * Retrieve current Audio object from SVDRP Client
+     *
+     * @return SVDRPAudio object
+     * @throws SVDRPConnectionException thrown if connection to VDR failed or was not possible
+     * @throws SVDRPParseResponseException thrown if something's not OK with SVDRP response
+     */
+    @Override
+    public SVDRPAudio getSVDRPAudio() throws SVDRPConnectionException, SVDRPParseResponseException {
+        SVDRPResponse res = null;
+
+        res = execute("AUDI");
+
+        if (res.getCode() == 250) {
+            return SVDRPAudio.parse(res.getMessage());
+        } else {
+            throw new SVDRPParseResponseException(res);
+        }
+    }
+
+    /**
      * Retrieve from SVDRP Client if a recording is currently active
      *
      * @return is currently a recording active

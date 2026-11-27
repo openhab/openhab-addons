@@ -9,10 +9,22 @@
 		<parameter-group name="logs">
 			<label>OpenTelemetry Logging</label>
 		</parameter-group>
+		<parameter-group name="metrics">
+			<label>OpenTelemetry Metrics</label>
+		</parameter-group>
+		<parameter-group name="traces">
+			<label>OpenTelemetry Traces</label>
+		</parameter-group>
 
 		<parameter name="otlpURL" type="text">
-			<label>OpenTelemetry Collector URL</label>
-			<description>The URL of the OpenTelemetry Collector instance (using HTTP transport)</description>
+			<label>OTLP Endpoint URL</label>
+			<description>
+				<![CDATA[
+				OTLP endpoint to push telemetry to. Set to a local <a href="https://opentelemetry.io/docs/collector/">OTel Collector</a>
+				(e.g. <code>http://localhost:4318</code>) or directly to a backend ingest URL.
+				Using a collector keeps backend credentials out of openHAB and allows routing to multiple backends.
+				]]>
+			</description>
 			<default>http://localhost:4318</default>
 			<context>network-address</context>
 		</parameter>
@@ -20,7 +32,8 @@
 			<label>OTLP Headers</label>
 			<description>
 				<![CDATA[
-				Optional headers for authentication (e.g., <code>Authorization=Bearer token</code>)
+				Comma-separated authentication headers, e.g. <code>Authorization=Bearer token</code>.
+				Only required for direct-to-backend deployments. Leave empty when using a collector.
 				]]>
 			</description>
 			<context>password</context>
@@ -35,6 +48,68 @@
 			<label>Log Endpoint</label>
 			<description>The endpoint to send logs to.</description>
 			<default>/v1/logs</default>
+		</parameter>
+
+		<parameter name="metricsEnabled" type="boolean" groupName="metrics">
+			<label>Export Metrics</label>
+			<description>Enable exporting openHAB metrics to OpenTelemetry.</description>
+			<default>false</default>
+		</parameter>
+		<parameter name="metricsEndpoint" type="text" groupName="metrics">
+			<label>Metrics Endpoint</label>
+			<description>The endpoint to send metrics to.</description>
+			<default>/v1/metrics</default>
+		</parameter>
+		<parameter name="metricsInterval" type="text" groupName="metrics">
+			<label>Metrics Export Interval</label>
+			<description>
+				<![CDATA[
+				How often metrics are pushed (ISO 8601 duration, e.g. <code>PT60S</code> for 60 seconds).
+				]]>
+			</description>
+			<default>PT60S</default>
+		</parameter>
+		<parameter name="metricsAggregationTemporality" type="text" groupName="metrics">
+			<label>Aggregation Temporality</label>
+			<description>
+				<![CDATA[
+				<code>CUMULATIVE</code>: running totals since process start; works with most backends and OTel Collector pipelines.<br/>
+				<code>DELTA</code>: change since last report; required by some backends when receiving OTLP directly. Consult your backend's documentation.
+				]]>
+			</description>
+			<default>CUMULATIVE</default>
+			<options>
+				<option value="CUMULATIVE">Cumulative</option>
+				<option value="DELTA">Delta</option>
+			</options>
+		</parameter>
+
+		<parameter name="tracesEnabled" type="boolean" groupName="traces">
+			<label>Export Traces</label>
+			<description>
+				<![CDATA[
+				Enable exporting openHAB event-bus spans to OpenTelemetry. These are flat, single-span traces
+				(item/thing/rule events), not distributed call trees — openHAB's event bus has no request context
+				to attach a parent to. For real distributed HTTP traces, run the OTel Java agent alongside this
+				bundle (see README).
+				]]>
+			</description>
+			<default>false</default>
+		</parameter>
+		<parameter name="tracesEndpoint" type="text" groupName="traces">
+			<label>Traces Endpoint</label>
+			<description>The endpoint to send traces to.</description>
+			<default>/v1/traces</default>
+		</parameter>
+		<parameter name="tracesSamplingRatio" type="decimal" groupName="traces" min="0" max="1" step="0.01">
+			<label>Traces Sampling Ratio</label>
+			<description>
+				<![CDATA[
+				Fraction of event-bus spans to export (0.0 = none, 1.0 = all).
+				Lower values reduce volume on busy instances.
+				]]>
+			</description>
+			<default>1</default>
 		</parameter>
 	</config-description>
 

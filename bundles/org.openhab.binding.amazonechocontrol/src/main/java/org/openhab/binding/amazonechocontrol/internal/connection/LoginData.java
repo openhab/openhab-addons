@@ -31,6 +31,7 @@ import org.openhab.core.util.HexUtils;
  * The {@link LoginData} holds the login data and provides the methods for serialization and deserialization
  *
  * @author Jan N. Klug - Initial contribution
+ * @author Jens Erat - Derive deviceId from the serial so the register payload is consistent
  */
 @NonNullByDefault
 public class LoginData {
@@ -42,7 +43,6 @@ public class LoginData {
     // data fields
     private String frc;
     private String serial;
-    private String deviceId;
     private @Nullable String refreshToken;
     private String retailDomain = "amazon.com";
     private String retailUrl = "https://www.amazon.com";
@@ -53,11 +53,10 @@ public class LoginData {
     private @Nullable Date loginTime;
     private List<Cookie> cookies = new ArrayList<>();
 
-    public LoginData(CookieManager cookieManager, String deviceId, String frc, String serial) {
+    public LoginData(CookieManager cookieManager, String frc, String serial) {
         this.cookieManager = cookieManager;
         this.frc = frc;
         this.serial = serial;
-        this.deviceId = deviceId;
     }
 
     public LoginData(CookieManager cookieManager) {
@@ -66,18 +65,20 @@ public class LoginData {
         // FRC
         byte[] frcBinary = new byte[313];
         rand.nextBytes(frcBinary);
-        this.frc = Base64.getEncoder().encodeToString(frcBinary);
+        this.frc = Base64.getEncoder().withoutPadding().encodeToString(frcBinary);
 
         // Serial number
         byte[] serialBinary = new byte[16];
         rand.nextBytes(serialBinary);
         this.serial = HexUtils.bytesToHex(serialBinary);
+    }
 
-        // Device id 16 random bytes in upper-case hex format, a # as separator and a fixed DEVICE_TYPE
-        byte[] bytes = new byte[16];
-        rand.nextBytes(bytes);
-        String hexStr = HexUtils.bytesToHex(bytes).toUpperCase() + "#" + DEVICE_TYPE;
-        this.deviceId = HexUtils.bytesToHex(hexStr.getBytes());
+    // The device id is always derived from the serial and never stored, like the Alexa app computes it from its
+    // uuid. Amazon's register endpoint rejects the request (InvalidValue) when device_serial does not match the
+    // serial embedded in client_id, so both must come from the same serial. Deriving it also keeps restored login
+    // data consistent, since a stored device id from an older release would otherwise not match the stored serial.
+    private static String deriveDeviceId(String serial) {
+        return HexUtils.bytesToHex((serial + "#" + DEVICE_TYPE).getBytes()).toLowerCase();
     }
 
     public String getFrc() {
@@ -89,7 +90,7 @@ public class LoginData {
     }
 
     public String getDeviceId() {
-        return deviceId;
+        return deriveDeviceId(serial);
     }
 
     public @Nullable String getRefreshToken() {
@@ -126,10 +127,6 @@ public class LoginData {
 
     public void setSerial(String serial) {
         this.serial = serial;
-    }
-
-    public void setDeviceId(String deviceId) {
-        this.deviceId = deviceId;
     }
 
     public void setRefreshToken(@Nullable String refreshToken) {
@@ -169,7 +166,7 @@ public class LoginData {
         builder.append("8\n"); // version
         builder.append(frc).append("\n");
         builder.append(serial).append("\n");
-        builder.append(deviceId).append("\n");
+        builder.append(deriveDeviceId(serial)).append("\n");
         builder.append(refreshToken).append("\n");
         builder.append(retailDomain).append("\n");
         builder.append(retailUrl).append("\n");
@@ -194,7 +191,7 @@ public class LoginData {
 
         frc = scanner.nextLine();
         serial = scanner.nextLine();
-        deviceId = scanner.nextLine();
+        scanner.nextLine(); // stored device id is ignored; it is derived from the serial
 
         refreshToken = scanner.nextLine();
         retailDomain = scanner.nextLine();
@@ -322,7 +319,7 @@ public class LoginData {
         }
         LoginData loginData = (LoginData) o;
         return Objects.equals(frc, loginData.frc) && Objects.equals(serial, loginData.serial)
-                && Objects.equals(deviceId, loginData.deviceId) && Objects.equals(refreshToken, loginData.refreshToken)
+                && Objects.equals(refreshToken, loginData.refreshToken)
                 && Objects.equals(retailDomain, loginData.retailDomain)
                 && Objects.equals(retailUrl, loginData.retailUrl)
                 && Objects.equals(websiteApiUrl, loginData.websiteApiUrl)
@@ -333,7 +330,7 @@ public class LoginData {
 
     @Override
     public int hashCode() {
-        return Objects.hash(frc, serial, deviceId, refreshToken, retailDomain, retailUrl, websiteApiUrl, deviceName,
+        return Objects.hash(frc, serial, refreshToken, retailDomain, retailUrl, websiteApiUrl, deviceName,
                 accountCustomerId, loginTime, cookies);
     }
 }

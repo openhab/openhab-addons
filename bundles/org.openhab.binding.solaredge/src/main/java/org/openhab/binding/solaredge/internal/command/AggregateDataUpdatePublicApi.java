@@ -20,8 +20,8 @@ import java.util.Calendar;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.api.Result;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.Result;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.solaredge.internal.connector.StatusUpdateListener;
@@ -90,8 +90,9 @@ public class AggregateDataUpdatePublicApi extends AbstractCommand implements Sol
     }
 
     @Override
-    public void onComplete(@Nullable Result result) {
-        logger.debug("onComplete()");
+    protected void handleResponse(@Nullable Result result) {
+        logger.debug("[AggregateDataUpdatePublicApi] onComplete()");
+        logger.trace("URL: {}", getURL());
 
         if (!HttpStatus.Code.OK.equals(getCommunicationStatus().getHttpCode())) {
             if (retries++ < MAX_RETRIES) {

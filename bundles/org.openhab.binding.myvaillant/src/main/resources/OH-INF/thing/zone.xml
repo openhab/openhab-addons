@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="myvaillant"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="zone">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="system"/>
+		</supported-bridge-type-refs>
+
+		<label>myVAILLANT Zone</label>
+		<description>A zone of the system (rooms controlled together)</description>
+		<semantic-equipment-tag>Thermostat</semantic-equipment-tag>
+
+		<channels>
+			<channel id="current-room-temperature" typeId="temperature">
+				<label>Current Temperature</label>
+			</channel>
+			<channel id="current-room-humidity" typeId="humidity"/>
+			<channel id="desired-room-temperature-setpoint" typeId="temperature-setpoint">
+				<label>Target Temperature</label>
+				<description>Current target temperature, a command changes the manual setpoint or the quick veto</description>
+			</channel>
+			<channel id="desired-room-temperature-setpoint-heating" typeId="temperature">
+				<label>Target Heating Temperature</label>
+			</channel>
+			<channel id="desired-room-temperature-setpoint-cooling" typeId="temperature">
+				<label>Target Cooling Temperature</label>
+			</channel>
+			<channel id="operation-mode-heating" typeId="operation-mode">
+				<label>Heating Operation Mode</label>
+			</channel>
+			<channel id="operation-mode-cooling" typeId="operation-mode">
+				<label>Cooling Operation Mode</label>
+			</channel>
+			<channel id="manual-mode-setpoint-heating" typeId="temperature-setpoint">
+				<label>Manual Mode Heating Temperature</label>
+			</channel>
+			<channel id="setpoint-cooling" typeId="temperature-setpoint">
+				<label>Cooling Temperature</label>
+			</channel>
+			<channel id="set-back-temperature" typeId="temperature-setpoint">
+				<label>Set Back Temperature</label>
+				<description>Temperature outside of the time windows in time controlled mode</description>
+			</channel>
+			<channel id="heating-state" typeId="heating-state"/>
+			<channel id="current-special-function" typeId="zone-special-function"/>
+			<channel id="hvac-action" typeId="hvac-action"/>
+			<channel id="quick-veto" typeId="switch">
+				<label>Quick Veto</label>
+				<description>Temporary target temperature, ON starts it with the manual mode temperature</description>
+			</channel>
+			<channel id="quick-veto-end" typeId="datetime">
+				<label>Quick Veto End</label>
+			</channel>
+			<channel id="quick-veto-duration" typeId="duration">
+				<label>Quick Veto Remaining Time</label>
+				<description>Remaining hours of the quick veto, a command sets a new duration</description>
+			</channel>
+			<channel id="manual-cooling-active" typeId="status">
+				<label>Manual Cooling Active</label>
+			</channel>
+		</channels>
+
+		<representation-property>componentId</representation-property>
+
+		<config-description>
+			<parameter name="index" type="integer" min="0" required="true">
+				<label>Zone Index</label>
+				<description>Index of the zone in the system, the first zone is 0</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+</thing:thing-descriptions>

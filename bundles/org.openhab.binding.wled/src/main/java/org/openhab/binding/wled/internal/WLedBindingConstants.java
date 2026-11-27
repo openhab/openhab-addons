@@ -73,4 +73,42 @@ public class WLedBindingConstants {
     public static final String CHANNEL_SLEEP_BRIGHTNESS = "sleepTargetBrightness";
     public static final String CHANNEL_SYNC_SEND = "syncSend";
     public static final String CHANNEL_SYNC_RECEIVE = "syncReceive";
+    public static final String CHANNEL_SLEEP_REMAINING = "sleepRemaining";
+    public static final String CHANNEL_UPTIME = "uptime";
+    public static final String CHANNEL_FREE_HEAP = "freeHeap";
+    public static final String CHANNEL_WIFI_SIGNAL = "wifiSignal";
+    public static final String CHANNEL_CURRENT = "estimatedCurrent";
+    public static final String CHANNEL_FPS = "fps";
+    public static final String CHANNEL_WHITE_TEMPERATURE = "whiteTemperature";
+    public static final String CHANNEL_CUSTOM_1 = "custom1";
+    public static final String CHANNEL_CUSTOM_2 = "custom2";
+    public static final String CHANNEL_CUSTOM_3 = "custom3";
+    public static final String CHANNEL_OPTION_1 = "option1";
+    public static final String CHANNEL_OPTION_2 = "option2";
+    public static final String CHANNEL_OPTION_3 = "option3";
+    public static final String CHANNEL_FREEZE = "freeze";
+    public static final String CHANNEL_SELECTED = "selected";
+    public static final String CHANNEL_SEGMENT_START = "segmentStart";
+    public static final String CHANNEL_SEGMENT_STOP = "segmentStop";
+    public static final String CHANNEL_SEGMENT_NAME = "segmentName";
+    public static final String CHANNEL_SYNC_SEND_GROUPS = "syncSendGroups";
+    public static final String CHANNEL_SYNC_RECEIVE_GROUPS = "syncReceiveGroups";
+    public static final String CHANNEL_MAIN_SEGMENT = "mainSegment";
+    public static final String CHANNEL_LED_MAP = "ledMap";
+    public static final String CHANNEL_LIVE_ACTIVE = "liveActive";
+    public static final String CHANNEL_LIVE_MODE = "liveMode";
+    public static final String CHANNEL_LIVE_SOURCE = "liveSource";
+    public static final String CHANNEL_AUDIO_REACTIVE = "audioReactive";
+    public static final String CHANNEL_AUDIO_SYNC_MODE = "audioSyncMode";
+    public static final String CHANNEL_MAPPING = "mapping";
+    public static final String CHANNEL_SOUND_SIMULATION = "soundSimulation";
+
+    // Properties
+    public static final String PROPERTY_NAME = "name";
+    public static final String PROPERTY_LED_COUNT = "ledCount";
+    public static final String PROPERTY_ARCHITECTURE = "architecture";
+    public static final String PROPERTY_BRAND = "brand";
+
+    // Firmware versions as int, 0.14.0 is 140
+    public static final int FIRMWARE_0_14 = 140;
 }

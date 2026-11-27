@@ -106,14 +106,14 @@ public class ComponentHandler extends BaseThingHandler {
         if (serialNumberString != null && !serialNumberString.isEmpty()) {
             SerialNumber sn = new SerialNumber(serialNumberString);
             if (!sn.isWellFormed()) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                         "@text/message.component.illegal.serial [\"" + serialNumberString + "\"]");
             } else {
                 this.serialNumber = sn;
                 updateStatus(ThingStatus.ONLINE);
             }
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/message.missing.serial");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/message.missing.serial");
         }
     }
 
@@ -124,14 +124,13 @@ public class ComponentHandler extends BaseThingHandler {
             if (null != serialNumber) {
                 Component component = getComponent();
                 if (null == component) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.GONE,
+                    updateStatus(ThingStatusDetail.GONE,
                             messages.getText("message.component.notfound", serialNumber, channelUID));
                 } else {
                     onUpdate(component);
                 }
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.GONE,
-                        "@text/message.component.missing.id [\"" + channelUID + "\"]");
+                updateStatus(ThingStatusDetail.GONE, "@text/message.component.missing.id [\"" + channelUID + "\"]");
             }
 
             return;

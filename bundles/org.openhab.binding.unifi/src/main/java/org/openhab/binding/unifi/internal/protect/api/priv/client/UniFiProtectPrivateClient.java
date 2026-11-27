@@ -26,12 +26,12 @@ import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.BufferingResponseListener;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.api.Response;
-import org.eclipse.jetty.client.api.Result;
-import org.eclipse.jetty.client.util.BufferingResponseListener;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.Response;
+import org.eclipse.jetty.client.Result;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.unifi.internal.api.UniFiSession;
@@ -186,6 +186,14 @@ public class UniFiProtectPrivateClient {
     }
 
     /**
+     * Drop the cached bootstrap so the next fetch is fresh — used when a WebSocket remove
+     * reports a topology change the cached copy cannot reflect.
+     */
+    public void invalidateBootstrap() {
+        lastBootstrapRefresh = null;
+    }
+
+    /**
      * Force refresh of bootstrap
      */
     public CompletableFuture<Bootstrap> refreshBootstrap() {
@@ -196,15 +204,16 @@ public class UniFiProtectPrivateClient {
     /**
      * Enable WebSocket for real-time updates
      */
-    public CompletableFuture<Void> enableWebSocket(
-            Consumer<UniFiProtectPrivateWebSocket.WebSocketUpdate> updateHandler) {
-        return ensureAuthenticated().thenCompose(v -> connectWebSocket(updateHandler, true));
+    public CompletableFuture<Void> enableWebSocket(Consumer<UniFiProtectPrivateWebSocket.WebSocketUpdate> updateHandler,
+            Runnable onReconnected) {
+        return ensureAuthenticated().thenCompose(v -> connectWebSocket(updateHandler, onReconnected, true));
     }
 
     // A null cookie is fine: the shared HttpClient's CookieStore supplies it on the upgrade (as for REST), and a
     // genuine 401 is re-authenticated and retried below.
     private CompletableFuture<Void> connectWebSocket(
-            Consumer<UniFiProtectPrivateWebSocket.WebSocketUpdate> updateHandler, boolean allowReauth) {
+            Consumer<UniFiProtectPrivateWebSocket.WebSocketUpdate> updateHandler, Runnable onReconnected,
+            boolean allowReauth) {
         if (webSocket != null) {
             logger.debug("WebSocket already enabled");
             return CompletableFuture.completedFuture(null);
@@ -212,8 +221,8 @@ public class UniFiProtectPrivateClient {
 
         String wsUrl = baseUrl.replace("https://", "wss://").replace("http://", "ws://") + "/proxy/protect/ws/updates";
         String cookie = authenticator.getAuthCookie();
-        UniFiProtectPrivateWebSocket ws = new UniFiProtectPrivateWebSocket(wsUrl, cookie, updateHandler, this,
-                httpClient);
+        UniFiProtectPrivateWebSocket ws = new UniFiProtectPrivateWebSocket(wsUrl, cookie, updateHandler, onReconnected,
+                this, httpClient);
         return ws.connect().handle((connected, ex) -> ex).thenCompose(ex -> {
             if (ex == null) {
                 webSocket = ws;
@@ -222,7 +231,7 @@ public class UniFiProtectPrivateClient {
             ws.disconnect();
             if (allowReauth && UniFiWebSocketUtil.isUnauthorizedUpgrade(ex)) {
                 logger.debug("WebSocket upgrade rejected (401); re-authenticating and retrying");
-                return reauthenticateSession().thenCompose(v -> connectWebSocket(updateHandler, false));
+                return reauthenticateSession().thenCompose(v -> connectWebSocket(updateHandler, onReconnected, false));
             }
             return CompletableFuture.<Void> failedFuture(ex);
         });
@@ -283,8 +292,8 @@ public class UniFiProtectPrivateClient {
                 String requestBody = null;
                 if (body != null) {
                     requestBody = JsonUtil.toJson(body);
-                    request.header("Content-Type", "application/json");
-                    request.content(new StringContentProvider(requestBody));
+                    request.headers(h -> h.add("Content-Type", "application/json"));
+                    request.body(new StringRequestContent(requestBody));
                 }
 
                 if (logger.isTraceEnabled()) {
@@ -296,6 +305,7 @@ public class UniFiProtectPrivateClient {
 
                 request.send(new BufferingResponseListener() {
                     @Override
+                    @NonNullByDefault({})
                     public void onComplete(Result result) {
                         try {
                             if (result.isFailed()) {
@@ -580,6 +590,7 @@ public class UniFiProtectPrivateClient {
 
                 request.send(new BufferingResponseListener() {
                     @Override
+                    @NonNullByDefault({})
                     public void onComplete(Result result) {
                         if (result.isFailed()) {
                             future.completeExceptionally(
@@ -613,6 +624,7 @@ public class UniFiProtectPrivateClient {
 
                 request.send(new BufferingResponseListener() {
                     @Override
+                    @NonNullByDefault({})
                     public void onComplete(Result result) {
                         if (result.isFailed()) {
                             future.completeExceptionally(
@@ -646,6 +658,7 @@ public class UniFiProtectPrivateClient {
 
                 request.send(new BufferingResponseListener() {
                     @Override
+                    @NonNullByDefault({})
                     public void onComplete(Result result) {
                         if (result.isFailed()) {
                             future.completeExceptionally(

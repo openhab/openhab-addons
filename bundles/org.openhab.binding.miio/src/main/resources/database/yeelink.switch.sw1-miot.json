@@ -10,7 +10,7 @@
 				"property": "on",
 				"siid": 2,
 				"piid": 1,
-				"friendlyName": "First Switch - Switch Status",
+				"friendlyName": "Switch 1",
 				"channel": "on",
 				"type": "Switch",
 				"refresh": true,
@@ -22,15 +22,16 @@
 				],
 				"category": "switch",
 				"tags": [
-					"Switch"
+					"Switch",
+					"Power"
 				]
 			},
 			{
 				"property": "mode",
 				"siid": 2,
 				"piid": 2,
-				"friendlyName": "First Switch Default - Mode",
-				"channel": "mode",
+				"friendlyName": "Switch 1 - Power-On State",
+				"channel": "default_power",
 				"type": "Number",
 				"stateDescription": {
 					"options": [
@@ -51,8 +52,10 @@
 						"parameterType": "NUMBER"
 					}
 				],
+				"category": "switch",
 				"tags": [
-					"Switch"
+					"Control",
+					"Power"
 				],
 				"readmeComment": "Value mapping `[\"0\"\u003d\"Off\",\"1\"\u003d\"On\"]`"
 			},
@@ -60,31 +63,35 @@
 				"property": "mode1",
 				"siid": 2,
 				"piid": 3,
-				"friendlyName": "First Switch - Delay",
-				"channel": "mode1",
-				"type": "Number",
+				"friendlyName": "Switch 1 - Off Delay",
+				"channel": "off_delay",
+				"type": "Number:Time",
+				"unit": "seconds",
 				"stateDescription": {
-					"minimum": -1.0,
-					"maximum": 43200.0,
-					"step": 1.0,
-					"pattern": "%.1f"
+					"minimum": 0,
+					"maximum": 43200,
+					"step": 60,
+					"pattern": "%.0f %unit%"
 				},
 				"refresh": true,
 				"actions": [
 					{
 						"command": "set_properties",
-						"parameterType": "STRING"
+						"parameterType": "NUMBER"
 					}
 				],
+				"category": "time",
 				"tags": [
-					"Control"
-				]
+					"Setpoint",
+					"Duration"
+				],
+				"readmeComment": "The switch turns off after this time"
 			},
 			{
 				"property": "on1",
 				"siid": 3,
 				"piid": 1,
-				"friendlyName": "Second Switch - Switch Status",
+				"friendlyName": "Switch 2",
 				"channel": "on1",
 				"type": "Switch",
 				"refresh": true,
@@ -94,16 +101,18 @@
 						"parameterType": "ONOFFBOOL"
 					}
 				],
+				"category": "switch",
 				"tags": [
-					"Switch"
+					"Switch",
+					"Power"
 				]
 			},
 			{
 				"property": "mode2",
 				"siid": 3,
 				"piid": 2,
-				"friendlyName": "Second Switch Default - Mode",
-				"channel": "mode2",
+				"friendlyName": "Switch 2 - Power-On State",
+				"channel": "default_power1",
 				"type": "Number",
 				"stateDescription": {
 					"options": [
@@ -124,8 +133,10 @@
 						"parameterType": "NUMBER"
 					}
 				],
+				"category": "switch",
 				"tags": [
-					"Switch"
+					"Control",
+					"Power"
 				],
 				"readmeComment": "Value mapping `[\"0\"\u003d\"Off\",\"1\"\u003d\"On\"]`"
 			},
@@ -133,31 +144,35 @@
 				"property": "mode3",
 				"siid": 3,
 				"piid": 3,
-				"friendlyName": "Second Switch Service - Delay",
-				"channel": "mode3",
-				"type": "Number",
+				"friendlyName": "Switch 2 - Off Delay",
+				"channel": "off_delay1",
+				"type": "Number:Time",
+				"unit": "seconds",
 				"stateDescription": {
-					"minimum": -1.0,
-					"maximum": 43200.0,
-					"step": 1.0,
-					"pattern": "%.1f"
+					"minimum": 0,
+					"maximum": 43200,
+					"step": 60,
+					"pattern": "%.0f %unit%"
 				},
 				"refresh": true,
 				"actions": [
 					{
 						"command": "set_properties",
-						"parameterType": "STRING"
+						"parameterType": "NUMBER"
 					}
 				],
+				"category": "time",
 				"tags": [
-					"Control"
-				]
+					"Setpoint",
+					"Duration"
+				],
+				"readmeComment": "The switch turns off after this time"
 			},
 			{
 				"property": "interlock",
 				"siid": 4,
 				"piid": 1,
-				"friendlyName": "Extension - Interlock",
+				"friendlyName": "Interlock",
 				"channel": "interlock",
 				"type": "Switch",
 				"refresh": true,
@@ -167,46 +182,51 @@
 						"parameterType": "ONOFFBOOL"
 					}
 				],
+				"category": "switch",
 				"tags": [
-					"Switch"
-				]
+					"Switch",
+					"Enabled"
+				],
+				"readmeComment": "Only one of the two switches can be on at the same time"
 			},
 			{
 				"property": "flash",
 				"siid": 4,
 				"piid": 2,
-				"friendlyName": "Extension - Flash",
-				"channel": "flash",
-				"type": "Number",
-				"stateDescription": {
-					"minimum": 0.0,
-					"maximum": 1.0,
-					"step": 1.0,
-					"pattern": "%.0f"
-				},
+				"friendlyName": "Smart Switch Mode",
+				"channel": "smart_switch",
+				"type": "Switch",
 				"refresh": true,
 				"actions": [
 					{
 						"command": "set_properties",
-						"parameterType": "NUMBER"
+						"parameterType": "ONOFFNUMBER"
 					}
 				],
+				"category": "switch",
 				"tags": [
-					"Control"
-				]
+					"Switch",
+					"Enabled"
+				],
+				"readmeComment": "Keeps the relay on and uses the wall switch only as a button for smart lights"
 			},
 			{
 				"property": "rc-list",
 				"siid": 4,
 				"piid": 3,
-				"friendlyName": "Extension - Rc List",
-				"channel": "rc-list",
+				"friendlyName": "Paired Remotes",
+				"channel": "remote_list",
 				"type": "String",
 				"stateDescription": {
 					"readOnly": true
 				},
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"category": "text",
+				"tags": [
+					"Status",
+					"Info"
+				]
 			}
 		],
 		"experimental": true

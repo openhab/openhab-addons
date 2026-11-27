@@ -200,7 +200,7 @@ public class KonnectedHandler extends BaseThingHandler {
         }
 
         if ((callbackUrl == null)) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Unable to obtain callback URL");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Unable to obtain callback URL");
         }
 
         else {
@@ -229,7 +229,7 @@ public class KonnectedHandler extends BaseThingHandler {
                         try {
                             http.doGet(baseUrl + "/settings?restart=true", null, retryCount);
                         } catch (KonnectedHttpRetryExceeded e) {
-                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                         }
                     });
                 } else if ("removewifi".equals(cfg[1]) && value instanceof Boolean bool && bool) {
@@ -237,7 +237,7 @@ public class KonnectedHandler extends BaseThingHandler {
                         try {
                             http.doGet(baseUrl + "/settings?restore=true", null, retryCount);
                         } catch (KonnectedHttpRetryExceeded e) {
-                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                         }
                     });
                 } else if ("sendConfig".equals(cfg[1]) && value instanceof Boolean bool && bool) {
@@ -247,13 +247,13 @@ public class KonnectedHandler extends BaseThingHandler {
                             logger.trace("The response from the konnected module with thingID {} was {}",
                                     getThing().getUID(), response);
                             if (response == null) {
-                                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                                         "Unable to communicate with Konnected Module.");
                             } else {
                                 updateStatus(ThingStatus.ONLINE);
                             }
                         } catch (KonnectedHttpRetryExceeded e) {
-                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                         }
                     });
                 }
@@ -268,7 +268,7 @@ public class KonnectedHandler extends BaseThingHandler {
             logger.trace("The response from the konnected module with thingID {} was {}", getThing().getUID(),
                     response);
             if (response == null) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                         "Unable to communicate with Konnected Module confirm settings.");
             } else {
                 updateStatus(ThingStatus.ONLINE);
@@ -276,7 +276,7 @@ public class KonnectedHandler extends BaseThingHandler {
         } catch (KonnectedHttpRetryExceeded e) {
             logger.trace("The number of retries was exceeeded during the HandleConfigurationUpdate(): {}",
                     e.getMessage());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 
@@ -286,19 +286,19 @@ public class KonnectedHandler extends BaseThingHandler {
         try {
             checkConfiguration();
         } catch (ConfigValidationException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
         }
         scheduler.execute(() -> {
             try {
                 String response = updateKonnectedModule();
                 if (response == null) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                             "Unable to communicate with Konnected Module confirm settings or readd thing.");
                 } else {
                     updateStatus(ThingStatus.ONLINE);
                 }
             } catch (KonnectedHttpRetryExceeded e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
         });
     }
@@ -434,7 +434,7 @@ public class KonnectedHandler extends BaseThingHandler {
         } catch (KonnectedHttpRetryExceeded e) {
             logger.debug("Attempting to set the state of the actuator on thing {} failed: {}",
                     this.thing.getUID().getId(), e.getMessage());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                     "Unable to communicate with Konnected Alarm Panel confirm settings, and that module is online.");
         }
     }
@@ -457,7 +457,7 @@ public class KonnectedHandler extends BaseThingHandler {
                     try {
                         sendSetSwitchState(thingID, payloadString);
                     } catch (KonnectedHttpRetryExceeded ex) {
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                                 "Unable to communicate with Konnected Alarm Panel confirm settings, and that module is online.");
                         logger.debug("Attempting to get the state of the zone on thing {} failed for channel: {} : {}",
                                 this.thing.getUID().getId(), channelId.getAsString(), ex.getMessage());

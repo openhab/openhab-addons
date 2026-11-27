@@ -12,9 +12,11 @@
  */
 package org.openhab.binding.ddwrt.internal.api;
 
-import java.util.ArrayList;
+import java.io.IOException;
 import java.util.List;
-import java.util.Locale;
+import java.util.Map;
+import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -29,6 +31,10 @@ import org.slf4j.Logger;
  */
 @NonNullByDefault
 public class DDWRTOpenWrtDevice extends DDWRTBaseDevice {
+
+    private static final Pattern SAFE_COMMAND_IDENTIFIER = Objects.requireNonNull(Pattern.compile("[a-zA-Z0-9._-]+"));
+
+    private final Map<String, String> wirelessDevicesByInterface = new ConcurrentHashMap<>();
 
     public DDWRTOpenWrtDevice(DDWRTDeviceConfiguration cfg, Logger logger) {
         super(cfg, logger);
@@ -46,7 +52,17 @@ public class DDWRTOpenWrtDevice extends DDWRTBaseDevice {
 
     @Override
     protected List<DDWRTRadio> enumerateRadios(SshRunner runner) {
-        return IwinfoParser.enumerateRadios(logger, runner, mac);
+        List<DDWRTRadio> radios = IwinfoParser.enumerateRadios(logger, runner, mac);
+        for (DDWRTRadio radio : radios) {
+            String iface = radio.getIfaceName();
+            if (SAFE_COMMAND_IDENTIFIER.matcher(iface).matches() && !wirelessDevicesByInterface.containsKey(iface)) {
+                String wirelessDevice = findWirelessDevice(runner, iface);
+                if (wirelessDevice != null) {
+                    wirelessDevicesByInterface.put(iface, wirelessDevice);
+                }
+            }
+        }
+        return radios;
     }
 
     @Override
@@ -61,16 +77,32 @@ public class DDWRTOpenWrtDevice extends DDWRTBaseDevice {
     }
 
     @Override
-    protected void setRadioEnabled(SshRunner runner, String iface, boolean enabled) {
-        if (enabled) {
-            runner.execStdout("ifconfig " + iface + " up");
-        } else {
-            runner.execStdout("ifconfig " + iface + " down");
+    protected void setRadioEnabled(SshRunner runner, String iface, boolean enabled) throws IOException {
+        if (!SAFE_COMMAND_IDENTIFIER.matcher(iface).matches()) {
+            throw new IOException("Invalid wireless interface name");
         }
+
+        String wirelessDevice = findWirelessDevice(runner, iface);
+        if (wirelessDevice != null) {
+            wirelessDevicesByInterface.put(iface, wirelessDevice);
+        } else {
+            wirelessDevice = wirelessDevicesByInterface.get(iface);
+        }
+        if (wirelessDevice == null) {
+            throw new IOException("Could not determine OpenWrt wireless device for " + iface);
+        }
+
+        runner.exec("/sbin/wifi " + (enabled ? "up " : "down ") + wirelessDevice);
+    }
+
+    private @Nullable String findWirelessDevice(SshRunner runner, String iface) {
+        String wirelessDevice = safeTrim(runner.execStdout("ubus call network.wireless status | jsonfilter -e "
+                + "'@.*.interfaces[@.ifname=\"" + iface + "\"].config.device[0]'"));
+        return SAFE_COMMAND_IDENTIFIER.matcher(wirelessDevice).matches() ? wirelessDevice : null;
     }
 
     @Override
-    protected String getLanInterface() {
+    protected String getLanInterface(SshRunner runner) {
         return "br-lan";
     }
 
@@ -161,222 +193,9 @@ public class DDWRTOpenWrtDevice extends DDWRTBaseDevice {
 
     @Override
     protected List<DDWRTFirewallRule> enumerateFirewallRules(SshRunner runner) {
-        List<DDWRTFirewallRule> rules = new ArrayList<>();
-
-        try {
-            // Modern OpenWrt (22.03+) uses nftables via fw4
-            String nftOutput = runner.execStdout("nft list ruleset 2>/dev/null");
-            if (!nftOutput.isEmpty()) {
-                rules.addAll(parseNftRules(nftOutput));
-                return rules;
-            }
-
-            // Fallback: older OpenWrt with iptables (fw3)
-            String iptablesOutput = runner
-                    .execStdout("iptables -L -n --line-numbers 2>/dev/null || iptables -L -n 2>/dev/null");
-            if (!iptablesOutput.isEmpty()) {
-                rules.addAll(parseIptablesRules(iptablesOutput));
-            }
-        } catch (Exception e) {
-            logger.debug("Failed to enumerate OpenWrt firewall rules: {}", e.getMessage());
-        }
-
-        return rules;
-    }
-
-    /**
-     * Parse {@code nft list ruleset} output into firewall rule objects.
-     * nftables output is structured as nested table/chain/rule blocks.
-     */
-    private List<DDWRTFirewallRule> parseNftRules(String nftOutput) {
-        List<DDWRTFirewallRule> rules = new ArrayList<>();
-        String[] lines = nftOutput.split("\n");
-
-        String currentChain = "";
-        int ruleNumber = 1;
-
-        for (String line : lines) {
-            line = line.trim();
-
-            // Track chain context: "chain input {"
-            if (line.startsWith("chain ") && line.endsWith("{")) {
-                currentChain = line.substring(6, line.length() - 1).trim();
-                ruleNumber = 1;
-                continue;
-            }
-
-            // Skip structural lines
-            if (line.isEmpty() || "}".equals(line) || line.startsWith("table ") || line.startsWith("type ")
-                    || line.startsWith("policy ") || line.startsWith("comment ") || line.startsWith("set ")
-                    || line.startsWith("elements")) {
-                continue;
-            }
-
-            // Remaining lines inside a chain are rules
-            if (!currentChain.isEmpty() && !line.startsWith("chain ") && !line.startsWith("table ")) {
-                try {
-                    DDWRTFirewallRule.Direction direction = convertChainToDirection(currentChain);
-                    DDWRTFirewallRule.RuleType type = DDWRTFirewallRule.RuleType.FILTER;
-
-                    if (line.contains("accept")) {
-                        type = DDWRTFirewallRule.RuleType.ACCEPT;
-                    } else if (line.contains("drop")) {
-                        type = DDWRTFirewallRule.RuleType.DROP;
-                    } else if (line.contains("reject")) {
-                        type = DDWRTFirewallRule.RuleType.REJECT;
-                    } else if (line.contains("log")) {
-                        type = DDWRTFirewallRule.RuleType.LOG;
-                    }
-
-                    String ruleId = "nft_" + currentChain + "_" + ruleNumber;
-                    String description = "nft " + currentChain + ": " + line;
-
-                    rules.add(new DDWRTFirewallRule(ruleId, type, direction, DDWRTFirewallRule.Protocol.ALL, null, null,
-                            null, null, null, true, description, mac, 0, 0));
-                    ruleNumber++;
-                } catch (Exception e) {
-                    logger.trace("Failed to parse nft rule '{}': {}", line, e.getMessage());
-                }
-            }
-        }
-
-        return rules;
-    }
-
-    /**
-     * Parse iptables -L output into firewall rule objects.
-     */
-    private List<DDWRTFirewallRule> parseIptablesRules(String iptablesOutput) {
-        List<DDWRTFirewallRule> rules = new ArrayList<>();
-        String[] lines = iptablesOutput.split("\n");
-
-        String currentChain = "";
-        int ruleNumber = 1;
-
-        for (String line : lines) {
-            line = line.trim();
-
-            // Skip empty lines and chain headers (except to capture chain name)
-            if (line.isEmpty() || line.startsWith("Chain") || line.startsWith("target") || line.startsWith("num")) {
-                if (line.startsWith("Chain")) {
-                    // Extract chain name: "Chain INPUT (policy ACCEPT)"
-                    String[] parts = line.split("\\s+");
-                    if (parts.length > 1) {
-                        currentChain = parts[1];
-                    }
-                }
-                continue;
-            }
-
-            try {
-                DDWRTFirewallRule rule = parseIptablesLine(line, currentChain, ruleNumber++);
-                if (rule != null) {
-                    rules.add(rule);
-                }
-            } catch (Exception e) {
-                logger.trace("Failed to parse iptables line '{}': {}", line, e.getMessage());
-            }
-        }
-
-        return rules;
-    }
-
-    /**
-     * Parse a single iptables rule line.
-     * Format: "num target prot opt source destination [options]"
-     */
-    private @Nullable DDWRTFirewallRule parseIptablesLine(String line, String chain, int ruleNumber) {
-        String[] parts = line.split("\\s+");
-        if (parts.length < 5) {
-            return null;
-        }
-
-        try {
-            // Parse basic rule components
-            String target = parts[1];
-            String protocol = parts[2];
-            // parts[3] is the iptables "opt" column (typically "--"), not used
-            String source = parts[4];
-            String dest = parts.length > 5 ? parts[5] : "any";
-
-            // Convert to our firewall rule format
-            DDWRTFirewallRule.RuleType type = convertTargetToRuleType(target);
-            DDWRTFirewallRule.Direction direction = convertChainToDirection(chain);
-            DDWRTFirewallRule.Protocol proto = convertProtocol(protocol);
-
-            // Extract ports from destination if present (e.g., "192.168.1.1:80")
-            String destIp = dest;
-            Integer destPort = null;
-            if (dest.contains(":") && !dest.startsWith("0.0.0.0/0")) {
-                String[] destParts = dest.split(":");
-                destIp = destParts[0];
-                try {
-                    destPort = Integer.parseInt(destParts[1]);
-                } catch (NumberFormatException e) {
-                    // Not a port, keep as-is
-                }
-            }
-
-            // Clean up "any" addresses
-            if ("0.0.0.0/0".equals(source) || "any".equals(source)) {
-                source = null;
-            }
-            if ("0.0.0.0/0".equals(destIp) || "any".equals(destIp)) {
-                destIp = null;
-            }
-
-            String ruleId = "iptables_" + chain + "_" + ruleNumber;
-            String description = String.format("OpenWrt iptables rule: %s chain %s", chain, target);
-
-            return new DDWRTFirewallRule(ruleId, type, direction, proto, source, destIp, null, destPort, null, true,
-                    description, mac, 0, 0);
-        } catch (Exception e) {
-            logger.trace("Error parsing iptables line: {}", e.getMessage());
-            return null;
-        }
-    }
-
-    private DDWRTFirewallRule.RuleType convertTargetToRuleType(String target) {
-        switch (target.toLowerCase(Locale.ROOT)) {
-            case "accept":
-                return DDWRTFirewallRule.RuleType.ACCEPT;
-            case "drop":
-                return DDWRTFirewallRule.RuleType.DROP;
-            case "reject":
-                return DDWRTFirewallRule.RuleType.REJECT;
-            case "log":
-                return DDWRTFirewallRule.RuleType.LOG;
-            default:
-                return DDWRTFirewallRule.RuleType.FILTER;
-        }
-    }
-
-    private DDWRTFirewallRule.Direction convertChainToDirection(String chain) {
-        switch (chain.toLowerCase(Locale.ROOT)) {
-            case "input":
-                return DDWRTFirewallRule.Direction.INPUT;
-            case "output":
-                return DDWRTFirewallRule.Direction.OUTPUT;
-            case "forward":
-                return DDWRTFirewallRule.Direction.FORWARD;
-            default:
-                return DDWRTFirewallRule.Direction.ANY;
-        }
-    }
-
-    private DDWRTFirewallRule.Protocol convertProtocol(String protocol) {
-        switch (protocol.toLowerCase(Locale.ROOT)) {
-            case "tcp":
-                return DDWRTFirewallRule.Protocol.TCP;
-            case "udp":
-                return DDWRTFirewallRule.Protocol.UDP;
-            case "icmp":
-                return DDWRTFirewallRule.Protocol.ICMP;
-            case "all":
-                return DDWRTFirewallRule.Protocol.ALL;
-            default:
-                return DDWRTFirewallRule.Protocol.ALL;
-        }
+        // OpenWrt's fw3/fw4 rulesets are generated runtime state rather than stable, user-configured rules. A future
+        // implementation should model the UCI firewall configuration instead of exposing iptables/nftables internals.
+        return List.of();
     }
 
     @Override

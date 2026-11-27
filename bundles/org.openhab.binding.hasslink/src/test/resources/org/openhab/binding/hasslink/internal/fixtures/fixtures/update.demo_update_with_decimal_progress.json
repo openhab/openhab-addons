@@ -1,0 +1,46 @@
+{
+  "id": 18,
+  "type": "event",
+  "event": {
+    "event_type": "state_changed",
+    "data": {
+      "entity_id": "update.demo_update_with_decimal_progress",
+      "old_state": null,
+      "new_state": {
+        "entity_id": "update.demo_update_with_decimal_progress",
+        "state": "on",
+        "attributes": {
+          "auto_update": false,
+          "display_precision": 2,
+          "installed_version": "1.93.3",
+          "in_progress": false,
+          "latest_version": "1.94.2",
+          "release_summary": "Added support for effects",
+          "release_url": "https://www.example.com/release/1.93.3",
+          "skipped_version": null,
+          "title": "Philips Lamps Firmware",
+          "update_percentage": null,
+          "device_class": "firmware",
+          "entity_picture": "/api/brands/integration/demo/icon.png",
+          "friendly_name": "Demo Update with Decimal Progress",
+          "supported_features": 31
+        },
+        "last_changed": "2026-09-21T12:46:27.358712+00:00",
+        "last_reported": "2026-09-21T12:46:27.358712+00:00",
+        "last_updated": "2026-09-21T12:46:27.358712+00:00",
+        "context": {
+          "id": "01M3201RGYRC8889WE888AYS00",
+          "parent_id": null,
+          "user_id": null
+        }
+      }
+    },
+    "origin": "LOCAL",
+    "time_fired": "2026-09-19T00:00:00.000000+00:00",
+    "context": {
+      "id": "01HXXXXXXX",
+      "parent_id": null,
+      "user_id": null
+    }
+  }
+}

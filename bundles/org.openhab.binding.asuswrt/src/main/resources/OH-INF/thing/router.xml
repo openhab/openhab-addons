@@ -5,12 +5,13 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<!-- Router Thing Type -->
-	<bridge-type id="router">
+	<bridge-type id="router" extensible="nvram-variable-type">
 		<label>Asuswrt Router</label>
 		<description>Router with Asuswrt or Asuswrt-Merlin OS</description>
 		<channel-groups>
 			<channel-group id="sys-info" typeId="sys-info-group"></channel-group>
 			<channel-group id="client-list" typeId="client-list-group"></channel-group>
+			<channel-group id="nvram-variables" typeId="nvram-variables-group-type"></channel-group>
 		</channel-groups>
 
 		<representation-property>macAddress</representation-property>
@@ -106,5 +107,11 @@
 			<channel id="online-clients-count" typeId="clients-online-count-type"></channel>
 			<channel id="client-online-event" typeId="client-online-event-type"></channel>
 		</channels>
+	</channel-group-type>
+
+	<!-- NVRAM Settings -->
+	<channel-group-type id="nvram-variables-group-type">
+		<label>NVRAM Variables</label>
+		<description>Router NVRAM variable channels</description>
 	</channel-group-type>
 </thing:thing-descriptions>

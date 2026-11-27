@@ -88,7 +88,7 @@ public abstract class WemoHandler extends WemoBaseThingHandler {
             // Check if the Wemo device is set in the UPnP service registry
             if (!isUpnpDeviceRegistered()) {
                 logger.debug("UPnP device {} not yet registered", getUDN());
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
+                updateStatus(ThingStatus.OFFLINE,
                         "@text/config-status.pending.device-not-registered [\"" + getUDN() + "\"]");
                 return;
             }
@@ -109,12 +109,11 @@ public abstract class WemoHandler extends WemoBaseThingHandler {
                     probeAndExecuteCall(BASICACTION, soapHeader, content);
                     updateStatus(ThingStatus.ONLINE);
                 } catch (MissingHostException e) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "@text/config-status.error.missing-ip");
+                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/config-status.error.missing-ip");
                 } catch (WemoException e) {
                     logger.warn("Failed to send command '{}' for thing '{}': {}", command, getThing().getUID(),
                             e.getMessage());
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                 }
             }
         }
@@ -150,11 +149,10 @@ public abstract class WemoHandler extends WemoBaseThingHandler {
             }
             updateStatus(ThingStatus.ONLINE);
         } catch (MissingHostException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/config-status.error.missing-ip");
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/config-status.error.missing-ip");
         } catch (WemoException e) {
             logger.debug("Failed to get actual state for thing '{}': {}", getThing().getUID(), e.getMessage());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 }

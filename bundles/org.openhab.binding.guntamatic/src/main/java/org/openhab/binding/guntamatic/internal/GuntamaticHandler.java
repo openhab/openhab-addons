@@ -28,9 +28,9 @@ import javax.measure.Unit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.Request;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
@@ -426,7 +426,8 @@ public class GuntamaticHandler extends BaseThingHandler {
         }
 
         Request request = httpClient.newRequest(req);
-        request.method(HttpMethod.GET).timeout(30, TimeUnit.SECONDS).header(HttpHeader.ACCEPT_ENCODING, "gzip");
+        request.method(HttpMethod.GET).timeout(30, TimeUnit.SECONDS)
+                .headers(headers -> headers.put(HttpHeader.ACCEPT_ENCODING, "gzip"));
 
         try {
             ContentResponse contentResponse = request.send();
@@ -463,7 +464,7 @@ public class GuntamaticHandler extends BaseThingHandler {
             Thread.currentThread().interrupt();
             errorReason = String.format("InterruptedException: %s", ((e.getMessage() != null) ? e.getMessage() : ""));
         }
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, errorReason);
+        updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, errorReason);
         return null;
     }
 
@@ -485,7 +486,7 @@ public class GuntamaticHandler extends BaseThingHandler {
     public void initialize() {
         config = getConfigAs(GuntamaticConfiguration.class);
         if (config.hostname.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Invalid hostname configuration");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Invalid hostname configuration");
         } else {
             updateStatus(ThingStatus.UNKNOWN);
             pollingFuture = scheduler.scheduleWithFixedDelay(this::pollGuntamatic, 1, config.refreshInterval,

@@ -72,13 +72,18 @@
 						}
 					}
 				],
+				"category": "light",
+				"tags": [
+					"Control",
+					"Light"
+				],
 				"readmeComment": "Value mapping `[\"light-toggle\"\u003d\"Light Toggle\",\"light-brightness-up\"\u003d\"Light Brightness Up\",\"light-brightness-down\"\u003d\"Light Brightness Down\"]`"
 			},
 			{
 				"property": "on",
 				"siid": 2,
 				"piid": 1,
-				"friendlyName": "Light - Switch Status",
+				"friendlyName": "Light - Power",
 				"channel": "on",
 				"type": "Switch",
 				"refresh": true,
@@ -88,10 +93,7 @@
 						"parameterType": "ONOFFBOOL"
 					}
 				],
-				"category": "switch",
-				"tags": [
-					"Switch"
-				]
+				"category": "switch"
 			},
 			{
 				"property": "mode",
@@ -108,7 +110,7 @@
 						},
 						{
 							"value": "1",
-							"label": "Night"
+							"label": "Night Light"
 						}
 					]
 				},
@@ -119,7 +121,12 @@
 						"parameterType": "NUMBER"
 					}
 				],
-				"readmeComment": "Value mapping `[\"0\"\u003d\"Day\",\"1\"\u003d\"Night\"]`"
+				"category": "light",
+				"tags": [
+					"Control",
+					"Mode"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Day\",\"1\"\u003d\"Night Light\"]`"
 			},
 			{
 				"property": "brightness",
@@ -127,20 +134,46 @@
 				"piid": 3,
 				"friendlyName": "Light - Brightness",
 				"channel": "brightness",
-				"type": "Number:Dimensionless",
-				"unit": "percentage",
-				"stateDescription": {
-					"minimum": 1,
-					"maximum": 100,
-					"step": 1,
-					"pattern": "%.0f %unit%"
-				},
+				"type": "Dimmer",
 				"refresh": true,
 				"actions": [
 					{
 						"command": "set_properties",
-						"parameterType": "NUMBER"
+						"parameterType": "NUMBER",
+						"condition": {
+							"name": "BrightnessExisting"
+						}
+					},
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL",
+						"parameters": [
+							{
+								"did": "on",
+								"siid": 2,
+								"piid": 1,
+								"value": "$value$"
+							}
+						],
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "OFF|(.*,)?0(\\.0*)?",
+									"returnValue": false
+								},
+								{
+									"matchValue": "ON|[0-9.,]+",
+									"returnValue": true
+								}
+							]
+						}
 					}
+				],
+				"category": "light",
+				"tags": [
+					"Control",
+					"Brightness"
 				]
 			},
 			{
@@ -155,16 +188,18 @@
 					"minimum": 2700,
 					"maximum": 6500,
 					"step": 1,
-					"pattern": "%.0f %unit%"
+					"pattern": "%.0f K"
 				},
 				"refresh": true,
 				"actions": [
 					{
 						"command": "set_properties",
-						"parameterType": "STRING"
+						"parameterType": "NUMBER"
 					}
-				]
+				],
+				"category": "colorlight"
 			}
-		]
+		],
+		"experimental": false
 	}
 }

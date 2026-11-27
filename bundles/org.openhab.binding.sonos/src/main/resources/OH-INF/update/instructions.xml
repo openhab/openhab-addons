@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<update:update-descriptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:update="https://openhab.org/schemas/update-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/update-description/v1.0.0 https://openhab.org/schemas/update-description-1.0.0.xsd">
+
+	<thing-type uid="sonos:Amp">
+		<instruction-set targetVersion="1">
+			<add-channel id="buttonlock">
+				<type>sonos:buttonlock</type>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+
+	<thing-type uid="sonos:Arc">
+		<instruction-set targetVersion="1">
+			<add-channel id="buttonlock">
+				<type>sonos:buttonlock</type>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+
+	<thing-type uid="sonos:ArcSL">
+		<instruction-set targetVersion="1">
+			<add-channel id="buttonlock">
+				<type>sonos:buttonlock</type>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+
+	<thing-type uid="sonos:ArcUltra">
+		<instruction-set targetVersion="1">
+			<add-channel id="buttonlock">
+				<type>sonos:buttonlock</type>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+
+	<thing-type uid="sonos:Beam">
+		<instruction-set targetVersion="1">
+			<add-channel id="buttonlock">
+				<type>sonos:buttonlock</type>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+
+	<thing-type uid="sonos:CONNECT">
+		<instruction-set targetVersion="1">
+			<add-channel id="buttonlock">
+				<type>sonos:buttonlock</type>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+
+	<thing-type uid="sonos:CONNECTAMP">
+		<instruction-set targetVersion="1">
+			<add-channel id="buttonlock">
+				<type>sonos:buttonlock</type>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+
+	<thing-type uid="sonos:Era100">
+		<instruction-set targetVersion="1">
+			<add-channel id="buttonlock">
+				<type>sonos:buttonlock</type>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+
+	<thing-type uid="sonos:Era300">
+		<instruction-set targetVersion="1">
+			<add-channel id="buttonlock">
+				<type>sonos:buttonlock</type>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+
+	<thing-type uid="sonos:Five">
+		<instruction-set targetVersion="1">
+			<add-channel id="buttonlock">
+				<type>sonos:buttonlock</type>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+
+	<thing-type uid="sonos:Move">
+		<instruction-set targetVersion="1">
+			<add-channel id="buttonlock">
+				<type>sonos:buttonlock</type>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+
+	<thing-type uid="sonos:Move2">
+		<instruction-set targetVersion="1">
+			<add-channel id="buttonlock">
+				<type>sonos:buttonlock</type>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+
+	<thing-type uid="sonos:One">
+		<instruction-set targetVersion="1">
+			<add-channel id="buttonlock">
+				<type>sonos:buttonlock</type>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+
+	<thing-type uid="sonos:OneSL">
+		<instruction-set targetVersion="1">
+			<add-channel id="buttonlock">
+				<type>sonos:buttonlock</type>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+
+	<thing-type uid="sonos:PLAY1">
+		<instruction-set targetVersion="1">
+			<add-channel id="buttonlock">
+				<type>sonos:buttonlock</type>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+
+	<thing-type uid="sonos:PLAY3">
+		<instruction-set targetVersion="1">
+			<add-channel id="buttonlock">
+				<type>sonos:buttonlock</type>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+
+	<thing-type uid="sonos:PLAY5">
+		<instruction-set targetVersion="1">
+			<add-channel id="buttonlock">
+				<type>sonos:buttonlock</type>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+
+	<thing-type uid="sonos:PLAYBAR">
+		<instruction-set targetVersion="1">
+			<add-channel id="buttonlock">
+				<type>sonos:buttonlock</type>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+
+	<thing-type uid="sonos:PLAYBASE">
+		<instruction-set targetVersion="1">
+			<add-channel id="buttonlock">
+				<type>sonos:buttonlock</type>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+
+	<thing-type uid="sonos:Port">
+		<instruction-set targetVersion="1">
+			<add-channel id="buttonlock">
+				<type>sonos:buttonlock</type>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+
+	<thing-type uid="sonos:Roam">
+		<instruction-set targetVersion="1">
+			<add-channel id="buttonlock">
+				<type>sonos:buttonlock</type>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+
+	<thing-type uid="sonos:RoamSL">
+		<instruction-set targetVersion="1">
+			<add-channel id="buttonlock">
+				<type>sonos:buttonlock</type>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+
+	<thing-type uid="sonos:SYMFONISK">
+		<instruction-set targetVersion="1">
+			<add-channel id="buttonlock">
+				<type>sonos:buttonlock</type>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+
+	<thing-type uid="sonos:zoneplayer">
+		<instruction-set targetVersion="1">
+			<add-channel id="buttonlock">
+				<type>sonos:buttonlock</type>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+
+</update:update-descriptions>

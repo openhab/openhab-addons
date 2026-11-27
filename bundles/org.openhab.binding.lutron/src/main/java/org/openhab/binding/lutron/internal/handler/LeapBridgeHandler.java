@@ -177,7 +177,7 @@ public class LeapBridgeHandler extends LutronBridgeHandler implements LeapMessag
 
         String ipAddress = config.ipAddress;
         if (ipAddress == null || ipAddress.isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "bridge address not specified");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "bridge address not specified");
             return;
         }
 
@@ -186,8 +186,7 @@ public class LeapBridgeHandler extends LutronBridgeHandler implements LeapMessag
         sendDelay = (config.delay < 0) ? 0 : config.delay;
 
         if (config.keystore == null || keystorePassword == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Keystore/keystore password not configured");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Keystore/keystore password not configured");
             return;
         } else {
             try (FileInputStream keystoreInputStream = new FileInputStream(config.keystore)) {
@@ -217,27 +216,26 @@ public class LeapBridgeHandler extends LutronBridgeHandler implements LeapMessag
 
                 sslsocketfactory = sslContext.getSocketFactory();
             } catch (FileNotFoundException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Keystore file not found");
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Keystore file not found");
                 return;
             } catch (CertificateException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Certificate exception");
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Certificate exception");
                 return;
             } catch (UnrecoverableKeyException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "Key unrecoverable with supplied password");
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Key unrecoverable with supplied password");
                 return;
             } catch (KeyManagementException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Key management exception");
+                updateStatus(ThingStatus.OFFLINE, "Key management exception");
                 logger.debug("Key management exception", e);
                 return;
             } catch (KeyStoreException | NoSuchAlgorithmException | IOException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Error initializing keystore");
+                updateStatus(ThingStatus.OFFLINE, "Error initializing keystore");
                 logger.debug("Error initializing keystore", e);
                 return;
             }
         }
 
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Connecting");
+        updateStatus(ThingStatus.OFFLINE, "Connecting");
         asyncInitializeTask = scheduler.submit(this::connect); // start the async connect task
     }
 
@@ -289,26 +287,25 @@ public class LeapBridgeHandler extends LutronBridgeHandler implements LeapMessag
             reader = new BufferedReader(new InputStreamReader(sslsocket.getInputStream()));
             this.sslsocket = sslsocket;
         } catch (UnknownHostException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Unknown host");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Unknown host");
             return;
         } catch (IllegalArgumentException e) {
             // port out of valid range
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Invalid port number");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Invalid port number");
             return;
         } catch (InterruptedIOException e) {
             logger.debug("Interrupted while establishing connection");
             Thread.currentThread().interrupt();
             return;
         } catch (IOException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Error opening SSL connection. Check log.");
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "Error opening SSL connection. Check log.");
             logger.info("Error opening SSL connection: {}", e.getMessage());
             disconnect(false);
             scheduleConnectRetry(reconnectInterval); // Possibly a temporary problem. Try again later.
             return;
         }
 
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, STATUS_INITIALIZING);
+        updateStatus(ThingStatus.OFFLINE, STATUS_INITIALIZING);
 
         Thread readerThread = new Thread(this::readerThreadJob, "OH-binding-" + getThing().getUID() + "-BridgeReader");
         readerThread.setDaemon(true);
@@ -408,7 +405,7 @@ public class LeapBridgeHandler extends LutronBridgeHandler implements LeapMessag
 
     private synchronized void reconnect() {
         logger.debug("Attempting to reconnect to the bridge");
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "reconnecting");
+        updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "reconnecting");
         disconnect(false);
         connect();
     }
@@ -431,11 +428,11 @@ public class LeapBridgeHandler extends LutronBridgeHandler implements LeapMessag
                     }
                 } catch (InterruptedIOException e) {
                     logger.debug("Interrupted while sending");
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Interrupted");
+                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "Interrupted");
                     break; // exit loop and terminate thread
                 } catch (IOException e) {
                     logger.warn("Communication error, will try to reconnect. Error: {}", e.getMessage());
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR);
                     sendQueue.add(command); // Requeue command
                     reconnect();
                     break; // reconnect() will start a new thread; terminate this one
@@ -464,17 +461,17 @@ public class LeapBridgeHandler extends LutronBridgeHandler implements LeapMessag
             }
             if (msg == null) {
                 logger.debug("End of input stream detected");
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Connection lost");
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "Connection lost");
             }
         } catch (InterruptedIOException e) {
             logger.debug("Interrupted while reading");
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Interrupted");
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "Interrupted");
         } catch (IOException e) {
             logger.debug("I/O error while reading from stream: {}", e.getMessage());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         } catch (RuntimeException e) {
             logger.warn("Runtime exception in reader thread", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         } finally {
             logger.debug("Message reader thread exiting");
         }

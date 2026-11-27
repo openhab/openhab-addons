@@ -12,13 +12,13 @@
  */
 package org.openhab.io.yamlcomposer.internal;
 
-import java.util.Map;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.io.yamlcomposer.internal.core.EvaluationContext;
 import org.openhab.io.yamlcomposer.internal.expression.ExpressionEvaluator;
 
 /**
@@ -112,12 +112,12 @@ public class StringInterpolator {
      *
      * @param value the raw string value that may contain placeholder patterns to substitute
      * @param pattern the substitution pattern to use
-     * @param variables the variable map
+     * @param context the evaluation context containing variables and callbacks
      * @param logSession the logging session
      * @param sourceLocation description of the source location for logging
      * @return the evaluated value
      */
-    public static @Nullable Object interpolate(String value, Pattern pattern, Map<String, @Nullable Object> variables,
+    public static @Nullable Object interpolate(String value, Pattern pattern, EvaluationContext context,
             LogSession logSession, String sourceLocation) {
         Matcher matcher = pattern.matcher(value);
         if (!matcher.find()) {
@@ -129,13 +129,13 @@ public class StringInterpolator {
         // when the value is a plain placeholder.
         if (matcher.matches()) {
             String content = Objects.requireNonNull(matcher.group("content"));
-            return evaluateExpression(content, variables, logSession, sourceLocation);
+            return evaluateExpression(content, context, logSession, sourceLocation);
         }
 
         // Evaluate the expressions inside the ${...} patterns and replace them in the string.
         String interpolated = matcher.replaceAll(match -> {
             String content = Objects.requireNonNull(match.group("content"));
-            Object result = evaluateExpression(content, variables, logSession, sourceLocation);
+            Object result = evaluateExpression(content, context, logSession, sourceLocation);
             String rendered = result != null ? result.toString() : "";
             return Matcher.quoteReplacement(rendered);
         });
@@ -150,14 +150,14 @@ public class StringInterpolator {
      * A warning is logged and consolidated through logSession
      *
      * @param expression the expression to evaluate without the ${} delimiters
-     * @param variables the variable context for evaluation
+     * @param context the evaluation context containing variables and callbacks
      * @param logSession the logging session for warnings and errors during evaluation
      * @param sourceLocation description of the source location for logging
      * @return the evaluated result
      */
-    public static @Nullable Object evaluateExpression(String expression, Map<String, @Nullable Object> variables,
+    public static @Nullable Object evaluateExpression(String expression, EvaluationContext context,
             LogSession logSession, String sourceLocation) {
-        Object rendered = ExpressionEvaluator.renderObject(expression, variables, logSession, sourceLocation);
+        Object rendered = ExpressionEvaluator.renderObject(expression, context, logSession, sourceLocation);
         return rendered;
     }
 }

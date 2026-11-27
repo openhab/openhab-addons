@@ -16,9 +16,11 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.matter.internal.client.dto.ws.AttributeChangedMessage;
 import org.openhab.binding.matter.internal.client.dto.ws.BridgeEventMessage;
 import org.openhab.binding.matter.internal.client.dto.ws.EventTriggeredMessage;
+import org.openhab.binding.matter.internal.client.dto.ws.IcdStateMessage;
 import org.openhab.binding.matter.internal.client.dto.ws.NodeDataMessage;
 import org.openhab.binding.matter.internal.client.dto.ws.NodeStateMessage;
 import org.openhab.binding.matter.internal.client.dto.ws.OtaUpdateAvailableMessage;
+import org.openhab.binding.matter.internal.client.dto.ws.OtaUpdateStatusMessage;
 
 /**
  * A listener for Matter client events
@@ -44,4 +46,8 @@ public interface MatterClientListener {
     public void onEvent(NodeDataMessage message);
 
     public void onEvent(OtaUpdateAvailableMessage message);
+
+    public void onEvent(OtaUpdateStatusMessage message);
+
+    public void onEvent(IcdStateMessage message);
 }

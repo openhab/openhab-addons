@@ -19,7 +19,9 @@
 
 		<parameter name="refreshInterval" type="integer" min="30" unit="s">
 			<label>Refresh Interval</label>
-			<description>Specifies the refresh time in seconds for polling temperature updates from Millheat service</description>
+			<description>Specifies the refresh time in seconds for polling updates from the Mill cloud service. The account is
+				limited to 2500 requests per hour in total, and each cycle costs roughly one request per house plus one per
+				room</description>
 			<default>120</default>
 		</parameter>
 
@@ -31,26 +33,27 @@
 			<label>MAC Address</label>
 			<description>Either MAC address or heaterId is required</description>
 		</parameter>
-		<parameter name="heaterId" type="integer">
+		<parameter name="heaterId" type="text">
 			<label>Heater ID</label>
-			<description>Either MAC address or heaterId is required</description>
-		</parameter>
-		<parameter name="power" type="integer">
-			<label>Heating Power</label>
-			<description>Number of watts this heater is consuming when it is heating. This value is sent to the currentPower
-				channel when the heater is heating in order to track energy usage</description>
+			<description>Device UUID as issued by the Mill cloud API. Use auto discovery to find this value; numeric IDs from
+				older configurations are not valid</description>
 		</parameter>
 	</config-description>
 
 	<config-description uri="thing-type:millheat:room">
-		<parameter name="roomId" type="integer" required="true">
+		<parameter name="roomId" type="text" required="true">
 			<label>Room ID</label>
+			<description>Room UUID as issued by the Mill cloud API. Use auto discovery to find this value; numeric IDs from
+				older
+				configurations are not valid</description>
 		</parameter>
 	</config-description>
 
 	<config-description uri="thing-type:millheat:home">
-		<parameter name="homeId" type="integer" required="true">
+		<parameter name="homeId" type="text" required="true">
 			<label>Home ID</label>
+			<description>House UUID as issued by the Mill cloud API. Use auto discovery to find this value; numeric IDs from
+				older configurations are not valid</description>
 		</parameter>
 	</config-description>
 

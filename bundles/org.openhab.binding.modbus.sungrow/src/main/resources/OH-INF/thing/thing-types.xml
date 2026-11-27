@@ -30,6 +30,26 @@
 		<config-description-ref uri="thing-type:sungrow:inverter"/>
 	</thing-type>
 
+	<thing-type id="sungrow-ihome-manager">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="serial"/>
+			<bridge-type-ref id="tcp"/>
+		</supported-bridge-type-refs>
+
+		<label>Sungrow iHomeManager</label>
+		<description>Sungrow iHomeManager connected via Modbus.</description>
+		<category>Energy</category>
+		<channel-groups>
+			<channel-group id="sg-ihm-overview" typeId="sg-ihm-overview"/>
+			<channel-group id="sg-ihm-battery-information" typeId="sg-ihm-battery-information"/>
+			<channel-group id="sg-ihm-grid-information" typeId="sg-ihm-grid-information"/>
+			<channel-group id="sg-ihm-load-information" typeId="sg-ihm-load-information"/>
+			<channel-group id="sg-ihm-meter-information" typeId="sg-ihm-meter-information"/>
+			<channel-group id="sg-ihm-charger" typeId="sg-ihm-charger"/>
+		</channel-groups>
+		<config-description-ref uri="thing-type:sungrow:inverter"/>
+	</thing-type>
+
 	<channel-group-type id="sg-overview">
 		<label>Overview</label>
 		<channels>
@@ -156,6 +176,75 @@
 		</channels>
 	</channel-group-type>
 
+	<channel-group-type id="sg-ihm-overview">
+		<label>Overview</label>
+		<channels>
+			<channel id="sg-total-devices-connected" typeId="sg-total-devices-connected"/>
+			<channel id="sg-devices-in-fault" typeId="sg-devices-in-fault"/>
+			<channel id="sg-total-nominal-active-power" typeId="sg-nominal-output-power"/>
+			<channel id="sg-total-active-power" typeId="sg-total-active-power"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="sg-ihm-battery-information">
+		<label>Battery Information</label>
+		<category>Battery</category>
+		<channels>
+			<channel id="sg-total-battery-rated-capacity" typeId="sg-battery-capacity"/>
+			<channel id="sg-battery-charge-discharge-limit" typeId="sg-battery-charge-discharge-limit"/>
+			<channel id="sg-battery-max-charge-power" typeId="sg-battery-max-charge-power"/>
+			<channel id="sg-battery-min-charge-power" typeId="sg-battery-min-charge-power"/>
+			<channel id="sg-battery-max-discharge-power" typeId="sg-battery-max-discharge-power"/>
+			<channel id="sg-battery-min-discharge-power" typeId="sg-battery-min-discharge-power"/>
+			<channel id="sg-battery-power" typeId="sg-battery-power"/>
+			<channel id="sg-battery-level" typeId="sg-battery-level"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="sg-ihm-grid-information">
+		<label>Grid Information</label>
+		<channels>
+			<channel id="sg-grid-import-energy" typeId="sg-total-import-energy"/>
+			<channel id="sg-grid-export-energy" typeId="sg-total-export-energy"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="sg-ihm-load-information">
+		<label>Load Information</label>
+		<channels>
+			<channel id="sg-load-power" typeId="sg-load-power"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="sg-ihm-meter-information">
+		<label>Meter Information</label>
+		<channels>
+			<channel id="sg-meter-power" typeId="sg-meter-power"/>
+			<channel id="sg-phase-a-voltage" typeId="sg-phase-a-voltage"/>
+			<channel id="sg-phase-b-voltage" typeId="sg-phase-b-voltage"/>
+			<channel id="sg-phase-c-voltage" typeId="sg-phase-c-voltage"/>
+			<channel id="sg-grid-frequency" typeId="sg-grid-frequency"/>
+			<channel id="sg-phase-a-active-power" typeId="sg-phase-a-active-power"/>
+			<channel id="sg-phase-b-active-power" typeId="sg-phase-b-active-power"/>
+			<channel id="sg-phase-c-active-power" typeId="sg-phase-c-active-power"/>
+			<channel id="sg-phase-a-voltage-ch2" typeId="sg-phase-a-voltage-ch2"/>
+			<channel id="sg-phase-b-voltage-ch2" typeId="sg-phase-b-voltage-ch2"/>
+			<channel id="sg-phase-c-voltage-ch2" typeId="sg-phase-c-voltage-ch2"/>
+			<channel id="sg-grid-frequency-ch2" typeId="sg-grid-frequency-ch2"/>
+			<channel id="sg-phase-a-active-power-ch2" typeId="sg-phase-a-active-power-ch2"/>
+			<channel id="sg-phase-b-active-power-ch2" typeId="sg-phase-b-active-power-ch2"/>
+			<channel id="sg-phase-c-active-power-ch2" typeId="sg-phase-c-active-power-ch2"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="sg-ihm-charger">
+		<label>Charger Information</label>
+		<channels>
+			<channel id="sg-output-type" typeId="sg-output-type"/>
+			<channel id="sg-charger-status" typeId="sg-charger-status"/>
+		</channels>
+	</channel-group-type>
+
 	<channel-type id="sg-device-type">
 		<item-type>String</item-type>
 		<label>Device Type</label>
@@ -164,6 +253,125 @@
 	<channel-type id="sg-output-type" advanced="true">
 		<item-type>String</item-type>
 		<label>Output Type</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="sg-total-devices-connected">
+		<item-type>Number</item-type>
+		<label>Total Devices Connected</label>
+		<state pattern="%.0f" readOnly="true"/>
+	</channel-type>
+	<channel-type id="sg-devices-in-fault">
+		<item-type>Number</item-type>
+		<label>Devices in Fault</label>
+		<state pattern="%.0f" readOnly="true"/>
+	</channel-type>
+	<channel-type id="sg-battery-charge-discharge-limit">
+		<item-type>Number:Power</item-type>
+		<label>Battery Charge/Discharge Limit</label>
+		<category>Energy</category>
+		<tags>
+			<point>Measurement</point>
+			<property>Power</property>
+		</tags>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="sg-battery-max-charge-power">
+		<item-type>Number:Power</item-type>
+		<label>Battery Max Charge Power</label>
+		<category>Energy</category>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="sg-battery-min-charge-power">
+		<item-type>Number:Power</item-type>
+		<label>Battery Min Charge Power</label>
+		<category>Energy</category>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="sg-battery-max-discharge-power">
+		<item-type>Number:Power</item-type>
+		<label>Battery Max Discharge Power</label>
+		<category>Energy</category>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="sg-battery-min-discharge-power">
+		<item-type>Number:Power</item-type>
+		<label>Battery Min Discharge Power</label>
+		<category>Energy</category>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="sg-meter-power">
+		<item-type>Number:Power</item-type>
+		<label>Meter Power</label>
+		<category>Energy</category>
+		<tags>
+			<point>Measurement</point>
+			<property>Power</property>
+		</tags>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="sg-phase-a-active-power">
+		<item-type>Number:Power</item-type>
+		<label>Phase A Active Power</label>
+		<category>Energy</category>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="sg-phase-b-active-power">
+		<item-type>Number:Power</item-type>
+		<label>Phase B Active Power</label>
+		<category>Energy</category>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="sg-phase-c-active-power">
+		<item-type>Number:Power</item-type>
+		<label>Phase C Active Power</label>
+		<category>Energy</category>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="sg-phase-a-voltage-ch2">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Phase A Voltage CH2</label>
+		<category>Energy</category>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="sg-phase-b-voltage-ch2">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Phase B Voltage CH2</label>
+		<category>Energy</category>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="sg-phase-c-voltage-ch2">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Phase C Voltage CH2</label>
+		<category>Energy</category>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="sg-grid-frequency-ch2">
+		<item-type>Number:Frequency</item-type>
+		<label>Grid Frequency CH2</label>
+		<category>Energy</category>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="sg-phase-a-active-power-ch2">
+		<item-type>Number:Power</item-type>
+		<label>Phase A Active Power CH2</label>
+		<category>Energy</category>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="sg-phase-b-active-power-ch2">
+		<item-type>Number:Power</item-type>
+		<label>Phase B Active Power CH2</label>
+		<category>Energy</category>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="sg-phase-c-active-power-ch2">
+		<item-type>Number:Power</item-type>
+		<label>Phase C Active Power CH2</label>
+		<category>Energy</category>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="sg-charger-status">
+		<item-type>String</item-type>
+		<label>Charger Status</label>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="sg-running-state">
@@ -230,8 +438,8 @@
 		<label>Daily Output Energy</label>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
@@ -240,8 +448,8 @@
 		<label>Total Output Energy</label>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
@@ -250,8 +458,8 @@
 		<label>Internal Temperature</label>
 		<category>Temperature</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
@@ -260,8 +468,8 @@
 		<label>MPPT1 Voltage</label>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Voltage</tag>
+			<point>Measurement</point>
+			<property>Voltage</property>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
@@ -270,8 +478,8 @@
 		<label>MPPT1 Current</label>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Current</tag>
+			<point>Measurement</point>
+			<property>Current</property>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
@@ -280,8 +488,8 @@
 		<label>MPPT2 Voltage</label>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Voltage</tag>
+			<point>Measurement</point>
+			<property>Voltage</property>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
@@ -290,8 +498,8 @@
 		<label>MPPT2 Current</label>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Current</tag>
+			<point>Measurement</point>
+			<property>Current</property>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
@@ -300,8 +508,8 @@
 		<label>MPPT3 Voltage</label>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Voltage</tag>
+			<point>Measurement</point>
+			<property>Voltage</property>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
@@ -310,8 +518,8 @@
 		<label>MPPT3 Current</label>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Current</tag>
+			<point>Measurement</point>
+			<property>Current</property>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
@@ -320,8 +528,8 @@
 		<label>MPPT4 Voltage</label>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Voltage</tag>
+			<point>Measurement</point>
+			<property>Voltage</property>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
@@ -330,8 +538,8 @@
 		<label>MPPT4 Current</label>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Current</tag>
+			<point>Measurement</point>
+			<property>Current</property>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
@@ -340,8 +548,8 @@
 		<label>Nominal Output Power</label>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point>Measurement</point>
+			<property>Power</property>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
@@ -350,8 +558,8 @@
 		<label>Total DC Power</label>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point>Measurement</point>
+			<property>Power</property>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
@@ -360,8 +568,8 @@
 		<label>Phase A Voltage</label>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Voltage</tag>
+			<point>Measurement</point>
+			<property>Voltage</property>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
@@ -370,8 +578,8 @@
 		<label>Phase B Voltage</label>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Voltage</tag>
+			<point>Measurement</point>
+			<property>Voltage</property>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
@@ -380,8 +588,8 @@
 		<label>Phase C Voltage</label>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Voltage</tag>
+			<point>Measurement</point>
+			<property>Voltage</property>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
@@ -390,8 +598,8 @@
 		<label>Reactive Power</label>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point>Measurement</point>
+			<property>Power</property>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
@@ -436,8 +644,8 @@
 		<label>Grid Frequency</label>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Frequency</tag>
+			<point>Measurement</point>
+			<property>Frequency</property>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
@@ -447,8 +655,8 @@
 		<description>Grid Frequency - High Precision</description>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Frequency</tag>
+			<point>Measurement</point>
+			<property>Frequency</property>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
@@ -458,8 +666,8 @@
 		<label>Daily PV Generation</label>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
@@ -468,8 +676,8 @@
 		<label>Total PV Generation</label>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
@@ -478,8 +686,8 @@
 		<label>Daily Export Power from PV</label>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point>Measurement</point>
+			<property>Power</property>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
@@ -488,8 +696,8 @@
 		<label>Total Export Energy from PV</label>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
@@ -498,8 +706,8 @@
 		<label>Load Power</label>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point>Measurement</point>
+			<property>Power</property>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
@@ -508,8 +716,8 @@
 		<label>Export Power</label>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point>Measurement</point>
+			<property>Power</property>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
@@ -518,8 +726,8 @@
 		<label>Daily Battery Charge</label>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
@@ -528,8 +736,8 @@
 		<label>Total Battery Charge</label>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
@@ -538,8 +746,8 @@
 		<label>Daily Direct Energy Consumption</label>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
@@ -548,8 +756,8 @@
 		<label>Total Direct Energy Consumption</label>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
@@ -558,8 +766,8 @@
 		<label>Battery Voltage</label>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Voltage</tag>
+			<point>Measurement</point>
+			<property>Voltage</property>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
@@ -568,8 +776,8 @@
 		<label>Battery Current</label>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Current</tag>
+			<point>Measurement</point>
+			<property>Current</property>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
@@ -578,8 +786,8 @@
 		<label>Battery Power</label>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point>Measurement</point>
+			<property>Power</property>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
@@ -588,8 +796,8 @@
 		<label>Battery Power signed</label>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point>Measurement</point>
+			<property>Power</property>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
@@ -599,8 +807,8 @@
 		<description>Battery Capacity High Precision</description>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
@@ -610,8 +818,8 @@
 		<description>Battery Power - Wide Range</description>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point>Measurement</point>
+			<property>Power</property>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
@@ -620,8 +828,8 @@
 		<label>Battery Level</label>
 		<category>Battery</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state pattern="%.2f %%" readOnly="true"/>
 	</channel-type>
@@ -636,8 +844,8 @@
 		<label>Battery Temperature</label>
 		<category>Temperature</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
@@ -646,8 +854,8 @@
 		<label>Daily Battery Discharge Energy</label>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
@@ -656,8 +864,8 @@
 		<label>Total Battery Discharge Energy</label>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
@@ -671,8 +879,8 @@
 		<label>Phase A Current</label>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Current</tag>
+			<point>Measurement</point>
+			<property>Current</property>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
@@ -681,8 +889,8 @@
 		<label>Phase B Current</label>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Current</tag>
+			<point>Measurement</point>
+			<property>Current</property>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
@@ -691,8 +899,8 @@
 		<label>Phase C Current</label>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Current</tag>
+			<point>Measurement</point>
+			<property>Current</property>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
@@ -701,8 +909,8 @@
 		<label>Total Active Power</label>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point>Measurement</point>
+			<property>Power</property>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
@@ -711,8 +919,8 @@
 		<label>Daily Import Energy</label>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
@@ -721,8 +929,8 @@
 		<label>Total Import Energy</label>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
@@ -731,8 +939,8 @@
 		<label>Battery Capacity</label>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
@@ -741,8 +949,8 @@
 		<label>Daily Charge Energy</label>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
@@ -751,8 +959,8 @@
 		<label>Total Charge Energy</label>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
@@ -762,8 +970,8 @@
 		<label>Daily Export Energy</label>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
@@ -772,8 +980,8 @@
 		<label>Total Export Energy</label>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
@@ -782,8 +990,8 @@
 		<label>Phase A Backup Voltage</label>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Voltage</tag>
+			<point>Measurement</point>
+			<property>Voltage</property>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
@@ -792,8 +1000,8 @@
 		<label>Phase A Backup Current</label>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Current</tag>
+			<point>Measurement</point>
+			<property>Current</property>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
@@ -802,8 +1010,8 @@
 		<label>Phase A Backup Power</label>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point>Measurement</point>
+			<property>Power</property>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
@@ -812,8 +1020,8 @@
 		<label>Phase B Backup Voltage</label>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Voltage</tag>
+			<point>Measurement</point>
+			<property>Voltage</property>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
@@ -822,8 +1030,8 @@
 		<label>Phase B Backup Current</label>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Current</tag>
+			<point>Measurement</point>
+			<property>Current</property>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
@@ -832,8 +1040,8 @@
 		<label>Phase B Backup Power</label>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point>Measurement</point>
+			<property>Power</property>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
@@ -842,8 +1050,8 @@
 		<label>Phase C Backup Voltage</label>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Voltage</tag>
+			<point>Measurement</point>
+			<property>Voltage</property>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
@@ -852,8 +1060,8 @@
 		<label>Phase C Backup Current</label>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Current</tag>
+			<point>Measurement</point>
+			<property>Current</property>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
@@ -862,8 +1070,8 @@
 		<label>Phase C Backup Power</label>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point>Measurement</point>
+			<property>Power</property>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
@@ -872,8 +1080,8 @@
 		<label>Total Backup Power</label>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point>Measurement</point>
+			<property>Power</property>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
@@ -882,8 +1090,8 @@
 		<label>Backup Frequency</label>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Frequency</tag>
+			<point>Measurement</point>
+			<property>Frequency</property>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>

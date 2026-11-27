@@ -41,6 +41,8 @@ import org.openhab.binding.upnpcontrol.internal.queue.UpnpEntryQueue;
 import org.openhab.binding.upnpcontrol.internal.util.UpnpControlUtil;
 import org.openhab.binding.upnpcontrol.internal.util.UpnpProtocolMatcher;
 import org.openhab.binding.upnpcontrol.internal.util.UpnpXMLParser;
+import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.io.transport.upnp.UpnpIOService;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Channel;
@@ -104,8 +106,10 @@ public class UpnpServerHandler extends UpnpHandler {
             ConcurrentMap<String, UpnpRendererHandler> upnpRenderers,
             UpnpDynamicStateDescriptionProvider upnpStateDescriptionProvider,
             UpnpDynamicCommandDescriptionProvider upnpCommandDescriptionProvider,
-            UpnpControlBindingConfiguration configuration) {
-        super(thing, upnpIOService, configuration, upnpStateDescriptionProvider, upnpCommandDescriptionProvider);
+            UpnpControlBindingConfiguration configuration, TranslationProvider translationProvider,
+            LocaleProvider localeProvider) {
+        super(thing, upnpIOService, configuration, upnpStateDescriptionProvider, upnpCommandDescriptionProvider,
+                translationProvider, localeProvider);
         this.upnpRenderers = upnpRenderers;
 
         // put root as highest level in parent map
@@ -124,7 +128,7 @@ public class UpnpServerHandler extends UpnpHandler {
             rendererChannelUID = rendererChannel.getUID();
         } else {
             String msg = String.format("@text/offline.channel-undefined [ \"%s\" ]", UPNPRENDERER);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, msg);
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, msg);
             return;
         }
         Channel selectionChannel = thing.getChannel(BROWSE);
@@ -132,7 +136,7 @@ public class UpnpServerHandler extends UpnpHandler {
             currentSelectionChannelUID = selectionChannel.getUID();
         } else {
             String msg = String.format("@text/offline.channel-undefined [ \"%s\" ]", BROWSE);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, msg);
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, msg);
             return;
         }
         Channel playlistSelectChannel = thing.getChannel(PLAYLIST_SELECT);
@@ -140,7 +144,7 @@ public class UpnpServerHandler extends UpnpHandler {
             playlistSelectChannelUID = playlistSelectChannel.getUID();
         } else {
             String msg = String.format("@text/offline.channel-undefined [ \"%s\" ]", PLAYLIST_SELECT);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, msg);
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, msg);
             return;
         }
 
@@ -165,7 +169,7 @@ public class UpnpServerHandler extends UpnpHandler {
         synchronized (jobLock) {
             if (!upnpIOService.isRegistered(this)) {
                 String msg = String.format("@text/offline.device-not-registered [ \"%s\" ]", getUDN());
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, msg);
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, msg);
                 return;
             }
 

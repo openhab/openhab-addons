@@ -5,6 +5,7 @@
 		],
 		"propertyMethod": "get_value",
 		"maxProperties": 6,
+		"experimental": false,
 		"channels": [
 			{
 				"property": "battery",
@@ -12,34 +13,55 @@
 				"channel": "battery",
 				"channelType": "system:battery-level",
 				"type": "Number",
+				"stateDescription": {
+					"readOnly": true
+				},
 				"refresh": true,
 				"ChannelGroup": "Status",
-				"actions": []
+				"actions": [],
+				"category": "battery",
+				"tags": [
+					"Measurement",
+					"StateOfCharge"
+				]
 			},
 			{
 				"property": "pm25",
 				"friendlyName": "PM2.5",
 				"channel": "pm25",
-				"type": "Number",
+				"type": "Number:Density",
+				"unit": "μg/m3",
 				"stateDescription": {
-					"pattern": "%.1f",
+					"pattern": "%.0f %unit%",
 					"readOnly": true
 				},
 				"refresh": true,
 				"ChannelGroup": "Status",
-				"actions": []
+				"actions": [],
+				"category": "smoke",
+				"tags": [
+					"Measurement",
+					"ParticulateMatter"
+				]
 			},
 			{
 				"property": "co2e",
 				"friendlyName": "CO2e",
 				"channel": "co2",
 				"description": "Carbon Dioxide",
-				"type": "Number",
+				"type": "Number:Dimensionless",
+				"unit": "ppm",
+				"stateDescription": {
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
 				"refresh": true,
 				"ChannelGroup": "Status",
 				"actions": [],
+				"category": "carbondioxide",
 				"tags": [
-					"Measurement"
+					"Measurement",
+					"CO2"
 				]
 			},
 			{
@@ -48,19 +70,29 @@
 				"channel": "tvoc",
 				"description": "Total Volatile Organic Compounds",
 				"type": "Number",
+				"stateDescription": {
+					"readOnly": true
+				},
 				"refresh": true,
 				"ChannelGroup": "Status",
 				"actions": [],
+				"category": "smoke",
 				"tags": [
-					"Measurement"
-				]
+					"Measurement",
+					"VOC"
+				],
+				"readmeComment": "The unit (ppb or mg/m3) is set in the Mi Home app."
 			},
 			{
 				"property": "humidity",
 				"friendlyName": "Humidity",
 				"channel": "humidity",
 				"type": "Number:Dimensionless",
-				"unit": "PERCENT",
+				"unit": "percentage",
+				"stateDescription": {
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
 				"refresh": true,
 				"ChannelGroup": "Status",
 				"actions": [],
@@ -75,7 +107,11 @@
 				"friendlyName": "Temperature",
 				"channel": "temperature",
 				"type": "Number:Temperature",
-				"unit": "CELSIUS",
+				"unit": "celsius",
+				"stateDescription": {
+					"pattern": "%.1f %unit%",
+					"readOnly": true
+				},
 				"refresh": true,
 				"ChannelGroup": "Status",
 				"actions": [],

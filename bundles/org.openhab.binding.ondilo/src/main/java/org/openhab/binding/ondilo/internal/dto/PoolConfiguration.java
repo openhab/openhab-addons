@@ -21,7 +21,7 @@ import com.google.gson.annotations.SerializedName;
 /**
  * The {@link PoolConfiguration} DTO for representing Ondilo pool configurations.
  *
- * @author MikeTheTux - Initial contribution
+ * @author Michael Weger - Initial contribution
  */
 public class PoolConfiguration {
     /*

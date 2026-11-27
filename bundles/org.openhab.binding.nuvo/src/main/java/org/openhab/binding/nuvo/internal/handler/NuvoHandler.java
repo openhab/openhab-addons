@@ -40,16 +40,13 @@ import java.util.stream.IntStream;
 
 import javax.measure.Unit;
 import javax.measure.quantity.Time;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
 import org.openhab.binding.nuvo.internal.NuvoException;
 import org.openhab.binding.nuvo.internal.NuvoStateDescriptionOptionProvider;
 import org.openhab.binding.nuvo.internal.NuvoThingActions;
@@ -91,6 +88,10 @@ import org.openhab.core.types.StateOption;
 import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBException;
+import jakarta.xml.bind.Unmarshaller;
 
 /**
  * The {@link NuvoHandler} is responsible for handling commands, which are sent to one of the channels.
@@ -219,7 +220,7 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
         }
 
         if (configError != null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, configError);
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, configError);
             return;
         }
 
@@ -230,8 +231,7 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
             this.isMps4 = (port.intValue() == MPS4_PORT);
             mps4Host = host;
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Either Serial port or Host & Port must be specifed");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Either Serial port or Host & Port must be specifed");
             return;
         }
 
@@ -650,7 +650,7 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
                 }
             } catch (NuvoException e) {
                 logger.warn("Command {} from channel {} failed: {}", command, channel, e.getMessage());
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Sending command failed");
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "Sending command failed");
                 closeConnection();
                 scheduleReconnectJob();
             }
@@ -1178,7 +1178,7 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
                     }
                     enableNuvonet(true);
                 } else {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Reconnection failed");
+                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "Reconnection failed");
                     closeConnection();
                 }
             }
@@ -1306,7 +1306,7 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
                     // the component is not responding even though the connection is still good
                     if ((System.currentTimeMillis() - lastEventReceived) > (POLLING_INTERVAL_SEC * 1.25 * 1000)) {
                         logger.debug("Component not responding to status requests");
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                                 "Component not responding to status requests");
                         closeConnection();
                         scheduleReconnectJob();

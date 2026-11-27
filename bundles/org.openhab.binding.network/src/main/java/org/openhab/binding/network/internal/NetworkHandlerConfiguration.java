@@ -22,12 +22,16 @@ import org.eclipse.jdt.annotation.Nullable;
  * do not rename them if you don't intend to break the configuration interface.
  *
  * @author David Graeff - Initial contribution
+ * @author Alexander Friese - Add HTTP presence detection
  */
 @NonNullByDefault
 public class NetworkHandlerConfiguration {
     public String hostname = "";
     public String macAddress = "";
     public @Nullable Integer port;
+    public String url = "";
+    public boolean treatRedirectAsError = false;
+    public boolean treatClientErrorAsError = true;
     public Integer retry = 1;
     public Integer refreshInterval = 60000;
     public Integer timeout = 5000;

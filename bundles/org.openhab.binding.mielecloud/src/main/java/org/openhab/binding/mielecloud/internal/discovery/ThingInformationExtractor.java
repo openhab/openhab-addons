@@ -50,7 +50,8 @@ public final class ThingInformationExtractor {
         propertyMap.put(Thing.PROPERTY_MODEL_ID, getModelId(deviceState));
         propertyMap.put(MieleCloudBindingConstants.CONFIG_PARAM_DEVICE_IDENTIFIER, deviceState.getDeviceIdentifier());
 
-        if (MieleCloudBindingConstants.THING_TYPE_HOB.equals(thingTypeUid)) {
+        if (MieleCloudBindingConstants.THING_TYPE_HOB.equals(thingTypeUid)
+                || MieleCloudBindingConstants.THING_TYPE_HOB_WITH_VAPOR_EXTRACTION.equals(thingTypeUid)) {
             deviceState.getPlateStepCount().ifPresent(plateCount -> propertyMap
                     .put(MieleCloudBindingConstants.PROPERTY_PLATE_COUNT, plateCount.toString()));
         }

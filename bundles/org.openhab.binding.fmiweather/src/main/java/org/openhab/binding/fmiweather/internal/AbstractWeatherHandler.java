@@ -260,7 +260,7 @@ public abstract class AbstractWeatherHandler extends BaseThingHandler {
 
     protected void handleError(FMIResponseException e, int retry) {
         response = null;
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+        updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                 String.format("%s: %s", e.getClass().getSimpleName(), e.getMessage()));
         logger.trace("Query failed. Increase retry count {} and try again. Error: {} {}", retry, e.getClass().getName(),
                 e.getMessage());

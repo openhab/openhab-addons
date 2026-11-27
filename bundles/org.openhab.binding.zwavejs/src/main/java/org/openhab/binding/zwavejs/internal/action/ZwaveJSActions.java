@@ -13,6 +13,7 @@
 package org.openhab.binding.zwavejs.internal.action;
 
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -42,20 +43,30 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class ZwaveJSActions implements ThingActions {
     private final Logger logger = LoggerFactory.getLogger(ZwaveJSActions.class);
-    private static final ScheduledExecutorService SCHEDULER = ThreadPoolManager
-            .getScheduledPool(BindingConstants.BINDING_ID);
+    private final ScheduledExecutorService scheduler;
     private static final int INCLUSION_EXCLUSION_TIMEOUT_SECONDS = 30;
     private @Nullable ZwaveJSBridgeHandler handler;
+    private @Nullable ScheduledFuture<?> actionStopJob;
+    private @Nullable ActiveAction activeAction;
+
+    public ZwaveJSActions() {
+        this(ThreadPoolManager.getScheduledPool(BindingConstants.BINDING_ID));
+    }
+
+    ZwaveJSActions(ScheduledExecutorService scheduler) {
+        this.scheduler = scheduler;
+    }
 
     @RuleAction(label = "@text/action.start-inclusion.label", description = "@text/action.start-inclusion.description")
-    public void startInclusion() {
+    public synchronized void startInclusion() {
         ZwaveJSBridgeHandler localHandler = handler;
         if (localHandler != null) {
             logger.debug("Inclusion action issued");
+            stopActiveAction(localHandler);
             localHandler.startInclusion();
-            SCHEDULER.schedule(() -> {
-                localHandler.stopInclusion();
-            }, INCLUSION_EXCLUSION_TIMEOUT_SECONDS, TimeUnit.SECONDS);
+            ActiveAction action = this.activeAction = new ActiveAction(ActionType.INCLUSION);
+            actionStopJob = scheduler.schedule(() -> stopActiveAction(localHandler, action),
+                    INCLUSION_EXCLUSION_TIMEOUT_SECONDS, TimeUnit.SECONDS);
         }
     }
 
@@ -64,14 +75,15 @@ public class ZwaveJSActions implements ThingActions {
     }
 
     @RuleAction(label = "@text/action.start-exclusion.label", description = "@text/action.start-exclusion.description")
-    public void startExclusion() {
+    public synchronized void startExclusion() {
         ZwaveJSBridgeHandler localHandler = handler;
         if (localHandler != null) {
             logger.debug("Exclusion action issued");
+            stopActiveAction(localHandler);
             localHandler.startExclusion();
-            SCHEDULER.schedule(() -> {
-                localHandler.stopExclusion();
-            }, INCLUSION_EXCLUSION_TIMEOUT_SECONDS, java.util.concurrent.TimeUnit.SECONDS);
+            ActiveAction action = this.activeAction = new ActiveAction(ActionType.EXCLUSION);
+            actionStopJob = scheduler.schedule(() -> stopActiveAction(localHandler, action),
+                    INCLUSION_EXCLUSION_TIMEOUT_SECONDS, TimeUnit.SECONDS);
         }
     }
 
@@ -99,14 +111,56 @@ public class ZwaveJSActions implements ThingActions {
     }
 
     @Override
-    public void setThingHandler(@Nullable ThingHandler handler) {
+    public synchronized void setThingHandler(@Nullable ThingHandler handler) {
+        cancelActionStopJob();
+        activeAction = null;
         if (handler instanceof ZwaveJSBridgeHandler bridgeHandler) {
             this.handler = bridgeHandler;
+        } else {
+            this.handler = null;
         }
     }
 
     @Override
     public @Nullable ThingHandler getThingHandler() {
         return handler;
+    }
+
+    private synchronized void stopActiveAction(ZwaveJSBridgeHandler expectedHandler, ActiveAction expectedAction) {
+        if (expectedHandler.equals(handler) && expectedAction.equals(activeAction)) {
+            stopActiveAction(expectedHandler);
+        }
+    }
+
+    private void stopActiveAction(ZwaveJSBridgeHandler handler) {
+        cancelActionStopJob();
+        ActiveAction activeAction = this.activeAction;
+        this.activeAction = null;
+        if (activeAction != null && activeAction.type == ActionType.INCLUSION) {
+            handler.stopInclusion();
+        } else if (activeAction != null && activeAction.type == ActionType.EXCLUSION) {
+            handler.stopExclusion();
+        }
+    }
+
+    private void cancelActionStopJob() {
+        ScheduledFuture<?> actionStopJob = this.actionStopJob;
+        if (actionStopJob != null) {
+            actionStopJob.cancel(false);
+            this.actionStopJob = null;
+        }
+    }
+
+    private static class ActiveAction {
+        private final ActionType type;
+
+        private ActiveAction(ActionType type) {
+            this.type = type;
+        }
+    }
+
+    private enum ActionType {
+        INCLUSION,
+        EXCLUSION
     }
 }

@@ -27,6 +27,8 @@ import com.hubspot.jinjava.lib.filter.Filter;
  *
  * Usage: variable|dig("key1", "key2", 0) to access variable["key1"]["key2"][0]
  * Also supports dot-notation in a single argument: variable|dig("key1.key2.0")
+ *
+ * @author Jimmy Tanagra - Initial contribution
  */
 @NonNullByDefault
 public class DigFilter implements Filter {

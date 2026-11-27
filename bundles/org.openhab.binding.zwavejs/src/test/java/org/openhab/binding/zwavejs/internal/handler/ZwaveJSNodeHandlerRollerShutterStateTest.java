@@ -83,18 +83,18 @@ public class ZwaveJSNodeHandlerRollerShutterStateTest {
     }
 
     @Test
-    public void testDimmerChannelUpdate_noInversion() {
+    public void testDimmerChannelUpdateNoInversion() {
         // Simulate event: dimmer channel updated to 80
         Event event = createRollerShutterDimmerEvent(capability.dimmerChannel.getId(), 80);
         handler.onNodeStateChanged(event);
         assertEquals(80, capability.getCachedPosition());
-        assertTrue(capability.isMovingDown());
-        assertFalse(capability.isMovingUp());
+        assertTrue(capability.isMovingUp());
+        assertFalse(capability.isMovingDown());
     }
 
     // Without any inversion, 100% is fully open (up position) and 0% is fully closed (down position).
     @Test
-    public void testUpChannelUpdate_noInversion() {
+    public void testUpChannelUpdateNoInversion() {
         // Simulate event: up channel ON
         Event event = createRollerShutterUpEvent(capability.upChannel.getId(), true);
         boolean successfulHandling = handler.onNodeStateChanged(event);
@@ -105,7 +105,7 @@ public class ZwaveJSNodeHandlerRollerShutterStateTest {
     }
 
     @Test
-    public void testDownChannelUpdate_noInversion() {
+    public void testDownChannelUpdateNoInversion() {
         // Simulate event: down channel ON
         Event event = createRollerShutterDownEvent(capability.downChannel.getId(), true);
         boolean successfulHandling = handler.onNodeStateChanged(event);
@@ -116,7 +116,7 @@ public class ZwaveJSNodeHandlerRollerShutterStateTest {
     }
 
     @Test
-    public void testDimmerChannelUpdate_withInversion() {
+    public void testDimmerChannelUpdateWithInversion() {
         // Enable inversion
         handler.setRollerShutterInversion(capability, true);
         // Simulate event: dimmer channel updated to 80
@@ -125,13 +125,13 @@ public class ZwaveJSNodeHandlerRollerShutterStateTest {
 
         assertTrue(successfulHandling);
         assertEquals(80, capability.getCachedPosition());
-        // With inversion, increasing value means moving up
-        assertTrue(capability.isMovingUp());
-        assertFalse(capability.isMovingDown());
+        // With inversion, increasing value means moving down
+        assertTrue(capability.isMovingDown());
+        assertFalse(capability.isMovingUp());
     }
 
     @Test
-    public void testUpChannelUpdate_withInversion() {
+    public void testUpChannelUpdateWithInversion() {
         handler.setRollerShutterInversion(capability, true);
         Event event = createRollerShutterUpEvent(capability.upChannel.getId(), true);
         boolean successfulHandling = handler.onNodeStateChanged(event);
@@ -143,7 +143,7 @@ public class ZwaveJSNodeHandlerRollerShutterStateTest {
     }
 
     @Test
-    public void testDownChannelUpdate_withInversion() {
+    public void testDownChannelUpdateWithInversion() {
         handler.setRollerShutterInversion(capability, true);
         Event event = createRollerShutterDownEvent(capability.downChannel.getId(), true);
         boolean successfulHandling = handler.onNodeStateChanged(event);

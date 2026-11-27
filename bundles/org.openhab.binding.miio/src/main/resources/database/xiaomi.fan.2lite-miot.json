@@ -1,0 +1,274 @@
+{
+	"deviceMapping": {
+		"id": [
+			"xiaomi.fan.2lite"
+		],
+		"propertyMethod": "get_properties",
+		"maxProperties": 1,
+		"experimental": true,
+		"readmeComment": "Created from the MIoT spec; not checked against the Mi Home app.",
+		"channels": [
+			{
+				"property": "on",
+				"siid": 2,
+				"piid": 1,
+				"friendlyName": "Power",
+				"channel": "power",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch",
+					"Power"
+				]
+			},
+			{
+				"property": "fan-level",
+				"siid": 2,
+				"piid": 4,
+				"friendlyName": "Fan Level",
+				"channel": "fan_level",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "Level 1"
+						},
+						{
+							"value": "1",
+							"label": "Level 2"
+						},
+						{
+							"value": "2",
+							"label": "Level 3"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "fan",
+				"tags": [
+					"Control",
+					"Speed"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Level 1\",\"1\"\u003d\"Level 2\",\"2\"\u003d\"Level 3\"]`"
+			},
+			{
+				"property": "mode",
+				"siid": 2,
+				"piid": 3,
+				"friendlyName": "Mode",
+				"channel": "mode",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "Standard"
+						},
+						{
+							"value": "1",
+							"label": "Sleep"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "flow",
+				"tags": [
+					"Control",
+					"Mode"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Standard\",\"1\"\u003d\"Sleep\"]`"
+			},
+			{
+				"property": "horizontal-swing",
+				"siid": 2,
+				"piid": 6,
+				"friendlyName": "Oscillation",
+				"channel": "horizontal_swing",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "fan",
+				"tags": [
+					"Switch",
+					"Airflow"
+				]
+			},
+			{
+				"property": "delay",
+				"siid": 9,
+				"piid": 1,
+				"friendlyName": "Power-Off Timer Enabled",
+				"channel": "off_delay",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "time",
+				"tags": [
+					"Switch",
+					"Enabled"
+				]
+			},
+			{
+				"property": "delay-time",
+				"siid": 9,
+				"piid": 2,
+				"friendlyName": "Power-Off Timer",
+				"channel": "off_delay_time",
+				"type": "Number:Time",
+				"unit": "minutes",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 480,
+					"step": 1,
+					"pattern": "%.0f min"
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "time",
+				"tags": [
+					"Setpoint",
+					"Duration"
+				]
+			},
+			{
+				"property": "delay-remain-time",
+				"siid": 9,
+				"piid": 4,
+				"friendlyName": "Power-Off Timer Remaining",
+				"channel": "off_delay_remaining",
+				"type": "Number:Time",
+				"unit": "minutes",
+				"stateDescription": {
+					"pattern": "%.0f min",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "time",
+				"tags": [
+					"Status",
+					"Duration"
+				]
+			},
+			{
+				"property": "alarm",
+				"siid": 7,
+				"piid": 1,
+				"friendlyName": "Notification Sound",
+				"channel": "buzzer",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "soundvolume",
+				"tags": [
+					"Switch",
+					"Enabled"
+				]
+			},
+			{
+				"property": "on1",
+				"siid": 5,
+				"piid": 1,
+				"friendlyName": "Indicator Light",
+				"channel": "led",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "light",
+				"tags": [
+					"Switch",
+					"Light"
+				]
+			},
+			{
+				"property": "physical-controls-locked",
+				"siid": 8,
+				"piid": 1,
+				"friendlyName": "Child Lock",
+				"channel": "child_lock",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "lock",
+				"tags": [
+					"Switch",
+					"Enabled"
+				]
+			},
+			{
+				"property": "fault",
+				"siid": 2,
+				"piid": 2,
+				"friendlyName": "Device Fault",
+				"channel": "fault",
+				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "0",
+							"label": "No Faults"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "error",
+				"tags": [
+					"Status"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"No Faults\"]`"
+			}
+		]
+	}
+}

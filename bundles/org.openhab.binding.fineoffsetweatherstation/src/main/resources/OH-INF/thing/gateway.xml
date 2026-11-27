@@ -18,8 +18,8 @@
 		<label>Temperature</label>
 		<category>Temperature</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -29,30 +29,30 @@
 		<label>Maximum Wind Speed</label>
 		<category>Wind</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Wind</tag>
+			<point>Measurement</point>
+			<property>Wind</property>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="rain">
-		<item-type>Number:Length</item-type>
+		<item-type unitHint="mm,in">Number:Length</item-type>
 		<label>Rain</label>
 		<category>Rain</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Rain</tag>
+			<point>Measurement</point>
+			<property>Rain</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="pressure">
-		<item-type>Number:Pressure</item-type>
+		<item-type unitHint="hPa,inHg">Number:Pressure</item-type>
 		<label>Pressure</label>
 		<category>Pressure</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Pressure</tag>
+			<point>Measurement</point>
+			<property>Pressure</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -62,41 +62,41 @@
 		<label>Humidity</label>
 		<category>Humidity</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Humidity</tag>
+			<point>Measurement</point>
+			<property>Humidity</property>
 		</tags>
 		<state pattern="%.0f %%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="moisture">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Moisture</label>
 		<category>Moisture</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Moisture</tag>
+			<point>Measurement</point>
+			<property>Moisture</property>
 		</tags>
 		<state pattern="%.0f %%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="illumination">
-		<item-type>Number:Illuminance</item-type>
+		<item-type unitHint="lx">Number:Illuminance</item-type>
 		<label>Illumination</label>
 		<category>Sun</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Light</tag>
+			<point>Measurement</point>
+			<property>Illuminance</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="uv-radiation">
-		<item-type>Number:Intensity</item-type>
+		<item-type unitHint="mW/m²">Number:Intensity</item-type>
 		<label>UV-Irradiation</label>
 		<category>Sun</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Ultraviolet</tag>
+			<point>Measurement</point>
+			<property>Ultraviolet</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -106,76 +106,76 @@
 		<label>UV-Index</label>
 		<category>Sun</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Ultraviolet</tag>
+			<point>Measurement</point>
+			<property>Ultraviolet</property>
 		</tags>
 		<state pattern="%.0f" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="rain-rate">
-		<item-type>Number:Speed</item-type>
+		<item-type unitHint="mm/h,in/h">Number:Speed</item-type>
 		<label>Rain Rate</label>
 		<category>Rain</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Rain</tag>
+			<point>Measurement</point>
+			<property>Rain</property>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="pm25">
-		<item-type>Number:Density</item-type>
+		<item-type unitHint="µg/m³">Number:Density</item-type>
 		<label>PM2.5 Air Quality</label>
 		<category>AirQuality</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>ParticulateMatter</tag>
+			<point>Measurement</point>
+			<property>ParticulateMatter</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="pm10">
-		<item-type>Number:Density</item-type>
+		<item-type unitHint="µg/m³">Number:Density</item-type>
 		<label>PM10 Air Quality</label>
 		<category>AirQuality</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>ParticulateMatter</tag>
+			<point>Measurement</point>
+			<property>ParticulateMatter</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="pm4">
-		<item-type>Number:Density</item-type>
+		<item-type unitHint="µg/m³">Number:Density</item-type>
 		<label>PM4 Air Quality</label>
 		<category>AirQuality</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>ParticulateMatter</tag>
+			<point>Measurement</point>
+			<property>ParticulateMatter</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 
 	<channel-type id="pm1">
-		<item-type>Number:Density</item-type>
+		<item-type unitHint="µg/m³">Number:Density</item-type>
 		<label>PM1 Air Quality</label>
 		<category>AirQuality</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>ParticulateMatter</tag>
+			<point>Measurement</point>
+			<property>ParticulateMatter</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="co2">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unitHint="ppm">Number:Dimensionless</item-type>
 		<label>CO₂</label>
 		<description>Air Quality Indicator</description>
 		<category>CarbonDioxide</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>CO2</tag>
+			<point>Measurement</point>
+			<property>CO2</property>
 		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
@@ -185,8 +185,8 @@
 		<label>Water Leak Detection</label>
 		<category>Alarm</category>
 		<tags>
-			<tag>Alarm</tag>
-			<tag>Water</tag>
+			<point>Alarm</point>
+			<property>Water</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -205,7 +205,7 @@
 	</channel-type>
 
 	<channel-type id="lightning-distance">
-		<item-type>Number:Length</item-type>
+		<item-type unitHint="km,mi">Number:Length</item-type>
 		<label>Lightning Distance</label>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
@@ -222,8 +222,8 @@
 		<label>Solar Radiation</label>
 		<category>Sun</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Light</tag>
+			<point>Measurement</point>
+			<property>Light</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -233,21 +233,21 @@
 		<label>Raining</label>
 		<category>Rain</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Rain</tag>
+			<point>Status</point>
+			<property>Rain</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="vapor-pressure-deficit">
-		<item-type>Number:Pressure</item-type>
+		<item-type unitHint="kPa">Number:Pressure</item-type>
 		<label>Vapor Pressure Deficit</label>
 		<description>The difference between the amount of moisture in the air and how much moisture the air can hold when
 			saturated</description>
 		<category>Humidity</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Humidity</tag>
+			<point>Measurement</point>
+			<property>Humidity</property>
 		</tags>
 		<state pattern="%.3f %unit%" readOnly="true"/>
 	</channel-type>

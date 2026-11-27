@@ -58,8 +58,7 @@ public class HaywardPumpHandler extends HaywardThingHandler {
             setStateDescriptions();
             updateStatus(ThingStatus.ONLINE);
         } catch (HaywardException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Unable to setPumpHandler StateDescriptions");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Unable to setPumpHandler StateDescriptions");
         }
     }
 
@@ -69,7 +68,11 @@ public class HaywardPumpHandler extends HaywardThingHandler {
         String option;
 
         Bridge bridge = getBridge();
-        if (bridge != null && bridge.getHandler() instanceof HaywardBridgeHandler bridgehandler) {
+        if (bridge == null) {
+            logger.debug("Bridge unavailable for Thing: {}", thing.getUID());
+            return;
+        }
+        if (bridge.getHandler() instanceof HaywardBridgeHandler bridgehandler) {
             // Set Pump % min and max speeds
             Channel ch = thing.getChannel(HaywardBindingConstants.CHANNEL_PUMP_SPEEDPERCENT);
             if (ch != null) {
@@ -128,7 +131,11 @@ public class HaywardPumpHandler extends HaywardThingHandler {
         List<String> data = new ArrayList<>();
 
         Bridge bridge = getBridge();
-        if (bridge != null && bridge.getHandler() instanceof HaywardBridgeHandler bridgehandler) {
+        if (bridge == null) {
+            logger.debug("Bridge unavailable for Thing: {}", thing.getUID());
+            return;
+        }
+        if (bridge.getHandler() instanceof HaywardBridgeHandler bridgehandler) {
             systemIDs = bridgehandler.evaluateXPath("//Pump/@systemId", xmlResponse);
             String thingSystemID = getThing().getUID().getId();
             for (int i = 0; i < systemIDs.size(); i++) {
@@ -166,7 +173,7 @@ public class HaywardPumpHandler extends HaywardThingHandler {
             }
             this.updateStatus(ThingStatus.ONLINE);
         } else {
-            this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
+            this.updateStatus(ThingStatus.UNKNOWN);
         }
     }
 
@@ -183,7 +190,11 @@ public class HaywardPumpHandler extends HaywardThingHandler {
         String pumpMaxRpm = getThing().getProperties().get(HaywardBindingConstants.PROPERTY_PUMP_MAXRPM);
 
         Bridge bridge = getBridge();
-        if (bridge != null && bridge.getHandler() instanceof HaywardBridgeHandler bridgehandler) {
+        if (bridge == null) {
+            logger.debug("Bridge unavailable for Thing: {}", thing.getUID());
+            return;
+        }
+        if (bridge.getHandler() instanceof HaywardBridgeHandler bridgehandler) {
             String cmdString = this.cmdToString(command);
             try {
                 switch (channelUID.getId()) {
@@ -250,7 +261,7 @@ public class HaywardPumpHandler extends HaywardThingHandler {
             }
             this.updateStatus(ThingStatus.ONLINE);
         } else {
-            this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
+            this.updateStatus(ThingStatus.UNKNOWN);
         }
     }
 }

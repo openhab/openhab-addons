@@ -267,8 +267,17 @@ public class MerossManager implements MqttMessageSubscriber {
 
             String method = null;
             Namespace namespace = null;
+            String deviceUUID = null;
             if (jsonObject.has("header") && !jsonObject.get("header").isJsonNull()) {
                 JsonObject header = jsonObject.getAsJsonObject("header");
+                if (header.has("uuid") && header.get("uuid").isJsonPrimitive()) {
+                    deviceUUID = header.get("uuid").getAsString();
+                } else if (header.has("from") && header.get("from").isJsonPrimitive()) {
+                    deviceUUID = mqttMessageBuilder.getDeviceUUID(header.get("from").getAsString());
+                }
+                if (!this.deviceUUID.equals(deviceUUID)) {
+                    return;
+                }
                 if (header.has("method") && header.get("method").isJsonPrimitive() && header.has("namespace")
                         && header.get("namespace").isJsonPrimitive()) {
                     method = header.get("method").getAsString();

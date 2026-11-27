@@ -25,6 +25,7 @@ import java.io.IOException;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.openhab.binding.homematic.internal.common.HomematicConfig;
 import org.openhab.binding.homematic.internal.communicator.HomematicGateway;
 import org.openhab.binding.homematic.internal.handler.HomematicBridgeHandler;
 import org.openhab.binding.homematic.internal.model.HmDevice;
@@ -76,6 +77,7 @@ public class HomematicDeviceDiscoveryServiceTest extends JavaTest {
         when(homematicBridgeHandler.getThing()).thenReturn(bridge);
         when(homematicBridgeHandler.getGateway()).thenReturn(homematicGateway);
         when(homematicBridgeHandler.getTypeGenerator()).thenReturn(homematicTypeGenerator);
+        when(homematicBridgeHandler.getHomematicConfig()).thenReturn(new HomematicConfig());
 
         return homematicBridgeHandler;
     }

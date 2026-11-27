@@ -85,14 +85,14 @@ public abstract class Cm11aAbstractHandler extends BaseThingHandler {
         Bridge bridge = getBridge();
         if (bridge == null) {
             logger.warn("{}", NO_BRIDGE_ERROR + houseUnitCode);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, NO_BRIDGE_ERROR + houseUnitCode);
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, NO_BRIDGE_ERROR + houseUnitCode);
             return;
         }
 
         if (ThingStatus.ONLINE.equals(bridge.getStatus())) {
             updateStatus(ThingStatus.ONLINE);
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
         }
     }
 
@@ -106,7 +106,7 @@ public abstract class Cm11aAbstractHandler extends BaseThingHandler {
         logger.debug("CM11A status changed to {}.", bridgeStatusInfo.getStatus());
 
         if (bridgeStatusInfo.getStatus() != ThingStatus.ONLINE) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
             logger.debug("CM11A is not online. Bridge status: {}", bridgeStatusInfo.getStatus());
             return;
         }
@@ -116,7 +116,7 @@ public abstract class Cm11aAbstractHandler extends BaseThingHandler {
                 // The config must be present and was set during initialization
                 updateStatus(ThingStatus.ONLINE);
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR);
             }
         }
     }

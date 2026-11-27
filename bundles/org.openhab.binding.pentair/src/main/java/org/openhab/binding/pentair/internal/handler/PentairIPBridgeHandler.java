@@ -55,7 +55,7 @@ public class PentairIPBridgeHandler extends PentairBaseBridgeHandler {
             Socket socket = this.socket;
 
             if (socket == null) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                         "@text/offline.communication-error.ip-stream-error");
                 return false;
             }
@@ -63,7 +63,7 @@ public class PentairIPBridgeHandler extends PentairBaseBridgeHandler {
             InputStream inputStream = socket.getInputStream();
             OutputStream outputStream = socket.getOutputStream();
             if (inputStream == null || outputStream == null) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                         "@text/offline.communication-error.ip-stream-error");
                 return false;
             }
@@ -75,13 +75,13 @@ public class PentairIPBridgeHandler extends PentairBaseBridgeHandler {
         } catch (UnknownHostException e) {
             if (getThing().getStatus() != ThingStatus.OFFLINE) {
                 String msg = String.format("unknown host name: %s, %s", config.address, e.getMessage());
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, msg);
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, msg);
             }
             return false;
         } catch (IOException e) {
             if (getThing().getStatus() != ThingStatus.OFFLINE) {
                 String msg = String.format("cannot open connection to %s, %s", config.address, e.getMessage());
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, msg);
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, msg);
             }
             return false;
         }

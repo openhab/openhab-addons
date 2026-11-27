@@ -17,12 +17,14 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
+import org.openhab.binding.matter.internal.MatterBindingConstants;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.DoorLockCluster;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.DoorLockCluster.CredentialTypeEnum;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.DoorLockCluster.UserStatusEnum;
@@ -32,6 +34,7 @@ import org.openhab.binding.matter.internal.client.dto.ws.EventTriggeredMessage;
 import org.openhab.binding.matter.internal.client.dto.ws.Path;
 import org.openhab.binding.matter.internal.client.dto.ws.TriggerEvent;
 import org.openhab.binding.matter.internal.controller.devices.converter.DoorLockConverter.LockUser;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.thing.Channel;
@@ -113,6 +116,50 @@ class DoorLockConverterTest extends BaseMatterConverterTest {
     }
 
     @Test
+    void testCreateChannelsWithSoundVolume() {
+        mockCluster.soundVolume = DoorLockCluster.SoundVolumeEnum.HIGH;
+
+        ChannelGroupUID channelGroupUID = new ChannelGroupUID("matter:node:test:12345:1");
+        Map<Channel, @Nullable StateDescription> channels = converter.createChannels(channelGroupUID);
+        assertEquals(4, channels.size());
+        Map.Entry<Channel, @Nullable StateDescription> soundVolume = channels.entrySet().stream()
+                .filter(e -> "doorlock-soundvolume".equals(e.getKey().getUID().getIdWithoutGroup())).findFirst()
+                .orElseThrow();
+        assertEquals("Number", soundVolume.getKey().getAcceptedItemType());
+        StateDescription stateDescription = soundVolume.getValue();
+        assertNotNull(stateDescription);
+        assertEquals(DoorLockCluster.SoundVolumeEnum.values().length, stateDescription.getOptions().size());
+    }
+
+    @Test
+    void testHandleCommandSoundVolume() {
+        when(mockHandler.writeAttribute(anyInt(), anyString(), anyString(), anyString()))
+                .thenReturn(CompletableFuture.completedFuture(null));
+        ChannelUID channelUID = new ChannelUID("matter:node:test:12345:1#doorlock-soundvolume");
+        converter.handleCommand(channelUID, new DecimalType(0));
+        verify(mockHandler, times(1)).writeAttribute(eq(1), eq(DoorLockCluster.CLUSTER_NAME), eq("soundVolume"),
+                eq("0"));
+    }
+
+    @Test
+    void testOnEventWithSoundVolume() {
+        AttributeChangedMessage message = new AttributeChangedMessage();
+        message.path = new Path();
+        message.path.attributeName = "soundVolume";
+        message.value = DoorLockCluster.SoundVolumeEnum.SILENT;
+        converter.onEvent(message);
+        verify(mockHandler, times(1)).updateState(eq(1), eq("doorlock-soundvolume"), eq(new DecimalType(0)));
+    }
+
+    @Test
+    void testInitStateWithSoundVolume() {
+        mockCluster.lockState = DoorLockCluster.LockStateEnum.LOCKED;
+        mockCluster.soundVolume = DoorLockCluster.SoundVolumeEnum.MEDIUM;
+        converter.initState();
+        verify(mockHandler, times(1)).updateState(eq(1), eq("doorlock-soundvolume"), eq(new DecimalType(3)));
+    }
+
+    @Test
     void testHandleCommandLock() {
         ChannelUID channelUID = new ChannelUID("matter:node:test:12345:1#doorlock-lockstate");
         converter.handleCommand(channelUID, OnOffType.ON);
@@ -176,6 +223,17 @@ class DoorLockConverterTest extends BaseMatterConverterTest {
         message.value = Integer.valueOf(30);
         converter.onEvent(message);
         verify(mockHandler, times(1)).updateConfiguration(anyMap());
+    }
+
+    @Test
+    void testOnEventWithAutoRelockTimeAboveIntegerRange() {
+        AttributeChangedMessage message = new AttributeChangedMessage();
+        message.path = new Path();
+        message.path.attributeName = "autoRelockTime";
+        message.value = 3_000_000_000L;
+        converter.onEvent(message);
+        verify(mockHandler, times(1)).updateConfiguration(
+                eq(Map.of(MatterBindingConstants.CONFIG_DOORLOCK_AUTO_RELOCK_TIME, 3_000_000_000L)));
     }
 
     @Test

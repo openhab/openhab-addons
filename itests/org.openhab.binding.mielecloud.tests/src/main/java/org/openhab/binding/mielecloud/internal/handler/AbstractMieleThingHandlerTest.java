@@ -310,6 +310,7 @@ public abstract class AbstractMieleThingHandlerTest extends JavaOSGiTest {
         ItemChannelLinkRegistry itemChannelLinkRegistry = getService(ItemChannelLinkRegistry.class,
                 ItemChannelLinkRegistry.class);
         assertNotNull(itemChannelLinkRegistry);
+        itemChannelLinkRegistry.waitForCompletedAsyncActivationTasks();
 
         for (Channel channel : thing.getChannels()) {
             String itemName = channel.getUID().getId();

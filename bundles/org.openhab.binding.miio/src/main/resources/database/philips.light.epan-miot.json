@@ -1,0 +1,673 @@
+{
+	"deviceMapping": {
+		"id": [
+			"philips.light.epan"
+		],
+		"propertyMethod": "get_properties",
+		"maxProperties": 4,
+		"channels": [
+			{
+				"property": "on",
+				"siid": 2,
+				"piid": 1,
+				"friendlyName": "Power",
+				"channel": "on",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "switch"
+			},
+			{
+				"property": "brightness",
+				"siid": 2,
+				"piid": 2,
+				"friendlyName": "Brightness",
+				"channel": "brightness",
+				"type": "Dimmer",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "light",
+				"tags": [
+					"Control",
+					"Brightness"
+				]
+			},
+			{
+				"property": "mode",
+				"siid": 2,
+				"piid": 7,
+				"friendlyName": "Scene",
+				"channel": "mode",
+				"type": "Number",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 1,
+					"step": 1,
+					"pattern": "%.0f",
+					"options": [
+						{
+							"value": "0",
+							"label": "Day Mode"
+						},
+						{
+							"value": "1",
+							"label": "Night Mode"
+						}
+					]
+				},
+				"category": "light",
+				"tags": [
+					"Control",
+					"Mode"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Day Mode\",\"1\"\u003d\"Night Mode\"]`"
+			},
+			{
+				"property": "flex-switch",
+				"siid": 2,
+				"piid": 14,
+				"friendlyName": "Momentary Contact Switch",
+				"channel": "flexSwitch",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch",
+					"Enabled"
+				],
+				"readmeComment": "Enable when the light is installed with a momentary contact (push button) wall switch."
+			},
+			{
+				"property": "alarm-en",
+				"siid": 5,
+				"piid": 5,
+				"friendlyName": "Fall Alert",
+				"channel": "fallAlert",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch",
+					"Enabled"
+				],
+				"readmeComment": "Calls the emergency contact set in the Mi Home app when a fall is detected."
+			},
+			{
+				"property": "fall-condition",
+				"siid": 5,
+				"piid": 2,
+				"friendlyName": "Fall Status",
+				"channel": "fallStatus",
+				"type": "Number",
+				"refresh": true,
+				"actions": [],
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 1,
+					"step": 1,
+					"pattern": "%.0f",
+					"options": [
+						{
+							"value": "0",
+							"label": "Normal"
+						},
+						{
+							"value": "1",
+							"label": "Fall Detected"
+						}
+					],
+					"readOnly": true
+				},
+				"category": "alarm",
+				"tags": [
+					"Alarm"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Normal\",\"1\"\u003d\"Fall Detected\"]`"
+			},
+			{
+				"property": "delay-call",
+				"siid": 5,
+				"piid": 3,
+				"friendlyName": "Fall Alert Delay",
+				"channel": "fallAlertDelay",
+				"type": "Number:Time",
+				"unit": "seconds",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 180,
+					"step": 1,
+					"pattern": "%.0f %unit%"
+				},
+				"category": "time",
+				"tags": [
+					"Setpoint",
+					"Duration"
+				],
+				"readmeComment": "No alert is sent when the person gets up within this time."
+			},
+			{
+				"property": "detection-sensitivity",
+				"siid": 4,
+				"piid": 25,
+				"friendlyName": "Fall Detection Sensitivity",
+				"channel": "detectionSensitivity",
+				"type": "Number",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"stateDescription": {
+					"minimum": 1,
+					"maximum": 2,
+					"step": 1,
+					"pattern": "%.0f",
+					"options": [
+						{
+							"value": "1",
+							"label": "Low"
+						},
+						{
+							"value": "2",
+							"label": "High"
+						}
+					]
+				},
+				"category": "settings",
+				"tags": [
+					"Control",
+					"Mode"
+				],
+				"readmeComment": "Value mapping `[\"1\"\u003d\"Low\",\"2\"\u003d\"High\"]`"
+			},
+			{
+				"property": "tof-status",
+				"siid": 6,
+				"piid": 3,
+				"friendlyName": "Sensor Status",
+				"channel": "sensorStatus",
+				"type": "Number",
+				"refresh": true,
+				"actions": [],
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 1,
+					"step": 1,
+					"pattern": "%.0f",
+					"options": [
+						{
+							"value": "0",
+							"label": "Normal"
+						},
+						{
+							"value": "1",
+							"label": "Polluted or Obstructed"
+						}
+					],
+					"readOnly": true
+				},
+				"category": "alarm",
+				"tags": [
+					"Status",
+					"Info"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Normal\",\"1\"\u003d\"Polluted or Obstructed\"]`"
+			},
+			{
+				"property": "wall-switch-en",
+				"siid": 8,
+				"piid": 1,
+				"friendlyName": "Wall Switch Scenes",
+				"channel": "WallSceneEn",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch",
+					"Enabled"
+				]
+			},
+			{
+				"property": "wall-switch-first",
+				"siid": 8,
+				"piid": 2,
+				"friendlyName": "Wall Switch Scene 1",
+				"channel": "WallScene1",
+				"type": "String",
+				"refresh": true,
+				"actions": [],
+				"stateDescription": {
+					"readOnly": true
+				},
+				"category": "text",
+				"tags": [
+					"Status",
+					"Info"
+				],
+				"readmeComment": "Set it in the Mi Home app. Format `scene-brightness-color temperature`."
+			},
+			{
+				"property": "wall-switch-sec",
+				"siid": 8,
+				"piid": 3,
+				"friendlyName": "Wall Switch Scene 2",
+				"channel": "WallScene2",
+				"type": "String",
+				"refresh": true,
+				"actions": [],
+				"stateDescription": {
+					"readOnly": true
+				},
+				"category": "text",
+				"tags": [
+					"Status",
+					"Info"
+				]
+			},
+			{
+				"property": "auto-on-off-enable",
+				"siid": 11,
+				"piid": 1,
+				"friendlyName": "Auto On/Off",
+				"channel": "autoOnOff",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch",
+					"Enabled"
+				],
+				"readmeComment": "Turns the light on when someone is detected and off when nobody is detected."
+			},
+			{
+				"property": "auto-leave-dur",
+				"siid": 11,
+				"piid": 2,
+				"friendlyName": "Auto Off Delay",
+				"channel": "autoOffDelay",
+				"type": "Number:Time",
+				"unit": "seconds",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"stateDescription": {
+					"minimum": 30,
+					"maximum": 600,
+					"step": 1,
+					"pattern": "%.0f %unit%"
+				},
+				"category": "time",
+				"tags": [
+					"Setpoint",
+					"Duration"
+				],
+				"readmeComment": "Turns off after nobody is detected for this time."
+			},
+			{
+				"property": "effect-distance",
+				"siid": 11,
+				"piid": 3,
+				"friendlyName": "Auto On Distance",
+				"channel": "autoOnDistance",
+				"type": "Number",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 400,
+					"step": 1,
+					"pattern": "%.0f cm"
+				},
+				"category": "motion",
+				"tags": [
+					"Setpoint"
+				],
+				"readmeComment": "Distance in cm within which a person turns the light on."
+			},
+			{
+				"property": "ambient-brightness",
+				"siid": 11,
+				"piid": 4,
+				"friendlyName": "Auto On Ambient Brightness",
+				"channel": "autoOnAmbientBrightness",
+				"type": "Number",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 3,
+					"step": 1,
+					"pattern": "%.0f",
+					"options": [
+						{
+							"value": "0",
+							"label": "None"
+						},
+						{
+							"value": "1",
+							"label": "Dark"
+						},
+						{
+							"value": "2",
+							"label": "Dim"
+						},
+						{
+							"value": "3",
+							"label": "Bright"
+						}
+					]
+				},
+				"category": "light",
+				"tags": [
+					"Setpoint",
+					"Illuminance"
+				],
+				"readmeComment": "Turns on only when the ambient light is below this level. Value mapping `[\"0\"\u003d\"None\",\"1\"\u003d\"Dark\",\"2\"\u003d\"Dim\",\"3\"\u003d\"Bright\"]`"
+			},
+			{
+				"property": "night-light-enable",
+				"siid": 12,
+				"piid": 1,
+				"friendlyName": "Automatic Night Light",
+				"channel": "nightLight",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "light",
+				"tags": [
+					"Switch",
+					"Enabled"
+				],
+				"readmeComment": "Within the set time the light turns on when someone is detected and off when nobody is detected."
+			},
+			{
+				"property": "night-light-time",
+				"siid": 12,
+				"piid": 2,
+				"friendlyName": "Automatic Night Light Time",
+				"channel": "nightLightTime",
+				"type": "String",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "STRING"
+					}
+				],
+				"category": "time",
+				"tags": [
+					"Control"
+				],
+				"readmeComment": "Time period as `HH:MM-HH:MM`."
+			},
+			{
+				"property": "change-speed-enable",
+				"siid": 14,
+				"piid": 1,
+				"friendlyName": "Gradual Brightness Adjustment",
+				"channel": "gradualAdjust",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "light",
+				"tags": [
+					"Switch",
+					"Enabled"
+				]
+			},
+			{
+				"property": "change-speed",
+				"siid": 14,
+				"piid": 2,
+				"friendlyName": "Gradual Brightness Speed",
+				"channel": "gradualSpeed",
+				"type": "Number",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 1,
+					"step": 1,
+					"pattern": "%.0f",
+					"options": [
+						{
+							"value": "0",
+							"label": "Slow"
+						},
+						{
+							"value": "1",
+							"label": "Fast"
+						}
+					]
+				},
+				"category": "settings",
+				"tags": [
+					"Control",
+					"Mode"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Slow\",\"1\"\u003d\"Fast\"]`"
+			},
+			{
+				"property": "toilet-monitor-enable",
+				"siid": 16,
+				"piid": 1,
+				"friendlyName": "Toilet Monitoring",
+				"channel": "toiletMonitor",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch",
+					"Enabled"
+				],
+				"readmeComment": "Alerts when the bathroom is visited too often within the monitoring period."
+			},
+			{
+				"property": "toilet-monitor-time",
+				"siid": 16,
+				"piid": 2,
+				"friendlyName": "Toilet Monitoring Time",
+				"channel": "toiletMonitorTime",
+				"type": "String",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "STRING"
+					}
+				],
+				"category": "time",
+				"tags": [
+					"Control"
+				],
+				"readmeComment": "Time period as `HH:MM-HH:MM`."
+			},
+			{
+				"property": "user-number",
+				"siid": 16,
+				"piid": 3,
+				"friendlyName": "Toilet Monitoring Users",
+				"channel": "toiletMonitorUsers",
+				"type": "Number",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"stateDescription": {
+					"minimum": 1,
+					"maximum": 2,
+					"step": 1,
+					"pattern": "%.0f"
+				},
+				"category": "settings",
+				"tags": [
+					"Setpoint"
+				]
+			},
+			{
+				"property": "alert-enable",
+				"siid": 16,
+				"piid": 4,
+				"friendlyName": "Toilet Monitoring Alert",
+				"channel": "toiletMonitorAlert",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch",
+					"Enabled"
+				]
+			},
+			{
+				"property": "",
+				"friendlyName": "Actions",
+				"channel": "actions",
+				"type": "String",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "light-toggle",
+							"label": "Light Toggle"
+						},
+						{
+							"value": "stop-alert",
+							"label": "Reset Fall Alert"
+						}
+					]
+				},
+				"refresh": false,
+				"actions": [
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 2,
+						"aiid": 1,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "light-toggle"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 5,
+						"aiid": 1,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "stop-alert"
+								}
+							]
+						}
+					}
+				],
+				"category": "light",
+				"tags": [
+					"Control",
+					"Light"
+				],
+				"readmeComment": "Value mapping `[\"light-toggle\"\u003d\"Light Toggle\",\"stop-alert\"\u003d\"Reset Fall Alert\"]`"
+			}
+		],
+		"experimental": true
+	}
+}

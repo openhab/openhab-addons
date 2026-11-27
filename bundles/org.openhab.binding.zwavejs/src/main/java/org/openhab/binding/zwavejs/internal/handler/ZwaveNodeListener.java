@@ -14,6 +14,7 @@ package org.openhab.binding.zwavejs.internal.handler;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.zwavejs.internal.api.dto.Event;
+import org.openhab.binding.zwavejs.internal.api.dto.Node;
 import org.openhab.binding.zwavejs.internal.api.dto.Statistics;
 
 /**
@@ -57,11 +58,32 @@ public interface ZwaveNodeListener {
     void onNodeAlive(Event event);
 
     /**
+     * This method is called when a node wakes up.
+     *
+     * @param event the event that contains information about the status change
+     */
+    void onNodeAwake(Event event);
+
+    /**
      * This method is called when a node is removed from the Z-Wave network.
      *
      * @param event the event that contains information about the removed node
      */
     void onNodeRemoved(Event event);
+
+    /**
+     * This method is called when a node is ready and its complete state is available.
+     *
+     * @param node the complete node state
+     */
+    void onNodeReady(Node node);
+
+    /**
+     * This method is called when values or metadata change the generated definition of a ready node.
+     *
+     * @param node the node with its incrementally updated values
+     */
+    void onNodeDefinitionChanged(Node node);
 
     /**
      * This method is called when the statistics of a node are updated.

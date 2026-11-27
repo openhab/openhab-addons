@@ -95,7 +95,7 @@ public abstract class SerialThingHandler extends BaseThingHandler implements Ser
             outputStream.write(msg.getBytes());
             outputStream.flush();
         } catch (IOException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                     "Error writing '" + msg + "' to serial port " + port + " : " + e.getMessage());
         }
     }
@@ -157,10 +157,10 @@ public abstract class SerialThingHandler extends BaseThingHandler implements Ser
         logger.debug("Initializing serial thing handler.");
 
         if (baud == 0) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Baud rate is not configured");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Baud rate is not configured");
             return;
         } else if (port == null || port.isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Serial port is not configured");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Serial port is not configured");
             return;
         }
 
@@ -171,7 +171,7 @@ public abstract class SerialThingHandler extends BaseThingHandler implements Ser
                     .collect(Collectors.joining(System.lineSeparator()));
             String description = String.format("Serial port '%s' could not be found. Available ports are:%n%s", port,
                     availablePorts);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, description);
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, description);
             return;
         }
 
@@ -179,7 +179,7 @@ public abstract class SerialThingHandler extends BaseThingHandler implements Ser
         try {
             serialPort = portId.open("openHAB", 2000);
         } catch (PortInUseException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                     "Could not open serial port " + port + ": " + e.getMessage());
             return;
         }
@@ -187,7 +187,7 @@ public abstract class SerialThingHandler extends BaseThingHandler implements Ser
         try {
             inputStream = serialPort.getInputStream();
         } catch (IOException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                     "Could not open serial port " + port + ": " + e.getMessage());
             return;
         }
@@ -195,7 +195,7 @@ public abstract class SerialThingHandler extends BaseThingHandler implements Ser
         try {
             serialPort.addEventListener(this);
         } catch (TooManyListenersException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                     "Could not open serial port " + port + ": " + e.getMessage());
             return;
         }
@@ -207,7 +207,7 @@ public abstract class SerialThingHandler extends BaseThingHandler implements Ser
             // set port parameters
             serialPort.setSerialPortParams(baud, SerialPort.DATABITS_8, SerialPort.STOPBITS_1, SerialPort.PARITY_NONE);
         } catch (UnsupportedCommOperationException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                     "Could not configure serial port " + port + ": " + e.getMessage());
             return;
         }
@@ -217,7 +217,7 @@ public abstract class SerialThingHandler extends BaseThingHandler implements Ser
             outputStream = serialPort.getOutputStream();
             updateStatus(ThingStatus.ONLINE);
         } catch (IOException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                     "Could not communicate with the serial port " + port + ": " + e.getMessage());
             return;
         }

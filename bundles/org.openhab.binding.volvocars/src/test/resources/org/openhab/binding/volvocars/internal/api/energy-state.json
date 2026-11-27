@@ -1,0 +1,21 @@
+{
+  "batteryChargeLevel": { "status": "OK", "value": 53.0, "unit": "percentage", "updatedAt": "2026-01-01T10:00:00Z" },
+  "electricRange": { "status": "OK", "value": 27.0, "unit": "km", "updatedAt": "2026-01-01T10:00:00Z" },
+  "chargerConnectionStatus": { "status": "OK", "value": "DISCONNECTED", "updatedAt": "2026-01-01T10:00:00Z" },
+  "chargingStatus": { "status": "OK", "value": "IDLE", "updatedAt": "2026-01-01T10:00:00Z" },
+  "chargingType": { "status": "OK", "value": "NONE", "updatedAt": "2026-01-01T10:00:00Z" },
+  "chargerPowerStatus": { "status": "OK", "value": "NO_POWER_AVAILABLE", "updatedAt": "2026-01-01T10:00:00Z" },
+  "estimatedChargingTimeToTargetBatteryChargeLevel": {
+    "status": "OK", "value": 0, "unit": "minutes", "updatedAt": "2026-01-01T10:00:00Z"
+  },
+  "chargingCurrentLimit": {
+    "status": "ERROR", "code": "PROPERTY_NOT_SUPPORTED", "message": "Property is not supported for this vehicle"
+  },
+  "targetBatteryChargeLevel": { "status": "OK", "value": 100, "unit": "percentage", "updatedAt": "2026-01-01T10:00:00Z" },
+  "chargingPower": {
+    "status": "ERROR", "code": "PROPERTY_NOT_FOUND", "message": "No valid value could be found for the requested resource"
+  },
+  "transferLimit": {
+    "status": "ERROR", "code": "PROPERTY_NOT_SUPPORTED", "message": "Property is not supported for this vehicle"
+  }
+}

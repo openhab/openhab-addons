@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -63,6 +64,8 @@ public abstract class TapoBaseDeviceHandler extends BaseThingHandler {
     protected TapoEnergyData energyData = new TapoEnergyData();
     protected @Nullable ScheduledFuture<?> startupJob;
     protected @Nullable ScheduledFuture<?> pollingJob;
+    private static final Object DISPOSED = new Object();
+    private volatile Object lifecycle = DISPOSED;
     protected @NonNullByDefault({}) TapoDeviceConnector connector;
     protected @NonNullByDefault({}) TapoBridgeHandler bridge;
 
@@ -118,12 +121,15 @@ public abstract class TapoBaseDeviceHandler extends BaseThingHandler {
      */
     @Override
     public void dispose() {
-        try {
-            stopScheduler(this.startupJob);
-            stopScheduler(this.pollingJob);
-            connector.logout();
-        } catch (Exception e) {
-            // handle exception
+        synchronized (lifecycle) {
+            lifecycle = DISPOSED;
+            try {
+                stopScheduler(this.startupJob);
+                stopScheduler(this.pollingJob);
+                connector.logout();
+            } catch (Exception e) {
+                // handle exception
+            }
         }
         super.dispose();
     }
@@ -132,11 +138,13 @@ public abstract class TapoBaseDeviceHandler extends BaseThingHandler {
      * ACTIVATE DEVICE
      */
     protected void activateDevice() {
+        lifecycle = new Object();
         // set the thing status to UNKNOWN temporarily and let the background task decide for the real status.
         updateStatus(ThingStatus.UNKNOWN);
 
         // background initialization (delay it a little bit):
-        this.startupJob = scheduler.schedule(this::delayedStartUp, 2000, TimeUnit.MILLISECONDS);
+        Object startupLifecycle = lifecycle;
+        this.startupJob = scheduler.schedule(() -> delayedStartUp(startupLifecycle), 2000, TimeUnit.MILLISECONDS);
     }
 
     /**
@@ -177,12 +185,14 @@ public abstract class TapoBaseDeviceHandler extends BaseThingHandler {
     /***********************************
      * SCHEDULER
      ************************************/
-    /**
-     * delayed OneTime StartupJob
-     */
-    private void delayedStartUp() {
+    private void delayedStartUp(Object startupLifecycle) {
         connect();
-        startPollingScheduler();
+        synchronized (startupLifecycle) {
+            if (!Objects.equals(startupLifecycle, lifecycle)) {
+                return;
+            }
+            startPollingScheduler();
+        }
     }
 
     /**
@@ -309,6 +319,17 @@ public abstract class TapoBaseDeviceHandler extends BaseThingHandler {
         return deviceConfig.ipAddress;
     }
 
+    public boolean isDimmerSwitch() {
+        return SUPPORTED_DIMMER_SWITCH_UIDS.contains(getThing().getThingTypeUID());
+    }
+
+    /**
+     * Runs device communication without blocking framework callback threads.
+     */
+    public void executeAsync(Runnable task) {
+        scheduler.execute(task);
+    }
+
     /*
      * return device configuration
      */
@@ -382,9 +403,8 @@ public abstract class TapoBaseDeviceHandler extends BaseThingHandler {
             if (isExpectedThing(baseDeviceData)) {
                 updateDeviceProperties(baseDeviceData);
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "found type:'" + baseDeviceData.getModel() + "' with mac:'"
-                                + baseDeviceData.getRepresentationProperty() + "'. Check IP-Address");
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "found type:'" + baseDeviceData.getModel()
+                        + "' with mac:'" + baseDeviceData.getRepresentationProperty() + "'. Check IP-Address");
             }
         } else {
             logger.debug("({}) tried to update device with empty data", uid);
@@ -417,11 +437,13 @@ public abstract class TapoBaseDeviceHandler extends BaseThingHandler {
             loginSuccess = connector.login();
             if (loginSuccess) {
                 queryDeviceData(true);
-            } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, deviceError.getMessage());
+            } else if (!Objects.equals(DISPOSED, lifecycle)) {
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, deviceError.getMessage());
             }
         } catch (Exception e) {
-            updateStatus(ThingStatus.UNKNOWN);
+            if (!Objects.equals(DISPOSED, lifecycle)) {
+                updateStatus(ThingStatus.UNKNOWN);
+            }
         }
         return loginSuccess;
     }
@@ -454,6 +476,9 @@ public abstract class TapoBaseDeviceHandler extends BaseThingHandler {
      * handle device state by connector error
      */
     public void handleConnectionState() {
+        if (Objects.equals(DISPOSED, lifecycle)) {
+            return; // no status updates on an already disposed handler
+        }
         ThingStatus deviceState = getThing().getStatus();
         TapoErrorCode errorCode = deviceError.getError();
 
@@ -467,14 +492,14 @@ public abstract class TapoBaseDeviceHandler extends BaseThingHandler {
                     connect();
                     break;
                 case COMMUNICATION_ERROR:
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, deviceError.getMessage());
+                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, deviceError.getMessage());
                     disconnect();
                     break;
                 case CONFIGURATION_ERROR:
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, deviceError.getMessage());
+                    updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, deviceError.getMessage());
                     break;
                 default:
-                    updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, deviceError.getMessage());
+                    updateStatus(ThingStatus.UNKNOWN, deviceError.getMessage());
             }
         }
     }
@@ -499,6 +524,10 @@ public abstract class TapoBaseDeviceHandler extends BaseThingHandler {
         properties.put(Thing.PROPERTY_HARDWARE_VERSION, baseDeviceData.getHardwareVersion());
         properties.put(Thing.PROPERTY_MODEL_ID, baseDeviceData.getModel());
         properties.put(Thing.PROPERTY_SERIAL_NUMBER, baseDeviceData.getDeviceId());
+        String alias = baseDeviceData.getNickname();
+        if (!alias.isBlank()) {
+            properties.put(PROPERTY_ALIAS, alias);
+        }
         updateProperties(properties);
     }
 

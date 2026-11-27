@@ -1,0 +1,24 @@
+This content is produced and maintained by the openHAB project.
+
+* Project home: https://www.openhab.org
+
+== Declared Project Licenses
+
+This program and the accompanying materials are made available under the terms
+of the Eclipse Public License 2.0 which is available at
+https://www.eclipse.org/legal/epl-2.0/.
+
+== Third-party Content
+
+myPyllant
+
+* License: MIT License
+* Project: https://github.com/signalkraft/myPyllant
+* Source: https://github.com/signalkraft/myPyllant
+* Copyright (c) 2023 Philipp Dörner
+* The API client in org.openhab.binding.myvaillant.internal.api (login, ALTCHA solver, requests and data model)
+  is a Java port of myPyllant
+
+== Source Code
+
+https://github.com/openhab/openhab-addons

@@ -12,14 +12,18 @@
  */
 package org.openhab.binding.millheat.internal.config;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * The {@link MillheatHomeConfiguration} class contains home thing configuration parameters.
  *
  * @author Arne Seime - Initial contribution
+ * @author Petter L. H. Eide - Identifiers are cloud API UUIDs
  */
+@NonNullByDefault
 public class MillheatHomeConfiguration {
-
-    public Long homeId;
+    public @Nullable String homeId;
 
     @Override
     public String toString() {

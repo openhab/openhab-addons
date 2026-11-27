@@ -93,12 +93,10 @@ public class FlicButtonHandler extends ChildThingHandler<FlicDaemonBridgeHandler
             initializeEventListener();
             // EventListener calls initializeStatus() before releasing so that ThingStatus should be set at this point
             if (this.getThing().getStatus().equals(ThingStatus.INITIALIZING)) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "Got no response by eventListener");
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "Got no response by eventListener");
             }
         } catch (IOException | InterruptedException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Connection setup failed: {}" + e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "Connection setup failed: {}" + e.getMessage());
         }
     }
 
@@ -162,21 +160,20 @@ public class FlicButtonHandler extends ChildThingHandler<FlicDaemonBridgeHandler
     }
 
     protected void setOnline() {
-        updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
+        updateStatus(ThingStatus.ONLINE);
     }
 
     protected void setOffline() {
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.NONE,
-                "Disconnect Reason: " + Objects.toString(latestDisconnectReason));
+        updateStatus(ThingStatus.OFFLINE, "Disconnect Reason: " + Objects.toString(latestDisconnectReason));
     }
 
     // Cleanup delayedDisconnect on status change to online
     @Override
-    protected void updateStatus(ThingStatus status, ThingStatusDetail statusDetail, @Nullable String description) {
+    protected void updateStatus(ThingStatus status) {
         if (status == ThingStatus.ONLINE) {
             cancelDelayedDisconnectTask();
         }
-        super.updateStatus(status, statusDetail, description);
+        super.updateStatus(status);
     }
 
     private void cancelInitializationTask() {
@@ -199,8 +196,7 @@ public class FlicButtonHandler extends ChildThingHandler<FlicDaemonBridgeHandler
     }
 
     void flicButtonRemoved() {
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.GONE,
-                "Button was removed/detached from flicd (e.g. by simpleclient).");
+        updateStatus(ThingStatusDetail.OFFLINE.GONE, "Button was removed/detached from flicd (e.g. by simpleclient).");
     }
 
     void fireTriggerEvent(String event) {

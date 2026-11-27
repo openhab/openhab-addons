@@ -23,9 +23,9 @@ import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.Request;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.mercedesme.internal.handler.AccountHandlerMock;
 import org.openhab.binding.mercedesme.internal.handler.ThingCallbackListener;
@@ -68,8 +68,8 @@ public class StatusTests {
             when(httpClient.newRequest(anyString())).thenReturn(clientRequest);
             when(httpClient.POST(anyString())).thenReturn(clientRequest);
             when(clientRequest.followRedirects(anyBoolean())).thenReturn(clientRequest);
-            when(clientRequest.header(anyString(), anyString())).thenReturn(clientRequest);
-            when(clientRequest.content(any())).thenReturn(clientRequest);
+            when(clientRequest.headers(any())).thenReturn(clientRequest);
+            when(clientRequest.body(any())).thenReturn(clientRequest);
             when(clientRequest.timeout(anyLong(), any())).thenReturn(clientRequest);
             when(clientRequest.getURI()).thenReturn(null);
             ContentResponse response = mock(ContentResponse.class);
@@ -155,7 +155,7 @@ public class StatusTests {
         ahm.initialize();
         ahm.refresh();
         ThingStatusInfo tsi = tcl.getThingStatus();
-        assertOfflineStatus(tsi, ThingStatusDetail.COMMUNICATION_ERROR, null, "Auth");
+        assertOfflineStatus(tsi, ThingStatusDetail.AUTHORIZATION_PENDING, null, "Auth");
         tearDown(ahm);
     }
 
@@ -191,7 +191,7 @@ public class StatusTests {
         ahm.refresh();
         ThingStatusInfo tsi = tcl.getThingStatus();
         assertEquals(ThingStatus.OFFLINE, tsi.getStatus(), "Auth Offline");
-        assertEquals(ThingStatusDetail.COMMUNICATION_ERROR, tsi.getStatusDetail(), "Auth details");
+        assertEquals(ThingStatusDetail.AUTHORIZATION_PENDING, tsi.getStatusDetail(), "Auth details");
         String statusDescription = tsi.getDescription();
         assertNotNull(statusDescription);
         assertTrue(statusDescription.contains("@text/mercedesme.account.status.auth-failure"),

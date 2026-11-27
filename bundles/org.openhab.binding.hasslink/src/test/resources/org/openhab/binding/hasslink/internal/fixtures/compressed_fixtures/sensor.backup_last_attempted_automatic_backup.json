@@ -1,0 +1,17 @@
+{
+  "id": 10,
+  "type": "event",
+  "event": {
+    "a": {
+      "sensor.backup_last_attempted_automatic_backup": {
+        "s": "unknown",
+        "a": {
+          "device_class": "timestamp",
+          "friendly_name": "Backup Last attempted automatic backup"
+        },
+        "c": "01M3201QZ049T1PC2BYQQCESCG",
+        "lc": 1789994786.784473
+      }
+    }
+  }
+}

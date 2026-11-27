@@ -90,7 +90,7 @@ public class SerialBridgeThingHandler extends KNXBridgeBaseThingHandler {
             if (message == null) {
                 message = e.getClass().getSimpleName();
             }
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "KNX security: " + message);
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "KNX security: " + message);
             return;
         }
 

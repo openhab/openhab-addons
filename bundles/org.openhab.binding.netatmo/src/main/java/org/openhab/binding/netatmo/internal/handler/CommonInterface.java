@@ -93,7 +93,7 @@ public interface CommonInterface {
     }
 
     default ScheduledFuture<?> schedule(Runnable arg0, Duration delay) {
-        return getScheduler().schedule(arg0, delay.getSeconds(), TimeUnit.SECONDS);
+        return getScheduler().schedule(arg0, delay.toMillis(), TimeUnit.MILLISECONDS);
     }
 
     default @Nullable ApiBridgeHandler getAccountHandler() {
@@ -122,9 +122,7 @@ public interface CommonInterface {
         return getThingConfigAs(NAThingConfiguration.class).getId();
     }
 
-    default <T> T getThingConfigAs(Class<T> configurationClass) {
-        return getThing().getConfiguration().as(configurationClass);
-    }
+    <T> T getThingConfigAs(Class<T> configurationClass);
 
     default Stream<Channel> getActiveChannels() {
         return getThing().getChannels().stream()
@@ -177,7 +175,7 @@ public interface CommonInterface {
                 .orElse(Optional.empty()));
     }
 
-    default void setNewData(NAObject newData) {
+    default void setNewData(Object newData) {
         if (newData instanceof NAThing thingData && getId().equals(thingData.getBridge())) {
             getActiveChildren().stream().filter(child -> child.getId().equals(thingData.getId())). //
                     findFirst().ifPresent(child -> child.setNewData(thingData));
@@ -201,7 +199,7 @@ public interface CommonInterface {
             channelHelper.setNewData(newData);
         }
 
-        if (newData.isIgnoredForThingUpdate()) {
+        if (newData instanceof NAObject naObject && naObject.isIgnoredForThingUpdate()) {
             return;
         }
 

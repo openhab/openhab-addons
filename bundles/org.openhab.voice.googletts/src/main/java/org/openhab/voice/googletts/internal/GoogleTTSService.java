@@ -36,11 +36,11 @@ import org.openhab.core.audio.ByteArrayAudioStream;
 import org.openhab.core.audio.utils.AudioWaveUtils;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
 import org.openhab.core.config.core.ConfigurableService;
-import org.openhab.core.voice.AbstractCachedTTSService;
-import org.openhab.core.voice.TTSCache;
-import org.openhab.core.voice.TTSException;
-import org.openhab.core.voice.TTSService;
-import org.openhab.core.voice.Voice;
+import org.openhab.core.voice.tts.AbstractCachedTTSService;
+import org.openhab.core.voice.tts.TTSCache;
+import org.openhab.core.voice.tts.TTSException;
+import org.openhab.core.voice.tts.TTSService;
+import org.openhab.core.voice.tts.Voice;
 import org.openhab.voice.googletts.internal.dto.AudioEncoding;
 import org.osgi.framework.Constants;
 import org.osgi.service.cm.ConfigurationAdmin;
@@ -130,7 +130,7 @@ public class GoogleTTSService extends AbstractCachedTTSService {
     @Activate
     protected void activate(Map<String, Object> config) {
         apiImpl = new GoogleCloudAPI(configAdmin, oAuthFactory);
-        updateConfig(config);
+        applyConfig(config);
     }
 
     @Deactivate
@@ -192,7 +192,17 @@ public class GoogleTTSService extends AbstractCachedTTSService {
      * @param newConfig Updated configuration
      */
     @Modified
-    private void updateConfig(Map<String, Object> newConfig) {
+    void updateConfig(Map<String, Object> newConfig) {
+        applyConfig(newConfig);
+        String clientId = config.clientId;
+        String clientSecret = config.clientSecret;
+        if (newConfig != null && (clientId == null || clientId.isBlank())
+                && (clientSecret == null || clientSecret.isBlank())) {
+            oAuthFactory.deleteServiceAndAccessToken(SERVICE_PID);
+        }
+    }
+
+    private void applyConfig(Map<String, Object> newConfig) {
         logger.debug("Updating configuration");
         if (newConfig != null) {
             // client id
@@ -236,9 +246,16 @@ public class GoogleTTSService extends AbstractCachedTTSService {
                     allVoices = initVoices();
                     audioFormats = initAudioFormats();
                 }
+            } else {
+                apiImpl.dispose();
+                allVoices = Set.of();
+                audioFormats = Set.of();
             }
         } else {
             logger.warn("Missing Google Cloud TTS configuration.");
+            apiImpl.dispose();
+            allVoices = Set.of();
+            audioFormats = Set.of();
         }
     }
 

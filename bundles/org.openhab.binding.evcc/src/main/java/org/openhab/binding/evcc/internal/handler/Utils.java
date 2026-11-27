@@ -59,10 +59,11 @@ public class Utils {
      * This method will sanitize a given string for a channel ID
      * 
      * @param input camel case string
-     * @return A string that contains hyphens
+     * @return A channel ID containing only lowercase ASCII letters, digits, underscores, and hyphens
      */
     public static String sanitizeChannelID(String input) {
-        return input.replaceAll("(?<!^)(?=[A-Z])", "-").toLowerCase(Locale.ROOT);
+        return input.replaceAll("(?<!^)(?=[A-Z])", "-").toLowerCase(Locale.ROOT).replaceAll("[^a-z0-9_]+", "-")
+                .replaceAll("^-|-$", "");
     }
 
     /**

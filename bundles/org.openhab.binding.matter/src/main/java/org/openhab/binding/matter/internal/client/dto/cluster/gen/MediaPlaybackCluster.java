@@ -112,24 +112,23 @@ public class MediaPlaybackCluster extends BaseCluster {
      */
     public BigInteger seekRangeStart; // 6 uint64 R V
     /**
-     * ActiveTrack refers to the Audio track currently set and being used for the streaming media. A value of null shall
-     * indicate that no Audio Track corresponding to the current media is currently being played.
+     * Indicates the Audio track currently set and being used for the streaming media. A value of null shall indicate
+     * that no Audio Track corresponding to the current media is currently being played.
      */
     public TrackStruct activeAudioTrack; // 7 TrackStruct R V
     /**
-     * AvailableAudioTracks refers to the list of Audio tracks available for the current title being played. A value of
-     * null shall indicate that no Audio Tracks corresponding to the current media are selectable by the client.
+     * Indicates the list of Audio tracks available for the current title being played. A value of null shall indicate
+     * that no Audio Tracks corresponding to the current media are selectable by the client.
      */
     public List<TrackStruct> availableAudioTracks; // 8 list R V
     /**
-     * ActiveTrack refers to the Text track currently set and being used for the streaming media. This can be nil. A
-     * value of null shall indicate that no Text Track corresponding to the current media is currently being displayed.
+     * Indicates the Text track currently set and being used for the streaming media. This can be nil. A value of null
+     * shall indicate that no Text Track corresponding to the current media is currently being displayed.
      */
     public TrackStruct activeTextTrack; // 9 TrackStruct R V
     /**
-     * AvailableTextTracks refers to the list of Text tracks available for the current title being played. This can be
-     * an empty list. A value of null shall indicate that no Text Tracks corresponding to the current media are
-     * selectable by the client.
+     * Indicates the list of Text tracks available for the current title being played. This can be an empty list. A
+     * value of null shall indicate that no Text Tracks corresponding to the current media are selectable by the client.
      */
     public List<TrackStruct> availableTextTracks; // 10 list R V
 
@@ -258,8 +257,8 @@ public class MediaPlaybackCluster extends BaseCluster {
      */
     public static class TrackAttributesStruct {
         /**
-         * The value is a String containing one of the standard Tags for Identifying Languages RFC 5646, which
-         * identifies the primary language used in the Track.
+         * The value is a String containing one of the standard Tags for Identifying Languages RFC5646, which identifies
+         * the primary language used in the Track.
          */
         public String languageCode; // string
         /**

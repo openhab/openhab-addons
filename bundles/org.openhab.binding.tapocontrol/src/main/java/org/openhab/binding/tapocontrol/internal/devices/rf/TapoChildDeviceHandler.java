@@ -82,7 +82,7 @@ public abstract class TapoChildDeviceHandler extends BaseThingHandler {
             activateDevice();
         } else {
             deviceError.raiseError(ERR_CONFIG_NO_BRIDGE);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, deviceError.getMessage());
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, deviceError.getMessage());
         }
     }
 
@@ -146,7 +146,7 @@ public abstract class TapoChildDeviceHandler extends BaseThingHandler {
         if (deviceInfo.isOnline()) {
             updateStatus(ThingStatus.ONLINE);
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR);
         }
     }
 

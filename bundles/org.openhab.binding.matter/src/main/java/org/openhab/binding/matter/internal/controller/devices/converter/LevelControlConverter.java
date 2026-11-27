@@ -55,10 +55,14 @@ public class LevelControlConverter extends GenericConverter<LevelControlCluster>
     private Integer onTransitionTime = 0;
     private Integer offTransitionTime = 0;
     private Integer defaultMoveRate = 0;
+    private final int minLevel;
 
     public LevelControlConverter(LevelControlCluster cluster, MatterBaseThingHandler handler, int endpointNumber,
             String labelPrefix) {
         super(cluster, handler, endpointNumber, labelPrefix);
+
+        // only the Lighting feature reserves level 0, everything else may be driven all the way down
+        minLevel = cluster.featureMap.lighting ? 1 : 0;
 
         if (cluster.onTransitionTime != null) {
             onTransitionTime = cluster.onTransitionTime;
@@ -105,7 +109,7 @@ public class LevelControlConverter extends GenericConverter<LevelControlCluster>
                 handler.sendClusterCommand(endpointNumber, OnOffCluster.CLUSTER_NAME, OnOffCluster.off());
             } else {
                 ClusterCommand levelCommand = LevelControlCluster.moveToLevelWithOnOff(
-                        ValueUtils.percentToLevel(percentType), defaultMoveRate, initializingCluster.options,
+                        ValueUtils.percentToLevel(percentType, minLevel), defaultMoveRate, initializingCluster.options,
                         initializingCluster.options);
                 handler.sendClusterCommand(endpointNumber, LevelControlCluster.CLUSTER_NAME, levelCommand);
             }
@@ -119,7 +123,7 @@ public class LevelControlConverter extends GenericConverter<LevelControlCluster>
             case LevelControlCluster.ATTRIBUTE_CURRENT_LEVEL:
                 clearUpdateTimer();
                 Integer numberValue = message.value instanceof Number number ? number.intValue() : 0;
-                lastLevel = ValueUtils.levelToPercent(numberValue);
+                lastLevel = toPercent(numberValue);
                 logger.debug("currentLevel {}", lastLevel);
                 if (lastOnOff == OnOffType.ON) {
                     updateState(CHANNEL_ID_LEVEL_LEVEL, lastLevel);
@@ -154,8 +158,13 @@ public class LevelControlConverter extends GenericConverter<LevelControlCluster>
 
     public void initState(boolean onOff) {
         lastOnOff = OnOffType.from(onOff);
-        lastLevel = ValueUtils.levelToPercent(initializingCluster.currentLevel);
+        lastLevel = toPercent(initializingCluster.currentLevel);
         updateState(CHANNEL_ID_LEVEL_LEVEL, onOff ? lastLevel : OnOffType.OFF);
+    }
+
+    private PercentType toPercent(int level) {
+        return initializingCluster.featureMap.lighting ? ValueUtils.levelToPercentWhenOn(level)
+                : ValueUtils.levelToPercent(level, minLevel);
     }
 
     private void clearUpdateTimer() {

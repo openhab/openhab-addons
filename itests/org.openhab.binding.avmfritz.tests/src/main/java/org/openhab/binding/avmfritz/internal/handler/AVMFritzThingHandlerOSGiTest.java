@@ -19,19 +19,11 @@ import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.*;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jetty.client.HttpClient;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.openhab.binding.avmfritz.internal.AVMFritzDynamicCommandDescriptionProvider;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.test.java.JavaOSGiTest;
-import org.openhab.core.test.storage.VolatileStorageService;
 import org.openhab.core.thing.Bridge;
-import org.openhab.core.thing.ManagedThingProvider;
-import org.openhab.core.thing.ThingProvider;
-import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
 import org.openhab.core.thing.binding.builder.BridgeBuilder;
 
@@ -43,60 +35,25 @@ import org.openhab.core.thing.binding.builder.BridgeBuilder;
 @NonNullByDefault
 public abstract class AVMFritzThingHandlerOSGiTest extends JavaOSGiTest {
 
-    private static HttpClient httpClient = new HttpClient();
-
-    private VolatileStorageService volatileStorageService = new VolatileStorageService();
-    private @NonNullByDefault({}) ManagedThingProvider managedThingProvider;
-
     protected @NonNullByDefault({}) Bridge bridge;
     protected @NonNullByDefault({}) BoxHandler bridgeHandler;
 
-    @BeforeAll
-    public static void setUpClass() throws Exception {
-        httpClient.start();
-    }
-
     @BeforeEach
     public void setUp() {
-        registerService(volatileStorageService);
-
-        managedThingProvider = getService(ThingProvider.class, ManagedThingProvider.class);
-        assertNotNull(managedThingProvider, "Could not get ManagedThingProvider");
-
         bridge = buildBridge();
         assertNotNull(bridge.getConfiguration());
 
-        managedThingProvider.add(bridge);
-
         ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
 
-        bridgeHandler = new BoxHandler(bridge, httpClient, mock(AVMFritzDynamicCommandDescriptionProvider.class));
+        bridgeHandler = new BoxHandler(bridge, mock(), mock(AVMFritzDynamicCommandDescriptionProvider.class));
         assertNotNull(bridgeHandler);
 
         bridgeHandler.setCallback(callback);
-
-        ThingHandler oldHandler = bridge.getHandler();
-        if (oldHandler != null) {
-            oldHandler.dispose();
-        }
         bridge.setHandler(bridgeHandler);
         assertNotNull(bridge.getHandler());
 
-        bridgeHandler.initialize();
-    }
-
-    @AfterEach
-    public void tearDown() {
-        if (bridge != null) {
-            managedThingProvider.remove(bridge.getUID());
-        }
-
-        unregisterService(volatileStorageService);
-    }
-
-    @AfterAll
-    public static void tearDownClass() throws Exception {
-        httpClient.stop();
+        // Discovery tests only need the handler's type and UID mapping. Initializing it would authenticate against
+        // the configured host and make these tests depend on the network.
     }
 
     private Bridge buildBridge() {

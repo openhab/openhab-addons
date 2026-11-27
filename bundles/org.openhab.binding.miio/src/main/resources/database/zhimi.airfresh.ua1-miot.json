@@ -15,7 +15,7 @@
 					"options": [
 						{
 							"value": "filter-reset-filter-life",
-							"label": "Filter Reset Filter Life"
+							"label": "Reset Filter Life"
 						}
 					]
 				},
@@ -23,9 +23,9 @@
 				"actions": [
 					{
 						"command": "action",
-						"parameterType": "UNKNOWN",
+						"parameterType": "EMPTY",
 						"parameters": [
-							1.0
+							0
 						],
 						"siid": 4,
 						"aiid": 1,
@@ -39,13 +39,14 @@
 						}
 					}
 				],
-				"readmeComment": "Value mapping `[\"filter-reset-filter-life\"\u003d\"Filter Reset Filter Life\"]`"
+				"category": "settings",
+				"readmeComment": "Value mapping `[\"filter-reset-filter-life\"\u003d\"Reset Filter Life\"]`"
 			},
 			{
 				"property": "on",
 				"siid": 2,
 				"piid": 1,
-				"friendlyName": "Air Fresh - Switch Status",
+				"friendlyName": "Power",
 				"channel": "on",
 				"type": "Switch",
 				"refresh": true,
@@ -64,7 +65,7 @@
 				"property": "fault",
 				"siid": 2,
 				"piid": 2,
-				"friendlyName": "Device Fault",
+				"friendlyName": "Fault",
 				"channel": "fault",
 				"type": "Number",
 				"stateDescription": {
@@ -78,28 +79,32 @@
 				},
 				"refresh": true,
 				"actions": [],
+				"category": "error",
+				"tags": [
+					"Status"
+				],
 				"readmeComment": "Value mapping `[\"0\"\u003d\"No Faults\"]`"
 			},
 			{
 				"property": "fan-level",
 				"siid": 2,
 				"piid": 5,
-				"friendlyName": "Air Fresh - Fan Level",
+				"friendlyName": "Fan Level",
 				"channel": "fan_level",
 				"type": "Number",
 				"stateDescription": {
 					"options": [
 						{
 							"value": "1",
-							"label": "Level1"
+							"label": "Level 1"
 						},
 						{
 							"value": "2",
-							"label": "Level2"
+							"label": "Level 2"
 						},
 						{
 							"value": "3",
-							"label": "Level3"
+							"label": "Level 3"
 						}
 					]
 				},
@@ -110,10 +115,12 @@
 						"parameterType": "NUMBER"
 					}
 				],
+				"category": "fan",
 				"tags": [
-					"Control"
+					"Control",
+					"Level"
 				],
-				"readmeComment": "Value mapping `[\"1\"\u003d\"Level1\",\"2\"\u003d\"Level2\",\"3\"\u003d\"Level3\"]`"
+				"readmeComment": "Value mapping `[\"1\"\u003d\"Level 1\",\"2\"\u003d\"Level 2\",\"3\"\u003d\"Level 3\"]`"
 			},
 			{
 				"property": "heater",
@@ -128,13 +135,17 @@
 						"command": "set_properties",
 						"parameterType": "ONOFFBOOL"
 					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch"
 				]
 			},
 			{
 				"property": "filter-used-time",
 				"siid": 4,
 				"piid": 1,
-				"friendlyName": "Filter - Filter Used Time",
+				"friendlyName": "Filter Used Time",
 				"channel": "filter_used_time",
 				"type": "Number:Time",
 				"unit": "minutes",
@@ -146,13 +157,18 @@
 					"readOnly": true
 				},
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"category": "time",
+				"tags": [
+					"Measurement",
+					"Duration"
+				]
 			},
 			{
 				"property": "filter-life-level",
 				"siid": 4,
 				"piid": 2,
-				"friendlyName": "Filter - Filter Life Level",
+				"friendlyName": "Filter Life Level",
 				"channel": "filter_life_level",
 				"type": "Number:Dimensionless",
 				"unit": "percentage",
@@ -164,13 +180,18 @@
 					"readOnly": true
 				},
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"category": "status",
+				"tags": [
+					"Measurement",
+					"Level"
+				]
 			},
 			{
 				"property": "physical-controls-locked",
 				"siid": 5,
 				"piid": 1,
-				"friendlyName": "Physical Control Locked - Physical Control Locked",
+				"friendlyName": "Child Lock",
 				"channel": "physical_controls_locked",
 				"type": "Switch",
 				"refresh": true,
@@ -179,13 +200,18 @@
 						"command": "set_properties",
 						"parameterType": "ONOFFBOOL"
 					}
+				],
+				"category": "lock",
+				"tags": [
+					"Switch",
+					"Enabled"
 				]
 			},
 			{
 				"property": "alarm",
 				"siid": 6,
 				"piid": 1,
-				"friendlyName": "Alarm - Alarm",
+				"friendlyName": "Notification Sound",
 				"channel": "alarm",
 				"type": "Switch",
 				"refresh": true,
@@ -194,13 +220,18 @@
 						"command": "set_properties",
 						"parameterType": "ONOFFBOOL"
 					}
+				],
+				"category": "soundvolume",
+				"tags": [
+					"Switch",
+					"Enabled"
 				]
 			},
 			{
 				"property": "brightness",
 				"siid": 7,
 				"piid": 3,
-				"friendlyName": "Indicator Light - Brightness",
+				"friendlyName": "Indicator Light Brightness",
 				"channel": "brightness",
 				"type": "Dimmer",
 				"refresh": true,
@@ -209,13 +240,18 @@
 						"command": "set_properties",
 						"parameterType": "NUMBER"
 					}
+				],
+				"category": "screen",
+				"tags": [
+					"Control",
+					"Brightness"
 				]
 			},
 			{
 				"property": "motor-a-speed-rpm",
 				"siid": 8,
 				"piid": 1,
-				"friendlyName": "Custom Service - Motor A Speed Rpm",
+				"friendlyName": "Motor A Speed",
 				"channel": "motor_a_speed_rpm",
 				"type": "Number",
 				"stateDescription": {
@@ -226,13 +262,18 @@
 					"readOnly": true
 				},
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"category": "fan",
+				"tags": [
+					"Measurement",
+					"Speed"
+				]
 			},
 			{
 				"property": "motor-b-speed-rpm",
 				"siid": 8,
 				"piid": 2,
-				"friendlyName": "Custom Service - Motor B Speed Rpm",
+				"friendlyName": "Motor B Speed",
 				"channel": "motor_b_speed_rpm",
 				"type": "Number",
 				"stateDescription": {
@@ -243,13 +284,18 @@
 					"readOnly": true
 				},
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"category": "fan",
+				"tags": [
+					"Measurement",
+					"Speed"
+				]
 			},
 			{
 				"property": "temperature",
 				"siid": 8,
 				"piid": 5,
-				"friendlyName": "Custom Service - Temperature",
+				"friendlyName": "Temperature",
 				"channel": "temperature",
 				"type": "Number:Temperature",
 				"unit": "CELSIUS",

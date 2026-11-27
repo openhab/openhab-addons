@@ -222,17 +222,28 @@ public class EcovacsVacuumHandler extends BaseThingHandler implements EcovacsDev
 
     @Override
     public void initialize() {
+        Bridge bridge = getBridge();
+        if (bridge == null) {
+            logger.debug("Bridge unavailable while initializing Thing: {}", thing.getUID());
+            return;
+        }
         serialNumber = getConfigAs(EcovacsVacuumConfiguration.class).serialNumber;
         if (serialNumber.isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/offline.config-error-no-serial");
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/offline.config-error-no-serial");
         } else {
             logger.debug("{}: Initializing handler", serialNumber);
-            updateStatus(ThingStatus.UNKNOWN);
+            if (bridge.getStatus() == ThingStatus.OFFLINE) {
+                updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
+            } else {
+                updateStatus(ThingStatus.UNKNOWN);
+            }
             initTask.setNamePrefix(serialNumber);
             reconnectTask.setNamePrefix(serialNumber);
             pollTask.setNamePrefix(serialNumber);
-            initTask.submit();
+
+            if (bridge.getStatus() == ThingStatus.ONLINE) {
+                initTask.submit();
+            }
         }
     }
 
@@ -283,7 +294,7 @@ public class EcovacsVacuumHandler extends BaseThingHandler implements EcovacsDev
             initTask.submit();
         } else if (bridgeStatusInfo.getStatus() == ThingStatus.OFFLINE) {
             teardown(false);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
         }
     }
 
@@ -519,15 +530,27 @@ public class EcovacsVacuumHandler extends BaseThingHandler implements EcovacsDev
     }
 
     private void initDevice() {
-        final EcovacsApiHandler handler = getApiHandler();
+        Bridge bridge = getBridge();
+        if (bridge == null) {
+            logger.debug("Bridge unavailable for Thing: {}", thing.getUID());
+            return;
+        }
+        if (bridge.getStatus() != ThingStatus.ONLINE) {
+            if (bridge.getStatus() == ThingStatus.OFFLINE) {
+                updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
+            } else {
+                updateStatus(ThingStatus.UNKNOWN);
+            }
+            return;
+        }
+        final EcovacsApiHandler handler = (EcovacsApiHandler) bridge.getHandler();
         if (handler == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
+            updateStatus(ThingStatus.UNKNOWN);
             return;
         }
 
         try {
-            final EcovacsApi api = handler.createApiForDevice(serialNumber);
-            api.loginAndGetAccessToken();
+            final EcovacsApi api = handler.getApi();
             Optional<EcovacsDevice> deviceOpt = api.getDevices().stream()
                     .filter(d -> serialNumber.equals(d.getSerialNumber())).findFirst();
             if (deviceOpt.isPresent()) {
@@ -545,10 +568,10 @@ public class EcovacsVacuumHandler extends BaseThingHandler implements EcovacsDev
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         } catch (ConfigurationException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getRawMessage());
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, e.getRawMessage());
         } catch (EcovacsApiException e) {
             logger.debug("API Exception: {}", e.getMessage(), e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 
@@ -823,19 +846,18 @@ public class EcovacsVacuumHandler extends BaseThingHandler implements EcovacsDev
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         } catch (EcovacsApiException e) {
-            logger.debug("{}: Failed communicating to device, reconnecting", serialNumber, e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             if (e.isAuthFailure) {
                 EcovacsApiHandler apiHandler = getApiHandler();
                 if (apiHandler != null) {
                     apiHandler.onLoginExpired();
                 }
-                // Drop our device instance to make sure we run a full init cycle,
-                // including an API re-login, on reconnection
-                device.disconnect(scheduler);
-                this.device = null;
+                // Drop our device instance to make sure we run a full init cycle on reconnection
+                teardown(false);
+            } else {
+                logger.debug("{}: Failed communicating to device, reconnecting", serialNumber, e);
+                teardownAndScheduleReconnection();
             }
-            teardownAndScheduleReconnection();
         }
     }
 

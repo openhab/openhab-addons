@@ -14,6 +14,8 @@ package org.openhab.binding.govee.internal;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -88,7 +90,30 @@ public class GoveeDiscoveryTest {
         Map<String, Object> deviceProperties = result.getProperties();
         assertEquals(deviceProperties.get(GoveeBindingConstants.DEVICE_TYPE), "H6076");
         assertEquals(deviceProperties.get(GoveeBindingConstants.IP_ADDRESS), "192.168.178.171");
-        assertEquals(deviceProperties.get(GoveeBindingConstants.MAC_ADDRESS), "7D:31:C3:35:33:33:44:15");
+        assertEquals(deviceProperties.get(GoveeBindingConstants.DEVICE_ID), "7D:31:C3:35:33:33:44:15");
+        assertFalse(deviceProperties.containsKey(GoveeBindingConstants.LEGACY_DEVICE_ID));
+        assertFalse(deviceProperties.containsKey("mac"));
+        assertEquals("deviceId", result.getRepresentationProperty());
+        assertEquals("govee:govee-light:7D_31_C3_35_33_33_44_15", result.getThingUID().toString());
+    }
+
+    @Test
+    public void testDiscoveryDoesNotPerformNetworkMacResolution() {
+        List<DiscoveryResult> results = new ArrayList<>();
+        GoveeDiscoveryService service = new GoveeDiscoveryService(new CommunicationManager()) {
+            @Override
+            protected void thingDiscovered(DiscoveryResult result) {
+                results.add(result);
+            }
+        };
+        DiscoveryResponse resp = new Gson().fromJson(response, DiscoveryResponse.class);
+        Objects.requireNonNull(resp);
+
+        service.onDiscoveryResponse(resp);
+
+        assertEquals(1, results.size());
+        assertFalse(results.get(0).getProperties().containsKey("mac"));
+        assertEquals("7D:31:C3:35:33:33:44:15", results.get(0).getProperties().get(GoveeBindingConstants.DEVICE_ID));
     }
 
     @Test

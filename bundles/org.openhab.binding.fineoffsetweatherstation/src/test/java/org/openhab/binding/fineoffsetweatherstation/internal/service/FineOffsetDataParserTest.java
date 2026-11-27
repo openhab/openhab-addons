@@ -13,6 +13,7 @@
 package org.openhab.binding.fineoffsetweatherstation.internal.service;
 
 import java.util.List;
+import java.util.Map;
 
 import org.assertj.core.api.Assertions;
 import org.assertj.core.groups.Tuple;
@@ -21,12 +22,16 @@ import org.junit.jupiter.api.Test;
 import org.openhab.binding.fineoffsetweatherstation.internal.domain.Command;
 import org.openhab.binding.fineoffsetweatherstation.internal.domain.DebugDetails;
 import org.openhab.binding.fineoffsetweatherstation.internal.domain.Protocol;
+import org.openhab.binding.fineoffsetweatherstation.internal.domain.Sensor;
+import org.openhab.binding.fineoffsetweatherstation.internal.domain.SensorGatewayBinding;
 import org.openhab.binding.fineoffsetweatherstation.internal.domain.response.MeasuredValue;
+import org.openhab.binding.fineoffsetweatherstation.internal.domain.response.SensorDevice;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.util.HexUtils;
 
 /**
  * @author Andreas Berger - Initial contribution
+ * @author Christopher Smith - Tests for the outdoor unit identification
  */
 @NonNullByDefault
 class FineOffsetDataParserTest {
@@ -224,5 +229,47 @@ class FineOffsetDataParserTest {
         byte[] data = HexUtils.hexToBytes("FFFF501511456173795765617468657256312E362E3400");
         String firmware = new FineOffsetDataParser(Protocol.ELV).getFirmwareVersion(data);
         Assertions.assertThat(firmware).isEqualTo("EasyWeatherV1.6.4");
+    }
+
+    @Test
+    void tcpMeasurandsCarrySensorTag() {
+        // 0xff 0xff : header
+        // 0x27 : CMD_GW1000_LIVEDATA
+        // 0x00 0x0A : size = 10 (loop runs while idx < 10; items at 5..9, checksum at 10)
+        // 0x2C 0x32 : soil moisture channel 1 = 50 % (PERCENTAGE = 1 byte)
+        // 0x02 0x00 0xD2 : outdoor temperature = 21.0 °C (TEMPERATURE = 2 bytes, signed: 0x00D2 = 210 → /10)
+        // 0x00 : checksum slot
+        byte[] bytes = new byte[] { (byte) 0xff, (byte) 0xff, 0x27, 0x00, 0x0A, //
+                0x2C, 0x32, // soil moisture channel 1 = 50 %
+                0x02, 0x00, (byte) 0xD2, // outdoor temperature = 21.0 °C
+                0x00 };
+        List<MeasuredValue> data = new FineOffsetDataParser(Protocol.DEFAULT).getMeasuredValues(bytes,
+                new DebugDetails(bytes, Command.CMD_GW1000_LIVEDATA, Protocol.DEFAULT));
+
+        Assertions.assertThat(data).extracting(MeasuredValue::getChannelId, MeasuredValue::getSensor).containsExactly( //
+                Assertions.tuple("moisture-soil-channel-1", Sensor.WH51), //
+                Assertions.tuple("temperature-outdoor", null));
+    }
+
+    @Test
+    void outdoorUnitIsNotGuessedWithoutSystemInfo() {
+        // one sensor at index 0 (WH24 or WH65): index, id, battery, signal
+        byte[] data = HexUtils.hexToBytes("FFFF3C000B" + "00" + "000000C2" + "00" + "04" + "00");
+        FineOffsetDataParser parser = new FineOffsetDataParser(Protocol.DEFAULT);
+        Assertions.assertThat(parser.getRegisteredSensors(data, () -> null)).isNull();
+        Assertions.assertThat(parser.getRegisteredSensors(data, () -> true))
+                .containsOnlyKeys(SensorGatewayBinding.WH24);
+    }
+
+    @Test
+    void disabledOutdoorSlotNeedsNoSystemInfo() {
+        // the gateways list the slot at index 0 even without an outdoor unit: disabled (FFFFFFFE), next to a WH51
+        byte[] data = HexUtils
+                .hexToBytes("FFFF3C0012" + "00" + "FFFFFFFE" + "00" + "00" + "0E" + "000D5159" + "0E" + "04" + "00");
+        Map<SensorGatewayBinding, SensorDevice> sensors = new FineOffsetDataParser(Protocol.DEFAULT)
+                .getRegisteredSensors(data, () -> {
+                    throw new AssertionError("the system information must not be needed");
+                });
+        Assertions.assertThat(sensors).containsOnlyKeys(SensorGatewayBinding.WH51_CH1);
     }
 }

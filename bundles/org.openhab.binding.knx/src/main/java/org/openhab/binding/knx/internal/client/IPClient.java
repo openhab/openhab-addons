@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.knx.internal.client;
 
+import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.NetworkInterface;
@@ -47,7 +48,7 @@ import io.calimero.secure.Security;
  * IP specific {@link AbstractKNXClient} implementation.
  *
  * @author Simon Kaufmann - initial contribution and API.
- *
+ * @author Kai Kreuzer - local endpoint check for tunneling connections.
  */
 @NonNullByDefault
 public class IPClient extends AbstractKNXClient {
@@ -161,6 +162,14 @@ public class IPClient extends AbstractKNXClient {
                     } catch (final UnknownHostException e) {
                         throw new KNXException("no local host available");
                     }
+                }
+                // check upfront whether the local endpoint can be bound, so an unassigned local IP address results in
+                // a configuration error instead of an error log from Calimero
+                try (DatagramSocket probeSocket = new DatagramSocket(local)) {
+                    // binding to the local endpoint succeeded, the socket is released again
+                } catch (final SocketException e) {
+                    throw new KNXIllegalArgumentException(
+                            "local IP address " + local.getHostString() + " is not available", e);
                 }
                 if (ipConnectionType == IpConnectionType.SECURE_TUNNEL) {
                     logger.trace("creating new TCP connection");

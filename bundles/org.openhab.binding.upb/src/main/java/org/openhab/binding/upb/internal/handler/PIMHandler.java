@@ -50,7 +50,7 @@ public abstract class PIMHandler extends BaseBridgeHandler implements MessageLis
     @Override
     public void initialize() {
         logger.debug("Initializing UPB PIM {}.", getThing().getUID());
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, Constants.OFFLINE_CTLR_OFFLINE);
+        updateStatus(ThingStatusDetail.BRIDGE_OFFLINE, Constants.OFFLINE_CTLR_OFFLINE);
         controller = new UPBController();
     }
 
@@ -88,7 +88,7 @@ public abstract class PIMHandler extends BaseBridgeHandler implements MessageLis
     public void onError(final Throwable t) {
         // Currently all PIM errors are unrecoverable, either a bug or
         // the serial thread had an I/O error.
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, Constants.OFFLINE_COMM_ERROR);
+        updateStatus(ThingStatusDetail.BRIDGE_OFFLINE, Constants.OFFLINE_COMM_ERROR);
     }
 
     public @Nullable UPBDevice getDevice(byte networkId, byte unitId) {

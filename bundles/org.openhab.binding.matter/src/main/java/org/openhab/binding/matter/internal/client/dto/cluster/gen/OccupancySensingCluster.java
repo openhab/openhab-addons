@@ -70,7 +70,6 @@ public class OccupancySensingCluster extends BaseCluster {
      * results in a single period of the bit in the Occupancy attribute being 1. The bit in the Occupancy attribute will
      * be set to 1 from the start of the first period where the PIR signal exceeds the threshold until HoldTime after
      * the last moment where the PIR exceeded the threshold.
-     * !HoldTime
      */
     public Integer holdTime; // 3 uint16 RW VM
     /**
@@ -269,9 +268,14 @@ public class OccupancySensingCluster extends BaseCluster {
          * Supports sensing based on analyzing images
          */
         public boolean vision;
+        /**
+         * 
+         * Supports generating OccupancyChanged events
+         */
+        public boolean occupancyEvent;
 
         public FeatureMap(boolean other, boolean passiveInfrared, boolean ultrasonic, boolean physicalContact,
-                boolean activeInfrared, boolean radar, boolean rfSensing, boolean vision) {
+                boolean activeInfrared, boolean radar, boolean rfSensing, boolean vision, boolean occupancyEvent) {
             this.other = other;
             this.passiveInfrared = passiveInfrared;
             this.ultrasonic = ultrasonic;
@@ -280,6 +284,7 @@ public class OccupancySensingCluster extends BaseCluster {
             this.radar = radar;
             this.rfSensing = rfSensing;
             this.vision = vision;
+            this.occupancyEvent = occupancyEvent;
         }
     }
 

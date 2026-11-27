@@ -50,11 +50,6 @@ public final class CloudBridgeHandler extends AbstractBridgeHandler<CloudBridgeC
     }
 
     @Override
-    public boolean isReadOnly() {
-        return false;
-    }
-
-    @Override
     public String channelPrefix() {
         return "ep_9";
     }

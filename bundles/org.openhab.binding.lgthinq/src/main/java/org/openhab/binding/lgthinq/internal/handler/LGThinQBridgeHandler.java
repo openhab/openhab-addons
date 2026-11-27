@@ -172,8 +172,7 @@ public class LGThinQBridgeHandler extends ConfigStatusBridgeHandler implements L
         lgDevicePollingRunnable.lgthinqConfig = lgthinqConfig;
         if (lgthinqConfig.username.isBlank() || lgthinqConfig.password.isBlank() || lgthinqConfig.language.isBlank()
                 || lgthinqConfig.country.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/error.mandotory-fields-missing");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.mandotory-fields-missing");
         } else {
             updateStatus(ThingStatus.UNKNOWN);
             startLGThinqDevicePolling();
@@ -261,14 +260,12 @@ public class LGThinQBridgeHandler extends ConfigStatusBridgeHandler implements L
                     try {
                         tokenManager.getValidRegisteredToken(bridgeName);
                     } catch (IOException e) {
-                        logger.error("Unexpected error reading LGThinq TokenFile", e);
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
-                                "@text/error.toke-file-corrupted");
+                        logger.debug("I/O error reading LGThinq TokenFile. Updating Bridge Status to OFFLINE.", e);
+                        updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.toke-file-corrupted");
                         return;
                     } catch (RefreshTokenException e) {
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
-                                "@text/error.toke-refresh");
-                        logger.error("Error refreshing token", e);
+                        updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/error.toke-refresh");
+                        logger.debug("Error refreshing token. Updating Bridge Status to OFFLINE.", e);
                         return;
                     }
                 } else {
@@ -282,13 +279,11 @@ public class LGThinQBridgeHandler extends ConfigStatusBridgeHandler implements L
                         logger.debug(
                                 "I/O error accessing json token configuration file. Updating Bridge Status to OFFLINE.",
                                 e);
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                                "@text/error.toke-file-access-error");
+                        updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.toke-file-access-error");
                         return;
                     } catch (LGThinqException e) {
                         logger.debug("Error accessing LG API. Updating Bridge Status to OFFLINE.", e);
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                "@text/error.lgapi-communication-error");
+                        updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/error.lgapi-communication-error");
                         return;
                     }
                 }
@@ -299,9 +294,8 @@ public class LGThinQBridgeHandler extends ConfigStatusBridgeHandler implements L
                 try {
                     doConnectedRun();
                 } catch (Exception e) {
-                    logger.error("Unexpected error getting device list from LG account", e);
-                    updateStatus(ThingStatus.ONLINE, ThingStatusDetail.CONFIGURATION_PENDING,
-                            "@text/error.lgapi-getting-devices");
+                    logger.debug("Unexpected error getting device list from LG account. Updating status.", e);
+                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/error.lgapi-getting-devices");
                 }
             } finally {
                 pollingLock.unlock();

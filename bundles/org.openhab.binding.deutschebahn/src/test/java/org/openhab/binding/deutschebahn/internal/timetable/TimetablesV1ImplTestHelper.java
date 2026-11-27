@@ -16,6 +16,10 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.File;
 import java.net.URL;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
+import java.util.GregorianCalendar;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
@@ -29,8 +33,19 @@ public interface TimetablesV1ImplTestHelper {
 
     static final String EVA_LEHRTE = "8000226";
     static final String EVA_HANNOVER_HBF = "8000152";
-    static final String CLIENT_ID = "bdwrpmxuo6157jrekftlbcc6ju9awo";
-    static final String CLIENT_SECRET = "354c8161cd7fb0936c840240280c131e";
+    // Values are never sent to the real service, as all requests are handled by TimetableStubHttpCallable.
+    static final String CLIENT_ID = "test-client-id";
+    static final String CLIENT_SECRET = "test-client-secret";
+    static final ZoneId TIME_ZONE = ZoneId.of("Europe/Berlin");
+    static final TimetableTimeConverter TIME_CONVERTER = new TimetableTimeConverter(TIME_ZONE);
+
+    default Date createDate(int year, int month, int dayOfMonth, int hour, int minute) {
+        return Date.from(LocalDateTime.of(year, month, dayOfMonth, hour, minute).atZone(TIME_ZONE).toInstant());
+    }
+
+    default GregorianCalendar createCalendar(int year, int month, int dayOfMonth, int hour, int minute) {
+        return GregorianCalendar.from(LocalDateTime.of(year, month, dayOfMonth, hour, minute).atZone(TIME_ZONE));
+    }
 
     /**
      * Creates a {@link TimetablesApiTestModule} that uses http response data from file system.
@@ -50,7 +65,7 @@ public interface TimetablesV1ImplTestHelper {
         assertNotNull(timetablesData);
         final File testDataDir = new File(timetablesData.toURI());
         final TimetableStubHttpCallable httpStub = new TimetableStubHttpCallable(testDataDir);
-        final TimetablesV1Impl timeTableApi = new TimetablesV1Impl(CLIENT_ID, CLIENT_SECRET, httpStub);
+        final TimetablesV1Impl timeTableApi = new TimetablesV1Impl(CLIENT_ID, CLIENT_SECRET, httpStub, TIME_CONVERTER);
         return new TimetablesApiTestModule(timeTableApi, httpStub);
     }
 }
