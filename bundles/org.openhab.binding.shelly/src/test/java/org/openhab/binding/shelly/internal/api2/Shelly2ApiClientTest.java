@@ -20,6 +20,7 @@ import java.util.ArrayList;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
+import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsEMeter;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsStatus;
 import org.openhab.binding.shelly.internal.api2.dto.ShellyMeterJsonDTO.Shelly2DeviceStatusEmData;
@@ -114,5 +115,27 @@ public class Shelly2ApiClientTest {
     void inModeActivateMapsToDedicatedButtonType() {
         // #19755: Mini G3/G4 and Plus devices report in_mode "activate", which was missing from the map
         assertEquals(SHELLY_BTNT_ACTIVATE, Shelly2ApiClient.MAP_INMODE_BTNTYPE.get(SHELLY2_BTNT_ACTIVATE));
+    }
+
+    @Test
+    void resolveNumInputsFloorsToRelayCountWhenDeviceUndercounts() {
+        assertEquals(2, ShellyDeviceProfile.resolveNumInputs(1, true, false, false, 2));
+    }
+
+    @Test
+    void resolveNumInputsKeepsDeviceCountWhenAlreadySufficient() {
+        assertEquals(2, ShellyDeviceProfile.resolveNumInputs(2, true, false, false, 2));
+    }
+
+    @Test
+    void resolveNumInputsKeepsZeroForRelayWithoutInputs() {
+        assertEquals(0, ShellyDeviceProfile.resolveNumInputs(0, true, false, false, 1));
+        assertEquals(0, ShellyDeviceProfile.resolveNumInputs(0, true, false, false, 2));
+    }
+
+    @Test
+    void resolveNumInputsIgnoresRollerAndDimmerDevices() {
+        assertEquals(0, ShellyDeviceProfile.resolveNumInputs(0, true, true, false, 2));
+        assertEquals(1, ShellyDeviceProfile.resolveNumInputs(1, true, false, true, 2));
     }
 }
