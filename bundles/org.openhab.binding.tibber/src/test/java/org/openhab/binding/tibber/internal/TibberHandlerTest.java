@@ -15,11 +15,12 @@ package org.openhab.binding.tibber.internal;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
-import static org.openhab.binding.tibber.internal.TibberBindingConstants.TIBBER_THING_TYPE;
+import static org.openhab.binding.tibber.internal.TibberBindingConstants.*;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.time.ZoneOffset;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -33,9 +34,9 @@ import org.eclipse.jetty.http.HttpStatus;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.tibber.internal.handler.TibberHandler;
 import org.openhab.core.config.core.Configuration;
-import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.scheduler.CronScheduler;
 import org.openhab.core.storage.StorageService;
+import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.internal.ThingImpl;
 import org.osgi.framework.BundleContext;
@@ -61,7 +62,8 @@ public class TibberHandlerTest {
     static Map<String, Object> createInitialResponse(String responseFileName) {
         ContentResponse responseMock = mock(ContentResponse.class);
         when(responseMock.getStatus()).thenReturn(HttpStatus.OK_200);
-        when(responseMock.getContentAsString()).thenReturn(readResponse(responseFileName));
+        when(responseMock.getContentAsString()).thenReturn(readResponse(responseFileName),
+                readResponse("src/test/resources/price-query-response.json"));
         Request requestMock = mock(Request.class);
         when(requestMock.timeout(anyLong(), any())).thenReturn(requestMock);
         when(requestMock.headers(any())).thenReturn(requestMock);
@@ -79,8 +81,8 @@ public class TibberHandlerTest {
         thing.setConfiguration(config);
 
         TibberHandlerMock handler = new TibberHandlerMock(thing, httpClientMock, mock(CronScheduler.class),
-                mock(BundleContext.class), mock(TimeZoneProvider.class), mock(StorageService.class));
-        TibberHandlerCallbackMock callback = new TibberHandlerCallbackMock();
+                mock(BundleContext.class), () -> ZoneOffset.UTC, mock(StorageService.class));
+        TibberHandlerCallbackMock callback = spy(new TibberHandlerCallbackMock());
         handler.setCallback(callback);
         Map<String, Object> initialResponse = new HashMap<>();
         initialResponse.put(TibberHandler.class.getCanonicalName(), handler);
@@ -109,9 +111,16 @@ public class TibberHandlerTest {
                 .get(TibberHandlerCallbackMock.class.getCanonicalName());
         assertNotNull(handler);
         assertNotNull(callback);
-        handler.initialize();
-        callback.waitFor(ThingStatus.ONLINE);
-        handler.dispose();
+        try {
+            handler.initialize();
+            verify(callback, timeout(10_000).times(2)).statusUpdated(any(),
+                    argThat(status -> status.getStatus() == ThingStatus.ONLINE));
+            ChannelUID averagePrices = new ChannelUID(handler.getThing().getUID(), CHANNEL_GROUP_PRICE,
+                    CHANNEL_AVERAGE);
+            verify(callback).sendTimeSeries(eq(averagePrices), argThat(series -> series.size() > 0));
+        } finally {
+            handler.dispose();
+        }
     }
 
     @Test
