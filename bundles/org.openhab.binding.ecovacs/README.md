@@ -27,6 +27,7 @@ The following devices will likely work because they are using similar protocols 
 - Deebot OZMO T5
 - Deebot (OZMO) T8 series
 - Deebot T9 series
+- DEEBOT X12S
 - Deebot T10 series
 - Deebot T20 series
 - Deebot Slim 2
@@ -36,6 +37,14 @@ The following devices will likely work because they are using similar protocols 
 - Deebot U2 series
 - Deebot X1 series
 - Deebot X2 series
+
+## DEEBOT X12S OmniCyclone
+
+The DEEBOT X12S OmniCyclone Care Kit (`tj7mri`) uses work-state reports instead of `getCleanInfo_V2`.
+An unavailable initial query does not prevent connection; MQTT reports update cleaning and station states.
+Other profiles retain their existing interpretation.
+If the historical cleaning image is unavailable, the binding tries the legacy API for the same cleaning run.
+Each record is attempted once, including unsuccessful lookups; a new record permits another attempt.
 
 ## Discovery
 
@@ -208,3 +217,8 @@ For doing so, you can follow the following steps:
 - create a file named `custom_device_descs.json`, whose format of that file is the same as [the built-in device list](https://raw.githubusercontent.com/openhab/openhab-addons/main/bundles/org.openhab.binding.ecovacs/src/main/resources/devices/supported_device_list.json)
 - for a model that is very similar to an existing one, create an entry with `modelName`, `deviceClass` (from the log line) and `deviceClassLink` (`deviceClass` of the similar model)
 - for other models, you can also try experimenting with creating a full entry, but it's likely that the binding code will need to be updated in that case
+
+## Credits
+
+Protocol details for newer models (work state) were researched
+in [DeebotUniverse/client.py](https://github.com/DeebotUniverse/client.py) and verified on a DEEBOT X12S.

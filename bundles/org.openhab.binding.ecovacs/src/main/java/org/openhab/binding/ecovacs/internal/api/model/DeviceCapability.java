@@ -57,6 +57,10 @@ public enum DeviceCapability {
     AIR_DRYING,
     @SerializedName("custom_water_amount")
     CUSTOM_WATER_AMOUNT,
+    @SerializedName("work_state_reporting")
+    WORK_STATE_REPORTING,
+    @SerializedName("legacy_clean_map_fallback")
+    LEGACY_CLEAN_MAP_FALLBACK,
     // implicit capabilities added in code
     EDGE_CLEANING,
     SPOT_CLEANING,

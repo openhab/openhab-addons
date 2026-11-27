@@ -36,6 +36,7 @@ import com.google.gson.Gson;
 
 /**
  * @author Danny Baumann - Initial contribution
+ * @author Andreas Rothstein - X12S cleaning-map fallback
  */
 @NonNullByDefault
 public class EcovacsIotMqDevice implements EcovacsDevice {
@@ -97,7 +98,31 @@ public class EcovacsIotMqDevice implements EcovacsDevice {
             return Optional.empty();
         }
         boolean needsSigning = hasCapability(DeviceCapability.USES_CLEAN_RESULTS_LOG_API);
-        return api.downloadCleanMapImage(device, record.mapImageUrl.get(), needsSigning);
+        Optional<byte[]> image = api.downloadCleanMapImage(device, record.mapImageUrl.get(), needsSigning);
+        if (image.isPresent() || !needsSigning || !hasCapability(DeviceCapability.LEGACY_CLEAN_MAP_FALLBACK)) {
+            return image;
+        }
+
+        // The newer image endpoint may reject X12S records. Preserve statistics from the newer log API,
+        // but try the older API's image URL for this exact cleaning run.
+        logger.debug("{}: Trying legacy cleaning-map lookup", getSerialNumber());
+        try {
+            for (PortalCleanLogRecord candidate : api.fetchCleanLogs(device)) {
+                String url = candidate.imageUrl;
+                if (candidate.timestamp == record.timestamp.getTime() / 1000 && url != null && !url.isBlank()
+                        && !url.equals(record.mapImageUrl.get())) {
+                    Optional<byte[]> fallback = api.downloadCleanMapImage(device, url, false);
+                    logger.debug("{}: Legacy cleaning-map lookup returned an image: {}", getSerialNumber(),
+                            fallback.isPresent());
+                    return fallback;
+                }
+            }
+            logger.debug("{}: No alternate map URL found for this cleaning run", getSerialNumber());
+        } catch (EcovacsApiException e) {
+            // A failed optional map lookup must not interrupt polling of the remaining device values.
+            logger.debug("{}: Legacy cleaning-map lookup unavailable", getSerialNumber());
+        }
+        return Optional.empty();
     }
 
     @Override

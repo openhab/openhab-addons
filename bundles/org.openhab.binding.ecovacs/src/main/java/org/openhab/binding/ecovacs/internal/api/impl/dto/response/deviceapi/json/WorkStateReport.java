@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.ecovacs.internal.api.impl.dto.response.deviceapi.json;
 
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.ecovacs.internal.api.model.CleanMode;
 
 import com.google.gson.Gson;
@@ -19,6 +20,7 @@ import com.google.gson.annotations.SerializedName;
 
 /**
  * @author Danny Baumann - Initial contribution
+ * @author Andreas Rothstein - X12S work-state handling
  */
 public class WorkStateReport {
     @SerializedName("paused")
@@ -56,6 +58,39 @@ public class WorkStateReport {
             modeValue = robotState.cleanState.type;
         } else if ("idle".equals(robotState.state)) {
             modeValue = stationState.state;
+        } else {
+            modeValue = robotState.state;
+        }
+        return gson.fromJson(modeValue, CleanMode.class);
+    }
+
+    /** Selects the X12S interpretation only for devices declaring work-state reporting. */
+    public @Nullable CleanMode determineCleanMode(Gson gson, boolean workStateReporting) {
+        if (!workStateReporting) {
+            return determineCleanMode(gson);
+        }
+        if (paused != 0) {
+            return CleanMode.PAUSE;
+        }
+        if (robotState == null || robotState.state == null) {
+            return null;
+        }
+        final String modeValue;
+        String stationMode = stationState != null ? stationState.state : null;
+        if (("idle".equals(robotState.state) || "cleaning".equals(robotState.state)) && stationMode != null
+                && !"idle".equals(stationMode)) {
+            // Returning and dock work take precedence over the preceding cleaning task.
+            if ("goEmptying".equals(stationMode)) {
+                return CleanMode.RETURNING;
+            }
+            modeValue = stationMode;
+        } else if ("cleaning".equals(robotState.state)) {
+            if (robotState.cleanState == null || robotState.cleanState.type == null) {
+                return null;
+            }
+            modeValue = robotState.cleanState.type;
+        } else if ("idle".equals(robotState.state)) {
+            modeValue = "idle";
         } else {
             modeValue = robotState.state;
         }
