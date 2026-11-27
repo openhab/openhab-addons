@@ -23,16 +23,16 @@ Things must be added manually.
 The `account` thing requires the API key that allows accessing the account.
 API keys can be created and managed under Google AI Studio: <https://aistudio.google.com/app/apikey>.
 
-| Name            | Type    | Description                                                                                                                              | Default               | Required | Advanced |
-|-----------------|---------|------------------------------------------------------------------------------------------------------------------------------------------|-----------------------|----------|----------|
-| apiKey          | text    | The API key to authenticate against the Gemini API.                                                                                      | N/A                   | yes      | no       |
-| requestTimeout  | integer | Timeout in seconds for chat API requests.                                                                                                | 30                    | no       | yes      |
-| model           | text    | The model to be used ([Models](https://ai.google.dev/gemini-api/docs/models), [Pricing](https://ai.google.dev/gemini-api/docs/pricing)). | gemini-3.1-flash-lite | no       | no       |
-| temperature     | decimal | A value between 0.0 and 1.0, where higher values make the output more random and lower values make it more focused and deterministic.    | 1.0                   | no       | yes      |
-| topP            | decimal | A value between 0.0 and 1.0 for nucleus sampling, where the model considers the results of the tokens with topP probability mass.        | 1.0                   | no       | yes      |
-| maxOutputTokens | integer | The maximum number of tokens to include in a candidate.                                                                                  | 2048                  | no       | yes      |
-| maxModelTurns   | integer | The maximum number of interaction turns with the model allowed in a single request to prevent infinite loops and excess resource usage.  | 10                    | no       | yes      |
-| thinkingLevel   | text    | Controls effort on thinking for models supporting it (`unspecified`, `minimal`, `low`, `medium`, `high`).                                | minimal               | no       | yes      |
+| Name            | Type    | Description                                                                                                                              | Default                  | Required | Advanced |
+|-----------------|---------|------------------------------------------------------------------------------------------------------------------------------------------|--------------------------|----------|----------|
+| apiKey          | text    | The API key to authenticate against the Gemini API.                                                                                      | N/A                      | yes      | no       |
+| requestTimeout  | integer | Timeout in seconds for chat API requests.                                                                                                | 30                       | no       | yes      |
+| model           | text    | The model to be used ([Models](https://ai.google.dev/gemini-api/docs/models), [Pricing](https://ai.google.dev/gemini-api/docs/pricing)). | gemini-flash-lite-latest | no       | no       |
+| temperature     | decimal | A value between 0.0 and 1.0, where higher values make the output more random and lower values make it more focused and deterministic.    | 1.0                      | no       | yes      |
+| topP            | decimal | A value between 0.0 and 1.0 for nucleus sampling, where the model considers the results of the tokens with topP probability mass.        | 1.0                      | no       | yes      |
+| maxOutputTokens | integer | The maximum number of tokens to include in a candidate.                                                                                  | 2048                     | no       | yes      |
+| maxModelTurns   | integer | The maximum number of interaction turns with the model allowed in a single request to prevent infinite loops and excess resource usage.  | 10                       | no       | yes      |
+| thinkingLevel   | text    | Controls effort on thinking for models supporting it (`unspecified`, `minimal`, `low`, `medium`, `high`).                                | minimal                  | no       | yes      |
 
 It is generally recommended to either alter temperature or topP, but not both.
 For Gemini 3.x models, Google recommends keeping both values at their default.
