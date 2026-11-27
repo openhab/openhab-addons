@@ -741,7 +741,7 @@ public class ShellyDeviceProfile {
         return thingTypeID.startsWith(THING_TYPE_SHELLYPLUS_PREFIX)
                 || thingTypeID.startsWith(THING_TYPE_SHELLYPRO_PREFIX) || GROUP_MINI_THING_TYPES.contains(thingTypeUID)
                 || GROUP_WALLDISPLAY_THING_TYPES.contains(thingTypeUID) || isBluSeries(thingTypeUID)
-                || THING_TYPE_SHELLYPLUSBLUGW.equals(thingTypeUID);
+                || THING_TYPE_SHELLYPLUSBLUGW.equals(thingTypeUID) || THING_TYPE_SHELLYPLUGUSG4.equals(thingTypeUID);
     }
 
     /**
