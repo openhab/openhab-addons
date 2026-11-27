@@ -110,6 +110,9 @@ public final class E3DCBindingConstants {
     /** Watt hours per kilowatt hour, which the device reports in watt hours. */
     public static final double WH_PER_KWH = 1000;
 
+    /** The name of the thread pool the blocking device access runs on. */
+    public static final String THREAD_POOL = "e3dc";
+
     private E3DCBindingConstants() {
     }
 }

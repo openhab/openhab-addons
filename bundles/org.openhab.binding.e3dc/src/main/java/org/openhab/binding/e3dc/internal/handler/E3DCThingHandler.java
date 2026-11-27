@@ -35,6 +35,7 @@ import org.openhab.binding.e3dc.internal.E3DCMessages;
 import org.openhab.binding.e3dc.internal.rscp.RscpTag;
 import org.openhab.binding.e3dc.internal.rscp.RscpType;
 import org.openhab.binding.e3dc.internal.rscp.RscpValue;
+import org.openhab.core.common.ThreadPoolManager;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -70,7 +71,8 @@ public abstract class E3DCThingHandler extends BaseThingHandler implements E3DCD
     protected final E3DCCommandHandler commandHandler = new E3DCCommandHandler();
 
     /** Works off the writes to the device one after the other, off the thread the framework called the handler on. */
-    protected final E3DCCommandQueue commandQueue = new E3DCCommandQueue(scheduler);
+    protected final E3DCCommandQueue commandQueue = new E3DCCommandQueue(
+            ThreadPoolManager.getScheduledPool(E3DCBindingConstants.THREAD_POOL));
 
     /** Whether a poll answer already carried a value of this thing; an index the device does not know never does. */
     private boolean valueSeen;

@@ -28,6 +28,7 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -47,6 +48,7 @@ import org.openhab.binding.e3dc.internal.rscp.RscpError;
 import org.openhab.binding.e3dc.internal.rscp.RscpException;
 import org.openhab.binding.e3dc.internal.rscp.RscpTag;
 import org.openhab.binding.e3dc.internal.rscp.RscpValue;
+import org.openhab.core.common.ThreadPoolManager;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.MetricPrefix;
@@ -190,6 +192,10 @@ public class E3DCBridgeHandler extends BaseBridgeHandler {
 
     private @Nullable ScheduledFuture<?> pollJob;
 
+    /** The blocking device access runs on a pool of its own, so a slow device does not hold the shared one. */
+    private final ScheduledExecutorService ioExecutor = ThreadPoolManager
+            .getScheduledPool(E3DCBindingConstants.THREAD_POOL);
+
     /**
      * Serializes the connect and poll cycles. All state a poll keeps (dropped tags, logged answers, the history
      * bookkeeping and the loop ratio window) is only touched while this lock is held, so a scheduled poll, a
@@ -248,7 +254,7 @@ public class E3DCBridgeHandler extends BaseBridgeHandler {
         }
 
         updateStatus(ThingStatus.UNKNOWN);
-        scheduler.execute(this::connectAndPoll);
+        ioExecutor.execute(this::connectAndPoll);
     }
 
     private void connectAndPoll() {
@@ -335,7 +341,7 @@ public class E3DCBridgeHandler extends BaseBridgeHandler {
         }
         synchronized (jobLock) {
             cancelPollJob();
-            pollJob = scheduler.schedule(task, delaySeconds, TimeUnit.SECONDS);
+            pollJob = ioExecutor.schedule(task, delaySeconds, TimeUnit.SECONDS);
         }
     }
 
@@ -352,7 +358,7 @@ public class E3DCBridgeHandler extends BaseBridgeHandler {
         if (now - previous < REFRESH_MIN_INTERVAL_MILLIS || !lastRefreshMillis.compareAndSet(previous, now)) {
             return;
         }
-        scheduler.execute(() -> {
+        ioExecutor.execute(() -> {
             // a poll that is running delivers fresh data anyway, so a refresh does not queue up behind it
             if (!pollLock.tryLock()) {
                 logger.trace("Refresh skipped, a poll is already running");

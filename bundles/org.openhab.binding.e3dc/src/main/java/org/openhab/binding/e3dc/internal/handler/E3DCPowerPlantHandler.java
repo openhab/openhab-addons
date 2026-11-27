@@ -168,6 +168,7 @@ public class E3DCPowerPlantHandler extends E3DCThingHandler {
 
     @Override
     public void initialize() {
+        closed = false;
         super.initialize();
         E3DCBridgeHandler bridge = getBridgeHandler();
         if (bridge != null) {
@@ -351,6 +352,12 @@ public class E3DCPowerPlantHandler extends E3DCThingHandler {
     /** The most days, weeks or months one call fetches, a safety limit as every period is a request. */
     static final int MAX_PERIODS = 400;
 
+    /** How long one history fetch may take before it returns what it has, so a rule does not wait forever. */
+    static final long FETCH_BUDGET_MILLIS = 30_000;
+
+    /** Set while the handler is disposed, so a long history fetch stops instead of publishing. */
+    private volatile boolean closed;
+
     /**
      * Fetches the yearly history of all earlier years once and publishes it on the {@code history#year-*}
      * channels as one time series entry per year. It starts at the last completed year, goes back year by year
@@ -439,8 +446,18 @@ public class E3DCPowerPlantHandler extends E3DCThingHandler {
         Map<String, TimeSeries> series = new LinkedHashMap<>();
         int delivered = 0;
         EmptyPeriods emptyPeriods = new EmptyPeriods(maxEmpty);
+        long deadline = System.currentTimeMillis() + FETCH_BUDGET_MILLIS;
         for (LocalDate start : starts) {
             if (emptyPeriods.exhausted()) {
+                break;
+            }
+            if (closed) {
+                logger.debug("History not fetched any further: the handler is disposed");
+                break;
+            }
+            if (System.currentTimeMillis() > deadline) {
+                logger.warn("History fetch stopped after {} ms with {} periods, the rest is skipped",
+                        FETCH_BUDGET_MILLIS, delivered);
                 break;
             }
             RscpValue response;
@@ -483,6 +500,10 @@ public class E3DCPowerPlantHandler extends E3DCThingHandler {
                 logger.debug("The device holds no history for {}", start);
                 emptyPeriods.record(false);
             }
+        }
+        if (closed) {
+            logger.debug("History not published: the handler is disposed");
+            return 0;
         }
         for (Map.Entry<String, TimeSeries> entry : series.entrySet()) {
             ChannelUID channelUID = new ChannelUID(getThing().getUID(),
@@ -606,6 +627,8 @@ public class E3DCPowerPlantHandler extends E3DCThingHandler {
 
     @Override
     public void dispose() {
+        // a running history fetch has to stop instead of publishing into a disposed handler
+        closed = true;
         E3DCBridgeHandler bridge = getBridgeHandler();
         if (bridge != null) {
             bridge.removeOnlineListener(propertiesListener);
