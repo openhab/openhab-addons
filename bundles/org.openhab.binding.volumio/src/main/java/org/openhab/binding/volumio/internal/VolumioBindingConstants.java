@@ -38,6 +38,7 @@ public class VolumioBindingConstants {
     public static final String CHANNEL_VOLUME = "volume";
     public static final String CHANNEL_PLAYER = "player";
     public static final String CHANNEL_COVER_ART = "album-art";
+    public static final String CHANNEL_MUTE = "mute";
     public static final String CHANNEL_TRACK_TYPE = "track-type";
     public static final String CHANNEL_PLAY_RADIO_STREAM = "play-radiostream";
     public static final String CHANNEL_PLAY_PLAYLIST = "play-playlist";
@@ -48,6 +49,45 @@ public class VolumioBindingConstants {
     public static final String CHANNEL_PLAY_FILE = "play-file";
     public static final String CHANNEL_SYSTEM_COMMAND = "system-command";
     public static final String CHANNEL_STOP = "stop-command";
+    public static final String CHANNEL_SEEK = "seek";
+    public static final String CHANNEL_DURATION = "duration";
+    public static final String CHANNEL_QUEUE_POSITION = "queue-position";
+    public static final String CHANNEL_QUEUE_SIZE = "queue-size";
+    public static final String CHANNEL_CURRENT_URI = "current-uri";
+    public static final String CHANNEL_SERVICE = "service";
+    public static final String CHANNEL_SAMPLE_RATE = "samplerate";
+    public static final String CHANNEL_BIT_DEPTH = "bitdepth";
+    public static final String CHANNEL_AUDIO_CHANNELS = "audio-channels";
+    public static final String CHANNEL_STREAMING = "streaming";
+    public static final String CHANNEL_LIBRARY_UPDATE = "library-update";
+    public static final String CHANNEL_REPEAT_SINGLE = "repeat-single";
+    public static final String CHANNEL_ADD_TO_QUEUE = "add-to-queue";
+    public static final String CHANNEL_REMOVE_FROM_QUEUE = "remove-from-queue";
+    public static final String CHANNEL_ENQUEUE_PLAYLIST = "enqueue-playlist";
+    public static final String CHANNEL_ADD_TO_FAVOURITES = "add-to-favourites";
+    public static final String CHANNEL_REMOVE_FROM_FAVOURITES = "remove-from-favourites";
+
+    // JSON keys of the Volumio "pushState" payload (see Volumio WebSocket API, "Get Player State")
+    public static final String STATE_TITLE = "title";
+    public static final String STATE_ARTIST = "artist";
+    public static final String STATE_ALBUM = "album";
+    public static final String STATE_ALBUM_ART = "albumart";
+    public static final String STATE_STATUS = "status";
+    public static final String STATE_TRACK_TYPE = "trackType";
+    public static final String STATE_VOLUME = "volume";
+    public static final String STATE_MUTE = "mute";
+    public static final String STATE_RANDOM = "random";
+    public static final String STATE_REPEAT = "repeat";
+    public static final String STATE_REPEAT_SINGLE = "repeatSingle";
+    public static final String STATE_POSITION = "position";
+    public static final String STATE_DURATION = "duration";
+    public static final String STATE_URI = "uri";
+    public static final String STATE_SERVICE = "service";
+    public static final String STATE_SAMPLE_RATE = "samplerate";
+    public static final String STATE_BIT_DEPTH = "bitdepth";
+    public static final String STATE_CHANNELS = "channels";
+    public static final String STATE_STREAM = "stream";
+    public static final String STATE_UPDATE_DB = "updatedb";
 
     // discovery properties
     public static final String DISCOVERY_SERVICE_TYPE = "_Volumio._tcp.local.";
