@@ -842,6 +842,10 @@ public class SamsungTvHandler extends BaseThingHandler implements RegistryListen
     }
 
     private void clearStandbyState() {
+        // the RemoteControllerService of a 2022 Frame TV is kept in standby, and newer firmware (art API 6000) does
+        // not send go_to_standby, so its art mode would otherwise stay on and an artMode ON command would be ignored
+        findServiceInstance(RemoteControllerService.SERVICE_NAME)
+                .ifPresent(s -> ((RemoteControllerService) s).clearArtMode());
         valueReceived(ART_MODE, OnOffType.OFF);
         valueReceived(POWER, OnOffType.OFF);
         if (getArtMode2022()) {
