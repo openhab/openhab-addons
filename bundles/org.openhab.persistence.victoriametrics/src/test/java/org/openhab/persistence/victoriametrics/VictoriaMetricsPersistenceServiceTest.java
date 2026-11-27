@@ -12,6 +12,8 @@
  */
 package org.openhab.persistence.victoriametrics;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -19,8 +21,10 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.openhab.persistence.victoriametrics.internal.VictoriaMetricsConfiguration.*;
 
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -44,7 +48,7 @@ import org.openhab.persistence.victoriametrics.internal.VictoriaMetricsRepositor
 /**
  * @author Joan Pujol Espinar - Initial contribution
  * @author Franz - Initial VictoriaMetrics adaptation
- * @author Michael Weger - Add configuration validation tests
+ * @author Michael Weger - Add configuration validation, deactivation and queue tests
  */
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -113,6 +117,37 @@ public class VictoriaMetricsPersistenceServiceTest {
     public void activateWithInvalidMaxStringStatesShouldFail() {
         assertThrows(IllegalArgumentException.class,
                 () -> getService(Map.of(URL_PARAM, "http://localhost:8428", MAX_STRING_STATES_PARAM, 0)));
+    }
+
+    @Test
+    public void activateWithInvalidMaxQueueSizeShouldFail() {
+        assertThrows(IllegalArgumentException.class,
+                () -> getService(Map.of(URL_PARAM, "http://localhost:8428", MAX_QUEUE_SIZE_PARAM, 0)));
+    }
+
+    @Test
+    public void activateWithInvalidQueueOverflowShouldFail() {
+        assertThrows(IllegalArgumentException.class,
+                () -> getService(Map.of(URL_PARAM, "http://localhost:8428", QUEUE_OVERFLOW_PARAM, "dropAll")));
+    }
+
+    @Test
+    public void backlogIsWrittenInBatches() throws Exception {
+        VictoriaMetricsPersistenceService instance = getService(VALID_CONFIGURATION_WITHOUT_AUTHENTICATION);
+        when(repositoryMock.isConnected()).thenReturn(true);
+        List<Integer> batchSizes = new CopyOnWriteArrayList<>();
+        when(repositoryMock.write(any())).thenAnswer(invocation -> {
+            batchSizes.add(invocation.<List<?>> getArgument(0).size());
+            return true;
+        });
+
+        for (int i = 0; i < 10_001; i++) {
+            instance.store(ItemTestHelper.createNumberItem("number", i));
+        }
+        CompletableFuture.runAsync(instance::deactivate).get(30, TimeUnit.SECONDS);
+
+        assertThat(batchSizes.stream().mapToInt(Integer::intValue).sum(), is(10_001));
+        assertThat(batchSizes, everyItem(lessThanOrEqualTo(10_000)));
     }
 
     @Test

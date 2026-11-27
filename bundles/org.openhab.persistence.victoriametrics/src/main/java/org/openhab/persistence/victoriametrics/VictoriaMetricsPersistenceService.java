@@ -17,7 +17,6 @@ import static org.openhab.persistence.victoriametrics.internal.VictoriaMetricsCo
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
@@ -25,11 +24,9 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -61,6 +58,8 @@ import org.openhab.persistence.victoriametrics.internal.VictoriaMetricsMetadataS
 import org.openhab.persistence.victoriametrics.internal.VictoriaMetricsMetricNameResolver;
 import org.openhab.persistence.victoriametrics.internal.VictoriaMetricsPersistentItemInfo;
 import org.openhab.persistence.victoriametrics.internal.VictoriaMetricsPoint;
+import org.openhab.persistence.victoriametrics.internal.VictoriaMetricsPointQueue;
+import org.openhab.persistence.victoriametrics.internal.VictoriaMetricsPointQueue.OverflowStrategy;
 import org.openhab.persistence.victoriametrics.internal.VictoriaMetricsRepository;
 import org.openhab.persistence.victoriametrics.internal.VictoriaMetricsStateConvertUtils;
 import org.openhab.persistence.victoriametrics.internal.VictoriaMetricsStringStateLimiter;
@@ -81,7 +80,7 @@ import org.slf4j.LoggerFactory;
  * @author Franz - Initial contribution
  * @author Joan Pujol Espinar - Original InfluxDB implementation
  * @author Michael Weger - Use Jetty, fix query with alias, store numeric states, components and string states, flush
- *         pending states on deactivation
+ *         pending states on deactivation, bound the queue
  */
 @NonNullByDefault
 @Component(service = { PersistenceService.class,
@@ -97,6 +96,8 @@ public class VictoriaMetricsPersistenceService implements QueryablePersistenceSe
     private static final int STOP_TIMEOUT = 10; // in s
     // default -maxLabelValueLen of VictoriaMetrics
     private static final int MAX_STRING_STATE_BYTES = 4096;
+    // limits the size of a single import request, e.g. when writing the backlog after an outage
+    private static final int MAX_BATCH_SIZE = 10_000;
     protected static final String CONFIG_URI = "persistence:victoriametrics";
 
     // External dependencies
@@ -112,7 +113,9 @@ public class VictoriaMetricsPersistenceService implements QueryablePersistenceSe
 
     // storage
     private final ScheduledFuture<?> storeJob;
-    private final BlockingQueue<VictoriaMetricsPoint> pointsQueue = new LinkedBlockingQueue<>();
+    private final VictoriaMetricsPointQueue pointsQueue;
+    // points dropped from the full queue since the last successful write, guarded by commitLock
+    private long droppedPoints;
     // stores whose conversion has not yet queued the point, guarded by this set together with serviceActivated
     private final Set<CompletableFuture<@Nullable Void>> pendingStores = new HashSet<>();
     // serializes the scheduled commits and the final commit on deactivation, which may re-queue points
@@ -129,6 +132,8 @@ public class VictoriaMetricsPersistenceService implements QueryablePersistenceSe
         this.configuration = new VictoriaMetricsConfiguration(config);
         this.metricNameResolver = new VictoriaMetricsMetricNameResolver(configuration, metadataService);
         if (configuration.isValid()) {
+            this.pointsQueue = new VictoriaMetricsPointQueue(configuration.getMaxQueueSize(),
+                    Objects.requireNonNull(configuration.getQueueOverflow()));
             this.repository = createVictoriaMetricsRepository();
             this.stringStateLimiter = new VictoriaMetricsStringStateLimiter(configuration.getMaxStringStates(),
                     repository::getStringStates);
@@ -176,6 +181,9 @@ public class VictoriaMetricsPersistenceService implements QueryablePersistenceSe
             if (commitLock.tryLock(STOP_TIMEOUT, TimeUnit.SECONDS)) {
                 try {
                     commit(); // ensure we at least tried to store the data
+                    if (droppedPoints > 0) {
+                        logger.warn("VictoriaMetrics dropped {} states because the queue was full.", droppedPoints);
+                    }
                 } finally {
                     commitLock.unlock();
                 }
@@ -236,11 +244,8 @@ public class VictoriaMetricsPersistenceService implements QueryablePersistenceSe
                 logger.trace("Ignoring item {}, conversion to a VictoriaMetrics point failed.", item.getName());
                 return;
             }
-            if (pointsQueue.offer(point)) {
-                logger.trace("Queued {} for item {}", point, item);
-            } else {
-                logger.warn("Failed to queue {} for item {}", point, item);
-            }
+            pointsQueue.add(point);
+            logger.trace("Queued {} for item {}", point, item);
         }).whenComplete((result, e) -> {
             if (e != null) {
                 logger.warn("Failed to convert the state of item {}", item.getName(), e);
@@ -303,25 +308,53 @@ public class VictoriaMetricsPersistenceService implements QueryablePersistenceSe
     private void commit() {
         commitLock.lock();
         try {
-            if (!pointsQueue.isEmpty() && checkConnection()) {
-                List<VictoriaMetricsPoint> queuedPoints = new ArrayList<>();
-                pointsQueue.drainTo(queuedPoints);
+            countDroppedPoints();
+            if (pointsQueue.isEmpty() || !checkConnection()) {
+                return;
+            }
+            // points queued while writing are left for the next commit
+            int remaining = pointsQueue.size();
+            while (remaining > 0) {
+                List<VictoriaMetricsPoint> queuedPoints = pointsQueue.poll(Math.min(remaining, MAX_BATCH_SIZE));
+                if (queuedPoints.isEmpty()) {
+                    break;
+                }
+                remaining -= queuedPoints.size();
                 List<VictoriaMetricsPoint> points = stringStateLimiter.filter(queuedPoints);
                 if (points == null) {
                     logger.warn("Re-queuing {} elements, failed to read the stored string states.",
                             queuedPoints.size());
-                    pointsQueue.addAll(queuedPoints);
+                    pointsQueue.requeue(queuedPoints);
                     repository.disconnect();
+                    return;
                 } else if (!repository.write(points)) {
                     logger.warn("Re-queuing {} elements, failed to write batch.", points.size());
-                    pointsQueue.addAll(points);
+                    pointsQueue.requeue(points);
                     repository.disconnect();
-                } else {
-                    logger.trace("Wrote {} elements to database", points.size());
+                    return;
                 }
+                logger.trace("Wrote {} elements to database", points.size());
+            }
+            countDroppedPoints();
+            if (droppedPoints > 0) {
+                logger.warn("VictoriaMetrics dropped {} states because the queue was full.", droppedPoints);
+                droppedPoints = 0;
             }
         } finally {
             commitLock.unlock();
+        }
+    }
+
+    private void countDroppedPoints() {
+        long dropped = pointsQueue.takeDroppedCount();
+        if (dropped > 0) {
+            if (droppedPoints == 0) {
+                logger.warn(
+                        "The VictoriaMetrics queue is full ({} states), the {} states are dropped until they can be written.",
+                        pointsQueue.getCapacity(),
+                        pointsQueue.getOverflowStrategy() == OverflowStrategy.DROP_OLDEST ? "oldest" : "newest");
+            }
+            droppedPoints += dropped;
         }
     }
 

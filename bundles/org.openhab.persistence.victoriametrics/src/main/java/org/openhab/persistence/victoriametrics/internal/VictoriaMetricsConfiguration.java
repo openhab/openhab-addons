@@ -16,7 +16,9 @@ import java.util.Map;
 import java.util.StringJoiner;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.config.core.ConfigParser;
+import org.openhab.persistence.victoriametrics.internal.VictoriaMetricsPointQueue.OverflowStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,7 +27,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Joan Pujol Espinar - Initial contribution
  * @author Franz - Initial VictoriaMetrics adaptation
- * @author Michael Weger - Remove case conversion, add metric prefix and suffix, limit string states
+ * @author Michael Weger - Remove case conversion, add metric prefix and suffix, limit string states and the queue
  */
 @NonNullByDefault
 public class VictoriaMetricsConfiguration {
@@ -40,7 +42,13 @@ public class VictoriaMetricsConfiguration {
     public static final String ADD_TYPE_TAG_PARAM = "addTypeTag";
     public static final String ADD_UNIT_TAG_PARAM = "addUnitTag";
     public static final String MAX_STRING_STATES_PARAM = "maxStringStates";
+    public static final String MAX_QUEUE_SIZE_PARAM = "maxQueueSize";
+    public static final String QUEUE_OVERFLOW_PARAM = "queueOverflow";
     public static final int DEFAULT_MAX_STRING_STATES = 50;
+    public static final int DEFAULT_MAX_QUEUE_SIZE = 100_000;
+    private static final Map<String, OverflowStrategy> QUEUE_OVERFLOW_OPTIONS = Map.of( //
+            "dropOldest", OverflowStrategy.DROP_OLDEST, //
+            "dropNewest", OverflowStrategy.DROP_NEWEST);
     private final Logger logger = LoggerFactory.getLogger(VictoriaMetricsConfiguration.class);
     private final String url;
     private final String user;
@@ -53,6 +61,8 @@ public class VictoriaMetricsConfiguration {
     private final boolean addLabelTag;
     private final boolean addUnitTag;
     private final int maxStringStates;
+    private final int maxQueueSize;
+    private final @Nullable OverflowStrategy queueOverflow;
 
     public VictoriaMetricsConfiguration(Map<String, Object> config) {
         url = ConfigParser.valueAsOrElse(config.get(URL_PARAM), String.class, "http://127.0.0.1:8428");
@@ -67,6 +77,10 @@ public class VictoriaMetricsConfiguration {
         addUnitTag = ConfigParser.valueAsOrElse(config.get(ADD_UNIT_TAG_PARAM), Boolean.class, false);
         maxStringStates = ConfigParser.valueAsOrElse(config.get(MAX_STRING_STATES_PARAM), Integer.class,
                 DEFAULT_MAX_STRING_STATES);
+        maxQueueSize = ConfigParser.valueAsOrElse(config.get(MAX_QUEUE_SIZE_PARAM), Integer.class,
+                DEFAULT_MAX_QUEUE_SIZE);
+        queueOverflow = QUEUE_OVERFLOW_OPTIONS
+                .get(ConfigParser.valueAsOrElse(config.get(QUEUE_OVERFLOW_PARAM), String.class, "dropOldest"));
     }
 
     public boolean isValid() {
@@ -77,8 +91,11 @@ public class VictoriaMetricsConfiguration {
                 || VictoriaMetricsMetricNameResolver.isValidMetricName(metricPrefix);
         boolean hasValidSuffix = VictoriaMetricsMetricNameResolver.isValidMetricNameSuffix(metricSuffix);
         boolean hasValidMaxStringStates = maxStringStates >= 1;
+        boolean hasValidMaxQueueSize = maxQueueSize >= 1;
+        boolean hasValidQueueOverflow = queueOverflow != null;
 
-        if (hasUrl && hasValidCredentials && hasValidPrefix && hasValidSuffix && hasValidMaxStringStates) {
+        if (hasUrl && hasValidCredentials && hasValidPrefix && hasValidSuffix && hasValidMaxStringStates
+                && hasValidMaxQueueSize && hasValidQueueOverflow) {
             return true;
         } else {
             String msg = "VictoriaMetrics configuration isn't valid. Addon won't work: ";
@@ -97,6 +114,12 @@ public class VictoriaMetricsConfiguration {
             }
             if (!hasValidMaxStringStates) {
                 reason.add("Maximum number of string states must be at least 1");
+            }
+            if (!hasValidMaxQueueSize) {
+                reason.add("Maximum queue size must be at least 1");
+            }
+            if (!hasValidQueueOverflow) {
+                reason.add("Queue overflow must be one of " + QUEUE_OVERFLOW_OPTIONS.keySet());
             }
             logger.warn("{} {}", msg, reason);
             return false;
@@ -147,11 +170,23 @@ public class VictoriaMetricsConfiguration {
         return addUnitTag;
     }
 
+    public int getMaxQueueSize() {
+        return maxQueueSize;
+    }
+
+    /**
+     * @return the overflow strategy of the queue, only <code>null</code> if the configuration is not valid
+     */
+    public @Nullable OverflowStrategy getQueueOverflow() {
+        return queueOverflow;
+    }
+
     @Override
     public String toString() {
         return "VictoriaMetricsConfiguration{url='" + url + "', user='" + user + "', password='" + password.length()
                 + " chars', token='" + token.length() + " chars', metricPrefix='" + metricPrefix + "', metricSuffix='"
                 + metricSuffix + "', addCategoryTag=" + addCategoryTag + ", addTypeTag=" + addTypeTag + ", addLabelTag="
-                + addLabelTag + ", addUnitTag=" + addUnitTag + ", maxStringStates=" + maxStringStates + '}';
+                + addLabelTag + ", addUnitTag=" + addUnitTag + ", maxStringStates=" + maxStringStates
+                + ", maxQueueSize=" + maxQueueSize + ", queueOverflow=" + queueOverflow + '}';
     }
 }

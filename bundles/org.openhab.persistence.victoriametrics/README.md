@@ -64,6 +64,8 @@ Attention: The file-based configuration overrides the UI configuration.
 | metricPrefix    |                         | No       | Prefix added to all metric names, e.g. `openhab_`. Must be a valid metric name. Useful if VictoriaMetrics also stores other metrics                                              |
 | metricSuffix    |                         | No       | Suffix added to all metric names. Set it to `_value` to continue using data written by the InfluxDB persistence service, see [Migrating from InfluxDB](#migrating-from-influxdb) |
 | maxStringStates | 50                      | No       | Maximum number of distinct string states stored per item, see [String States](#string-states)                                                                                    |
+| maxQueueSize    | 100000                  | No       | Maximum number of states kept in memory until they are written, e.g. while VictoriaMetrics is not available, see [Unavailable Database](#unavailable-database)                   |
+| queueOverflow   | dropOldest              | No       | States to drop when the queue is full: `dropOldest` or `dropNewest`                                                                                                              |
 
 (\*) A single-node VictoriaMetrics server does not require authentication by default.
 If a user is set, a password must be set as well.
@@ -77,6 +79,15 @@ metricPrefix=openhab_
 
 All item- and event-related configuration is defined in the file `persistence/victoriametrics.persist`.
 Please consider [persistence documentation](https://www.openhab.org/docs/configuration/persistence.html#persistence) for further information.
+
+### Unavailable Database
+
+States are written every 3 seconds.
+While VictoriaMetrics is not available, they are kept in memory and written as soon as it is available again, in requests of at most 10,000 states.
+To protect the memory of openHAB, at most `maxQueueSize` states are kept.
+When the queue is full, the oldest states are dropped by default, so the most recent states, e.g. for restoring them on startup, are kept.
+Set `queueOverflow=dropNewest` to keep the oldest states instead.
+A warning is logged when states start being dropped, and the number of dropped states is logged when writing succeeds again or the service stops.
 
 ### Additional configuration for customized storage options in VictoriaMetrics
 

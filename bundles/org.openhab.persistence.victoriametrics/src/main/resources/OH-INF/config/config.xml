@@ -70,6 +70,26 @@
 			<advanced>true</advanced>
 		</parameter>
 
+		<parameter name="maxQueueSize" type="integer" min="1" required="false" groupName="misc">
+			<label>Maximum Queue Size</label>
+			<description>Maximum number of states kept in memory until they are written, e.g. while VictoriaMetrics is not
+				available.</description>
+			<default>100000</default>
+			<advanced>true</advanced>
+		</parameter>
+
+		<parameter name="queueOverflow" type="text" required="false" groupName="misc">
+			<label>Queue Overflow</label>
+			<description>States to drop when the queue is full.</description>
+			<options>
+				<option value="dropOldest">Drop oldest states</option>
+				<option value="dropNewest">Drop newest states</option>
+			</options>
+			<limitToOptions>true</limitToOptions>
+			<default>dropOldest</default>
+			<advanced>true</advanced>
+		</parameter>
+
 		<parameter name="addCategoryTag" type="boolean" required="true" groupName="tags">
 			<label>Add Category Tag</label>
 			<description>Should the category of the item be included as tag "category"? If no category is set, "n/a" is
