@@ -32,6 +32,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -100,6 +102,17 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public abstract class ShellyBaseHandler extends BaseThingHandler
         implements ShellyThingInterface, ShellyDeviceListener, ShellyManagerInterface {
+
+    private static final Set<String> NON_ALARM_EVENTS = Stream
+            .of("", SHELLY_WAKEUPT_NONE, SHELLY_WAKEUPT_SENSOR, SHELLY_WAKEUPT_PERIODIC, SHELLY_WAKEUPT_BUTTON,
+                    SHELLY_WAKEUPT_POWERON, SHELLY_WAKEUPT_EXT_POWER, SHELLY_WAKEUPT_UNKNOWN,
+                    Shelly2ApiJsonDTO.SHELLY2_WAKEUPOCAUSE_USB, Shelly2ApiJsonDTO.SHELLY2_WAKEUPOCAUSE_UPDATE,
+                    Shelly2ApiJsonDTO.SHELLY2_WAKEUPOCAUSE_UNDEFINED, Shelly2ApiJsonDTO.SHELLY2_WAKEUPOCAUSE_BUTTON,
+                    Shelly2ApiJsonDTO.SHELLY2_WAKEUPOCAUSE_PERIODIC, Shelly2ApiJsonDTO.SHELLY2_WAKEUPOCAUSE_ALARM,
+                    Shelly2ApiJsonDTO.SHELLY2_WAKEUPOCAUSE_ALARM_TEST, Shelly2ApiJsonDTO.SHELLY2_EVENT_OTASTART,
+                    Shelly2ApiJsonDTO.SHELLY2_EVENT_OTAPROGRESS, Shelly2ApiJsonDTO.SHELLY2_EVENT_OTADONE,
+                    SHELLY_EVENT_ROLLER_CALIB, ALARM_TYPE_NONE)
+            .map(e -> e.toUpperCase(Locale.ROOT)).collect(Collectors.toUnmodifiableSet());
 
     protected final Logger logger = LoggerFactory.getLogger(ShellyBaseHandler.class);
     protected final ShellyChannelDefinitions channelDefinitions;
@@ -1138,32 +1151,21 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
 
         if (force || !lastAlarmMsg.equals(event) || (lastAlarmMsg.equals(event)
                 && (lastAlarm == null || now() > lastAlarm.timeStamp() + HEALTH_CHECK_INTERVAL_SEC))) {
-            switch (event.toUpperCase(Locale.ROOT)) {
-                case "":
-                case "0": // DW2 1.8
-                case SHELLY_WAKEUPT_SENSOR:
-                case SHELLY_WAKEUPT_PERIODIC:
-                case SHELLY_WAKEUPT_BUTTON:
-                case SHELLY_WAKEUPT_POWERON:
-                case SHELLY_WAKEUPT_EXT_POWER:
-                case SHELLY_WAKEUPT_UNKNOWN:
-                case Shelly2ApiJsonDTO.SHELLY2_EVENT_OTASTART:
-                case Shelly2ApiJsonDTO.SHELLY2_EVENT_OTAPROGRESS:
-                case Shelly2ApiJsonDTO.SHELLY2_EVENT_OTADONE:
-                case SHELLY_EVENT_ROLLER_CALIB:
-                    logger.debug("{}: {}", thingName, messages.get("event.filtered", event));
-                    break;
-                case ALARM_TYPE_NONE:
-                    break;
-                default:
-                    logger.debug("{}: {}", thingName, messages.get("event.triggered", event));
-                    triggerChannel(channelId, event);
-                    cache.updateChannel(channelId, getStringType(event.toUpperCase(Locale.ROOT)));
-                    lastAlarm = new ShellyDeviceAlarm(event, (long) now());
-                    stats.lastAlarm.set(lastAlarm);
-                    stats.alarms.incrementAndGet();
+            if (isAlarmEvent(event)) {
+                logger.debug("{}: {}", thingName, messages.get("event.triggered", event));
+                triggerChannel(channelId, event);
+                cache.updateChannel(channelId, getStringType(event.toUpperCase(Locale.ROOT)));
+                lastAlarm = new ShellyDeviceAlarm(event, (long) now());
+                stats.lastAlarm.set(lastAlarm);
+                stats.alarms.incrementAndGet();
+            } else if (!ALARM_TYPE_NONE.equalsIgnoreCase(event)) {
+                logger.debug("{}: {}", thingName, messages.get("event.filtered", event));
             }
         }
+    }
+
+    static boolean isAlarmEvent(String event) {
+        return !NON_ALARM_EVENTS.contains(event.toUpperCase(Locale.ROOT));
     }
 
     public boolean isUpdateScheduled() {
