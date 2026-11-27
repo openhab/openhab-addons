@@ -4,7 +4,6 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<!-- BRIDGE: Pleos API Account -->
 	<bridge-type id="account">
 		<label>Pleos API Account</label>
 		<description>Manages the connection to the Pleos Private User API (Hyundai/Kia/Genesis). Only for EU available
@@ -50,7 +49,6 @@
 		</config-description>
 	</bridge-type>
 
-	<!-- THING: Connected Vehicle -->
 	<thing-type id="vehicle">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="account"/>
@@ -81,32 +79,26 @@
 		</config-description>
 	</thing-type>
 
-	<!-- ==================== CHANNEL GROUP TYPES ==================== -->
-
-	<!-- Charging Channel Group -->
 	<channel-group-type id="charging">
 		<label>Charging</label>
 		<description>High-voltage battery and charging parameters</description>
 		<category>Battery</category>
 	</channel-group-type>
 
-	<!-- Fuel Channel Group -->
 	<channel-group-type id="fuel">
 		<label>Fuel</label>
 		<description>Fuel tank and combustion engine parameters</description>
 		<category>Oil</category>
 	</channel-group-type>
 
-	<!-- 1. Base Vehicle Status (Powertrain, Location, Driving Operation) -->
 	<channel-group-type id="vehicle-status">
 		<label>Vehicle Status</label>
 		<description>Base telematics, powertrain, GPS position, and operational state</description>
 		<category>Vehicle</category>
 		<channels>
-			<!-- Powertrain -->
 			<channel id="distance-to-empty" typeId="distance-to-empty"/>
 			<channel id="distance-type" typeId="distance-type-enum"/>
-			<!-- Location -->
+
 			<channel id="location" typeId="gps-location"/>
 			<channel id="latitude" typeId="gps-coordinate">
 				<label>Latitude</label>
@@ -120,7 +112,7 @@
 			<channel id="location-last-update" typeId="location-timestamp"/>
 			<channel id="speed" typeId="speed"/>
 			<channel id="heading" typeId="heading"/>
-			<!-- Driving / Operation -->
+
 			<channel id="odometer" typeId="odometer"/>
 			<channel id="ignition" typeId="ignition-enum"/>
 			<channel id="ignition-acc" typeId="ignition-detail-boolean">
@@ -141,7 +133,6 @@
 		</channels>
 	</channel-group-type>
 
-	<!-- 2. Doors, Hood, Trunk & Sunroof -->
 	<channel-group-type id="doors-status">
 		<label>Doors &amp; Closures</label>
 		<description>State of passenger doors, hood, trunk, and sunroof</description>
@@ -171,7 +162,6 @@
 		</channels>
 	</channel-group-type>
 
-	<!-- 3. Tires & Tire Pressure -->
 	<channel-group-type id="tires-status">
 		<label>Tires &amp; Tire Pressure</label>
 		<description>Tire pressure values and low-pressure warnings</description>
@@ -207,7 +197,6 @@
 		</channels>
 	</channel-group-type>
 
-	<!-- 4. Climate Control & Heating -->
 	<channel-group-type id="climate-status">
 		<label>Climate Control</label>
 		<description>HVAC, temperatures, and auxiliary heating systems</description>
@@ -227,7 +216,6 @@
 		</channels>
 	</channel-group-type>
 
-	<!-- 5. Seats (Heating & Ventilation) -->
 	<channel-group-type id="seats-status">
 		<label>Seats Comfort</label>
 		<description>Seat heating and ventilation intensity levels</description>
@@ -260,7 +248,6 @@
 		</channels>
 	</channel-group-type>
 
-	<!-- 6. Vehicle Warning Indicators -->
 	<channel-group-type id="warning-status">
 		<label>Vehicle Warning Indicators</label>
 		<description>Dashboard warning lights and subsystem error indicators</description>
@@ -305,7 +292,6 @@
 		</channels>
 	</channel-group-type>
 
-	<!-- 7. Freezer Compartment -->
 	<channel-group-type id="freezer-status">
 		<label>Freezer Compartment</label>
 		<description>Operational status and temperature of the refrigeration unit</description>
@@ -316,16 +302,14 @@
 		</channels>
 	</channel-group-type>
 
-	<!-- ==================== ACCOUNT BRIDGE CHANNEL TYPES ==================== -->
-
 	<channel-type id="secret-expires">
 		<item-type>DateTime</item-type>
 		<label>Client Secret Expiration</label>
 		<description>Calculated expiration timestamp (90 days after key creation)</description>
 		<category>Time</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
+			<point>Status</point>
+			<property>Timestamp</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -336,8 +320,8 @@
 		<description>Remaining days until the Client Secret expires</description>
 		<category>Time</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Duration</tag>
+			<point>Status</point>
+			<property>Duration</property>
 		</tags>
 		<state readOnly="true" pattern="%.0f d"/>
 	</channel-type>
@@ -348,7 +332,7 @@
 		<description>Indicates whether the Client Secret expires within 7 days</description>
 		<category>Alarm</category>
 		<tags>
-			<tag>Alarm</tag>
+			<point>Alarm</point>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -366,16 +350,14 @@
 		</event>
 	</channel-type>
 
-	<!-- ==================== CHANNEL TYPES ==================== -->
-
 	<channel-type id="soc">
 		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>State of Charge</label>
 		<description>Current high-voltage battery state of charge</description>
 		<category>Battery</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Level</tag>
+			<point>Measurement</point>
+			<property>Level</property>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
@@ -386,8 +368,8 @@
 		<description>Configured maximum state of charge limit</description>
 		<category>Battery</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Energy</tag>
+			<point>Status</point>
+			<property>Energy</property>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
@@ -398,8 +380,8 @@
 		<description>Target state of charge for AC standard charging</description>
 		<category>Battery</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Energy</tag>
+			<point>Status</point>
+			<property>Energy</property>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
@@ -410,8 +392,8 @@
 		<description>Target state of charge for DC fast charging</description>
 		<category>Battery</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Energy</tag>
+			<point>Status</point>
+			<property>Energy</property>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
@@ -422,8 +404,8 @@
 		<description>Maximum high-voltage battery capacity</description>
 		<category>Battery</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true" pattern="%.0f Wh"/>
 	</channel-type>
@@ -434,8 +416,8 @@
 		<description>Current fuel tank level</description>
 		<category>Oil</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Level</tag>
+			<point>Measurement</point>
+			<property>Level</property>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
@@ -445,7 +427,7 @@
 		<label>Odometer</label>
 		<description>Cumulative vehicle mileage</description>
 		<tags>
-			<tag>Measurement</tag>
+			<point>Measurement</point>
 		</tags>
 		<state readOnly="true" pattern="%.1f km"/>
 	</channel-type>
@@ -455,7 +437,7 @@
 		<label>Distance to Empty</label>
 		<description>Estimated driving range on current charge or fuel</description>
 		<tags>
-			<tag>Forecast</tag>
+			<point>Forecast</point>
 		</tags>
 		<state readOnly="true" pattern="%.0f km"/>
 	</channel-type>
@@ -465,8 +447,8 @@
 		<label>GPS Location</label>
 		<description>Current geographical location of the vehicle</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>GeoLocation</tag>
+			<point>Measurement</point>
+			<property>GeoLocation</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -475,7 +457,7 @@
 		<item-type>Number</item-type>
 		<label>GPS Coordinate</label>
 		<tags>
-			<tag>Measurement</tag>
+			<point>Measurement</point>
 		</tags>
 		<state readOnly="true" pattern="%.6f"/>
 	</channel-type>
@@ -485,7 +467,7 @@
 		<label>Altitude</label>
 		<description>Altitude above sea level</description>
 		<tags>
-			<tag>Measurement</tag>
+			<point>Measurement</point>
 		</tags>
 		<state readOnly="true" pattern="%.1f m"/>
 	</channel-type>
@@ -496,8 +478,8 @@
 		<description>Timestamp when this GPS position was recorded</description>
 		<category>Time</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
+			<point>Status</point>
+			<property>Timestamp</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -507,8 +489,8 @@
 		<label>Speed</label>
 		<description>Vehicle ground speed</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Speed</tag>
+			<point>Measurement</point>
+			<property>Speed</property>
 		</tags>
 		<state readOnly="true" pattern="%.0f km/h"/>
 	</channel-type>
@@ -518,7 +500,7 @@
 		<label>Heading</label>
 		<description>Driving direction heading angle</description>
 		<tags>
-			<tag>Measurement</tag>
+			<point>Measurement</point>
 		</tags>
 		<state readOnly="true" pattern="%.0f °"/>
 	</channel-type>
@@ -529,8 +511,8 @@
 		<description>Measured Outside Temperature (If supported by the vehicle)</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f °C"/>
 	</channel-type>
@@ -541,8 +523,8 @@
 		<description>Measured Freezer Temperature (If supported by the vehicle)</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f °C"/>
 	</channel-type>
@@ -553,8 +535,8 @@
 		<description>Air temperature setpoint</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Temperature</tag>
+			<point>Status</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f °C"/>
 	</channel-type>
@@ -565,8 +547,8 @@
 		<description>Estimated remaining charging time</description>
 		<category>Time</category>
 		<tags>
-			<tag>Forecast</tag>
-			<tag>Duration</tag>
+			<point>Forecast</point>
+			<property>Duration</property>
 		</tags>
 		<state readOnly="true" pattern="%.0f min"/>
 	</channel-type>
@@ -576,21 +558,20 @@
 		<label>Tire Pressure</label>
 		<description>Measured tire pressure</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Pressure</tag>
+			<point>Measurement</point>
+			<property>Pressure</property>
 		</tags>
 		<state readOnly="true" pattern="%.2f bar"/>
 	</channel-type>
 
-	<!-- Booleans / Switches -->
 	<channel-type id="charging-boolean">
 		<item-type>Switch</item-type>
 		<label>Charging Active</label>
 		<description>Indicates whether charging is currently active</description>
 		<category>Battery</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Level</tag>
+			<point>Status</point>
+			<property>Level</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -601,8 +582,8 @@
 		<description>Indicates whether climate control is currently active</description>
 		<category>Climate</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Heating</tag>
+			<point>Status</point>
+			<property>Heating</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -613,8 +594,8 @@
 		<description>Indicates whether auxiliary heating is active</description>
 		<category>Heating</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Heating</tag>
+			<point>Status</point>
+			<property>Heating</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -625,8 +606,8 @@
 		<description>Indicates whether a system warning light is triggered</description>
 		<category>Alarm</category>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Info</tag>
+			<point>Switch</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -636,15 +617,14 @@
 		</state>
 	</channel-type>
 
-	<!-- Enums -->
 	<channel-type id="charge-plugin-enum">
 		<item-type>String</item-type>
 		<label>Plug Status</label>
 		<description>Charge cable connection status</description>
 		<category>Battery</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -661,8 +641,8 @@
 		<description>Current charging mode status</description>
 		<category>Battery</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -682,8 +662,8 @@
 		<description>Seat heating intensity level</description>
 		<category>Heating</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Heating</tag>
+			<point>Status</point>
+			<property>Heating</property>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -701,8 +681,8 @@
 		<description>Seat ventilation intensity level</description>
 		<category>Flow</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Airflow</tag>
+			<point>Status</point>
+			<property>Airflow</property>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -719,8 +699,8 @@
 		<label>Climate Mode</label>
 		<description>Current operating mode of the HVAC system</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -739,8 +719,8 @@
 		<description>HVAC fan blower speed level (-1 = Auto, 0 = Off 1-8 = Level)</description>
 		<category>Flow</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Airflow</tag>
+			<point>Status</point>
+			<property>Airflow</property>
 		</tags>
 		<state readOnly="true" pattern="Speed %d">
 			<options>
@@ -763,8 +743,8 @@
 		<label>Distance Type</label>
 		<description>Powertrain range estimation basis</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -782,8 +762,8 @@
 		<label>Ignition Status</label>
 		<description>Primary ignition power state</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -800,7 +780,7 @@
 		<label>Ignition Circuit State</label>
 		<description>Status of specific vehicle electrical circuit</description>
 		<tags>
-			<tag>Status</tag>
+			<point>Status</point>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -810,8 +790,8 @@
 		<label>Sleep Mode</label>
 		<description>Power-saving sleep mode status</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -827,8 +807,8 @@
 		<label>Gear in Park (P)</label>
 		<description>Indicates whether automatic transmission is in Park (P)</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Enabled</tag>
+			<point>Status</point>
+			<property>Enabled</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -839,8 +819,8 @@
 		<description>Timestamp of the last successful data retrieval from the Pleos API</description>
 		<category>Time</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
+			<point>Status</point>
+			<property>Timestamp</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -851,8 +831,8 @@
 		<description>Indicates whether a door, hood, or trunk is open, closed, or locked</description>
 		<category>Door</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>LockState</tag>
+			<point>Status</point>
+			<property>LockState</property>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -869,7 +849,7 @@
 		<label>Freezer State</label>
 		<description>Indicates whether the refrigeration unit is running</description>
 		<tags>
-			<tag>Status</tag>
+			<point>Status</point>
 		</tags>
 		<state readOnly="true">
 			<options>
