@@ -14,6 +14,8 @@ package org.openhab.io.eebus.internal;
 
 import java.net.InetSocketAddress;
 import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -152,8 +154,12 @@ public class EEBusImpl implements EEBus, ReadyService.ReadyTracker {
                     .withConnectClientsTo(ConnectClientsTo.valueOf(settings.connectPolicy));
             this.shipCommunication = communication;
 
+            // LPC and LPP each get their own entity: jEEBus registers every limitation use case's
+            // heartbeat check as a write validator on its entity's shared LoadControl feature, so on
+            // one entity a partner that only speaks LPC gets every LPC write rejected by LPP's validator.
             Device newDevice = Device.getBuilder().withDeviceType(deviceType).withCommunication(communication)
-                    .withId(settings.deviceId).addEntity().setType(entityType).applyToDevice().build();
+                    .withId(settings.deviceId).addEntity().setType(entityType).applyToDevice().addEntity()
+                    .setType(entityType).applyToDevice().build();
             this.device = newDevice;
 
             // Device.build() also adds an implicit DEVICE_INFORMATION entity alongside the one
@@ -161,10 +167,13 @@ public class EEBusImpl implements EEBus, ReadyService.ReadyTracker {
             // must be selected by type rather than assumed to be the sole/first entry (confirmed
             // live: addUseCase() on the DEVICE_INFORMATION entity throws
             // "Use case LpcCs does not allow entity type DEVICE_INFORMATION").
-            Entity entity = newDevice.getEntities().stream().filter(e -> e.getType() == entityType).findFirst()
-                    .orElseThrow(() -> new IllegalStateException(
-                            "EEBus: no " + entityType + " entity found on the built device"));
-            this.changeListener = new EEBusChangeListener(itemRegistry, metadataRegistry, eventPublisher, entity);
+            List<Entity> entities = newDevice.getEntities().stream().filter(e -> e.getType() == entityType)
+                    .sorted(Comparator.comparing((Entity e) -> e.getAddress().getEntity().get(0))).toList();
+            if (entities.size() < 2) {
+                throw new IllegalStateException("EEBus: expected two " + entityType + " entities on the built device");
+            }
+            this.changeListener = new EEBusChangeListener(itemRegistry, metadataRegistry, eventPublisher,
+                    entities.get(0), entities.get(1));
 
             logger.info("EEBus: SHIP node started, own SKI: {}", communication.getOwnSki());
         } catch (RuntimeException e) {

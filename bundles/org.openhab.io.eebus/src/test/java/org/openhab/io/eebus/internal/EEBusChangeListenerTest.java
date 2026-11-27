@@ -67,7 +67,8 @@ class EEBusChangeListenerTest {
     private final List<EEBusChangeListener> listeners = new ArrayList<>();
 
     private EEBusChangeListener createListener() {
-        EEBusChangeListener listener = new EEBusChangeListener(itemRegistry, metadataRegistry, eventPublisher, entity);
+        EEBusChangeListener listener = new EEBusChangeListener(itemRegistry, metadataRegistry, eventPublisher, entity,
+                entity);
         listeners.add(listener);
         return listener;
     }
@@ -156,7 +157,7 @@ class EEBusChangeListenerTest {
         EEBusChangeListener listener = createListener();
 
         // jEEBus passes null as the active limit in the CONTROLLED and AUTONOMOUS states
-        listener.onLimitUpdate(ITEM_NAME, null);
+        listener.onLimitUpdate(ITEM_NAME, null, false);
 
         ArgumentCaptor<Event> captor = ArgumentCaptor.forClass(Event.class);
         verify(eventPublisher).post(captor.capture());
@@ -174,12 +175,29 @@ class EEBusChangeListenerTest {
         when(limit.getResultingValue()).thenReturn(4200.0);
         when(limit.getUnit()).thenReturn("W");
 
-        listener.onLimitUpdate(ITEM_NAME, limit);
+        listener.onLimitUpdate(ITEM_NAME, limit, false);
 
         ArgumentCaptor<Event> captor = ArgumentCaptor.forClass(Event.class);
         verify(eventPublisher).post(captor.capture());
         ItemCommandEvent event = assertInstanceOf(ItemCommandEvent.class, captor.getValue());
         assertEquals(new QuantityType<>(4200.0, Units.WATT), event.getItemCommand());
+    }
+
+    @Test
+    void productionLimitIsPostedAsAPositivePower() throws Exception {
+        when(itemRegistry.getItems()).thenReturn(List.of());
+        when(itemRegistry.getItem(ITEM_NAME)).thenReturn(new NumberItem(ITEM_NAME));
+        EEBusChangeListener listener = createListener();
+        ActiveLimit limit = mock(ActiveLimit.class);
+        when(limit.getResultingValue()).thenReturn(-6000.0);
+        when(limit.getUnit()).thenReturn("W");
+
+        listener.onLimitUpdate(ITEM_NAME, limit, true);
+
+        ArgumentCaptor<Event> captor = ArgumentCaptor.forClass(Event.class);
+        verify(eventPublisher).post(captor.capture());
+        ItemCommandEvent event = assertInstanceOf(ItemCommandEvent.class, captor.getValue());
+        assertEquals(new QuantityType<>(6000.0, Units.WATT), event.getItemCommand());
     }
 
     @Test
@@ -189,7 +207,7 @@ class EEBusChangeListenerTest {
         EEBusChangeListener listener = createListener();
 
         listener.stop();
-        listener.onLimitUpdate(ITEM_NAME, null);
+        listener.onLimitUpdate(ITEM_NAME, null, false);
 
         verify(eventPublisher, never()).post(any());
     }

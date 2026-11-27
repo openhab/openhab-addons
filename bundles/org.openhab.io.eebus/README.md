@@ -71,6 +71,13 @@ When no limit is active any more, for example after the partner lifts it, the it
 Route it into your rules the same way you would a manually-entered value, e.g. clamp an EV charger's current limit
 to it.
 
+An `lpp` item always receives the production limit as a positive power: `6000 W` means feed-in is limited to 6 kW.
+EEBus sends an active production limit as a negative value and the failsafe production limit as a positive one, and the add-on posts the magnitude in both cases.
+Configure `nominalMax` and `failsafeLimit` for `lpp` as positive watts as well.
+
+LPC and LPP are hosted on two separate SPINE entities of the configured `entityType`.
+A control box that only implements LPC can then still limit the `lpc` item while an `lpp` item is tagged as well.
+
 ## Testing Without EEBus Hardware
 
 Since this add-on implements the standard EEBus SHIP/SPINE Controllable System role, it can be paired against any

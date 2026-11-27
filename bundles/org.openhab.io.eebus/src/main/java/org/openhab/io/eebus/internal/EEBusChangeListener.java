@@ -67,7 +67,8 @@ public class EEBusChangeListener implements ItemRegistryChangeListener {
     private final ItemRegistry itemRegistry;
     private final MetadataRegistry metadataRegistry;
     private final EventPublisher eventPublisher;
-    private final Entity entity;
+    private final Entity lpcEntity;
+    private final Entity lppEntity;
 
     private final RegistryChangeListener<Metadata> metadataChangeListener;
     private final LimitationExecutorAccess limitationExecutorAccess = new LimitationExecutorAccess();
@@ -78,11 +79,12 @@ public class EEBusChangeListener implements ItemRegistryChangeListener {
     private volatile boolean stopped;
 
     public EEBusChangeListener(ItemRegistry itemRegistry, MetadataRegistry metadataRegistry,
-            EventPublisher eventPublisher, Entity entity) {
+            EventPublisher eventPublisher, Entity lpcEntity, Entity lppEntity) {
         this.itemRegistry = itemRegistry;
         this.metadataRegistry = metadataRegistry;
         this.eventPublisher = eventPublisher;
-        this.entity = entity;
+        this.lpcEntity = lpcEntity;
+        this.lppEntity = lppEntity;
 
         metadataChangeListener = new RegistryChangeListener<>() {
             @Override
@@ -236,7 +238,7 @@ public class EEBusChangeListener implements ItemRegistryChangeListener {
             return;
         }
         LpcCs cs = new LpcCs(EEBusLimitationConfigFactory.lpc(config));
-        registerUseCase(cs, itemName);
+        registerUseCase(cs, lpcEntity, itemName, false);
         lpcItemName = itemName;
         logger.info("EEBus: LPC bound to item {}", itemName);
     }
@@ -252,15 +254,15 @@ public class EEBusChangeListener implements ItemRegistryChangeListener {
             return;
         }
         LppCs cs = new LppCs(EEBusLimitationConfigFactory.lpp(config));
-        registerUseCase(cs, itemName);
+        registerUseCase(cs, lppEntity, itemName, true);
         lppItemName = itemName;
         logger.info("EEBus: LPP bound to item {}", itemName);
     }
 
-    private void registerUseCase(LimitationUseCaseImpl useCase, String itemName) {
+    private void registerUseCase(LimitationUseCaseImpl useCase, Entity entity, String itemName, boolean production) {
         ScheduledExecutorService executor = limitationExecutorAccess.getExecutor(useCase);
         try {
-            useCase.addListener((event, state, limit) -> onLimitUpdate(itemName, limit));
+            useCase.addListener((event, state, limit) -> onLimitUpdate(itemName, limit, production));
             entity.addUseCase(useCase);
             limitationExecutors.add(executor);
         } catch (RuntimeException e) {
@@ -274,7 +276,7 @@ public class EEBusChangeListener implements ItemRegistryChangeListener {
      * when jEEBus reports no active limit ({@code null} in the CONTROLLED and AUTONOMOUS states,
      * e.g. after LIMIT_DEACTIVATED or INIT_TIMEOUT).
      */
-    void onLimitUpdate(String itemName, @Nullable ActiveLimit limit) {
+    void onLimitUpdate(String itemName, @Nullable ActiveLimit limit, boolean production) {
         // Ignore callbacks that arrive as the state machine is shutting down.
         if (stopped) {
             return;
@@ -293,7 +295,9 @@ public class EEBusChangeListener implements ItemRegistryChangeListener {
         if (!"W".equals(limit.getUnit())) {
             logger.debug("EEBus: unexpected active-limit unit '{}' for item {}, expected W", limit.getUnit(), itemName);
         }
-        Command command = new QuantityType<>(value, Units.WATT);
+        // LPP sends an active production limit as a negative number but its failsafe limit as a positive
+        // one; the item always gets the positive magnitude.
+        Command command = new QuantityType<>(production ? Math.abs(value) : value, Units.WATT);
         eventPublisher.post(ItemEventFactory.createCommandEvent(itemName, command, COMMAND_SOURCE));
     }
 
