@@ -89,4 +89,9 @@ public class SinopeApiLoginRequest extends SinopeRequest {
         // Avoid logging the raw login payload containing the API key
         this.internal_payload = internal_payload;
     }
+
+    @Override
+    public String toString() {
+        return String.format("SinopeApiLoginRequest [id=%s, apiKey=***]", ByteUtil.toString(id).trim());
+    }
 }

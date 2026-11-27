@@ -53,13 +53,13 @@ public abstract class SinopeAnswer extends SinopeRequest {
         bb.order(ByteOrder.LITTLE_ENDIAN);
         bb.put(sizeInByte);
         short size = bb.getShort(0);
-        if (size < 0) {
+        if (size < SinopeFrame.COMMAND_SIZE) {
             throw new IOException(String.format("Invalid frame size: %d", size));
         }
 
-        byte[] payload = new byte[SinopeRequest.HEADER_COMMAND_CRC_SIZE + size];
-        byte[] remain = new byte[size + 1];
+        byte[] remain = new byte[size + SinopeFrame.CRC_SIZE];
         readFully(r, remain);
+        byte[] payload = new byte[header.length + remain.length];
         bb = ByteBuffer.wrap(payload);
         bb.put(header);
         bb.put(remain);

@@ -38,6 +38,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 import org.openhab.binding.sinope.handler.SinopeGatewayHandler;
 import org.openhab.binding.sinope.internal.config.SinopeConfig;
+import org.openhab.binding.sinope.internal.core.SinopeApiLoginRequest;
 import org.openhab.binding.sinope.internal.core.SinopeAuthenticationKeyAnswer;
 import org.openhab.binding.sinope.internal.core.SinopeDeviceReportAnswer;
 import org.openhab.binding.sinope.internal.core.SinopePingAnswer;
@@ -115,11 +116,179 @@ public class SinopeDiscoveryAndPairingTest {
 
     @Test
     public void testAuthenticationKeyAnswerShortFrame() throws IOException {
-        byte[] frame = buildFrame((byte) 0x01, (byte) 0x11, new byte[] { 0x02, 0x00, 0x0A });
+        // Truncated 9-byte data frame (only 6 key bytes instead of 8) must NOT pass length guard
+        byte[] truncatedKeyData = new byte[] { 0x01, 0x00, 0x00, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66 };
+        byte[] frame = buildFrame((byte) 0x01, (byte) 0x11, truncatedKeyData);
         SinopeAuthenticationKeyAnswer answer = new SinopeAuthenticationKeyAnswer(new ByteArrayInputStream(frame));
 
-        assertEquals(2, answer.getStatus());
+        assertEquals(1, answer.getStatus());
         assertEquals(0, answer.getApiKey().length);
+    }
+
+    @Test
+    public void testDeviceReportTruncatedFrameAndInvalidSize() throws IOException {
+        // Truncated 3-byte data frame (only 2 device-id bytes instead of 4) must NOT fabricate an ID
+        byte[] truncatedReport = buildFrame((byte) 0x01, (byte) 0x16, new byte[] { 0x00, 0x12, 0x34 });
+        SinopeDeviceReportAnswer answer = new SinopeDeviceReportAnswer(new ByteArrayInputStream(truncatedReport));
+        assertEquals(0, answer.getDeviceId().length);
+
+        // Size below COMMAND_SIZE (2) must be rejected
+        byte[] badSizeFrame = new byte[] { 0x55, 0x00, 0x01, 0x00, 0x00, 0x00 };
+        assertThrows(IOException.class, () -> new SinopePingAnswer(new ByteArrayInputStream(badSizeFrame)));
+    }
+
+    @Test
+    public void testLoginRequestToStringRedactsApiKey() {
+        byte[] gatewayId = new byte[] { 0x00, 0x2F, (byte) 0xC2, (byte) 0xC2, (byte) 0xDD, (byte) 0x88, (byte) 0xAA,
+                (byte) 0xAA };
+        byte[] apiKey = new byte[] { 0x12, 0x57, 0x55, (byte) 0xD5, (byte) 0xCD, 0x4A, (byte) 0xD5, 0x33 };
+        SinopeApiLoginRequest request = new SinopeApiLoginRequest(gatewayId, apiKey);
+
+        String diagnostic = request.toString();
+        assertThat(diagnostic, containsString("***"));
+        assertFalse(diagnostic.contains("0x57"));
+        assertFalse(diagnostic.contains("0xCD"));
+    }
+
+    @Test
+    @Timeout(10)
+    public void testDisposeUnblocksInFlightConnectPromptly() throws Exception {
+        CountDownLatch acceptedLatch = new CountDownLatch(1);
+        CountDownLatch releaseServer = new CountDownLatch(1);
+
+        try (ServerSocket server = new ServerSocket(0)) {
+            Thread stalledGateway = new Thread(() -> {
+                try (Socket s = server.accept()) {
+                    acceptedLatch.countDown();
+                    // Accept TCP but never respond to login until test releases
+                    releaseServer.await(10, TimeUnit.SECONDS);
+                } catch (IOException | InterruptedException ignored) {
+                }
+            });
+            stalledGateway.setDaemon(true);
+            stalledGateway.start();
+
+            Bridge bridge = BridgeBuilder.create(SinopeBindingConstants.THING_TYPE_GATEWAY, "stalledgw")
+                    .withConfiguration(new Configuration(Map.of("hostname", "127.0.0.1", "port", server.getLocalPort(),
+                            "gatewayId", "002f-c2c2-dd88-aaaa", "apiKey", "0x12 0x57 0x55 0xD5 0xCD 0x4A 0xD5 0x33",
+                            "refresh", 60)))
+                    .build();
+
+            SinopeGatewayHandler handler = new SinopeGatewayHandler(bridge);
+            ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
+            handler.setCallback(callback);
+
+            try {
+                handler.initialize();
+                assertTrue(acceptedLatch.await(5, TimeUnit.SECONDS), "Gateway should initiate TCP connection");
+                long startNanos = System.nanoTime();
+                handler.dispose();
+                long elapsedMs = TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - startNanos);
+                assertTrue(elapsedMs < 3000, "dispose() should cancel in-flight connect promptly, took " + elapsedMs);
+            } finally {
+                releaseServer.countDown();
+            }
+        }
+    }
+
+    @Test
+    @Timeout(15)
+    public void testReinitializedPairingIgnoresStaleWorker() throws Exception {
+        byte[] staleKey = new byte[] { 0x11, 0x11, 0x11, 0x11, 0x11, 0x11, 0x11, 0x11 };
+        byte[] freshKey = new byte[] { 0x22, 0x22, 0x22, 0x22, 0x22, 0x22, 0x22, 0x22 };
+        String expectedFreshKey = ByteUtil.toString(freshKey).trim();
+
+        CountDownLatch staleConnected = new CountDownLatch(1);
+        CountDownLatch releaseStaleReply = new CountDownLatch(1);
+        CountDownLatch freshKeySaved = new CountDownLatch(1);
+        AtomicReference<String> savedApiKey = new AtomicReference<>("");
+
+        try (ServerSocket staleServer = new ServerSocket(0); ServerSocket freshServer = new ServerSocket(0)) {
+            Thread staleThread = new Thread(() -> {
+                try (Socket s = staleServer.accept()) {
+                    InputStream in = s.getInputStream();
+                    OutputStream out = s.getOutputStream();
+                    readFrame(in); // ping
+                    out.write(buildFrame((byte) 0x00, (byte) 0x13, new byte[0]));
+                    out.flush();
+                    readFrame(in); // auth key request
+                    staleConnected.countDown();
+                    releaseStaleReply.await(5, TimeUnit.SECONDS);
+                    ByteBuffer keyData = ByteBuffer.allocate(11);
+                    keyData.put((byte) 0x01).put((byte) 0x00).put((byte) 0x00).put(ByteUtil.reverse(staleKey));
+                    out.write(buildFrame((byte) 0x01, (byte) 0x11, keyData.array()));
+                    out.flush();
+                } catch (IOException | InterruptedException ignored) {
+                }
+            });
+            staleThread.setDaemon(true);
+            staleThread.start();
+
+            Thread freshThread = new Thread(() -> {
+                try {
+                    try (Socket s1 = freshServer.accept()) {
+                        InputStream in = s1.getInputStream();
+                        OutputStream out = s1.getOutputStream();
+                        readFrame(in); // ping
+                        out.write(buildFrame((byte) 0x00, (byte) 0x13, new byte[0]));
+                        out.flush();
+                        readFrame(in); // auth key request
+                        ByteBuffer keyData = ByteBuffer.allocate(11);
+                        keyData.put((byte) 0x01).put((byte) 0x00).put((byte) 0x00).put(ByteUtil.reverse(freshKey));
+                        out.write(buildFrame((byte) 0x01, (byte) 0x11, keyData.array()));
+                        out.flush();
+                    }
+                    try (Socket s2 = freshServer.accept()) {
+                        InputStream in = s2.getInputStream();
+                        OutputStream out = s2.getOutputStream();
+                        readFrame(in); // login
+                        out.write(buildFrame((byte) 0x01, (byte) 0x11, new byte[10]));
+                        out.flush();
+                        in.read();
+                    }
+                } catch (IOException ignored) {
+                }
+            });
+            freshThread.setDaemon(true);
+            freshThread.start();
+
+            Bridge bridge = BridgeBuilder.create(SinopeBindingConstants.THING_TYPE_GATEWAY, "reinitgw")
+                    .withConfiguration(new Configuration(Map.of("hostname", "127.0.0.1", "port",
+                            staleServer.getLocalPort(), "gatewayId", "002f-c2c2-dd88-aaaa", "refresh", 60)))
+                    .build();
+
+            SinopeGatewayHandler handler = new SinopeGatewayHandler(bridge);
+            ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
+            doAnswer(inv -> {
+                Bridge updated = inv.getArgument(0);
+                Object key = updated.getConfiguration().get(SinopeBindingConstants.CONFIG_PROPERTY_API_KEY);
+                if (key instanceof String s) {
+                    savedApiKey.set(s);
+                    freshKeySaved.countDown();
+                }
+                return null;
+            }).when(callback).thingUpdated(any());
+            handler.setCallback(callback);
+
+            try {
+                handler.initialize();
+                assertTrue(staleConnected.await(5, TimeUnit.SECONDS), "Initial pairing should connect");
+
+                // Reinitialize the same handler instance against freshServer via thingUpdated()
+                Bridge updatedBridge = BridgeBuilder.create(SinopeBindingConstants.THING_TYPE_GATEWAY, "reinitgw")
+                        .withConfiguration(new Configuration(Map.of("hostname", "127.0.0.1", "port",
+                                freshServer.getLocalPort(), "gatewayId", "002f-c2c2-dd88-aaaa", "refresh", 60)))
+                        .build();
+                handler.thingUpdated(updatedBridge);
+                releaseStaleReply.countDown();
+
+                assertTrue(freshKeySaved.await(10, TimeUnit.SECONDS), "Fresh pairing should save API key");
+                assertEquals(expectedFreshKey, savedApiKey.get());
+            } finally {
+                releaseStaleReply.countDown();
+                handler.dispose();
+            }
+        }
     }
 
     @Test

@@ -49,6 +49,7 @@
 			<channel id="setpointMode" typeId="setpointMode"/>
 			<channel id="heatingLevel" typeId="heatingLevel"/>
 		</channels>
+		<representation-property>deviceId</representation-property>
 		<config-description>
 			<parameter name="deviceId" type="text" required="true">
 				<label>Thermostat Device ID</label>

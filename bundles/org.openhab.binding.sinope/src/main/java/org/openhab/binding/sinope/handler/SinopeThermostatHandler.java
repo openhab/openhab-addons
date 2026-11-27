@@ -262,6 +262,7 @@ public class SinopeThermostatHandler extends BaseThingHandler {
             updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Invalid Device id");
             return;
         }
+        updateProperty(SinopeBindingConstants.CONFIG_PROPERTY_DEVICE_ID, ByteUtil.toString(this.deviceId).trim());
 
         Bridge bridge = getBridge();
         if (bridge == null) {
