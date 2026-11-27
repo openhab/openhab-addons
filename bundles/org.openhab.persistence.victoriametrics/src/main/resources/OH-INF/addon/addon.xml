@@ -18,7 +18,7 @@
 			<match-properties>
 				<match-property>
 					<name>command</name>
-					<regex>(?i).*[/\\](victoria-metrics)(-prod)?(\.exe)?$</regex>
+					<regex>(?i).*[/\\]victoria-metrics(-[a-z]+-[a-z0-9]+)?(-prod)?(-fips)?(\.exe)?$</regex>
 				</match-property>
 			</match-properties>
 		</discovery-method>
