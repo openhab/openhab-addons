@@ -246,7 +246,7 @@ public class E3DCPowerPlantHandler extends E3DCThingHandler {
             if (mode.isHeld()) {
                 heldMode = mode;
                 heldUntilMillis = System.currentTimeMillis()
-                        + mode.cycles() * bridge.getRefreshIntervalSeconds() * 1000L;
+                        + mode.cycles() * TimeUnit.SECONDS.toMillis(bridge.getRefreshIntervalSeconds());
             } else {
                 heldMode = null;
             }
@@ -255,9 +255,6 @@ public class E3DCPowerPlantHandler extends E3DCThingHandler {
     }
 
     /** Reads the idle periods of the second version from the device, one per line, or {@code null} on failure. */
-    /**
-     * The idle periods in their written form.
-     */
     public @Nullable String getIdlePeriods() {
         synchronized (idleLock) {
             List<E3DCIdlePeriod> periods = readIdlePeriods();
@@ -266,9 +263,6 @@ public class E3DCPowerPlantHandler extends E3DCThingHandler {
     }
 
     /** Replaces the whole list of idle periods of the second version on the device; an empty text removes all. */
-    /**
-     * Sets the idle periods from the written form.
-     */
     public boolean setIdlePeriods(String text) {
         List<E3DCIdlePeriod> periods = E3DCIdlePeriod.parseAll(text);
         if (periods == null) {
@@ -307,9 +301,6 @@ public class E3DCPowerPlantHandler extends E3DCThingHandler {
     }
 
     /** Removes the idle period of the given name and keeps all others. */
-    /**
-     * Removes the idle period of the given name.
-     */
     public boolean deleteIdlePeriod(String name) {
         String wanted = name.trim();
         boolean[] found = new boolean[1];
@@ -871,7 +862,7 @@ public class E3DCPowerPlantHandler extends E3DCThingHandler {
     private static @Nullable String kilowatts(RscpValue response, int tag) {
         Number value = response.findNumber(tag);
         return value != null && value.doubleValue() > 0
-                ? String.format(Locale.ROOT, "%.1f kW", value.doubleValue() / 1000.0)
+                ? String.format(Locale.ROOT, "%.1f kW", value.doubleValue() / E3DCBindingConstants.WH_PER_KWH)
                 : null;
     }
 
@@ -1004,7 +995,7 @@ public class E3DCPowerPlantHandler extends E3DCThingHandler {
             loggedTrackers = found;
             trackerPolls = 0;
             logger.debug("Inverter answers for {}", found.describe());
-            logger.debug("Answer of the inverter:{}{}", System.lineSeparator(), inverter.describeTree());
+            logger.trace("Answer of the inverter:{}{}", System.lineSeparator(), inverter.describeTree());
         }
         if (logger.isTraceEnabled() || trackerPolls % 20 == 0) {
             logger.debug("PV tracker values: {}", E3DCInverterChannels.describeValues(inverter));

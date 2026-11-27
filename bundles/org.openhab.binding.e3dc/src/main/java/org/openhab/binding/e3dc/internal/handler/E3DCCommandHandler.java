@@ -45,9 +45,6 @@ public class E3DCCommandHandler {
     private final Map<Integer, RscpValue> powerSettings = new LinkedHashMap<>();
 
     /** Remembers the device state so a later write can complete the parameters it does not change. */
-    /**
-     * Takes the settings of the answer as the current device state.
-     */
     public synchronized void updateFromResponse(RscpValue response) {
         for (int container : POWER_SETTINGS_CONTAINERS) {
             RscpValue settings = response.find(container);
@@ -69,9 +66,6 @@ public class E3DCCommandHandler {
     }
 
     /** Builds the request of a converted command, sends it and applies the acknowledgement as one transaction. */
-    /**
-     * Sends the command of one channel and reports whether the device accepted it.
-     */
     public synchronized boolean execute(E3DCBridgeHandler bridge, E3DCCommandSpec spec, RscpValue value,
             int deviceIndex) {
         List<RscpValue> request = buildRequest(spec, value, deviceIndex);
@@ -79,10 +73,7 @@ public class E3DCCommandHandler {
     }
 
     /** Builds the request for a command on a settable channel, or {@code null} when it cannot be represented. */
-    /**
-     * The request for one command, or null when the command does not fit.
-     */
-    public synchronized @Nullable List<RscpValue> buildRequest(E3DCCommandSpec spec, Command command, int deviceIndex) {
+    synchronized @Nullable List<RscpValue> buildRequest(E3DCCommandSpec spec, Command command, int deviceIndex) {
         RscpValue value = spec.toValue(command);
         return value == null ? null : buildRequest(spec, value, deviceIndex);
     }
@@ -125,17 +116,14 @@ public class E3DCCommandHandler {
     }
 
     /** Sends the request and reports whether the device answered without an error. */
-    /**
-     * Sends the request and reports whether the device answered without an error.
-     */
     public synchronized boolean send(E3DCBridgeHandler bridge, List<RscpValue> request) {
         try {
             if (logger.isDebugEnabled()) {
-                logger.debug("Sending command: {}", RscpValue.container(0, request).describeTree());
+                logger.trace("Sending command: {}", RscpValue.container(0, request).describeTree());
             }
             RscpValue response = bridge.sendRequest(request);
             if (logger.isDebugEnabled()) {
-                logger.debug("Command answered with: {}", response.describeTree());
+                logger.trace("Command answered with: {}", response.describeTree());
             }
             if (response.containsError()) {
                 logger.debug("The device rejected the command: {}", response.findError());

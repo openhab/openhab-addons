@@ -94,9 +94,6 @@ public record E3DCCommandSpec(int tag, RscpType type, int container, boolean swi
     }
 
     /** Converts a command into the RSCP value the device expects, or {@code null} when it cannot be represented. */
-    /**
-     * The value to send for the command, or null when the command does not fit.
-     */
     public @Nullable RscpValue toValue(Command command) {
         if (switchValue) {
             Boolean on = toBoolean(command);
@@ -213,9 +210,6 @@ public record E3DCCommandSpec(int tag, RscpType type, int container, boolean swi
     }
 
     /** The settable channels of a wallbox: one channel per value reports and sets it, without a second one. */
-    /**
-     * The writable channels of a wallbox.
-     */
     public static E3DCCommandRegistry wallbox() {
         return new E3DCCommandRegistry().group(E3DCBindingConstants.GROUP_WALLBOX_STATUS_CONTROL, Map.of(//
                 "sun-mode", E3DCCommandSpec.uchar8Flag(RscpTag.WB_REQ_SET_SUN_MODE_ACTIVE, RscpTag.WB_REQ_DATA), //

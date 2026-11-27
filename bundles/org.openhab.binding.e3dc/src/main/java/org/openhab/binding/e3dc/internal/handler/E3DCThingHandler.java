@@ -83,15 +83,9 @@ public abstract class E3DCThingHandler extends BaseThingHandler implements E3DCD
     }
 
     /** The channels this handler publishes, grouped by channel group. */
-    /**
-     * The channel specifications of this thing.
-     */
     protected abstract E3DCChannelRegistry getRegistry();
 
     /** The index of this thing's device in a container that holds several, or {@code null} for a single device. */
-    /**
-     * The index of this thing's device in a container that holds several.
-     */
     protected @Nullable Integer getDeviceIndex() {
         return null;
     }
@@ -171,9 +165,6 @@ public abstract class E3DCThingHandler extends BaseThingHandler implements E3DCD
     }
 
     /** The channels this handler publishes itself instead of from one data point of the poll answer. */
-    /**
-     * The channels this handler publishes itself instead of from one data point.
-     */
     protected Set<String> channelsComputedByHandler() {
         return Set.of();
     }
@@ -278,7 +269,7 @@ public abstract class E3DCThingHandler extends BaseThingHandler implements E3DCD
         }
         Channel channel = getThing().getChannel(channelUID);
         if (channel != null && "DateTime".equals(channel.getAcceptedItemType())) {
-            State moment = timestampState(value);
+            State moment = timestampState(value, getZone());
             if (moment != null) {
                 updateState(channelUID, moment);
             }
@@ -333,9 +324,6 @@ public abstract class E3DCThingHandler extends BaseThingHandler implements E3DCD
     }
 
     /** Updates a thing property only when its value changed, so a poll does not rewrite it every cycle. */
-    /**
-     * Sets one thing property, or removes it when the value is null.
-     */
     protected void setProperty(String property, @Nullable String value) {
         if (value == null || value.isBlank()) {
             return;
@@ -403,7 +391,13 @@ public abstract class E3DCThingHandler extends BaseThingHandler implements E3DCD
      * means nothing happened yet, because the device fills a moment that was never set with zero or with a
      * placeholder far in the future. Such a moment is undefined. {@code null} means no moment at all.
      */
+    /** The state of a timestamp channel, shown in the zone of the openHAB installation. */
     static @Nullable State timestampState(RscpValue value) {
+        return timestampState(value, ZoneId.systemDefault());
+    }
+
+    /** The state of a timestamp channel, shown in the given zone. */
+    static @Nullable State timestampState(RscpValue value, ZoneId zone) {
         Object raw = value.getValue();
         Instant moment;
         if (raw instanceof Instant instant) {
@@ -421,7 +415,7 @@ public abstract class E3DCThingHandler extends BaseThingHandler implements E3DCD
         if (epochSecond < EARLIEST_MOMENT_SECONDS || epochSecond > LATEST_MOMENT_SECONDS) {
             return UnDefType.UNDEF;
         }
-        return new DateTimeType(moment.atZone(ZoneId.systemDefault()));
+        return new DateTimeType(moment.atZone(zone));
     }
 
     /** The start of the year 2000, no moment the device reports is older than that. */
@@ -554,7 +548,7 @@ public abstract class E3DCThingHandler extends BaseThingHandler implements E3DCD
 
     /** The energy of a battery capacity at a given voltage. */
     static @Nullable Double energyKwh(@Nullable Double ampereHours, double volts) {
-        return ampereHours == null ? null : ampereHours * volts / 1000.0;
+        return ampereHours == null ? null : ampereHours * volts / E3DCBindingConstants.WH_PER_KWH;
     }
 
     /**
@@ -654,25 +648,16 @@ public abstract class E3DCThingHandler extends BaseThingHandler implements E3DCD
     }
 
     /** Whether the value written to a channel is published as its state, which a command only channel does not do. */
-    /**
-     * Whether the channel shows the value it was written with.
-     */
     protected boolean publishesWrittenState(ChannelUID channelUID) {
         return true;
     }
 
     /** The writable channels of this thing, or {@code null} when it has none. */
-    /**
-     * The writable channels of this thing, or null when none can be written.
-     */
     protected @Nullable E3DCCommandRegistry getCommandRegistry() {
         return null;
     }
 
     /** Applies power settings received from the device to the command snapshot. */
-    /**
-     * Takes the settings of the answer as the current device state.
-     */
     protected void onPowerSettings(RscpValue response) {
         commandHandler.updateFromResponse(response);
     }

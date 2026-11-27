@@ -24,6 +24,7 @@ import java.net.SocketTimeoutException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -88,7 +89,7 @@ public class RscpClient implements AutoCloseable {
      * Connects to the device and authenticates, or throws when it does not answer.
      */
     public void connect() throws RscpException {
-        close();
+        resetConnection();
         logger.debug("Connecting to {}:{} with a timeout of {} ms", host, port, timeoutMillis);
         try {
             Socket opened = openSocket();
@@ -97,7 +98,7 @@ public class RscpClient implements AutoCloseable {
             this.cipher = new RscpCipher(key);
         } catch (IOException e) {
             restoreInterrupt(e);
-            close();
+            resetConnection();
             throw new RscpException("Cannot connect to " + host + ":" + port, e);
         }
         Socket connected = socket;
@@ -111,12 +112,12 @@ public class RscpClient implements AutoCloseable {
         try {
             response = request(List.of(authentication));
         } catch (RscpException e) {
-            close();
+            resetConnection();
             throw new RscpException(explainHandshakeFailure(e), e);
         }
         RscpError error = response.findError();
         if (error != null) {
-            close();
+            resetConnection();
             if (error == RscpError.ACCESS_DENIED) {
                 throw new RscpException("The device rejected the credentials (access denied). The user name or the"
                         + " password does not match the E3/DC cloud account.");
@@ -126,7 +127,7 @@ public class RscpClient implements AutoCloseable {
         int accessLevel = accessLevelOf(response);
         if (accessLevel < MIN_ACCESS_LEVEL) {
             // a wrong login is answered with an access level of zero rather than with an error item
-            close();
+            resetConnection();
             throw new RscpException("The device accepted the connection but not the login: the access level is "
                     + accessLevel + ". Check the user name and password of the E3/DC account and the RSCP password.");
         }
@@ -377,6 +378,13 @@ public class RscpClient implements AutoCloseable {
 
     @Override
     public void close() {
+        resetConnection();
+        // the derived key is as secret as the password, so it is wiped when the connection is dropped for good
+        Arrays.fill(key, (byte) 0);
+    }
+
+    /** Drops the connection but keeps the derived key, which a new connection on this client needs again. */
+    private void resetConnection() {
         Socket current = socket;
         socket = null;
         input = null;

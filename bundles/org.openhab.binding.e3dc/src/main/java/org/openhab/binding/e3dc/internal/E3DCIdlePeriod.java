@@ -69,9 +69,6 @@ public record E3DCIdlePeriod(String name, int weekdays, Type type, boolean activ
     }
 
     /** Parses one period, or returns {@code null} when the text is not a valid period. */
-    /**
-     * The idle period of its written form, or null when the text is not valid.
-     */
     public static @Nullable E3DCIdlePeriod parse(String text) {
         return parseInternal(text, null);
     }
@@ -120,11 +117,14 @@ public record E3DCIdlePeriod(String name, int weekdays, Type type, boolean activ
             type = fixedType;
             activeField = parts[2];
         }
-        boolean active = switch (activeField.trim().toLowerCase(Locale.ROOT)) {
-            case "true", "on", "1" -> true;
-            case "false", "off", "0" -> false;
-            default -> false;
+        Boolean active = switch (activeField.trim().toLowerCase(Locale.ROOT)) {
+            case "true", "on", "1" -> Boolean.TRUE;
+            case "false", "off", "0" -> Boolean.FALSE;
+            default -> null;
         };
+        if (active == null) {
+            return null;
+        }
         String[] times = window.split("-");
         if (times.length != 2) {
             return null;
@@ -204,9 +204,6 @@ public record E3DCIdlePeriod(String name, int weekdays, Type type, boolean activ
     }
 
     /** Whether the window ends after it starts, which is what the device and rscp2mqtt require. */
-    /**
-     * Whether the start lies before the end of the window.
-     */
     public boolean hasValidWindow() {
         return start.isBefore(stop);
     }
@@ -234,9 +231,6 @@ public record E3DCIdlePeriod(String name, int weekdays, Type type, boolean activ
     }
 
     /** The request that replaces the whole list of periods on the device. */
-    /**
-     * The values that set the given periods.
-     */
     public static List<RscpValue> toRequest(List<E3DCIdlePeriod> periods) {
         List<RscpValue> children = new ArrayList<>();
         for (E3DCIdlePeriod period : periods) {
@@ -246,9 +240,6 @@ public record E3DCIdlePeriod(String name, int weekdays, Type type, boolean activ
     }
 
     /** The text form of this period, which parses back to an equal period. */
-    /**
-     * The period in its written form.
-     */
     public String toText() {
         return name + ":" + daysText() + ":" + (type == Type.CHARGE ? "charge" : "discharge") + ":" + active + ":"
                 + windowText();
@@ -324,9 +315,6 @@ public record E3DCIdlePeriod(String name, int weekdays, Type type, boolean activ
     }
 
     /** The text of the periods of one direction, as the channel of that direction carries them. */
-    /**
-     * The periods of one type in their written form.
-     */
     public static String toText(List<E3DCIdlePeriod> periods, Type type) {
         StringBuilder text = new StringBuilder();
         for (E3DCIdlePeriod period : periods) {

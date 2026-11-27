@@ -260,9 +260,6 @@ public final class E3DCInverterChannels {
     }
 
     /** The values of every tracker and sensor in the answer, one line per index. */
-    /**
-     * The tracker values of an answer for the debug log.
-     */
     public static String describeValues(RscpValue inverter) {
         Found found = discover(inverter);
         if (found.isEmpty()) {

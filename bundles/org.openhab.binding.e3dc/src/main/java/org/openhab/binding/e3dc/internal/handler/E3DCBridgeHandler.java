@@ -60,6 +60,7 @@ import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
+import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -94,13 +95,13 @@ public class E3DCBridgeHandler extends BaseBridgeHandler {
     /** The channel groups a thing needs a container request for, with the config key of the addressed device. */
     private static final Map<ThingTypeUID, List<GroupRequest>> GROUP_REQUESTS = Map.of(//
             E3DCBindingConstants.THING_TYPE_WALLBOX,
-            List.of(new GroupRequest(E3DCBindingConstants.GROUP_WALLBOX, "wallboxIndex")), //
+            List.of(new GroupRequest(E3DCBindingConstants.GROUP_WALLBOX, E3DCBindingConstants.CONFIG_WALLBOX_INDEX)), //
             E3DCBindingConstants.THING_TYPE_POWER_METER,
-            List.of(new GroupRequest(E3DCBindingConstants.GROUP_METER, "meterIndex")), //
+            List.of(new GroupRequest(E3DCBindingConstants.GROUP_METER, E3DCBindingConstants.CONFIG_METER_INDEX)), //
             E3DCBindingConstants.THING_TYPE_BATTERY,
-            List.of(new GroupRequest(E3DCBindingConstants.GROUP_PACK, "batteryIndex")), //
+            List.of(new GroupRequest(E3DCBindingConstants.GROUP_PACK, E3DCBindingConstants.CONFIG_BATTERY_INDEX)), //
             E3DCBindingConstants.THING_TYPE_BATTERY_MODULE,
-            List.of(new GroupRequest(E3DCBindingConstants.GROUP_MODULE, "batteryIndex")), //
+            List.of(new GroupRequest(E3DCBindingConstants.GROUP_MODULE, E3DCBindingConstants.CONFIG_BATTERY_INDEX)), //
             E3DCBindingConstants.THING_TYPE_POWER_PLANT,
             List.of(new GroupRequest(E3DCBindingConstants.GROUP_INVERTER, null),
                     new GroupRequest(E3DCBindingConstants.GROUP_EMERGENCY, null)));
@@ -267,7 +268,7 @@ public class E3DCBridgeHandler extends BaseBridgeHandler {
 
         int generation = connectionGeneration.get();
         RscpClient newClient = new RscpClient(current.host, current.port, current.userName, current.password,
-                current.rscpPassword, current.timeoutSeconds() * 1000);
+                current.rscpPassword, (int) TimeUnit.SECONDS.toMillis(current.timeoutSeconds()));
         // a dispose during the blocking connect has to be able to close the socket this attempt has opened
         pendingClient = newClient;
         try {
@@ -421,8 +422,7 @@ public class E3DCBridgeHandler extends BaseBridgeHandler {
             RscpValue response = current.request(buildRequest(withHistory));
             long answered = System.nanoTime();
             if (withHistory) {
-                lastHistoryPollMillis = System.currentTimeMillis();
-                lastHistoryDay = LocalDate.now(getZone());
+                markHistoryPoll(response);
             }
             reportTagSupport(response);
             logContainerAnswers(response);
@@ -460,7 +460,7 @@ public class E3DCBridgeHandler extends BaseBridgeHandler {
         long busy = current.getBusyNanos();
         long busyDelta = busy - lastBusyNanos;
         lastBusyNanos = busy;
-        long intervalNanos = currentConfig.refreshIntervalSeconds() * 1_000_000_000L;
+        long intervalNanos = TimeUnit.SECONDS.toNanos(currentConfig.refreshIntervalSeconds());
         double ratio = (double) busyDelta / intervalNanos;
         if (logger.isTraceEnabled()) {
             logger.trace("Loop ratio {} % (busy {} ms of {} ms interval, history {})",
@@ -490,16 +490,18 @@ public class E3DCBridgeHandler extends BaseBridgeHandler {
     }
 
     private void updateStatistics(RscpClient current, double ratio, long dispatchNanos) {
-        publishStatistic("loop-ratio", new QuantityType<>(ratio * 100, Units.PERCENT));
-        publishStatistic("poll-duration", milliseconds(current.getLastWireNanos()));
-        publishStatistic("device-wait", milliseconds(current.getLastDeviceWaitNanos()));
-        publishStatistic("dispatch-time", milliseconds(dispatchNanos));
-        publishStatistic("answer-size", new QuantityType<>(current.getLastAnswerBytes(), Units.BYTE));
+        publishStatistic(E3DCBindingConstants.CHANNEL_LOOP_RATIO, new QuantityType<>(ratio * 100, Units.PERCENT));
+        publishStatistic(E3DCBindingConstants.CHANNEL_POLL_DURATION, milliseconds(current.getLastWireNanos()));
+        publishStatistic(E3DCBindingConstants.CHANNEL_DEVICE_WAIT, milliseconds(current.getLastDeviceWaitNanos()));
+        publishStatistic(E3DCBindingConstants.CHANNEL_DISPATCH_TIME, milliseconds(dispatchNanos));
+        publishStatistic(E3DCBindingConstants.CHANNEL_ANSWER_SIZE,
+                new QuantityType<>(current.getLastAnswerBytes(), Units.BYTE));
     }
 
     private void updateWindowStatistics(double average, double peak) {
-        publishStatistic("loop-ratio-average", new QuantityType<>(average * 100, Units.PERCENT));
-        publishStatistic("loop-ratio-peak", new QuantityType<>(peak * 100, Units.PERCENT));
+        publishStatistic(E3DCBindingConstants.CHANNEL_LOOP_RATIO_AVERAGE,
+                new QuantityType<>(average * 100, Units.PERCENT));
+        publishStatistic(E3DCBindingConstants.CHANNEL_LOOP_RATIO_PEAK, new QuantityType<>(peak * 100, Units.PERCENT));
     }
 
     private static QuantityType<?> milliseconds(long nanos) {
@@ -589,6 +591,37 @@ public class E3DCBridgeHandler extends BaseBridgeHandler {
         return items;
     }
 
+    /** How long a history request waits for another try when the answer carried no history container. */
+    private static final long HISTORY_RETRY_MILLIS = 60_000;
+
+    /**
+     * Remembers that the poll carried the history containers. An answer without them is asked again after a
+     * shorter period than the history interval, so the history channels do not stay empty for a whole interval.
+     */
+    private void markHistoryPoll(RscpValue response) {
+        long now = System.currentTimeMillis();
+        if (hasHistoryData(response)) {
+            lastHistoryPollMillis = now;
+            lastHistoryDay = LocalDate.now(getZone());
+            return;
+        }
+        E3DCBridgeConfiguration currentConfig = config;
+        if (currentConfig == null) {
+            lastHistoryPollMillis = now;
+            return;
+        }
+        logger.debug("The answer carried no history containers, the history is requested again in {} ms",
+                HISTORY_RETRY_MILLIS);
+        lastHistoryPollMillis = now - TimeUnit.SECONDS.toMillis(currentConfig.historyIntervalSeconds())
+                + HISTORY_RETRY_MILLIS;
+    }
+
+    private static boolean hasHistoryData(RscpValue response) {
+        return !response.findAll(RscpTag.DB_HISTORY_DATA_YEAR).isEmpty()
+                || !response.findAll(RscpTag.DB_HISTORY_DATA_MONTH).isEmpty()
+                || !response.findAll(RscpTag.DB_HISTORY_DATA_DAY).isEmpty();
+    }
+
     /** Whether this poll has to carry the history containers, due at the history interval and on a new local day. */
     private boolean isHistoryDue() {
         E3DCBridgeConfiguration current = config;
@@ -598,7 +631,8 @@ public class E3DCBridgeHandler extends BaseBridgeHandler {
         if (!LocalDate.now(getZone()).equals(lastHistoryDay)) {
             return true;
         }
-        return System.currentTimeMillis() - lastHistoryPollMillis >= current.historyIntervalSeconds() * 1000L;
+        return System.currentTimeMillis() - lastHistoryPollMillis >= TimeUnit.SECONDS
+                .toMillis(current.historyIntervalSeconds());
     }
 
     /**
@@ -633,8 +667,8 @@ public class E3DCBridgeHandler extends BaseBridgeHandler {
         Map<Integer, Set<Integer>> modules = new TreeMap<>();
         for (Thing thing : getThing().getThings()) {
             if (E3DCBindingConstants.THING_TYPE_BATTERY_MODULE.equals(thing.getThingTypeUID())) {
-                Integer module = configuredIndex(thing, "moduleIndex");
-                Integer battery = configuredIndex(thing, "batteryIndex");
+                Integer module = configuredIndex(thing, E3DCBindingConstants.CONFIG_MODULE_INDEX);
+                Integer battery = configuredIndex(thing, E3DCBindingConstants.CONFIG_BATTERY_INDEX);
                 if (module != null && module >= 0 && (battery == null || battery >= 0)) {
                     int batteryIndex = battery != null ? battery : 0;
                     Set<Integer> indexes = modules.get(batteryIndex);
@@ -709,18 +743,12 @@ public class E3DCBridgeHandler extends BaseBridgeHandler {
     }
 
     /** The request for the history of one whole calendar year, used by the history fetch of the thing action. */
-    /**
-     * The request that reads the history of one year.
-     */
     public static RscpValue yearHistoryRequest(int year, ZoneId zone) {
         LocalDate start = LocalDate.of(year, 1, 1);
         return periodHistoryRequest(RscpTag.DB_HISTORY_DATA_YEAR, start, start.lengthOfYear(), zone);
     }
 
     /** The request for the history of a finished period, used by the history fetch of the thing action. */
-    /**
-     * The request that reads the days of one period.
-     */
     public static RscpValue periodHistoryRequest(int container, LocalDate start, int days, ZoneId zone) {
         Instant startTime = start.atStartOfDay(zone).toInstant();
         return historyPeriodRequest(RscpTag.pollTagFor(container), startTime, Duration.ofDays(days).toSeconds());
@@ -807,9 +835,6 @@ public class E3DCBridgeHandler extends BaseBridgeHandler {
     }
 
     /** Sends one RSCP request over the existing connection. Used by child handlers for commands. */
-    /**
-     * Sends the request and returns the answer, or throws when the device does not answer.
-     */
     public RscpValue sendRequest(List<RscpValue> items) throws RscpException {
         RscpClient current = client;
         if (current == null || !current.isConnected()) {
@@ -819,9 +844,6 @@ public class E3DCBridgeHandler extends BaseBridgeHandler {
     }
 
     /** The interval between two poll cycles in seconds. */
-    /**
-     * The poll interval in seconds.
-     */
     public int getRefreshIntervalSeconds() {
         E3DCBridgeConfiguration current = config;
         return current != null ? current.refreshIntervalSeconds() : 60;
@@ -836,9 +858,6 @@ public class E3DCBridgeHandler extends BaseBridgeHandler {
     }
 
     /** Registers something to run each time the connection to the device has come up, as the discovery does. */
-    /**
-     * Adds a listener that is told when the bridge came online.
-     */
     public void addOnlineListener(Runnable listener) {
         onlineListeners.add(listener);
     }
@@ -867,6 +886,10 @@ public class E3DCBridgeHandler extends BaseBridgeHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         // the channels of the bridge are read only statistics
+        if (command instanceof RefreshType) {
+            logger.trace("A refresh of the statistics is answered with the next poll");
+            requestRefresh();
+        }
     }
 
     @Override

@@ -103,9 +103,6 @@ public final class RscpValue {
     }
 
     /** A moment, which the interface carries as seconds and nanoseconds since 1970. */
-    /**
-     * A timestamp item.
-     */
     public static RscpValue timestamp(int tag, Instant instant) {
         return new RscpValue(tag, RscpType.TIMESTAMP, instant, List.of());
     }
@@ -153,9 +150,6 @@ public final class RscpValue {
     }
 
     /** First descendant with the given tag, depth first, or {@code null}. */
-    /**
-     * The child with the given tag, or null.
-     */
     public @Nullable RscpValue find(int searchTag) {
         if (tag == searchTag) {
             return this;

@@ -100,9 +100,6 @@ public final class E3DCMessages {
     }
 
     /** The messages as a JSON array; a field the device did not report is left out. */
-    /**
-     * The messages as the JSON the channel and the action return.
-     */
     public static String toJson(List<Message> messages) {
         StringBuilder json = new StringBuilder("[");
         boolean first = true;

@@ -102,7 +102,7 @@ public class E3DCBatteryHandler extends E3DCThingHandler {
         }
         updateState(channel("usable-remaining-capacity"), new QuantityType<>(stored, Units.AMPERE_HOUR));
         updateState(channel("usable-remaining-energy"),
-                new QuantityType<>(stored * volts / 1000.0, Units.KILOWATT_HOUR));
+                new QuantityType<>(stored * volts / E3DCBindingConstants.WH_PER_KWH, Units.KILOWATT_HOUR));
     }
 
     private @Nullable Double storedCapacity(RscpValue response) {

@@ -89,6 +89,27 @@ public final class E3DCBindingConstants {
     public static final String CHANNEL_SOC = "soc";
     public static final String CHANNEL_ENERGY = "energy";
 
+    /** The configuration key of the battery index. */
+    public static final String CONFIG_BATTERY_INDEX = "batteryIndex";
+    /** The configuration key of the cell module index. */
+    public static final String CONFIG_MODULE_INDEX = "moduleIndex";
+    /** The configuration key of the power meter index. */
+    public static final String CONFIG_METER_INDEX = "meterIndex";
+    /** The configuration key of the wallbox index. */
+    public static final String CONFIG_WALLBOX_INDEX = "wallboxIndex";
+
+    /** The channel ids of the bridge statistics. */
+    public static final String CHANNEL_LOOP_RATIO = "loop-ratio";
+    public static final String CHANNEL_POLL_DURATION = "poll-duration";
+    public static final String CHANNEL_DEVICE_WAIT = "device-wait";
+    public static final String CHANNEL_DISPATCH_TIME = "dispatch-time";
+    public static final String CHANNEL_ANSWER_SIZE = "answer-size";
+    public static final String CHANNEL_LOOP_RATIO_AVERAGE = "loop-ratio-average";
+    public static final String CHANNEL_LOOP_RATIO_PEAK = "loop-ratio-peak";
+
+    /** Watt hours per kilowatt hour, which the device reports in watt hours. */
+    public static final double WH_PER_KWH = 1000;
+
     private E3DCBindingConstants() {
     }
 }

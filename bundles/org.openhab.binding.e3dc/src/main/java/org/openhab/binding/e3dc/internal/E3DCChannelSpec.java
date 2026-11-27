@@ -42,17 +42,11 @@ public record E3DCChannelSpec(int tag, int container, double divisor, int bitMas
     }
 
     /** Renders the whole list of idle periods as text; they are containers, not one value. */
-    /**
-     * The channel that lists the idle periods of the battery.
-     */
     public static E3DCChannelSpec idlePeriods() {
         return new E3DCChannelSpec(RscpTag.EMS_GET_IDLE_PERIODS_2, 0, 1, 0, -1, 0, NO_INDEX, true, false);
     }
 
     /** Reports the stored messages, which arrive as one container per message. */
-    /**
-     * The channel that lists the messages of the device.
-     */
     public static E3DCChannelSpec messages() {
         return new E3DCChannelSpec(RscpTag.EMS_STORED_ERRORS, 0, 1, 0, -1, 0, NO_INDEX, true, false);
     }
@@ -87,9 +81,6 @@ public record E3DCChannelSpec(int tag, int container, double divisor, int bitMas
     }
 
     /** One of several occurrences of the tag, selected by position because the values carry no index. */
-    /**
-     * A value that the device reports once per index.
-     */
     public static E3DCChannelSpec indexedIn(int container, int tag, int valueIndex) {
         return new E3DCChannelSpec(tag, container, 1, 0, -1, 0, valueIndex, false, false);
     }
@@ -109,9 +100,6 @@ public record E3DCChannelSpec(int tag, int container, double divisor, int bitMas
     }
 
     /** One occurrence, selected by the index its container carries, or by position when it carries none. */
-    /**
-     * A value inside a nested container that the device reports once per index.
-     */
     public static E3DCChannelSpec indexedNested(int container, int nestedContainer, int tag, int valueIndex) {
         return new E3DCChannelSpec(tag, container, 1, 0, -1, nestedContainer, valueIndex, false, false);
     }

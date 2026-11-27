@@ -53,9 +53,6 @@ public class E3DCBridgeConfiguration {
     public int timeout = 10;
 
     /** The poll interval limited to the supported range; things file values are not checked against the metadata. */
-    /**
-     * The poll interval in seconds, at least one second.
-     */
     public int refreshIntervalSeconds() {
         return Math.clamp(refreshInterval, MIN_REFRESH_INTERVAL_SECONDS, MAX_REFRESH_INTERVAL_SECONDS);
     }

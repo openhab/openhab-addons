@@ -50,9 +50,6 @@ public class E3DCCommandQueue {
     }
 
     /** Queues a task and starts the executor if no other task is being worked off. */
-    /**
-     * Queues a task and starts the executor when no task is running.
-     */
     public void submit(Runnable task) {
         synchronized (this) {
             if (tasks.size() >= MAX_PENDING_TASKS) {
@@ -80,9 +77,6 @@ public class E3DCCommandQueue {
     }
 
     /** Drops the tasks that have not started yet, which a disposed handler must not run any more. */
-    /**
-     * Drops the tasks that have not started yet.
-     */
     public synchronized void clear() {
         tasks.clear();
     }

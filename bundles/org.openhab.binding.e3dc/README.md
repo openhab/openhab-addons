@@ -10,14 +10,14 @@ The binding uses the BouncyCastle engine for it, because implementations of the 
 
 ## Supported Things
 
-| Thing Type   | ID            | Description                                                              |
-|--------------|---------------|--------------------------------------------------------------------------|
-| E3/DC Device | `bridge`      | The connection to one E3/DC device. All other things require this bridge. |
-| Power Plant  | `power-plant` | Power flows, battery, inverter, energy counters and system information.   |
-| Wallbox      | `wallbox`     | Values of one wallbox attached to the power plant.                        |
-| Power Meter  | `power-meter` | Phase values of one power meter attached to the power plant.              |
-| Battery      | `battery`     | Values of one battery, such as its voltage, current and state of health. |
-| Battery Module | `battery-module` | Values of one battery cell module, such as its state of health.     |
+| Thing Type     | ID               | Description                                                                |
+| -------------- | ---------------- | -------------------------------------------------------------------------- |
+| E3/DC Device   | `bridge`         | The connection to one E3/DC device. All other things require this bridge.  |
+| Power Plant    | `power-plant`    | Power flows, battery, inverter, energy counters and system information.    |
+| Wallbox        | `wallbox`        | Values of one wallbox attached to the power plant.                         |
+| Power Meter    | `power-meter`    | Phase values of one power meter attached to the power plant.               |
+| Battery        | `battery`        | Values of one battery, such as its voltage, current and state of health.   |
+| Battery Module | `battery-module` | Values of one battery cell module, such as its state of health.            |
 
 A power plant is attached to the bridge, wallboxes and power meters are attached to the bridge as well and are distinguished by their index.
 
@@ -38,13 +38,13 @@ How to use it:
 
 What is proposed:
 
-| Thing           | How it is found                                                                                          |
-|-----------------|----------------------------------------------------------------------------------------------------------|
-| `power-plant`   | Always, one per bridge.                                                                                  |
-| `battery`       | The device is asked which batteries it has. Every battery that answers with values is proposed.          |
-| `battery-module`| The cell modules that each battery reports, one thing per battery and module.                             |
-| `power-meter`   | The device reports no count. The indexes 0 to 7 are asked for, and each one that answers with values and at least one active phase is proposed. |
-| `wallbox`       | The device reports no count. The indexes 0 to 7 are asked for, and each one that answers with values is proposed. |
+| Thing             | How it is found                                                                                                                                 |
+| ----------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| `power-plant`     | Always, one per bridge.                                                                                                                         |
+| `battery`         | The device is asked which batteries it has. Every battery that answers with values is proposed.                                                 |
+| `battery-module`  | The cell modules that each battery reports, one thing per battery and module.                                                                   |
+| `power-meter`     | The device reports no count. The indexes 0 to 7 are asked for, and each one that answers with values and at least one active phase is proposed. |
+| `wallbox`         | The device reports no count. The indexes 0 to 7 are asked for, and each one that answers with values is proposed.                               |
 
 Background discovery is switched off by default.
 When it is switched on in the discovery settings of the binding, a scan runs 5 seconds after the connection to the device came up (also after every reconnect), and after that once an hour.
@@ -59,27 +59,27 @@ They show how the device answers for an index it does not have.
 
 ### `bridge` Thing Configuration
 
-| Name            | Type    | Description                                                      | Default | Required | Advanced |
-|-----------------|---------|------------------------------------------------------------------|---------|----------|----------|
-| host            | text    | Host name or IP address of the E3/DC device.                      | N/A     | yes      | no       |
-| port            | integer | TCP port of the RSCP interface.                                   | 5033    | no       | yes      |
-| userName        | text    | User name of the E3/DC account, usually the e-mail address.        | N/A     | yes      | no       |
-| password        | text    | Password of the E3/DC account.                                    | N/A     | yes      | no       |
-| rscpPassword    | text    | Encryption key configured on the device.                          | N/A     | yes      | no       |
-| refreshInterval | integer | Interval the device is polled in seconds, between 1 and 300.      | 5       | no       | no       |
-| historyInterval | integer | Interval the history counters are requested in minutes, between 1 and 1440. Never shorter than `refreshInterval`. | 15      | no       | no       |
-| timeout         | integer | Timeout for a single request in seconds, between 1 and 60.        | 10      | no       | yes      |
+| Name              | Type      | Description                                                                                                       | Default   | Required   | Advanced   |
+| ----------------- | --------- | ----------------------------------------------------------------------------------------------------------------- | --------- | ---------- | ---------- |
+| host              | text      | Host name or IP address of the E3/DC device.                                                                      | N/A       | yes        | no         |
+| port              | integer   | TCP port of the RSCP interface.                                                                                   | 5033      | no         | yes        |
+| userName          | text      | User name of the E3/DC account, usually the e-mail address.                                                       | N/A       | yes        | no         |
+| password          | text      | Password of the E3/DC account.                                                                                    | N/A       | yes        | no         |
+| rscpPassword      | text      | Encryption key configured on the device.                                                                          | N/A       | yes        | no         |
+| refreshInterval   | integer   | Interval the device is polled in seconds, between 1 and 300.                                                      | 5         | no         | no         |
+| historyInterval   | integer   | Interval the history counters are requested in minutes, between 1 and 1440. Never shorter than `refreshInterval`. | 15        | no         | no         |
+| timeout           | integer   | Timeout for a single request in seconds, between 1 and 60.                                                        | 10        | no         | yes        |
 
 #### The credentials
 
 The bridge needs three values, and they are made of two things only: your E3/DC account and the RSCP key.
 There is no separate account on the device.
 
-| Parameter      | What it is                                              | Where it comes from                                       |
-|----------------|----------------------------------------------------------|-----------------------------------------------------------|
-| `userName`     | Your E3/DC account, usually an e-mail address             | The account you use for the E3/DC portal                   |
-| `password`     | The password of that E3/DC account                        | The same account                                          |
-| `rscpPassword` | The key the connection is encrypted with                  | _Main Page → Personalize → User profile → RSCP password_   |
+| Parameter        | What it is                                                 | Where it comes from                                         |
+| ---------------- | ---------------------------------------------------------- | ----------------------------------------------------------- |
+| `userName`       | Your E3/DC account, usually an e-mail address              | The account you use for the E3/DC portal                    |
+| `password`       | The password of that E3/DC account                         | The same account                                            |
+| `rscpPassword`   | The key the connection is encrypted with                   | _Main Page → Personalize → User profile → RSCP password_    |
 
 `userName` and `password` are the E3/DC account credentials, not a device local account.
 The `rscpPassword` is a separate value: it encrypts the connection and is not checked against a user, so a wrong key makes the device drop the connection instead of answering with an authentication error.
@@ -88,12 +88,12 @@ References: the [E3/DC binding by Björn Brings](https://github.com/bjoernbrings
 
 #### If the connection stays offline
 
-| Status detail          | Meaning                                                                    |
-|------------------------|----------------------------------------------------------------------------|
+| Status detail                                           | Meaning                                                                                                                                                                      |
+| ------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `COMMUNICATION_ERROR` with `closed after 0 of 32 bytes` | The device accepted the TCP connection and closed it without answering. Usually the `rscpPassword` does not match the key on the device, so the request cannot be decrypted. |
-| `COMMUNICATION_ERROR` with a timeout                   | Nothing arrived at all. The host or port is wrong, or a firewall drops the connection. |
-| `COMMUNICATION_ERROR` about the credentials              | The device answered with access denied, so `userName` or `password` is wrong. |
-| `BRIDGE_OFFLINE`                                        | The bridge itself is offline; the state of the bridge explains why.         |
+| `COMMUNICATION_ERROR` with a timeout                    | Nothing arrived at all. The host or port is wrong, or a firewall drops the connection.                                                                                       |
+| `COMMUNICATION_ERROR` about the credentials             | The device answered with access denied, so `userName` or `password` is wrong.                                                                                                |
+| `BRIDGE_OFFLINE`                                        | The bridge itself is offline; the state of the bridge explains why.                                                                                                          |
 
 For a protocol level trace of the handshake, raise the log level for the RSCP client:
 
@@ -106,13 +106,13 @@ Passwords and the RSCP key are never logged.
 
 ### `power-plant`, `wallbox`, `power-meter`, `battery` and `battery-module` Thing Configuration
 
-| Thing Type    | Name         | Type    | Description                                       | Default | Required |
-|---------------|--------------|---------|---------------------------------------------------|---------|----------|
-| `wallbox`     | wallboxIndex | integer | Zero based index of the wallbox on the device.     | 0       | yes      |
-| `power-meter` | meterIndex   | integer | Zero based index of the power meter on the device. | 0       | yes      |
-| `battery`     | batteryIndex | integer | Zero based index of the battery on the device.     | 0       | yes      |
-| `battery-module` | batteryIndex | integer | Zero based index of the battery that reports the cell module. | 0 | yes |
-| `battery-module` | moduleIndex | integer | Zero based index of the cell module inside its battery. | N/A | yes |
+| Thing Type       | Name           | Type      | Description                                                   | Default   | Required   |
+| ---------------- | -------------- | --------- | ------------------------------------------------------------- | --------- | ---------- |
+| `wallbox`        | wallboxIndex   | integer   | Zero based index of the wallbox on the device.                | 0         | yes        |
+| `power-meter`    | meterIndex     | integer   | Zero based index of the power meter on the device.            | 0         | yes        |
+| `battery`        | batteryIndex   | integer   | Zero based index of the battery on the device.                | 0         | yes        |
+| `battery-module` | batteryIndex   | integer   | Zero based index of the battery that reports the cell module. | 0         | yes        |
+| `battery-module` | moduleIndex    | integer   | Zero based index of the cell module inside its battery.       | N/A       | yes        |
 
 The module index counts the cell modules inside one battery: a system with several batteries reports module 0 once per battery, so a cell module is addressed by the pair of battery and module index.
 
@@ -129,11 +129,11 @@ A thing that starts asks the bridge for a refresh, so its channels show the curr
 Values that describe a device and do not change while it runs are thing properties, not channels.
 The things read them once after they came online.
 
-| Thing Type       | Properties |
-|------------------|------------|
-| `power-plant`    | `firmwareVersion`, `serialNumber`, `productionDate`, `timeZone`, `installedPeakPower`, `inverterCount`, `batteryCount`, `couplingMode` |
-| `battery`        | `deviceName`, `moduleCount` |
-| `battery-module` | `deviceName`, `vendor`, `manufactureDate`, `serialNumber`, `serialCode`, `firmwareVersion`, `protocolVersion`, `tableVersion`, `pcbVersion`, `designVoltage`, `maxChargeVoltage`, `maxChargeCurrent`, `maxDischargeCurrent`, `sensorCount`, `seriesCellCount`, `parallelCellCount` |
+| Thing Type         | Properties                                                                                                                                                                                                                                                                         |
+| ------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `power-plant`      | `firmwareVersion`, `serialNumber`, `productionDate`, `timeZone`, `installedPeakPower`, `inverterCount`, `batteryCount`, `couplingMode`                                                                                                                                             |
+| `battery`          | `deviceName`, `moduleCount`                                                                                                                                                                                                                                                        |
+| `battery-module`   | `deviceName`, `vendor`, `manufactureDate`, `serialNumber`, `serialCode`, `firmwareVersion`, `protocolVersion`, `tableVersion`, `pcbVersion`, `designVoltage`, `maxChargeVoltage`, `maxChargeCurrent`, `maxDischargeCurrent`, `sensorCount`, `seriesCellCount`, `parallelCellCount` |
 
 ## Channels
 
@@ -142,69 +142,69 @@ Power values are reported in `W`, energy counters in `kWh`.
 
 ### Channel Group `power`
 
-| Channel          | Type                 | Description                                     |
-|------------------|----------------------|-------------------------------------------------|
-| solar-power      | Number:Power         | Photovoltaic power currently produced            |
-| battery-power    | Number:Power         | Power flowing into or out of the battery         |
-| house-power      | Number:Power         | Power currently consumed by the household        |
-| grid-power       | Number:Power         | Power drawn from or fed into the grid            |
-| additional-power | Number:Power         | Power of an additional producer or consumer      |
-| wallbox-power | Number:Power | Power drawn by all wallboxes |
-| wallbox-solar-power | Number:Power | Part of the wallbox power that comes from solar |
-| autarky          | Number:Dimensionless | Share of consumption covered by the power plant  |
-| self-consumption | Number:Dimensionless | Share of production used on site                 |
+| Channel             | Type                   | Description                                       |
+| ------------------- | ---------------------- | ------------------------------------------------- |
+| solar-power         | Number:Power           | Photovoltaic power currently produced             |
+| battery-power       | Number:Power           | Power flowing into or out of the battery          |
+| house-power         | Number:Power           | Power currently consumed by the household         |
+| grid-power          | Number:Power           | Power drawn from or fed into the grid             |
+| additional-power    | Number:Power           | Power of an additional producer or consumer       |
+| wallbox-power       | Number:Power           | Power drawn by all wallboxes                      |
+| wallbox-solar-power | Number:Power           | Part of the wallbox power that comes from solar   |
+| autarky             | Number:Dimensionless   | Share of consumption covered by the power plant   |
+| self-consumption    | Number:Dimensionless   | Share of production used on site                  |
 
 ### Channel Group `battery`
 
-| Channel | Type | Description |
-|---------|------|-------------|
-| soc | Number:Dimensionless | Battery state of charge |
-| rsoc | Number:Dimensionless | State of charge the battery reports itself |
-| remaining-charge-power | Number:Power | Charge power still available |
-| remaining-discharge-power | Number:Power | Discharge power still available |
-| charging-lock | Switch | Battery charging is currently blocked |
-| discharging-lock | Switch | Battery discharging is currently blocked |
-| charging-throttled | Switch | Battery charging is currently limited |
-| charging-time-lock | Switch | Battery charging is blocked by a time window |
-| discharging-time-lock | Switch | Battery discharging is blocked by a time window |
+| Channel                   | Type                 | Description                                     |
+| ------------------------- | -------------------- | ----------------------------------------------- |
+| soc                       | Number:Dimensionless | Battery state of charge                         |
+| rsoc                      | Number:Dimensionless | State of charge the battery reports itself      |
+| remaining-charge-power    | Number:Power         | Charge power still available                    |
+| remaining-discharge-power | Number:Power         | Discharge power still available                 |
+| charging-lock             | Switch               | Battery charging is currently blocked           |
+| discharging-lock          | Switch               | Battery discharging is currently blocked        |
+| charging-throttled        | Switch               | Battery charging is currently limited           |
+| charging-time-lock        | Switch               | Battery charging is blocked by a time window    |
+| discharging-time-lock     | Switch               | Battery discharging is blocked by a time window |
 
 ### Channel Group `grid`
 
-| Channel | Type | Description |
-|---------|------|-------------|
-| active-phases | Number | Number of phases in use (1 to 3) |
-| limit-active | Switch | Grid consumption is currently limited |
+| Channel           | Type                 | Description                                                       |
+| ----------------- | -------------------- | ----------------------------------------------------------------- |
+| active-phases     | Number               | Number of phases in use (1 to 3)                                  |
+| limit-active      | Switch               | Grid consumption is currently limited                             |
 | derate-at-percent | Number:Dimensionless | Share of the installed peak power at which the feed in is reduced |
-| derate-at-power | Number:Power | Power at which the feed in is reduced |
+| derate-at-power   | Number:Power         | Power at which the feed in is reduced                             |
 
 ### Channel Group `inverter`
 
-| Channel      | Type                     | Description                                   |
-|--------------|--------------------------|-----------------------------------------------|
-| ac-power-l1 | Number:Power | Alternating current power of phase L1 |
-| ac-power-l2 | Number:Power | Alternating current power of phase L2 |
-| ac-power-l3 | Number:Power | Alternating current power of phase L3 |
-| ac-voltage-l1 | Number:ElectricPotential | Alternating current voltage of phase L1 |
-| ac-voltage-l2 | Number:ElectricPotential | Alternating current voltage of phase L2 |
-| ac-voltage-l3 | Number:ElectricPotential | Alternating current voltage of phase L3 |
-| ac-current-l1 | Number:ElectricCurrent | Alternating current of phase L1 |
-| ac-current-l2 | Number:ElectricCurrent | Alternating current of phase L2 |
-| ac-current-l3 | Number:ElectricCurrent | Alternating current of phase L3 |
-| apparent-power-l1 | Number:Power | Apparent power of phase L1 |
-| apparent-power-l2 | Number:Power | Apparent power of phase L2 |
-| apparent-power-l3 | Number:Power | Apparent power of phase L3 |
-| reactive-power-l1 | Number:Power | Reactive power of phase L1 |
-| reactive-power-l2 | Number:Power | Reactive power of phase L2 |
-| reactive-power-l3 | Number:Power | Reactive power of phase L3 |
-| energy-total-l1 | Number:Energy | Energy produced on phase L1 since commissioning |
-| energy-total-l2 | Number:Energy | Energy produced on phase L2 since commissioning |
-| energy-total-l3 | Number:Energy | Energy produced on phase L3 since commissioning |
-| energy-day-l1 | Number:Energy | Energy produced on phase L1 today |
-| energy-day-l2 | Number:Energy | Energy produced on phase L2 today |
-| energy-day-l3 | Number:Energy | Energy produced on phase L3 today |
-| ac-frequency | Number:Frequency         | Grid frequency measured by the inverter        |
-| on-grid      | Switch                   | Whether the inverter is connected to the grid   |
-| string-count | Number                   | Number of photovoltaic strings in use           |
+| Channel           | Type                       | Description                                     |
+| ----------------- | -------------------------- | ----------------------------------------------- |
+| ac-power-l1       | Number:Power               | Alternating current power of phase L1           |
+| ac-power-l2       | Number:Power               | Alternating current power of phase L2           |
+| ac-power-l3       | Number:Power               | Alternating current power of phase L3           |
+| ac-voltage-l1     | Number:ElectricPotential   | Alternating current voltage of phase L1         |
+| ac-voltage-l2     | Number:ElectricPotential   | Alternating current voltage of phase L2         |
+| ac-voltage-l3     | Number:ElectricPotential   | Alternating current voltage of phase L3         |
+| ac-current-l1     | Number:ElectricCurrent     | Alternating current of phase L1                 |
+| ac-current-l2     | Number:ElectricCurrent     | Alternating current of phase L2                 |
+| ac-current-l3     | Number:ElectricCurrent     | Alternating current of phase L3                 |
+| apparent-power-l1 | Number:Power               | Apparent power of phase L1                      |
+| apparent-power-l2 | Number:Power               | Apparent power of phase L2                      |
+| apparent-power-l3 | Number:Power               | Apparent power of phase L3                      |
+| reactive-power-l1 | Number:Power               | Reactive power of phase L1                      |
+| reactive-power-l2 | Number:Power               | Reactive power of phase L2                      |
+| reactive-power-l3 | Number:Power               | Reactive power of phase L3                      |
+| energy-total-l1   | Number:Energy              | Energy produced on phase L1 since commissioning |
+| energy-total-l2   | Number:Energy              | Energy produced on phase L2 since commissioning |
+| energy-total-l3   | Number:Energy              | Energy produced on phase L3 since commissioning |
+| energy-day-l1     | Number:Energy              | Energy produced on phase L1 today               |
+| energy-day-l2     | Number:Energy              | Energy produced on phase L2 today               |
+| energy-day-l3     | Number:Energy              | Energy produced on phase L3 today               |
+| ac-frequency      | Number:Frequency           | Grid frequency measured by the inverter         |
+| on-grid           | Switch                     | Whether the inverter is connected to the grid   |
+| string-count      | Number                     | Number of photovoltaic strings in use           |
 
 #### Trackers and temperature sensors
 
@@ -215,12 +215,12 @@ An index the inverter does not have is answered with an error, which does not st
 
 For every index that answers with a value the binding creates channels at runtime, numbered from 1:
 
-| Channel                | Type                     | Description                                           |
-|------------------------|--------------------------|-------------------------------------------------------|
-| tracker-N-power        | Number:Power             | Direct current power of tracker N                      |
-| tracker-N-voltage      | Number:ElectricPotential | Direct current voltage of tracker N                    |
-| tracker-N-current      | Number:ElectricCurrent   | Direct current of tracker N                            |
-| temperature-N          | Number:Temperature       | Temperature of sensor N of the inverter                |
+| Channel                  | Type                       | Description                                             |
+| ------------------------ | -------------------------- | ------------------------------------------------------- |
+| tracker-N-power          | Number:Power               | Direct current power of tracker N                       |
+| tracker-N-voltage        | Number:ElectricPotential   | Direct current voltage of tracker N                     |
+| tracker-N-current        | Number:ElectricCurrent     | Direct current of tracker N                             |
+| temperature-N            | Number:Temperature         | Temperature of sensor N of the inverter                 |
 
 - The channels appear with the first poll after the thing came online.
   A tracker that is connected later gets its channels as soon as the inverter answers for it.
@@ -252,11 +252,11 @@ In a chart the repeated value is a straight line, which looks like a gap in the 
 
 ### Channel Group `system`
 
-| Channel | Type | Description |
-|---------|------|-------------|
-| powersave | Switch | Power saving mode is active |
-| has-messages | Switch | The energy manager holds at least one message |
-| messages | String | Messages of the energy manager as a JSON array |
+| Channel      | Type   | Description                                    |
+| ------------ | ------ | ---------------------------------------------- |
+| powersave    | Switch | Power saving mode is active                    |
+| has-messages | Switch | The energy manager holds at least one message  |
+| messages     | String | Messages of the energy manager as a JSON array |
 
 The firmware version, the serial number and the other fixed values of the power plant are [thing properties](#thing-properties).
 
@@ -265,28 +265,28 @@ The firmware version, the serial number and the other fixed values of the power 
 The limits for charging and discharging the battery.
 The four settable channels are written as one request, see [Writable Channels](#writable-channels).
 
-| Channel | Type | Description |
-|---------|------|-------------|
-| max-charge-power | Number:Power | Configured limit for battery charging |
-| max-discharge-power | Number:Power | Configured limit for battery discharging |
-| discharge-start-power | Number:Power | Power above which the battery is discharged |
-| power-limits-used | Switch | Configured power limits are active |
-| charge-limit-battery | Number:Power | Charge power limit reported by the battery |
-| charge-limit-dcdc | Number:Power | Charge power limit of the DC/DC converter |
-| charge-limit-used | Number:Power | Charge power limit currently applied |
-| charge-limit-user | Number:Power | Charge power limit set by the user |
+| Channel                 | Type         | Description                                   |
+| ----------------------- | ------------ | --------------------------------------------- |
+| max-charge-power        | Number:Power | Configured limit for battery charging         |
+| max-discharge-power     | Number:Power | Configured limit for battery discharging      |
+| discharge-start-power   | Number:Power | Power above which the battery is discharged   |
+| power-limits-used       | Switch       | Configured power limits are active            |
+| charge-limit-battery    | Number:Power | Charge power limit reported by the battery    |
+| charge-limit-dcdc       | Number:Power | Charge power limit of the DC/DC converter     |
+| charge-limit-used       | Number:Power | Charge power limit currently applied          |
+| charge-limit-user       | Number:Power | Charge power limit set by the user            |
 | discharge-limit-battery | Number:Power | Discharge power limit reported by the battery |
-| discharge-limit-dcdc | Number:Power | Discharge power limit of the DC/DC converter |
-| discharge-limit-used | Number:Power | Discharge power limit currently applied |
-| discharge-limit-user | Number:Power | Discharge power limit set by the user |
+| discharge-limit-dcdc    | Number:Power | Discharge power limit of the DC/DC converter  |
+| discharge-limit-used    | Number:Power | Discharge power limit currently applied       |
+| discharge-limit-user    | Number:Power | Discharge power limit set by the user         |
 
 ### Channel Group `battery-mode`
 
-| Channel | Type | Description |
-|---------|------|-------------|
-| active-mode | Number | Operating mode of the energy management system |
-| set-power-mode | String | Forced battery mode for a number of poll cycles |
-| weather-regulated-charge | Switch | Charging follows the weather forecast |
+| Channel                  | Type   | Description                                     |
+| ------------------------ | ------ | ----------------------------------------------- |
+| active-mode              | Number | Operating mode of the energy management system  |
+| set-power-mode           | String | Forced battery mode for a number of poll cycles |
+| weather-regulated-charge | Switch | Charging follows the weather forecast           |
 
 #### Power mode
 
@@ -294,12 +294,12 @@ The four settable channels are written as one request, see [Writable Channels](#
 It is a command channel: it carries no state and offers a few presets as command options.
 The text is one of:
 
-| Text | Effect |
-|------|--------|
-| `auto` | The energy manager decides again. Ends a forced mode. |
-| `idle:<cycles>` | The battery neither charges nor discharges. |
-| `charge:<watts>:<cycles>` | The battery charges with the given power. |
-| `discharge:<watts>:<cycles>` | The battery discharges with the given power. |
+| Text                           | Effect                                                  |
+| ------------------------------ | ------------------------------------------------------- |
+| `auto`                         | The energy manager decides again. Ends a forced mode.   |
+| `idle:<cycles>`                | The battery neither charges nor discharges.             |
+| `charge:<watts>:<cycles>`      | The battery charges with the given power.               |
+| `discharge:<watts>:<cycles>`   | The battery discharges with the given power.            |
 | `grid_charge:<watts>:<cycles>` | The battery charges with the given power from the grid. |
 
 The device keeps a forced mode only for a short time.
@@ -315,12 +315,12 @@ The same is available as the thing action `setPowerMode(mode, watts, cycles)` wi
 
 How the house battery and the wallbox share the energy.
 
-| Channel | Type | Description |
-|---------|------|-------------|
-| charge-battery-before-car | Switch | The house battery is charged before the car |
-| discharge-battery-to-car | Switch | The house battery may discharge into the car |
-| discharge-until | Number:Dimensionless | State of charge down to which the battery may discharge into the car |
-| battery-off-in-mix-mode | Switch | No battery charging while the wallbox charges in mix mode |
+| Channel                   | Type                 | Description                                                          |
+| ------------------------- | -------------------- | -------------------------------------------------------------------- |
+| charge-battery-before-car | Switch               | The house battery is charged before the car                          |
+| discharge-battery-to-car  | Switch               | The house battery may discharge into the car                         |
+| discharge-until           | Number:Dimensionless | State of charge down to which the battery may discharge into the car |
+| battery-off-in-mix-mode   | Switch               | No battery charging while the wallbox charges in mix mode            |
 
 ### Channel Group `idle-periods`
 
@@ -330,13 +330,13 @@ How the house battery and the wallbox share the energy.
 > Decide for one of these ways at a time.
 > They write to the same idle periods and power settings of the device and can overwrite each other.
 
-| Channel | Type | Description |
-|---------|------|-------------|
-| enabled | Switch | Whether the device uses the configured idle periods |
-| charge-periods | String | Periods in which charging is locked |
-| discharge-periods | String | Periods in which discharging is locked |
-| block-charging | Switch | Blocks charging of the battery around the clock |
-| block-discharging | Switch | Blocks discharging of the battery around the clock |
+| Channel           | Type   | Description                                         |
+| ----------------- | ------ | --------------------------------------------------- |
+| enabled           | Switch | Whether the device uses the configured idle periods |
+| charge-periods    | String | Periods in which charging is locked                 |
+| discharge-periods | String | Periods in which discharging is locked              |
+| block-charging    | Switch | Blocks charging of the battery around the clock     |
+| block-discharging | Switch | Blocks discharging of the battery around the clock  |
 
 The `charge-periods` and `discharge-periods` channels show the periods during which the battery is locked against charging or discharging.
 Each line reads `name:days:active:hh:mm-hh:mm`, for example:
@@ -364,10 +364,10 @@ To add or change one period, read the list with `getIdlePeriods` and write it ba
 The device has no function that simply blocks charging or discharging of the battery.
 The switches `block-charging` and `block-discharging` provide it with an idle period of their own that locks the battery on all seven days, from 00:00 to 23:59:
 
-| Switch              | Idle period it manages                                                |
-|---------------------|-----------------------------------------------------------------------|
-| `block-charging`    | `OH_Block_Charge:monday,tuesday,wednesday,thursday,friday,saturday,sunday:charge:true:00:00-23:59`       |
-| `block-discharging` | `OH_Block_Discharge:monday,tuesday,wednesday,thursday,friday,saturday,sunday:discharge:true:00:00-23:59` |
+| Switch                | Idle period it manages                                                                                   |
+| --------------------- | -------------------------------------------------------------------------------------------------------- |
+| `block-charging`      | `OH_Block_Charge:monday,tuesday,wednesday,thursday,friday,saturday,sunday:charge:true:00:00-23:59`       |
+| `block-discharging`   | `OH_Block_Discharge:monday,tuesday,wednesday,thursday,friday,saturday,sunday:discharge:true:00:00-23:59` |
 
 - `ON` adds the period to the list and switches on the use of idle periods (`idle-periods#enabled`), because the period has no effect otherwise.
 - `OFF` removes the period again.
@@ -384,14 +384,14 @@ The same list can be read and replaced as a whole with the [thing actions](#thin
 
 Starts a manual battery charge and reports its state.
 
-| Channel                      | Type          | Description                                                  |
-|------------------------------|---------------|--------------------------------------------------------------|
-| set-manual-charge            | Number:Energy | Command only: starts a manual battery charge with this energy, offered in steps of 500 Wh up to the energy the battery holds |
-| manual-charge-active         | Switch        | A manual battery charge is currently running                 |
-| manual-charge-target         | Number:Energy | Energy the manual battery charge started last was started with |
-| manual-charge-energy         | Number:Energy | Energy charged so far by the manual battery charge started last |
-| manual-charge-remaining      | Number:Energy | Energy the running manual battery charge still has to charge, 0 when none is running |
-| manual-charge-last-start     | DateTime      | Time the last manual battery charge was started              |
+| Channel                        | Type            | Description                                                                                                                  |
+| ------------------------------ | --------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| set-manual-charge              | Number:Energy   | Command only: starts a manual battery charge with this energy, offered in steps of 500 Wh up to the energy the battery holds |
+| manual-charge-active           | Switch          | A manual battery charge is currently running                                                                                 |
+| manual-charge-target           | Number:Energy   | Energy the manual battery charge started last was started with                                                               |
+| manual-charge-energy           | Number:Energy   | Energy charged so far by the manual battery charge started last                                                              |
+| manual-charge-remaining        | Number:Energy   | Energy the running manual battery charge still has to charge, 0 when none is running                                         |
+| manual-charge-last-start       | DateTime        | Time the last manual battery charge was started                                                                              |
 
 The device reports the energies in Wh, and the channels publish them in Wh.
 `manual-charge-remaining` is calculated by the binding as `manual-charge-target` less `manual-charge-energy`.
@@ -423,53 +423,53 @@ The device answers the history containers only when the request states the perio
 > **rrd4j cannot:** it only records values at the time they arrive, ignores the timestamp of a time series entry and aggregates old values away.
 > Do not use rrd4j for the `history` items.
 
-| Channel                  | Type                 | Description                                        |
-|--------------------------|----------------------|----------------------------------------------------|
-| day-solar                | Number:Energy        | Photovoltaic energy of the completed day            |
-| day-house                | Number:Energy        | Household energy of the completed day               |
-| day-grid-in              | Number:Energy        | Energy drawn from the grid on the completed day     |
-| day-grid-out             | Number:Energy        | Energy fed into the grid on the completed day       |
-| day-battery-in           | Number:Energy        | Energy charged into the battery on the completed day |
-| day-battery-out          | Number:Energy        | Energy taken from the battery on the completed day  |
-| day-autarky              | Number:Dimensionless | Share of consumption covered by the power plant      |
-| day-consumed-production  | Number:Dimensionless | Share of production used on site                    |
-| week-solar               | Number:Energy        | Photovoltaic energy of the last seven days          |
-| week-house               | Number:Energy        | Household energy of the last seven days             |
-| week-grid-in             | Number:Energy        | Energy drawn from the grid in the last seven days   |
-| week-grid-out            | Number:Energy        | Energy fed into the grid in the last seven days     |
-| week-battery-in          | Number:Energy        | Energy charged into the battery in the last seven days |
-| week-battery-out         | Number:Energy        | Energy taken from the battery in the last seven days |
-| week-autarky             | Number:Dimensionless | Share of consumption covered by the power plant      |
-| week-consumed-production | Number:Dimensionless | Share of production used on site                    |
-| month-solar              | Number:Energy        | Photovoltaic energy of the current month            |
-| month-house              | Number:Energy        | Household energy of the current month               |
-| month-grid-in            | Number:Energy        | Energy drawn from the grid in the current month     |
-| month-grid-out           | Number:Energy        | Energy fed into the grid in the current month       |
-| month-battery-in         | Number:Energy        | Energy charged into the battery in the current month |
-| month-battery-out        | Number:Energy        | Energy taken from the battery in the current month  |
-| month-autarky            | Number:Dimensionless | Share of consumption covered by the power plant      |
-| month-consumed-production | Number:Dimensionless | Share of production used on site                   |
-| year-solar               | Number:Energy        | Photovoltaic energy of the current year             |
-| year-house               | Number:Energy        | Household energy of the current year                |
-| year-grid-in             | Number:Energy        | Energy drawn from the grid in the current year      |
-| year-grid-out            | Number:Energy        | Energy fed into the grid in the current year        |
-| year-battery-in          | Number:Energy        | Energy charged into the battery in the current year |
-| year-battery-out         | Number:Energy        | Energy taken from the battery in the current year   |
-| year-autarky             | Number:Dimensionless | Share of consumption covered by the power plant      |
-| year-consumed-production | Number:Dimensionless | Share of production used on site                    |
+| Channel                    | Type                   | Description                                            |
+| -------------------------- | ---------------------- | ------------------------------------------------------ |
+| day-solar                  | Number:Energy          | Photovoltaic energy of the completed day               |
+| day-house                  | Number:Energy          | Household energy of the completed day                  |
+| day-grid-in                | Number:Energy          | Energy drawn from the grid on the completed day        |
+| day-grid-out               | Number:Energy          | Energy fed into the grid on the completed day          |
+| day-battery-in             | Number:Energy          | Energy charged into the battery on the completed day   |
+| day-battery-out            | Number:Energy          | Energy taken from the battery on the completed day     |
+| day-autarky                | Number:Dimensionless   | Share of consumption covered by the power plant        |
+| day-consumed-production    | Number:Dimensionless   | Share of production used on site                       |
+| week-solar                 | Number:Energy          | Photovoltaic energy of the last seven days             |
+| week-house                 | Number:Energy          | Household energy of the last seven days                |
+| week-grid-in               | Number:Energy          | Energy drawn from the grid in the last seven days      |
+| week-grid-out              | Number:Energy          | Energy fed into the grid in the last seven days        |
+| week-battery-in            | Number:Energy          | Energy charged into the battery in the last seven days |
+| week-battery-out           | Number:Energy          | Energy taken from the battery in the last seven days   |
+| week-autarky               | Number:Dimensionless   | Share of consumption covered by the power plant        |
+| week-consumed-production   | Number:Dimensionless   | Share of production used on site                       |
+| month-solar                | Number:Energy          | Photovoltaic energy of the current month               |
+| month-house                | Number:Energy          | Household energy of the current month                  |
+| month-grid-in              | Number:Energy          | Energy drawn from the grid in the current month        |
+| month-grid-out             | Number:Energy          | Energy fed into the grid in the current month          |
+| month-battery-in           | Number:Energy          | Energy charged into the battery in the current month   |
+| month-battery-out          | Number:Energy          | Energy taken from the battery in the current month     |
+| month-autarky              | Number:Dimensionless   | Share of consumption covered by the power plant        |
+| month-consumed-production  | Number:Dimensionless   | Share of production used on site                       |
+| year-solar                 | Number:Energy          | Photovoltaic energy of the current year                |
+| year-house                 | Number:Energy          | Household energy of the current year                   |
+| year-grid-in               | Number:Energy          | Energy drawn from the grid in the current year         |
+| year-grid-out              | Number:Energy          | Energy fed into the grid in the current year           |
+| year-battery-in            | Number:Energy          | Energy charged into the battery in the current year    |
+| year-battery-out           | Number:Energy          | Energy taken from the battery in the current year      |
+| year-autarky               | Number:Dimensionless   | Share of consumption covered by the power plant        |
+| year-consumed-production   | Number:Dimensionless   | Share of production used on site                       |
 
 ### Channel Group `emergency`
 
 The group holds the reserve, the part of the battery the device keeps available for emergency power, and the state of the emergency power supply.
 
-| Channel    | Type                 | Description                                              |
-|------------|----------------------|----------------------------------------------------------|
-| percent    | Number:Dimensionless | Share of the battery kept for emergency power             |
-| energy     | Number:Energy        | Energy kept for emergency power                           |
-| energy-max | Number:Energy        | Highest reserve the battery can hold for emergency power  |
-| last-soc   | Number:Dimensionless | State of charge the battery was left with                 |
-| power-status | Number       | State of the emergency power supply              |
-| power-available | Switch       | Emergency power reserve is available             |
+| Channel         | Type                   | Description                                                |
+| --------------- | ---------------------- | ---------------------------------------------------------- |
+| percent         | Number:Dimensionless   | Share of the battery kept for emergency power              |
+| energy          | Number:Energy          | Energy kept for emergency power                            |
+| energy-max      | Number:Energy          | Highest reserve the battery can hold for emergency power   |
+| last-soc        | Number:Dimensionless   | State of charge the battery was left with                  |
+| power-status    | Number                 | State of the emergency power supply                        |
+| power-available | Switch                 | Emergency power reserve is available                       |
 
 The energy the `energy` channel offers is not a fixed list.
 The device states with `energy-max` how much energy it accepts as reserve, and the binding offers whole kilowatt hours from zero up to that value, so the choices fit the installed battery.
@@ -480,13 +480,13 @@ The `percent` channel keeps its fixed steps, because a share of the battery mean
 The `power-status` channel reports the state of the emergency power supply of the device.
 It carries a state mapping, so the item shows the meaning instead of the number:
 
-| Value | Meaning                                                                          |
-|-------|----------------------------------------------------------------------------------|
-| 0     | Not supported: the device has no emergency power supply                          |
-| 1     | Emergency power active: the grid failed and the battery supplies the house       |
-| 2     | Emergency power inactive                                                         |
-| 3     | Emergency power not available                                                    |
-| 4     | Motor switch not on: the motor switch of an S10 E is not in the on position      |
+| Value   | Meaning                                                                            |
+| ------- | ---------------------------------------------------------------------------------- |
+| 0       | Not supported: the device has no emergency power supply                            |
+| 1       | Emergency power active: the grid failed and the battery supplies the house         |
+| 2       | Emergency power inactive                                                           |
+| 3       | Emergency power not available                                                      |
+| 4       | Motor switch not on: the motor switch of an S10 E is not in the on position        |
 
 These are the states E/3DC documents for the emergency power status of its devices.
 The Modbus interface reports the same status in register 40084, where the states are described in words.
@@ -497,33 +497,33 @@ The following channels accept commands and write the value to the device.
 A value that the device reports is set through the channel that reports it, so there is one channel per value and no second one for writing it.
 The charge and discharge limits are written as one container because switching the power limits off resets the enclosed limits: a write for one of them always carries the other values that were last read from the device.
 
-| Channel Group | Channel                      | Type         | Description                                                                 |
-|---------------|------------------------------|--------------|-----------------------------------------------------------------------------|
-| `battery-limits` | max-charge-power          | Number:Power | Configured limit for battery charging                                        |
-| `battery-limits` | max-discharge-power       | Number:Power | Configured limit for battery discharging                                     |
-| `battery-limits` | discharge-start-power     | Number:Power | Power above which the battery is discharged                                  |
-| `wallbox-priority` | discharge-battery-to-car | Switch       | The house battery may discharge into the car                                 |
-| `wallbox-priority` | charge-battery-before-car | Switch       | The house battery is charged before the car                                  |
-| `wallbox-priority` | discharge-until         | Number:Dimensionless | State of charge down to which the battery may discharge into the car |
-| `wallbox-priority` | battery-off-in-mix-mode | Switch       | No battery charging while the wallbox charges in mix mode                    |
-| `battery-limits` | power-limits-used           | Switch       | Whether the configured power limits are active                               |
-| `battery-mode` | weather-regulated-charge      | Switch       | Whether charging follows the weather forecast                                |
-| `battery-mode` | set-power-mode                | String       | Command only: forces a power mode, `auto`, `idle:<cycles>` or `charge`/`discharge`/`grid_charge:<watts>:<cycles>` |
-| `manual-battery-charge` | set-manual-charge      | Number:Energy | Command only: starts a manual battery charge with this energy, offered in steps of 500 Wh up to the energy the battery holds |
-| `idle-periods` | block-charging                | Switch       | Blocks battery charging on all days, see [The block switches](#the-block-switches) |
-| `idle-periods` | block-discharging             | Switch       | Blocks battery discharging on all days, see [The block switches](#the-block-switches) |
-| `idle-periods` | enabled                      | Switch       | Whether the device uses the configured idle periods                          |
-| `idle-periods` | charge-periods               | String       | The periods of charging, see [Channel Group `idle-periods`](#channel-group-idle-periods) |
-| `idle-periods` | discharge-periods            | String       | The periods of discharging, see [Channel Group `idle-periods`](#channel-group-idle-periods) |
-| `emergency`   | percent                      | Number:Dimensionless | Share of the battery to keep for emergency power                    |
-| `emergency`   | energy                       | Number:Energy | Energy to keep for emergency power, offered in whole kWh up to the maximum the device accepts |
-| `status-control` | sun-mode                  | Switch       | Whether charging uses surplus photovoltaic power                             |
-| `status-control` | suspended                 | Switch       | Whether the charging session is suspended                                    |
-| `status-control` | toggle                    | Switch       | `ON` suspends a running session and resumes a suspended one, then returns to `OFF` |
-| `status-control` | auto-phase-switch         | Switch       | Whether the wallbox changes the number of phases by itself                    |
-| `status-control` | min-charge-current        | Number:ElectricCurrent | Lowest charging current allowed, 6 to 16 A                  |
-| `status-control` | max-charge-current        | Number:ElectricCurrent | Highest charging current allowed, 6 to 16 A                        |
-| `status-control` | number-phases             | Number       | Number of phases used for charging, 1 or 3                                   |
+| Channel Group           | Channel                        | Type                   | Description                                                                                                                  |
+| ----------------------- | ------------------------------ | ---------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| `battery-limits`        | max-charge-power               | Number:Power           | Configured limit for battery charging                                                                                        |
+| `battery-limits`        | max-discharge-power            | Number:Power           | Configured limit for battery discharging                                                                                     |
+| `battery-limits`        | discharge-start-power          | Number:Power           | Power above which the battery is discharged                                                                                  |
+| `wallbox-priority`      | discharge-battery-to-car       | Switch                 | The house battery may discharge into the car                                                                                 |
+| `wallbox-priority`      | charge-battery-before-car      | Switch                 | The house battery is charged before the car                                                                                  |
+| `wallbox-priority`      | discharge-until                | Number:Dimensionless   | State of charge down to which the battery may discharge into the car                                                         |
+| `wallbox-priority`      | battery-off-in-mix-mode        | Switch                 | No battery charging while the wallbox charges in mix mode                                                                    |
+| `battery-limits`        | power-limits-used              | Switch                 | Whether the configured power limits are active                                                                               |
+| `battery-mode`          | weather-regulated-charge       | Switch                 | Whether charging follows the weather forecast                                                                                |
+| `battery-mode`          | set-power-mode                 | String                 | Command only: forces a power mode, `auto`, `idle:<cycles>` or `charge`/`discharge`/`grid_charge:<watts>:<cycles>`            |
+| `manual-battery-charge` | set-manual-charge              | Number:Energy          | Command only: starts a manual battery charge with this energy, offered in steps of 500 Wh up to the energy the battery holds |
+| `idle-periods`          | block-charging                 | Switch                 | Blocks battery charging on all days, see [The block switches](#the-block-switches)                                           |
+| `idle-periods`          | block-discharging              | Switch                 | Blocks battery discharging on all days, see [The block switches](#the-block-switches)                                        |
+| `idle-periods`          | enabled                        | Switch                 | Whether the device uses the configured idle periods                                                                          |
+| `idle-periods`          | charge-periods                 | String                 | The periods of charging, see [Channel Group `idle-periods`](#channel-group-idle-periods)                                     |
+| `idle-periods`          | discharge-periods              | String                 | The periods of discharging, see [Channel Group `idle-periods`](#channel-group-idle-periods)                                  |
+| `emergency`             | percent                        | Number:Dimensionless   | Share of the battery to keep for emergency power                                                                             |
+| `emergency`             | energy                         | Number:Energy          | Energy to keep for emergency power, offered in whole kWh up to the maximum the device accepts                                |
+| `status-control`        | sun-mode                       | Switch                 | Whether charging uses surplus photovoltaic power                                                                             |
+| `status-control`        | suspended                      | Switch                 | Whether the charging session is suspended                                                                                    |
+| `status-control`        | toggle                         | Switch                 | `ON` suspends a running session and resumes a suspended one, then returns to `OFF`                                           |
+| `status-control`        | auto-phase-switch              | Switch                 | Whether the wallbox changes the number of phases by itself                                                                   |
+| `status-control`        | min-charge-current             | Number:ElectricCurrent | Lowest charging current allowed, 6 to 16 A                                                                                   |
+| `status-control`        | max-charge-current             | Number:ElectricCurrent | Highest charging current allowed, 6 to 16 A                                                                                  |
+| `status-control`        | number-phases                  | Number                 | Number of phases used for charging, 1 or 3                                                                                   |
 
 A channel state is only updated after the device acknowledged the write, so a rejected command leaves the channel untouched.
 The commands of a thing run one after another on the shared scheduler and never block the framework thread, so a command waits while the device answers the one before it.
@@ -539,20 +539,20 @@ All of them are read from the same request, so the grouping costs nothing at the
 
 #### Group `status-control`
 
-| Channel            | Type                   | Description                                          |
-|--------------------|------------------------|------------------------------------------------------|
-| plugged            | Switch                 | A vehicle is connected                               |
-| locked             | Switch                 | The connector is locked                              |
-| charging           | Switch                 | A charging session is running                        |
-| key-state          | Switch                 | State of the wallbox key switch                      |
-| soc                | Number:Dimensionless   | State of charge of the connected vehicle             |
-| sun-mode           | Switch                 | Charging uses surplus photovoltaic power             |
-| suspended          | Switch                 | Charging is currently suspended                      |
-| toggle             | Switch                 | Suspends or resumes the charging, goes back to `OFF` |
-| min-charge-current | Number:ElectricCurrent | Lowest charging current allowed                      |
-| max-charge-current | Number:ElectricCurrent | Highest charging current allowed                     |
-| number-phases      | Number                 | Number of phases used for charging                   |
-| auto-phase-switch  | Switch                 | Wallbox changes the number of phases by itself       |
+| Channel              | Type                     | Description                                            |
+| -------------------- | ------------------------ | ------------------------------------------------------ |
+| plugged              | Switch                   | A vehicle is connected                                 |
+| locked               | Switch                   | The connector is locked                                |
+| charging             | Switch                   | A charging session is running                          |
+| key-state            | Switch                   | State of the wallbox key switch                        |
+| soc                  | Number:Dimensionless     | State of charge of the connected vehicle               |
+| sun-mode             | Switch                   | Charging uses surplus photovoltaic power               |
+| suspended            | Switch                   | Charging is currently suspended                        |
+| toggle               | Switch                   | Suspends or resumes the charging, goes back to `OFF`   |
+| min-charge-current   | Number:ElectricCurrent   | Lowest charging current allowed                        |
+| max-charge-current   | Number:ElectricCurrent   | Highest charging current allowed                       |
+| number-phases        | Number                   | Number of phases used for charging                     |
+| auto-phase-switch    | Switch                   | Wallbox changes the number of phases by itself         |
 
 #### Group `session`
 
@@ -560,58 +560,58 @@ The wallbox reports the phase and energy values for the last charging session.
 They are not live values and not daily or lifetime counters.
 The power values are live.
 
-| Channel   | Type          | Description                                                          |
-|-----------|---------------|----------------------------------------------------------------------|
-| power-l1  | Number:Power  | Power on phase L1                                                    |
-| power-l2  | Number:Power  | Power on phase L2                                                    |
-| power-l3  | Number:Power  | Power on phase L3                                                    |
-| phase-l1  | Switch        | Whether the wallbox charged on phase L1 in the last charging session |
-| phase-l2  | Switch        | Whether the wallbox charged on phase L2 in the last charging session |
-| phase-l3  | Switch        | Whether the wallbox charged on phase L3 in the last charging session |
-| energy-l1 | Number:Energy | Energy drawn on phase L1 in the last charging session                |
-| energy-l2 | Number:Energy | Energy drawn on phase L2 in the last charging session                |
-| energy-l3 | Number:Energy | Energy drawn on phase L3 in the last charging session                |
+| Channel     | Type            | Description                                                            |
+| ----------- | --------------- | ---------------------------------------------------------------------- |
+| power-l1    | Number:Power    | Power on phase L1                                                      |
+| power-l2    | Number:Power    | Power on phase L2                                                      |
+| power-l3    | Number:Power    | Power on phase L3                                                      |
+| phase-l1    | Switch          | Whether the wallbox charged on phase L1 in the last charging session   |
+| phase-l2    | Switch          | Whether the wallbox charged on phase L2 in the last charging session   |
+| phase-l3    | Switch          | Whether the wallbox charged on phase L3 in the last charging session   |
+| energy-l1   | Number:Energy   | Energy drawn on phase L1 in the last charging session                  |
+| energy-l2   | Number:Energy   | Energy drawn on phase L2 in the last charging session                  |
+| energy-l3   | Number:Energy   | Energy drawn on phase L3 in the last charging session                  |
 
 #### Group `counters`
 
-| Channel | Type          | Description                               |
-|---------|---------------|-------------------------------------------|
-| total   | Number:Energy | Energy charged through this wallbox       |
-| solar   | Number:Energy | Energy taken from the photovoltaic system |
+| Channel   | Type            | Description                                 |
+| --------- | --------------- | ------------------------------------------- |
+| total     | Number:Energy   | Energy charged through this wallbox         |
+| solar     | Number:Energy   | Energy taken from the photovoltaic system   |
 
 ### Channel Group `meter`
 
-| Channel         | Type                     | Description                         |
-|-----------------|--------------------------|-------------------------------------|
-| power-l1        | Number:Power             | Power on phase L1                   |
-| power-l2        | Number:Power             | Power on phase L2                   |
-| power-l3        | Number:Power             | Power on phase L3                   |
-| voltage-l1      | Number:ElectricPotential | Voltage on phase L1                 |
-| voltage-l2      | Number:ElectricPotential | Voltage on phase L2                 |
-| voltage-l3      | Number:ElectricPotential | Voltage on phase L3                 |
-| active-phases   | Number                   | Number of phases in use (1 to 3)   |
-| energy-l1       | Number:Energy            | Energy measured on phase L1         |
-| energy-l2       | Number:Energy            | Energy measured on phase L2         |
-| energy-l3       | Number:Energy            | Energy measured on phase L3         |
-| max-phase-power | Number:Power             | Highest power measured on one phase |
+| Channel           | Type                       | Description                           |
+| ----------------- | -------------------------- | ------------------------------------- |
+| power-l1          | Number:Power               | Power on phase L1                     |
+| power-l2          | Number:Power               | Power on phase L2                     |
+| power-l3          | Number:Power               | Power on phase L3                     |
+| voltage-l1        | Number:ElectricPotential   | Voltage on phase L1                   |
+| voltage-l2        | Number:ElectricPotential   | Voltage on phase L2                   |
+| voltage-l3        | Number:ElectricPotential   | Voltage on phase L3                   |
+| active-phases     | Number                     | Number of phases in use (1 to 3)      |
+| energy-l1         | Number:Energy              | Energy measured on phase L1           |
+| energy-l2         | Number:Energy              | Energy measured on phase L2           |
+| energy-l3         | Number:Energy              | Energy measured on phase L3           |
+| max-phase-power   | Number:Power               | Highest power measured on one phase   |
 
 ### Channel Group `pack` (battery)
 
-| Channel                   | Type                     | Description                                              |
-|---------------------------|--------------------------|----------------------------------------------------------|
-| voltage                   | Number:ElectricPotential | Voltage of the battery                                   |
-| current                   | Number:ElectricCurrent   | Current of the battery, negative while discharging       |
-| charge-cycles             | Number                   | Number of charge cycles of the battery                   |
-| soh                       | Number:Dimensionless     | State of health of the battery                           |
-| status-code               | Number                   | Status code of the battery                               |
-| error-code                | Number                   | Error code of the battery                                |
-| training-mode             | Number                   | Training mode of the battery                             |
-| design-capacity           | Number:ElectricCharge    | Design capacity in Ah                                    |
-| usable-capacity           | Number:ElectricCharge    | Usable capacity in Ah                                    |
-| usable-remaining-capacity | Number:ElectricCharge    | Stored capacity in Ah, including the reserve             |
-| design-energy             | Number:Energy            | Design energy in kWh, design capacity (Ah) × voltage (V) |
-| usable-energy             | Number:Energy            | Usable energy in kWh, usable capacity (Ah) × voltage (V) |
-| usable-remaining-energy   | Number:Energy            | Stored energy in kWh, stored capacity (Ah) × voltage (V) |
+| Channel                     | Type                       | Description                                                |
+| --------------------------- | -------------------------- | ---------------------------------------------------------- |
+| voltage                     | Number:ElectricPotential   | Voltage of the battery                                     |
+| current                     | Number:ElectricCurrent     | Current of the battery, negative while discharging         |
+| charge-cycles               | Number                     | Number of charge cycles of the battery                     |
+| soh                         | Number:Dimensionless       | State of health of the battery                             |
+| status-code                 | Number                     | Status code of the battery                                 |
+| error-code                  | Number                     | Error code of the battery                                  |
+| training-mode               | Number                     | Training mode of the battery                               |
+| design-capacity             | Number:ElectricCharge      | Design capacity in Ah                                      |
+| usable-capacity             | Number:ElectricCharge      | Usable capacity in Ah                                      |
+| usable-remaining-capacity   | Number:ElectricCharge      | Stored capacity in Ah, including the reserve               |
+| design-energy               | Number:Energy              | Design energy in kWh, design capacity (Ah) × voltage (V)   |
+| usable-energy               | Number:Energy              | Usable energy in kWh, usable capacity (Ah) × voltage (V)   |
+| usable-remaining-energy     | Number:Energy              | Stored energy in kWh, stored capacity (Ah) × voltage (V)   |
 
 The three energy channels are not reported by the device.
 The binding multiplies the capacity in `Ah` by the battery `voltage` of the same poll.
@@ -628,27 +628,27 @@ The module group reports the values of one battery cell module.
 The capacities are published in `Ah`.
 The fixed values of a module, such as its serial number, its design voltage and its cell counts, are [thing properties](#thing-properties).
 
-| Channel               | Type                     | Description                                  |
-|-----------------------|--------------------------|----------------------------------------------|
-| soc                   | Number:Dimensionless     | State of charge of the module                 |
-| soh                   | Number:Dimensionless     | State of health of the module                 |
-| voltage               | Number:ElectricPotential | Voltage of the module                         |
-| voltage-avg-30s       | Number:ElectricPotential | Voltage averaged over 30 seconds               |
-| current               | Number:ElectricCurrent   | Current of the module                          |
-| current-avg-30s       | Number:ElectricCurrent   | Current averaged over 30 seconds               |
-| remaining-capacity    | Number:ElectricCharge                   | Remaining capacity in Ah                       |
-| full-charge-capacity  | Number:ElectricCharge                   | Capacity at full charge in Ah                  |
-| design-capacity       | Number:ElectricCharge                   | Design capacity in Ah                          |
-| remaining-energy      | Number:Energy            | Remaining energy in kWh, remaining capacity (Ah) × module voltage (V) |
-| full-charge-energy    | Number:Energy            | Energy at full charge in kWh, full charge capacity (Ah) × module voltage (V) |
-| design-energy         | Number:Energy            | Design energy in kWh, design capacity (Ah) × module voltage (V) |
-| charge-high-temperature | Number:Temperature     | Upper temperature limit for charging           |
-| charge-low-temperature | Number:Temperature      | Lower temperature limit for charging           |
-| cycles                | Number                   | Charge cycles the module has completed         |
-| status                | Number                   | Status code reported by the module             |
-| warning               | Number                   | Warning code reported by the module            |
-| alarm                 | Number                   | Alarm code reported by the module              |
-| error                 | Number                   | Error code reported by the module              |
+| Channel                 | Type                       | Description                                                                  |
+| ----------------------- | -------------------------- | ---------------------------------------------------------------------------- |
+| soc                     | Number:Dimensionless       | State of charge of the module                                                |
+| soh                     | Number:Dimensionless       | State of health of the module                                                |
+| voltage                 | Number:ElectricPotential   | Voltage of the module                                                        |
+| voltage-avg-30s         | Number:ElectricPotential   | Voltage averaged over 30 seconds                                             |
+| current                 | Number:ElectricCurrent     | Current of the module                                                        |
+| current-avg-30s         | Number:ElectricCurrent     | Current averaged over 30 seconds                                             |
+| remaining-capacity      | Number:ElectricCharge      | Remaining capacity in Ah                                                     |
+| full-charge-capacity    | Number:ElectricCharge      | Capacity at full charge in Ah                                                |
+| design-capacity         | Number:ElectricCharge      | Design capacity in Ah                                                        |
+| remaining-energy        | Number:Energy              | Remaining energy in kWh, remaining capacity (Ah) × module voltage (V)        |
+| full-charge-energy      | Number:Energy              | Energy at full charge in kWh, full charge capacity (Ah) × module voltage (V) |
+| design-energy           | Number:Energy              | Design energy in kWh, design capacity (Ah) × module voltage (V)              |
+| charge-high-temperature | Number:Temperature         | Upper temperature limit for charging                                         |
+| charge-low-temperature  | Number:Temperature         | Lower temperature limit for charging                                         |
+| cycles                  | Number                     | Charge cycles the module has completed                                       |
+| status                  | Number                     | Status code reported by the module                                           |
+| warning                 | Number                     | Warning code reported by the module                                          |
+| alarm                   | Number                     | Alarm code reported by the module                                            |
+| error                   | Number                     | Error code reported by the module                                            |
 
 ### Channel Group `statistics` (bridge)
 
@@ -656,15 +656,15 @@ The bridge reports how much it occupies the device.
 All channels are advanced and read only.
 They show the last poll and, for the loop ratio, the summary of the last 20 polls.
 
-| Channel            | Type                 | Description                                                                 |
-|--------------------|----------------------|-----------------------------------------------------------------------------|
-| loop-ratio         | Number:Dimensionless | Time the device was occupied by the connection during the last poll, in percent of `refreshInterval` |
-| loop-ratio-average | Number:Dimensionless | Average of the loop ratio over the last 20 polls                           |
-| loop-ratio-peak    | Number:Dimensionless | Highest loop ratio of the last 20 polls                                    |
-| poll-duration      | Number:Time          | Time the last request spent on the wire, from sending to the complete answer |
-| device-wait        | Number:Time          | Time the device needed to start its answer                                 |
-| dispatch-time      | Number:Time          | Time openHAB needed to hand the answer to the things                       |
-| answer-size        | Number:DataAmount    | Size of the answer to the last request                                     |
+| Channel              | Type                   | Description                                                                                          |
+| -------------------- | ---------------------- | ---------------------------------------------------------------------------------------------------- |
+| loop-ratio           | Number:Dimensionless   | Time the device was occupied by the connection during the last poll, in percent of `refreshInterval` |
+| loop-ratio-average   | Number:Dimensionless   | Average of the loop ratio over the last 20 polls                                                     |
+| loop-ratio-peak      | Number:Dimensionless   | Highest loop ratio of the last 20 polls                                                              |
+| poll-duration        | Number:Time            | Time the last request spent on the wire, from sending to the complete answer                         |
+| device-wait          | Number:Time            | Time the device needed to start its answer                                                           |
+| dispatch-time        | Number:Time            | Time openHAB needed to hand the answer to the things                                                 |
+| answer-size          | Number:DataAmount      | Size of the answer to the last request                                                               |
 
 The loop ratio is the time of all requests on the connection (polls, commands and history fetches) divided by the refresh interval.
 A value below 20 % is the working target; above 100 % the interval is shorter than the device needs to answer.
@@ -676,14 +676,14 @@ The log output (`E3DCBridgeHandler` at DEBUG and TRACE) does not depend on that.
 The `power-plant` thing provides actions to read and replace the idle periods of the second version, the named time windows during which the battery is locked against charging or discharging.
 They work on the same list as the `charge-periods` and `discharge-periods` channels and the [block switches](#the-block-switches).
 
-| Action                          | Returns   | Description                                                      |
-|---------------------------------|-----------|------------------------------------------------------------------|
-| `getIdlePeriods()`              | `String`  | The periods in the device, one per line, or `null` if the device could not be asked |
-| `setIdlePeriods(String periods)` | `boolean` | Replaces the whole list and tells whether the device accepted it |
-| `setPowerMode(String mode, int watts, int cycles)` | `boolean` | Forces a power mode, see [Power mode](#power-mode), and tells whether the device accepted it |
-| `deleteIdlePeriod(String name)` | `boolean` | Removes the period of that name, keeps the others and tells whether the device accepted it |
-| `fetchPeriodHistory(String period, int count)` | `int` | Fetches the finished `day`, `week`, `month` or `year` periods, see [History Fetch](#history-fetch), and returns the number of periods that had data, or `-1` if the arguments are not valid or the device is not connected |
-| `fetchHistory()` | `int` | Fetches the yearly history of all earlier years once and returns the number of years that had data, or `-1` if the device is not connected |
+| Action                                             | Returns     | Description                                                                                                                                                                                                                |
+| -------------------------------------------------- | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `getIdlePeriods()`                                 | `String`    | The periods in the device, one per line, or `null` if the device could not be asked                                                                                                                                        |
+| `setIdlePeriods(String periods)`                   | `boolean`   | Replaces the whole list and tells whether the device accepted it                                                                                                                                                           |
+| `setPowerMode(String mode, int watts, int cycles)` | `boolean`   | Forces a power mode, see [Power mode](#power-mode), and tells whether the device accepted it                                                                                                                               |
+| `deleteIdlePeriod(String name)`                    | `boolean`   | Removes the period of that name, keeps the others and tells whether the device accepted it                                                                                                                                 |
+| `fetchPeriodHistory(String period, int count)`     | `int`       | Fetches the finished `day`, `week`, `month` or `year` periods, see [History Fetch](#history-fetch), and returns the number of periods that had data, or `-1` if the arguments are not valid or the device is not connected |
+| `fetchHistory()`                                   | `int`       | Fetches the yearly history of all earlier years once and returns the number of years that had data, or `-1` if the device is not connected                                                                                 |
 
 A period is one line `name:days:mode:active:hh:mm-hh:mm`, as in the `charge-periods` and `discharge-periods` channels, with the mode as an additional field:
 
