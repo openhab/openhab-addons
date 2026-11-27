@@ -20,18 +20,17 @@ import org.eclipse.jdt.annotation.Nullable;
 import com.google.gson.JsonElement;
 
 /**
- * Data model for an Pleos vehicle.
+ * Data model for a Pleos vehicle.
  *
  * @author Stephan Sandmann - Initial contribution
  */
 @NonNullByDefault
 public class PleosVehicleModels {
 
-    // Reusable component for doors and seats ([0]=Front, [1]=Rear))
+    // Reusable component for doors and seats ([0]=Front, [1]=Rear)
     public record LeftRightRow<T>(@Nullable T left, @Nullable T right) {
     }
 
-    // --- 1. Vehicle list (/v1/vehicles/consent) (for Discovery) ---
     public record VehiclesResponse(@Nullable VehiclesData data) {
         public record VehiclesData(@Nullable List<VehicleInfo> vehicles) {
         }
@@ -41,7 +40,6 @@ public class PleosVehicleModels {
         }
     }
 
-    // --- 2. Battery status (/v1/vehicles/{vin}/batteries) ---
     public record BatteryResponse(@Nullable BatteryData data) {
         public record BatteryData(@Nullable ChargeInfo charge) {
         }
@@ -55,7 +53,6 @@ public class PleosVehicleModels {
         }
     }
 
-    // --- 3. Powertrain-Status (/v1/vehicles/{vin}/powertrains) ---
     public record PowertrainResponse(@Nullable PowertrainData data) {
         public record PowertrainData(@Nullable EngineInfo engine, @Nullable List<DistanceInfo> distanceToEmpties) {
         }
@@ -67,7 +64,6 @@ public class PleosVehicleModels {
         }
     }
 
-    // --- 4. Location-Status (/v1/vehicles/{vin}/locations) ---
     public record LocationResponse(@Nullable LocationData data) {
         public record LocationData(@Nullable String timestamp, @Nullable GpsLocation location) {
         }
@@ -76,8 +72,8 @@ public class PleosVehicleModels {
                 @Nullable JsonElement speed, @Nullable String heading) {
 
             /**
-             * Helper method directly within the record: Extracts the speed,
-             * regardless of whether Pleos provides an object like {"value": "50"} or simply "50".
+             * Extracts the speed regardless of whether the API returns an object ({"value": "50"}) or a plain string
+             * ("50").
              */
             public @Nullable String extractRawSpeed() {
                 JsonElement speedElement = this.speed;
@@ -93,7 +89,6 @@ public class PleosVehicleModels {
         }
     }
 
-    // --- 5. Driving / Operation-Status (/v1/vehicles/{vin}/driving) ---
     public record DrivingResponse(@Nullable DrivingData data) {
         public record DrivingData(@Nullable IgnitionInfo ignition, @Nullable String sleepMode,
                 @Nullable OdometerInfo odometer, @Nullable TransmissionInfo transmission, @Nullable String timestamp) {
@@ -112,7 +107,6 @@ public class PleosVehicleModels {
         }
     }
 
-    // --- 6. Vehicle-Status (/v1/vehicles/{vin}/status) ---
     public record VehicleStatusResponse(@Nullable VehicleStatusData data) {
 
         public record VehicleStatusData(@Nullable List<LeftRightRow<String>> doors, @Nullable String hood,
@@ -140,7 +134,6 @@ public class PleosVehicleModels {
         }
     }
 
-    // --- 7. Freezer-Status (/v1/vehicles/{vin}/freezer) ---
     public record FreezerResponse(@Nullable FreezerData data) {
         public record FreezerData(@Nullable FreezerInfo freezer) {
         }

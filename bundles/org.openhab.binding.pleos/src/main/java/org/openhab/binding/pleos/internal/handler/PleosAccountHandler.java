@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.pleos.internal.handler;
 
+import static org.openhab.binding.pleos.internal.PleosBindingConstants.*;
+
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -60,6 +62,9 @@ import org.slf4j.LoggerFactory;
 public class PleosAccountHandler extends BaseBridgeHandler {
 
     private static final int RETRY_INTERVAL_SECONDS = 60;
+    private static final String EVENT_EXPIRED = "EXPIRED";
+    private static final String EVENT_EXPIRING_2_DAYS = "EXPIRING_2_DAYS";
+    private static final String EVENT_EXPIRING_7_DAYS = "EXPIRING_7_DAYS";
     private static final int SECRET_CHECK_INTERVAL_HOURS = 1;
 
     private final Logger logger = LoggerFactory.getLogger(PleosAccountHandler.class);
@@ -265,6 +270,7 @@ public class PleosAccountHandler extends BaseBridgeHandler {
             return null;
         }
         try {
+            // Pleos client secrets expire 90 days after creation
             return LocalDate.parse(dateStr.trim()).atStartOfDay(zoneId).plusDays(90);
         } catch (DateTimeParseException e) {
             return null;
@@ -274,9 +280,9 @@ public class PleosAccountHandler extends BaseBridgeHandler {
     private void checkSecretExpiration() {
         ZonedDateTime expiry = this.secretExpiryTime;
         if (expiry == null) {
-            updateState("secret-expires", UnDefType.UNDEF);
-            updateState("secret-remaining-days", UnDefType.UNDEF);
-            updateState("secret-expiry-warning", UnDefType.UNDEF);
+            updateState(CHANNEL_SECRET_EXPIRES, UnDefType.UNDEF);
+            updateState(CHANNEL_SECRET_REMAINING_DAYS, UnDefType.UNDEF);
+            updateState(CHANNEL_SECRET_EXPIRY_WARNING, UnDefType.UNDEF);
             return;
         }
 
@@ -285,15 +291,15 @@ public class PleosAccountHandler extends BaseBridgeHandler {
         long remainingHours = ChronoUnit.HOURS.between(now, expiry);
         long remainingDays = ChronoUnit.DAYS.between(now, expiry);
 
-        updateState("secret-expires", new DateTimeType(expiry));
-        updateState("secret-remaining-days", new QuantityType<>(Math.max(0, remainingDays), Units.DAY));
-        updateState("secret-expiry-warning", OnOffType.from(remainingHours <= 168));
+        updateState(CHANNEL_SECRET_EXPIRES, new DateTimeType(expiry));
+        updateState(CHANNEL_SECRET_REMAINING_DAYS, new QuantityType<>(Math.max(0, remainingDays), Units.DAY));
+        updateState(CHANNEL_SECRET_EXPIRY_WARNING, OnOffType.from(remainingHours <= 168));
 
         if (isExpired) {
             if (lastAlertStage < 3) {
                 lastAlertStage = 3;
                 logger.warn("Pleos Client Secret has expired! Please generate a new key in the Pleos Playground.");
-                triggerChannel("secret-expiry-event", "EXPIRED");
+                triggerChannel(CHANNEL_SECRET_EXPIRY_EVENT, EVENT_EXPIRED);
             }
             return;
         }
@@ -304,7 +310,7 @@ public class PleosAccountHandler extends BaseBridgeHandler {
                 lastAlertStage = 2;
                 lastSixHourAlert = currentInstant;
                 logger.warn("Pleos Client Secret expires in {} hours! Please renew it soon.", remainingHours);
-                triggerChannel("secret-expiry-event", "EXPIRING_2_DAYS");
+                triggerChannel(CHANNEL_SECRET_EXPIRY_EVENT, EVENT_EXPIRING_2_DAYS);
             }
             return;
         }
@@ -312,7 +318,7 @@ public class PleosAccountHandler extends BaseBridgeHandler {
         if (remainingHours <= 168 && lastAlertStage < 1) {
             lastAlertStage = 1;
             logger.warn("Pleos Client Secret expires in {} days ({}).", remainingDays, expiry.toLocalDate());
-            triggerChannel("secret-expiry-event", "EXPIRING_7_DAYS");
+            triggerChannel(CHANNEL_SECRET_EXPIRY_EVENT, EVENT_EXPIRING_7_DAYS);
         }
     }
 }

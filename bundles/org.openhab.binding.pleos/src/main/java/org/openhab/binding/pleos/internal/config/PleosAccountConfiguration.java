@@ -25,26 +25,26 @@ public class PleosAccountConfiguration {
 
     /**
      * Pleos Account clientId.
-     **/
+     */
     public @Nullable String clientId;
 
     /**
      * Pleos Account clientSecret.
-     **/
+     */
     public @Nullable String clientSecret;
 
     /**
      * Vehicle brand (Hyundai, Kia or Genesis). Always required.
-     **/
+     */
     public @Nullable String brand;
 
     /**
-     * refreshInterval for the Vehicle Data
-     **/
+     * Refresh interval for vehicle data (in minutes).
+     */
     public int refreshInterval = 15;
 
     /**
-     * Date the clientSecret was created
+     * Date the clientSecret was created (YYYY-MM-DD).
      */
     public @Nullable String secretCreationDate;
 }

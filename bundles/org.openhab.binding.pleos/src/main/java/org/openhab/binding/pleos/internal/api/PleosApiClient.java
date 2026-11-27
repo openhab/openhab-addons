@@ -64,11 +64,12 @@ public class PleosApiClient {
 
     private static final String PLEOS_API_BASE = "https://api.pleos.ai";
     private static final String PLEOS_AUTH_URL = "https://api.pleos.ai/v1/auth/personal-token";
+    private static final String CONTENT_TYPE_JSON = "application/json";
     private static final int TIMEOUT_SECONDS = 10;
 
     // 55-minute fallback validity (3300 sec.) if Pleos does not provide an `expiresIn` value
     private static final long DEFAULT_TOKEN_LIFETIME_SECONDS = 3300;
-    // 5-minute safety buffer before the actual process begins
+    // Refresh token 5 minutes before actual expiry
     private static final long EXPIRY_SAFETY_BUFFER_SECONDS = 300;
 
     // Error codes for which a new token resolves the issue
@@ -110,7 +111,7 @@ public class PleosApiClient {
 
         Request request = httpClient.newRequest(PLEOS_AUTH_URL).method(HttpMethod.POST)
                 .timeout(TIMEOUT_SECONDS, TimeUnit.SECONDS).headers(headers -> {
-                    headers.put(HttpHeader.CONTENT_TYPE, "application/json");
+                    headers.put(HttpHeader.CONTENT_TYPE, CONTENT_TYPE_JSON);
                     headers.put("Brand", brand.name().toLowerCase(Locale.ROOT));
                 }).body(new StringRequestContent(jsonPayload, StandardCharsets.UTF_8));
 
@@ -126,7 +127,6 @@ public class PleosApiClient {
                 if (data != null && data.accessToken() != null) {
                     this.accessToken = data.accessToken();
 
-                    // Dynamic calculation with a 5-minute buffer or a 55-minute fallback
                     Long expiresIn = data.expiresIn();
                     long validSeconds = (expiresIn != null && expiresIn > EXPIRY_SAFETY_BUFFER_SECONDS)
                             ? (expiresIn - EXPIRY_SAFETY_BUFFER_SECONDS)
@@ -150,7 +150,7 @@ public class PleosApiClient {
     }
 
     /**
-     * CORE METHOD: Sends a GET request, refreshes the token if necessary,
+     * Sends a GET request, refreshes the token if necessary,
      * and converts the JSON directly into the desired target record (<T>).
      */
     public <T> T sendGetRequest(String urlPath, Class<T> responseType) throws PleosApiException {
@@ -166,7 +166,7 @@ public class PleosApiClient {
         Request request = httpClient.newRequest(PLEOS_API_BASE + urlPath).method(HttpMethod.GET)
                 .timeout(TIMEOUT_SECONDS, TimeUnit.SECONDS).headers(headers -> {
                     headers.put(HttpHeader.AUTHORIZATION, "Bearer " + this.accessToken);
-                    headers.put(HttpHeader.CONTENT_TYPE, "application/json");
+                    headers.put(HttpHeader.CONTENT_TYPE, CONTENT_TYPE_JSON);
                     headers.put("Brand", brand.name().toLowerCase(Locale.ROOT));
                 });
 
@@ -175,7 +175,6 @@ public class PleosApiClient {
             int status = response.getStatus();
             String body = response.getContentAsString();
 
-            // Return API Result when HttpStatus.OK_200
             if (status == HttpStatus.OK_200) {
                 @Nullable
                 T result = gson.fromJson(body, responseType);
@@ -185,18 +184,15 @@ public class PleosApiClient {
                 return result;
             }
 
-            // Build Exception From Error Response
             PleosApiException apiEx = buildExceptionFromErrorResponse(status, body, false);
             String errorCode = apiEx.getErrorCode();
 
-            // Retryable Token Error try to get access token again
             if (!isRetry && errorCode != null && RETRYABLE_TOKEN_CODES.contains(errorCode)) {
                 logger.debug("Token is invalid/expired according to the API (code {}). Renewing token...", errorCode);
                 authenticate();
                 return sendGetRequestInternal(urlPath, responseType, true);
             }
 
-            // Else trow error reported from PLeosAPI
             throw apiEx;
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
@@ -233,8 +229,6 @@ public class PleosApiClient {
         }
         return new PleosApiException("HTTP Error " + httpStatus + ": " + body, String.valueOf(httpStatus), isLoginCall);
     }
-
-    // --- PLEOS API FUNCTIONAL ENDPOINTS ---
 
     public VehiclesResponse getVehicles() throws PleosApiException {
         return sendGetRequest("/v1/vehicles/consent", VehiclesResponse.class);

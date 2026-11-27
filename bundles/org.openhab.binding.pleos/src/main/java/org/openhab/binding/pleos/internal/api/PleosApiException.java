@@ -16,7 +16,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * Exception for Pleos API API errors.
+ * Exception for Pleos API errors.
  *
  * @author Stephan Sandmann - Initial contribution
  */

@@ -25,11 +25,9 @@ import com.google.gson.annotations.SerializedName;
 @NonNullByDefault
 public class PleosAuthModels {
 
-    // What we send to Pleos
     public record TokenRequest(String clientId, String clientSecret) {
     }
 
-    // What Pleos sends back: {"data": {"accessToken": "...", "expiresIn": 3600}}
     public record TokenResponse(@Nullable TokenData data) {
         public record TokenData(@SerializedName(value = "accessToken", alternate = {
                 "access_token" }) @Nullable String accessToken,

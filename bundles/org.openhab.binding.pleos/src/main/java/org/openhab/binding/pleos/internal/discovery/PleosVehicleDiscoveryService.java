@@ -12,11 +12,12 @@
  */
 package org.openhab.binding.pleos.internal.discovery;
 
+import static org.openhab.binding.pleos.internal.PleosBindingConstants.*;
+
 import java.util.List;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.pleos.internal.PleosBindingConstants;
 import org.openhab.binding.pleos.internal.api.PleosApiClient;
 import org.openhab.binding.pleos.internal.api.PleosApiException;
 import org.openhab.binding.pleos.internal.api.model.PleosVehicleModels.VehiclesResponse;
@@ -46,8 +47,7 @@ public class PleosVehicleDiscoveryService extends AbstractThingHandlerDiscoveryS
     private static final int DISCOVERY_TIMEOUT_SECONDS = 30;
 
     public PleosVehicleDiscoveryService() {
-        super(PleosAccountHandler.class, Set.of(PleosBindingConstants.THING_TYPE_VEHICLE), DISCOVERY_TIMEOUT_SECONDS,
-                true);
+        super(PleosAccountHandler.class, Set.of(THING_TYPE_VEHICLE), DISCOVERY_TIMEOUT_SECONDS, true);
     }
 
     @Override
@@ -80,19 +80,20 @@ public class PleosVehicleDiscoveryService extends AbstractThingHandlerDiscoveryS
 
                 VehicleType vehicleType = VehicleType.fromApiValue(vehicle.type());
                 String label = buildVehicleLabel(vin, vehicle.sellname(), vehicle.nickname());
-                ThingUID vehicleUID = new ThingUID(PleosBindingConstants.THING_TYPE_VEHICLE, bridgeUID, vin);
+                ThingUID vehicleUID = new ThingUID(THING_TYPE_VEHICLE, bridgeUID, vin);
 
                 DiscoveryResultBuilder resultBuilder = DiscoveryResultBuilder.create(vehicleUID).withBridge(bridgeUID)
-                        .withLabel(label).withProperty("vin", vin).withProperty("vehicleType", vehicleType.name())
-                        .withRepresentationProperty("vin");
+                        .withLabel(label).withProperty(PROPERTY_VIN, vin)
+                        .withProperty(PROPERTY_VEHICLE_TYPE, vehicleType.name())
+                        .withRepresentationProperty(PROPERTY_VIN);
 
                 String sellname = vehicle.sellname();
                 if (sellname != null && !sellname.isBlank()) {
-                    resultBuilder.withProperty("modelName", sellname.trim());
+                    resultBuilder.withProperty(PROPERTY_MODEL_NAME, sellname.trim());
                 }
                 String modelCode = vehicle.name();
                 if (modelCode != null && !modelCode.isBlank()) {
-                    resultBuilder.withProperty("modelCode", modelCode.trim());
+                    resultBuilder.withProperty(PROPERTY_MODEL_CODE, modelCode.trim());
                 }
 
                 thingDiscovered(resultBuilder.build());

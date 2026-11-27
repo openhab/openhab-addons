@@ -122,7 +122,7 @@ public class PleosVehicleHandler extends BaseThingHandler {
             return;
         }
         this.vin = configuredVin.trim();
-        this.vehicleType = VehicleType.fromApiValue(getThing().getProperties().get("vehicleType"));
+        this.vehicleType = VehicleType.fromApiValue(getThing().getProperties().get(PROPERTY_VEHICLE_TYPE));
         if (this.vehicleType != VehicleType.UNKNOWN) {
             createDynamicChannels();
         }
@@ -167,24 +167,16 @@ public class PleosVehicleHandler extends BaseThingHandler {
                 resolveVehicleMetadata(apiClient);
             }
 
-            // 1. Battery and charging (only applicable if the car is not a pure internal combustion engine vehicle)
             if (vehicleType.supportsCharging()) {
                 updateBatteryStatus(apiClient.getBatteryStatus(vin));
             }
 
-            // 2. Powertrain & Range
             updatePowertrainStatus(apiClient.getPowertrainStatus(vin));
-
-            // 3. Position and Speed
             updateLocationStatus(apiClient.getLocationInfo(vin));
-
-            // 4. Vehicle Operation, Ignition & Mileage
             updateDrivingStatus(apiClient.getOperationStatus(vin));
-
-            // 5. Doors, Tires, Warnings, Climate & Seats
             updateVehicleStatus(apiClient.getVehicleStatus(vin));
 
-            // 6. Cold storage (Freezer – optional feature; 4045/NoData is cleanly ignored)
+            // Freezer is an optional feature; 4045 (no data) is expected if not equipped
             try {
                 updateFreezerStatus(apiClient.getFreezerStatus(vin));
             } catch (PleosApiException e) {
@@ -235,14 +227,14 @@ public class PleosVehicleHandler extends BaseThingHandler {
                     this.vehicleType = detected;
 
                     Map<String, String> props = new HashMap<>(getThing().getProperties());
-                    props.put("vehicleType", detected.name());
+                    props.put(PROPERTY_VEHICLE_TYPE, detected.name());
                     String sellname = info.sellname();
                     if (sellname != null && !sellname.isBlank()) {
-                        props.put("modelName", sellname.trim());
+                        props.put(PROPERTY_MODEL_NAME, sellname.trim());
                     }
                     String modelCode = info.name();
                     if (modelCode != null && !modelCode.isBlank()) {
-                        props.put("modelCode", modelCode.trim());
+                        props.put(PROPERTY_MODEL_CODE, modelCode.trim());
                     }
                     updateProperties(props);
                     createDynamicChannels();
@@ -278,7 +270,6 @@ public class PleosVehicleHandler extends BaseThingHandler {
             }
         }
 
-        // 1. Charging channels (EV & Plug-in Hybrid)
         if (vehicleType.supportsCharging()) {
             final List<ChannelBuilder> chargingChannels = List.of(
                     buildChannel(GROUP_CHARGING, CHANNEL_SOC, CoreItemFactory.NUMBER + ":Dimensionless",
@@ -308,7 +299,6 @@ public class PleosVehicleHandler extends BaseThingHandler {
             thing.getChannelsOfGroup(GROUP_CHARGING).stream().map(Channel::getUID).forEach(channelsToRemove::add);
         }
 
-        // 2. Fuel channels (Combustion, Hybrid, Plug-in Hybrid, Fuel Cell)
         if (vehicleType.supportsFuel()) {
             ChannelBuilder fuelChannel = buildChannel(GROUP_FUEL, CHANNEL_FUEL_LEVEL,
                     CoreItemFactory.NUMBER + ":Dimensionless", CHANNEL_TYPE_FUEL_LEVEL);
@@ -333,9 +323,6 @@ public class PleosVehicleHandler extends BaseThingHandler {
         ChannelTypeUID channelTypeUID = new ChannelTypeUID(BINDING_ID, channelTypeId);
         return ChannelBuilder.create(channelUID, itemType).withType(channelTypeUID);
     }
-    // =========================================================================
-    // MAPPING METHODS (Records -> openHAB Channels)
-    // =========================================================================
 
     private void updateBatteryStatus(BatteryResponse response) {
         BatteryData data = response.data();
@@ -403,14 +390,16 @@ public class PleosVehicleHandler extends BaseThingHandler {
             DistanceInfo primary = distances.get(0);
             Unit<?> distUnit = "mile".equalsIgnoreCase(primary.unit()) ? ImperialUnits.MILE
                     : MetricPrefix.KILO(SIUnits.METRE);
-            updateChannel(GROUP_VEHICLE, "distance-to-empty", parseQuantityOrUndef(primary.value(), distUnit));
+            updateChannel(GROUP_VEHICLE, CHANNEL_DISTANCE_TO_EMPTY, parseQuantityOrUndef(primary.value(), distUnit));
 
             String rawType = primary.type();
             if (rawType != null && !rawType.isBlank()) {
                 String upper = rawType.toUpperCase(Locale.ROOT);
-                updateChannel(GROUP_VEHICLE, "distance-type", new StringType("ICE".equals(upper) ? "GASOLINE" : upper));
+                // Normalize API value "ICE" to the channel option "GASOLINE"
+                updateChannel(GROUP_VEHICLE, CHANNEL_DISTANCE_TYPE,
+                        new StringType("ICE".equals(upper) ? "GASOLINE" : upper));
             } else {
-                updateChannel(GROUP_VEHICLE, "distance-type", UnDefType.UNDEF);
+                updateChannel(GROUP_VEHICLE, CHANNEL_DISTANCE_TYPE, UnDefType.UNDEF);
             }
         }
     }
@@ -422,7 +411,7 @@ public class PleosVehicleHandler extends BaseThingHandler {
             return;
         }
 
-        updateChannel(GROUP_VEHICLE, "location-last-update", parseDateTimeOrUndef(data.timestamp()));
+        updateChannel(GROUP_VEHICLE, CHANNEL_LOCATION_LAST_UPDATE, parseDateTimeOrUndef(data.timestamp()));
 
         GpsLocation loc = data.location();
         if (loc == null) {
@@ -435,27 +424,29 @@ public class PleosVehicleHandler extends BaseThingHandler {
         Double alt = parseDouble(loc.altitude());
 
         if (lat != null && lon != null) {
-            updateChannel(GROUP_VEHICLE, "latitude", new DecimalType(lat));
-            updateChannel(GROUP_VEHICLE, "longitude", new DecimalType(lon));
+            updateChannel(GROUP_VEHICLE, CHANNEL_LATITUDE, new DecimalType(lat));
+            updateChannel(GROUP_VEHICLE, CHANNEL_LONGITUDE, new DecimalType(lon));
             if (alt != null) {
-                updateChannel(GROUP_VEHICLE, "altitude", new QuantityType<>(alt, SIUnits.METRE));
-                updateChannel(GROUP_VEHICLE, "location",
+                updateChannel(GROUP_VEHICLE, CHANNEL_ALTITUDE, new QuantityType<>(alt, SIUnits.METRE));
+                updateChannel(GROUP_VEHICLE, CHANNEL_LOCATION,
                         new PointType(new DecimalType(lat), new DecimalType(lon), new DecimalType(alt)));
             } else {
-                updateChannel(GROUP_VEHICLE, "altitude", UnDefType.UNDEF);
-                updateChannel(GROUP_VEHICLE, "location", new PointType(new DecimalType(lat), new DecimalType(lon)));
+                updateChannel(GROUP_VEHICLE, CHANNEL_ALTITUDE, UnDefType.UNDEF);
+                updateChannel(GROUP_VEHICLE, CHANNEL_LOCATION,
+                        new PointType(new DecimalType(lat), new DecimalType(lon)));
             }
         } else {
-            updateChannel(GROUP_VEHICLE, "latitude", UnDefType.UNDEF);
-            updateChannel(GROUP_VEHICLE, "longitude", UnDefType.UNDEF);
-            updateChannel(GROUP_VEHICLE, "altitude", UnDefType.UNDEF);
-            updateChannel(GROUP_VEHICLE, "location", UnDefType.UNDEF);
+            updateChannel(GROUP_VEHICLE, CHANNEL_LATITUDE, UnDefType.UNDEF);
+            updateChannel(GROUP_VEHICLE, CHANNEL_LONGITUDE, UnDefType.UNDEF);
+            updateChannel(GROUP_VEHICLE, CHANNEL_ALTITUDE, UnDefType.UNDEF);
+            updateChannel(GROUP_VEHICLE, CHANNEL_LOCATION, UnDefType.UNDEF);
         }
 
-        updateChannel(GROUP_VEHICLE, "speed", parseQuantityOrUndef(loc.extractRawSpeed(), SIUnits.KILOMETRE_PER_HOUR));
+        updateChannel(GROUP_VEHICLE, CHANNEL_SPEED,
+                parseQuantityOrUndef(loc.extractRawSpeed(), SIUnits.KILOMETRE_PER_HOUR));
 
         Double heading = parseDouble(loc.heading());
-        updateChannel(GROUP_VEHICLE, "heading",
+        updateChannel(GROUP_VEHICLE, CHANNEL_HEADING,
                 heading != null ? new QuantityType<>(heading.intValue(), Units.DEGREE_ANGLE) : UnDefType.UNDEF);
     }
 
@@ -468,7 +459,7 @@ public class PleosVehicleHandler extends BaseThingHandler {
         IgnitionInfo ignition = data.ignition();
         if (ignition != null) {
             String ignStatus = ignition.status();
-            updateChannel(GROUP_VEHICLE, "ignition",
+            updateChannel(GROUP_VEHICLE, CHANNEL_IGNITION,
                     ignStatus != null ? new StringType(ignStatus.toUpperCase(Locale.ROOT)) : UnDefType.UNDEF);
 
             List<IgnitionDetail> details = ignition.ignitionDetails();
@@ -480,9 +471,9 @@ public class PleosVehicleHandler extends BaseThingHandler {
                     }
                     OnOffType state = OnOffType.from("on".equalsIgnoreCase(detail.status()));
                     switch (type.toLowerCase(Locale.ROOT)) {
-                        case "acc" -> updateChannel(GROUP_VEHICLE, "ignition-acc", state);
-                        case "ign1" -> updateChannel(GROUP_VEHICLE, "ignition-ign1", state);
-                        case "ign3" -> updateChannel(GROUP_VEHICLE, "ignition-ign3", state);
+                        case "acc" -> updateChannel(GROUP_VEHICLE, CHANNEL_IGNITION_ACC, state);
+                        case "ign1" -> updateChannel(GROUP_VEHICLE, CHANNEL_IGNITION_IGN1, state);
+                        case "ign3" -> updateChannel(GROUP_VEHICLE, CHANNEL_IGNITION_IGN3, state);
                         default -> {
                         }
                     }
@@ -491,7 +482,7 @@ public class PleosVehicleHandler extends BaseThingHandler {
         }
 
         String sleepMode = data.sleepMode();
-        updateChannel(GROUP_VEHICLE, "sleep-mode",
+        updateChannel(GROUP_VEHICLE, CHANNEL_SLEEP_MODE,
                 sleepMode != null ? new StringType(sleepMode.toUpperCase(Locale.ROOT)) : UnDefType.UNDEF);
 
         OdometerInfo odo = data.odometer();
@@ -500,17 +491,17 @@ public class PleosVehicleHandler extends BaseThingHandler {
             if (val != null) {
                 Unit<?> odoUnit = "mile".equalsIgnoreCase(odo.unit()) ? ImperialUnits.MILE
                         : MetricPrefix.KILO(SIUnits.METRE);
-                updateChannel(GROUP_VEHICLE, "odometer", new QuantityType<>(val, odoUnit));
+                updateChannel(GROUP_VEHICLE, CHANNEL_ODOMETER, new QuantityType<>(val, odoUnit));
             }
         }
 
         TransmissionInfo trans = data.transmission();
         Boolean parking = trans != null ? trans.parkingPosition() : null;
         if (parking != null) {
-            updateChannel(GROUP_VEHICLE, "parking-position", OnOffType.from(parking));
+            updateChannel(GROUP_VEHICLE, CHANNEL_PARKING_POSITION, OnOffType.from(parking));
         }
 
-        updateChannel(GROUP_VEHICLE, "last-update", parseDateTimeOrUndef(data.timestamp()));
+        updateChannel(GROUP_VEHICLE, CHANNEL_LAST_UPDATE, parseDateTimeOrUndef(data.timestamp()));
     }
 
     private void updateVehicleStatus(VehicleStatusResponse response) {
@@ -519,101 +510,104 @@ public class PleosVehicleHandler extends BaseThingHandler {
             return;
         }
 
-        // 1. Doors and flaps
         List<LeftRightRow<String>> doors = data.doors();
         LeftRightRow<String> frontDoors = (doors != null && !doors.isEmpty()) ? doors.get(0) : null;
         LeftRightRow<String> rearDoors = (doors != null && doors.size() > 1) ? doors.get(1) : null;
 
-        updateChannel(GROUP_DOORS, "door-front-left",
+        updateChannel(GROUP_DOORS, CHANNEL_DOOR_FRONT_LEFT,
                 toUpperStringOrUndef(frontDoors != null ? frontDoors.left() : null));
-        updateChannel(GROUP_DOORS, "door-front-right",
+        updateChannel(GROUP_DOORS, CHANNEL_DOOR_FRONT_RIGHT,
                 toUpperStringOrUndef(frontDoors != null ? frontDoors.right() : null));
-        updateChannel(GROUP_DOORS, "door-rear-left", toUpperStringOrUndef(rearDoors != null ? rearDoors.left() : null));
-        updateChannel(GROUP_DOORS, "door-rear-right",
+        updateChannel(GROUP_DOORS, CHANNEL_DOOR_REAR_LEFT,
+                toUpperStringOrUndef(rearDoors != null ? rearDoors.left() : null));
+        updateChannel(GROUP_DOORS, CHANNEL_DOOR_REAR_RIGHT,
                 toUpperStringOrUndef(rearDoors != null ? rearDoors.right() : null));
-        updateChannel(GROUP_DOORS, "hood", toUpperStringOrUndef(data.hood()));
-        updateChannel(GROUP_DOORS, "trunk", toUpperStringOrUndef(data.trunk()));
-        updateChannel(GROUP_DOORS, "sunroof", toUpperStringOrUndef(data.sunroof()));
+        updateChannel(GROUP_DOORS, CHANNEL_HOOD, toUpperStringOrUndef(data.hood()));
+        updateChannel(GROUP_DOORS, CHANNEL_TRUNK, toUpperStringOrUndef(data.trunk()));
+        updateChannel(GROUP_DOORS, CHANNEL_SUNROOF, toUpperStringOrUndef(data.sunroof()));
 
-        // 2. Tire pressure
         List<TireRow> tires = data.tire();
-        updateTireRow(tires != null && !tires.isEmpty() ? tires.get(0) : null, "tire-pressure-front-left",
-                "tire-pressure-front-right");
-        updateTireRow(tires != null && tires.size() > 1 ? tires.get(1) : null, "tire-pressure-rear-left",
-                "tire-pressure-rear-right");
+        updateTireRow(tires != null && !tires.isEmpty() ? tires.get(0) : null, CHANNEL_TIRE_PRESSURE_FRONT_LEFT,
+                CHANNEL_TIRE_PRESSURE_FRONT_RIGHT);
+        updateTireRow(tires != null && tires.size() > 1 ? tires.get(1) : null, CHANNEL_TIRE_PRESSURE_REAR_LEFT,
+                CHANNEL_TIRE_PRESSURE_REAR_RIGHT);
 
-        // 3. Warnings
         List<String> rawWarnings = data.warnings();
         List<String> warnings = rawWarnings != null ? rawWarnings : List.of();
-        updateChannel(GROUP_WARNINGS, "warning-low-fuel", OnOffType.from(warnings.contains("lowFuel")));
-        updateChannel(GROUP_WARNINGS, "warning-smartkey-battery", OnOffType.from(warnings.contains("smartKeyBattery")));
-        updateChannel(GROUP_WARNINGS, "warning-wash-fluid", OnOffType.from(warnings.contains("washFluid")));
-        updateChannel(GROUP_WARNINGS, "warning-brake-oil", OnOffType.from(warnings.contains("brakeOil")));
-        updateChannel(GROUP_WARNINGS, "warning-engine-oil", OnOffType.from(warnings.contains("engineOil")));
-        updateChannel(GROUP_WARNINGS, "warning-lamp-headlamp", OnOffType.from(warnings.contains("frontHeadLamp")));
-        updateChannel(GROUP_WARNINGS, "warning-lamp-turn-front-left",
+        updateChannel(GROUP_WARNINGS, CHANNEL_WARNING_LOW_FUEL, OnOffType.from(warnings.contains("lowFuel")));
+        updateChannel(GROUP_WARNINGS, CHANNEL_WARNING_SMARTKEY_BATTERY,
+                OnOffType.from(warnings.contains("smartKeyBattery")));
+        updateChannel(GROUP_WARNINGS, CHANNEL_WARNING_WASH_FLUID, OnOffType.from(warnings.contains("washFluid")));
+        updateChannel(GROUP_WARNINGS, CHANNEL_WARNING_BRAKE_OIL, OnOffType.from(warnings.contains("brakeOil")));
+        updateChannel(GROUP_WARNINGS, CHANNEL_WARNING_ENGINE_OIL, OnOffType.from(warnings.contains("engineOil")));
+        updateChannel(GROUP_WARNINGS, CHANNEL_WARNING_LAMP_HEADLAMP,
+                OnOffType.from(warnings.contains("frontHeadLamp")));
+        updateChannel(GROUP_WARNINGS, CHANNEL_WARNING_LAMP_TURN_FRONT_LEFT,
                 OnOffType.from(warnings.contains("frontLeftTurnSignal")));
-        updateChannel(GROUP_WARNINGS, "warning-lamp-turn-front-right",
+        updateChannel(GROUP_WARNINGS, CHANNEL_WARNING_LAMP_TURN_FRONT_RIGHT,
                 OnOffType.from(warnings.contains("frontRightTurnSignal")));
-        updateChannel(GROUP_WARNINGS, "warning-lamp-stop-rear-left",
+        updateChannel(GROUP_WARNINGS, CHANNEL_WARNING_LAMP_STOP_REAR_LEFT,
                 OnOffType.from(warnings.contains("rearLeftStopLamp")));
-        updateChannel(GROUP_WARNINGS, "warning-lamp-stop-rear-right",
+        updateChannel(GROUP_WARNINGS, CHANNEL_WARNING_LAMP_STOP_REAR_RIGHT,
                 OnOffType.from(warnings.contains("rearRightStopLamp")));
-        updateChannel(GROUP_WARNINGS, "warning-lamp-turn-rear-left",
+        updateChannel(GROUP_WARNINGS, CHANNEL_WARNING_LAMP_TURN_REAR_LEFT,
                 OnOffType.from(warnings.contains("rearLeftTurnSignal")));
-        updateChannel(GROUP_WARNINGS, "warning-lamp-turn-rear-right",
+        updateChannel(GROUP_WARNINGS, CHANNEL_WARNING_LAMP_TURN_REAR_RIGHT,
                 OnOffType.from(warnings.contains("rearRightTurnSignal")));
 
-        updateChannel(GROUP_TIRES, "tire-warning-fl", OnOffType.from(warnings.contains("tirePressureFrontLeft")));
-        updateChannel(GROUP_TIRES, "tire-warning-fr", OnOffType.from(warnings.contains("tirePressureFrontRight")));
-        updateChannel(GROUP_TIRES, "tire-warning-rl", OnOffType.from(warnings.contains("tirePressureRearLeft")));
-        updateChannel(GROUP_TIRES, "tire-warning-rr", OnOffType.from(warnings.contains("tirePressureRearRight")));
-        updateChannel(GROUP_TIRES, "tire-warning-low-generic", OnOffType.from(warnings.contains("tirePressureLow")));
+        updateChannel(GROUP_TIRES, CHANNEL_TIRE_WARNING_FL, OnOffType.from(warnings.contains("tirePressureFrontLeft")));
+        updateChannel(GROUP_TIRES, CHANNEL_TIRE_WARNING_FR,
+                OnOffType.from(warnings.contains("tirePressureFrontRight")));
+        updateChannel(GROUP_TIRES, CHANNEL_TIRE_WARNING_RL, OnOffType.from(warnings.contains("tirePressureRearLeft")));
+        updateChannel(GROUP_TIRES, CHANNEL_TIRE_WARNING_RR, OnOffType.from(warnings.contains("tirePressureRearRight")));
+        updateChannel(GROUP_TIRES, CHANNEL_TIRE_WARNING_LOW_GENERIC,
+                OnOffType.from(warnings.contains("tirePressureLow")));
 
-        // 4. Climate and temperatures
         ClimateControl climate = data.climateControl();
         if (climate != null) {
-            updateChannel(GROUP_CLIMATE, "climate-mode", toUpperStringOrUndef(climate.mode()));
-            updateChannel(GROUP_CLIMATE, "climate-status",
+            updateChannel(GROUP_CLIMATE, CHANNEL_CLIMATE_MODE, toUpperStringOrUndef(climate.mode()));
+            updateChannel(GROUP_CLIMATE, CHANNEL_CLIMATE_STATUS,
                     climate.status() != null ? OnOffType.from("on".equalsIgnoreCase(climate.status()))
                             : UnDefType.UNDEF);
             Integer speed = climate.speed();
             if (speed != null) {
-                updateChannel(GROUP_CLIMATE, "climate-speed",
+                updateChannel(GROUP_CLIMATE, CHANNEL_CLIMATE_SPEED,
                         climate.speed() != null ? new DecimalType(speed) : UnDefType.UNDEF);
             }
-            updateChannel(GROUP_CLIMATE, "climate-target-temp", toTemperatureOrUndef(climate.temperature()));
+            updateChannel(GROUP_CLIMATE, CHANNEL_CLIMATE_TARGET_TEMP, toTemperatureOrUndef(climate.temperature()));
         } else {
-            updateChannel(GROUP_CLIMATE, "climate-mode", UnDefType.UNDEF);
-            updateChannel(GROUP_CLIMATE, "climate-status", UnDefType.UNDEF);
-            updateChannel(GROUP_CLIMATE, "climate-speed", UnDefType.UNDEF);
-            updateChannel(GROUP_CLIMATE, "climate-target-temp", UnDefType.UNDEF);
+            updateChannel(GROUP_CLIMATE, CHANNEL_CLIMATE_MODE, UnDefType.UNDEF);
+            updateChannel(GROUP_CLIMATE, CHANNEL_CLIMATE_STATUS, UnDefType.UNDEF);
+            updateChannel(GROUP_CLIMATE, CHANNEL_CLIMATE_SPEED, UnDefType.UNDEF);
+            updateChannel(GROUP_CLIMATE, CHANNEL_CLIMATE_TARGET_TEMP, UnDefType.UNDEF);
         }
 
         WindshieldInfo windshield = data.windshield();
-        updateChannel(GROUP_CLIMATE, "windshield-heater",
+        updateChannel(GROUP_CLIMATE, CHANNEL_WINDSHIELD_HEATER,
                 (windshield != null && windshield.defrost() != null)
                         ? OnOffType.from("on".equalsIgnoreCase(windshield.defrost()))
                         : UnDefType.UNDEF);
 
-        updateChannel(GROUP_CLIMATE, "steering-wheel-heater",
+        updateChannel(GROUP_CLIMATE, CHANNEL_STEERING_WHEEL_HEATER,
                 data.steeringWheelHeat() != null ? OnOffType.from("on".equalsIgnoreCase(data.steeringWheelHeat()))
                         : UnDefType.UNDEF);
 
-        updateChannel(GROUP_CLIMATE, "outside-temperature", toTemperatureOrUndef(data.outsideTemperature()));
+        updateChannel(GROUP_CLIMATE, CHANNEL_OUTSIDE_TEMPERATURE, toTemperatureOrUndef(data.outsideTemperature()));
 
-        // 5. Seats
         List<LeftRightRow<SeatInfo>> seats = data.seats();
         LeftRightRow<SeatInfo> frontSeats = (seats != null && !seats.isEmpty()) ? seats.get(0) : null;
         LeftRightRow<SeatInfo> rearSeats = (seats != null && seats.size() > 1) ? seats.get(1) : null;
 
-        updateSeatSide(frontSeats != null ? frontSeats.left() : null, "seat-front-left");
-        updateSeatSide(frontSeats != null ? frontSeats.right() : null, "seat-front-right");
-        updateSeatSide(rearSeats != null ? rearSeats.left() : null, "seat-rear-left");
-        updateSeatSide(rearSeats != null ? rearSeats.right() : null, "seat-rear-right");
+        updateSeatSide(frontSeats != null ? frontSeats.left() : null, CHANNEL_SEAT_FRONT_LEFT_HEAT,
+                CHANNEL_SEAT_FRONT_LEFT_VENT);
+        updateSeatSide(frontSeats != null ? frontSeats.right() : null, CHANNEL_SEAT_FRONT_RIGHT_HEAT,
+                CHANNEL_SEAT_FRONT_RIGHT_VENT);
+        updateSeatSide(rearSeats != null ? rearSeats.left() : null, CHANNEL_SEAT_REAR_LEFT_HEAT,
+                CHANNEL_SEAT_REAR_LEFT_VENT);
+        updateSeatSide(rearSeats != null ? rearSeats.right() : null, CHANNEL_SEAT_REAR_RIGHT_HEAT,
+                CHANNEL_SEAT_REAR_RIGHT_VENT);
     }
 
-    // 6. Freezer
     private void updateFreezerStatus(FreezerResponse response) {
         FreezerData data = response.data();
         FreezerInfo freezer = data != null ? data.freezer() : null;
@@ -621,16 +615,13 @@ public class PleosVehicleHandler extends BaseThingHandler {
             return;
         }
         String status = freezer.status();
-        updateChannel(GROUP_FREEZER, "freezer-active",
+        updateChannel(GROUP_FREEZER, CHANNEL_FREEZER_ACTIVE,
                 status != null ? OnOffType.from("on".equalsIgnoreCase(status)) : UnDefType.UNDEF);
         Double temp = freezer.temperature();
-        updateChannel(GROUP_FREEZER, "freezer-temperature",
+        updateChannel(GROUP_FREEZER, CHANNEL_FREEZER_TEMPERATURE,
                 temp != null ? new QuantityType<>(temp, SIUnits.CELSIUS) : UnDefType.UNDEF);
     }
 
-    // =========================================================================
-    // HELPER METHODS FOR TYPE CONVERSION
-    // =========================================================================
     private void updateChannel(String group, String channelId, State state) {
         updateState(new ChannelUID(getThing().getUID(), group, channelId), state);
     }
@@ -658,9 +649,11 @@ public class PleosVehicleHandler extends BaseThingHandler {
     }
 
     static State formatTireValue(@Nullable Double raw, String apiUnit, Unit<?> uomUnit) {
+        // 255 is the API sentinel value for an unavailable tire pressure sensor
         if (raw == null || raw == 255.0) {
             return UnDefType.UNDEF;
         }
+        // Pleos API reports kPa in steps of 5 and bar in tenths
         double scaled = switch (apiUnit) {
             case "kpa" -> raw * 5.0;
             case "bar" -> raw / 10.0;
@@ -669,16 +662,17 @@ public class PleosVehicleHandler extends BaseThingHandler {
         return new QuantityType<>(scaled, uomUnit);
     }
 
-    private void updateSeatSide(@Nullable SeatInfo seat, String prefix) {
+    private void updateSeatSide(@Nullable SeatInfo seat, String heatChannel, String ventChannel) {
         if (seat == null) {
-            updateChannel(GROUP_SEATS, prefix + "-heat", UnDefType.UNDEF);
-            updateChannel(GROUP_SEATS, prefix + "-vent", UnDefType.UNDEF);
+            updateChannel(GROUP_SEATS, heatChannel, UnDefType.UNDEF);
+            updateChannel(GROUP_SEATS, ventChannel, UnDefType.UNDEF);
             return;
         }
-        updateChannel(GROUP_SEATS, prefix + "-heat", new StringType(resolveSeatLevel(seat.heat())));
-        updateChannel(GROUP_SEATS, prefix + "-vent", new StringType(resolveSeatLevel(seat.ventilation())));
+        updateChannel(GROUP_SEATS, heatChannel, new StringType(resolveSeatLevel(seat.heat())));
+        updateChannel(GROUP_SEATS, ventChannel, new StringType(resolveSeatLevel(seat.ventilation())));
     }
 
+    // Pleos API may return seat levels either as numeric codes (0-3) or as strings
     static String resolveSeatLevel(@Nullable JsonElement element) {
         if (element == null || element.isJsonNull() || !element.isJsonPrimitive()) {
             return "OFF";
@@ -729,6 +723,7 @@ public class PleosVehicleHandler extends BaseThingHandler {
             return null;
         }
         String trimmed = raw.trim();
+        // Pleos API uses "-" to indicate an unavailable numeric value
         if (trimmed.isEmpty() || "-".equals(trimmed)) {
             return null;
         }
@@ -762,13 +757,13 @@ public class PleosVehicleHandler extends BaseThingHandler {
     }
 
     private void setAllLocationChannelsToUndef() {
-        updateChannel(GROUP_VEHICLE, "location-last-update", UnDefType.UNDEF);
-        updateChannel(GROUP_VEHICLE, "latitude", UnDefType.UNDEF);
-        updateChannel(GROUP_VEHICLE, "longitude", UnDefType.UNDEF);
-        updateChannel(GROUP_VEHICLE, "altitude", UnDefType.UNDEF);
-        updateChannel(GROUP_VEHICLE, "location", UnDefType.UNDEF);
-        updateChannel(GROUP_VEHICLE, "speed", UnDefType.UNDEF);
-        updateChannel(GROUP_VEHICLE, "heading", UnDefType.UNDEF);
+        updateChannel(GROUP_VEHICLE, CHANNEL_LOCATION_LAST_UPDATE, UnDefType.UNDEF);
+        updateChannel(GROUP_VEHICLE, CHANNEL_LATITUDE, UnDefType.UNDEF);
+        updateChannel(GROUP_VEHICLE, CHANNEL_LONGITUDE, UnDefType.UNDEF);
+        updateChannel(GROUP_VEHICLE, CHANNEL_ALTITUDE, UnDefType.UNDEF);
+        updateChannel(GROUP_VEHICLE, CHANNEL_LOCATION, UnDefType.UNDEF);
+        updateChannel(GROUP_VEHICLE, CHANNEL_SPEED, UnDefType.UNDEF);
+        updateChannel(GROUP_VEHICLE, CHANNEL_HEADING, UnDefType.UNDEF);
     }
 
     private @Nullable PleosAccountHandler getAccountHandler() {
