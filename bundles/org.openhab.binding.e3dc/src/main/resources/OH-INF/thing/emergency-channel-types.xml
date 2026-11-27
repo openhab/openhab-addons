@@ -9,8 +9,8 @@
 		<label>Reserve</label>
 		<description>Share of the battery kept for emergency power</description>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>StateOfCharge</tag>
+			<point>Setpoint</point>
+			<property>StateOfCharge</property>
 		</tags>
 		<state pattern="%.0f %%"/>
 		<command>
@@ -35,8 +35,8 @@
 		<label>Reserve Energy</label>
 		<description>Energy kept for emergency power</description>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Energy</tag>
+			<point>Setpoint</point>
+			<property>Energy</property>
 		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
@@ -46,8 +46,8 @@
 		<label>Maximum Reserve Energy</label>
 		<description>Highest reserve the battery can hold for emergency power</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -57,8 +57,8 @@
 		<label>Reserve Last SoC</label>
 		<description>State of charge the battery was left with for emergency power</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>StateOfCharge</tag>
+			<point>Measurement</point>
+			<property>StateOfCharge</property>
 		</tags>
 		<state pattern="%.0f %%" readOnly="true"/>
 	</channel-type>

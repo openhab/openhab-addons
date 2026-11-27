@@ -108,7 +108,7 @@ class E3DCChildHandlerTest {
         handler.initialize();
 
         ThingStatusInfo status = lastStatus(callback);
-        assertEquals(ThingStatus.OFFLINE, status.getStatus());
+        assertEquals(ThingStatus.UNINITIALIZED, status.getStatus());
         assertEquals(ThingStatusDetail.BRIDGE_UNINITIALIZED, status.getStatusDetail());
     }
 

@@ -9,7 +9,7 @@
 		<label>Active Phases</label>
 		<description>Number of phases in use (1 to 3)</description>
 		<tags>
-			<tag>Measurement</tag>
+			<point>Measurement</point>
 		</tags>
 		<state pattern="%d" readOnly="true"/>
 	</channel-type>

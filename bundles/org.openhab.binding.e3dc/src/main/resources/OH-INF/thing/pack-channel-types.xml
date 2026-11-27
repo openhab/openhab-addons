@@ -9,8 +9,8 @@
 		<label>Voltage</label>
 		<description>Voltage of the battery</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Voltage</tag>
+			<point>Measurement</point>
+			<property>Voltage</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -20,8 +20,8 @@
 		<label>Current</label>
 		<description>Current of the battery, negative while discharging</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Current</tag>
+			<point>Measurement</point>
+			<property>Current</property>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
@@ -31,7 +31,7 @@
 		<label>Charge Cycles</label>
 		<description>Number of charge cycles of the battery</description>
 		<tags>
-			<tag>Measurement</tag>
+			<point>Measurement</point>
 		</tags>
 		<state pattern="%d" readOnly="true"/>
 	</channel-type>
@@ -41,7 +41,7 @@
 		<label>State of Health</label>
 		<description>State of health of the battery</description>
 		<tags>
-			<tag>Measurement</tag>
+			<point>Measurement</point>
 		</tags>
 		<state pattern="%.1f %%" readOnly="true"/>
 	</channel-type>
@@ -51,7 +51,7 @@
 		<label>Status Code</label>
 		<description>Status code of the battery</description>
 		<tags>
-			<tag>Status</tag>
+			<point>Status</point>
 		</tags>
 		<state pattern="%d" readOnly="true"/>
 	</channel-type>
@@ -61,7 +61,7 @@
 		<label>Error Code</label>
 		<description>Error code of the battery</description>
 		<tags>
-			<tag>Status</tag>
+			<point>Status</point>
 		</tags>
 		<state pattern="%d" readOnly="true"/>
 	</channel-type>
@@ -71,8 +71,8 @@
 		<label>Training Mode</label>
 		<description>Training mode of the battery</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
+			<point>Status</point>
+			<property>Mode</property>
 		</tags>
 		<state pattern="%d" readOnly="true"/>
 	</channel-type>
@@ -82,7 +82,7 @@
 		<label>Design Capacity</label>
 		<description>Design capacity of the battery</description>
 		<tags>
-			<tag>Measurement</tag>
+			<point>Measurement</point>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -92,7 +92,7 @@
 		<label>Usable Capacity</label>
 		<description>Usable capacity of the battery</description>
 		<tags>
-			<tag>Measurement</tag>
+			<point>Measurement</point>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -102,7 +102,7 @@
 		<label>Remaining Capacity</label>
 		<description>Capacity stored in the battery, including its reserve</description>
 		<tags>
-			<tag>Measurement</tag>
+			<point>Measurement</point>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -112,8 +112,8 @@
 		<label>Design Energy</label>
 		<description>Design energy of the battery</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
@@ -123,8 +123,8 @@
 		<label>Usable Energy</label>
 		<description>Usable energy of the battery</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
@@ -134,8 +134,8 @@
 		<label>Remaining Energy</label>
 		<description>Energy stored in the battery, calculated from the stored capacity</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>

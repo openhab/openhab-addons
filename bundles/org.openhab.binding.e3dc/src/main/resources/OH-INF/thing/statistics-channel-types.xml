@@ -9,7 +9,7 @@
 		<label>Loop Ratio</label>
 		<description>Share of the refresh interval this connection occupied the device</description>
 		<tags>
-			<tag>Measurement</tag>
+			<point>Measurement</point>
 		</tags>
 		<state pattern="%.1f %%" readOnly="true"/>
 	</channel-type>
@@ -19,7 +19,7 @@
 		<label>Loop Ratio Average</label>
 		<description>Average loop ratio over the last 20 polls</description>
 		<tags>
-			<tag>Measurement</tag>
+			<point>Measurement</point>
 		</tags>
 		<state pattern="%.1f %%" readOnly="true"/>
 	</channel-type>
@@ -29,7 +29,7 @@
 		<label>Loop Ratio Peak</label>
 		<description>Highest loop ratio of the last 20 polls</description>
 		<tags>
-			<tag>Measurement</tag>
+			<point>Measurement</point>
 		</tags>
 		<state pattern="%.1f %%" readOnly="true"/>
 	</channel-type>
@@ -39,8 +39,8 @@
 		<label>Poll Duration</label>
 		<description>Duration of the last request</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Duration</tag>
+			<point>Measurement</point>
+			<property>Duration</property>
 		</tags>
 		<state pattern="%.1f ms" readOnly="true"/>
 	</channel-type>
@@ -50,8 +50,8 @@
 		<label>Device Wait</label>
 		<description>Time the device needed to start its answer to the last request</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Duration</tag>
+			<point>Measurement</point>
+			<property>Duration</property>
 		</tags>
 		<state pattern="%.1f ms" readOnly="true"/>
 	</channel-type>
@@ -61,8 +61,8 @@
 		<label>Dispatch Time</label>
 		<description>Time openHAB needed to hand the answer of the last poll to the things</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Duration</tag>
+			<point>Measurement</point>
+			<property>Duration</property>
 		</tags>
 		<state pattern="%.1f ms" readOnly="true"/>
 	</channel-type>
@@ -72,7 +72,7 @@
 		<label>Answer Size</label>
 		<description>Size of the answer to the last request</description>
 		<tags>
-			<tag>Measurement</tag>
+			<point>Measurement</point>
 		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>

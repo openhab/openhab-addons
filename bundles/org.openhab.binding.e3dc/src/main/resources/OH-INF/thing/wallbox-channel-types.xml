@@ -9,8 +9,8 @@
 		<label>Session Power L1</label>
 		<description>Power on phase L1 in the charging session</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point>Measurement</point>
+			<property>Power</property>
 		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
@@ -20,8 +20,8 @@
 		<label>Session Power L2</label>
 		<description>Power on phase L2 in the charging session</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point>Measurement</point>
+			<property>Power</property>
 		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
@@ -31,8 +31,8 @@
 		<label>Session Power L3</label>
 		<description>Power on phase L3 in the charging session</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point>Measurement</point>
+			<property>Power</property>
 		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
@@ -42,8 +42,8 @@
 		<label>Total Energy</label>
 		<description>Energy produced since commissioning</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -53,8 +53,8 @@
 		<label>Solar Energy</label>
 		<description>Energy taken from the photovoltaic system</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -64,8 +64,8 @@
 		<label>State of Charge</label>
 		<description>State of charge of the connected vehicle</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>StateOfCharge</tag>
+			<point>Measurement</point>
+			<property>StateOfCharge</property>
 		</tags>
 		<state pattern="%.0f %%" readOnly="true"/>
 	</channel-type>
@@ -75,8 +75,8 @@
 		<label>Minimum Charge Current</label>
 		<description>Lowest charging current allowed</description>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Current</tag>
+			<point>Setpoint</point>
+			<property>Current</property>
 		</tags>
 		<state min="6" max="16" step="1" pattern="%.0f %unit%">
 			<options>
@@ -100,8 +100,8 @@
 		<label>Maximum Charge Current</label>
 		<description>Highest charging current allowed</description>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Current</tag>
+			<point>Setpoint</point>
+			<property>Current</property>
 		</tags>
 		<state min="6" max="16" step="1" pattern="%.0f %unit%">
 			<options>
@@ -125,7 +125,7 @@
 		<label>Number of Phases</label>
 		<description>Number of phases used for charging</description>
 		<tags>
-			<tag>Setpoint</tag>
+			<point>Setpoint</point>
 		</tags>
 		<state pattern="%s">
 			<options>
@@ -140,8 +140,8 @@
 		<label>Automatic Phase Switch</label>
 		<description>Whether the wallbox changes the number of phases by itself</description>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Enabled</tag>
+			<point>Switch</point>
+			<property>Enabled</property>
 		</tags>
 		<state/>
 	</channel-type>
@@ -151,7 +151,7 @@
 		<label>Key State</label>
 		<description>State of the wallbox key switch</description>
 		<tags>
-			<tag>Status</tag>
+			<point>Status</point>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -161,7 +161,7 @@
 		<label>Plugged</label>
 		<description>A vehicle is connected</description>
 		<tags>
-			<tag>Status</tag>
+			<point>Status</point>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -171,7 +171,7 @@
 		<label>Locked</label>
 		<description>The connector is locked</description>
 		<tags>
-			<tag>Status</tag>
+			<point>Status</point>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -181,7 +181,7 @@
 		<label>Charging</label>
 		<description>A charging session is running</description>
 		<tags>
-			<tag>Status</tag>
+			<point>Status</point>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -191,7 +191,7 @@
 		<label>Suspended</label>
 		<description>Charging is currently suspended</description>
 		<tags>
-			<tag>Switch</tag>
+			<point>Switch</point>
 		</tags>
 		<state/>
 	</channel-type>
@@ -201,7 +201,7 @@
 		<label>Toggle Charging</label>
 		<description>Suspends a running charging session and resumes a suspended one</description>
 		<tags>
-			<tag>Switch</tag>
+			<point>Switch</point>
 		</tags>
 		<state/>
 	</channel-type>
@@ -211,7 +211,7 @@
 		<label>Sun Mode</label>
 		<description>Charging uses surplus photovoltaic power</description>
 		<tags>
-			<tag>Switch</tag>
+			<point>Switch</point>
 		</tags>
 		<state/>
 	</channel-type>
@@ -221,7 +221,7 @@
 		<label>Session Phase L1</label>
 		<description>Whether the wallbox charged on phase L1 in the last charging session</description>
 		<tags>
-			<tag>Status</tag>
+			<point>Status</point>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -231,8 +231,8 @@
 		<label>Session Energy L1</label>
 		<description>Energy drawn on phase L1 in the last charging session</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -242,7 +242,7 @@
 		<label>Session Phase L2</label>
 		<description>Whether the wallbox charged on phase L2 in the last charging session</description>
 		<tags>
-			<tag>Status</tag>
+			<point>Status</point>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -252,8 +252,8 @@
 		<label>Session Energy L2</label>
 		<description>Energy drawn on phase L2 in the last charging session</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -263,7 +263,7 @@
 		<label>Session Phase L3</label>
 		<description>Whether the wallbox charged on phase L3 in the last charging session</description>
 		<tags>
-			<tag>Status</tag>
+			<point>Status</point>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -273,8 +273,8 @@
 		<label>Session Energy L3</label>
 		<description>Energy drawn on phase L3 in the last charging session</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>

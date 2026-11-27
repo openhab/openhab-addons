@@ -16,8 +16,8 @@
 		<label>Tracker Power</label>
 		<description>Direct current power of a photovoltaic tracker</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point>Measurement</point>
+			<property>Power</property>
 		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
@@ -27,8 +27,8 @@
 		<label>Tracker Voltage</label>
 		<description>Direct current voltage of a photovoltaic tracker</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Voltage</tag>
+			<point>Measurement</point>
+			<property>Voltage</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -38,8 +38,8 @@
 		<label>Tracker Current</label>
 		<description>Direct current of a photovoltaic tracker</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Current</tag>
+			<point>Measurement</point>
+			<property>Current</property>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
@@ -49,8 +49,8 @@
 		<label>Temperature</label>
 		<description>Temperature of a sensor of the inverter</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>

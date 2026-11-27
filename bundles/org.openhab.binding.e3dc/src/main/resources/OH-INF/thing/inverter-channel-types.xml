@@ -9,8 +9,8 @@
 		<label>AC Frequency</label>
 		<description>Grid frequency measured by the inverter</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Frequency</tag>
+			<point>Measurement</point>
+			<property>Frequency</property>
 		</tags>
 		<state pattern="%.3f %unit%" readOnly="true"/>
 	</channel-type>
@@ -20,7 +20,7 @@
 		<label>On Grid</label>
 		<description>Whether the PV inverter is connected to the grid</description>
 		<tags>
-			<tag>Status</tag>
+			<point>Status</point>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -30,7 +30,7 @@
 		<label>String Count</label>
 		<description>Number of photovoltaic strings in use</description>
 		<tags>
-			<tag>Measurement</tag>
+			<point>Measurement</point>
 		</tags>
 		<state pattern="%d" readOnly="true"/>
 	</channel-type>
@@ -40,8 +40,8 @@
 		<label>AC Power L1</label>
 		<description>Alternating current power of phase L1</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point>Measurement</point>
+			<property>Power</property>
 		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
@@ -51,8 +51,8 @@
 		<label>AC Power L2</label>
 		<description>Alternating current power of phase L2</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point>Measurement</point>
+			<property>Power</property>
 		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
@@ -62,8 +62,8 @@
 		<label>AC Power L3</label>
 		<description>Alternating current power of phase L3</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point>Measurement</point>
+			<property>Power</property>
 		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
@@ -73,8 +73,8 @@
 		<label>AC Voltage L1</label>
 		<description>Alternating current voltage of phase L1</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Voltage</tag>
+			<point>Measurement</point>
+			<property>Voltage</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -84,8 +84,8 @@
 		<label>AC Voltage L2</label>
 		<description>Alternating current voltage of phase L2</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Voltage</tag>
+			<point>Measurement</point>
+			<property>Voltage</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -95,8 +95,8 @@
 		<label>AC Voltage L3</label>
 		<description>Alternating current voltage of phase L3</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Voltage</tag>
+			<point>Measurement</point>
+			<property>Voltage</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -106,8 +106,8 @@
 		<label>AC Current L1</label>
 		<description>Alternating current of phase L1</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Current</tag>
+			<point>Measurement</point>
+			<property>Current</property>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
@@ -117,8 +117,8 @@
 		<label>AC Current L2</label>
 		<description>Alternating current of phase L2</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Current</tag>
+			<point>Measurement</point>
+			<property>Current</property>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
@@ -128,8 +128,8 @@
 		<label>AC Current L3</label>
 		<description>Alternating current of phase L3</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Current</tag>
+			<point>Measurement</point>
+			<property>Current</property>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
@@ -139,8 +139,8 @@
 		<label>Apparent Power L1</label>
 		<description>Apparent power of phase L1</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point>Measurement</point>
+			<property>Power</property>
 		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
@@ -150,8 +150,8 @@
 		<label>Apparent Power L2</label>
 		<description>Apparent power of phase L2</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point>Measurement</point>
+			<property>Power</property>
 		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
@@ -161,8 +161,8 @@
 		<label>Apparent Power L3</label>
 		<description>Apparent power of phase L3</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point>Measurement</point>
+			<property>Power</property>
 		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
@@ -172,8 +172,8 @@
 		<label>Reactive Power L1</label>
 		<description>Reactive power of phase L1</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point>Measurement</point>
+			<property>Power</property>
 		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
@@ -183,8 +183,8 @@
 		<label>Reactive Power L2</label>
 		<description>Reactive power of phase L2</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point>Measurement</point>
+			<property>Power</property>
 		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
@@ -194,8 +194,8 @@
 		<label>Reactive Power L3</label>
 		<description>Reactive power of phase L3</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point>Measurement</point>
+			<property>Power</property>
 		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
@@ -205,8 +205,8 @@
 		<label>Total Energy L1</label>
 		<description>Energy produced on phase L1 since commissioning</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -216,8 +216,8 @@
 		<label>Total Energy L2</label>
 		<description>Energy produced on phase L2 since commissioning</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -227,8 +227,8 @@
 		<label>Total Energy L3</label>
 		<description>Energy produced on phase L3 since commissioning</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -238,8 +238,8 @@
 		<label>Energy Today L1</label>
 		<description>Energy produced on phase L1 today</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -249,8 +249,8 @@
 		<label>Energy Today L2</label>
 		<description>Energy produced on phase L2 today</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -260,8 +260,8 @@
 		<label>Energy Today L3</label>
 		<description>Energy produced on phase L3 today</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>

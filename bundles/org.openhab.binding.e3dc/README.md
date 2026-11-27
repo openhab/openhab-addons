@@ -119,7 +119,7 @@ The module index counts the cell modules inside one battery: a system with sever
 ### Thing Status
 
 The bridge is `ONLINE` while the connection to the device exists.
-A child thing is `OFFLINE` with the detail `BRIDGE_UNINITIALIZED` while its bridge does not exist yet and with `BRIDGE_OFFLINE` while the bridge is not connected.
+A child thing is `UNINITIALIZED` with the detail `BRIDGE_UNINITIALIZED` while its bridge does not exist yet and `OFFLINE` with the detail `BRIDGE_OFFLINE` while the bridge is not connected.
 Once the bridge is online a child thing is `UNKNOWN` and becomes `ONLINE` with its first data.
 A thing that starts asks the bridge for a refresh, so its channels show the current values without waiting for the next poll.
 

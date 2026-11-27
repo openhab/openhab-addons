@@ -9,8 +9,8 @@
 		<label>Active Mode</label>
 		<description>Operating mode of the energy management system</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
+			<point>Status</point>
+			<property>Mode</property>
 		</tags>
 		<state pattern="%s" readOnly="true">
 			<options>
@@ -28,8 +28,8 @@
 		<label>Set Power Mode</label>
 		<description>Forced battery mode for a number of poll cycles</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Mode</tag>
+			<point>Control</point>
+			<property>Mode</property>
 		</tags>
 		<command>
 			<options>
@@ -53,7 +53,7 @@
 		<label>Emergency Power Status</label>
 		<description>State of the emergency power supply</description>
 		<tags>
-			<tag>Status</tag>
+			<point>Status</point>
 		</tags>
 		<state pattern="%s" readOnly="true">
 			<options>
@@ -71,7 +71,7 @@
 		<label>Charging Lock</label>
 		<description>Battery charging is currently blocked</description>
 		<tags>
-			<tag>Status</tag>
+			<point>Status</point>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -81,7 +81,7 @@
 		<label>Discharging Lock</label>
 		<description>Battery discharging is currently blocked</description>
 		<tags>
-			<tag>Status</tag>
+			<point>Status</point>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -91,7 +91,7 @@
 		<label>Emergency Available</label>
 		<description>Emergency power reserve is available</description>
 		<tags>
-			<tag>Status</tag>
+			<point>Status</point>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -101,7 +101,7 @@
 		<label>Charging Throttled</label>
 		<description>Battery charging is currently limited</description>
 		<tags>
-			<tag>Status</tag>
+			<point>Status</point>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -111,7 +111,7 @@
 		<label>Grid Limit Active</label>
 		<description>Grid consumption is currently limited</description>
 		<tags>
-			<tag>Status</tag>
+			<point>Status</point>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -121,7 +121,7 @@
 		<label>Charging Time Lock</label>
 		<description>Battery charging is blocked by a time window</description>
 		<tags>
-			<tag>Status</tag>
+			<point>Status</point>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -131,7 +131,7 @@
 		<label>Discharging Time Lock</label>
 		<description>Battery discharging is blocked by a time window</description>
 		<tags>
-			<tag>Status</tag>
+			<point>Status</point>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -141,8 +141,8 @@
 		<label>Weather Regulated Charge</label>
 		<description>Charging follows the weather forecast</description>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Enabled</tag>
+			<point>Switch</point>
+			<property>Enabled</property>
 		</tags>
 		<state/>
 	</channel-type>
@@ -152,7 +152,7 @@
 		<label>Power Limits Used</label>
 		<description>Configured power limits are active</description>
 		<tags>
-			<tag>Switch</tag>
+			<point>Switch</point>
 		</tags>
 		<state/>
 	</channel-type>
@@ -162,8 +162,8 @@
 		<label>Power Save</label>
 		<description>Power saving mode is active</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Enabled</tag>
+			<point>Status</point>
+			<property>Enabled</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -173,7 +173,7 @@
 		<label>Block Charging</label>
 		<description>Blocks charging of the battery around the clock</description>
 		<tags>
-			<tag>Switch</tag>
+			<point>Switch</point>
 		</tags>
 		<state readOnly="false"/>
 	</channel-type>
@@ -183,7 +183,7 @@
 		<label>Block Discharging</label>
 		<description>Blocks discharging of the battery around the clock</description>
 		<tags>
-			<tag>Switch</tag>
+			<point>Switch</point>
 		</tags>
 		<state readOnly="false"/>
 	</channel-type>
@@ -193,7 +193,7 @@
 		<label>Derate at Percent</label>
 		<description>Share of the installed peak power at which the feed in is reduced</description>
 		<tags>
-			<tag>Measurement</tag>
+			<point>Measurement</point>
 		</tags>
 		<state pattern="%.0f %%" readOnly="true"/>
 	</channel-type>
@@ -203,8 +203,8 @@
 		<label>Derate at Power</label>
 		<description>Power at which the feed in is reduced</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point>Measurement</point>
+			<property>Power</property>
 		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
@@ -214,8 +214,8 @@
 		<label>Idle Periods Enabled</label>
 		<description>Whether the device uses the configured idle periods</description>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Enabled</tag>
+			<point>Switch</point>
+			<property>Enabled</property>
 		</tags>
 		<state readOnly="false"/>
 	</channel-type>
@@ -225,7 +225,7 @@
 		<label>Has Messages</label>
 		<description>The energy manager holds at least one message</description>
 		<tags>
-			<tag>Status</tag>
+			<point>Status</point>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -235,7 +235,7 @@
 		<label>Messages</label>
 		<description>Messages of the energy manager as a JSON array</description>
 		<tags>
-			<tag>Status</tag>
+			<point>Status</point>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>

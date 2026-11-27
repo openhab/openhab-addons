@@ -88,10 +88,8 @@ public abstract class E3DCThingHandler extends BaseThingHandler implements E3DCD
     public void initialize() {
         updateStatus(ThingStatus.UNKNOWN);
         E3DCBridgeHandler bridge = getBridgeHandler();
-        // the status detail overloads are deprecated since openHAB 5.3, but are the only ones in 5.2, which the
-        // binding still supports
         if (bridge == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED, "The bridge is not available");
+            updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED, "The bridge is not available");
             return;
         }
         bridge.registerDataListener(this);
@@ -99,7 +97,7 @@ public abstract class E3DCThingHandler extends BaseThingHandler implements E3DCD
             // the thing is online with its first data, which the refresh brings without waiting for the next poll
             bridge.requestRefresh();
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
         }
     }
 
@@ -111,7 +109,7 @@ public abstract class E3DCThingHandler extends BaseThingHandler implements E3DCD
                 updateStatus(ThingStatus.UNKNOWN);
             }
         } else if (bridgeStatusInfo.getStatus() == ThingStatus.OFFLINE) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
         }
     }
 

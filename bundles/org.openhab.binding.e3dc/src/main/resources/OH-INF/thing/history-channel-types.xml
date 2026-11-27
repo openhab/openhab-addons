@@ -9,8 +9,8 @@
 		<label>Solar Energy Today</label>
 		<description>Photovoltaic energy of the completed day</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -20,8 +20,8 @@
 		<label>House Energy Today</label>
 		<description>Household energy of the completed day</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -31,8 +31,8 @@
 		<label>Grid Supply Today</label>
 		<description>Energy drawn from the grid on the completed day</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -42,8 +42,8 @@
 		<label>Grid Feed Today</label>
 		<description>Energy fed into the grid on the completed day</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -53,8 +53,8 @@
 		<label>Battery Charge Today</label>
 		<description>Energy charged into the battery on the completed day</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -64,8 +64,8 @@
 		<label>Battery Discharge Today</label>
 		<description>Energy taken from the battery on the completed day</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -75,7 +75,7 @@
 		<label>Autarky Today</label>
 		<description>Share of consumption covered by the power plant on the completed day</description>
 		<tags>
-			<tag>Measurement</tag>
+			<point>Measurement</point>
 		</tags>
 		<state pattern="%.0f %%" readOnly="true"/>
 	</channel-type>
@@ -85,8 +85,8 @@
 		<label>Solar Energy Week</label>
 		<description>Photovoltaic energy of the last seven days</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -96,8 +96,8 @@
 		<label>House Energy Week</label>
 		<description>Household energy of the last seven days</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -107,8 +107,8 @@
 		<label>Grid Supply Week</label>
 		<description>Energy drawn from the grid in the last seven days</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -118,8 +118,8 @@
 		<label>Grid Feed Week</label>
 		<description>Energy fed into the grid in the last seven days</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -129,8 +129,8 @@
 		<label>Battery Charge Week</label>
 		<description>Energy charged into the battery in the last seven days</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -140,8 +140,8 @@
 		<label>Discharge This Week</label>
 		<description>Energy taken from the battery in the last seven days</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -151,7 +151,7 @@
 		<label>Autarky This Week</label>
 		<description>Share of consumption covered by the power plant in the last seven days</description>
 		<tags>
-			<tag>Measurement</tag>
+			<point>Measurement</point>
 		</tags>
 		<state pattern="%.0f %%" readOnly="true"/>
 	</channel-type>
@@ -161,8 +161,8 @@
 		<label>Solar Energy Month</label>
 		<description>Photovoltaic energy of the current month</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -172,8 +172,8 @@
 		<label>House Energy Month</label>
 		<description>Household energy of the current month</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -183,8 +183,8 @@
 		<label>Grid Supply Month</label>
 		<description>Energy drawn from the grid in the current month</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -194,8 +194,8 @@
 		<label>Grid Feed Month</label>
 		<description>Energy fed into the grid in the current month</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -205,8 +205,8 @@
 		<label>Battery Charge Month</label>
 		<description>Energy charged into the battery in the current month</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -216,8 +216,8 @@
 		<label>Discharge This Month</label>
 		<description>Energy taken from the battery in the current month</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -227,7 +227,7 @@
 		<label>Autarky This Month</label>
 		<description>Share of consumption covered by the power plant in the current month</description>
 		<tags>
-			<tag>Measurement</tag>
+			<point>Measurement</point>
 		</tags>
 		<state pattern="%.0f %%" readOnly="true"/>
 	</channel-type>
@@ -237,8 +237,8 @@
 		<label>Solar Energy Year</label>
 		<description>Photovoltaic energy of the current year</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -248,8 +248,8 @@
 		<label>House Energy Year</label>
 		<description>Household energy of the current year</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -259,8 +259,8 @@
 		<label>Grid Supply Year</label>
 		<description>Energy drawn from the grid in the current year</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -270,8 +270,8 @@
 		<label>Grid Feed Year</label>
 		<description>Energy fed into the grid in the current year</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -281,8 +281,8 @@
 		<label>Battery Charge Year</label>
 		<description>Energy charged into the battery in the current year</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -292,8 +292,8 @@
 		<label>Discharge This Year</label>
 		<description>Energy taken from the battery in the current year</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -303,7 +303,7 @@
 		<label>Autarky This Year</label>
 		<description>Share of consumption covered by the power plant in the current year</description>
 		<tags>
-			<tag>Measurement</tag>
+			<point>Measurement</point>
 		</tags>
 		<state pattern="%.0f %%" readOnly="true"/>
 	</channel-type>
@@ -313,7 +313,7 @@
 		<label>Self Consumption Today</label>
 		<description>Share of production used on site on the completed day</description>
 		<tags>
-			<tag>Measurement</tag>
+			<point>Measurement</point>
 		</tags>
 		<state pattern="%.0f %%" readOnly="true"/>
 	</channel-type>
@@ -323,7 +323,7 @@
 		<label>Self Consumed Week</label>
 		<description>Share of production used on site in the last seven days</description>
 		<tags>
-			<tag>Measurement</tag>
+			<point>Measurement</point>
 		</tags>
 		<state pattern="%.0f %%" readOnly="true"/>
 	</channel-type>
@@ -333,7 +333,7 @@
 		<label>Self Consumed Month</label>
 		<description>Share of production used on site in the current month</description>
 		<tags>
-			<tag>Measurement</tag>
+			<point>Measurement</point>
 		</tags>
 		<state pattern="%.0f %%" readOnly="true"/>
 	</channel-type>
@@ -343,7 +343,7 @@
 		<label>Self Consumed Year</label>
 		<description>Share of production used on site in the current year</description>
 		<tags>
-			<tag>Measurement</tag>
+			<point>Measurement</point>
 		</tags>
 		<state pattern="%.0f %%" readOnly="true"/>
 	</channel-type>

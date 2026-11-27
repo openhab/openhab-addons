@@ -9,8 +9,8 @@
 		<label>Start Manual Charge</label>
 		<description>Energy of a manual battery charge</description>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Energy</tag>
+			<point>Setpoint</point>
+			<property>Energy</property>
 		</tags>
 		<state pattern="%.0f Wh"/>
 	</channel-type>
@@ -20,7 +20,7 @@
 		<label>Manual Charge Active</label>
 		<description>A manual battery charge is currently running</description>
 		<tags>
-			<tag>Status</tag>
+			<point>Status</point>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -30,8 +30,8 @@
 		<label>Manual Target Energy</label>
 		<description>Energy the manual battery charge started last was started with</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state pattern="%.0f Wh" readOnly="true"/>
 	</channel-type>
@@ -41,8 +41,8 @@
 		<label>Manual Charge Energy</label>
 		<description>Energy charged so far by the manual battery charge started last</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state pattern="%.1f Wh" readOnly="true"/>
 	</channel-type>
@@ -52,8 +52,8 @@
 		<label>Manual Remaining Energy</label>
 		<description>Energy the running manual battery charge still has to charge</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state pattern="%.1f Wh" readOnly="true"/>
 	</channel-type>
@@ -63,8 +63,8 @@
 		<label>Last Manual Start</label>
 		<description>Time the last manual battery charge was started</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
+			<point>Status</point>
+			<property>Timestamp</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>

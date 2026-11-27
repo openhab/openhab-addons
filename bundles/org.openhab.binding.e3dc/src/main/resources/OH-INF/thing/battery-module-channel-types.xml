@@ -9,8 +9,8 @@
 		<label>State of Charge</label>
 		<description>State of Charge of the battery cell module</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>StateOfCharge</tag>
+			<point>Measurement</point>
+			<property>StateOfCharge</property>
 		</tags>
 		<state pattern="%.1f %%" readOnly="true"/>
 	</channel-type>
@@ -20,7 +20,7 @@
 		<label>State of Health</label>
 		<description>State of Health of the battery cell module</description>
 		<tags>
-			<tag>Measurement</tag>
+			<point>Measurement</point>
 		</tags>
 		<state pattern="%.1f %%" readOnly="true"/>
 	</channel-type>
@@ -30,8 +30,8 @@
 		<label>Voltage</label>
 		<description>Voltage of the battery cell module</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Voltage</tag>
+			<point>Measurement</point>
+			<property>Voltage</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -41,8 +41,8 @@
 		<label>Voltage 30s Average</label>
 		<description>Voltage 30s Average of the battery cell module</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Voltage</tag>
+			<point>Measurement</point>
+			<property>Voltage</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -52,8 +52,8 @@
 		<label>Current</label>
 		<description>Current of the battery cell module</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Current</tag>
+			<point>Measurement</point>
+			<property>Current</property>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
@@ -63,8 +63,8 @@
 		<label>Current 30s Average</label>
 		<description>Current 30s Average of the battery cell module</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Current</tag>
+			<point>Measurement</point>
+			<property>Current</property>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
@@ -74,7 +74,7 @@
 		<label>Remaining Capacity</label>
 		<description>Remaining Capacity of the battery cell module</description>
 		<tags>
-			<tag>Measurement</tag>
+			<point>Measurement</point>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -84,7 +84,7 @@
 		<label>Full Charge Capacity</label>
 		<description>Full Charge Capacity of the battery cell module</description>
 		<tags>
-			<tag>Measurement</tag>
+			<point>Measurement</point>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -94,7 +94,7 @@
 		<label>Design Capacity</label>
 		<description>Design Capacity of the battery cell module</description>
 		<tags>
-			<tag>Measurement</tag>
+			<point>Measurement</point>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -104,8 +104,8 @@
 		<label>Charge High Temperature</label>
 		<description>Charge High Temperature of the battery cell module</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -115,8 +115,8 @@
 		<label>Charge Low Temperature</label>
 		<description>Charge Low Temperature of the battery cell module</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -126,7 +126,7 @@
 		<label>Charge Cycles</label>
 		<description>Charge Cycles of the battery cell module</description>
 		<tags>
-			<tag>Measurement</tag>
+			<point>Measurement</point>
 		</tags>
 		<state pattern="%d" readOnly="true"/>
 	</channel-type>
@@ -136,7 +136,7 @@
 		<label>Status Code</label>
 		<description>Status Code of the battery cell module</description>
 		<tags>
-			<tag>Status</tag>
+			<point>Status</point>
 		</tags>
 		<state pattern="%d" readOnly="true"/>
 	</channel-type>
@@ -146,7 +146,7 @@
 		<label>Warning Code</label>
 		<description>Warning Code of the battery cell module</description>
 		<tags>
-			<tag>Status</tag>
+			<point>Status</point>
 		</tags>
 		<state pattern="%d" readOnly="true"/>
 	</channel-type>
@@ -156,7 +156,7 @@
 		<label>Alarm Code</label>
 		<description>Alarm Code of the battery cell module</description>
 		<tags>
-			<tag>Status</tag>
+			<point>Status</point>
 		</tags>
 		<state pattern="%d" readOnly="true"/>
 	</channel-type>
@@ -166,7 +166,7 @@
 		<label>Error Code</label>
 		<description>Error Code of the battery cell module</description>
 		<tags>
-			<tag>Status</tag>
+			<point>Status</point>
 		</tags>
 		<state pattern="%d" readOnly="true"/>
 	</channel-type>
@@ -176,8 +176,8 @@
 		<label>Remaining Energy</label>
 		<description>Remaining energy of the battery module</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
@@ -187,8 +187,8 @@
 		<label>Full Charge Energy</label>
 		<description>Energy of the battery module at full charge</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
@@ -198,8 +198,8 @@
 		<label>Design Energy</label>
 		<description>Design energy of the battery module</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
