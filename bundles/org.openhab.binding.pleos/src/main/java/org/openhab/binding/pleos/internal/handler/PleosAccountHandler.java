@@ -60,6 +60,7 @@ import org.slf4j.LoggerFactory;
 public class PleosAccountHandler extends BaseBridgeHandler {
 
     private static final int RETRY_INTERVAL_SECONDS = 60;
+    private static final int SECRET_CHECK_INTERVAL_HOURS = 1;
 
     private final Logger logger = LoggerFactory.getLogger(PleosAccountHandler.class);
     private final HttpClient httpClient;
@@ -72,6 +73,7 @@ public class PleosAccountHandler extends BaseBridgeHandler {
     private volatile @Nullable PleosApiClient apiClient;
     private @Nullable ScheduledFuture<?> initJob;
     private @Nullable ScheduledFuture<?> refreshJob;
+    private @Nullable ScheduledFuture<?> secretCheckJob;
 
     public PleosAccountHandler(Bridge bridge, HttpClient httpClient, TimeZoneProvider timeZoneProvider) {
         super(bridge);
@@ -83,6 +85,13 @@ public class PleosAccountHandler extends BaseBridgeHandler {
     public void initialize() {
         logger.debug("Initialize Pleos Account Handler...");
 
+        cancelJob(this.initJob);
+        this.initJob = null;
+        cancelJob(this.refreshJob);
+        this.refreshJob = null;
+        cancelJob(this.secretCheckJob);
+        this.secretCheckJob = null;
+
         PleosAccountConfiguration config = getConfigAs(PleosAccountConfiguration.class);
 
         String secretCreationDate = config.secretCreationDate;
@@ -92,7 +101,13 @@ public class PleosAccountHandler extends BaseBridgeHandler {
         }
         this.lastAlertStage = 0;
         this.lastSixHourAlert = Instant.EPOCH;
-        checkSecretExpiration(); // Immediate initial check upon startup
+
+        if (this.secretExpiryTime != null) {
+            this.secretCheckJob = scheduler.scheduleWithFixedDelay(this::checkSecretExpiration, 0,
+                    SECRET_CHECK_INTERVAL_HOURS, TimeUnit.HOURS);
+        } else {
+            checkSecretExpiration();
+        }
 
         String clientId = config.clientId;
         String clientSecret = config.clientSecret;
@@ -179,18 +194,20 @@ public class PleosAccountHandler extends BaseBridgeHandler {
     @Override
     public void dispose() {
         logger.debug("Terminate Pleo's account handler (dispose).");
-        ScheduledFuture<?> currentInitJob = this.initJob;
-        if (currentInitJob != null) {
-            currentInitJob.cancel(true);
-            this.initJob = null;
-        }
-        ScheduledFuture<?> currentRefreshJob = this.refreshJob;
-        if (currentRefreshJob != null) {
-            currentRefreshJob.cancel(true);
-            this.refreshJob = null;
-        }
+        cancelJob(this.initJob);
+        this.initJob = null;
+        cancelJob(this.refreshJob);
+        this.refreshJob = null;
+        cancelJob(this.secretCheckJob);
+        this.secretCheckJob = null;
         this.apiClient = null;
         super.dispose();
+    }
+
+    private void cancelJob(@Nullable ScheduledFuture<?> job) {
+        if (job != null) {
+            job.cancel(true);
+        }
     }
 
     @Override
@@ -220,17 +237,11 @@ public class PleosAccountHandler extends BaseBridgeHandler {
     }
 
     private void startAutomaticRefresh(int intervalMinutes) {
-        int safeInterval = Math.max(1, intervalMinutes); // Protection against 0 or negative values
+        int safeInterval = Math.max(1, intervalMinutes);
         logger.debug("Start cyclic refresh every {} minutes.", safeInterval);
 
-        ScheduledFuture<?> currentRefreshJob = this.refreshJob;
-        if (currentRefreshJob != null) {
-            currentRefreshJob.cancel(true);
-            this.refreshJob = null;
-        }
-
-        refreshJob = scheduler.scheduleWithFixedDelay(() -> {
-            checkSecretExpiration();
+        cancelJob(this.refreshJob);
+        this.refreshJob = scheduler.scheduleWithFixedDelay(() -> {
             if (getThing().getStatus() != ThingStatus.ONLINE) {
                 return;
             }
@@ -264,15 +275,15 @@ public class PleosAccountHandler extends BaseBridgeHandler {
         }
 
         ZonedDateTime now = ZonedDateTime.now(timeZoneProvider.getTimeZone());
+        boolean isExpired = !now.isBefore(expiry);
         long remainingHours = ChronoUnit.HOURS.between(now, expiry);
         long remainingDays = ChronoUnit.DAYS.between(now, expiry);
 
         updateState("secret-expires", new DateTimeType(expiry));
         updateState("secret-remaining-days", new QuantityType<>(Math.max(0, remainingDays), Units.DAY));
-        updateState("secret-expiry-warning", OnOffType.from(remainingHours <= 168)); // 168 Std. = 7 Tage
+        updateState("secret-expiry-warning", OnOffType.from(remainingHours <= 168));
 
-        // 1. The clientSecret has already expired
-        if (remainingHours <= 0) {
+        if (isExpired) {
             if (lastAlertStage < 3) {
                 lastAlertStage = 3;
                 logger.warn("Pleos Client Secret has expired! Please generate a new key in the Pleos Playground.");
@@ -281,7 +292,6 @@ public class PleosAccountHandler extends BaseBridgeHandler {
             return;
         }
 
-        // 2. Less than 2 days (48 hours): Issue a warning immediately, then repeat every 6 hours
         if (remainingHours <= 48) {
             Instant currentInstant = Instant.now();
             if (lastAlertStage < 2 || ChronoUnit.HOURS.between(lastSixHourAlert, currentInstant) >= 6) {
@@ -293,7 +303,6 @@ public class PleosAccountHandler extends BaseBridgeHandler {
             return;
         }
 
-        // 3. Less than 7 days (168 hours): One-time advance warning
         if (remainingHours <= 168 && lastAlertStage < 1) {
             lastAlertStage = 1;
             logger.warn("Pleos Client Secret expires in {} days ({}).", remainingDays, expiry.toLocalDate());
