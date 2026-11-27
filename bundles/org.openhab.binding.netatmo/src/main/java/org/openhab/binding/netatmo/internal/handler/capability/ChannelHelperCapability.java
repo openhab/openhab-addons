@@ -86,10 +86,12 @@ public class ChannelHelperCapability extends Capability {
             if (eventType.validFor(handler.getModuleType()) && (localLast == null || eventTime.isAfter(localLast))) {
                 String eventTypeName = eventType.name();
                 lastEventTime = eventTime;
-                handler.recurseUpToHomeHandler(handler).ifPresent(homeHandler -> homeHandler
-                        .triggerChannel(GROUP_SECURITY_EVENT, CHANNEL_HOME_EVENT, eventTypeName));
-                handler.triggerChannel(GROUP_SECURITY_EVENT, CHANNEL_HOME_EVENT, Objects
-                        .requireNonNull(event.getSubTypeDescription().map(EventSubType::name).orElse(eventTypeName)));
+                String subTypeName = Objects
+                        .requireNonNull(event.getSubTypeDescription().map(EventSubType::name).orElse(eventTypeName));
+                handler.recurseUpToHomeHandler(handler)
+                        .flatMap(homeHandler -> homeHandler.getCapabilities().get(HomeCapability.class))
+                        .ifPresent(homeCapability -> homeCapability.triggerEvent(eventTime, eventTypeName));
+                handler.triggerChannel(GROUP_SECURITY_EVENT, CHANNEL_HOME_EVENT, subTypeName);
             }
         }
 

@@ -15,6 +15,7 @@ package org.openhab.binding.netatmo.internal.handler.capability;
 import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 
 import java.time.Duration;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -22,6 +23,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.HomeApi;
 import org.openhab.binding.netatmo.internal.api.NetatmoException;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.FeatureArea;
@@ -47,6 +49,8 @@ public class HomeCapability extends CacheCapability<HomeApi> {
     private final Set<FeatureArea> featureAreas = new HashSet<>();
     private final NetatmoDescriptionProvider descriptionProvider;
     private final Set<String> homeIds = new HashSet<>(3);
+
+    private @Nullable ZonedDateTime lastEventTime;
 
     public HomeCapability(CommonInterface handler, NetatmoDescriptionProvider descriptionProvider) {
         super(handler, Duration.ofSeconds(2), HomeApi.class);
@@ -127,5 +131,12 @@ public class HomeCapability extends CacheCapability<HomeApi> {
             }
         });
         return result;
+    }
+
+    public void triggerEvent(ZonedDateTime eventTime, String eventName) {
+        if (lastEventTime == null || eventTime.isAfter(lastEventTime)) {
+            lastEventTime = eventTime;
+            handler.triggerChannel(GROUP_SECURITY_EVENT, CHANNEL_HOME_EVENT, eventName);
+        }
     }
 }
