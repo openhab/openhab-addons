@@ -12,10 +12,19 @@ Right now, only the thermostat devices (3000W and 4000W) (TH1120RF) are supporte
 
 ## Discovery
 
-The Sinopé Gateway (bridge) discovery is not supported for now.
-The Sinopé device discovery is implemented.
+The Sinopé Gateway (bridge) itself must be added manually with its IP address/hostname and Gateway ID (printed on the back of the gateway).
 
-## Prerequisites
+Once the gateway is configured:
+
+- **API Key discovery (pairing):** Leave the `apiKey` parameter empty when creating the Sinopé Gateway Thing in the UI.
+  The gateway Thing will enter `CONFIGURATION_PENDING` state and wait for you to press the physical **WEB** button on the Sinopé Gateway.
+  Once pressed, the binding automatically retrieves the API key, saves it to the Thing configuration, and brings the gateway `ONLINE`.
+- **Device discovery:** Once the gateway is `ONLINE`, start a manual discovery scan for the Sinopé binding in the openHAB UI (Inbox → Scan → Sinopé Binding).
+  During the 120-second scan window, press both buttons on each thermostat you want to add; each device will appear in your Inbox with its `deviceId` pre-filled.
+
+## Prerequisites (Optional CLI Setup)
+
+If you prefer file-based `.things` configuration (where the binding cannot automatically write back the API key), you can still obtain the API key and device IDs using the standalone [sinope-core library](<https://github.com/chaton78/sinope-core/releases>).
 
 ### Bridge or the Sinopé Gateway
 

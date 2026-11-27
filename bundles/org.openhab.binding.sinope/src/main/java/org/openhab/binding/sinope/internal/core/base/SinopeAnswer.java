@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.sinope.internal.core.base;
 
+import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
@@ -40,7 +41,7 @@ public abstract class SinopeAnswer extends SinopeRequest {
     public SinopeAnswer(InputStream r) throws IOException {
         byte[] header = new byte[SinopeFrame.PREAMBLE_SIZE + SinopeFrame.FRAME_CTL_SIZE + SinopeFrame.SIZE_SIZE];
 
-        r.read(header, 0, header.length);
+        readFully(r, header);
 
         if (header[0] != 0x55) {
             throw new IOException(String.format("Invalid header PREAMBLE: %02x", header[0]));
@@ -52,15 +53,29 @@ public abstract class SinopeAnswer extends SinopeRequest {
         bb.order(ByteOrder.LITTLE_ENDIAN);
         bb.put(sizeInByte);
         short size = bb.getShort(0);
+        if (size < 0) {
+            throw new IOException(String.format("Invalid frame size: %d", size));
+        }
 
         byte[] payload = new byte[SinopeRequest.HEADER_COMMAND_CRC_SIZE + size];
         byte[] remain = new byte[size + 1];
-        r.read(remain, 0, size + 1);
+        readFully(r, remain);
         bb = ByteBuffer.wrap(payload);
         bb.put(header);
         bb.put(remain);
 
         this.setInternal_payload(bb.array());
+    }
+
+    private static void readFully(InputStream r, byte[] buffer) throws IOException {
+        int offset = 0;
+        while (offset < buffer.length) {
+            int read = r.read(buffer, offset, buffer.length - offset);
+            if (read < 0) {
+                throw new EOFException("Unexpected end of stream while reading Sinope frame");
+            }
+            offset += read;
+        }
     }
 
     /**

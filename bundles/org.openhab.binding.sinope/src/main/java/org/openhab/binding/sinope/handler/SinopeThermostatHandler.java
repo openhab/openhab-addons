@@ -70,7 +70,10 @@ public class SinopeThermostatHandler extends BaseThingHandler {
                         command.getClass().getSimpleName());
                 if (SinopeBindingConstants.CHANNEL_SETTEMP.equals(channelUID.getId())
                         && command instanceof QuantityType<?> quantityCommand) {
-                    setSetpointTemp(quantityCommand.floatValue());
+                    QuantityType<?> celsiusCommand = quantityCommand.toUnit(SIUnits.CELSIUS);
+                    if (celsiusCommand != null) {
+                        setSetpointTemp(celsiusCommand.floatValue());
+                    }
                 } else if (SinopeBindingConstants.CHANNEL_SETTEMP.equals(channelUID.getId())
                         && command instanceof DecimalType decimalCommand) {
                     setSetpointTemp(decimalCommand.floatValue());

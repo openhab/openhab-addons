@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.sinope;
 
-import java.util.HashSet;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -40,17 +39,13 @@ public class SinopeBindingConstants {
     public static final String CHANNEL_INTEMP = "insideTemperature";
     public static final String CHANNEL_OUTTEMP = "outsideTemperature";
 
-    public static final String CONFIG_PROPERTY_HOST = "ipAddress";
-    public static final String CONFIG_PROPERTY_PORT = "ipPort";
-    public static final String CONFIG_PROPERTY_GATEWAY_ID = "gatewayID";
+    public static final String CONFIG_PROPERTY_HOST = "hostname";
+    public static final String CONFIG_PROPERTY_PORT = "port";
+    public static final String CONFIG_PROPERTY_GATEWAY_ID = "gatewayId";
     public static final String CONFIG_PROPERTY_API_KEY = "apiKey";
-    public static final String CONFIG_PROPERTY_POLLING_INTERVAL = "pollingInterval";
+    public static final String CONFIG_PROPERTY_POLLING_INTERVAL = "refresh";
     public static final String CONFIG_PROPERTY_DEVICE_ID = "deviceId";
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<>();
-
-    static {
-        SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_GATEWAY);
-        SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_THERMO);
-    }
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_GATEWAY, THING_TYPE_THERMO);
+    public static final Set<ThingTypeUID> SUPPORTED_DISCOVERY_THING_TYPES_UIDS = Set.of(THING_TYPE_THERMO);
 }

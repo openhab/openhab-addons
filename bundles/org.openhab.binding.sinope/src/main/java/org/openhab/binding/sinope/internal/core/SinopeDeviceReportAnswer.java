@@ -57,7 +57,7 @@ public class SinopeDeviceReportAnswer extends SinopeAnswer {
      */
     public byte getStatus() {
         byte[] b = this.getFrameData();
-        return b[0];
+        return b.length >= STATUS_SIZE ? b[0] : -1;
     }
 
     /**
@@ -67,6 +67,9 @@ public class SinopeDeviceReportAnswer extends SinopeAnswer {
      */
     public byte[] getDeviceId() {
         byte[] b = this.getFrameData();
+        if (b.length < STATUS_SIZE + DEVICE_ID_SIZE) {
+            return new byte[0];
+        }
         b = Arrays.copyOfRange(b, STATUS_SIZE, STATUS_SIZE + DEVICE_ID_SIZE);
         return ByteUtil.reverse(b);
     }
