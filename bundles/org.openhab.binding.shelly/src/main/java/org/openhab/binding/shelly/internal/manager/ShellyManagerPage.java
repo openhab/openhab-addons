@@ -345,7 +345,7 @@ public class ShellyManagerPage {
             String attribute) {
         State state = thingHandler.getChannelValue(group, attribute);
         String value = "";
-        if (state != UnDefType.NULL) {
+        if (!(state instanceof UnDefType)) {
             if (state instanceof DateTimeType dateTimeState) {
                 switch (attribute) {
                     case ATTRIBUTE_LAST_ALARM:
