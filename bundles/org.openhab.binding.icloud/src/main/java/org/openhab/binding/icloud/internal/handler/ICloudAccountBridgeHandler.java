@@ -483,13 +483,6 @@ public class ICloudAccountBridgeHandler extends BaseBridgeHandler {
     }
 
     private void informDeviceInformationListeners(List<ICloudDeviceInformation> deviceInformationList) {
-        // A failing listener must neither prevent the update of the other listeners nor take the bridge offline.
-        for (ICloudDeviceInformationListener listener : List.copyOf(deviceInformationListeners)) {
-            try {
-                listener.deviceInformationUpdate(deviceInformationList);
-            } catch (RuntimeException e) {
-                logger.warn("Failed to process iCloud device information in {}", listener, e);
-            }
-        }
+        this.deviceInformationListeners.forEach(discovery -> discovery.deviceInformationUpdate(deviceInformationList));
     }
 }

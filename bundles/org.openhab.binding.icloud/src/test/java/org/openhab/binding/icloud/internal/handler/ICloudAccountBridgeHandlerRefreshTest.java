@@ -138,19 +138,6 @@ class ICloudAccountBridgeHandlerRefreshTest {
     }
 
     @Test
-    void failingListenerNeitherBlocksOtherListenersNorTakesBridgeOffline() throws Exception {
-        ICloudDeviceInformationListener failing = mock(ICloudDeviceInformationListener.class);
-        doThrow(new IllegalStateException("boom")).when(failing).deviceInformationUpdate(anyList());
-        handler.registerListener(failing);
-        initAndWait();
-
-        handler.refreshData();
-
-        verify(listener, atLeastOnce()).deviceInformationUpdate(anyList());
-        assertTrue(statuses().stream().noneMatch(s -> s.getStatus() == ThingStatus.OFFLINE), statuses()::toString);
-    }
-
-    @Test
     void networkErrorDuringLoginIsCommunicationErrorAndRetried() throws Exception {
         when(service.authenticate(false)).thenThrow(new IOException("Network is unreachable")).thenReturn(true);
         initAndWait();

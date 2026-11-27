@@ -61,12 +61,6 @@ import org.slf4j.LoggerFactory;
 public class ICloudDeviceHandler extends BaseThingHandler implements ICloudDeviceInformationListener {
     private final Logger logger = LoggerFactory.getLogger(ICloudDeviceHandler.class);
 
-    /**
-     * iCloud occasionally omits known devices from a single response. A device that was already reported is only
-     * considered missing from the account after this number of consecutive responses without it.
-     */
-    static final int MISSING_DEVICE_TOLERANCE = 3;
-
     private static final int DEVICE_STATUS_ONLINE = 200;
 
     /**
@@ -82,9 +76,6 @@ public class ICloudDeviceHandler extends BaseThingHandler implements ICloudDevic
     /** Whether the bridge has delivered device data since initialization. */
     private volatile boolean deviceInformationReceived;
 
-    /** Consecutive responses without this device, guarded by {@link #statusLock}. */
-    private int missingResponses;
-
     private final Object statusLock = new Object();
 
     public ICloudDeviceHandler(Thing thing) {
@@ -95,15 +86,7 @@ public class ICloudDeviceHandler extends BaseThingHandler implements ICloudDevic
     public void deviceInformationUpdate(List<ICloudDeviceInformation> deviceInformationList) {
         ICloudDeviceInformation deviceInformationRecord = getDeviceInformationRecord(deviceInformationList);
         synchronized (statusLock) {
-            if (deviceInformationRecord != null) {
-                this.deviceInformationRecord = deviceInformationRecord;
-                missingResponses = 0;
-            } else if (this.deviceInformationRecord != null && ++missingResponses < MISSING_DEVICE_TOLERANCE) {
-                logger.debug("Device {} is missing in the iCloud response ({} times), keeping its last status.",
-                        deviceId, missingResponses);
-            } else {
-                this.deviceInformationRecord = null;
-            }
+            this.deviceInformationRecord = deviceInformationRecord;
             this.deviceInformationReceived = true;
             updateThingStatus(false);
         }
@@ -128,9 +111,6 @@ public class ICloudDeviceHandler extends BaseThingHandler implements ICloudDevic
         this.deviceId = configuration.deviceId;
         this.deviceInformationRecord = null;
         this.deviceInformationReceived = false;
-        synchronized (statusLock) {
-            this.missingResponses = 0;
-        }
 
         Bridge bridge = getBridge();
         if (bridge == null) {

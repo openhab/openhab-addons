@@ -199,37 +199,6 @@ class ICloudDeviceHandlerTest {
     }
 
     @Test
-    void knownDeviceTemporarilyMissingKeepsItsStatus() {
-        handler.initialize();
-        handler.deviceInformationUpdate(deviceData(200));
-
-        for (int i = 1; i < ICloudDeviceHandler.MISSING_DEVICE_TOLERANCE; i++) {
-            handler.deviceInformationUpdate(List.of());
-            assertEquals(ONLINE, thing.getStatusInfo());
-        }
-        handler.deviceInformationUpdate(List.of());
-
-        assertEquals(status(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                "The device is not included in the current account"), thing.getStatusInfo());
-    }
-
-    @Test
-    void reappearingDeviceResetsMissingCount() {
-        handler.initialize();
-        handler.deviceInformationUpdate(deviceData(200));
-        for (int i = 1; i < ICloudDeviceHandler.MISSING_DEVICE_TOLERANCE; i++) {
-            handler.deviceInformationUpdate(List.of());
-        }
-        handler.deviceInformationUpdate(deviceData(200));
-
-        for (int i = 1; i < ICloudDeviceHandler.MISSING_DEVICE_TOLERANCE; i++) {
-            handler.deviceInformationUpdate(List.of());
-        }
-
-        assertEquals(ONLINE, thing.getStatusInfo());
-    }
-
-    @Test
     void reportedOfflineIncludesDeviceStatus() {
         handler.initialize();
 
