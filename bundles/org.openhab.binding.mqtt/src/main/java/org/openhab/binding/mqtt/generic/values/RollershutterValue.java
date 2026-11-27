@@ -164,6 +164,25 @@ public class RollershutterValue extends Value {
         return command;
     }
 
+    /**
+     * Whether the given (already parsed) command is published as an up/down command string.
+     * This is the case for {@link UpDownType} with a configured up/down string, and for 0%/100% if
+     * transformExtentsToString is enabled and the corresponding up/down string is configured.
+     *
+     * @param command The parsed command (see {@link #parseCommand(Command)})
+     * @return true if the published payload is the up or down command string
+     */
+    public boolean isUpDownPublish(Command command) {
+        if (command instanceof UpDownType) {
+            return true;
+        }
+        if (transformExtentsToString && command instanceof PercentType) {
+            return (command.equals(PercentType.HUNDRED) && downCommandString != null)
+                    || (command.equals(PercentType.ZERO) && upCommandString != null);
+        }
+        return false;
+    }
+
     @Override
     public String getMQTTpublishValue(Command command, @Nullable String pattern) {
         String value = getMQTTpublishValue(command, transformExtentsToString);
