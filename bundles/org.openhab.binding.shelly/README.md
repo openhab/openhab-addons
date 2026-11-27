@@ -2734,6 +2734,7 @@ end
 |         | lowBattery         | Switch   | yes       | ON: Battery of the attached sensor is low                                         |
 | device  | relayInThermostat  | Switch   | yes       | ON: The relay output is used by a thermostat/climate profile                      |
 |         | sensorInThermostat | Switch   | yes       | ON: The temperature sensor input is used by a thermostat/climate profile          |
+|         | screen             | Switch   | r/w       | Turns the screen on or off, the device stays powered and reachable                |
 | media   | mediaControl       | Player   | r/w       | Control media playback (PLAY/PAUSE/NEXT/PREVIOUS)                                 |
 |         | volume             | Dimmer   | r/w       | Media player volume in percent (0-100%)                                           |
 |         | title              | String   | yes       | Title of the currently playing media                                              |
@@ -2763,6 +2764,10 @@ The ids and names of the profiles configured in the Shelly app are offered as op
 Profiles and schedule rules themselves can only be edited in the Shelly app.
 The list of profiles is read when the Thing is initialized, and again when the device reports a profile that is not in the list yet.
 Renamed profiles are picked up when the Thing is initialized again, e.g. after a device restart.
+
+The `screen` channel turns only the display off, the relay, sensors and media player keep working.
+The device doesn't report the screen state, so the channel shows the last command sent from openHAB.
+Touching the display, motion or a button press can wake the screen without openHAB noticing it.
 
 The `sensors` group's `batteryLevel` and `lowBattery` channels are only available while a battery-operated sensor is attached to the Wall Display.
 Pairing a sensor after the Thing was created adds them with the next status update, unpairing the sensor removes them again.

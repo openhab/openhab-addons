@@ -312,6 +312,7 @@ public class ShellyBindingConstants {
 
     public static final String CHANNEL_LED_STATUS_DISABLE = "statusLed";
     public static final String CHANNEL_LED_POWER_DISABLE = "powerLed";
+    public static final String CHANNEL_DEVST_SCREEN = "screen"; // Wall Display
     // Button/xi3
     public static final String CHANNEL_GROUP_STATUS = "status";
     public static final String CHANNEL_STATUS_EVENTTYPE = "lastEvent";

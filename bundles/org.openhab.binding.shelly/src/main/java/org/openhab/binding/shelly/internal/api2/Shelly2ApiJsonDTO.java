@@ -110,6 +110,7 @@ public class Shelly2ApiJsonDTO {
     public static final String SHELLYRPC_METHOD_MEDIA_PLAY = "Media.MediaPlayer.Play";
     public static final String SHELLYRPC_METHOD_MEDIA_SETVOLUME = "Media.SetVolume";
     public static final String SHELLYRPC_METHOD_MEDIA_RADIO_PLAYFAVOURITE = "Media.Radio.PlayFavourite";
+    public static final String SHELLYRPC_METHOD_UI_SCREEN_SET = "Ui.Screen.Set";
     public static final String SHELLYRPC_METHOD_THERMOSTAT_SETCONFIG = "Thermostat.SetConfig";
     public static final String SHELLYRPC_METHOD_THERMOSTAT_SCHEDULE_SETCONFIG = "Thermostat.Schedule.SetConfig";
     public static final String SHELLYRPC_METHOD_THERMOSTAT_SCHEDULE_LISTPROFILES = "Thermostat.Schedule.ListProfiles";
@@ -291,6 +292,11 @@ public class Shelly2ApiJsonDTO {
 
         public Shelly2RpcRequest withPos(int pos) {
             params.pos = pos;
+            return this;
+        }
+
+        public Shelly2RpcRequest withOn(boolean on) {
+            params.on = on;
             return this;
         }
 
