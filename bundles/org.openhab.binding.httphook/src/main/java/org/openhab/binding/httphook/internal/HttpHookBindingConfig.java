@@ -14,9 +14,20 @@ package org.openhab.binding.httphook.internal;
 
 import java.io.Serializable;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
+/**
+ * @author Martin Grześlowski - Binding authentication configuration
+ */
+@NonNullByDefault
 public record HttpHookBindingConfig(boolean enforceAuthentication, @Nullable String defaultBasic,
         @Nullable String defaultBearer) implements Serializable {
-    public static final HttpHookBindingConfig DEFAULT = new HttpHookBindingConfig(false, null, null);
+    public static final HttpHookBindingConfig DEFAULT = new HttpHookBindingConfig(true, null, null);
+
+    @Override
+    public String toString() {
+        // Configuration is logged. Keep credentials and any future secret fields out of this representation.
+        return "HttpHookBindingConfig[enforceAuthentication=" + enforceAuthentication + "]";
+    }
 }

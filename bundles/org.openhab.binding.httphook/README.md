@@ -17,11 +17,15 @@ Create endpoint things manually.
 
 ## Binding Configuration
 
-| Name                    | Type    | Default | Description                                                                                                                                                     |
-| ----------------------- | ------- | ------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `enforceAuthentication` | boolean | `false` | If `true`, every endpoint must define authorization or use a matching binding default.                                                                          |
-| `defaultBasic`          | text    | empty   | Default Basic credentials in `username:password` format, used when endpoint authorization is not configured and the request has a `Basic` authorization prefix. |
-| `defaultBearer`         | text    | empty   | Default Bearer token, used when endpoint authorization is not configured and the request has a `Bearer` authorization prefix.                                   |
+| Name                    | Type    | Default | Description                                                                                      |
+| ----------------------- | ------- | ------- | ------------------------------------------------------------------------------------------------ |
+| `enforceAuthentication` | boolean | `true`  | Set to `false` to allow anonymous access to endpoints without Thing or binding-wide credentials. |
+| `defaultBasic`          | text    | empty   | Binding-wide Basic credentials in `username:password` format.                                    |
+| `defaultBearer`         | text    | empty   | Binding-wide Bearer token.                                                                       |
+
+Thing credentials take precedence over binding defaults.
+When an endpoint inherits binding defaults, the client must provide valid credentials for a configured scheme, even if `enforceAuthentication` is disabled.
+If both binding defaults are configured, clients can use either scheme.
 
 ## Thing Configuration
 
@@ -67,9 +71,13 @@ The transformation receives a JSON string with request metadata:
 }
 ```
 
+Credential headers such as `Authorization`, `Proxy-Authorization`, `Cookie`, `X-API-Key`, and `X-Auth-Token` are excluded from the transformation input.
+
 The transformation output is returned unchanged.
 It can be JSON, text, CSV, XML, or any other format.
 Set `contentType` to match the output.
+Browsers can display `application/json`, `text/plain`, and `text/csv` inline.
+Other media types, including HTML and XML, are served as downloads.
 
 ## HTTP Behavior
 

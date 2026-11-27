@@ -49,9 +49,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * @author Martin Grzeslowski - Initial contribution
+ * @author Martin Grześlowski - Test browser response isolation and credential filtering
  */
 @Timeout(value = 3, unit = SECONDS)
 class DispatcherServletIntTest {
+    private static final HttpHookBindingConfig ANONYMOUS_CONFIG = new HttpHookBindingConfig(false, null, null);
     private static final Logger logger = LoggerFactory.getLogger(DispatcherServletIntTest.class);
     private static DispatcherServlet servlet;
 
@@ -66,7 +68,7 @@ class DispatcherServletIntTest {
         TranslationProvider i18nProvider = mock();
         httpHookBinding = mock();
 
-        lenient().when(httpHookBinding.getConfig()).thenReturn(HttpHookBindingConfig.DEFAULT);
+        lenient().when(httpHookBinding.getConfig()).thenReturn(ANONYMOUS_CONFIG);
         var authorizationService = new AuthorizationService(httpHookBinding);
         servlet = new DispatcherServlet(i18nProvider, authorizationService);
 
@@ -116,23 +118,45 @@ class DispatcherServletIntTest {
         assertThat(response.body()).isEqualTo("plain response");
         assertThat(response.headers().firstValue("Content-Type"))
                 .hasValueSatisfying(contentType -> assertThat(contentType).startsWith("text/plain"));
+        assertThat(response.headers().firstValue("Content-Disposition")).isEmpty();
+    }
+
+    @Test
+    void servesHtmlAsASandboxedDownload() throws Exception {
+        var body = "<p>Frame status</p>";
+        servlet.register("/status/html", GET, endpoint(null, body, "text/html"));
+
+        var response = sendGet("/httphook/status/html");
+
+        assertThat(response.statusCode()).isEqualTo(200);
+        assertThat(response.body()).isEqualTo(body);
+        assertThat(response.headers().firstValue("Content-Type"))
+                .hasValueSatisfying(contentType -> assertThat(contentType).startsWith("text/html"));
+        assertThat(response.headers().firstValue("Content-Disposition")).contains("attachment");
+        assertThat(response.headers().firstValue("Content-Security-Policy")).contains("sandbox; default-src 'none'");
+        assertThat(response.headers().firstValue("X-Content-Type-Options")).contains("nosniff");
     }
 
     @Test
     @DisplayName("passes request metadata JSON to transformation")
     void passesRequestMetadataJsonToTransformation() throws Exception {
         var transformation = transformation("ok");
-        servlet.register("/status/metadata", POST, new Endpoint(null, transformation, "text/plain"));
+        var authorization = new Authorization.Bearer("metadata-token");
+        servlet.register("/status/metadata", POST, new Endpoint(authorization, transformation, "text/plain"));
 
         var request = HttpRequest.newBuilder().uri(server.getURI().resolve("/httphook/status/metadata?unit=test"))
-                .header("X-Test", "abc").POST(HttpRequest.BodyPublishers.ofString("payload")).build();
+                .header("X-Test", "abc").header("aUtHoRiZaTiOn", "Bearer metadata-token")
+                .header("cOoKiE", "session=metadata-cookie").header("X-API-Key", "metadata-api-key")
+                .POST(HttpRequest.BodyPublishers.ofString("payload")).build();
         var response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
         assertThat(response.statusCode()).isEqualTo(200);
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
         verify(transformation).apply(captor.capture());
-        assertThat(captor.getValue()).contains("\"method\":\"POST\"", "\"path\":\"/status/metadata\"",
+        var context = captor.getValue();
+        assertThat(context).contains("\"method\":\"POST\"", "\"path\":\"/status/metadata\"",
                 "\"queryString\":\"unit=test\"", "\"body\":\"payload\"", "X-Test", "abc");
+        assertThat(context).doesNotContain("metadata-token", "metadata-cookie", "metadata-api-key");
     }
 
     @Test
@@ -243,7 +267,7 @@ class DispatcherServletIntTest {
         assertThat(response.statusCode()).isEqualTo(401);
         assertThat(response.body()).contains("\"code\":401")
                 .contains("servlet.error.authorization.missing-config-or-disable-enforce");
-        when(httpHookBinding.getConfig()).thenReturn(HttpHookBindingConfig.DEFAULT);
+        when(httpHookBinding.getConfig()).thenReturn(ANONYMOUS_CONFIG);
     }
 
     @Test
@@ -257,7 +281,7 @@ class DispatcherServletIntTest {
 
         assertThat(response.statusCode()).isEqualTo(200);
         assertThat(response.body()).isEqualTo("{\"ok\":true}");
-        when(httpHookBinding.getConfig()).thenReturn(HttpHookBindingConfig.DEFAULT);
+        when(httpHookBinding.getConfig()).thenReturn(ANONYMOUS_CONFIG);
     }
 
     @Test
@@ -271,7 +295,7 @@ class DispatcherServletIntTest {
 
         assertThat(response.statusCode()).isEqualTo(200);
         assertThat(response.body()).isEqualTo("{\"ok\":true}");
-        when(httpHookBinding.getConfig()).thenReturn(HttpHookBindingConfig.DEFAULT);
+        when(httpHookBinding.getConfig()).thenReturn(ANONYMOUS_CONFIG);
     }
 
     @Test
@@ -286,7 +310,7 @@ class DispatcherServletIntTest {
         assertThat(response.statusCode()).isEqualTo(401);
         assertThat(response.body()).contains("\"code\":401")
                 .contains("servlet.error.authorization.invalid-username-or-password");
-        when(httpHookBinding.getConfig()).thenReturn(HttpHookBindingConfig.DEFAULT);
+        when(httpHookBinding.getConfig()).thenReturn(ANONYMOUS_CONFIG);
     }
 
     @Test
@@ -299,7 +323,7 @@ class DispatcherServletIntTest {
 
         assertThat(response.statusCode()).isEqualTo(200);
         assertThat(response.body()).isEqualTo("{\"ok\":true}");
-        when(httpHookBinding.getConfig()).thenReturn(HttpHookBindingConfig.DEFAULT);
+        when(httpHookBinding.getConfig()).thenReturn(ANONYMOUS_CONFIG);
     }
 
     @Test
@@ -312,7 +336,7 @@ class DispatcherServletIntTest {
 
         assertThat(response.statusCode()).isEqualTo(401);
         assertThat(response.body()).contains("\"code\":401").contains("servlet.error.authorization.invalid-token");
-        when(httpHookBinding.getConfig()).thenReturn(HttpHookBindingConfig.DEFAULT);
+        when(httpHookBinding.getConfig()).thenReturn(ANONYMOUS_CONFIG);
     }
 
     private HttpResponse<String> sendGet(String path) throws Exception {

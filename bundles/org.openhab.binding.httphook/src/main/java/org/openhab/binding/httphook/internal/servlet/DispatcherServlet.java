@@ -26,6 +26,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -53,6 +54,7 @@ import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * @author Martin Grzeslowski - Initial contribution
+ * @author Martin Grześlowski - Protect credentials and isolate browser responses
  */
 @NonNullByDefault
 @Component(service = { Servlet.class, DispatcherServlet.class }, immediate = true)
@@ -61,6 +63,9 @@ import jakarta.servlet.http.HttpServletResponse;
 public class DispatcherServlet extends HttpServlet {
     public static final String SERVLET_PATH = "/" + BINDING_ID;
     private static final int MAX_BODY_SIZE = 64 * 1024;
+    private static final Set<String> SENSITIVE_HEADERS = Set.of("authorization", "proxy-authorization", "cookie",
+            "cookie2", "set-cookie", "x-api-key", "x-auth-token");
+    private static final Set<String> INLINE_MEDIA_TYPES = Set.of("application/json", "text/plain", "text/csv");
     @Serial
     private static final long serialVersionUID = 1L;
     private final Logger logger = LoggerFactory.getLogger(DispatcherServlet.class);
@@ -83,12 +88,19 @@ public class DispatcherServlet extends HttpServlet {
             throws IOException {
         requireNonNull(req, "Request must not be null");
         requireNonNull(resp, "Response must not be null");
+        resp.setHeader("Content-Security-Policy", "sandbox; default-src 'none'");
+        resp.setHeader("X-Content-Type-Options", "nosniff");
         try {
             var uri = findRequestUri(req);
             logger.debug("Processing {}:{}", method, uri);
             var endpointResponse = process(method, uri, req.getHeader("Authorization"), req);
             resp.setStatus(SC_OK);
-            resp.setContentType(endpointResponse.contentType());
+            var contentType = endpointResponse.contentType();
+            if (!INLINE_MEDIA_TYPES.contains(contentType.split(";", 2)[0].strip().toLowerCase(Locale.ROOT))) {
+                // Serve potentially active content as a download on the openHAB UI origin.
+                resp.setHeader("Content-Disposition", "attachment");
+            }
+            resp.setContentType(contentType);
             resp.setCharacterEncoding("UTF-8");
             resp.getWriter().write(endpointResponse.body());
         } catch (UserRequestException e) {
@@ -148,6 +160,9 @@ public class DispatcherServlet extends HttpServlet {
         }
         Map<String, List<String>> headers = new LinkedHashMap<>();
         for (String headerName : Collections.list(headerNames)) {
+            if (SENSITIVE_HEADERS.contains(headerName.toLowerCase(Locale.ROOT))) {
+                continue;
+            }
             var headerValues = request.getHeaders(headerName);
             headers.put(headerName, headerValues == null ? List.of() : Collections.list(headerValues));
         }

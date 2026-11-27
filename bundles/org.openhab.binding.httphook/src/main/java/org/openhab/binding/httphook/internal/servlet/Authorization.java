@@ -24,10 +24,16 @@ public sealed interface Authorization {
 
     String prefix();
 
+    // Keep credential fields out of the generated record representations used in diagnostics.
     public record Basic(String username, String password) implements Authorization {
         @Override
         public String prefix() {
             return BASIC_PREFIX;
+        }
+
+        @Override
+        public String toString() {
+            return "Basic[]";
         }
     }
 
@@ -35,6 +41,11 @@ public sealed interface Authorization {
         @Override
         public String prefix() {
             return BEARER_PREFIX;
+        }
+
+        @Override
+        public String toString() {
+            return "Bearer[]";
         }
     }
 }

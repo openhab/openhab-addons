@@ -7,8 +7,9 @@
 	<config-description uri="binding:httphook">
 		<parameter name="enforceAuthentication" type="boolean" required="false">
 			<label>Enforce Authentication</label>
-			<description>Require authorization for all endpoints, even if endpoint-specific authorization is not configured.</description>
-			<default>false</default>
+			<description>Require authorization for all endpoints. Disable to allow anonymous access only when no endpoint or
+				binding-wide credentials are configured.</description>
+			<default>true</default>
 		</parameter>
 		<parameter name="defaultBasic" type="text" required="false">
 			<label>Default Basic Authorization</label>
@@ -41,7 +42,8 @@
 		</parameter>
 		<parameter name="contentType" type="text">
 			<label>Content Type</label>
-			<description>MIME content type returned by this response channel.</description>
+			<description>MIME content type returned by this response channel. Browsers receive formats other than JSON, plain
+				text and CSV as downloads.</description>
 			<default>application/json</default>
 			<options>
 				<option value="application/json">application/json</option>

@@ -30,6 +30,7 @@ import org.slf4j.LoggerFactory;
  * binding components.
  *
  * @author Martin Grzeslowski - Initial contribution
+ * @author Martin Grześlowski - Configuration lifecycle for inherited authentication
  */
 @NonNullByDefault
 @Component(configurationPid = CONFIGURATION_PID, service = { HttpHookBinding.class, ManagedService.class })
@@ -37,33 +38,29 @@ public class HttpHookBinding implements ManagedService, Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
     private final Logger logger = LoggerFactory.getLogger(HttpHookBinding.class);
-    private volatile HttpHookBindingConfig config = HttpHookBindingConfig.DEFAULT;
+    // Configuration Admin delivers its first update asynchronously, even when no configuration exists.
+    private volatile @Nullable HttpHookBindingConfig config;
 
     @Override
     @NonNullByDefault({})
     public void updated(Dictionary<String, ?> properties) {
-        if (properties == null || properties.isEmpty()) {
-            return;
-        }
-
-        this.config = new HttpHookBindingConfig(getBoolean(properties, "enforceAuthentication", false),
-                getNullableString(properties, "defaultBasic"), getNullableString(properties, "defaultBearer"));
-        logger.debug("Loaded configuration: {}", config);
+        var newConfig = properties == null ? HttpHookBindingConfig.DEFAULT
+                : new HttpHookBindingConfig(isAuthenticationEnforced(properties),
+                        getNullableString(properties, "defaultBasic"), getNullableString(properties, "defaultBearer"));
+        config = newConfig;
+        logger.debug("Loaded configuration: {}", newConfig);
     }
 
-    public HttpHookBindingConfig getConfig() {
+    public @Nullable HttpHookBindingConfig getConfig() {
         return config;
     }
 
-    private static boolean getBoolean(Dictionary<String, ?> properties, String key, boolean defaultValue) {
-        Object value = properties.get(key);
+    private static boolean isAuthenticationEnforced(Dictionary<String, ?> properties) {
+        Object value = properties.get("enforceAuthentication");
         if (value instanceof Boolean bool) {
             return bool;
         }
-        if (value instanceof String text) {
-            return Boolean.parseBoolean(text);
-        }
-        return defaultValue;
+        return !(value instanceof String text && "false".equalsIgnoreCase(text));
     }
 
     private static @Nullable String getNullableString(Dictionary<String, ?> properties, String key) {
