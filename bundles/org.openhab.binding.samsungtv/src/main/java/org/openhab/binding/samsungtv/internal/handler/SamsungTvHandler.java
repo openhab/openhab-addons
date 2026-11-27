@@ -774,6 +774,8 @@ public class SamsungTvHandler extends BaseThingHandler implements RegistryListen
             servicesOnline = true;
             updateStatus(ThingStatus.ONLINE);
             startPolling();
+            findServiceInstance(RemoteControllerService.SERVICE_NAME)
+                    .ifPresent(s -> ((RemoteControllerService) s).refreshArtModeStatus());
             if (!getArtModeSupported()) {
                 if (getArtMode2022()) {
                     // TV's with the art API restored clear artMode2022 once the art websocket answers
