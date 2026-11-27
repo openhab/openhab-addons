@@ -133,8 +133,7 @@ temperature{item="tempBath",floor="firstfloor"}
 
 You can now easily select all temperatures of the first floor (`temperature{floor="firstfloor"}`) or the average temperature of the ground floor (`avg(temperature{floor="groundfloor"})`).
 
-_Warning:_ Do **not** override the labels `item`, `component` and `state` within the metadata.
-These labels are used internally by openHAB, and changing them will lead to problems querying the persisted data points.
+The labels `item`, `component`, `state` and `__name__` are used internally by openHAB to query the persisted data points, so metadata configuration keys with these names are ignored.
 The metadata configuration key `stringStates` is not stored as a label, see [String States](#string-states).
 
 #### String States

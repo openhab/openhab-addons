@@ -80,7 +80,7 @@ import org.slf4j.LoggerFactory;
  * @author Franz - Initial contribution
  * @author Joan Pujol Espinar - Original InfluxDB implementation
  * @author Michael Weger - Use Jetty, fix query with alias, store numeric states, components and string states, flush
- *         pending states on deactivation, bound the queue
+ *         pending states on deactivation, bound the queue, protect internal labels
  */
 @NonNullByDefault
 @Component(service = { PersistenceService.class,
@@ -98,6 +98,9 @@ public class VictoriaMetricsPersistenceService implements QueryablePersistenceSe
     private static final int MAX_STRING_STATE_BYTES = 4096;
     // limits the size of a single import request, e.g. when writing the backlog after an outage
     private static final int MAX_BATCH_SIZE = 10_000;
+    // labels the read path relies on, which item metadata must not overwrite
+    private static final Set<String> RESERVED_LABELS = Set.of(LABEL_METRIC_NAME, TAG_ITEM_NAME, TAG_COMPONENT_NAME,
+            TAG_STATE_NAME);
     protected static final String CONFIG_URI = "persistence:victoriametrics";
 
     // External dependencies
@@ -439,8 +442,15 @@ public class VictoriaMetricsPersistenceService implements QueryablePersistenceSe
 
             metadataService.getMetaData(alias)
                     .ifPresent(metadata -> metadata.getConfiguration().forEach((key, tagValue) -> {
-                        if (!METADATA_STRING_STATES.equals(key)) {
-                            pointBuilder.withTag(VictoriaMetricsMetricNameResolver.sanitizeLabelName(key), tagValue);
+                        if (METADATA_STRING_STATES.equals(key)) {
+                            return;
+                        }
+                        String label = VictoriaMetricsMetricNameResolver.sanitizeLabelName(key);
+                        if (RESERVED_LABELS.contains(label)) {
+                            logger.debug("Ignoring the metadata label '{}' of item '{}', the label is reserved", label,
+                                    itemName);
+                        } else {
+                            pointBuilder.withTag(label, tagValue);
                         }
                     }));
 

@@ -59,7 +59,7 @@ import org.openhab.persistence.victoriametrics.internal.VictoriaMetricsRepositor
 /**
  * @author Joan Pujol Espinar - Initial contribution
  * @author Franz - Initial VictoriaMetrics adaptation
- * @author Michael Weger - Add metric name, unsupported state, unit tag and string state tests
+ * @author Michael Weger - Add metric name, unsupported state, unit tag, string state and reserved label tests
  */
 @ExtendWith(MockitoExtension.class)
 @NonNullByDefault(value = { DefaultLocation.PARAMETER, DefaultLocation.RETURN_TYPE })
@@ -383,6 +383,25 @@ public class ItemToStorePointCreatorTest {
 
         assertThat(point.getTags(), hasEntry("key1", "val1"));
         assertThat(point.getTags(), hasEntry("key_2", "val2"));
+    }
+
+    @Test
+    public void shouldNotOverwriteReservedLabelsWithMetadata() throws ExecutionException, InterruptedException {
+        NumberItem item = ItemTestHelper.createNumberItem("myitem", 5);
+        MetadataKey metadataKey = new MetadataKey(VictoriaMetricsPersistenceService.SERVICE_NAME, item.getName());
+
+        when(metadataRegistry.get(metadataKey)).thenReturn(new Metadata(metadataKey, "", Map.of("item", "floor1",
+                "component", "hue", "state", "ON", "__name__", "other", "floor", "groundfloor")));
+
+        VictoriaMetricsPoint point = instance.convert(item, item.getState(), Instant.now(), null).get();
+
+        if (point == null) {
+            Assertions.fail("'point' is null");
+            return;
+        }
+
+        assertThat(point.getMetricName(), equalTo("myitem"));
+        assertThat(point.getTags(), equalTo(Map.of("item", "myitem", "floor", "groundfloor")));
     }
 
     @Test
