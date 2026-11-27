@@ -170,13 +170,13 @@ public class PleosAccountHandler extends BaseBridgeHandler {
 
             try {
                 client.authenticate();
-                if (Thread.currentThread().isInterrupted() || this.apiClient != client) {
+                if (isStaleClient(client)) {
                     return;
                 }
                 updateStatus(ThingStatus.ONLINE);
                 startAutomaticRefresh(config.refreshInterval);
             } catch (PleosApiException e) {
-                if (Thread.currentThread().isInterrupted() || this.apiClient != client) {
+                if (isStaleClient(client)) {
                     return;
                 }
                 logger.debug("Authentication failed: {}", e.getMessage());
@@ -189,6 +189,12 @@ public class PleosAccountHandler extends BaseBridgeHandler {
                 }
             }
         }, delaySeconds, TimeUnit.SECONDS);
+    }
+
+    private boolean isStaleClient(PleosApiClient client) {
+        boolean clientChanged = this.apiClient != client;
+        return Thread.currentThread().isInterrupted() || clientChanged; // NOPMD - intentional reference comparison for
+                                                                        // thread safety
     }
 
     @Override
