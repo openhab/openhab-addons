@@ -36,6 +36,13 @@
 			<advanced>true</advanced>
 			<default>true</default>
 		</parameter>
+		<parameter name="standbyOnline" type="boolean" required="false">
+			<label>Standby Online</label>
+			<description>Keep the thing ONLINE while the TV is in standby but still reachable on the network. The power channel
+				is set to OFF in this case. The thing only goes OFFLINE if the TV does not answer on the network at all.</description>
+			<advanced>true</advanced>
+			<default>false</default>
+		</parameter>
 	</config-description>
 
 </config-description:config-descriptions>
