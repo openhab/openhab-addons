@@ -163,6 +163,18 @@ class SunsynkProfileTest {
         plan.forEach(block -> assertTrue(
                 block.getEnd() - block.getStart() + 1 >= 2 && block.getEnd() - block.getStart() + 1 <= 125));
         for (SunsynkSensor sensor : profile.sensors()) {
+            assertTrue(
+                    sensor.registers().isEmpty() || plan.stream()
+                            .anyMatch(block -> sensor.registers().stream()
+                                    .allMatch(address -> address >= block.getStart() && address <= block.getEnd())),
+                    "All words must share one request: " + name + "/" + sensor.id());
+            plan.stream()
+                    .filter(block -> sensor.registers().stream()
+                            .anyMatch(address -> address >= block.getStart() && address <= block.getEnd()))
+                    .forEach(block -> assertTrue(
+                            sensor.registers().stream()
+                                    .allMatch(address -> address >= block.getStart() && address <= block.getEnd()),
+                            "Overlapping reads must also contain every word: " + name + "/" + sensor.id()));
             sensor.registers()
                     .forEach(address -> assertTrue(
                             plan.stream().anyMatch(block -> address >= block.getStart() && address <= block.getEnd()),
@@ -171,6 +183,34 @@ class SunsynkProfileTest {
                 assertFalse(sensor.accepts(OnOffType.ON));
                 assertFalse(sensor.accepts(new DecimalType(1)));
             }
+        }
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = { "three_phase_lv", "three_phase_hv" })
+    void gridPowerDoesNotCombineWordsFromOppositeSidesOfZero(String name) throws IOException {
+        SunsynkProfile profile = new SunsynkProfile(name);
+        for (String id : List.of("grid_l1_power", "grid_l2_power", "grid_l3_power", "grid_power")) {
+            SunsynkSensor sensor = find(profile, id);
+            Map<Integer, byte[]> snapshot = new HashMap<>();
+            boolean firstRead = true;
+            for (var block : profile.readPlan()) {
+                if (sensor.registers().stream()
+                        .anyMatch(address -> address >= block.getStart() && address <= block.getEnd())) {
+                    // The device changes from +1 W to -1 W between requests, never within a response.
+                    int value = firstRead ? 1 : -1;
+                    for (int i = 0; i < sensor.registers().size(); i++) {
+                        int address = sensor.registers().get(i);
+                        if (address >= block.getStart() && address <= block.getEnd()) {
+                            snapshot.put(address, word(i == 0 ? value & 65535 : value < 0 ? 65535 : 0));
+                        }
+                    }
+                    firstRead = false;
+                }
+            }
+            assertEquals(1, ((QuantityType<?>) sensor.decode(snapshot, ZoneOffset.UTC)).intValue(), id);
+            sensor.registers().forEach(address -> snapshot.put(address, word(65535)));
+            assertEquals(-1, ((QuantityType<?>) sensor.decode(snapshot, ZoneOffset.UTC)).intValue(), id);
         }
     }
 

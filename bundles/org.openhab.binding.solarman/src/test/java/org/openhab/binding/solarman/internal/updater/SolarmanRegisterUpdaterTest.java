@@ -13,6 +13,7 @@
 package org.openhab.binding.solarman.internal.updater;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyByte;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -21,6 +22,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -74,7 +76,24 @@ class SolarmanRegisterUpdaterTest {
     void setUp() throws SolarmanException {
         when(connector.createConnection()).thenReturn(connection);
         when(connection.isConnected()).thenReturn(true);
-        when(protocol.writeRegisters(any(), anyInt(), any())).thenReturn(true);
+        Map<Integer, byte[]> device = new HashMap<>();
+        when(protocol.readRegisters(any(), anyByte(), anyInt(), anyInt())).thenAnswer(invocation -> {
+            int first = invocation.getArgument(2);
+            int last = invocation.getArgument(3);
+            Map<Integer, byte[]> snapshot = new HashMap<>();
+            for (int address = first; address <= last; address++) {
+                snapshot.put(address, device.getOrDefault(address, toBytes(0)));
+            }
+            return snapshot;
+        });
+        when(protocol.writeRegisters(any(), anyInt(), any())).thenAnswer(invocation -> {
+            int first = invocation.getArgument(1);
+            byte[] data = invocation.getArgument(2);
+            for (int i = 0; i < data.length; i += 2) {
+                device.put(first + i / 2, new byte[] { data[i], data[i + 1] });
+            }
+            return true;
+        });
         updater = createUpdater();
     }
 
@@ -166,6 +185,7 @@ class SolarmanRegisterUpdaterTest {
     private SolarmanRegisterUpdater createUpdater() {
         ParameterItem time = createItem("Time 1", 9, TIME_REGISTER, null);
         ParameterItem soc = createItem("SOC 1", 1, SOC_REGISTER, createValidation(0, 100));
+        soc.setUom("%");
         // Static channels are built with an empty Validation, which must not restrict writes
         ParameterItem unbounded = createItem("Power", 1, UNBOUNDED_REGISTER, new Validation());
         // Validation is expressed in channel units (W), the register holds W / 10

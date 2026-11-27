@@ -103,16 +103,14 @@ public class SolarmanLoggerConnection implements AutoCloseable {
                         MAX_HEARTBEATS);
             }
         } catch (IOException e) {
-            if (v5) {
-                close();
-            }
+            close();
             throw new SolarmanConnectionException("Unable to exchange a complete logger frame", e);
         }
     }
 
     private byte[] readFrame(InputStream input, Socket local, boolean v5, long deadline)
             throws IOException, SolarmanConnectionException {
-        byte[] header = readFully(input, v5 ? 3 : 6, local, v5, deadline);
+        byte[] header = readFully(input, v5 ? 3 : 6, local, deadline);
         int payloadLength = Short.toUnsignedInt(ByteBuffer.wrap(header, v5 ? 1 : 4, 2)
                 .order(v5 ? ByteOrder.LITTLE_ENDIAN : ByteOrder.BIG_ENDIAN).getShort());
         int totalLength = (v5 ? 13 : 6) + payloadLength;
@@ -120,7 +118,7 @@ public class SolarmanLoggerConnection implements AutoCloseable {
             throw new SolarmanConnectionException("Invalid response frame length");
         }
         byte[] response = ByteBuffer.allocate(totalLength).put(header)
-                .put(readFully(input, totalLength - header.length, local, v5, deadline)).array();
+                .put(readFully(input, totalLength - header.length, local, deadline)).array();
         return response;
     }
 
@@ -137,21 +135,13 @@ public class SolarmanLoggerConnection implements AutoCloseable {
         return (checksum & 255) == Byte.toUnsignedInt(response[12]);
     }
 
-    private byte[] readFully(InputStream input, int length, Socket local, boolean v5, long deadline)
-            throws IOException {
-        if (!v5) {
-            byte[] bytes = input.readNBytes(length);
-            if (bytes.length != length) {
-                throw new IOException("Connection closed before the response frame was complete");
-            }
-            return bytes;
-        }
+    private byte[] readFully(InputStream input, int length, Socket local, long deadline) throws IOException {
         byte[] bytes = new byte[length];
         int offset = 0;
         while (offset < length) {
             long remaining = deadline - nanoTime.getAsLong();
             if (remaining <= 0 || Thread.currentThread().isInterrupted()) {
-                throw new SocketTimeoutException("V5 response deadline expired or logger task was cancelled");
+                throw new SocketTimeoutException("Response deadline expired or logger task was cancelled");
             }
             local.setSoTimeout((int) Math.min(RESPONSE_TIMEOUT_MILLIS, (remaining + 999_999) / 1_000_000));
             int count = input.read(bytes, offset, length - offset);
@@ -159,6 +149,9 @@ public class SolarmanLoggerConnection implements AutoCloseable {
                 throw new IOException("Connection closed before the response frame was complete");
             }
             offset += count;
+        }
+        if (deadline - nanoTime.getAsLong() <= 0 || Thread.currentThread().isInterrupted()) {
+            throw new SocketTimeoutException("Response deadline expired or logger task was cancelled");
         }
         return bytes;
     }

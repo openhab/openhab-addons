@@ -209,7 +209,47 @@ class SolarmanLoggerConnectionTest {
         Socket socket = socket(fragmented(response), new ByteArrayOutputStream());
         try (SolarmanLoggerConnection connection = new SolarmanLoggerConnection(socket)) {
             assertArrayEquals(response, connection.sendRequest(new byte[] { 0, 1, 0, 0, 0, 6, 1, 3 }));
-            verify(socket, never()).setSoTimeout(anyInt());
+            verify(socket, atLeastOnce()).setSoTimeout(intThat(timeout -> timeout > 0 && timeout <= 10000));
+        }
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = { 1, 2, 3 })
+    void rawReplySharesOneDeadlineAcrossHeaderAndBody(int fragmentSize) throws Exception {
+        byte[] request = new byte[] { 0, 1, 0, 0, 0, 6, 1, 3 };
+        byte[] response = HexFormat.of().parseHex("000100000005010302004E");
+        AtomicLong clock = new AtomicLong();
+        InputStream delayed = new FilterInputStream(new ByteArrayInputStream(response)) {
+            @Override
+            public int read(byte @Nullable [] bytes, int offset, int length) throws IOException {
+                clock.addAndGet(2_500_000_000L);
+                return super.read(Objects.requireNonNull(bytes), offset, Math.min(length, fragmentSize));
+            }
+        };
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
+        Socket socket = socket(delayed, output);
+        try (SolarmanLoggerConnection connection = new SolarmanLoggerConnection(socket, clock::get)) {
+            SolarmanConnectionException failure = assertThrows(SolarmanConnectionException.class,
+                    () -> connection.sendRequest(request));
+            assertInstanceOf(SocketTimeoutException.class, failure.getCause());
+            assertEquals(10_000_000_000L, clock.get());
+            assertFalse(connection.isOpen());
+            assertArrayEquals(request, output.toByteArray());
+            verify(socket).setSoTimeout(2500);
+        }
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = { 0, 4, 8 })
+    void closesTruncatedRawReplyWithoutResending(int available) throws Exception {
+        byte[] request = new byte[] { 0, 1, 0, 0, 0, 6, 1, 3 };
+        byte[] response = HexFormat.of().parseHex("000100000005010302004E");
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
+        Socket socket = socket(fragmented(Arrays.copyOf(response, available)), output);
+        try (SolarmanLoggerConnection connection = new SolarmanLoggerConnection(socket)) {
+            assertThrows(SolarmanConnectionException.class, () -> connection.sendRequest(request));
+            assertFalse(connection.isOpen());
+            assertArrayEquals(request, output.toByteArray());
         }
     }
 

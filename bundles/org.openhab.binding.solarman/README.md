@@ -153,6 +153,7 @@ That confirmation interval is separate from the five-second minimum periodic ref
 
 The logger connection uses the configured Modbus slave ID, defaulting to 1.
 Read blocks contain at most 125 consecutive registers.
+Registers composing one sensor value are kept in the same read, including non-adjacent power words in the three-phase profiles.
 The profile is read independently of linked Items so that dependent limits and calculated sensors have the required inputs.
 A failed optional block publishes UNDEF for affected channels; a valid response can keep the Thing ONLINE while unsupported measurements remain unavailable.
 No valid blocks or a connection failure results in OFFLINE/COMMUNICATION_ERROR.
@@ -524,6 +525,7 @@ This interval may allow delayed device application to settle, but its benefit on
 
 V5 exchanges can skip up to three valid 14-byte logger heartbeats (`0x4710`) while waiting for the original Modbus response.
 The complete V5 response, including any heartbeats and TCP fragments, shares a 10-second receive deadline.
+Raw Modbus TCP responses also share one 10-second deadline across the header and body, even when received in fragments.
 This does not resend requests or acknowledge heartbeats; response identity and checksum validation remain unchanged.
 If no valid response follows, the exchange still fails. Hardware recovery depends on whether the logger subsequently sends the requested response.
 

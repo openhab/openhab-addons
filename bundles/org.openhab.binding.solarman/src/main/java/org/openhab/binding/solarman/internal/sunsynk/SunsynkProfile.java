@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.TreeMap;
 import java.util.TreeSet;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -81,26 +82,48 @@ public final class SunsynkProfile {
             addresses.add(i);
         }
         sensors.values().forEach(s -> addresses.addAll(s.registers()));
+        TreeMap<Integer, Integer> ranges = new TreeMap<>();
+        addresses.forEach(address -> ranges.put(address, address));
+        sensors.values().stream().filter(sensor -> !sensor.registers().isEmpty()).forEach(sensor -> {
+            int first = sensor.registers().stream().mapToInt(Integer::intValue).min().orElseThrow();
+            int last = sensor.registers().stream().mapToInt(Integer::intValue).max().orElseThrow();
+            ranges.merge(first, last, Math::max);
+        });
+        // Overlapping sensor ranges must stay together, including non-adjacent low/high power words.
+        List<Request> groups = new ArrayList<>();
+        ranges.forEach((first, last) -> {
+            if (first < 0 || last > 65535) {
+                throw new IllegalArgumentException("Register address is outside Modbus range");
+            }
+            if (!groups.isEmpty() && first <= groups.getLast().getEnd()) {
+                Request previous = groups.getLast();
+                previous.setEnd(Math.max(previous.getEnd(), last));
+            } else {
+                groups.add(new Request(3, first, last));
+            }
+            if (groups.getLast().getEnd() - groups.getLast().getStart() >= 125) {
+                throw new IllegalArgumentException("Overlapping sensor registers exceed the Modbus read limit");
+            }
+        });
         List<Request> plan = new ArrayList<>();
         int start = -1;
         int end = -1;
-        for (int address : addresses) {
-            if (address < 0 || address > 65535) {
-                throw new IllegalArgumentException("Register address is outside Modbus range");
-            }
-            if (start < 0 || address - start >= 125) {
+        for (Request group : groups) {
+            if (start < 0 || group.getEnd() - start >= 125) {
                 if (start >= 0) {
                     plan.add(new Request(3, start, end));
                 }
-                start = address;
+                start = group.getStart();
             }
-            end = address;
+            end = group.getEnd();
         }
         plan.add(new Request(3, start, end));
         for (Request block : plan) {
             if (block.getStart().equals(block.getEnd())) {
-                int previous = Objects.requireNonNullElse(addresses.lower(block.getStart()), -1);
-                int next = Objects.requireNonNullElse(addresses.higher(block.getEnd()), 65536);
+                int previous = groups.stream().filter(group -> group.getEnd() < block.getStart())
+                        .mapToInt(Request::getStart).max().orElse(-1);
+                int next = groups.stream().filter(group -> group.getStart() > block.getEnd()).mapToInt(Request::getEnd)
+                        .min().orElse(65536);
                 if (previous >= 0 && block.getStart() - previous < 125) {
                     block.setStart(previous);
                 } else if (next <= 65535 && next - block.getStart() < 125) {
