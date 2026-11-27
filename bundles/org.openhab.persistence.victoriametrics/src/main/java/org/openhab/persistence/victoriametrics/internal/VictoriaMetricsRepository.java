@@ -36,6 +36,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
+import javax.measure.Unit;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.ContentResponse;
@@ -47,7 +49,9 @@ import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.persistence.FilterCriteria;
+import org.openhab.core.types.util.UnitUtils;
 import org.openhab.persistence.victoriametrics.internal.VictoriaMetricsFilterCriteriaQueryCreator.VictoriaMetricsQuery;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,7 +68,7 @@ import com.google.gson.JsonParser;
  * @author Joan Pujol Espinar - Initial contribution
  * @author Franz - Initial VictoriaMetrics adaptation
  * @author Michael Weger - Use Jetty, query raw samples, join state components, read string states, abort requests on
- *         stop
+ *         stop, convert values from the stored unit
  */
 @NonNullByDefault
 public class VictoriaMetricsRepository {
@@ -199,14 +203,16 @@ public class VictoriaMetricsRepository {
      *
      * @param filter the query filter
      * @param alias the alias the item is stored with, or <code>null</code>
+     * @param itemUnit the unit to convert the values of series with a stored unit to, or <code>null</code> to read
+     *            all values unchanged
      * @return Query results
      */
-    public List<VictoriaMetricsRow> query(FilterCriteria filter, @Nullable String alias) {
+    public List<VictoriaMetricsRow> query(FilterCriteria filter, @Nullable String alias, @Nullable Unit<?> itemUnit) {
         try {
             List<VictoriaMetricsRow> rows = new ArrayList<>();
             List<VictoriaMetricsRow> result = List.of();
             for (VictoriaMetricsQuery query : queryCreator.createQueries(filter, alias, Instant.now())) {
-                rows.addAll(export(query));
+                rows.addAll(export(query, itemUnit));
                 result = queryCreator.applyCriteria(rows.stream(), filter);
                 if (queryCreator.isComplete(result, filter)) {
                     break;
@@ -224,7 +230,7 @@ public class VictoriaMetricsRepository {
         return List.of();
     }
 
-    private List<VictoriaMetricsRow> export(VictoriaMetricsQuery query)
+    private List<VictoriaMetricsRow> export(VictoriaMetricsQuery query, @Nullable Unit<?> itemUnit)
             throws InterruptedException, TimeoutException, ExecutionException, IOException {
         logger.trace("Query {}", query);
         Request request = newRequest(PATH_EXPORT).param("match[]", query.selector()).param("end",
@@ -246,7 +252,7 @@ public class VictoriaMetricsRepository {
                     throw new IOException("HTTP status " + response.getStatus() + ": "
                             + new String(inputStream.readAllBytes(), StandardCharsets.UTF_8));
                 }
-                List<VictoriaMetricsRow> rows = parseExport(inputStream);
+                List<VictoriaMetricsRow> rows = parseExport(inputStream, itemUnit);
                 completed = true;
                 return rows;
             }
@@ -261,13 +267,19 @@ public class VictoriaMetricsRepository {
     /**
      * Parse the JSON lines returned by the export API, skipping non-finite values and merging the components of a
      * state into one row
+     * <p>
+     * The values of series with a unit label are converted from that unit to the item unit, so values stored before
+     * the unit of the item was changed are read correctly.
      *
      * @param inputStream the response body
+     * @param itemUnit the unit to convert the values of series with a stored unit to, or <code>null</code> to read
+     *            all values unchanged
      * @return the samples of all exported series
      * @throws IOException if reading fails
      */
-    List<VictoriaMetricsRow> parseExport(InputStream inputStream) throws IOException {
+    List<VictoriaMetricsRow> parseExport(InputStream inputStream, @Nullable Unit<?> itemUnit) throws IOException {
         List<VictoriaMetricsRow> rows = new ArrayList<>();
+        Set<String> unconvertibleUnits = new LinkedHashSet<>();
         Map<ComponentKey, Map<String, BigDecimal>> componentRows = new LinkedHashMap<>();
         BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
         String line;
@@ -289,6 +301,10 @@ public class VictoriaMetricsRepository {
             String itemName = itemElement != null ? itemElement.getAsString() : "";
             JsonElement componentElement = metric.get(TAG_COMPONENT_NAME);
             JsonElement stateElement = metric.get(TAG_STATE_NAME);
+            JsonElement unitElement = metric.get(TAG_UNIT_NAME);
+            Unit<?> storedUnit = itemUnit != null && unitElement != null
+                    ? getStoredUnit(unitElement.getAsString(), itemUnit, unconvertibleUnits)
+                    : null;
             for (int i = 0; i < values.size(); i++) {
                 BigDecimal value = toBigDecimal(values.get(i));
                 if (value == null) {
@@ -298,7 +314,8 @@ public class VictoriaMetricsRepository {
                 if (stateElement != null) {
                     rows.add(new VictoriaMetricsRow(time, itemName, stateElement.getAsString()));
                 } else if (componentElement == null) {
-                    rows.add(new VictoriaMetricsRow(time, itemName, value));
+                    rows.add(new VictoriaMetricsRow(time, itemName,
+                            storedUnit != null && itemUnit != null ? convert(value, storedUnit, itemUnit) : value));
                 } else {
                     componentRows.computeIfAbsent(new ComponentKey(time, itemName), k -> new LinkedHashMap<>())
                             .put(componentElement.getAsString(), value);
@@ -312,6 +329,40 @@ public class VictoriaMetricsRepository {
     }
 
     private record ComponentKey(Instant time, String itemName) {
+    }
+
+    /**
+     * Get the unit stored with a series, if its values have to be converted to the item unit
+     * <p>
+     * Values in a unit that cannot be parsed or converted are read in the item unit, as without a stored unit.
+     *
+     * @param unitLabel the value of the unit label
+     * @param itemUnit the unit of the item
+     * @param unconvertibleUnits the stored units already logged as not convertible
+     * @return the stored unit, or <code>null</code> if the values are read in the item unit
+     */
+    private @Nullable Unit<?> getStoredUnit(String unitLabel, Unit<?> itemUnit, Set<String> unconvertibleUnits) {
+        Unit<?> storedUnit = UnitUtils.parseUnit(unitLabel);
+        if (itemUnit.equals(storedUnit)) {
+            return null;
+        }
+        if (storedUnit == null || new QuantityType<>(BigDecimal.ONE, storedUnit).toInvertibleUnit(itemUnit) == null) {
+            if (unconvertibleUnits.add(unitLabel)) {
+                logger.debug("Reading values stored in unit '{}' in the item unit {}, the units are not convertible",
+                        unitLabel, itemUnit);
+            }
+            return null;
+        }
+        return storedUnit;
+    }
+
+    /**
+     * Convert a value to the item unit, rounded to the 64-bit floating point precision of the stored samples like the
+     * state filter, so that converted values can be compared with it
+     */
+    private BigDecimal convert(BigDecimal value, Unit<?> storedUnit, Unit<?> itemUnit) {
+        QuantityType<?> converted = new QuantityType<>(value, storedUnit).toInvertibleUnit(itemUnit);
+        return converted != null ? BigDecimal.valueOf(converted.doubleValue()) : value;
     }
 
     private @Nullable BigDecimal toBigDecimal(JsonElement element) {

@@ -174,8 +174,10 @@ public class VictoriaMetricsPersistenceServiceTest {
 
         instance.query(filter);
 
-        verify(repositoryMock).query(argThat(converted -> converted.getState() instanceof QuantityType<?> quantity
-                && quantity.getUnit().equals(SIUnits.CELSIUS) && quantity.doubleValue() == 20.0), isNull());
+        verify(repositoryMock).query(
+                argThat(converted -> converted.getState() instanceof QuantityType<?> quantity
+                        && quantity.getUnit().equals(SIUnits.CELSIUS) && quantity.doubleValue() == 20.0),
+                isNull(), eq(SIUnits.CELSIUS));
         // the filter of the caller is not changed
         assertThat(filter.getState(), is(new QuantityType<>(68, ImperialUnits.FAHRENHEIT)));
     }
@@ -192,7 +194,7 @@ public class VictoriaMetricsPersistenceServiceTest {
                 .setState(new QuantityType<>(5, SIUnits.METRE));
 
         assertThat(instance.query(filter).iterator().hasNext(), is(false));
-        verify(repositoryMock, never()).query(any(), any());
+        verify(repositoryMock, never()).query(any(), any(), any());
     }
 
     @Test

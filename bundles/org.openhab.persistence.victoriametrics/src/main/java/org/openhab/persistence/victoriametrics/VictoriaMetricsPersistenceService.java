@@ -87,7 +87,7 @@ import org.slf4j.LoggerFactory;
  * @author Joan Pujol Espinar - Original InfluxDB implementation
  * @author Michael Weger - Use Jetty, fix query with alias, store numeric states, components and string states, flush
  *         pending states on deactivation within a deadline, bound the queue, protect internal labels, convert filter
- *         units
+ *         and stored units
  */
 @NonNullByDefault
 @Component(service = { PersistenceService.class,
@@ -110,7 +110,7 @@ public class VictoriaMetricsPersistenceService implements QueryablePersistenceSe
     private static final int MAX_BATCH_SIZE = 10_000;
     // labels the read path relies on, which item metadata must not overwrite
     private static final Set<String> RESERVED_LABELS = Set.of(LABEL_METRIC_NAME, TAG_ITEM_NAME, TAG_COMPONENT_NAME,
-            TAG_STATE_NAME);
+            TAG_STATE_NAME, TAG_UNIT_NAME);
     protected static final String CONFIG_URI = "persistence:victoriametrics";
 
     // External dependencies
@@ -303,11 +303,13 @@ public class VictoriaMetricsPersistenceService implements QueryablePersistenceSe
         if (serviceActivated && checkConnection()) {
             logger.trace("Query-Filter: {}", filter);
 
-            FilterCriteria storedUnitFilter = toStoredUnit(filter, itemName);
-            if (storedUnitFilter == null) {
+            Unit<?> itemUnit = getItemUnit(itemName);
+            FilterCriteria itemUnitFilter = toItemUnit(filter, itemUnit);
+            if (itemUnitFilter == null) {
                 return List.of();
             }
-            List<VictoriaMetricsRepository.VictoriaMetricsRow> results = repository.query(storedUnitFilter, alias);
+            List<VictoriaMetricsRepository.VictoriaMetricsRow> results = repository.query(itemUnitFilter, alias,
+                    itemUnit);
             return results.stream().map(r -> mapRowToHistoricItem(r, itemName)).collect(Collectors.toList());
         } else {
             logger.debug("Query for persisted data ignored, VictoriaMetrics is not connected");
@@ -316,26 +318,33 @@ public class VictoriaMetricsPersistenceService implements QueryablePersistenceSe
     }
 
     /**
-     * Convert a quantity filter state to the unit the item's values are stored in
-     * <p>
-     * Number items with a unit convert their state to the item unit, so the samples contain values in this unit, and
-     * {@link VictoriaMetricsStateConvertUtils#objectToState(Object, Item)} reads them in the same unit.
+     * Get the unit of a number item, or of the base item of a group item
      *
-     * @param filter the query filter
      * @param itemName the name of the queried item
-     * @return the filter to compare with the stored values, or <code>null</code> if the filter state cannot be
-     *         converted to the item unit
+     * @return the unit, or <code>null</code> if the item has no unit
      */
-    private @Nullable FilterCriteria toStoredUnit(FilterCriteria filter, String itemName) {
-        if (!(filter.getState() instanceof QuantityType<?> quantity)) {
-            return filter;
-        }
+    private @Nullable Unit<?> getItemUnit(String itemName) {
         Item item = itemRegistry.get(itemName);
         if (item instanceof GroupItem groupItem) {
             item = groupItem.getBaseItem();
         }
-        Unit<?> unit = item instanceof NumberItem numberItem ? numberItem.getUnit() : null;
-        if (unit == null) {
+        return item instanceof NumberItem numberItem ? numberItem.getUnit() : null;
+    }
+
+    /**
+     * Convert a quantity filter state to the item unit
+     * <p>
+     * Number items with a unit convert their state to the item unit, so the samples contain values in this unit. The
+     * repository converts samples stored in another unit to the item unit, and
+     * {@link VictoriaMetricsStateConvertUtils#objectToState(Object, Item)} reads them in the same unit.
+     *
+     * @param filter the query filter
+     * @param unit the unit of the queried item, or <code>null</code> if it has no unit
+     * @return the filter to compare with the samples, or <code>null</code> if the filter state cannot be converted to
+     *         the item unit
+     */
+    private @Nullable FilterCriteria toItemUnit(FilterCriteria filter, @Nullable Unit<?> unit) {
+        if (!(filter.getState() instanceof QuantityType<?> quantity) || unit == null) {
             return filter;
         }
         QuantityType<?> converted = quantity.toInvertibleUnit(unit);

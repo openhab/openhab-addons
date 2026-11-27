@@ -391,7 +391,7 @@ public class ItemToStorePointCreatorTest {
         MetadataKey metadataKey = new MetadataKey(VictoriaMetricsPersistenceService.SERVICE_NAME, item.getName());
 
         when(metadataRegistry.get(metadataKey)).thenReturn(new Metadata(metadataKey, "", Map.of("item", "floor1",
-                "component", "hue", "state", "ON", "__name__", "other", "floor", "groundfloor")));
+                "component", "hue", "state", "ON", "__name__", "other", "unit", "A", "floor", "groundfloor")));
 
         VictoriaMetricsPoint point = instance.convert(item, item.getState(), Instant.now(), null).get();
 

@@ -53,6 +53,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import org.openhab.core.items.MetadataRegistry;
+import org.openhab.core.library.unit.MetricPrefix;
+import org.openhab.core.library.unit.SIUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.persistence.victoriametrics.internal.VictoriaMetricsRepository.VictoriaMetricsRow;
 
 /**
@@ -260,7 +263,7 @@ public class VictoriaMetricsRepositoryTest {
                 {"metric":{"__name__":"Light","item":"Light","component":"saturation","label":"x"},"values":[100,90],"timestamps":[1000,2000]}
                 """;
         List<VictoriaMetricsRow> rows = createRepository()
-                .parseExport(new ByteArrayInputStream(export.getBytes(StandardCharsets.UTF_8)));
+                .parseExport(new ByteArrayInputStream(export.getBytes(StandardCharsets.UTF_8)), null);
 
         assertThat(rows,
                 containsInAnyOrder(
@@ -279,7 +282,7 @@ public class VictoriaMetricsRepositoryTest {
                 {"metric":{"__name__":"MyItem","item":"MyItem","unit":"°C"},"values":[3,NaN],"timestamps":[4000,5000]}
                 """;
         List<VictoriaMetricsRow> rows = createRepository()
-                .parseExport(new ByteArrayInputStream(export.getBytes(StandardCharsets.UTF_8)));
+                .parseExport(new ByteArrayInputStream(export.getBytes(StandardCharsets.UTF_8)), null);
 
         assertThat(rows,
                 contains(new VictoriaMetricsRow(Instant.ofEpochMilli(1000), "MyItem", new BigDecimal("1")),
@@ -295,12 +298,56 @@ public class VictoriaMetricsRepositoryTest {
                 {"metric":{"__name__":"Mode","item":"Mode","state":"HEATING"},"values":[1],"timestamps":[2000]}
                 """;
         List<VictoriaMetricsRow> rows = createRepository()
-                .parseExport(new ByteArrayInputStream(export.getBytes(StandardCharsets.UTF_8)));
+                .parseExport(new ByteArrayInputStream(export.getBytes(StandardCharsets.UTF_8)), null);
 
         assertThat(rows,
                 contains(new VictoriaMetricsRow(Instant.ofEpochMilli(1000), "Mode", "IDLE"),
                         new VictoriaMetricsRow(Instant.ofEpochMilli(3000), "Mode", "IDLE"),
                         new VictoriaMetricsRow(Instant.ofEpochMilli(2000), "Mode", "HEATING")));
+    }
+
+    @Test
+    public void parseExportConvertsStoredUnitToItemUnit() throws IOException {
+        // the unit of the item was changed from W to kW
+        String export = """
+                {"metric":{"__name__":"Power","item":"Power","unit":"W"},"values":[1500,250],"timestamps":[1000,2000]}
+                {"metric":{"__name__":"Power","item":"Power","unit":"kW"},"values":[2.5],"timestamps":[3000]}
+                {"metric":{"__name__":"Power","item":"Power"},"values":[3],"timestamps":[4000]}
+                """;
+        List<VictoriaMetricsRow> rows = createRepository().parseExport(
+                new ByteArrayInputStream(export.getBytes(StandardCharsets.UTF_8)), MetricPrefix.KILO(Units.WATT));
+
+        assertThat(rows,
+                contains(new VictoriaMetricsRow(Instant.ofEpochMilli(1000), "Power", new BigDecimal("1.5")),
+                        new VictoriaMetricsRow(Instant.ofEpochMilli(2000), "Power", new BigDecimal("0.25")),
+                        new VictoriaMetricsRow(Instant.ofEpochMilli(3000), "Power", new BigDecimal("2.5")),
+                        new VictoriaMetricsRow(Instant.ofEpochMilli(4000), "Power", new BigDecimal("3"))));
+    }
+
+    @Test
+    public void parseExportConvertsStoredUnitWithOffset() throws IOException {
+        String export = """
+                {"metric":{"__name__":"Temperature","item":"Temperature","unit":"°F"},"values":[68],"timestamps":[1000]}
+                """;
+        List<VictoriaMetricsRow> rows = createRepository()
+                .parseExport(new ByteArrayInputStream(export.getBytes(StandardCharsets.UTF_8)), SIUnits.CELSIUS);
+
+        // 68 °F is 20.00000000000000000000000000000002 °C, rounded to the precision of the samples
+        assertThat(rows,
+                contains(new VictoriaMetricsRow(Instant.ofEpochMilli(1000), "Temperature", new BigDecimal("20.0"))));
+    }
+
+    @Test
+    public void parseExportReadsUnconvertibleUnitInItemUnit() throws IOException {
+        String export = """
+                {"metric":{"__name__":"Power","item":"Power","unit":"m"},"values":[4],"timestamps":[1000]}
+                {"metric":{"__name__":"Power","item":"Power","unit":"no unit"},"values":[5],"timestamps":[2000]}
+                """;
+        List<VictoriaMetricsRow> rows = createRepository().parseExport(
+                new ByteArrayInputStream(export.getBytes(StandardCharsets.UTF_8)), MetricPrefix.KILO(Units.WATT));
+
+        assertThat(rows, contains(new VictoriaMetricsRow(Instant.ofEpochMilli(1000), "Power", new BigDecimal("4")),
+                new VictoriaMetricsRow(Instant.ofEpochMilli(2000), "Power", new BigDecimal("5"))));
     }
 
     @Test

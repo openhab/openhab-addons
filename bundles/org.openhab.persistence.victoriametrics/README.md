@@ -11,6 +11,7 @@ VictoriaMetrics is compatible with the Prometheus query API, so tools such as [G
 - VictoriaMetrics stores 64-bit floating point values only, so only states with a numeric representation are persisted:
   - `DecimalType` and `QuantityType` (e.g. Number, Dimmer and Rollershutter items) are stored as their value.
     For items with a dimension, the value is stored in the unit of the state, which is the item's unit unless the state was stored with another unit.
+    Queries return the values in the item's unit; values stored with the unit tag (see [Extended Automatic Tagging](#extended-automatic-tagging)) are converted from their stored unit.
   - `OnOffType` and `OpenClosedType` (Switch and Contact items) are stored as 0 or 1.
   - `DateTimeType` is stored as milliseconds since 1970-01-01T00:00:00Z.
   - `PlayPauseType` and `RewindFastforwardType` (Player items) are stored as 0 (`PAUSE`), 1 (`PLAY`), 2 (`REWIND`) or 3 (`FASTFORWARD`).
@@ -136,7 +137,7 @@ temperature{item="tempBath",floor="firstfloor"}
 
 You can now easily select all temperatures of the first floor (`temperature{floor="firstfloor"}`) or the average temperature of the ground floor (`avg(temperature{floor="groundfloor"})`).
 
-The labels `item`, `component`, `state` and `__name__` are used internally by openHAB to query the persisted data points, so metadata configuration keys with these names are ignored.
+The labels `item`, `component`, `state`, `unit` and `__name__` are used internally by openHAB to query the persisted data points, so metadata configuration keys with these names are ignored.
 The metadata configuration key `stringStates` is not stored as a label, see [String States](#string-states).
 
 #### String States
@@ -216,6 +217,8 @@ Besides the metadata tags, there are additional configuration parameters to acti
 | addUnitTag     | false   | No       | Should the unit of items with a dimension be included as tag "unit"?                                 |
 
 The unit tag makes it easier to label values in Grafana.
+openHAB also uses it when reading: values stored in another unit than the current unit of the item are converted to the item's unit, so the history stays correct when the unit of an item is changed (e.g. from W to kW).
+Values stored without the unit tag, or in a unit that cannot be converted to the item's unit, are read in the item's unit.
 VictoriaMetrics stores the labels once per series, not per sample, so additional tags do not increase the size of the stored samples.
 A new series is created whenever a tag value changes, e.g. when the unit or label of an item is changed.
 openHAB still finds all samples of the item, because it only filters by metric name and `item` label.
