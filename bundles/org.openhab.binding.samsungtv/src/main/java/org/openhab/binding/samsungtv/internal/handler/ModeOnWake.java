@@ -19,7 +19,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 /**
  * The {@link ModeOnWake} remembers the mode a power or artMode ON command asked for while the TV wakes. A Frame TV
  * wakes in the mode it was switched off from, so the commanded mode is requested if the first art mode report within
- * the next minute differs.
+ * the next minute differs. Until that report, or for at most 15 seconds, the TV counts as waking.
  *
  * @author Nick Waterton - Initial contribution
  */
@@ -27,9 +27,11 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 class ModeOnWake {
 
     private static final long WINDOW_MS = 60000;
+    private static final long WAKING_MS = 15000;
 
     private final LongSupplier clock;
     private long until = 0;
+    private long wakingUntil = 0;
     private boolean artMode;
 
     ModeOnWake() {
@@ -45,11 +47,21 @@ class ModeOnWake {
      */
     synchronized void set(boolean artMode) {
         this.artMode = artMode;
-        until = clock.getAsLong() + WINDOW_MS;
+        long now = clock.getAsLong();
+        until = now + WINDOW_MS;
+        wakingUntil = now + WAKING_MS;
     }
 
     synchronized void clear() {
         until = 0;
+        wakingUntil = 0;
+    }
+
+    /**
+     * @return true if an ON command is waking the TV and it has not reported its art mode yet
+     */
+    synchronized boolean isWaking() {
+        return clock.getAsLong() < wakingUntil;
     }
 
     /**
@@ -59,6 +71,7 @@ class ModeOnWake {
      * @return true if a wake is pending and the TV is not in the commanded mode
      */
     synchronized boolean take(boolean reportedArtMode) {
+        wakingUntil = 0;
         if (clock.getAsLong() < until) {
             until = 0;
             return reportedArtMode != artMode;

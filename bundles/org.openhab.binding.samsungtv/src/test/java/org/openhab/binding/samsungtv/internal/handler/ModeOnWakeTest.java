@@ -58,6 +58,35 @@ public class ModeOnWakeTest {
     }
 
     @Test
+    public void wakingUntilFirstReport() {
+        modeOnWake.set(true);
+        assertTrue(modeOnWake.isWaking());
+        modeOnWake.take(true);
+        assertFalse(modeOnWake.isWaking());
+    }
+
+    @Test
+    public void wakingExpires() {
+        modeOnWake.set(true);
+        now.addAndGet(15000);
+        assertFalse(modeOnWake.isWaking());
+    }
+
+    @Test
+    public void offStopsWaking() {
+        modeOnWake.set(true);
+        modeOnWake.clear();
+        assertFalse(modeOnWake.isWaking());
+    }
+
+    @Test
+    public void notWakingWithoutCommand() {
+        assertFalse(modeOnWake.isWaking());
+        modeOnWake.take(false);
+        assertFalse(modeOnWake.isWaking());
+    }
+
+    @Test
     public void nothingPendingWithoutCommand() {
         assertFalse(modeOnWake.take(true));
         assertFalse(modeOnWake.take(false));
