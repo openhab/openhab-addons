@@ -137,6 +137,13 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
     private final AtomicReference<String> lastWakeupReason = new AtomicReference<>("");
     private volatile boolean updateMarkerSet;
 
+    // TRV target temperature queued while the device is sleeping, applied once it wakes up again
+    private static final long TRV_PENDING_COMMAND_TIMEOUT_MS = TimeUnit.MINUTES.toMillis(30);
+    private final AtomicReference<@Nullable PendingTrvTargetTemp> pendingTrvTargetTemp = new AtomicReference<>();
+
+    private record PendingTrvTargetTemp(double temp, long deadline) {
+    }
+
     // Scheduler
     private volatile double watchdog = now();
     private volatile double lastReport = 0;
@@ -301,6 +308,30 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         }
 
         return retry;
+    }
+
+    /**
+     * Apply a target temperature that was queued while the TRV was asleep/unreachable, now that it responded.
+     */
+    private void applyPendingTrvTargetTemp() {
+        PendingTrvTargetTemp pending = pendingTrvTargetTemp.getAndSet(null);
+        if (pending == null) {
+            return;
+        }
+        double temp = pending.temp();
+        if (System.currentTimeMillis() > pending.deadline()) {
+            logger.debug("{}: Discarding queued target temperature {}, expired", thingName, temp);
+            return;
+        }
+        try {
+            logger.debug("{}: Applying queued target temperature {}", thingName, temp);
+            api.setValveTemperature(0, temp);
+        } catch (ShellyApiException e) {
+            logger.debug("{}: Failed to apply queued target temperature {}: {}", thingName, temp, e.toString());
+            if (e.isConnectionError() || e.isTimeout()) {
+                pendingTrvTargetTemp.compareAndSet(null, pending);
+            }
+        }
     }
 
     @Override
@@ -666,6 +697,14 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
             if (res.isNotCalibrated()) {
                 String key = profile.isDimmer ? "dimmer.not-calibrated" : "roller.calibrating";
                 logger.warn("{}: {}", thingName, messages.get(key));
+            } else if (profile.isTRV && CHANNEL_CONTROL_SETTEMP.equals(channel)
+                    && (e.isConnectionError() || e.isTimeout())) {
+                // TRV is asleep and unreachable via HTTP - queue the command, applied on the next successful poll
+                double temp = getNumber(command).doubleValue();
+                pendingTrvTargetTemp.set(
+                        new PendingTrvTargetTemp(temp, System.currentTimeMillis() + TRV_PENDING_COMMAND_TIMEOUT_MS));
+                logger.debug("{}: Device unreachable, queuing target temperature {} for next wake-up", thingName, temp);
+                return;
             } else if (e.isTimeout() && profile.isSensor) {
                 logger.debug(
                         "{}: Command {} for channel {} timed out, device is likely a sleeping battery-powered sensor: {}",
@@ -743,6 +782,9 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
                 if (stopping) {
                     // dispose() may have run while the blocking calls above were in flight
                     return;
+                }
+                if (prf.isTRV) {
+                    applyPendingTrvTargetTemp();
                 }
                 if (restarted) {
                     logger.debug("{}: Device restart #{} detected", thingName, stats.restarts);
