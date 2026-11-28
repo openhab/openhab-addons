@@ -56,6 +56,10 @@ import org.slf4j.LoggerFactory;
 
 /**
  * The {@link ForecastSolarPlaneHandler} is triggered by bridge to fetch solar forecast data if expired.
+ * <p>
+ * The handler instance is reused when its Thing is updated (dispose/initialize). The forecast is discarded only if
+ * the configuration differs from the one it was fetched with. A re-initialization without a configuration change
+ * (e.g. label, tags or a .things reload with the same values) keeps the forecast and causes no API request.
  *
  * @author Bernd Weymann - Initial contribution
  * @author Bernd Weymann - Used as base class for {@link AdjustableForecastSolarPlaneHandler} and
@@ -68,6 +72,8 @@ public class ForecastSolarPlaneHandler extends BaseThingHandler implements Solar
     private final AtomicBoolean dirty = new AtomicBoolean(false);
     private final HttpClient httpClient;
     private ForecastSolarObject forecast;
+    // configuration the current forecast was fetched with, only accessed in initialize()
+    private @Nullable Map<String, Object> appliedConfiguration;
 
     protected ForecastSolarPlaneConfiguration configuration = new ForecastSolarPlaneConfiguration();
     protected String identifier;
@@ -99,6 +105,7 @@ public class ForecastSolarPlaneHandler extends BaseThingHandler implements Solar
             if (handler != null) {
                 if (handler instanceof ForecastSolarBridgeHandler fsbh) {
                     bridgeHandler = fsbh;
+                    resetForecastOnConfigChange(fsbh);
                     updateStatus(ThingStatus.UNKNOWN, "@text/solarforecast.plane.status.await-feedback");
                     bridge().addPlane(this);
                 } else {
@@ -133,17 +140,29 @@ public class ForecastSolarPlaneHandler extends BaseThingHandler implements Solar
         return true;
     }
 
+    /**
+     * Discard the forecast if the configuration changed since the last successful initialization. Queued on the
+     * sequential scheduler before the plane is attached, so neither a running update nor the update triggered by
+     * attaching can keep the forecast fetched with the old parameters.
+     * Subclasses reach this only via super.initialize(), i.e. with a valid configuration. A plane whose new
+     * configuration is invalid stays detached and keeps its snapshot until a valid configuration is applied.
+     */
+    private void resetForecastOnConfigChange(ForecastSolarBridgeHandler fsbh) {
+        Map<String, Object> current = new HashMap<>(getConfig().getProperties());
+        Map<String, Object> previous = appliedConfiguration;
+        appliedConfiguration = current;
+        if (previous != null && !previous.equals(current)) {
+            fsbh.getSequentialScheduler().execute(this::resetForecast);
+        }
+    }
+
     protected void configErrorStatus(String message) {
         updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, message);
     }
 
     @Override
     public void dispose() {
-        ForecastSolarBridgeHandler localBridge = bridge();
-        localBridge.removePlane(this);
-        // the handler instance is reused after a configuration change, so the forecast fetched with the
-        // previous parameters must not survive until it expires. Queued behind a running update.
-        localBridge.getSequentialScheduler().execute(this::resetForecast);
+        bridge().removePlane(this);
     }
 
     @Override

@@ -19,6 +19,7 @@ import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -74,6 +75,8 @@ public class ForecastSolarBridgeHandler extends BaseBridgeHandler implements Sol
     private Instant calmDownEnd = Instant.MIN;
     private @Nullable ScheduledFuture<?> refreshJob;
     private @Nullable PointType homeLocation;
+    // site configuration the plane forecasts were fetched with, only accessed in initialize()
+    private @Nullable Map<String, Object> appliedConfiguration;
 
     protected CopyOnWriteArrayList<ForecastSolarPlaneHandler> planes = new CopyOnWriteArrayList<>();
 
@@ -114,8 +117,14 @@ public class ForecastSolarBridgeHandler extends BaseBridgeHandler implements Sol
         updateConfiguration(editConfig);
         configuration = getConfigAs(ForecastSolarBridgeConfiguration.class);
 
-        // planes stay attached while the site is reinitialized, their forecasts may rely on a changed site config
-        sequentialScheduler.execute(() -> planes.forEach(ForecastSolarPlaneHandler::resetForecast));
+        // Planes stay attached while the site is reinitialized. Discard their forecasts only if the site
+        // configuration changed, queued before the refresh job so its first run fetches new forecasts.
+        Map<String, Object> current = new HashMap<>(getConfig().getProperties());
+        Map<String, Object> previous = appliedConfiguration;
+        appliedConfiguration = current;
+        if (previous != null && !previous.equals(current)) {
+            sequentialScheduler.execute(() -> planes.forEach(ForecastSolarPlaneHandler::resetForecast));
+        }
         updateStatus(ThingStatus.UNKNOWN);
         refreshJob = sequentialScheduler.scheduleWithFixedDelay(this::updateData, 0, REFRESH_ACTUAL_INTERVAL,
                 TimeUnit.MINUTES);
