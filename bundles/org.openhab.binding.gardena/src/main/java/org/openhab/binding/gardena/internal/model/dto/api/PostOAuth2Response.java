@@ -63,6 +63,11 @@ public class PostOAuth2Response {
         return Instant.now().isAfter(refreshTokenValidity);
     }
 
+    // OAuth client_credentials responses may not include a refresh_token.
+    public boolean needsNewToken(boolean accessTokenExpired) {
+        return isRefreshTokenExpired() || (accessTokenExpired && (refreshToken == null || refreshToken.isBlank()));
+    }
+
     @Override
     public String toString() {
         return "Token expiration: accessToken: " + ZonedDateTime.ofInstant(accessTokenValidity, ZoneId.systemDefault())
