@@ -19,6 +19,7 @@ import java.net.URI;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
+import org.openhab.binding.netatmo.internal.handler.capability.HomeSecurityThingCapability;
 
 /**
  * @author Gaël L'hopital - Initial contribution
@@ -49,6 +50,15 @@ public class ModuleTypeTest {
                 URI confDesc = mt.configDescription;
                 assertEquals(getConfigDescription(mt), confDesc);
             }
+        });
+    }
+
+    @Test
+    public void checkPushModeChannelIsUngrouped() {
+        ModuleType.AS_SET.forEach(moduleType -> {
+            boolean supportsPushMode = moduleType.capabilities.stream()
+                    .anyMatch(HomeSecurityThingCapability.class::isAssignableFrom);
+            assertEquals(supportsPushMode, moduleType.supportsPushMode(), moduleType.name());
         });
     }
 }

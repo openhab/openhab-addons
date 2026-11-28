@@ -127,9 +127,6 @@ public abstract class ChannelHelper {
     }
 
     protected State pictureIfUrlPresent(@Nullable String url, boolean toRaw) {
-        if (url == null || url.isBlank()) {
-            return UnDefType.NULL;
-        }
-        return toRaw ? toRawType(url) : toStringType(url);
+        return (url == null || url.isBlank()) ? UnDefType.NULL : toRaw ? toRawType(url) : toStringType(url);
     }
 }

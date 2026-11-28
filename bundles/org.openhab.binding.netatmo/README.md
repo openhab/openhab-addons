@@ -122,6 +122,8 @@ Please be aware of Netatmo's own limits regarding webhook usage:
 - unanswered webhook 5 times leads to a 24h ban time
 - no more than one webhook per application
 
+Webhook enabled thing will publish push/pull mode on the `push-mode` channel.
+
 NB: Allowed ports for webhooks are 80, 88, 443 and 9443.
 
 ### Configure Things

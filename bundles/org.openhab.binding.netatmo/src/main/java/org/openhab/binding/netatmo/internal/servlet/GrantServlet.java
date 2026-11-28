@@ -82,12 +82,12 @@ public class GrantServlet extends NetatmoServlet {
 
             handleRedirect(replaceMap, servletBaseURL, req.getQueryString());
 
-            String label = handler.getThing().getLabel();
+            String label = accountHandler.getThing().getLabel();
             replaceMap.put(ACCOUNT_NAME, label != null ? label : "");
-            replaceMap.put(CLIENT_ID, handler.getId());
-            replaceMap.put(ACCOUNT_AUTHORIZED_CLASS, handler.isConnected() ? " authorized" : " Unauthorized");
-            replaceMap.put(ACCOUNT_AUTHORIZE,
-                    handler.formatAuthorizationUrl().queryParam(REDIRECT_URI, servletBaseURL).build().toString());
+            replaceMap.put(CLIENT_ID, accountHandler.getId());
+            replaceMap.put(ACCOUNT_AUTHORIZED_CLASS, accountHandler.isConnected() ? " authorized" : " Unauthorized");
+            replaceMap.put(ACCOUNT_AUTHORIZE, accountHandler.formatAuthorizationUrl()
+                    .queryParam(REDIRECT_URI, servletBaseURL).build().toString());
             replaceMap.put(REDIRECT_URI, servletBaseURL);
 
             resp.setContentType(CONTENT_TYPE);
@@ -122,7 +122,7 @@ public class GrantServlet extends NetatmoServlet {
                 logger.debug("Netatmo redirected with an error: {}", reqError);
                 replaceMap.put(KEY_ERROR, String.format(HTML_ERROR, reqError));
             } else if (reqState != null && reqCode != null) {
-                handler.openConnection(reqCode, servletBaseURL);
+                accountHandler.openConnection(reqCode, servletBaseURL);
             }
         }
     }
