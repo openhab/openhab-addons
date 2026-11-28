@@ -25,6 +25,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import javax.jmdns.JmDNS;
 
@@ -69,12 +72,16 @@ import io.github.hapjava.server.impl.crypto.HAPSetupCodeUtils;
  *
  * @author Andy Lintner - Initial contribution
  * @author Eugen Freiter - Recover the bridge after network changes
+ * @author Leo Siepel - Handle asynchronous bridge startup failures
  */
 @Component(service = { Homekit.class }, configurationPid = HomekitSettings.CONFIG_PID, property = {
         Constants.SERVICE_PID + "=org.openhab.homekit", "port:Integer=9123" })
 @ConfigurableService(category = "io", label = "HomeKit Integration", description_uri = "io:homekit")
 @NonNullByDefault
 public class HomekitImpl implements Homekit, NetworkAddressChangeListener, ReadyService.ReadyTracker {
+    private static final int STARTUP_TIMEOUT_SECONDS = 30;
+    private static final int RETRY_DELAY_SECONDS = 30;
+
     private final Logger logger = LoggerFactory.getLogger(HomekitImpl.class);
 
     private final StorageService storageService;
@@ -91,11 +98,37 @@ public class HomekitImpl implements Homekit, NetworkAddressChangeListener, Ready
     private final List<HomekitRoot> bridges = new ArrayList<>();
     private MDNSClient mdnsClient;
     private boolean started = false;
+    private boolean disposed;
+    private @Nullable Startup pendingStartup;
+    private @Nullable ScheduledFuture<?> retryTask;
+    private long retryGeneration;
 
     private final List<HomekitChangeListener> changeListeners = new ArrayList<>();
 
     private final ScheduledExecutorService scheduler = ThreadPoolManager
             .getScheduledPool(ThreadPoolManager.THREAD_POOL_NAME_COMMON);
+
+    private record HomekitInstance(HomekitServer server, HomekitRoot bridge, HomekitChangeListener listener,
+            HomekitAuthInfoImpl authInfo) {
+        private void stop() {
+            listener.stop();
+            try {
+                bridge.stop();
+            } finally {
+                server.stop();
+            }
+        }
+    }
+
+    private static final class Startup {
+        private final List<HomekitInstance> instances = new ArrayList<>();
+        private int remaining;
+        private @Nullable ScheduledFuture<?> timeout;
+
+        private Startup(int remaining) {
+            this.remaining = remaining;
+        }
+    }
 
     @Activate
     public HomekitImpl(@Reference StorageService storageService, @Reference ItemRegistry itemRegistry,
@@ -154,6 +187,9 @@ public class HomekitImpl implements Homekit, NetworkAddressChangeListener, Ready
 
     @Modified
     protected synchronized void modified(Map<String, Object> config) {
+        if (disposed) {
+            return;
+        }
         try {
             HomekitSettings oldSettings = settings;
             settings = processConfig(config);
@@ -177,6 +213,10 @@ public class HomekitImpl implements Homekit, NetworkAddressChangeListener, Ready
                     startHomekitServer();
                 }
             } else {
+                if (settings.instances != oldSettings.instances) {
+                    cancelRetry();
+                    cancelPendingStartup();
+                }
                 // Stop removed instances
                 for (int i = oldSettings.instances - 1; i >= settings.instances; --i) {
                     clearStorage(i);
@@ -185,13 +225,20 @@ public class HomekitImpl implements Homekit, NetworkAddressChangeListener, Ready
                 // Start up new instances; if the bridge is not running yet, it starts all instances later
                 InetAddress localNetworkInterface = networkInterface;
                 if (localNetworkInterface != null && !homekitServers.isEmpty()) {
-                    for (int i = homekitServers.size(); i < settings.instances; ++i) {
-                        startHomekitServer(i, localNetworkInterface);
-                    }
+                    startHomekitInstances(homekitServers.size(), localNetworkInterface);
+                } else if (started && pendingStartup == null) {
+                    startHomekitServer();
                 }
                 // Notify remaining instances of the change
                 for (HomekitChangeListener changeListener : changeListeners) {
                     changeListener.updateSettings(settings);
+                }
+                Startup startup = pendingStartup;
+                if (startup != null) {
+                    for (HomekitInstance instance : startup.instances) {
+                        instance.listener().updateSettings(settings);
+                        instance.authInfo().setBlockUserDeletion(settings.blockUserDeletion);
+                    }
                 }
                 if (settings.blockUserDeletion != oldSettings.blockUserDeletion) {
                     for (HomekitAuthInfoImpl authInfo : authInfos) {
@@ -206,6 +253,9 @@ public class HomekitImpl implements Homekit, NetworkAddressChangeListener, Ready
 
     @Override
     public synchronized void onReadyMarkerAdded(ReadyMarker readyMarker) {
+        if (disposed) {
+            return;
+        }
         try {
             started = true;
             startHomekitServer();
@@ -234,7 +284,7 @@ public class HomekitImpl implements Homekit, NetworkAddressChangeListener, Ready
         return bridge;
     }
 
-    private void startHomekitServer(int instance, InetAddress localNetworkInterface)
+    private HomekitInstance createInstance(int instance, InetAddress localNetworkInterface)
             throws IOException, InvalidAlgorithmParameterException {
         logger.trace("starting HomeKit bridge instance {}", instance + 1);
 
@@ -264,18 +314,12 @@ public class HomekitImpl implements Homekit, NetworkAddressChangeListener, Ready
             logger.trace("create HomeKit server with dedicated mDNS server");
             homekitServer = new HomekitServer(localNetworkInterface, settings.port + instance);
         }
-        // Register the instance only once it is fully started, and release what was set up if starting fails, so
-        // that a later attempt (e.g. after a network change) can start again from scratch.
         HomekitChangeListener changeListener = null;
         HomekitRoot bridge = null;
         try {
             changeListener = new HomekitChangeListener(itemRegistry, settings, metadataRegistry, storage, instance + 1);
             bridge = createBridge(homekitServer, authInfo, changeListener, instance + 1);
-            bridge.start();
-            homekitServers.add(homekitServer);
-            changeListeners.add(changeListener);
-            bridges.add(bridge);
-            authInfos.add(authInfo);
+            return new HomekitInstance(homekitServer, bridge, changeListener, authInfo);
         } catch (IOException | RuntimeException e) {
             if (bridge != null) {
                 bridge.stop();
@@ -294,22 +338,146 @@ public class HomekitImpl implements Homekit, NetworkAddressChangeListener, Ready
 
     private void startHomekitServer(List<CidrAddress> addedAddresses)
             throws IOException, InvalidAlgorithmParameterException {
-        if (!homekitServers.isEmpty()) {
-            logger.warn("trying to start HomeKit server but it is already initialized");
+        if (!homekitServers.isEmpty() || pendingStartup != null) {
             return;
         }
-        InetAddress localNetworkInterface = ensureNetworkInterface(addedAddresses);
-        if (localNetworkInterface == null) {
-            logger.debug("no network address available, HomeKit bridge will start once the network is up");
-            return;
-        }
+        cancelRetry();
         try {
-            for (int i = 0; i < settings.instances; ++i) {
-                startHomekitServer(i, localNetworkInterface);
+            InetAddress localNetworkInterface = ensureNetworkInterface(addedAddresses);
+            if (localNetworkInterface == null) {
+                logger.debug("no network address available, HomeKit bridge will start once the network is up");
+                scheduleRetry();
+                return;
+            }
+            startHomekitInstances(0, localNetworkInterface);
+        } catch (IOException | InvalidAlgorithmParameterException | RuntimeException e) {
+            scheduleRetry();
+            throw e;
+        }
+    }
+
+    private void startHomekitInstances(int firstInstance, InetAddress localNetworkInterface)
+            throws IOException, InvalidAlgorithmParameterException {
+        if (pendingStartup != null || firstInstance >= settings.instances) {
+            return;
+        }
+        cancelRetry();
+        Startup startup = new Startup(settings.instances - firstInstance);
+        pendingStartup = startup;
+        startup.timeout = scheduler.schedule(
+                () -> startupFailed(startup, new TimeoutException("HomeKit startup timed out")),
+                STARTUP_TIMEOUT_SECONDS, TimeUnit.SECONDS);
+        try {
+            for (int i = firstInstance; i < settings.instances; ++i) {
+                HomekitInstance instance = createInstance(i, localNetworkInterface);
+                startup.instances.add(instance);
+                instance.bridge().startAsync()
+                        .whenCompleteAsync((ignored, error) -> instanceStarted(startup, instance, error), scheduler);
             }
         } catch (IOException | InvalidAlgorithmParameterException | RuntimeException e) {
-            stopHomekitServer();
+            cancelPendingStartup();
+            if (homekitServers.isEmpty()) {
+                networkInterface = null;
+            }
+            scheduleRetry();
             throw e;
+        }
+    }
+
+    private synchronized void instanceStarted(Startup startup, HomekitInstance instance, @Nullable Throwable error) {
+        if (!startup.equals(pendingStartup)) {
+            if (!bridges.contains(instance.bridge())) {
+                stopPendingInstance(instance);
+            }
+            return;
+        }
+        if (error != null) {
+            startupFailed(startup, error);
+            return;
+        }
+        if (--startup.remaining != 0) {
+            return;
+        }
+        pendingStartup = null;
+        ScheduledFuture<?> timeout = startup.timeout;
+        if (timeout != null) {
+            timeout.cancel(false);
+        }
+        for (HomekitInstance completed : startup.instances) {
+            homekitServers.add(completed.server());
+            bridges.add(completed.bridge());
+            changeListeners.add(completed.listener());
+            authInfos.add(completed.authInfo());
+        }
+    }
+
+    private synchronized void startupFailed(Startup startup, Throwable error) {
+        if (!startup.equals(pendingStartup)) {
+            return;
+        }
+        cancelPendingStartup();
+        if (homekitServers.isEmpty()) {
+            networkInterface = null;
+        }
+        logger.warn("could not initialize HomeKit bridge: {}", error.getMessage());
+        scheduleRetry();
+    }
+
+    private void cancelPendingStartup() {
+        Startup startup = pendingStartup;
+        pendingStartup = null;
+        if (startup != null) {
+            ScheduledFuture<?> timeout = startup.timeout;
+            if (timeout != null) {
+                timeout.cancel(false);
+            }
+            for (HomekitInstance instance : startup.instances) {
+                stopPendingInstance(instance);
+            }
+        }
+    }
+
+    private void stopPendingInstance(HomekitInstance instance) {
+        try {
+            instance.stop();
+        } catch (RuntimeException e) {
+            logger.warn("could not stop pending HomeKit bridge: {}", e.getMessage());
+        }
+    }
+
+    private void cancelRetry() {
+        retryGeneration++;
+        ScheduledFuture<?> task = retryTask;
+        retryTask = null;
+        if (task != null) {
+            task.cancel(false);
+        }
+    }
+
+    private void scheduleRetry() {
+        if (started && retryTask == null) {
+            long generation = retryGeneration;
+            retryTask = scheduler.schedule(() -> retryStartup(generation), RETRY_DELAY_SECONDS, TimeUnit.SECONDS);
+        }
+    }
+
+    private synchronized void retryStartup(long generation) {
+        if (generation != retryGeneration) {
+            return;
+        }
+        retryTask = null;
+        if (started) {
+            try {
+                InetAddress localNetworkInterface = ensureNetworkInterface(List.of());
+                if (localNetworkInterface == null) {
+                    scheduleRetry();
+                } else {
+                    startHomekitInstances(homekitServers.size(), localNetworkInterface);
+                }
+            } catch (IOException | InvalidAlgorithmParameterException | RuntimeException e) {
+                logger.warn("could not initialize HomeKit bridge: {}", e.getMessage());
+                scheduleRetry();
+            }
         }
     }
 
@@ -344,6 +512,8 @@ public class HomekitImpl implements Homekit, NetworkAddressChangeListener, Ready
 
     private void stopHomekitServer() {
         logger.trace("stopping HomeKit bridge");
+        cancelRetry();
+        cancelPendingStartup();
         changeListeners.parallelStream().forEach(HomekitChangeListener::stop);
         bridges.parallelStream().forEach(HomekitRoot::stop);
         homekitServers.parallelStream().forEach(HomekitServer::stop);
@@ -379,27 +549,30 @@ public class HomekitImpl implements Homekit, NetworkAddressChangeListener, Ready
     }
 
     @Deactivate
-    protected void deactivate() {
+    protected synchronized void deactivate() {
+        disposed = true;
+        started = false;
+        readyService.unregisterTracker(this);
         networkAddressService.removeNetworkAddressChangeListener(this);
         stopHomekitServer();
     }
 
     @Override
-    public void refreshAuthInfo() throws IOException {
+    public synchronized void refreshAuthInfo() throws IOException {
         for (HomekitRoot bridge : bridges) {
             bridge.refreshAuthInfo();
         }
     }
 
     @Override
-    public void allowUnauthenticatedRequests(boolean allow) {
+    public synchronized void allowUnauthenticatedRequests(boolean allow) {
         for (HomekitRoot bridge : bridges) {
             bridge.allowUnauthenticatedRequests(allow);
         }
     }
 
     @Override
-    public Collection<HomekitAccessory> getAccessories() {
+    public synchronized Collection<HomekitAccessory> getAccessories() {
         List<HomekitAccessory> accessories = new ArrayList<>();
         for (HomekitChangeListener changeListener : changeListeners) {
             accessories.addAll(changeListener.getAccessories().values());
@@ -408,7 +581,7 @@ public class HomekitImpl implements Homekit, NetworkAddressChangeListener, Ready
     }
 
     @Override
-    public Collection<HomekitAccessory> getAccessories(int instance) {
+    public synchronized Collection<HomekitAccessory> getAccessories(int instance) {
         if (instance < 1 || instance > changeListeners.size()) {
             logger.warn("Instance {} is out of range 1..{}.", instance, changeListeners.size());
             return List.of();
@@ -418,14 +591,14 @@ public class HomekitImpl implements Homekit, NetworkAddressChangeListener, Ready
     }
 
     @Override
-    public void clearHomekitPairings() {
+    public synchronized void clearHomekitPairings() {
         for (int i = 1; i <= authInfos.size(); ++i) {
             clearHomekitPairings(i);
         }
     }
 
     @Override
-    public void clearHomekitPairings(int instance) {
+    public synchronized void clearHomekitPairings(int instance) {
         if (instance < 1 || instance > authInfos.size()) {
             logger.warn("Instance {} is out of range 1..{}.", instance, authInfos.size());
             return;
@@ -440,14 +613,14 @@ public class HomekitImpl implements Homekit, NetworkAddressChangeListener, Ready
     }
 
     @Override
-    public void pruneDummyAccessories() {
+    public synchronized void pruneDummyAccessories() {
         for (HomekitChangeListener changeListener : changeListeners) {
             changeListener.pruneDummyAccessories();
         }
     }
 
     @Override
-    public void pruneDummyAccessories(int instance) {
+    public synchronized void pruneDummyAccessories(int instance) {
         if (instance < 1 || instance > authInfos.size()) {
             logger.warn("Instance {} is out of range 1..{}.", instance, authInfos.size());
             return;
@@ -457,7 +630,7 @@ public class HomekitImpl implements Homekit, NetworkAddressChangeListener, Ready
     }
 
     @Override
-    public int getInstanceCount() {
+    public synchronized int getInstanceCount() {
         return homekitServers.size();
     }
 
