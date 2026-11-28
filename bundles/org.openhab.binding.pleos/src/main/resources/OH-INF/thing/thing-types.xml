@@ -1,0 +1,862 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="pleos"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="account">
+		<label>Pleos API Account</label>
+		<description>Manages the connection to the Pleos Private User API (Hyundai/Kia/Genesis). Only for EU available
+			currently.</description>
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
+
+		<channels>
+			<channel id="secret-expires" typeId="secret-expires"/>
+			<channel id="secret-remaining-days" typeId="secret-remaining-days"/>
+			<channel id="secret-expiry-warning" typeId="secret-expiry-warning"/>
+			<channel id="secret-expiry-event" typeId="secret-expiry-event"/>
+		</channels>
+
+		<config-description>
+			<parameter name="clientId" type="text" required="true">
+				<label>Client ID</label>
+				<description>The issued Client ID from your Pleos Developer Playground.</description>
+			</parameter>
+			<parameter name="clientSecret" type="text" required="true">
+				<label>Client Secret</label>
+				<description>The corresponding Client Secret token from your developer workspace.</description>
+				<context>password</context>
+			</parameter>
+			<parameter name="secretCreationDate" type="text" required="false">
+				<label>API Secret Creation Date</label>
+				<description>Date when the Client Secret was generated (YYYY-MM-DD). Used to warn before the 90-day expiration.</description>
+				<context>date</context>
+			</parameter>
+			<parameter name="brand" type="text" required="true">
+				<label>Vehicle Brand</label>
+				<description>Specifies whether the cloud infrastructure routes to hyundai, kia, or genesis.</description>
+				<options>
+					<option value="HYUNDAI">Hyundai</option>
+					<option value="KIA">Kia</option>
+					<option value="GENESIS">Genesis</option>
+				</options>
+			</parameter>
+			<parameter name="refreshInterval" type="integer" min="5" max="1440">
+				<label>Refresh Interval</label>
+				<description>Defines how often data is polled from the Pleos API (in minutes).</description>
+				<default>15</default>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+	<thing-type id="vehicle">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="account"/>
+		</supported-bridge-type-refs>
+		<label>Pleos Connected Vehicle</label>
+		<description>A telematics-connected vehicle tracked via the Pleos API.</description>
+		<semantic-equipment-tag>Vehicle</semantic-equipment-tag>
+
+		<channel-groups>
+			<channel-group id="vehicle" typeId="vehicle-status"/>
+			<channel-group id="charging" typeId="charging"/>
+			<channel-group id="fuel" typeId="fuel"/>
+			<channel-group id="doors" typeId="doors-status"/>
+			<channel-group id="tires" typeId="tires-status"/>
+			<channel-group id="climate" typeId="climate-status"/>
+			<channel-group id="seats" typeId="seats-status"/>
+			<channel-group id="warnings" typeId="warning-status"/>
+			<channel-group id="freezer" typeId="freezer-status"/>
+		</channel-groups>
+
+		<representation-property>vin</representation-property>
+
+		<config-description>
+			<parameter name="vin" type="text" required="true">
+				<label>VIN</label>
+				<description>Vehicle Identification Number (VIN)</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-group-type id="charging">
+		<label>Charging</label>
+		<description>High-voltage battery and charging parameters</description>
+		<category>Battery</category>
+	</channel-group-type>
+
+	<channel-group-type id="fuel">
+		<label>Fuel</label>
+		<description>Fuel tank and combustion engine parameters</description>
+		<category>Oil</category>
+	</channel-group-type>
+
+	<channel-group-type id="vehicle-status">
+		<label>Vehicle Status</label>
+		<description>Base telematics, powertrain, GPS position, and operational state</description>
+		<category>Vehicle</category>
+		<channels>
+			<channel id="distance-to-empty" typeId="distance-to-empty"/>
+			<channel id="distance-type" typeId="distance-type-enum"/>
+
+			<channel id="location" typeId="gps-location"/>
+			<channel id="latitude" typeId="gps-coordinate">
+				<label>Latitude</label>
+				<description>Current Latitude of the vehicle</description>
+			</channel>
+			<channel id="longitude" typeId="gps-coordinate">
+				<label>Longitude</label>
+				<description>Current Longitude of the vehicle</description>
+			</channel>
+			<channel id="altitude" typeId="altitude"/>
+			<channel id="location-last-update" typeId="location-timestamp"/>
+			<channel id="speed" typeId="speed"/>
+			<channel id="heading" typeId="heading"/>
+
+			<channel id="odometer" typeId="odometer"/>
+			<channel id="ignition" typeId="ignition-enum"/>
+			<channel id="ignition-acc" typeId="ignition-detail-boolean">
+				<label>Ignition ACC</label>
+				<description>Indicates if accessory circuit (infotainment/radio) is active</description>
+			</channel>
+			<channel id="ignition-ign1" typeId="ignition-detail-boolean">
+				<label>Ignition IGN1</label>
+				<description>Indicates if vehicle electronics circuit is active</description>
+			</channel>
+			<channel id="ignition-ign3" typeId="ignition-detail-boolean">
+				<label>Ignition IGN3</label>
+				<description>Indicates if high-voltage / drive-ready circuit is active</description>
+			</channel>
+			<channel id="sleep-mode" typeId="sleep-mode-enum"/>
+			<channel id="parking-position" typeId="parking-position-boolean"/>
+			<channel id="last-update" typeId="operation-timestamp"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="doors-status">
+		<label>Doors &amp; Closures</label>
+		<description>State of passenger doors, hood, trunk, and sunroof</description>
+		<category>Door</category>
+		<channels>
+			<channel id="door-front-left" typeId="door-state-enum">
+				<label>Front Left Door</label>
+			</channel>
+			<channel id="door-front-right" typeId="door-state-enum">
+				<label>Front Right Door</label>
+			</channel>
+			<channel id="door-rear-left" typeId="door-state-enum">
+				<label>Rear Left Door</label>
+			</channel>
+			<channel id="door-rear-right" typeId="door-state-enum">
+				<label>Rear Right Door</label>
+			</channel>
+			<channel id="hood" typeId="door-state-enum">
+				<label>Hood</label>
+			</channel>
+			<channel id="trunk" typeId="door-state-enum">
+				<label>Trunk</label>
+			</channel>
+			<channel id="sunroof" typeId="door-state-enum">
+				<label>Sunroof</label>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="tires-status">
+		<label>Tires &amp; Tire Pressure</label>
+		<description>Tire pressure values and low-pressure warnings</description>
+		<category>Car</category>
+		<channels>
+			<channel id="tire-pressure-front-left" typeId="tire-pressure">
+				<label>Tire Pressure Front Left</label>
+			</channel>
+			<channel id="tire-pressure-front-right" typeId="tire-pressure">
+				<label>Tire Pressure Front Right</label>
+			</channel>
+			<channel id="tire-pressure-rear-left" typeId="tire-pressure">
+				<label>Tire Pressure Rear Left</label>
+			</channel>
+			<channel id="tire-pressure-rear-right" typeId="tire-pressure">
+				<label>Tire Pressure Rear Right</label>
+			</channel>
+			<channel id="tire-warning-fl" typeId="warning-boolean">
+				<label>Tire Warning Front Left</label>
+			</channel>
+			<channel id="tire-warning-fr" typeId="warning-boolean">
+				<label>Tire Warning Front Right</label>
+			</channel>
+			<channel id="tire-warning-rl" typeId="warning-boolean">
+				<label>Tire Warning Rear Left</label>
+			</channel>
+			<channel id="tire-warning-rr" typeId="warning-boolean">
+				<label>Tire Warning Rear Right</label>
+			</channel>
+			<channel id="tire-warning-low-generic" typeId="warning-boolean">
+				<label>Generic Low Tire Pressure Warning</label>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="climate-status">
+		<label>Climate Control</label>
+		<description>HVAC, temperatures, and auxiliary heating systems</description>
+		<category>HVAC</category>
+		<channels>
+			<channel id="climate-status" typeId="climate-boolean"/>
+			<channel id="climate-target-temp" typeId="temperature-setpoint"/>
+			<channel id="climate-mode" typeId="climate-mode-enum"/>
+			<channel id="climate-speed" typeId="climate-speed-decimal"/>
+			<channel id="outside-temperature" typeId="temperature-outside"/>
+			<channel id="windshield-heater" typeId="heater-boolean">
+				<label>Front Windshield Defrost</label>
+			</channel>
+			<channel id="steering-wheel-heater" typeId="heater-boolean">
+				<label>Steering Wheel Heater</label>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="seats-status">
+		<label>Seats Comfort</label>
+		<description>Seat heating and ventilation intensity levels</description>
+		<category>Car</category>
+		<channels>
+			<channel id="seat-front-left-heat" typeId="seat-heat-level-enum">
+				<label>Seat Heating Front Left</label>
+			</channel>
+			<channel id="seat-front-right-heat" typeId="seat-heat-level-enum">
+				<label>Seat Heating Front Right</label>
+			</channel>
+			<channel id="seat-front-left-vent" typeId="seat-vent-level-enum">
+				<label>Seat Ventilation Front Left</label>
+			</channel>
+			<channel id="seat-front-right-vent" typeId="seat-vent-level-enum">
+				<label>Seat Ventilation Front Right</label>
+			</channel>
+			<channel id="seat-rear-left-heat" typeId="seat-heat-level-enum">
+				<label>Seat Heating Rear Left</label>
+			</channel>
+			<channel id="seat-rear-right-heat" typeId="seat-heat-level-enum">
+				<label>Seat Heating Rear Right</label>
+			</channel>
+			<channel id="seat-rear-left-vent" typeId="seat-vent-level-enum">
+				<label>Seat Ventilation Rear Left</label>
+			</channel>
+			<channel id="seat-rear-right-vent" typeId="seat-vent-level-enum">
+				<label>Seat Ventilation Rear Right</label>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="warning-status">
+		<label>Vehicle Warning Indicators</label>
+		<description>Dashboard warning lights and subsystem error indicators</description>
+		<category>Alarm</category>
+		<channels>
+			<channel id="warning-wash-fluid" typeId="warning-boolean">
+				<label>Low Washer Fluid</label>
+			</channel>
+			<channel id="warning-brake-oil" typeId="warning-boolean">
+				<label>Brake Fluid Warning</label>
+			</channel>
+			<channel id="warning-engine-oil" typeId="warning-boolean">
+				<label>Check Engine / Oil Warning</label>
+			</channel>
+			<channel id="warning-smartkey-battery" typeId="warning-boolean">
+				<label>Smartkey Battery Low</label>
+			</channel>
+			<channel id="warning-low-fuel" typeId="warning-boolean">
+				<label>Low Fuel Warning</label>
+			</channel>
+			<channel id="warning-lamp-headlamp" typeId="warning-boolean">
+				<label>Headlamp Defect</label>
+			</channel>
+			<channel id="warning-lamp-turn-front-left" typeId="warning-boolean">
+				<label>Turn Signal Front Left Defect</label>
+			</channel>
+			<channel id="warning-lamp-turn-front-right" typeId="warning-boolean">
+				<label>Turn Signal Front Right Defect</label>
+			</channel>
+			<channel id="warning-lamp-stop-rear-left" typeId="warning-boolean">
+				<label>Brake Lamp Rear Left Defect</label>
+			</channel>
+			<channel id="warning-lamp-stop-rear-right" typeId="warning-boolean">
+				<label>Brake Lamp Rear Right Defect</label>
+			</channel>
+			<channel id="warning-lamp-turn-rear-left" typeId="warning-boolean">
+				<label>Turn Signal Rear Left Defect</label>
+			</channel>
+			<channel id="warning-lamp-turn-rear-right" typeId="warning-boolean">
+				<label>Turn Signal Rear Right Defect</label>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="freezer-status">
+		<label>Freezer Compartment</label>
+		<description>Operational status and temperature of the refrigeration unit</description>
+		<category>Freezer</category>
+		<channels>
+			<channel id="freezer-active" typeId="freezer-boolean"/>
+			<channel id="freezer-temperature" typeId="temperature-freezer"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-type id="secret-expires">
+		<item-type>DateTime</item-type>
+		<label>Client Secret Expiration</label>
+		<description>Calculated expiration timestamp (90 days after key creation)</description>
+		<category>Time</category>
+		<tags>
+			<point>Status</point>
+			<property>Timestamp</property>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="secret-remaining-days">
+		<item-type unitHint="d">Number:Time</item-type>
+		<label>Remaining Key Validity</label>
+		<description>Remaining days until the Client Secret expires</description>
+		<category>Time</category>
+		<tags>
+			<point>Status</point>
+			<property>Duration</property>
+		</tags>
+		<state readOnly="true" pattern="%.0f d"/>
+	</channel-type>
+
+	<channel-type id="secret-expiry-warning">
+		<item-type>Switch</item-type>
+		<label>Key Expiry Warning</label>
+		<description>Indicates whether the Client Secret expires within 7 days</description>
+		<category>Alarm</category>
+		<tags>
+			<point>Alarm</point>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="secret-expiry-event">
+		<kind>trigger</kind>
+		<label>Key Expiry Trigger</label>
+		<description>Fires events at 7 days, 2 days, and every 6 hours below 2 days before expiration</description>
+		<event>
+			<options>
+				<option value="EXPIRING_7_DAYS">Expires in less than 7 days</option>
+				<option value="EXPIRING_2_DAYS">Expires in less than 2 days</option>
+				<option value="EXPIRED">Client Secret has expired</option>
+			</options>
+		</event>
+	</channel-type>
+
+	<channel-type id="soc">
+		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<label>State of Charge</label>
+		<description>Current high-voltage battery state of charge</description>
+		<category>Battery</category>
+		<tags>
+			<point>Measurement</point>
+			<property>Level</property>
+		</tags>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+
+	<channel-type id="soc-limit">
+		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<label>Charge Limit</label>
+		<description>Configured maximum state of charge limit</description>
+		<category>Battery</category>
+		<tags>
+			<point>Status</point>
+			<property>Energy</property>
+		</tags>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+
+	<channel-type id="target-soc-standard">
+		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<label>Charge Limit AC (Standard)</label>
+		<description>Target state of charge for AC standard charging</description>
+		<category>Battery</category>
+		<tags>
+			<point>Status</point>
+			<property>Energy</property>
+		</tags>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+
+	<channel-type id="target-soc-quick">
+		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<label>Charge Limit DC (Fast)</label>
+		<description>Target state of charge for DC fast charging</description>
+		<category>Battery</category>
+		<tags>
+			<point>Status</point>
+			<property>Energy</property>
+		</tags>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+
+	<channel-type id="battery-capacity">
+		<item-type>Number:Energy</item-type>
+		<label>Battery Capacity</label>
+		<description>Maximum high-voltage battery capacity</description>
+		<category>Battery</category>
+		<tags>
+			<point>Status</point>
+			<property>Info</property>
+		</tags>
+		<state readOnly="true" pattern="%.0f Wh"/>
+	</channel-type>
+
+	<channel-type id="fuel-level">
+		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<label>Fuel Level</label>
+		<description>Current fuel tank level</description>
+		<category>Oil</category>
+		<tags>
+			<point>Measurement</point>
+			<property>Level</property>
+		</tags>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+
+	<channel-type id="odometer">
+		<item-type>Number:Length</item-type>
+		<label>Odometer</label>
+		<description>Cumulative vehicle mileage</description>
+		<tags>
+			<point>Measurement</point>
+		</tags>
+		<state readOnly="true" pattern="%.1f km"/>
+	</channel-type>
+
+	<channel-type id="distance-to-empty">
+		<item-type>Number:Length</item-type>
+		<label>Distance to Empty</label>
+		<description>Estimated driving range on current charge or fuel</description>
+		<tags>
+			<point>Forecast</point>
+		</tags>
+		<state readOnly="true" pattern="%.0f km"/>
+	</channel-type>
+
+	<channel-type id="gps-location">
+		<item-type>Location</item-type>
+		<label>GPS Location</label>
+		<description>Current geographical location of the vehicle</description>
+		<tags>
+			<point>Measurement</point>
+			<property>GeoLocation</property>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="gps-coordinate">
+		<item-type>Number</item-type>
+		<label>GPS Coordinate</label>
+		<tags>
+			<point>Measurement</point>
+		</tags>
+		<state readOnly="true" pattern="%.6f"/>
+	</channel-type>
+
+	<channel-type id="altitude">
+		<item-type>Number:Length</item-type>
+		<label>Altitude</label>
+		<description>Altitude above sea level</description>
+		<tags>
+			<point>Measurement</point>
+		</tags>
+		<state readOnly="true" pattern="%.1f m"/>
+	</channel-type>
+
+	<channel-type id="location-timestamp">
+		<item-type>DateTime</item-type>
+		<label>Location Timestamp</label>
+		<description>Timestamp when this GPS position was recorded</description>
+		<category>Time</category>
+		<tags>
+			<point>Status</point>
+			<property>Timestamp</property>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="speed">
+		<item-type>Number:Speed</item-type>
+		<label>Speed</label>
+		<description>Vehicle ground speed</description>
+		<tags>
+			<point>Measurement</point>
+			<property>Speed</property>
+		</tags>
+		<state readOnly="true" pattern="%.0f km/h"/>
+	</channel-type>
+
+	<channel-type id="heading">
+		<item-type>Number:Angle</item-type>
+		<label>Heading</label>
+		<description>Driving direction heading angle</description>
+		<tags>
+			<point>Measurement</point>
+		</tags>
+		<state readOnly="true" pattern="%.0f °"/>
+	</channel-type>
+
+	<channel-type id="temperature-outside">
+		<item-type>Number:Temperature</item-type>
+		<label>Outside Temperature</label>
+		<description>Measured Outside Temperature (If supported by the vehicle)</description>
+		<category>Temperature</category>
+		<tags>
+			<point>Measurement</point>
+			<property>Temperature</property>
+		</tags>
+		<state readOnly="true" pattern="%.1f °C"/>
+	</channel-type>
+
+	<channel-type id="temperature-freezer">
+		<item-type>Number:Temperature</item-type>
+		<label>Freezer Temperature</label>
+		<description>Measured Freezer Temperature (If supported by the vehicle)</description>
+		<category>Temperature</category>
+		<tags>
+			<point>Measurement</point>
+			<property>Temperature</property>
+		</tags>
+		<state readOnly="true" pattern="%.1f °C"/>
+	</channel-type>
+
+	<channel-type id="temperature-setpoint">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature Setpoint</label>
+		<description>Air temperature setpoint</description>
+		<category>Temperature</category>
+		<tags>
+			<point>Status</point>
+			<property>Temperature</property>
+		</tags>
+		<state readOnly="true" pattern="%.1f °C"/>
+	</channel-type>
+
+	<channel-type id="remain-time">
+		<item-type>Number:Time</item-type>
+		<label>Remaining Charge Time</label>
+		<description>Estimated remaining charging time</description>
+		<category>Time</category>
+		<tags>
+			<point>Forecast</point>
+			<property>Duration</property>
+		</tags>
+		<state readOnly="true" pattern="%.0f min"/>
+	</channel-type>
+
+	<channel-type id="tire-pressure">
+		<item-type>Number:Pressure</item-type>
+		<label>Tire Pressure</label>
+		<description>Measured tire pressure</description>
+		<tags>
+			<point>Measurement</point>
+			<property>Pressure</property>
+		</tags>
+		<state readOnly="true" pattern="%.2f bar"/>
+	</channel-type>
+
+	<channel-type id="charging-boolean">
+		<item-type>Switch</item-type>
+		<label>Charging Active</label>
+		<description>Indicates whether charging is currently active</description>
+		<category>Battery</category>
+		<tags>
+			<point>Status</point>
+			<property>Level</property>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="climate-boolean">
+		<item-type>Switch</item-type>
+		<label>Climate Control Active</label>
+		<description>Indicates whether climate control is currently active</description>
+		<category>Climate</category>
+		<tags>
+			<point>Status</point>
+			<property>Heating</property>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="heater-boolean">
+		<item-type>Switch</item-type>
+		<label>Heater State</label>
+		<description>Indicates whether auxiliary heating is active</description>
+		<category>Heating</category>
+		<tags>
+			<point>Status</point>
+			<property>Heating</property>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="warning-boolean">
+		<item-type>Switch</item-type>
+		<label>Warning Indicator</label>
+		<description>Indicates whether a system warning light is triggered</description>
+		<category>Alarm</category>
+		<tags>
+			<point>Switch</point>
+			<property>Info</property>
+		</tags>
+		<state readOnly="true">
+			<options>
+				<option value="ON">WARNING</option>
+				<option value="OFF">OK</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="charge-plugin-enum">
+		<item-type>String</item-type>
+		<label>Plug Status</label>
+		<description>Charge cable connection status</description>
+		<category>Battery</category>
+		<tags>
+			<point>Status</point>
+			<property>Info</property>
+		</tags>
+		<state readOnly="true">
+			<options>
+				<option value="UNPLUGGED">Unplugged</option>
+				<option value="PLUGGED">Plugged</option>
+				<option value="INVALID">Invalid / Error</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="charge-status-enum">
+		<item-type>String</item-type>
+		<label>Charging Status</label>
+		<description>Current charging mode status</description>
+		<category>Battery</category>
+		<tags>
+			<point>Status</point>
+			<property>Info</property>
+		</tags>
+		<state readOnly="true">
+			<options>
+				<option value="NOT_CHARGING">Not Charging</option>
+				<option value="CHARGING_AC">Charging AC (Standard)</option>
+				<option value="CHARGING_DC">Charging DC (Fast)</option>
+				<option value="FINISHED">Finished</option>
+				<option value="WAITING_SCHEDULE">Waiting for Schedule</option>
+				<option value="ERROR">Error</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="seat-heat-level-enum">
+		<item-type>String</item-type>
+		<label>Seat Level</label>
+		<description>Seat heating intensity level</description>
+		<category>Heating</category>
+		<tags>
+			<point>Status</point>
+			<property>Heating</property>
+		</tags>
+		<state readOnly="true">
+			<options>
+				<option value="OFF">Off</option>
+				<option value="LOW">Low</option>
+				<option value="MIDDLE">Middle</option>
+				<option value="HIGH">High</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="seat-vent-level-enum">
+		<item-type>String</item-type>
+		<label>Seat Level</label>
+		<description>Seat ventilation intensity level</description>
+		<category>Flow</category>
+		<tags>
+			<point>Status</point>
+			<property>Airflow</property>
+		</tags>
+		<state readOnly="true">
+			<options>
+				<option value="OFF">Off</option>
+				<option value="LOW">Low</option>
+				<option value="MIDDLE">Middle</option>
+				<option value="HIGH">High</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="climate-mode-enum">
+		<item-type>String</item-type>
+		<label>Climate Mode</label>
+		<description>Current operating mode of the HVAC system</description>
+		<tags>
+			<point>Status</point>
+			<property>Info</property>
+		</tags>
+		<state readOnly="true">
+			<options>
+				<option value="OFF">Off</option>
+				<option value="AUTO">Auto</option>
+				<option value="MANUAL">Manual</option>
+				<option value="DEFROST">Defrost</option>
+				<option value="ECO">Eco</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="climate-speed-decimal">
+		<item-type>Number</item-type>
+		<label>Blower Speed</label>
+		<description>HVAC fan blower speed level (-1 = Auto, 0 = Off 1-8 = Level)</description>
+		<category>Flow</category>
+		<tags>
+			<point>Status</point>
+			<property>Airflow</property>
+		</tags>
+		<state readOnly="true" pattern="Speed %d">
+			<options>
+				<option value="-1">Auto</option>
+				<option value="0">Off</option>
+				<option value="1">Level 1</option>
+				<option value="2">Level 2</option>
+				<option value="3">Level 3</option>
+				<option value="4">Level 4</option>
+				<option value="5">Level 5</option>
+				<option value="6">Level 6</option>
+				<option value="7">Level 7</option>
+				<option value="8">Level 8</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="distance-type-enum">
+		<item-type>String</item-type>
+		<label>Distance Type</label>
+		<description>Powertrain range estimation basis</description>
+		<tags>
+			<point>Status</point>
+			<property>Info</property>
+		</tags>
+		<state readOnly="true">
+			<options>
+				<option value="EV">EV (Electric)</option>
+				<option value="GASOLINE">Gasoline</option>
+				<option value="DIESEL">Diesel</option>
+				<option value="PHEV">Plug-in Hybrid</option>
+				<option value="HEV">Hybrid</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="ignition-enum">
+		<item-type>String</item-type>
+		<label>Ignition Status</label>
+		<description>Primary ignition power state</description>
+		<tags>
+			<point>Status</point>
+			<property>Info</property>
+		</tags>
+		<state readOnly="true">
+			<options>
+				<option value="OFF">Off</option>
+				<option value="ACC">Accessory (ACC)</option>
+				<option value="ON">On</option>
+				<option value="START">Ready / Start</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="ignition-detail-boolean">
+		<item-type>Switch</item-type>
+		<label>Ignition Circuit State</label>
+		<description>Status of specific vehicle electrical circuit</description>
+		<tags>
+			<point>Status</point>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="sleep-mode-enum">
+		<item-type>String</item-type>
+		<label>Sleep Mode</label>
+		<description>Power-saving sleep mode status</description>
+		<tags>
+			<point>Status</point>
+			<property>Info</property>
+		</tags>
+		<state readOnly="true">
+			<options>
+				<option value="OFF">Inactive</option>
+				<option value="ON">Active</option>
+				<option value="INVALID">Invalid / Unknown</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="parking-position-boolean">
+		<item-type>Switch</item-type>
+		<label>Gear in Park (P)</label>
+		<description>Indicates whether automatic transmission is in Park (P)</description>
+		<tags>
+			<point>Status</point>
+			<property>Enabled</property>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="operation-timestamp">
+		<item-type>DateTime</item-type>
+		<label>Last Update</label>
+		<description>Timestamp of the last successful data retrieval from the Pleos API</description>
+		<category>Time</category>
+		<tags>
+			<point>Status</point>
+			<property>Timestamp</property>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="door-state-enum">
+		<item-type>String</item-type>
+		<label>Closure State</label>
+		<description>Indicates whether a door, hood, or trunk is open, closed, or locked</description>
+		<category>Door</category>
+		<tags>
+			<point>Status</point>
+			<property>LockState</property>
+		</tags>
+		<state readOnly="true">
+			<options>
+				<option value="OPEN">Open</option>
+				<option value="CLOSED">Closed</option>
+				<option value="LOCKED">Locked</option>
+				<option value="INVALID">Invalid</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="freezer-boolean">
+		<item-type>Switch</item-type>
+		<label>Freezer State</label>
+		<description>Indicates whether the refrigeration unit is running</description>
+		<tags>
+			<point>Status</point>
+		</tags>
+		<state readOnly="true">
+			<options>
+				<option value="ON">Active</option>
+				<option value="OFF">Inactive</option>
+			</options>
+		</state>
+	</channel-type>
+
+</thing:thing-descriptions>
