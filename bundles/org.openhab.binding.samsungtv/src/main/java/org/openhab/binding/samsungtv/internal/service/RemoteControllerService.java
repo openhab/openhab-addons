@@ -160,6 +160,16 @@ public class RemoteControllerService implements SamsungTvService {
         }
     }
 
+    /**
+     * Requests the art mode status, which also updates the power state. Frame TV's with newer firmware (art API 6000)
+     * do not send wakeup when they come out of standby, so the binding would otherwise not know the TV's mode.
+     */
+    public void refreshArtModeStatus() {
+        if (getArtModeSupported() && remoteController instanceof RemoteControllerWebSocket) {
+            remoteController.getArtmodeStatus();
+        }
+    }
+
     @Override
     public void stop() {
         powerGeneration.incrementAndGet();
