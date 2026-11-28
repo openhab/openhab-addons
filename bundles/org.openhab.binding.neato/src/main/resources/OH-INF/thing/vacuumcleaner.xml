@@ -72,8 +72,8 @@
 		<label>Current State</label>
 		<description>Current state of the vacuum cleaner.</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
+			<point>Status</point>
+			<property>Mode</property>
 		</tags>
 		<state readOnly="true" pattern="%s">
 			<options>
@@ -91,8 +91,8 @@
 		<label>Current Action</label>
 		<description>Current action of the vacuum cleaner.</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
+			<point>Status</point>
+			<property>Mode</property>
 		</tags>
 		<state readOnly="true" pattern="%s">
 			<options>
@@ -156,8 +156,8 @@
 		<label>Send Command</label>
 		<description>Send Commands to Vacuum Cleaner. (clean with map, clean, pause, resume, stop, dock)</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Mode</tag>
+			<point>Control</point>
+			<property>Mode</property>
 		</tags>
 		<state readOnly="false" pattern="%s">
 			<options>
@@ -176,8 +176,8 @@
 		<label>Cleaning Category</label>
 		<description>Current or last category of the cleaning.</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
+			<point>Status</point>
+			<property>Mode</property>
 		</tags>
 		<state readOnly="true" pattern="%s">
 			<options>
@@ -194,8 +194,8 @@
 		<label>Cleaning Mode</label>
 		<description>Current or last cleaning mode.</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
+			<point>Status</point>
+			<property>Mode</property>
 		</tags>
 		<state readOnly="true" pattern="%s">
 			<options>
@@ -210,8 +210,8 @@
 		<label>Cleaning Modifier</label>
 		<description>Modifier of current or last cleaning.</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
+			<point>Status</point>
+			<property>Mode</property>
 		</tags>
 		<state readOnly="true" pattern="%s">
 			<options>

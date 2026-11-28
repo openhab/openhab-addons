@@ -32,19 +32,19 @@ public class Shelly2DeviceJsonDTO {
     public static final int SHELLY2_DEBUGLOG_LEVEL_VERBOSE = 4;
 
     public static class Shelly2SysSetConfigParams {
-        public Shelly2SysConfig config;
+        public @Nullable Shelly2SysConfig config;
     }
 
     public static class Shelly2SysConfig {
-        public Shelly2SysConfigDebug debug;
+        public @Nullable Shelly2SysConfigDebug debug;
     }
 
     public static class Shelly2SysConfigDebug {
-        public Shelly2SysConfigDebugWebSocket websocket;
+        public @Nullable Shelly2SysConfigDebugWebSocket websocket;
     }
 
     public static class Shelly2SysConfigDebugWebSocket {
-        public Boolean enable;
+        public @Nullable Boolean enable;
     }
 
     /**

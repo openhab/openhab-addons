@@ -37,9 +37,9 @@ import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.Request;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
@@ -345,7 +345,7 @@ public class ShellyManagerPage {
             String attribute) {
         State state = thingHandler.getChannelValue(group, attribute);
         String value = "";
-        if (state != UnDefType.NULL) {
+        if (!(state instanceof UnDefType)) {
             if (state instanceof DateTimeType dateTimeState) {
                 switch (attribute) {
                     case ATTRIBUTE_LAST_ALARM:
@@ -385,7 +385,11 @@ public class ShellyManagerPage {
         if (!value.isEmpty()) {
             switch (attribute) {
                 case PROPERTY_FIRMWARE_VERSION:
-                    value = substringBeforeLast(value, "-");
+                    // the handler stores "<version>/<build date>", only the version is shown
+                    int pos = value.indexOf('/');
+                    if (pos >= 0) {
+                        value = value.substring(0, pos);
+                    }
                     break;
                 case PROPERTY_UPDATE_AVAILABLE:
                     value = value.replace(OnOffType.ON.toString(), "yes");
@@ -496,7 +500,7 @@ public class ShellyManagerPage {
         try {
             Request request = httpClient.newRequest(url).method(method).timeout(SHELLY_API_TIMEOUT_MS,
                     TimeUnit.MILLISECONDS);
-            request.header(HttpHeader.ACCEPT, ShellyHttpClient.CONTENT_TYPE_JSON);
+            request.headers(h -> h.add(HttpHeader.ACCEPT, ShellyHttpClient.CONTENT_TYPE_JSON));
             logger.trace("{}: HTTP {} {}", LOG_PREFIX, method, url);
             ContentResponse contentResponse = request.send();
             ShellyApiResult apiResult = ShellyApiResult.builder(contentResponse).build();

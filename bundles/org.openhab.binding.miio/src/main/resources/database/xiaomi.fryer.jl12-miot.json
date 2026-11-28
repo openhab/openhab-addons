@@ -1,0 +1,1399 @@
+{
+	"deviceMapping": {
+		"id": [
+			"xiaomi.fryer.jl12",
+			"xiaomi.fryer.jl12w"
+		],
+		"propertyMethod": "get_properties",
+		"maxProperties": 1,
+		"channels": [
+			{
+				"property": "",
+				"friendlyName": "Actions",
+				"channel": "actions",
+				"type": "String",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "upper-pause",
+							"label": "Pause Upper Basket"
+						},
+						{
+							"value": "lower-pause",
+							"label": "Pause Lower Basket"
+						},
+						{
+							"value": "both-pause",
+							"label": "Pause Both Baskets"
+						},
+						{
+							"value": "upper-resume",
+							"label": "Resume Upper Basket"
+						},
+						{
+							"value": "lower-resume",
+							"label": "Resume Lower Basket"
+						},
+						{
+							"value": "both-resume",
+							"label": "Resume Both Baskets"
+						},
+						{
+							"value": "upper-cancel",
+							"label": "Cancel Upper Basket"
+						},
+						{
+							"value": "lower-cancel",
+							"label": "Cancel Lower Basket"
+						},
+						{
+							"value": "both-cancel",
+							"label": "Cancel Both Baskets"
+						}
+					]
+				},
+				"refresh": false,
+				"actions": [
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 8,
+						"aiid": 1,
+						"parameters": [
+							0
+						],
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "upper-pause"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 8,
+						"aiid": 2,
+						"parameters": [
+							0
+						],
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "lower-pause"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 8,
+						"aiid": 1,
+						"parameters": [
+							1
+						],
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "both-pause"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 8,
+						"aiid": 2,
+						"parameters": [
+							1
+						],
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "both-pause"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 8,
+						"aiid": 3,
+						"parameters": [
+							0
+						],
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "upper-resume"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 8,
+						"aiid": 4,
+						"parameters": [
+							0
+						],
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "lower-resume"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 8,
+						"aiid": 3,
+						"parameters": [
+							1
+						],
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "both-resume"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 8,
+						"aiid": 4,
+						"parameters": [
+							1
+						],
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "both-resume"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 8,
+						"aiid": 5,
+						"parameters": [
+							0
+						],
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "upper-cancel"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 8,
+						"aiid": 6,
+						"parameters": [
+							0
+						],
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "lower-cancel"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 8,
+						"aiid": 5,
+						"parameters": [
+							1
+						],
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "both-cancel"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 8,
+						"aiid": 6,
+						"parameters": [
+							1
+						],
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "both-cancel"
+								}
+							]
+						}
+					}
+				],
+				"readmeComment": "Value mapping `[\"upper-pause\"\u003d\"Pause Upper Basket\",\"lower-pause\"\u003d\"Pause Lower Basket\",\"both-pause\"\u003d\"Pause Both Baskets\",\"upper-resume\"\u003d\"Resume Upper Basket\",\"lower-resume\"\u003d\"Resume Lower Basket\",\"both-resume\"\u003d\"Resume Both Baskets\",\"upper-cancel\"\u003d\"Cancel Upper Basket\",\"lower-cancel\"\u003d\"Cancel Lower Basket\",\"both-cancel\"\u003d\"Cancel Both Baskets\"]`"
+			},
+			{
+				"property": "",
+				"friendlyName": "Upper Basket - Start Cooking With Settings",
+				"channel": "upper_start_cook",
+				"type": "String",
+				"refresh": false,
+				"actions": [
+					{
+						"command": "action",
+						"parameterType": "JSON",
+						"siid": 6,
+						"aiid": 5
+					}
+				],
+				"readmeComment": "Starts cooking in the upper basket with a JSON list of 7 values: time (minutes), temperature (degrees Celsius), recipe id, keep warm after cooking (true or false), scheduled start time (minutes, 0 starts now), both baskets (0 this basket only, 1 both baskets), turn food reminder (true or false). The recipe id is `M11` for manual cooking, other `M` ids for the device presets or `C` plus the recipeID of a cloud recipe. For both baskets the Mi Home app sends the same list to the upper and the lower basket. Example manual cooking 15 minutes at 180 degrees: `[15,180,\"M11\",false,0,0,false]`."
+			},
+			{
+				"property": "",
+				"friendlyName": "Lower Basket - Start Cooking With Settings",
+				"channel": "lower_start_cook",
+				"type": "String",
+				"refresh": false,
+				"actions": [
+					{
+						"command": "action",
+						"parameterType": "JSON",
+						"siid": 7,
+						"aiid": 5
+					}
+				],
+				"readmeComment": "Starts cooking in the lower basket with a JSON list of 7 values: time (minutes), temperature (degrees Celsius), recipe id, keep warm after cooking (true or false), scheduled start time (minutes, 0 starts now), both baskets (0 this basket only, 1 both baskets), turn food reminder (true or false). The recipe id is `M11` for manual cooking, other `M` ids for the device presets or `C` plus the recipeID of a cloud recipe. For both baskets the Mi Home app sends the same list to the upper and the lower basket. Example manual cooking 15 minutes at 180 degrees: `[15,180,\"M11\",false,0,0,false]`."
+			},
+			{
+				"property": "on",
+				"siid": 2,
+				"piid": 24,
+				"friendlyName": "Power",
+				"channel": "power",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch",
+					"Power"
+				]
+			},
+			{
+				"property": "status",
+				"siid": 2,
+				"piid": 26,
+				"friendlyName": "Air Fryer - Status",
+				"channel": "status",
+				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "0",
+							"label": "Off"
+						},
+						{
+							"value": "1",
+							"label": "Idle"
+						},
+						{
+							"value": "2",
+							"label": "Scheduled"
+						},
+						{
+							"value": "3",
+							"label": "Cooking"
+						},
+						{
+							"value": "4",
+							"label": "Paused"
+						},
+						{
+							"value": "5",
+							"label": "Paused (Basket Removed)"
+						},
+						{
+							"value": "6",
+							"label": "Keep Warm"
+						},
+						{
+							"value": "7",
+							"label": "Keep Warm Completed"
+						},
+						{
+							"value": "8",
+							"label": "Cooking Completed"
+						},
+						{
+							"value": "9",
+							"label": "Waiting"
+						},
+						{
+							"value": "10",
+							"label": "Waiting Paused"
+						},
+						{
+							"value": "11",
+							"label": "Cooling Down"
+						},
+						{
+							"value": "12",
+							"label": "Cooling Completed"
+						},
+						{
+							"value": "13",
+							"label": "Cooking Canceled"
+						},
+						{
+							"value": "14",
+							"label": "Keep Warm Canceled"
+						},
+						{
+							"value": "15",
+							"label": "Cooling Down Canceled"
+						},
+						{
+							"value": "16",
+							"label": "Connected Standby"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [],
+				"tags": [
+					"Status"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Off\",\"1\"\u003d\"Idle\",\"2\"\u003d\"Scheduled\",\"3\"\u003d\"Cooking\",\"4\"\u003d\"Paused\",\"5\"\u003d\"Paused (Basket Removed)\",\"6\"\u003d\"Keep Warm\",\"7\"\u003d\"Keep Warm Completed\",\"8\"\u003d\"Cooking Completed\",\"9\"\u003d\"Waiting\",\"10\"\u003d\"Waiting Paused\",\"11\"\u003d\"Cooling Down\",\"12\"\u003d\"Cooling Completed\",\"13\"\u003d\"Cooking Canceled\",\"14\"\u003d\"Keep Warm Canceled\",\"15\"\u003d\"Cooling Down Canceled\",\"16\"\u003d\"Connected Standby\"]`"
+			},
+			{
+				"property": "left-time",
+				"siid": 2,
+				"piid": 25,
+				"friendlyName": "Air Fryer - Left Time",
+				"channel": "left_time",
+				"type": "Number:Time",
+				"unit": "minutes",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 1440,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "time",
+				"tags": [
+					"Status",
+					"Duration"
+				]
+			},
+			{
+				"property": "fault",
+				"siid": 2,
+				"piid": 3,
+				"friendlyName": "Air Fryer - Device Fault",
+				"channel": "fault",
+				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "0",
+							"label": "No Faults"
+						},
+						{
+							"value": "1",
+							"label": "Sampling Chip Error"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "error",
+				"tags": [
+					"Status"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"No Faults\",\"1\"\u003d\"Sampling Chip Error\"]`"
+			},
+			{
+				"property": "auto-keep-warm",
+				"siid": 2,
+				"piid": 19,
+				"friendlyName": "Air Fryer - Keep Warm Available",
+				"channel": "auto_keep_warm",
+				"type": "Switch",
+				"stateDescription": {
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"tags": [
+					"Status"
+				]
+			},
+			{
+				"property": "end-cooking-together",
+				"siid": 2,
+				"piid": 22,
+				"friendlyName": "Air Fryer - Finish Together",
+				"channel": "end_cooking_together",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"tags": [
+					"Switch",
+					"Enabled"
+				]
+			},
+			{
+				"property": "currently-using-pot",
+				"siid": 8,
+				"piid": 1,
+				"friendlyName": "Air Fryer - Basket Selection",
+				"channel": "basket_selection",
+				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "1",
+							"label": "Upper Basket"
+						},
+						{
+							"value": "2",
+							"label": "Lower Basket"
+						},
+						{
+							"value": "3",
+							"label": "Both Baskets"
+						},
+						{
+							"value": "4",
+							"label": "Double Recipe"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [],
+				"tags": [
+					"Status"
+				],
+				"readmeComment": "Value mapping `[\"1\"\u003d\"Upper Basket\",\"2\"\u003d\"Lower Basket\",\"3\"\u003d\"Both Baskets\",\"4\"\u003d\"Double Recipe\"]`"
+			},
+			{
+				"property": "is-dual-baskets",
+				"siid": 8,
+				"piid": 4,
+				"friendlyName": "Air Fryer - Both Baskets",
+				"channel": "dual_baskets",
+				"type": "Switch",
+				"stateDescription": {
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"tags": [
+					"Status"
+				]
+			},
+			{
+				"property": "upper-status",
+				"siid": 6,
+				"piid": 2,
+				"friendlyName": "Upper Basket - Status",
+				"channel": "upper_status",
+				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "0",
+							"label": "Off"
+						},
+						{
+							"value": "1",
+							"label": "Idle"
+						},
+						{
+							"value": "2",
+							"label": "Scheduled"
+						},
+						{
+							"value": "3",
+							"label": "Cooking"
+						},
+						{
+							"value": "4",
+							"label": "Paused"
+						},
+						{
+							"value": "5",
+							"label": "Paused (Basket Removed)"
+						},
+						{
+							"value": "6",
+							"label": "Keep Warm"
+						},
+						{
+							"value": "7",
+							"label": "Keep Warm Completed"
+						},
+						{
+							"value": "8",
+							"label": "Cooking Completed"
+						},
+						{
+							"value": "9",
+							"label": "Waiting"
+						},
+						{
+							"value": "10",
+							"label": "Waiting Paused"
+						},
+						{
+							"value": "11",
+							"label": "Cooling Down"
+						},
+						{
+							"value": "12",
+							"label": "Cooling Completed"
+						},
+						{
+							"value": "13",
+							"label": "Cooking Canceled"
+						},
+						{
+							"value": "14",
+							"label": "Keep Warm Canceled"
+						},
+						{
+							"value": "15",
+							"label": "Cooling Down Canceled"
+						},
+						{
+							"value": "16",
+							"label": "Connected Standby"
+						},
+						{
+							"value": "17",
+							"label": "Cooking Stopped"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [],
+				"tags": [
+					"Status"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Off\",\"1\"\u003d\"Idle\",\"2\"\u003d\"Scheduled\",\"3\"\u003d\"Cooking\",\"4\"\u003d\"Paused\",\"5\"\u003d\"Paused (Basket Removed)\",\"6\"\u003d\"Keep Warm\",\"7\"\u003d\"Keep Warm Completed\",\"8\"\u003d\"Cooking Completed\",\"9\"\u003d\"Waiting\",\"10\"\u003d\"Waiting Paused\",\"11\"\u003d\"Cooling Down\",\"12\"\u003d\"Cooling Completed\",\"13\"\u003d\"Cooking Canceled\",\"14\"\u003d\"Keep Warm Canceled\",\"15\"\u003d\"Cooling Down Canceled\",\"16\"\u003d\"Connected Standby\",\"17\"\u003d\"Cooking Stopped\"]`"
+			},
+			{
+				"property": "upper-fault",
+				"siid": 6,
+				"piid": 12,
+				"friendlyName": "Upper Basket - Device Fault",
+				"channel": "upper_fault",
+				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "0",
+							"label": "No Faults"
+						},
+						{
+							"value": "1",
+							"label": "Temperature Sensor Failure"
+						},
+						{
+							"value": "2",
+							"label": "Temperature Sensor Short Circuit"
+						},
+						{
+							"value": "3",
+							"label": "Temperature Sensor Disconnected"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "error",
+				"tags": [
+					"Status"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"No Faults\",\"1\"\u003d\"Temperature Sensor Failure\",\"2\"\u003d\"Temperature Sensor Short Circuit\",\"3\"\u003d\"Temperature Sensor Disconnected\"]`"
+			},
+			{
+				"property": "upper-target-time",
+				"siid": 6,
+				"piid": 4,
+				"friendlyName": "Upper Basket - Target Time",
+				"channel": "upper_target_time",
+				"type": "Number:Time",
+				"unit": "minutes",
+				"stateDescription": {
+					"minimum": 1,
+					"maximum": 1440,
+					"step": 1,
+					"pattern": "%.0f %unit%"
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "time",
+				"tags": [
+					"Setpoint",
+					"Duration"
+				]
+			},
+			{
+				"property": "upper-target-temperature",
+				"siid": 6,
+				"piid": 6,
+				"friendlyName": "Upper Basket - Target Temperature",
+				"channel": "upper_target_temperature",
+				"type": "Number:Temperature",
+				"unit": "celsius",
+				"stateDescription": {
+					"minimum": 40,
+					"maximum": 230,
+					"step": 5,
+					"pattern": "%.0f %unit%"
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "temperature",
+				"tags": [
+					"Setpoint",
+					"Temperature"
+				]
+			},
+			{
+				"property": "upper-left-time",
+				"siid": 6,
+				"piid": 5,
+				"friendlyName": "Upper Basket - Left Time",
+				"channel": "upper_left_time",
+				"type": "Number:Time",
+				"unit": "minutes",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 1440,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "time",
+				"tags": [
+					"Status",
+					"Duration"
+				]
+			},
+			{
+				"property": "upper-mode",
+				"siid": 6,
+				"piid": 3,
+				"friendlyName": "Upper Basket - Mode",
+				"channel": "upper_mode",
+				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "0",
+							"label": "Manual"
+						},
+						{
+							"value": "1",
+							"label": "French Fries"
+						},
+						{
+							"value": "2",
+							"label": "Chicken Drumstick"
+						},
+						{
+							"value": "3",
+							"label": "Steak"
+						},
+						{
+							"value": "4",
+							"label": "Fish"
+						},
+						{
+							"value": "5",
+							"label": "Vegetables"
+						},
+						{
+							"value": "6",
+							"label": "Pizza"
+						},
+						{
+							"value": "7",
+							"label": "Cake"
+						},
+						{
+							"value": "8",
+							"label": "Dried Fruit"
+						},
+						{
+							"value": "9",
+							"label": "Reheat"
+						},
+						{
+							"value": "10",
+							"label": "Custom"
+						},
+						{
+							"value": "11",
+							"label": "Chicken Breast Potato Chunks"
+						},
+						{
+							"value": "12",
+							"label": "Chicken Legs Broccoli"
+						},
+						{
+							"value": "13",
+							"label": "Salmon Asparagus"
+						},
+						{
+							"value": "14",
+							"label": "Steak Asparagus"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [],
+				"tags": [
+					"Status",
+					"Mode"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Manual\",\"1\"\u003d\"French Fries\",\"2\"\u003d\"Chicken Drumstick\",\"3\"\u003d\"Steak\",\"4\"\u003d\"Fish\",\"5\"\u003d\"Vegetables\",\"6\"\u003d\"Pizza\",\"7\"\u003d\"Cake\",\"8\"\u003d\"Dried Fruit\",\"9\"\u003d\"Reheat\",\"10\"\u003d\"Custom\",\"11\"\u003d\"Chicken Breast Potato Chunks\",\"12\"\u003d\"Chicken Legs Broccoli\",\"13\"\u003d\"Salmon Asparagus\",\"14\"\u003d\"Steak Asparagus\"]`"
+			},
+			{
+				"property": "upper-recipe-id",
+				"siid": 6,
+				"piid": 7,
+				"friendlyName": "Upper Basket - Recipe Id",
+				"channel": "upper_recipe_id",
+				"type": "String",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "STRING"
+					}
+				]
+			},
+			{
+				"property": "upper-turn-pot",
+				"siid": 6,
+				"piid": 8,
+				"friendlyName": "Upper Basket - Turn Food",
+				"channel": "upper_turn_pot",
+				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "1",
+							"label": "No Action"
+						},
+						{
+							"value": "2",
+							"label": "Turn Food Now"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [],
+				"tags": [
+					"Status"
+				],
+				"readmeComment": "Value mapping `[\"1\"\u003d\"No Action\",\"2\"\u003d\"Turn Food Now\"]`"
+			},
+			{
+				"property": "upper-turn-pot-config",
+				"siid": 6,
+				"piid": 9,
+				"friendlyName": "Upper Basket - Turn Food Reminder",
+				"channel": "upper_turn_pot_config",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"tags": [
+					"Switch",
+					"Enabled"
+				]
+			},
+			{
+				"property": "upper-current-keep-warm",
+				"siid": 6,
+				"piid": 10,
+				"friendlyName": "Upper Basket - Keep Warm After Cooking",
+				"channel": "upper_current_keep_warm",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"tags": [
+					"Switch",
+					"Enabled"
+				]
+			},
+			{
+				"property": "upper-reservation-left-time",
+				"siid": 6,
+				"piid": 11,
+				"friendlyName": "Upper Basket - Scheduled Start Time Left",
+				"channel": "upper_reservation_left_time",
+				"type": "Number:Time",
+				"unit": "minutes",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 1440,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "time",
+				"tags": [
+					"Status",
+					"Duration"
+				]
+			},
+			{
+				"property": "upper-double-pot-param-sync",
+				"siid": 6,
+				"piid": 13,
+				"friendlyName": "Upper Basket - Basket Mode",
+				"channel": "upper_basket_mode",
+				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "0",
+							"label": "Single Basket"
+						},
+						{
+							"value": "1",
+							"label": "Both Baskets"
+						},
+						{
+							"value": "2",
+							"label": "Double Recipe"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [],
+				"tags": [
+					"Status"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Single Basket\",\"1\"\u003d\"Both Baskets\",\"2\"\u003d\"Double Recipe\"]`"
+			},
+			{
+				"property": "lower-status",
+				"siid": 7,
+				"piid": 2,
+				"friendlyName": "Lower Basket - Status",
+				"channel": "lower_status",
+				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "0",
+							"label": "Off"
+						},
+						{
+							"value": "1",
+							"label": "Idle"
+						},
+						{
+							"value": "2",
+							"label": "Scheduled"
+						},
+						{
+							"value": "3",
+							"label": "Cooking"
+						},
+						{
+							"value": "4",
+							"label": "Paused"
+						},
+						{
+							"value": "5",
+							"label": "Paused (Basket Removed)"
+						},
+						{
+							"value": "6",
+							"label": "Keep Warm"
+						},
+						{
+							"value": "7",
+							"label": "Keep Warm Completed"
+						},
+						{
+							"value": "8",
+							"label": "Cooking Completed"
+						},
+						{
+							"value": "9",
+							"label": "Waiting"
+						},
+						{
+							"value": "10",
+							"label": "Waiting Paused"
+						},
+						{
+							"value": "11",
+							"label": "Cooling Down"
+						},
+						{
+							"value": "12",
+							"label": "Cooling Completed"
+						},
+						{
+							"value": "13",
+							"label": "Cooking Canceled"
+						},
+						{
+							"value": "14",
+							"label": "Keep Warm Canceled"
+						},
+						{
+							"value": "15",
+							"label": "Cooling Down Canceled"
+						},
+						{
+							"value": "16",
+							"label": "Connected Standby"
+						},
+						{
+							"value": "17",
+							"label": "Cooking Stopped"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [],
+				"tags": [
+					"Status"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Off\",\"1\"\u003d\"Idle\",\"2\"\u003d\"Scheduled\",\"3\"\u003d\"Cooking\",\"4\"\u003d\"Paused\",\"5\"\u003d\"Paused (Basket Removed)\",\"6\"\u003d\"Keep Warm\",\"7\"\u003d\"Keep Warm Completed\",\"8\"\u003d\"Cooking Completed\",\"9\"\u003d\"Waiting\",\"10\"\u003d\"Waiting Paused\",\"11\"\u003d\"Cooling Down\",\"12\"\u003d\"Cooling Completed\",\"13\"\u003d\"Cooking Canceled\",\"14\"\u003d\"Keep Warm Canceled\",\"15\"\u003d\"Cooling Down Canceled\",\"16\"\u003d\"Connected Standby\",\"17\"\u003d\"Cooking Stopped\"]`"
+			},
+			{
+				"property": "lower-fault",
+				"siid": 7,
+				"piid": 12,
+				"friendlyName": "Lower Basket - Device Fault",
+				"channel": "lower_fault",
+				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "0",
+							"label": "No Faults"
+						},
+						{
+							"value": "1",
+							"label": "Temperature Sensor Failure"
+						},
+						{
+							"value": "2",
+							"label": "Temperature Sensor Short Circuit"
+						},
+						{
+							"value": "3",
+							"label": "Temperature Sensor Disconnected"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "error",
+				"tags": [
+					"Status"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"No Faults\",\"1\"\u003d\"Temperature Sensor Failure\",\"2\"\u003d\"Temperature Sensor Short Circuit\",\"3\"\u003d\"Temperature Sensor Disconnected\"]`"
+			},
+			{
+				"property": "lower-target-time",
+				"siid": 7,
+				"piid": 4,
+				"friendlyName": "Lower Basket - Target Time",
+				"channel": "lower_target_time",
+				"type": "Number:Time",
+				"unit": "minutes",
+				"stateDescription": {
+					"minimum": 1,
+					"maximum": 1440,
+					"step": 1,
+					"pattern": "%.0f %unit%"
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "time",
+				"tags": [
+					"Setpoint",
+					"Duration"
+				]
+			},
+			{
+				"property": "lower-target-temperature",
+				"siid": 7,
+				"piid": 6,
+				"friendlyName": "Lower Basket - Target Temperature",
+				"channel": "lower_target_temperature",
+				"type": "Number:Temperature",
+				"unit": "celsius",
+				"stateDescription": {
+					"minimum": 40,
+					"maximum": 230,
+					"step": 5,
+					"pattern": "%.0f %unit%"
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "temperature",
+				"tags": [
+					"Setpoint",
+					"Temperature"
+				]
+			},
+			{
+				"property": "lower-left-time",
+				"siid": 7,
+				"piid": 5,
+				"friendlyName": "Lower Basket - Left Time",
+				"channel": "lower_left_time",
+				"type": "Number:Time",
+				"unit": "minutes",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 1440,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "time",
+				"tags": [
+					"Status",
+					"Duration"
+				]
+			},
+			{
+				"property": "lower-mode",
+				"siid": 7,
+				"piid": 3,
+				"friendlyName": "Lower Basket - Mode",
+				"channel": "lower_mode",
+				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "0",
+							"label": "Manual"
+						},
+						{
+							"value": "1",
+							"label": "French Fries"
+						},
+						{
+							"value": "2",
+							"label": "Chicken Drumstick"
+						},
+						{
+							"value": "3",
+							"label": "Steak"
+						},
+						{
+							"value": "4",
+							"label": "Fish"
+						},
+						{
+							"value": "5",
+							"label": "Vegetables"
+						},
+						{
+							"value": "6",
+							"label": "Pizza"
+						},
+						{
+							"value": "7",
+							"label": "Cake"
+						},
+						{
+							"value": "8",
+							"label": "Dried Fruit"
+						},
+						{
+							"value": "9",
+							"label": "Reheat"
+						},
+						{
+							"value": "10",
+							"label": "Custom"
+						},
+						{
+							"value": "11",
+							"label": "Chicken Breast Potato Chunks"
+						},
+						{
+							"value": "12",
+							"label": "Chicken Legs Broccoli"
+						},
+						{
+							"value": "13",
+							"label": "Salmon Asparagus"
+						},
+						{
+							"value": "14",
+							"label": "Steak Asparagus"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [],
+				"tags": [
+					"Status",
+					"Mode"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Manual\",\"1\"\u003d\"French Fries\",\"2\"\u003d\"Chicken Drumstick\",\"3\"\u003d\"Steak\",\"4\"\u003d\"Fish\",\"5\"\u003d\"Vegetables\",\"6\"\u003d\"Pizza\",\"7\"\u003d\"Cake\",\"8\"\u003d\"Dried Fruit\",\"9\"\u003d\"Reheat\",\"10\"\u003d\"Custom\",\"11\"\u003d\"Chicken Breast Potato Chunks\",\"12\"\u003d\"Chicken Legs Broccoli\",\"13\"\u003d\"Salmon Asparagus\",\"14\"\u003d\"Steak Asparagus\"]`"
+			},
+			{
+				"property": "lower-recipe-id",
+				"siid": 7,
+				"piid": 7,
+				"friendlyName": "Lower Basket - Recipe Id",
+				"channel": "lower_recipe_id",
+				"type": "String",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "STRING"
+					}
+				]
+			},
+			{
+				"property": "lower-turn-pot",
+				"siid": 7,
+				"piid": 8,
+				"friendlyName": "Lower Basket - Turn Food",
+				"channel": "lower_turn_pot",
+				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "1",
+							"label": "No Action"
+						},
+						{
+							"value": "2",
+							"label": "Turn Food Now"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [],
+				"tags": [
+					"Status"
+				],
+				"readmeComment": "Value mapping `[\"1\"\u003d\"No Action\",\"2\"\u003d\"Turn Food Now\"]`"
+			},
+			{
+				"property": "lower-turn-pot-config",
+				"siid": 7,
+				"piid": 9,
+				"friendlyName": "Lower Basket - Turn Food Reminder",
+				"channel": "lower_turn_pot_config",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"tags": [
+					"Switch",
+					"Enabled"
+				]
+			},
+			{
+				"property": "lower-current-keep-warm",
+				"siid": 7,
+				"piid": 10,
+				"friendlyName": "Lower Basket - Keep Warm After Cooking",
+				"channel": "lower_current_keep_warm",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"tags": [
+					"Switch",
+					"Enabled"
+				]
+			},
+			{
+				"property": "lower-reservation-left-time",
+				"siid": 7,
+				"piid": 11,
+				"friendlyName": "Lower Basket - Scheduled Start Time Left",
+				"channel": "lower_reservation_left_time",
+				"type": "Number:Time",
+				"unit": "minutes",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 1440,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "time",
+				"tags": [
+					"Status",
+					"Duration"
+				]
+			},
+			{
+				"property": "lower-double-pot-param-sync",
+				"siid": 7,
+				"piid": 13,
+				"friendlyName": "Lower Basket - Basket Mode",
+				"channel": "lower_basket_mode",
+				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "0",
+							"label": "Single Basket"
+						},
+						{
+							"value": "1",
+							"label": "Both Baskets"
+						},
+						{
+							"value": "2",
+							"label": "Double Recipe"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [],
+				"tags": [
+					"Status"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Single Basket\",\"1\"\u003d\"Both Baskets\",\"2\"\u003d\"Double Recipe\"]`"
+			},
+			{
+				"property": "",
+				"friendlyName": "Recipes",
+				"channel": "recipes",
+				"type": "String",
+				"stateDescription": {
+					"readOnly": true
+				},
+				"refresh": true,
+				"refreshInterval": -1,
+				"customRefreshCommand": "/v2/recipes/query",
+				"customRefreshParameters": {
+					"vendor": "xiaomi",
+					"deviceType": "fryer",
+					"model": "xiaomi.fryer.jl12"
+				},
+				"transformation": "getJsonElement-recipes[*].{recipeID,recipeName,recipeCommand.cookCommand.time,recipeCommand.cookCommand.temperature,recipeCommand.cookCommand.preHeat,recipeCommand.cookCommand.capacity}",
+				"actions": [],
+				"readmeComment": "List of the Mi Home cloud recipes as JSON, with for each recipe the recipeID, recipeName, time (minutes), temperature (degrees Celsius), preHeat and capacity. Requires the cloud server to be set. The list is read once, send a refresh command to read it again."
+			}
+		],
+		"experimental": true
+	}
+}

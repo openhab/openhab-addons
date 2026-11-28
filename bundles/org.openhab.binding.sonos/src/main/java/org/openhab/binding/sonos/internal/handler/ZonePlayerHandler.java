@@ -3026,13 +3026,11 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
     }
 
     private void waitForTransportState(String state) throws InterruptedException {
-        if (getTransportState() != null) {
-            long start = System.currentTimeMillis();
-            while (!state.equals(getTransportState())) {
-                Thread.sleep(50);
-                if (System.currentTimeMillis() - start > (long) configuration.notificationTimeout * 1000) {
-                    break;
-                }
+        long start = System.currentTimeMillis();
+        while (!state.equals(getTransportState())) {
+            Thread.sleep(50);
+            if (System.currentTimeMillis() - start > (long) configuration.notificationTimeout * 1000) {
+                break;
             }
         }
     }
@@ -3411,6 +3409,9 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
         } else {
             logger.debug("UPnP device {} is absent (thing {})", getUDN(), getThing().getUID());
             updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR);
+            synchronized (upnpLock) {
+                subscriptionState.clear();
+            }
         }
     }
 

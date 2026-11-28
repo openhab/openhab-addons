@@ -26,6 +26,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.CommonTriggerEvents;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
@@ -134,5 +135,25 @@ public class HwDimmerHandlerTest {
         handler.bridgeStatusChanged(bridgeStatus(ThingStatus.ONLINE));
 
         verify(bridgeHandler, never()).sendCommand(org.mockito.ArgumentMatchers.anyString());
+    }
+
+    @Test
+    public void tapMessagesFireTriggerEventsOnlyWhenTheThingHasTheChannel() {
+        org.openhab.core.thing.ChannelUID tap = new org.openhab.core.thing.ChannelUID(THING_UID, "tap");
+        handler.handleTap(CommonTriggerEvents.PRESSED);
+        verify(callback, never()).channelTriggered(org.mockito.ArgumentMatchers.any(),
+                org.mockito.ArgumentMatchers.any(), org.mockito.ArgumentMatchers.any());
+
+        when(thing.getChannel("tap")).thenReturn(org.openhab.core.thing.binding.builder.ChannelBuilder.create(tap)
+                .withKind(org.openhab.core.thing.type.ChannelKind.TRIGGER).build());
+        handler.handleTap(CommonTriggerEvents.PRESSED);
+        handler.handleTap(CommonTriggerEvents.RELEASED);
+        handler.handleTap(CommonTriggerEvents.LONG_PRESSED);
+        handler.handleTap(CommonTriggerEvents.DOUBLE_PRESSED);
+
+        verify(callback).channelTriggered(thing, tap, "PRESSED");
+        verify(callback).channelTriggered(thing, tap, "RELEASED");
+        verify(callback).channelTriggered(thing, tap, "LONG_PRESSED");
+        verify(callback).channelTriggered(thing, tap, "DOUBLE_PRESSED");
     }
 }

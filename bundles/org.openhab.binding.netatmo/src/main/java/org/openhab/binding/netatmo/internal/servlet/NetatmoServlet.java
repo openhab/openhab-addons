@@ -14,15 +14,15 @@ package org.openhab.binding.netatmo.internal.servlet;
 
 import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.BINDING_ID;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.netatmo.internal.handler.ApiBridgeHandler;
-import org.osgi.service.http.HttpService;
-import org.osgi.service.http.NamespaceException;
+import org.ops4j.pax.web.service.http.HttpService;
+import org.ops4j.pax.web.service.http.NamespaceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServlet;
 
 /**
  * The {@link NetatmoServlet} is the ancestor class for Netatmo servlets
@@ -37,12 +37,12 @@ public abstract class NetatmoServlet extends HttpServlet {
     private final HttpService httpService;
     private final String path;
 
-    protected final ApiBridgeHandler handler;
+    protected final ApiBridgeHandler accountHandler;
 
-    public NetatmoServlet(ApiBridgeHandler handler, HttpService httpService, String localPath) {
-        this.path = "/" + BINDING_ID + "/" + localPath + "/" + handler.getId();
+    public NetatmoServlet(ApiBridgeHandler accountHandler, HttpService httpService, String localPath) {
+        this.path = "/" + BINDING_ID + "/" + localPath + "/" + accountHandler.getId();
         this.httpService = httpService;
-        this.handler = handler;
+        this.accountHandler = accountHandler;
     }
 
     public void startListening() {

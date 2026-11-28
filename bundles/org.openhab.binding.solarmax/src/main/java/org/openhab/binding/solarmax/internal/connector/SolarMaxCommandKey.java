@@ -44,6 +44,15 @@ public enum SolarMaxCommandKey {
     acPhase1Voltage("UL1"), //
     acPhase2Voltage("UL2"), //
     acPhase3Voltage("UL3"), //
+    operatingState("SYS"), //
+    alarmCode("SAL"), //
+    dcInput1Voltage("UD01"), //
+    dcInput2Voltage("UD02"), //
+    dcInput1Current("ID01"), //
+    dcInput2Current("ID02"), //
+    dcInput1Power("PD01"), //
+    dcInput2Power("PD02"), //
+    dcPower("PDC"), //
     UNKNOWN("UNKNOWN") // really unknown - shouldn't ever be sent to the device
     ;
 

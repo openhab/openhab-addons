@@ -55,8 +55,8 @@
 		<description>Switch the radio on or off.</description>
 		<category>Switch</category>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Power</tag>
+			<point>Switch</point>
+			<property>Power</property>
 		</tags>
 	</channel-type>
 	<channel-type id="preset">
@@ -70,8 +70,8 @@
 		<description>Volume (min=0, max=32).</description>
 		<category>SoundVolume</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>SoundVolume</tag>
+			<point>Control</point>
+			<property>SoundVolume</property>
 		</tags>
 		<state min="0" max="32" step="1"/>
 	</channel-type>
@@ -81,8 +81,8 @@
 		<description>Volume (in percent).</description>
 		<category>SoundVolume</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>SoundVolume</tag>
+			<point>Control</point>
+			<property>SoundVolume</property>
 		</tags>
 		<state min="0" max="100" step="3"/> <!-- 3% correspond to 1 absolute step -->
 	</channel-type>
@@ -91,8 +91,8 @@
 		<label>Mute</label>
 		<description>Mute the radio.</description>
 		<tags>
-			<tag>Switch</tag>
-			<tag>SoundVolume</tag>
+			<point>Switch</point>
+			<property>SoundVolume</property>
 		</tags>
 	</channel-type>
 	<channel-type id="play-info-name">

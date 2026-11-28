@@ -55,7 +55,10 @@ public abstract class GatewayQueryService implements AutoCloseable {
     @Nullable
     public abstract String getFirmwareVersion();
 
-    public abstract Map<SensorGatewayBinding, SensorDevice> getRegisteredSensors();
+    /**
+     * @return the sensors paired with the gateway, or {@code null} if they could not be read (completely)
+     */
+    public abstract @Nullable Map<SensorGatewayBinding, SensorDevice> getRegisteredSensors();
 
     @Nullable
     public abstract SystemInfo fetchSystemInfo();

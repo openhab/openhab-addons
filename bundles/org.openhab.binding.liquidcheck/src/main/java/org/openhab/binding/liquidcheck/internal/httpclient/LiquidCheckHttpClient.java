@@ -17,10 +17,10 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.liquidcheck.internal.LiquidCheckConfiguration;
@@ -79,8 +79,8 @@ public class LiquidCheckHttpClient {
         String uri = "http://" + config.hostname + "/command";
         Request request = client.newRequest(uri).timeout(config.connectionTimeout, TimeUnit.SECONDS);
         request.method(HttpMethod.POST);
-        request.header(HttpHeader.CONTENT_TYPE, "applicaton/json");
-        request.content(new StringContentProvider(
+        request.headers(h -> h.add(HttpHeader.CONTENT_TYPE, "applicaton/json"));
+        request.body(new StringRequestContent(
                 "{\"header\":{\"namespace\":\"Device.Control\",\"name\":\"StartMeasure\",\"messageId\":\"1\",\"payloadVersion\":\"1\"},\"payload\":null}"));
         ContentResponse response = request.send();
         return response.getContentAsString();

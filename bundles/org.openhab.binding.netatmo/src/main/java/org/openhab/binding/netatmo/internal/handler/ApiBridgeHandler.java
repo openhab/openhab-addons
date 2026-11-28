@@ -15,9 +15,7 @@ package org.openhab.binding.netatmo.internal.handler;
 import static java.util.Comparator.*;
 import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
@@ -37,20 +35,18 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.function.BiFunction;
 
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.UriBuilder;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.BytesRequestContent;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.InputStreamContentProvider;
+import org.eclipse.jetty.client.Request;
 import org.eclipse.jetty.http.HttpField;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.http.HttpStatus.Code;
+import org.openhab.binding.netatmo.internal.NetatmoHandlerFactory;
 import org.openhab.binding.netatmo.internal.api.AircareApi;
 import org.openhab.binding.netatmo.internal.api.ApiError;
 import org.openhab.binding.netatmo.internal.api.AuthenticationApi;
@@ -73,13 +69,16 @@ import org.openhab.binding.netatmo.internal.config.ConfigurationLevel;
 import org.openhab.binding.netatmo.internal.deserialization.AccessTokenResponseDeserializer;
 import org.openhab.binding.netatmo.internal.deserialization.NADeserializer;
 import org.openhab.binding.netatmo.internal.discovery.NetatmoDiscoveryService;
+import org.openhab.binding.netatmo.internal.servlet.CloudWebhookServlet;
 import org.openhab.binding.netatmo.internal.servlet.GrantServlet;
+import org.openhab.binding.netatmo.internal.servlet.LocalWebhookServlet;
 import org.openhab.binding.netatmo.internal.servlet.WebhookServlet;
 import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
 import org.openhab.core.auth.client.oauth2.OAuthClientService;
 import org.openhab.core.auth.client.oauth2.OAuthException;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
 import org.openhab.core.auth.client.oauth2.OAuthResponseException;
+import org.openhab.core.io.rest.WebhookService;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.Bridge;
@@ -91,7 +90,7 @@ import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
-import org.osgi.service.http.HttpService;
+import org.ops4j.pax.web.service.http.HttpService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -99,6 +98,9 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
+
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.UriBuilder;
 
 /**
  * {@link ApiBridgeHandler} is the handler for a Netatmo API and connects it to the framework.
@@ -108,7 +110,7 @@ import com.google.gson.JsonParser;
  * @author Martin Littkovsky - Keep HTTP status and raw error code for unclassified errors
  */
 @NonNullByDefault
-public class ApiBridgeHandler extends BaseBridgeHandler {
+public class ApiBridgeHandler extends BaseBridgeHandler implements NetatmoHandlerFactory.WebhookServiceListener {
     private static final int TIMEOUT_S = 20;
     private static final int API_LIMIT_INTERVAL_S = 3600;
     private static final int MAX_REQUESTS_PER_SECOND = 5;
@@ -116,6 +118,7 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(ApiBridgeHandler.class);
     private final AuthenticationApi connectApi = new AuthenticationApi(this);
+    private final WebhookApi webhookApi = new WebhookApi(this);
     private final Map<Class<? extends RestManager>, RestManager> managers = new HashMap<>();
     private final Deque<Instant> requestsTimestamps = new ArrayDeque<>(200);
     private final Deque<Long> requestsWindowInNanos = new ArrayDeque<>(MAX_REQUESTS_PER_SECOND);
@@ -124,22 +127,27 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
     private final OAuthFactory oAuthFactory;
     private final NADeserializer deserializer;
     private final HttpService httpService;
+    private final NetatmoHandlerFactory handlerFactory;
     private final ChannelUID requestCountChannelUID;
     private final ChannelUID hookSetChannelUID;
+    private final GrantServlet grantServlet;
 
     private @Nullable OAuthClientService oAuthClientService;
     private @Nullable ScheduledFuture<?> connectJob;
     private @Nullable WebhookServlet webhookServlet;
-    private @Nullable GrantServlet grantServlet;
+    private @Nullable WebhookService webhookService;
 
     public ApiBridgeHandler(Bridge bridge, HttpClient httpClient, NADeserializer deserializer,
-            BindingConfiguration configuration, HttpService httpService, OAuthFactory oAuthFactory) {
+            BindingConfiguration configuration, HttpService httpService, OAuthFactory oAuthFactory,
+            NetatmoHandlerFactory handlerFactory) {
         super(bridge);
         this.bindingConf = configuration;
         this.httpClient = httpClient;
         this.deserializer = deserializer;
         this.httpService = httpService;
         this.oAuthFactory = oAuthFactory;
+        this.handlerFactory = handlerFactory;
+        this.grantServlet = new GrantServlet(this, httpService);
         requestCountChannelUID = new ChannelUID(thing.getUID(), GROUP_MONITORING, CHANNEL_REQUEST_COUNT);
         hookSetChannelUID = new ChannelUID(thing.getUID(), GROUP_MONITORING, CHANNEL_HOOK_SET);
     }
@@ -164,6 +172,7 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
                         new AccessTokenResponseDeserializer()));
 
         updateStatus(ThingStatus.UNKNOWN);
+        grantServlet.startListening();
 
         scheduler.execute(() -> openConnection(null, null));
     }
@@ -174,18 +183,19 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
         }
 
         logger.debug("Connected to Netatmo API.");
+
         freeConnectJob();
+        freeWebhookServlet();
 
         ApiHandlerConfiguration configuration = getConfiguration();
-        hookState(false);
-        if (!configuration.webHookUrl.isBlank() && getRestManager(WebhookApi.class) instanceof WebhookApi api) {
-            WebhookServlet servlet = webhookServlet;
-            if (servlet != null) {
-                servlet.dispose();
-            }
-            servlet = webhookServlet = new WebhookServlet(this, httpService, deserializer, api,
-                    configuration.webHookUrl, configuration.webHookPostfix);
-            servlet.startListening();
+        if (configuration.useCloudWebhook) {
+            handlerFactory.registerCloudWebhookServiceListener(this);
+        } else {
+            handlerFactory.unregisterCloudWebhookServiceListener(this);
+        }
+
+        if (configuration.getWebhookUrlPattern() != null) {
+            checkStartWebhook();
         }
 
         updateStatus(ThingStatus.ONLINE);
@@ -200,14 +210,9 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
 
         AccessTokenResponse accessTokenResponse;
         try {
-            if (code != null) {
-                accessTokenResponse = oAuthClientService.getAccessTokenResponseByAuthorizationCode(code, redirectUri);
-
-                // Dispose grant servlet upon completion of authorization flow.
-                freeGrantServlet();
-            } else {
-                accessTokenResponse = oAuthClientService.getAccessTokenResponse();
-            }
+            accessTokenResponse = code != null
+                    ? oAuthClientService.getAccessTokenResponseByAuthorizationCode(code, redirectUri)
+                    : oAuthClientService.getAccessTokenResponse();
         } catch (OAuthException | OAuthResponseException e) {
             logger.debug("Failed to load access token: {}", e.getMessage());
             startAuthorizationFlow();
@@ -233,8 +238,6 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
     }
 
     private void startAuthorizationFlow() {
-        GrantServlet grantServlet = this.grantServlet = new GrantServlet(this, httpService);
-        grantServlet.startListening();
         updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                 "@text/conf-error-grant-needed [ \"http(s)://<YOUROPENHAB>:<YOURPORT>%s\" ]"
                         .formatted(grantServlet.getPath()));
@@ -267,24 +270,13 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
         this.connectJob = null;
     }
 
-    private void freeGrantServlet() {
-        if (grantServlet instanceof GrantServlet servlet) {
-            servlet.dispose();
-        }
-        this.grantServlet = null;
-    }
-
     @Override
     public void dispose() {
         logger.debug("Shutting down Netatmo API bridge handler.");
 
-        WebhookServlet webHookServlet = this.webhookServlet;
-        if (webHookServlet != null) {
-            webHookServlet.dispose();
-        }
-        this.webhookServlet = null;
-
-        freeGrantServlet();
+        webhookServiceGone();
+        grantServlet.dispose();
+        handlerFactory.unregisterCloudWebhookServiceListener(this);
 
         connectApi.dispose();
         freeConnectJob();
@@ -304,7 +296,7 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command == RefreshType.REFRESH && CHANNEL_HOOK_SET.equals(channelUID.getIdWithoutGroup())) {
             updateState(hookSetChannelUID,
-                    webhookServlet != null ? OnOffType.from(webhookServlet.hookSet()) : OnOffType.OFF);
+                    webhookServlet != null ? OnOffType.from(webhookServlet.hookInstalled()) : OnOffType.OFF);
         }
     }
 
@@ -317,7 +309,7 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
                 if (connectApi.matchesScopes(expected)) {
                     managers.put(clazz, instance);
                 } else {
-                    logger.warn("Unable to instantiate {}, expected scope {} is not active", clazz, expected);
+                    logger.warn("Unable to instantiate {} because expected scope {} is not active", clazz, expected);
                 }
             } catch (SecurityException | ReflectiveOperationException e) {
                 logger.warn("Error invoking RestManager constructor for class {}: {}", clazz, e.getMessage());
@@ -341,7 +333,8 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
                 prepareReconnection("@text/status-bridge-offline", null, null);
                 throw new NetatmoException("Not authenticated");
             }
-            connectApi.getAuthorization().ifPresent(auth -> request.header(HttpHeader.AUTHORIZATION, auth));
+            connectApi.getAuthorization()
+                    .ifPresent(auth -> request.headers(h -> h.add(HttpHeader.AUTHORIZATION, auth)));
 
             handlePayload(method, payload, contentType, request);
             handleRequestCounter();
@@ -456,11 +449,8 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
             return;
         }
 
-        InputStream stream = new ByteArrayInputStream(payload.getBytes(StandardCharsets.UTF_8));
-        try (InputStreamContentProvider inputStreamContentProvider = new InputStreamContentProvider(stream)) {
-            request.content(inputStreamContentProvider, contentType);
-            request.header(HttpHeader.ACCEPT, MediaType.APPLICATION_JSON);
-        }
+        request.body(new BytesRequestContent(contentType, payload.getBytes(StandardCharsets.UTF_8)));
+        request.headers(h -> h.add(HttpHeader.ACCEPT, MediaType.APPLICATION_JSON));
         logger.trace(" -with payload: {} ", payload);
     }
 
@@ -582,5 +572,46 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
         }
 
         updateState(hookSetChannelUID, OnOffType.from(hooked));
+    }
+
+    @Override
+    public void webhookServiceAvailable(WebhookService webhookService) {
+        this.webhookService = webhookService;
+        checkStartWebhook();
+    }
+
+    @Override
+    public void webhookServiceGone() {
+        webhookService = null;
+        if (webhookServlet instanceof CloudWebhookServlet) {
+            freeWebhookServlet();
+        }
+    }
+
+    private void checkStartWebhook() {
+        ApiHandlerConfiguration configuration = getConfiguration();
+        WebhookServlet servlet = null;
+        if (configuration.useCloudWebhook) {
+            if (webhookService instanceof WebhookService service) {
+                servlet = new CloudWebhookServlet(this, httpService, deserializer, webhookApi, service, scheduler);
+            } else {
+                logger.info("Netatmo webhook will be set once openHAB Cloud WebhookService is available");
+            }
+        } else if (configuration.getWebhookUrlPattern() instanceof String urlPattern) {
+            servlet = new LocalWebhookServlet(this, httpService, deserializer, webhookApi, urlPattern);
+        }
+
+        if (servlet != null) {
+            this.webhookServlet = servlet;
+            servlet.startListening();
+        }
+    }
+
+    private void freeWebhookServlet() {
+        hookState(false);
+        if (webhookServlet instanceof WebhookServlet servlet) {
+            servlet.dispose();
+        }
+        this.webhookServlet = null;
     }
 }

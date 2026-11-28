@@ -3,6 +3,14 @@
 	xmlns:update="https://openhab.org/schemas/update-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/update-description/v1.0.0 https://openhab.org/schemas/update-description-1.0.0.xsd">
 
+	<thing-type uid="lutron:hwdimmer">
+		<instruction-set targetVersion="1">
+			<add-channel id="tap">
+				<type>lutron:buttonTrigger</type>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+
 	<thing-type uid="lutron:keypad">
 		<instruction-set targetVersion="1">
 			<update-channel id="button1">

@@ -62,8 +62,8 @@
 		<description>Current temperature in room</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state min="5" max="35" step="0.5" readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -73,8 +73,8 @@
 		<description>Sets the desired temperature in room</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state min="5" max="35" step="0.5" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -90,8 +90,8 @@
 			turned on, following manual temperature until next schedule.
 		</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Mode</tag>
+			<point>Control</point>
+			<property>Mode</property>
 		</tags>
 		<state>
 			<options>
@@ -107,8 +107,8 @@
 		<label>Running State</label>
 		<description>Is the device running</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Power</tag>
+			<point>Status</point>
+			<property>Power</property>
 		</tags>
 	</channel-type>
 
@@ -118,8 +118,8 @@
 		<description>Requested cooling temperature. Supported only by cooling-capable thermostats.</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state min="5" max="35" step="0.5" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -128,8 +128,8 @@
 		<label>System Mode</label>
 		<description>Selects heating, cooling or off independently of the schedule/hold mode.</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Mode</tag>
+			<point>Control</point>
+			<property>Mode</property>
 		</tags>
 		<state>
 			<options>
@@ -144,7 +144,7 @@
 		<label>Keypad Lock</label>
 		<description>Locks the thermostat keypad when ON.</description>
 		<tags>
-			<tag>Control</tag>
+			<point>Control</point>
 		</tags>
 	</channel-type>
 	<channel-type id="it600-allow-local-unlock" advanced="true">
@@ -152,7 +152,7 @@
 		<label>Allow Local Unlock</label>
 		<description>Allows the keypad to be unlocked on the thermostat when ON.</description>
 		<tags>
-			<tag>Control</tag>
+			<point>Control</point>
 		</tags>
 	</channel-type>
 	<channel-type id="it600-temperature-offset" advanced="true">
@@ -161,8 +161,8 @@
 		<description>Calibration offset added to the measured room temperature.</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state min="-3" max="3" step="0.5" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -172,8 +172,8 @@
 		<description>Temperature maintained by frost protection.</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state min="5" max="17" step="0.5" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -183,8 +183,8 @@
 		<description>Lowest allowed heating setpoint.</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state min="5" max="35" step="0.5" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -194,8 +194,8 @@
 		<description>Highest allowed heating setpoint.</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state min="5" max="35" step="0.5" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -204,7 +204,7 @@
 		<label>Valve Protection</label>
 		<description>Enables the thermostat valve-protection function.</description>
 		<tags>
-			<tag>Control</tag>
+			<point>Control</point>
 		</tags>
 	</channel-type>
 	<channel-type id="it600-display-off" advanced="true">
@@ -212,7 +212,7 @@
 		<label>Display Off</label>
 		<description>Switches the thermostat display off when ON.</description>
 		<tags>
-			<tag>Control</tag>
+			<point>Control</point>
 		</tags>
 	</channel-type>
 	<channel-type id="it600-display-unit" advanced="true">
@@ -220,8 +220,8 @@
 		<label>Display Unit</label>
 		<description>Temperature unit shown on the physical thermostat.</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Mode</tag>
+			<point>Control</point>
+			<property>Mode</property>
 		</tags>
 		<state>
 			<options>
@@ -235,8 +235,8 @@
 		<label>Clock Format</label>
 		<description>Time format shown on the physical thermostat.</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Mode</tag>
+			<point>Control</point>
+			<property>Mode</property>
 		</tags>
 		<state>
 			<options>
@@ -250,7 +250,7 @@
 		<label>Active Errors</label>
 		<description>Comma-separated reported error codes, or NONE when all reported flags are clear.</description>
 		<tags>
-			<tag>Alarm</tag>
+			<point>Alarm</point>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -259,7 +259,7 @@
 		<label>Received Signal Strength</label>
 		<description>Signal strength of the last thermostat radio message.</description>
 		<tags>
-			<tag>Measurement</tag>
+			<point>Measurement</point>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
@@ -268,7 +268,7 @@
 		<label>Link Quality</label>
 		<description>Link quality of the last thermostat radio message.</description>
 		<tags>
-			<tag>Measurement</tag>
+			<point>Measurement</point>
 		</tags>
 		<state min="0" max="255" step="1" readOnly="true" pattern="%d"/>
 	</channel-type>

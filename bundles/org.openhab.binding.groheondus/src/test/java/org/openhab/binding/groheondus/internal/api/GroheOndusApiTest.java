@@ -15,10 +15,10 @@ package org.openhab.binding.groheondus.internal.api;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
+import static org.openhab.binding.groheondus.internal.GroheOndusBindingConstants.*;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.CookieStore;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -32,13 +32,15 @@ import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.http.HttpCookieStore;
 import org.eclipse.jetty.http.HttpFields;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openhab.core.i18n.TimeZoneProvider;
+import org.openhab.core.thing.Thing;
 
 /**
  * Tests for {@link GroheOndusApi}.
@@ -62,7 +64,7 @@ class GroheOndusApiTest {
     void setUp() {
         TimeZoneProvider timeZoneProvider = mock(TimeZoneProvider.class);
         when(timeZoneProvider.getTimeZone()).thenReturn(ZONE);
-        when(httpClient.getCookieStore()).thenReturn(mock(CookieStore.class));
+        when(httpClient.getHttpCookieStore()).thenReturn(mock(HttpCookieStore.class));
         when(httpClient.newRequest(anyString())).thenAnswer(invocation -> createRequest(invocation.getArgument(0)));
         api = new GroheOndusApi(httpClient, timeZoneProvider);
     }
@@ -87,7 +89,7 @@ class GroheOndusApiTest {
     }
 
     private static ContentResponse response(int status, String body) {
-        return response(status, body, new HttpFields());
+        return response(status, body, HttpFields.EMPTY);
     }
 
     private static ContentResponse response(int status, String body, HttpFields headers) {
@@ -131,8 +133,8 @@ class GroheOndusApiTest {
 
     @Test
     void webFormLogin() throws Exception {
-        HttpFields redirect = new HttpFields();
-        redirect.put("Location", "ondus://idp2-apigw.cloud.grohe.com/v3/iot/oidc/token?code=xyz");
+        HttpFields redirect = HttpFields.build().put("Location",
+                "ondus://idp2-apigw.cloud.grohe.com/v3/iot/oidc/token?code=xyz");
         responses.put("oidc/login", response(200, fixture("login-page.html")));
         responses.put("login-actions/authenticate", response(302, "", redirect));
         responses.put("oidc/token", response(200, TOKEN_JSON));
@@ -167,9 +169,12 @@ class GroheOndusApiTest {
         List<ApplianceInfo> appliances = api().getAppliances();
 
         assertEquals(3, appliances.size());
-        assertEquals(new ApplianceInfo(SENSE, "Sense kitchen", ApplianceInfo.TYPE_SENSE, null, null),
+        assertEquals(
+                new ApplianceInfo(SENSE, "Sense kitchen", ApplianceInfo.TYPE_SENSE, null, null, null, null, null, null),
                 appliances.get(0));
-        assertEquals(new ApplianceInfo(GUARD, "Guard", ApplianceInfo.TYPE_SENSE_GUARD, 900, null), appliances.get(2));
+        assertEquals(
+                new ApplianceInfo(GUARD, "Guard", ApplianceInfo.TYPE_SENSE_GUARD, 900, null, null, null, null, null),
+                appliances.get(2));
     }
 
     @Test
@@ -182,6 +187,23 @@ class GroheOndusApiTest {
         assertEquals(ApplianceInfo.TYPE_SENSE_GUARD, appliance.type());
         assertEquals(900, appliance.measurementTransmissionInterval());
         assertEquals(Instant.parse("2026-11-18T09:00:00Z"), appliance.lastTransmission());
+        assertEquals(Map.of(PROPERTY_APPLIANCE_NAME, "Guard", Thing.PROPERTY_VENDOR, "GROHE", Thing.PROPERTY_MODEL_ID,
+                "Sense Guard", Thing.PROPERTY_SERIAL_NUMBER, "1Z16011B14BD000100040004",
+                Thing.PROPERTY_FIRMWARE_VERSION, "01.44.Z22.0400.0101", PROPERTY_INSTALLATION_DATE,
+                "2020-01-01T00:00:00.000+00:00", PROPERTY_MEASUREMENT_INTERVAL, "900"), appliance.properties());
+    }
+
+    @Test
+    void propertiesLeaveOutUnreportedValues() throws Exception {
+        authenticate();
+        responses.put("dashboard", response(200, fixture("dashboard.json")));
+
+        List<ApplianceInfo> appliances = api().getAppliances();
+
+        assertEquals(Map.of(PROPERTY_APPLIANCE_NAME, "Sense kitchen", Thing.PROPERTY_VENDOR, "GROHE",
+                Thing.PROPERTY_MODEL_ID, "Sense"), appliances.get(0).properties());
+        assertEquals(Map.of(PROPERTY_APPLIANCE_NAME, "Blue", Thing.PROPERTY_VENDOR, "GROHE"),
+                appliances.get(1).properties());
     }
 
     @Test
@@ -292,6 +314,19 @@ class GroheOndusApiTest {
         authenticate();
         responses.put("/command", response(200, fixture("command.json")));
         assertEquals(Boolean.TRUE, api().isValveOpen(GUARD));
+    }
+
+    @Test
+    void decodeSerialNumber() {
+        assertEquals("1Z16011B14BD000100040004",
+                GroheOndusApi.decodeSerialNumber("315a31363031314231344244303030313030303430303034"));
+        assertEquals("SN-123", GroheOndusApi.decodeSerialNumber("SN-123"));
+        assertEquals("abc", GroheOndusApi.decodeSerialNumber("abc"));
+        // Valid hex, but not printable ASCII
+        assertEquals("00ff", GroheOndusApi.decodeSerialNumber("00ff"));
+        // Fullwidth digits are Unicode hex digits, but not accepted by HexFormat
+        assertEquals("\uFF13\uFF11", GroheOndusApi.decodeSerialNumber("\uFF13\uFF11"));
+        assertNull(GroheOndusApi.decodeSerialNumber(null));
     }
 
     @Test

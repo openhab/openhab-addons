@@ -140,8 +140,8 @@
 		<label>Loxone Switch</label>
 		<description>Loxone's virtual input of switch type and push button controls.</description>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Power</tag>
+			<point>Switch</point>
+			<property>Power</property>
 		</tags>
 	</channel-type>
 
@@ -157,8 +157,8 @@
 		<label>Loxone Jalousie</label>
 		<description>Loxone's Jalousies (rollershutters, blinds).</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>OpenLevel</tag>
+			<point>Control</point>
+			<property>OpenLevel</property>
 		</tags>
 	</channel-type>
 
@@ -168,8 +168,8 @@
 		<description>Loxone's window position control.</description>
 		<category>Window</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>OpenLevel</tag>
+			<point>Control</point>
+			<property>OpenLevel</property>
 		</tags>
 		<state min="0" max="100"/>
 		<config-description>
@@ -191,8 +191,8 @@
 			and closing require Miniserver 12.1 or newer.</description>
 		<category>garagedoor</category>
 		<tags>
-			<tag>Control</tag>
-			<tag>OpenLevel</tag>
+			<point>Control</point>
+			<property>OpenLevel</property>
 		</tags>
 		<state min="0" max="100" pattern="%d %%"/>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
@@ -256,8 +256,8 @@
 		<label>Loxone Light Controller / Hotel Light Controller</label>
 		<description>Loxone's light controllers (LightController).</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Light</tag>
+			<point>Control</point>
+			<property>Light</property>
 		</tags>
 		<state pattern="%d" min="0" max="9" step="1">
 			<options>
@@ -287,8 +287,8 @@
 		<label>Loxone Dimmer</label>
 		<description>Loxone's dimmer control</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Brightness</tag>
+			<point>Control</point>
+			<property>Brightness</property>
 		</tags>
 	</channel-type>
 
@@ -297,8 +297,8 @@
 		<label>Loxone ColorPicker</label>
 		<description>Loxone's Color Picker V2 control</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Color</tag>
+			<point>Control</point>
+			<property>Color</property>
 		</tags>
 	</channel-type>
 

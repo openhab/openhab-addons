@@ -24,6 +24,7 @@ import java.time.format.DateTimeParseException;
 import java.time.temporal.TemporalAccessor;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HexFormat;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
@@ -34,11 +35,11 @@ import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
+import org.eclipse.jetty.client.FormRequestContent;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.FormContentProvider;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
@@ -107,7 +108,7 @@ public class GroheOndusApi {
         JsonObject body = new JsonObject();
         body.addProperty("refresh_token", refreshToken);
         Request request = httpClient.newRequest(API_URL + "oidc/refresh").method(HttpMethod.POST)
-                .content(new StringContentProvider(CONTENT_TYPE_JSON, body.toString(), StandardCharsets.UTF_8));
+                .body(new StringRequestContent(CONTENT_TYPE_JSON, body.toString(), StandardCharsets.UTF_8));
         return acceptToken(sendForBody(request));
     }
 
@@ -119,7 +120,7 @@ public class GroheOndusApi {
      */
     public TokenResponse authenticateWithCredentials(String username, String password) throws GroheOndusApiException {
         // The login form relies on a cookie session; stale cookies from an earlier login can break a new one
-        httpClient.getCookieStore().removeAll();
+        httpClient.getHttpCookieStore().clear();
 
         String loginPage = sendForBody(httpClient.newRequest(API_URL + "oidc/login").method(HttpMethod.GET));
         String formAction = extractFormAction(loginPage);
@@ -127,10 +128,10 @@ public class GroheOndusApi {
         Fields fields = new Fields();
         fields.put("username", username);
         fields.put("password", password);
-        ContentResponse response = execute(
-                httpClient.newRequest(formAction).method(HttpMethod.POST).followRedirects(false)
-                        .header("X-Requested-With", "XMLHttpRequest").header(HttpHeader.REFERER, formAction)
-                        .header(HttpHeader.ORIGIN, BASE_URL).content(new FormContentProvider(fields)));
+        ContentResponse response = execute(httpClient.newRequest(formAction).method(HttpMethod.POST)
+                .followRedirects(false).headers(h -> h.put("X-Requested-With", "XMLHttpRequest")
+                        .put(HttpHeader.REFERER, formAction).put(HttpHeader.ORIGIN, BASE_URL))
+                .body(new FormRequestContent(fields)));
 
         // On success the form redirects to the app scheme; the same path served over https returns the tokens
         String location = response.getHeaders().get(HttpHeader.LOCATION);
@@ -274,8 +275,8 @@ public class GroheOndusApi {
             throw new GroheOndusCommunicationException("Command response without command object");
         }
         command.addProperty("valve_open", open);
-        sendAuthorized(httpClient.newRequest(applianceUrl(ref) + "/command").method(HttpMethod.POST).content(
-                new StringContentProvider(CONTENT_TYPE_JSON, commandResponse.toString(), StandardCharsets.UTF_8)));
+        sendAuthorized(httpClient.newRequest(applianceUrl(ref) + "/command").method(HttpMethod.POST)
+                .body(new StringRequestContent(CONTENT_TYPE_JSON, commandResponse.toString(), StandardCharsets.UTF_8)));
     }
 
     /**
@@ -289,7 +290,7 @@ public class GroheOndusApi {
             JsonObject body = new JsonObject();
             body.addProperty("snooze_duration", durationMinutes);
             sendAuthorized(httpClient.newRequest(url).method(HttpMethod.PUT)
-                    .content(new StringContentProvider(CONTENT_TYPE_JSON, body.toString(), StandardCharsets.UTF_8)));
+                    .body(new StringRequestContent(CONTENT_TYPE_JSON, body.toString(), StandardCharsets.UTF_8)));
         }
     }
 
@@ -337,7 +338,7 @@ public class GroheOndusApi {
         if (token == null) {
             throw new GroheOndusAuthenticationException("Not authenticated");
         }
-        return sendForBody(request.header(HttpHeader.AUTHORIZATION, "Bearer " + token));
+        return sendForBody(request.headers(h -> h.put(HttpHeader.AUTHORIZATION, "Bearer " + token)));
     }
 
     private String sendForBody(Request request) throws GroheOndusApiException {
@@ -395,7 +396,9 @@ public class GroheOndusApi {
         ApplianceResponse.Config config = appliance.config;
         return new ApplianceInfo(ref, Objects.requireNonNullElse(appliance.name, ref.applianceId()),
                 Objects.requireNonNull(appliance.type), config == null ? null : config.measurementTransmissionInterval,
-                parseTimestamp(appliance.tdt, timeZoneProvider.getTimeZone()));
+                parseTimestamp(appliance.tdt, timeZoneProvider.getTimeZone()),
+                decodeSerialNumber(appliance.serialNumber), appliance.version, appliance.installationDate,
+                config == null ? null : config.measurementPeriod);
     }
 
     private static String applianceUrl(ApplianceRef ref) {
@@ -413,6 +416,28 @@ public class GroheOndusApi {
             logger.debug("Ignoring sample with unsupported timestamp '{}'", date);
         }
         return timestamp;
+    }
+
+    /**
+     * The API reports the serial number hex-encoded, e.g. {@code 315a3136...} for {@code 1Z16...}.
+     *
+     * @return the decoded serial number, or the value unchanged if it is not hex-encoded printable ASCII
+     */
+    static @Nullable String decodeSerialNumber(@Nullable String value) {
+        if (value == null || value.isBlank()) {
+            return value;
+        }
+        String text = value.trim();
+        if (text.length() % 2 != 0 || !text.chars().allMatch(HexFormat::isHexDigit)) {
+            return text;
+        }
+        byte[] bytes = HexFormat.of().parseHex(text);
+        for (byte b : bytes) {
+            if (b < 0x20 || b > 0x7e) {
+                return text;
+            }
+        }
+        return new String(bytes, StandardCharsets.US_ASCII);
     }
 
     static String extractFormAction(String loginPage) throws GroheOndusCommunicationException {

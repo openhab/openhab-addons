@@ -4,7 +4,6 @@
 			"xiaomi.aircondition.ma1",
 			"xiaomi.aircondition.ma2",
 			"xiaomi.aircondition.ma4",
-			"xiaomi.aircondition.ma5",
 			"xiaomi.aircondition.ma6",
 			"xiaomi.aircondition.ma9"
 		],
@@ -34,26 +33,26 @@
 				"property": "mode",
 				"siid": 2,
 				"piid": 2,
-				"friendlyName": "Air Conditioner - Mode",
+				"friendlyName": "Mode",
 				"channel": "mode",
 				"type": "Number",
 				"stateDescription": {
 					"options": [
 						{
-							"value": "1",
+							"value": "2",
 							"label": "Cool"
 						},
 						{
-							"value": "2",
-							"label": "Dry"
-						},
-						{
 							"value": "3",
-							"label": "Heat"
+							"label": "Dry"
 						},
 						{
 							"value": "4",
 							"label": "Fan"
+						},
+						{
+							"value": "5",
+							"label": "Heat"
 						}
 					]
 				},
@@ -64,23 +63,25 @@
 						"parameterType": "NUMBER"
 					}
 				],
+				"category": "climate",
 				"tags": [
-					"Control"
+					"Control",
+					"Mode"
 				],
-				"readmeComment": "Value mapping `[\"1\"\u003d\"Cool\",\"2\"\u003d\"Dry\",\"3\"\u003d\"Heat\",\"4\"\u003d\"Fan\"]`"
+				"readmeComment": "Value mapping `[\"2\"\u003d\"Cool\",\"3\"\u003d\"Dry\",\"4\"\u003d\"Fan\",\"5\"\u003d\"Heat\"]`"
 			},
 			{
 				"property": "target-temperature",
 				"siid": 2,
 				"piid": 3,
-				"friendlyName": "Air Conditioner - Target Temperature",
-				"channel": "target-temperature",
+				"friendlyName": "Target Temperature",
+				"channel": "target_temperature",
 				"type": "Number:Temperature",
 				"unit": "celsius",
 				"stateDescription": {
 					"minimum": 16,
 					"maximum": 31,
-					"step": 0.0,
+					"step": 0.5,
 					"pattern": "%.1f %unit%"
 				},
 				"refresh": true,
@@ -100,7 +101,7 @@
 				"property": "eco",
 				"siid": 2,
 				"piid": 4,
-				"friendlyName": "Air Conditioner - Eco",
+				"friendlyName": "Eco",
 				"channel": "eco",
 				"type": "Switch",
 				"refresh": true,
@@ -119,7 +120,7 @@
 				"property": "heater",
 				"siid": 2,
 				"piid": 5,
-				"friendlyName": "Air Conditioner - Heater",
+				"friendlyName": "Auxiliary Heat",
 				"channel": "heater",
 				"type": "Switch",
 				"refresh": true,
@@ -129,17 +130,18 @@
 						"parameterType": "ONOFFBOOL"
 					}
 				],
-				"category": "switch",
+				"category": "heating",
 				"tags": [
-					"Switch"
+					"Switch",
+					"Heating"
 				]
 			},
 			{
 				"property": "sleep-mode",
 				"siid": 2,
 				"piid": 6,
-				"friendlyName": "Air Conditioner - Sleep Mode",
-				"channel": "sleep-mode",
+				"friendlyName": "Sleep",
+				"channel": "sleep_mode",
 				"type": "Switch",
 				"refresh": true,
 				"actions": [
@@ -148,7 +150,7 @@
 						"parameterType": "ONOFFBOOL"
 					}
 				],
-				"category": "switch",
+				"category": "moon",
 				"tags": [
 					"Switch"
 				]
@@ -157,7 +159,7 @@
 				"property": "dryer",
 				"siid": 2,
 				"piid": 7,
-				"friendlyName": "Air Conditioner - Dryer",
+				"friendlyName": "Drying",
 				"channel": "dryer",
 				"type": "Switch",
 				"refresh": true,
@@ -170,14 +172,15 @@
 				"category": "switch",
 				"tags": [
 					"Switch"
-				]
+				],
+				"readmeComment": "Keeps the unit dry inside to avoid mold"
 			},
 			{
 				"property": "fan-level",
 				"siid": 3,
 				"piid": 1,
-				"friendlyName": "Fan Control - Fan Level",
-				"channel": "fan-level",
+				"friendlyName": "Fan Level",
+				"channel": "fan_level",
 				"type": "Number",
 				"stateDescription": {
 					"options": [
@@ -187,31 +190,31 @@
 						},
 						{
 							"value": "1",
-							"label": "Level1"
+							"label": "Level 1"
 						},
 						{
 							"value": "2",
-							"label": "Level2"
+							"label": "Level 2"
 						},
 						{
 							"value": "3",
-							"label": "Level3"
+							"label": "Level 3"
 						},
 						{
 							"value": "4",
-							"label": "Level4"
+							"label": "Level 4"
 						},
 						{
 							"value": "5",
-							"label": "Level5"
+							"label": "Level 5"
 						},
 						{
 							"value": "6",
-							"label": "Level6"
+							"label": "Level 6"
 						},
 						{
 							"value": "7",
-							"label": "Level7"
+							"label": "Level 7"
 						}
 					]
 				},
@@ -227,14 +230,14 @@
 					"Control",
 					"Level"
 				],
-				"readmeComment": "Value mapping `[\"0\"\u003d\"Auto\",\"1\"\u003d\"Level1\",\"2\"\u003d\"Level2\",\"3\"\u003d\"Level3\",\"4\"\u003d\"Level4\",\"5\"\u003d\"Level5\",\"6\"\u003d\"Level6\",\"7\"\u003d\"Level7\"]`"
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Auto\",\"1\"\u003d\"Level 1\",\"2\"\u003d\"Level 2\",\"3\"\u003d\"Level 3\",\"4\"\u003d\"Level 4\",\"5\"\u003d\"Level 5\",\"6\"\u003d\"Level 6\",\"7\"\u003d\"Level 7\"]`"
 			},
 			{
 				"property": "vertical-swing",
 				"siid": 3,
 				"piid": 2,
-				"friendlyName": "Fan Control - Vertical Swing",
-				"channel": "vertical-swing",
+				"friendlyName": "Up/Down Swing",
+				"channel": "vertical_swing",
 				"type": "Switch",
 				"refresh": true,
 				"actions": [
@@ -243,23 +246,23 @@
 						"parameterType": "ONOFFBOOL"
 					}
 				],
-				"category": "switch",
+				"category": "fan",
 				"tags": [
-					"Control",
-					"Opening"
+					"Switch",
+					"Airflow"
 				]
 			},
 			{
 				"property": "temperature",
 				"siid": 4,
 				"piid": 1,
-				"friendlyName": "Environment - Temperature",
+				"friendlyName": "Temperature",
 				"channel": "temperature",
 				"type": "Number:Temperature",
 				"unit": "celsius",
 				"stateDescription": {
-					"minimum": -20.0,
-					"maximum": 80.0,
+					"minimum": -20,
+					"maximum": 80,
 					"pattern": "%.1f %unit%",
 					"readOnly": true
 				},
@@ -275,7 +278,7 @@
 				"property": "alarm",
 				"siid": 5,
 				"piid": 1,
-				"friendlyName": "Alarm - Alarm",
+				"friendlyName": "Button Sounds",
 				"channel": "alarm",
 				"type": "Switch",
 				"refresh": true,
@@ -285,17 +288,18 @@
 						"parameterType": "ONOFFBOOL"
 					}
 				],
-				"category": "alarm",
+				"category": "soundvolume",
 				"tags": [
-					"Alarm"
+					"Switch",
+					"Enabled"
 				]
 			},
 			{
 				"property": "on1",
 				"siid": 6,
 				"piid": 1,
-				"friendlyName": "Indicator Light - Switch Status",
-				"channel": "on1",
+				"friendlyName": "Indicator",
+				"channel": "indicator",
 				"type": "Switch",
 				"refresh": true,
 				"actions": [
@@ -304,7 +308,7 @@
 						"parameterType": "ONOFFBOOL"
 					}
 				],
-				"category": "switch",
+				"category": "screen",
 				"tags": [
 					"Switch"
 				]

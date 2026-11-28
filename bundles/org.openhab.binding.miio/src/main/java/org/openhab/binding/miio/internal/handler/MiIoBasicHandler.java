@@ -17,10 +17,12 @@ import static org.openhab.binding.miio.internal.MiIoBindingConstants.*;
 import java.awt.Color;
 import java.io.IOException;
 import java.io.StringReader;
+import java.math.BigDecimal;
 import java.net.URL;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -297,7 +299,11 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
                     }
                     // the value is inside a parameter, e.g. [{"piid": 1, "value": "$value$"}]
                     boolean valueInParameters = false;
-                    if (value != null && value.isJsonPrimitive() && hasNestedValueToken(parameters)) {
+                    if (paramType == CommandParameterType.EMPTY && !action.isMiOtAction() && parameters.size() > 1
+                            && parameters.equals(value)) {
+                        // several parameters are the command parameters, send them as written
+                        valueInParameters = true;
+                    } else if (value != null && value.isJsonPrimitive() && hasNestedValueToken(parameters)) {
                         JsonElement replaced = replaceValueToken(parameters.deepCopy(), value.getAsJsonPrimitive());
                         if (action.isMiOtAction()) {
                             // for an action the parameters are the input list
@@ -563,7 +569,8 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
     /**
      * Parses the command text as the complete input list of a MIoT action, e.g. {@code ["C7795", 11, 180]}.
      *
-     * @return the list, or null when the action is no MIoT action or the text is no JSON list of numbers and texts
+     * @return the list, or null when the action is no MIoT action or the text is no JSON list of numbers, texts and
+     *         booleans
      */
     private @Nullable JsonElement parseActionInput(MiIoDeviceAction action, String text) {
         if (!action.isMiOtAction()) {
@@ -573,8 +580,8 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
         try (JsonReader reader = new JsonReader(new StringReader(text))) {
             reader.setStrictness(Strictness.STRICT);
             JsonElement input = JsonParser.parseReader(reader);
-            if (input.isJsonArray() && reader.peek() == JsonToken.END_DOCUMENT && input.getAsJsonArray().asList()
-                    .stream().allMatch(e -> e.isJsonPrimitive() && !e.getAsJsonPrimitive().isBoolean())) {
+            if (input.isJsonArray() && reader.peek() == JsonToken.END_DOCUMENT
+                    && input.getAsJsonArray().asList().stream().allMatch(JsonElement::isJsonPrimitive)) {
                 return input;
             }
         } catch (JsonParseException | IOException e) {
@@ -1031,25 +1038,11 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
                     }
                     break;
                 case "switch":
-                    if (val.getAsJsonPrimitive().isNumber()) {
-                        updateState(basicChannel.getChannel(), OnOffType.from(val.getAsInt() > 0));
-                    } else {
-                        String strVal = val.getAsString().toLowerCase();
-                        updateState(basicChannel.getChannel(),
-                                "on".equals(strVal) || "true".equals(strVal) || "1".equals(strVal) ? OnOffType.ON
-                                        : OnOffType.OFF);
-                    }
+                    updateState(basicChannel.getChannel(), OnOffType.from(isOn(val, "on", "true")));
                     break;
                 case "contact":
-                    if (val.getAsJsonPrimitive().isNumber()) {
-                        updateState(basicChannel.getChannel(),
-                                val.getAsInt() > 0 ? OpenClosedType.OPEN : OpenClosedType.CLOSED);
-                    } else {
-                        String strVal = val.getAsString().toLowerCase();
-                        updateState(basicChannel.getChannel(),
-                                "open".equals(strVal) || "on".equals(strVal) || "true".equals(strVal)
-                                        || "1".equals(strVal) ? OpenClosedType.OPEN : OpenClosedType.CLOSED);
-                    }
+                    updateState(basicChannel.getChannel(),
+                            isOn(val, "open", "on", "true") ? OpenClosedType.OPEN : OpenClosedType.CLOSED);
                     break;
                 case "color":
                     if (val.isJsonPrimitive()
@@ -1078,6 +1071,19 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
             return false;
         }
         return true;
+    }
+
+    /**
+     * Checks whether a value read from the device means on: a number (also as text) above 0, or one of the given
+     * texts.
+     */
+    private static boolean isOn(JsonElement val, String... onTexts) {
+        String text = val.getAsJsonPrimitive().getAsString().toLowerCase();
+        try {
+            return new BigDecimal(text).compareTo(BigDecimal.ONE) >= 0;
+        } catch (NumberFormatException e) {
+            return Arrays.asList(onTexts).contains(text);
+        }
     }
 
     protected void quantityTypeUpdate(MiIoBasicChannel basicChannel, JsonElement val, String type) {

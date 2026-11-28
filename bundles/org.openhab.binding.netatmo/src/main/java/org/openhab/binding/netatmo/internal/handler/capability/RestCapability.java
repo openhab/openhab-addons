@@ -34,8 +34,9 @@ import org.openhab.binding.netatmo.internal.handler.CommonInterface;
  */
 @NonNullByDefault
 public abstract class RestCapability<T extends RestManager> extends Capability {
+    private final Class<T> restManagerClass;
+
     private @Nullable T api;
-    private Class<T> restManagerClass;
 
     RestCapability(CommonInterface handler, Class<T> restManagerClazz) {
         super(handler);
@@ -43,15 +44,17 @@ public abstract class RestCapability<T extends RestManager> extends Capability {
     }
 
     @Override
-    protected void updateNADevice(Device newData) {
-        super.updateNADevice(newData);
-        NAObjectMap<Module> modules = newData.getModules();
-        handler.getActiveChildren().forEach(child -> {
-            Module childData = modules.get(child.getId());
-            if (childData != null) {
-                child.setNewData(childData);
-            }
-        });
+    protected void internalSetNewData(Object newData) {
+        super.internalSetNewData(newData);
+        if (newData instanceof Device device) {
+            NAObjectMap<Module> modules = device.getModules();
+            handler.getActiveChildren().forEach(child -> {
+                Module childData = modules.get(child.getId());
+                if (childData != null) {
+                    child.setNewData(childData);
+                }
+            });
+        }
     }
 
     @Override
@@ -61,7 +64,7 @@ public abstract class RestCapability<T extends RestManager> extends Capability {
         return result;
     }
 
-    protected List<NAObject> updateReadings(@SuppressWarnings("unused") T api) {
+    protected List<NAObject> updateReadings(T api) {
         return List.of();
     }
 

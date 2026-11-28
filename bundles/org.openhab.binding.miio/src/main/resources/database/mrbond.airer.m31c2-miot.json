@@ -1,0 +1,311 @@
+{
+	"deviceMapping": {
+		"id": [
+			"hyd.airer.h51c",
+			"mrbond.airer.m31c2"
+		],
+		"propertyMethod": "get_properties",
+		"maxProperties": 1,
+		"channels": [
+			{
+				"property": "fault",
+				"siid": 2,
+				"piid": 1,
+				"friendlyName": "Fault",
+				"channel": "fault",
+				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "0",
+							"label": "No faults"
+						},
+						{
+							"value": "1",
+							"label": "Obstruction"
+						},
+						{
+							"value": "2",
+							"label": "Overweight"
+						},
+						{
+							"value": "3",
+							"label": "Overheated motor"
+						},
+						{
+							"value": "4",
+							"label": "Disinfection is prepared"
+						},
+						{
+							"value": "5",
+							"label": "The fan cannot be turned on"
+						},
+						{
+							"value": "6",
+							"label": "UV error"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "error",
+				"tags": [
+					"Status"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"No faults\",\"1\"\u003d\"Obstruction\",\"2\"\u003d\"Overweight\",\"3\"\u003d\"Overheated motor\",\"4\"\u003d\"Disinfection is prepared\",\"5\"\u003d\"The fan cannot be turned on\",\"6\"\u003d\"UV error\"]`"
+			},
+			{
+				"property": "motor-control",
+				"siid": 2,
+				"piid": 2,
+				"friendlyName": "Motor",
+				"channel": "motor_control",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "Pause"
+						},
+						{
+							"value": "1",
+							"label": "Raise"
+						},
+						{
+							"value": "2",
+							"label": "Lower"
+						}
+					]
+				},
+				"refresh": false,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "movecontrol",
+				"tags": [
+					"Control"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Pause\",\"1\"\u003d\"Raise\",\"2\"\u003d\"Lower\"]`"
+			},
+			{
+				"property": "status",
+				"siid": 2,
+				"piid": 4,
+				"friendlyName": "Status",
+				"channel": "status",
+				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "0",
+							"label": "Stopped at top"
+						},
+						{
+							"value": "1",
+							"label": "Raising"
+						},
+						{
+							"value": "2",
+							"label": "Lowering"
+						},
+						{
+							"value": "3",
+							"label": "Paused"
+						},
+						{
+							"value": "4",
+							"label": "Stopped at bottom"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "status",
+				"tags": [
+					"Status"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Stopped at top\",\"1\"\u003d\"Raising\",\"2\"\u003d\"Lowering\",\"3\"\u003d\"Paused\",\"4\"\u003d\"Stopped at bottom\"]`"
+			},
+			{
+				"property": "uv",
+				"siid": 2,
+				"piid": 8,
+				"friendlyName": "Disinfection",
+				"channel": "uv",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch"
+				]
+			},
+			{
+				"property": "uv-left-time",
+				"siid": 2,
+				"piid": 9,
+				"friendlyName": "Disinfection Remaining",
+				"channel": "uv_left_time",
+				"type": "Number:Time",
+				"unit": "minutes",
+				"stateDescription": {
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "time",
+				"tags": [
+					"Measurement",
+					"Duration"
+				]
+			},
+			{
+				"property": "current-position",
+				"siid": 2,
+				"piid": 10,
+				"friendlyName": "Current Position",
+				"channel": "current_position",
+				"type": "Number:Dimensionless",
+				"unit": "percentage",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 100,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "blinds",
+				"tags": [
+					"Status",
+					"OpenLevel"
+				]
+			},
+			{
+				"property": "alarm",
+				"siid": 2,
+				"piid": 12,
+				"friendlyName": "Notification Sound",
+				"channel": "alarm",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFNUMBER"
+					}
+				],
+				"category": "soundvolume",
+				"tags": [
+					"Switch",
+					"Enabled"
+				]
+			},
+			{
+				"property": "target-position",
+				"siid": 2,
+				"piid": 13,
+				"friendlyName": "Custom Target Position",
+				"channel": "target_position",
+				"type": "Number:Dimensionless",
+				"unit": "percentage",
+				"stateDescription": {
+					"minimum": 10,
+					"maximum": 100,
+					"step": 1,
+					"pattern": "%.0f %unit%"
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "blinds",
+				"tags": [
+					"Setpoint",
+					"OpenLevel"
+				],
+				"readmeComment": "Custom stop position of the rack (Mi Home setting \"Set custom target-position\")."
+			},
+			{
+				"property": "on",
+				"siid": 3,
+				"piid": 1,
+				"friendlyName": "Light",
+				"channel": "light",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "switch"
+			},
+			{
+				"property": "brightness",
+				"siid": 3,
+				"piid": 2,
+				"friendlyName": "Brightness",
+				"channel": "brightness",
+				"type": "Dimmer",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER",
+						"condition": {
+							"name": "BrightnessExisting"
+						}
+					},
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL",
+						"parameters": [
+							{
+								"did": "light",
+								"siid": 3,
+								"piid": 1,
+								"value": "$value$"
+							}
+						],
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "OFF|(.*,)?0(\\.0*)?",
+									"returnValue": false
+								},
+								{
+									"matchValue": "ON|[0-9.,]+",
+									"returnValue": true
+								}
+							]
+						}
+					}
+				],
+				"category": "light",
+				"tags": [
+					"Control",
+					"Brightness"
+				]
+			}
+		],
+		"experimental": true
+	}
+}

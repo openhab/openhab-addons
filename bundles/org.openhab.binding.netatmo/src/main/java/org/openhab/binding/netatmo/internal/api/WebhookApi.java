@@ -18,13 +18,13 @@ import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.ws.rs.core.UriBuilder;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.FeatureArea;
 import org.openhab.binding.netatmo.internal.api.dto.Webhook;
 import org.openhab.binding.netatmo.internal.api.dto.Webhook.WebhooksResponse;
 import org.openhab.binding.netatmo.internal.handler.ApiBridgeHandler;
+
+import jakarta.ws.rs.core.UriBuilder;
 
 /**
  * Base class for all Webhooks related endpoints

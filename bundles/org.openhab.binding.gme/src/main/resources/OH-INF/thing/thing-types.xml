@@ -153,8 +153,8 @@
 		<label>Energy Price</label>
 		<category>Price</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Price</tag>
+			<point>Status</point>
+			<property>Price</property>
 		</tags>
 		<state readOnly="true" pattern="%.6f %unit%"/>
 	</channel-type>
@@ -164,7 +164,7 @@
 		<label>Timestamp</label>
 		<category>Time</category>
 		<tags>
-			<tag>Status</tag>
+			<point>Status</point>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -173,7 +173,7 @@
 		<item-type>String</item-type>
 		<label>Password Status</label>
 		<tags>
-			<tag>Status</tag>
+			<point>Status</point>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -183,7 +183,7 @@
 		<label>Availability</label>
 		<category>Switch</category>
 		<tags>
-			<tag>Status</tag>
+			<point>Status</point>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>

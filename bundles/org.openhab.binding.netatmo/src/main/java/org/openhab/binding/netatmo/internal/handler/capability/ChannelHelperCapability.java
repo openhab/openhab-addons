@@ -12,15 +12,19 @@
  */
 package org.openhab.binding.netatmo.internal.handler.capability;
 
-import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.VENDOR;
+import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 import static org.openhab.core.thing.Thing.*;
 
+import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.netatmo.internal.api.data.EventSubType;
+import org.openhab.binding.netatmo.internal.api.data.EventType;
+import org.openhab.binding.netatmo.internal.api.dto.Event;
 import org.openhab.binding.netatmo.internal.api.dto.NAError;
-import org.openhab.binding.netatmo.internal.api.dto.NAObject;
 import org.openhab.binding.netatmo.internal.api.dto.NAThing;
 import org.openhab.binding.netatmo.internal.handler.CommonInterface;
 import org.openhab.binding.netatmo.internal.handler.channelhelper.ChannelHelper;
@@ -37,6 +41,7 @@ import org.openhab.core.types.State;
  */
 @NonNullByDefault
 public class ChannelHelperCapability extends Capability {
+    private @Nullable ZonedDateTime lastEventTime;
     private final List<ChannelHelper> channelHelpers;
 
     public ChannelHelperCapability(CommonInterface handler, List<ChannelHelper> channelHelpers) {
@@ -54,7 +59,7 @@ public class ChannelHelperCapability extends Capability {
     }
 
     @Override
-    public void afterNewData(@Nullable NAObject newData) {
+    public void afterNewData(Object newData) {
         channelHelpers.forEach(helper -> helper.setNewData(newData));
         handler.getActiveChannels().forEach(channel -> {
             ChannelUID channelUID = channel.getUID();
@@ -69,14 +74,38 @@ public class ChannelHelperCapability extends Capability {
                 }
             }
         });
+
+        // The channel should get triggered at last (after super and sub methods), because this allows rules to access
+        // the new updated data from the other channels.
+        // Event is common ancestor to HomeEvent and WebhookEvent
+        if (newData instanceof Event event) {
+            EventType eventType = event.getEventType();
+            ZonedDateTime localLast = lastEventTime;
+            ZonedDateTime eventTime = event.getTime();
+
+            if (eventType.validFor(handler.getModuleType()) && (localLast == null || eventTime.isAfter(localLast))) {
+                String eventTypeName = eventType.name();
+                lastEventTime = eventTime;
+                String subTypeName = Objects
+                        .requireNonNull(event.getSubTypeDescription().map(EventSubType::name).orElse(eventTypeName));
+                handler.recurseUpToHomeHandler(handler)
+                        .flatMap(homeHandler -> homeHandler.getCapabilities().get(HomeCapability.class))
+                        .ifPresent(homeCapability -> homeCapability.triggerEvent(eventTime, eventTypeName));
+                handler.triggerChannel(GROUP_SECURITY_EVENT, CHANNEL_HOME_EVENT, subTypeName);
+            }
+        }
+
         super.afterNewData(newData);
     }
 
     @Override
-    protected void updateNAThing(NAThing newData) {
-        newData.getFirmware().map(fw -> properties.put(PROPERTY_FIRMWARE_VERSION, fw));
-        if (!newData.isReachable()) {
-            statusReason = "@text/device-not-connected";
+    protected void internalSetNewData(Object newData) {
+        super.internalSetNewData(newData);
+        if (newData instanceof NAThing naThing) {
+            naThing.getFirmware().map(fw -> properties.put(PROPERTY_FIRMWARE_VERSION, fw));
+            if (!naThing.isReachable()) {
+                statusReason = "@text/device-not-connected";
+            }
         }
     }
 

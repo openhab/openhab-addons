@@ -30,6 +30,7 @@ Variables needed for the setup of the binding are:
 
 - `<CLIENT_ID>` Your client ID taken from your App at <https://dev.netatmo.com/apps>
 - `<CLIENT_SECRET>` A token provided along with the `<CLIENT_ID>`.
+
 The binding has the following configuration options:
 
 | Parameter   | Type    | Description                                                  |
@@ -42,13 +43,16 @@ You will have to create at first a bridge to handle communication with your Neta
 
 The Account bridge has the following configuration elements:
 
-| Parameter         | Type   | Required | Description                                                                                                         |
-| ----------------- | ------ | -------- | ------------------------------------------------------------------------------------------------------------------- |
-| clientId          | String | Yes      | Client ID provided for the application you created on <http://dev.netatmo.com/createapp>                            |
-| clientSecret      | String | Yes      | Client Secret provided for the application you created                                                              |
-| webHookUrl        | String | No       | Protocol, public IP and port to access openHAB server from internet                                                 |
-| webHookPostfix    | String | No       | String appended to the generated webhook address (should start with "/")                                            |
-| reconnectInterval | Number | No       | The reconnection interval to Netatmo API (in s)                                                                     |
+| Parameter         | Type    | Required | Description                                                                                                         |
+| ----------------- | ------- | -------- | ------------------------------------------------------------------------------------------------------------------- |
+| clientId          | String  | Yes      | Client ID provided for the application you created on <http://dev.netatmo.com/createapp>                            |
+| clientSecret      | String  | Yes      | Client Secret provided for the application you created                                                              |
+| webHookUrl        | String  | No       | Protocol, public IP and port to access openHAB server from internet                                                 |
+| webHookPostfix    | String  | No       | String appended to the generated webhook address (should start with "/")                                            |
+| reconnectInterval | Number  | No       | The reconnection interval to Netatmo API (in s)                                                                     |
+| useCloudWebhook   | Boolean | No       | Request the public webhook URL from openHAB Cloud Connector                                                         |
+
+openHAB Cloud webhook publication will be prioritized over local webhook.
 
 **Supported channels for the Account bridge Thing:**
 
@@ -117,6 +121,8 @@ Please be aware of Netatmo's own limits regarding webhook usage:
 
 - unanswered webhook 5 times leads to a 24h ban time
 - no more than one webhook per application
+
+Webhook enabled thing will publish push/pull mode on the `push-mode` channel.
 
 NB: Allowed ports for webhooks are 80, 88, 443 and 9443.
 

@@ -84,7 +84,7 @@ public class PlugwiseHAApplianceHandler extends PlugwiseHABaseHandler<Appliance,
 
     @Override
     protected synchronized void initialize(PlugwiseHAThingConfig config, PlugwiseHABridgeHandler bridgeHandler) {
-        if (thing.getStatus() == INITIALIZING) {
+        if (thing.getStatus() == INITIALIZING || thing.getStatus() == OFFLINE) {
             logger.debug("Initializing Plugwise Home Automation appliance handler with config = {}", config);
             if (!config.isValid()) {
                 updateStatus(CONFIGURATION_ERROR,
@@ -139,7 +139,7 @@ public class PlugwiseHAApplianceHandler extends PlugwiseHABaseHandler<Appliance,
             case APPLIANCE_LOCK_CHANNEL:
                 if (command instanceof OnOffType onOffCommand) {
                     try {
-                        controller.setRelay(entity, (command == OnOffType.ON));
+                        controller.setRelayLock(entity, onOffCommand == OnOffType.ON);
                     } catch (PlugwiseHAException e) {
                         logger.warn("Unable to switch relay lock {} for appliance '{}'", onOffCommand,
                                 entity.getName());
@@ -384,7 +384,7 @@ public class PlugwiseHAApplianceHandler extends PlugwiseHABaseHandler<Appliance,
                 }
                 break;
             case APPLIANCE_RETURNWATERTEMPERATURE_CHANNEL:
-                if (entity.getBoilerTemp().isPresent()) {
+                if (entity.getReturnWaterTemp().isPresent()) {
                     Unit<Temperature> unit = getRemoteTemperatureUnit(entity);
                     state = new QuantityType<>(entity.getReturnWaterTemp().get(), unit);
                 }

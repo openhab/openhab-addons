@@ -363,8 +363,8 @@
 		<description>Whether all doors are locked</description>
 		<category>Lock</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>LockState</tag>
+			<point>Status</point>
+			<property>LockState</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -375,8 +375,8 @@
 		<description>Lock state of the doors as reported by the vehicle</description>
 		<category>Lock</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>LockState</tag>
+			<point>Status</point>
+			<property>LockState</property>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -394,8 +394,8 @@
 		<description>Whether the door is open</description>
 		<category>Door</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>OpenState</tag>
+			<point>Status</point>
+			<property>OpenState</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -406,8 +406,8 @@
 		<description>Whether the window is open; a partly open window is open</description>
 		<category>Window</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>OpenState</tag>
+			<point>Status</point>
+			<property>OpenState</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -418,8 +418,8 @@
 		<description>State of the window as reported by the vehicle</description>
 		<category>Window</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>OpenLevel</tag>
+			<point>Status</point>
+			<property>OpenLevel</property>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -436,8 +436,8 @@
 		<description>Overall state of the sunroof as reported by the vehicle</description>
 		<category>Window</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>OpenLevel</tag>
+			<point>Status</point>
+			<property>OpenLevel</property>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -456,8 +456,8 @@
 			parked
 			for a long time</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
+			<point>Status</point>
+			<property>Mode</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -468,8 +468,8 @@
 		<description>Selected limit of the AC charging current</description>
 		<category>Energy</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Current</tag>
+			<point>Status</point>
+			<property>Current</property>
 		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
@@ -480,8 +480,8 @@
 		<description>Whether the vehicle is moving</description>
 		<category>Motion</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Motion</tag>
+			<point>Status</point>
+			<property>Motion</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -492,8 +492,8 @@
 		<description>Voltage of the 12V battery</description>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Voltage</tag>
+			<point>Measurement</point>
+			<property>Voltage</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -511,8 +511,8 @@
 		<description>Time of the most recent data reported by the vehicle</description>
 		<category>Time</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
+			<point>Status</point>
+			<property>Timestamp</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -523,7 +523,7 @@
 		<description>Total distance travelled by the vehicle</description>
 		<category>Line</category>
 		<tags>
-			<tag>Measurement</tag>
+			<point>Measurement</point>
 		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
@@ -533,7 +533,7 @@
 		<label>Range</label>
 		<category>Line</category>
 		<tags>
-			<tag>Calculation</tag>
+			<point>Calculation</point>
 		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
@@ -542,7 +542,7 @@
 		<label>Range Forecast</label>
 		<category>Line</category>
 		<tags>
-			<tag>Forecast</tag>
+			<point>Forecast</point>
 		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
@@ -553,8 +553,8 @@
 		<description>Fill level of the fuel tank</description>
 		<category>Oil</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Level</tag>
+			<point>Measurement</point>
+			<property>Level</property>
 		</tags>
 		<state readOnly="true" pattern="%d %%"/>
 	</channel-type>
@@ -565,8 +565,8 @@
 		<description>Amount of fuel in the tank</description>
 		<category>Oil</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Level</tag>
+			<point>Measurement</point>
+			<property>Level</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -577,8 +577,8 @@
 		<description>State of charge of the high-voltage battery</description>
 		<category>BatteryLevel</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>StateOfCharge</tag>
+			<point>Measurement</point>
+			<property>StateOfCharge</property>
 		</tags>
 		<state readOnly="true" pattern="%d %%"/>
 	</channel-type>
@@ -589,8 +589,8 @@
 		<description>State of charge at which charging stops</description>
 		<category>BatteryLevel</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>StateOfCharge</tag>
+			<point>Status</point>
+			<property>StateOfCharge</property>
 		</tags>
 		<state readOnly="true" pattern="%d %%"/>
 	</channel-type>
@@ -601,8 +601,8 @@
 		<description>Charging state as reported by the vehicle</description>
 		<category>Energy</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Power</tag>
+			<point>Status</point>
+			<property>Power</property>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -624,8 +624,8 @@
 		<description>Whether a charging cable is plugged in</description>
 		<category>PowerOutlet</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Presence</tag>
+			<point>Status</point>
+			<property>Presence</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -636,8 +636,8 @@
 		<description>Current charging power</description>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
+			<point>Measurement</point>
+			<property>Power</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -648,8 +648,8 @@
 		<description>Estimated time until charging is completed</description>
 		<category>Time</category>
 		<tags>
-			<tag>Forecast</tag>
-			<tag>Duration</tag>
+			<point>Forecast</point>
+			<property>Duration</property>
 		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
@@ -661,8 +661,8 @@
 		<description>Compass heading of the vehicle</description>
 		<category>Zoom</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Position</tag>
+			<point>Measurement</point>
+			<property>Position</property>
 		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
@@ -673,8 +673,8 @@
 		<description>Whether the trunk is locked</description>
 		<category>Lock</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>LockState</tag>
+			<point>Status</point>
+			<property>LockState</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -685,8 +685,8 @@
 		<description>State of the cabin preconditioning</description>
 		<category>Climate</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
+			<point>Status</point>
+			<property>Mode</property>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -706,8 +706,8 @@
 		<description>State of charge of the 12V battery</description>
 		<category>Battery</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>StateOfCharge</tag>
+			<point>Measurement</point>
+			<property>StateOfCharge</property>
 		</tags>
 		<state readOnly="true" pattern="%d %%"/>
 	</channel-type>
@@ -718,7 +718,7 @@
 		<description>Remaining distance until the next service</description>
 		<category>Line</category>
 		<tags>
-			<tag>Calculation</tag>
+			<point>Calculation</point>
 		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
@@ -728,8 +728,8 @@
 		<label>Charging Current</label>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Current</tag>
+			<point>Measurement</point>
+			<property>Current</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -740,8 +740,8 @@
 		<description>Current AC charging voltage</description>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Voltage</tag>
+			<point>Measurement</point>
+			<property>Voltage</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -752,8 +752,8 @@
 		<description>Number of phases used for charging</description>
 		<category>Energy</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
+			<point>Status</point>
+			<property>Mode</property>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -771,8 +771,8 @@
 		<description>Charging method and plug type</description>
 		<category>Energy</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -783,8 +783,8 @@
 		<description>Whether a charging plug is connected to the charging port</description>
 		<category>PowerOutlet</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Presence</tag>
+			<point>Status</point>
+			<property>Presence</property>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -800,8 +800,8 @@
 		<description>Measured tyre pressure</description>
 		<category>Pressure</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Pressure</tag>
+			<point>Measurement</point>
+			<property>Pressure</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -812,8 +812,8 @@
 		<description>Target tyre pressure</description>
 		<category>Pressure</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Pressure</tag>
+			<point>Status</point>
+			<property>Pressure</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -824,8 +824,8 @@
 		<description>Measured tyre temperature</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
+			<point>Measurement</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
@@ -836,8 +836,8 @@
 		<description>Progress of the active preconditioning</description>
 		<category>Climate</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Progress</tag>
+			<point>Status</point>
+			<property>Progress</property>
 		</tags>
 		<state readOnly="true" pattern="%d %%"/>
 	</channel-type>
@@ -847,8 +847,8 @@
 		<label>Remaining Time</label>
 		<category>Time</category>
 		<tags>
-			<tag>Forecast</tag>
-			<tag>Duration</tag>
+			<point>Forecast</point>
+			<property>Duration</property>
 		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
@@ -859,8 +859,8 @@
 		<description>Target cabin temperature of the preconditioning</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -870,8 +870,8 @@
 		<label>Heating Active</label>
 		<category>Heating</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Heating</tag>
+			<point>Status</point>
+			<property>Heating</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -882,8 +882,8 @@
 		<description>State of the cabin air purification</description>
 		<category>Climate</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>AirQuality</tag>
+			<point>Status</point>
+			<property>AirQuality</property>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -900,8 +900,8 @@
 		<description>Activity of the auxiliary climate control</description>
 		<category>Climate</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Airconditioning</tag>
+			<point>Status</point>
+			<property>Airconditioning</property>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -920,8 +920,8 @@
 		<description>Reason why the auxiliary climate control was not executed</description>
 		<category>Climate</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -942,8 +942,8 @@
 		<description>Altitude of the vehicle above sea level</description>
 		<category>Line</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Position</tag>
+			<point>Measurement</point>
+			<property>Position</property>
 		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
@@ -953,8 +953,8 @@
 		<label>GPS Fix</label>
 		<description>Quality of the GPS position</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -971,7 +971,7 @@
 		<description>Distance to the active navigation destination</description>
 		<category>Line</category>
 		<tags>
-			<tag>Calculation</tag>
+			<point>Calculation</point>
 		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
@@ -982,8 +982,8 @@
 		<description>Expected arrival time at the navigation destination (hh:mm)</description>
 		<category>Time</category>
 		<tags>
-			<tag>Forecast</tag>
-			<tag>Timestamp</tag>
+			<point>Forecast</point>
+			<property>Timestamp</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -994,8 +994,8 @@
 		<description>Time when the last trip ended</description>
 		<category>Time</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
+			<point>Status</point>
+			<property>Timestamp</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -1006,7 +1006,7 @@
 		<description>Total mileage at the end of the last trip</description>
 		<category>Line</category>
 		<tags>
-			<tag>Measurement</tag>
+			<point>Measurement</point>
 		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
@@ -1017,8 +1017,8 @@
 		<description>State of charge of the high-voltage battery at the end of the last trip</description>
 		<category>BatteryLevel</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>StateOfCharge</tag>
+			<point>Measurement</point>
+			<property>StateOfCharge</property>
 		</tags>
 		<state readOnly="true" pattern="%d %%"/>
 	</channel-type>
@@ -1029,8 +1029,8 @@
 		<description>Energy recovered during the last trip in kWh/100km</description>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f kWh/100km"/>
 	</channel-type>
@@ -1041,8 +1041,8 @@
 		<description>Electrical energy consumed in COMFORT mode during the last trip</description>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -1051,7 +1051,7 @@
 		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Trip Share</label>
 		<tags>
-			<tag>Measurement</tag>
+			<point>Measurement</point>
 		</tags>
 		<state readOnly="true" pattern="%d %%"/>
 	</channel-type>
@@ -1060,7 +1060,7 @@
 		<item-type>Number</item-type>
 		<label>Driving Rating</label>
 		<tags>
-			<tag>Measurement</tag>
+			<point>Measurement</point>
 		</tags>
 		<state readOnly="true" pattern="%.1f"/>
 	</channel-type>
@@ -1071,8 +1071,8 @@
 		<description>Whether the ignition is on</description>
 		<category>Switch</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Power</tag>
+			<point>Status</point>
+			<property>Power</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -1083,8 +1083,8 @@
 		<description>Whether the engine is running</description>
 		<category>Switch</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Power</tag>
+			<point>Status</point>
+			<property>Power</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -1095,8 +1095,8 @@
 		<description>Whether the anti-theft alarm is going off</description>
 		<category>Alarm</category>
 		<tags>
-			<tag>Alarm</tag>
-			<tag>Tampered</tag>
+			<point>Alarm</point>
+			<property>Tampered</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -1107,8 +1107,8 @@
 		<description>Arming state of the anti-theft alarm system</description>
 		<category>Alarm</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
+			<point>Status</point>
+			<property>Mode</property>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -1125,8 +1125,8 @@
 		<description>Time of the last alarm as reported by the vehicle, without time zone</description>
 		<category>Time</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
+			<point>Status</point>
+			<property>Timestamp</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -1136,8 +1136,8 @@
 		<label>Battery Energy</label>
 		<category>Battery</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -1148,7 +1148,7 @@
 		<description>Health of the high-voltage battery as state of certified energy (SoCE)</description>
 		<category>Battery</category>
 		<tags>
-			<tag>Measurement</tag>
+			<point>Measurement</point>
 		</tags>
 		<state readOnly="true" pattern="%.0f"/>
 	</channel-type>
@@ -1159,8 +1159,8 @@
 		<description>Energy required to fully charge the high-voltage battery</description>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -1171,8 +1171,8 @@
 		<description>Date of the next legal inspection</description>
 		<category>Time</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
+			<point>Status</point>
+			<property>Timestamp</property>
 		</tags>
 		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td"/>
 	</channel-type>
@@ -1183,8 +1183,8 @@
 		<description>Total energy charged from the grid over the lifetime of the vehicle</description>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -1195,7 +1195,7 @@
 		<description>Total fuel consumed over the lifetime of the vehicle</description>
 		<category>Oil</category>
 		<tags>
-			<tag>Measurement</tag>
+			<point>Measurement</point>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -1206,8 +1206,8 @@
 		<description>Average electric consumption in kWh/100km</description>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<point>Measurement</point>
+			<property>Energy</property>
 		</tags>
 		<state readOnly="true" pattern="%.1f kWh/100km"/>
 	</channel-type>
@@ -1218,8 +1218,8 @@
 		<description>Average speed of the vehicle</description>
 		<category>Motion</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Speed</tag>
+			<point>Measurement</point>
+			<property>Speed</property>
 		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
@@ -1229,7 +1229,7 @@
 		<label>Weekly Distance</label>
 		<category>Line</category>
 		<tags>
-			<tag>Measurement</tag>
+			<point>Measurement</point>
 		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
@@ -1240,8 +1240,8 @@
 		<description>Predicted state of charge at the end of charging</description>
 		<category>BatteryLevel</category>
 		<tags>
-			<tag>Forecast</tag>
-			<tag>StateOfCharge</tag>
+			<point>Forecast</point>
+			<property>StateOfCharge</property>
 		</tags>
 		<state readOnly="true" pattern="%d %%"/>
 	</channel-type>
@@ -1252,8 +1252,8 @@
 		<description>Minimum state of charge requested for smart charging</description>
 		<category>BatteryLevel</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>StateOfCharge</tag>
+			<point>Status</point>
+			<property>StateOfCharge</property>
 		</tags>
 		<state readOnly="true" pattern="%d %%"/>
 	</channel-type>
@@ -1264,8 +1264,8 @@
 		<description>Estimated time until the high-voltage battery is fully charged</description>
 		<category>Time</category>
 		<tags>
-			<tag>Forecast</tag>
-			<tag>Duration</tag>
+			<point>Forecast</point>
+			<property>Duration</property>
 		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
@@ -1276,8 +1276,8 @@
 		<description>Current charging mode</description>
 		<category>Energy</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Mode</tag>
+			<point>Status</point>
+			<property>Mode</property>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -1294,8 +1294,8 @@
 		<description>Reason why the last charging ended</description>
 		<category>Energy</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -1306,8 +1306,8 @@
 		<description>Result of the last charging</description>
 		<category>Energy</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
+			<point>Status</point>
+			<property>Info</property>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -1323,8 +1323,8 @@
 		<description>Lock state of the charging cable</description>
 		<category>Lock</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>LockState</tag>
+			<point>Status</point>
+			<property>LockState</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -1335,8 +1335,8 @@
 		<description>Whether the charging flap is open</description>
 		<category>Door</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>OpenState</tag>
+			<point>Status</point>
+			<property>OpenState</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -1347,8 +1347,8 @@
 		<description>Whether the charging flap is locked</description>
 		<category>Lock</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>LockState</tag>
+			<point>Status</point>
+			<property>LockState</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>

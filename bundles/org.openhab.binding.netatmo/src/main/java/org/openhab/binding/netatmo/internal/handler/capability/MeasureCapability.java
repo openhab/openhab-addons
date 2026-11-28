@@ -25,7 +25,6 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.NetatmoException;
 import org.openhab.binding.netatmo.internal.api.WeatherApi;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.MeasureClass;
-import org.openhab.binding.netatmo.internal.api.dto.Device;
 import org.openhab.binding.netatmo.internal.api.dto.NAObject;
 import org.openhab.binding.netatmo.internal.config.MeasureConfiguration;
 import org.openhab.binding.netatmo.internal.handler.CommonInterface;
@@ -58,7 +57,7 @@ public class MeasureCapability extends CacheCapability<WeatherApi> {
     }
 
     @Override
-    protected void updateNADevice(Device newData) {
+    protected void internalSetNewData(Object newData) {
         // Resolution of issue #15684 :
         // Do not transfer newData to superclass - MeasureCapability pulls its own data based on measurement channels
         // configuration and store them in 'measures' for the channel helper.

@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.netatmo.internal.handler;
 
+import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.CHANNEL_PUSH_MODE;
+
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,6 +38,7 @@ import org.openhab.binding.netatmo.internal.handler.capability.HomeCapability;
 import org.openhab.binding.netatmo.internal.handler.capability.ParentUpdateCapability;
 import org.openhab.binding.netatmo.internal.handler.capability.RefreshCapability;
 import org.openhab.binding.netatmo.internal.handler.capability.RestCapability;
+import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -175,7 +178,7 @@ public interface CommonInterface {
                 .orElse(Optional.empty()));
     }
 
-    default void setNewData(NAObject newData) {
+    default void setNewData(Object newData) {
         if (newData instanceof NAThing thingData && getId().equals(thingData.getBridge())) {
             getActiveChildren().stream().filter(child -> child.getId().equals(thingData.getId())). //
                     findFirst().ifPresent(child -> child.setNewData(thingData));
@@ -199,7 +202,7 @@ public interface CommonInterface {
             channelHelper.setNewData(newData);
         }
 
-        if (newData.isIgnoredForThingUpdate()) {
+        if (newData instanceof NAObject naObject && naObject.isIgnoredForThingUpdate()) {
             return;
         }
 
@@ -262,5 +265,9 @@ public interface CommonInterface {
 
     default void removeChannels(List<Channel> channels) {
         updateThing(editThing().withoutChannels(channels).build());
+    }
+
+    default void setPushMode(boolean enabled) {
+        updateState(new ChannelUID(getThing().getUID(), CHANNEL_PUSH_MODE), OnOffType.from(enabled));
     }
 }

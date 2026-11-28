@@ -212,6 +212,8 @@ public class MiIoBasicHandlerCustomStringTest {
                 handler.send(JSON_ACTION, "[]"));
         assertEquals(List.of("action{\"did\":\"test\",\"siid\":3,\"aiid\":1,\"in\":[\"C7795\",11,180]}"),
                 handler.send(JSON_ACTION, "[\"C7795\", 11, 180]"));
+        assertEquals(List.of("action{\"did\":\"test\",\"siid\":3,\"aiid\":1,\"in\":[15,180,true,false,\"M0\"]}"),
+                handler.send(JSON_ACTION, "[15, 180, true, false, \"M0\"]"));
     }
 
     @Test
@@ -226,10 +228,9 @@ public class MiIoBasicHandlerCustomStringTest {
     }
 
     @Test
-    public void jsonWithOtherThanNumbersAndTextIsNotSent() {
+    public void jsonWithOtherThanNumbersTextAndBooleansIsNotSent() {
         assertEquals(List.of(), handler.send(JSON_ACTION, "[NaN]"));
         assertEquals(List.of(), handler.send(JSON_ACTION, "[1;2]"));
-        assertEquals(List.of(), handler.send(JSON_ACTION, "[true]"));
         assertEquals(List.of(), handler.send(JSON_ACTION, "[null]"));
         assertEquals(List.of(), handler.send(JSON_ACTION, "[[1]]"));
         assertEquals(List.of(), handler.send(JSON_ACTION, "[{\"a\": 1}]"));

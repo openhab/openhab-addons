@@ -62,6 +62,7 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.ThingHandler;
@@ -169,10 +170,25 @@ public class PirateWeatherWeatherAndForecastHandler extends BaseThingHandler {
                 : sunsetTriggerChannel.getConfiguration().as(PirateWeatherChannelConfiguration.class);
 
         Bridge bridge = getBridge();
-        if (bridge != null && ThingStatus.ONLINE.equals(bridge.getStatus())) {
-            updateStatus(ThingStatus.UNKNOWN);
-        } else {
+        if (bridge == null) {
+            updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED);
+        } else if (ThingStatus.OFFLINE.equals(bridge.getStatus())) {
             updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
+        } else {
+            updateStatus(ThingStatus.UNKNOWN);
+        }
+    }
+
+    @Override
+    public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
+        if (ThingStatus.ONLINE.equals(bridgeStatusInfo.getStatus())) {
+            if (!ThingStatus.ONLINE.equals(getThing().getStatus())) {
+                scheduler.execute(this::updateData);
+            }
+        } else if (ThingStatus.OFFLINE.equals(bridgeStatusInfo.getStatus())) {
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
+        } else if (ThingStatus.UNKNOWN.equals(bridgeStatusInfo.getStatus())) {
+            updateStatus(ThingStatus.UNKNOWN);
         }
     }
 

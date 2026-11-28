@@ -57,7 +57,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.openhab.binding.bambulab.internal.BambuLabBindingConstants.PrinterChannel;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.StringType;
@@ -284,16 +284,20 @@ public class PrinterHandler extends BaseBridgeHandler
         logger.debug("Will reconnect in {} seconds...", configNotNull.reconnectTime);
         try {
             reconnectSchedule.set(//
-                    scheduler.schedule(() -> {
-                        logger.debug("Reconnecting...");
-                        reconnectSchedule.set(null);
-                        dispose();
-                        initialize();
-                    }, configNotNull.reconnectTime, SECONDS));
+                    scheduler.schedule(this::reconnectNow, configNotNull.reconnectTime, SECONDS));
         } catch (RejectedExecutionException ex) {
             logger.debug("Task was rejected", ex);
             updateStatus(COMMUNICATION_ERROR, ex.getLocalizedMessage());
         }
+    }
+
+    void reconnectNow() {
+        logger.debug("Reconnecting...");
+        reconnectSchedule.set(null);
+        // not dispose(): the AMS things stay ONLINE through a reconnect, so childHandlerInitialized() is not
+        // called again and a cleared list would never be filled - their channels would stop updating
+        disconnect();
+        initialize();
     }
 
     private PrinterClient buildLocalClient(URI uri, PrinterConfiguration config) throws InitializationException {
@@ -313,10 +317,17 @@ public class PrinterHandler extends BaseBridgeHandler
 
     @Override
     public void dispose() {
+        disconnect();
+        amses.clear();
+    }
+
+    /**
+     * Everything {@link #dispose()} does except forgetting the AMS handlers, which a reconnect must keep.
+     */
+    private void disconnect() {
         try {
             latestPrinterState.set(null);
             printerWatcher.close();
-            amses.clear();
             closeConfig();
             closeReconnectSchedule();
             closeCamera();
@@ -620,7 +631,7 @@ public class PrinterHandler extends BaseBridgeHandler
         var request = httpClient.POST(LOGIN_URL);
         request.timeout(3, SECONDS);
         request.accept("application/json");
-        request.content(new StringContentProvider("application/json",
+        request.body(new StringRequestContent("application/json",
                 jsonMapper.toJson(new BambuPasswordRequest(username, password)), UTF_8));
         try {
             var response = request.send();
@@ -650,7 +661,7 @@ public class PrinterHandler extends BaseBridgeHandler
         var request = httpClient.POST(LOGIN_URL);
         request.timeout(3, SECONDS);
         request.accept("application/json");
-        request.content(new StringContentProvider("application/json",
+        request.body(new StringRequestContent("application/json",
                 jsonMapper.toJson(new BambuCodeRequest(username, code)), UTF_8));
         try {
             var response = request.send();

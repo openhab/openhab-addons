@@ -21,9 +21,9 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.Request;
 import org.eclipse.jetty.http.HttpFields;
 import org.eclipse.jetty.http.HttpHeader;
 import org.junit.jupiter.api.Test;
@@ -61,7 +61,7 @@ class ShellyHttpClientErrorResponseTest {
 
     @Test
     void malformedGen2ErrorBodyKeepsAuthChallengeHeader() throws Exception {
-        HttpFields headers = new HttpFields();
+        HttpFields.Mutable headers = HttpFields.build();
         headers.put(HttpHeader.WWW_AUTHENTICATE, DIGEST_CHALLENGE);
         ShellyHttpClient client = buildClient(401, "{\"id\":1,\"error\":{\"code\":401,", headers);
 
@@ -71,7 +71,7 @@ class ShellyHttpClientErrorResponseTest {
     }
 
     private static ShellyHttpClient buildClient(int status, String body) throws Exception {
-        return buildClient(status, body, new HttpFields());
+        return buildClient(status, body, HttpFields.EMPTY);
     }
 
     private static ShellyHttpClient buildClient(int status, String body, HttpFields headers) throws Exception {
@@ -83,7 +83,7 @@ class ShellyHttpClientErrorResponseTest {
         Request request = mock(Request.class);
         when(request.method(anyString())).thenReturn(request);
         when(request.timeout(anyLong(), any(TimeUnit.class))).thenReturn(request);
-        when(request.header(any(HttpHeader.class), anyString())).thenReturn(request);
+        when(request.headers(any())).thenReturn(request);
         when(request.send()).thenReturn(response);
         when(request.getURI()).thenReturn(URI.create("http://192.168.1.2/rpc"));
         when(request.getMethod()).thenReturn("POST");

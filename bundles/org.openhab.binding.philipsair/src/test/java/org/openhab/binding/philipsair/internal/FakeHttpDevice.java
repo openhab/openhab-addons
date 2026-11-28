@@ -15,8 +15,8 @@ package org.openhab.binding.philipsair.internal;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.*;
 
+import java.io.IOException;
 import java.math.BigInteger;
-import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
@@ -33,11 +33,11 @@ import javax.crypto.spec.SecretKeySpec;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentProvider;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.Request;
 import org.eclipse.jetty.http.HttpMethod;
+import org.eclipse.jetty.io.Content;
 import org.mockito.invocation.InvocationOnMock;
 import org.openhab.binding.philipsair.internal.connection.PhilipsAirCipher;
 import org.openhab.core.util.HexUtils;
@@ -283,7 +283,7 @@ public class FakeHttpDevice {
                 case "method":
                     state.method = invocation.getArgument(0);
                     return invocation.getMock();
-                case "content":
+                case "body":
                     state.body = read(invocation.getArgument(0));
                     return invocation.getMock();
                 case "timeout":
@@ -296,14 +296,8 @@ public class FakeHttpDevice {
         }));
     }
 
-    private static String read(ContentProvider provider) {
-        StringBuilder body = new StringBuilder();
-        for (ByteBuffer buffer : provider) {
-            byte[] bytes = new byte[buffer.remaining()];
-            buffer.duplicate().get(bytes);
-            body.append(new String(bytes, StandardCharsets.UTF_8));
-        }
-        return body.toString();
+    private static String read(Request.Content content) throws IOException {
+        return Content.Source.asString(content, StandardCharsets.UTF_8);
     }
 
     private ContentResponse reply(String url, HttpMethod method, @Nullable String body) throws Exception {

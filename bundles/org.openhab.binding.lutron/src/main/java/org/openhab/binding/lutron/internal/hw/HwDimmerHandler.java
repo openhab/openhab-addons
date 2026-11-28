@@ -13,6 +13,7 @@
 package org.openhab.binding.lutron.internal.hw;
 
 import static org.openhab.binding.lutron.internal.LutronBindingConstants.CHANNEL_LIGHTLEVEL;
+import static org.openhab.binding.lutron.internal.hw.HwConstants.CHANNEL_TAP;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -136,6 +137,17 @@ public class HwDimmerHandler extends BaseThingHandler {
 
         String cmd = String.format("FADEDIM, %s, %s, 0, %s", level, fadeTime, address);
         bridgeHandler.sendCommand(cmd);
+    }
+
+    /**
+     * Passes a tap on the dimmer's switch on to the {@code tap} channel.
+     *
+     * @param event a trigger event of {@link org.openhab.core.thing.CommonTriggerEvents}
+     */
+    void handleTap(String event) {
+        if (thing.getChannel(CHANNEL_TAP) != null) {
+            triggerChannel(CHANNEL_TAP, event);
+        }
     }
 
     public void handleLevelChange(Integer level) {

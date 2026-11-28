@@ -47,7 +47,16 @@ public enum SolarMaxChannel {
     CHANNEL_AC_PHASE1_VOLTAGE(SolarMaxCommandKey.acPhase1Voltage.name(), Units.VOLT),
     CHANNEL_AC_PHASE2_VOLTAGE(SolarMaxCommandKey.acPhase2Voltage.name(), Units.VOLT),
     CHANNEL_AC_PHASE3_VOLTAGE(SolarMaxCommandKey.acPhase3Voltage.name(), Units.VOLT),
-    CHANNEL_HEAT_SINK_TEMPERATUR(SolarMaxCommandKey.heatSinkTemperature.name(), SIUnits.CELSIUS);
+    CHANNEL_HEAT_SINK_TEMPERATUR(SolarMaxCommandKey.heatSinkTemperature.name(), SIUnits.CELSIUS),
+    CHANNEL_OPERATING_STATE(SolarMaxCommandKey.operatingState.name(), null),
+    CHANNEL_ALARM_CODE(SolarMaxCommandKey.alarmCode.name(), null),
+    CHANNEL_DC_INPUT1_VOLTAGE(SolarMaxCommandKey.dcInput1Voltage.name(), Units.VOLT),
+    CHANNEL_DC_INPUT2_VOLTAGE(SolarMaxCommandKey.dcInput2Voltage.name(), Units.VOLT),
+    CHANNEL_DC_INPUT1_CURRENT(SolarMaxCommandKey.dcInput1Current.name(), Units.AMPERE),
+    CHANNEL_DC_INPUT2_CURRENT(SolarMaxCommandKey.dcInput2Current.name(), Units.AMPERE),
+    CHANNEL_DC_INPUT1_POWER(SolarMaxCommandKey.dcInput1Power.name(), Units.WATT),
+    CHANNEL_DC_INPUT2_POWER(SolarMaxCommandKey.dcInput2Power.name(), Units.WATT),
+    CHANNEL_DC_POWER(SolarMaxCommandKey.dcPower.name(), Units.WATT);
 
     private final String channelId;
 

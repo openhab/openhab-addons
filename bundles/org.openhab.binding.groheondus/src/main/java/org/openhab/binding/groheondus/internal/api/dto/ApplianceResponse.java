@@ -24,11 +24,19 @@ public class ApplianceResponse {
     public String applianceId;
     public String name;
     public Integer type;
+    @SerializedName("serial_number")
+    public String serialNumber;
+    /** Firmware version */
+    public String version;
+    @SerializedName("installation_date")
+    public String installationDate;
     /** Time of the last data transmission from the device, ISO 8601 with offset */
     public String tdt;
     public Config config;
 
     public static class Config {
+        @SerializedName("measurement_period")
+        public Integer measurementPeriod;
         @SerializedName("measurement_transmission_intervall")
         public Integer measurementTransmissionInterval;
     }

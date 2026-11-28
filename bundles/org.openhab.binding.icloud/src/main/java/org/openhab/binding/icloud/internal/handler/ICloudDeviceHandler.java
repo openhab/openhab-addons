@@ -37,6 +37,7 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.types.Command;
@@ -53,15 +54,29 @@ import org.slf4j.LoggerFactory;
  * @author Hans-Jörg Merk - Helped with testing and feedback
  * @author Gaël L'hopital - Added low battery
  * @author Simon Spielmann - Rework for new iCloud API
+ * @author Simon Spielmann - Recover status after bridge and communication failures
  *
  */
 @NonNullByDefault
 public class ICloudDeviceHandler extends BaseThingHandler implements ICloudDeviceInformationListener {
     private final Logger logger = LoggerFactory.getLogger(ICloudDeviceHandler.class);
 
+    private static final int DEVICE_STATUS_ONLINE = 200;
+
+    /**
+     * Reported while a requested location update is still in progress. The device is reachable, so it is treated as
+     * online; how old the location is can be seen in the last location update channel.
+     */
+    private static final int DEVICE_STATUS_PENDING = 203;
+
     private @Nullable String deviceId;
 
-    private @Nullable ICloudDeviceInformation deviceInformationRecord;
+    private volatile @Nullable ICloudDeviceInformation deviceInformationRecord;
+
+    /** Whether the bridge has delivered device data since initialization. */
+    private volatile boolean deviceInformationReceived;
+
+    private final Object statusLock = new Object();
 
     public ICloudDeviceHandler(Thing thing) {
         super(thing);
@@ -70,14 +85,12 @@ public class ICloudDeviceHandler extends BaseThingHandler implements ICloudDevic
     @Override
     public void deviceInformationUpdate(List<ICloudDeviceInformation> deviceInformationList) {
         ICloudDeviceInformation deviceInformationRecord = getDeviceInformationRecord(deviceInformationList);
-        if (deviceInformationRecord != null) {
+        synchronized (statusLock) {
             this.deviceInformationRecord = deviceInformationRecord;
-            if (deviceInformationRecord.getDeviceStatus() == 200) {
-                updateStatus(ONLINE);
-            } else {
-                updateStatus(COMMUNICATION_ERROR, "Reported offline by iCloud webservice");
-            }
-
+            this.deviceInformationReceived = true;
+            updateThingStatus(false);
+        }
+        if (deviceInformationRecord != null) {
             updateState(BATTERY_STATUS, new StringType(deviceInformationRecord.getBatteryStatus()));
 
             Double batteryLevel = deviceInformationRecord.getBatteryLevel();
@@ -89,8 +102,6 @@ public class ICloudDeviceHandler extends BaseThingHandler implements ICloudDevic
             if (deviceInformationRecord.getLocation() != null) {
                 updateLocationRelatedStates(deviceInformationRecord);
             }
-        } else {
-            updateStatus(CONFIGURATION_ERROR, "The device is not included in the current account");
         }
     }
 
@@ -98,24 +109,65 @@ public class ICloudDeviceHandler extends BaseThingHandler implements ICloudDevic
     public void initialize() {
         ICloudDeviceThingConfiguration configuration = getConfigAs(ICloudDeviceThingConfiguration.class);
         this.deviceId = configuration.deviceId;
+        this.deviceInformationRecord = null;
+        this.deviceInformationReceived = false;
 
         Bridge bridge = getBridge();
         if (bridge == null) {
             logger.debug("Bridge unavailable while initializing Thing: {}", thing.getUID());
             return;
         }
-        ICloudAccountBridgeHandler handler = (ICloudAccountBridgeHandler) bridge.getHandler();
-        if (handler != null) {
+        if (bridge.getHandler() instanceof ICloudAccountBridgeHandler handler) {
             handler.registerListener(this);
+            synchronized (statusLock) {
+                updateThingStatus(true);
+            }
             if (bridge.getStatus() == ThingStatus.ONLINE) {
-                handler.refreshData();
-                updateStatus(ThingStatus.ONLINE);
-            } else {
-                updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
+                // Fetching the device data requires network access, which must not block initialize().
+                scheduler.execute(handler::refreshData);
             }
         } else {
             updateStatus(ThingStatus.UNKNOWN, "Bridge handler is not configured");
         }
+    }
+
+    /**
+     * openHAB core delivers bridge status notifications asynchronously, so they may arrive out of order. The status
+     * is therefore derived from the current bridge status instead of the delivered one.
+     */
+    @Override
+    public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
+        synchronized (statusLock) {
+            updateThingStatus(false);
+        }
+    }
+
+    /**
+     * Derives the Thing status from the current bridge status and the last device data received from the bridge.
+     * Must be called while holding {@link #statusLock}.
+     *
+     * @param initializing whether the handler is initializing and has to leave the INITIALIZING status
+     */
+    private void updateThingStatus(boolean initializing) {
+        Bridge bridge = getBridge();
+        ThingStatus bridgeStatus = bridge != null ? bridge.getStatus() : ThingStatus.OFFLINE;
+        if (bridgeStatus == ThingStatus.ONLINE) {
+            ICloudDeviceInformation record = deviceInformationRecord;
+            if (!deviceInformationReceived) {
+                updateStatus(ThingStatus.UNKNOWN);
+            } else if (record == null) {
+                updateStatus(CONFIGURATION_ERROR, "The device is not included in the current account");
+            } else if (record.getDeviceStatus() == DEVICE_STATUS_ONLINE
+                    || record.getDeviceStatus() == DEVICE_STATUS_PENDING) {
+                updateStatus(ONLINE);
+            } else {
+                updateStatus(COMMUNICATION_ERROR,
+                        "Reported offline by iCloud webservice (device status " + record.getDeviceStatus() + ")");
+            }
+        } else if (bridgeStatus == ThingStatus.OFFLINE || initializing) {
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
+        }
+        // Otherwise the bridge is re-initializing (UNKNOWN). The status is kept until the bridge reports a result.
     }
 
     @Override
@@ -138,17 +190,19 @@ public class ICloudDeviceHandler extends BaseThingHandler implements ICloudDevic
         if (channelId.equals(FIND_MY_PHONE)) {
             if (command == OnOffType.ON) {
                 try {
-                    if (deviceInformationRecord == null) {
+                    ICloudDeviceInformation localDeviceInformationRecord = deviceInformationRecord;
+                    if (localDeviceInformationRecord == null) {
                         this.logger
                                 .debug("Can't send Find My Device request, because deviceInformationRecord is null!");
                         return;
                     }
-                    if (deviceInformationRecord.getId() == null) {
+                    String id = localDeviceInformationRecord.getId();
+                    if (id == null) {
                         this.logger.debug(
                                 "Can't send Find My Device request, because deviceInformationRecord.getId() is null!");
                         return;
                     }
-                    bridgeHandler.findMyDevice(deviceInformationRecord.getId());
+                    bridgeHandler.findMyDevice(id);
                 } catch (IOException | InterruptedException e) {
                     this.logger.warn("Unable to execute find my device request", e);
                 }

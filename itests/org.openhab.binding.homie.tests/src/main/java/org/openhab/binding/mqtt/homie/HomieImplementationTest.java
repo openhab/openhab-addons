@@ -258,10 +258,14 @@ public class HomieImplementationTest extends MqttOSGiTest {
         assertThat(device.attributes.homie, is("3.0"));
         assertThat(device.attributes.name, is("Name"));
         assertThat(device.attributes.state, is(ReadyState.ready));
-        assertThat(device.attributes.nodes.length, is(1));
-        verify(device, times(4)).attributeChanged(any(), any(), any(), any(), anyBoolean());
+        assertArrayEquals(new String[] { "testnode" }, device.attributes.nodes);
         verify(callback).readyStateChanged(eq(ReadyState.ready));
-        verify(device).attributesReceived(any(), any(), anyInt());
+        publish(DEVICE_TOPIC + "/$state", "init").get(5, TimeUnit.SECONDS);
+        waitForAssert(() -> verify(callback).readyStateChanged(ReadyState.init));
+        assertThat(device.attributes.state, is(ReadyState.init));
+        publish(DEVICE_TOPIC + "/$state", "ready").get(5, TimeUnit.SECONDS);
+        waitForAssert(() -> verify(callback, times(2)).readyStateChanged(ReadyState.ready));
+        assertThat(device.attributes.state, is(ReadyState.ready));
 
         // Expect 1 node
         assertThat(device.nodes.size(), is(1));
@@ -269,7 +273,7 @@ public class HomieImplementationTest extends MqttOSGiTest {
         // Check node and node attributes
         Node node = device.nodes.get("testnode");
         verify(node).subscribe(any(), any(), anyInt());
-        verify(node).attributesReceived(any(), any(), anyInt());
+        verify(callback).nodeAddedOrChanged(node);
         verify(node.attributes).subscribeAndReceive(any(), any(), anyString(), any(), anyInt());
         assertThat(node.attributes.type, is("Type"));
         assertThat(node.attributes.name, is("Testnode"));

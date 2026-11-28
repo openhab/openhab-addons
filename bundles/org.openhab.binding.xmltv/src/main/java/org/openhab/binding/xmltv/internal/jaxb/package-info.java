@@ -10,5 +10,5 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-@javax.xml.bind.annotation.XmlSchema(namespace = "", elementFormDefault = javax.xml.bind.annotation.XmlNsForm.QUALIFIED)
+@jakarta.xml.bind.annotation.XmlSchema(namespace = "", elementFormDefault = jakarta.xml.bind.annotation.XmlNsForm.QUALIFIED)
 package org.openhab.binding.xmltv.internal.jaxb;

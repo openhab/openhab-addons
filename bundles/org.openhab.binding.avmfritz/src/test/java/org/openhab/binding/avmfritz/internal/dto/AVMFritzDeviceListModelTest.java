@@ -22,8 +22,6 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
@@ -41,6 +39,9 @@ import org.openhab.binding.avmfritz.internal.util.JAXBUtils;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingUID;
+
+import jakarta.xml.bind.JAXBException;
+import jakarta.xml.bind.Unmarshaller;
 
 /**
  * Tests for {@link DeviceListModel}.

@@ -281,8 +281,8 @@
 		<label>Price</label>
 		<category>Price</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Price</tag>
+			<point>Status</point>
+			<property>Price</property>
 		</tags>
 		<state readOnly="true" pattern="%.3f %unit%"/>
 	</channel-type>
@@ -293,8 +293,8 @@
 		<description>Price in ct/kWh</description>
 		<category>Price</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Price</tag>
+			<point>Status</point>
+			<property>Price</property>
 		</tags>
 		<state readOnly="true" pattern="%.3f ct"/>
 	</channel-type>
@@ -304,8 +304,8 @@
 		<label>Duration</label>
 		<description>Length of the bestprice period to search for (hours)</description>
 		<tags>
-			<tag>Control</tag>
-			<tag>Duration</tag>
+			<point>Control</point>
+			<property>Duration</property>
 		</tags>
 		<state readOnly="false" pattern="%d"/>
 	</channel-type>
@@ -322,8 +322,8 @@
 		<label>Consecutive</label>
 		<description>Consecutive range needed?</description>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
+			<point>Switch</point>
+			<property>Mode</property>
 		</tags>
 		<state readOnly="false"/>
 	</channel-type>
@@ -333,8 +333,8 @@
 		<label>Inverted</label>
 		<description>Return highest prices?</description>
 		<tags>
-			<tag>Switch</tag>
-			<tag>Mode</tag>
+			<point>Switch</point>
+			<property>Mode</property>
 		</tags>
 		<state readOnly="false"/>
 	</channel-type>
@@ -353,8 +353,8 @@
 		<description>Starting time of period.</description>
 		<category>Time</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
+			<point>Status</point>
+			<property>Timestamp</property>
 		</tags>
 		<state readOnly="true" pattern="%1$tH:%1$tM"/>
 	</channel-type>
@@ -365,8 +365,8 @@
 		<description>End time of period.</description>
 		<category>Time</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
+			<point>Status</point>
+			<property>Timestamp</property>
 		</tags>
 		<state readOnly="true" pattern="%1$tH:%1$tM"/>
 	</channel-type>
@@ -377,8 +377,8 @@
 		<description>Time until start of period.</description>
 		<category>Time</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Duration</tag>
+			<point>Measurement</point>
+			<property>Duration</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -389,8 +389,8 @@
 		<description>Time until end of period.</description>
 		<category>Time</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Duration</tag>
+			<point>Measurement</point>
+			<property>Duration</property>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>

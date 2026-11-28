@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.renault.internal.api;
 
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.Locale;
 import java.util.Optional;
@@ -21,10 +22,10 @@ import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.util.Fields;
@@ -321,7 +322,7 @@ public class MyRenaultHttpSession {
     private void postKamereonRequest(final EndpointDefinitions endpointDefinition, final String content)
             throws RenaultException {
         requestKamereonResponse(HttpMethod.POST, kamereonUrl(endpointDefinition),
-                new StringContentProvider(content, "utf-8"));
+                new StringRequestContent(content, StandardCharsets.UTF_8));
     }
 
     private Optional<JsonObject> getKamereonResponse(EndpointDefinitions endpointDefinition) throws RenaultException {
@@ -333,10 +334,12 @@ public class MyRenaultHttpSession {
     }
 
     private Optional<JsonObject> requestKamereonResponse(HttpMethod httpMethod, String path,
-            @Nullable StringContentProvider content) throws RenaultException {
+            @Nullable StringRequestContent content) throws RenaultException {
         Request request = httpClient.newRequest(this.constants.getKamereonRootUrl() + path).method(httpMethod)
-                .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS).header("Content-type", "application/vnd.api+json")
-                .header("apikey", this.config.kamereonApiKey).header("x-gigya-id_token", jwt).content(content);
+                .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS)
+                .headers(h -> h.add("Content-type", "application/vnd.api+json")
+                        .add("apikey", this.config.kamereonApiKey).add("x-gigya-id_token", jwt))
+                .body(content);
         try {
             ContentResponse response = request.send();
             logKamereonCall(request, response);

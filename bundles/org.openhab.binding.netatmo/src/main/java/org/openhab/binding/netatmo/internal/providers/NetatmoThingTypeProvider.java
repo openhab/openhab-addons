@@ -27,8 +27,11 @@ import org.openhab.binding.netatmo.internal.config.NAThingConfiguration;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.ThingTypeProvider;
 import org.openhab.core.thing.i18n.ThingTypeI18nLocalizationService;
+import org.openhab.core.thing.type.ChannelDefinition;
+import org.openhab.core.thing.type.ChannelDefinitionBuilder;
 import org.openhab.core.thing.type.ChannelGroupDefinition;
 import org.openhab.core.thing.type.ChannelGroupTypeUID;
+import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.thing.type.ThingType;
 import org.openhab.core.thing.type.ThingTypeBuilder;
 import org.osgi.framework.Bundle;
@@ -75,6 +78,7 @@ public class NetatmoThingTypeProvider implements ThingTypeProvider {
                 ThingTypeBuilder thingTypeBuilder = ThingTypeBuilder.instance(thingTypeUID, thingTypeUID.toString())
                         .withRepresentationProperty(NAThingConfiguration.ID)
                         .withExtensibleChannelTypeIds(moduleType.getExtensions())
+                        .withChannelDefinitions(getChannelDefinitions(moduleType))
                         .withChannelGroupDefinitions(getGroupDefinitions(moduleType))
                         .withProperties(Map.of(PROPERTY_THING_TYPE_VERSION, moduleType.thingTypeVersion))
                         .withConfigDescriptionURI(moduleType.configDescription);
@@ -96,6 +100,13 @@ public class NetatmoThingTypeProvider implements ThingTypeProvider {
     private List<ChannelGroupDefinition> getGroupDefinitions(ModuleType thingType) {
         return thingType.getGroupTypes().stream().map(groupType -> new ChannelGroupDefinition(toGroupName(groupType),
                 new ChannelGroupTypeUID(BINDING_ID, groupType))).toList();
+    }
+
+    private List<ChannelDefinition> getChannelDefinitions(ModuleType thingType) {
+        return thingType.supportsPushMode() ? List
+                .of(new ChannelDefinitionBuilder(CHANNEL_PUSH_MODE, new ChannelTypeUID(BINDING_ID, CHANNEL_PUSH_MODE))
+                        .build())
+                : List.of();
     }
 
     public static String toGroupName(String groupeTypeName) {

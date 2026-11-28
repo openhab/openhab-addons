@@ -78,7 +78,7 @@
 		<label>Machine State</label>
 		<description>Current operating mode</description>
 		<tags>
-			<tag>Status</tag>
+			<point>Status</point>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -98,7 +98,7 @@
 		<label>Program Phase</label>
 		<description>Current washing phase</description>
 		<tags>
-			<tag>Status</tag>
+			<point>Status</point>
 		</tags>
 		<state readOnly="true">
 			<options>
@@ -131,8 +131,8 @@
 		<label>Remaining Time</label>
 		<description>Remaining wash duration</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Duration</tag>
+			<point>Measurement</point>
+			<property>Duration</property>
 		</tags>
 		<state readOnly="true" pattern="%.0f min"/>
 	</channel-type>
@@ -141,8 +141,8 @@
 		<label>Target Temperature</label>
 		<description>Reported program temperature setting</description>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Temperature</tag>
+			<point>Setpoint</point>
+			<property>Temperature</property>
 		</tags>
 		<state readOnly="true" pattern="%.0f °C"/>
 	</channel-type>
@@ -151,8 +151,8 @@
 		<label>Target Spin Speed</label>
 		<description>Reported program spin setting</description>
 		<tags>
-			<tag>Setpoint</tag>
-			<tag>Frequency</tag>
+			<point>Setpoint</point>
+			<property>Frequency</property>
 		</tags>
 		<state readOnly="true" pattern="%.0f rpm"/>
 	</channel-type>
@@ -161,7 +161,7 @@
 		<label>Remote Control Enabled</label>
 		<description>Permission for remote appliance operation</description>
 		<tags>
-			<tag>Status</tag>
+			<point>Status</point>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -170,7 +170,7 @@
 		<label>Error Code</label>
 		<description>Device error identifier</description>
 		<tags>
-			<tag>Status</tag>
+			<point>Status</point>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -179,8 +179,8 @@
 		<label>Last Update</label>
 		<description>Last successful local status read</description>
 		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
+			<point>Status</point>
+			<property>Timestamp</property>
 		</tags>
 		<state readOnly="true" pattern="%1$tF %1$tT"/>
 	</channel-type>
@@ -189,7 +189,7 @@
 		<label>Machine Mode Code</label>
 		<description>Raw machine mode code</description>
 		<tags>
-			<tag>Status</tag>
+			<point>Status</point>
 		</tags>
 		<state readOnly="true" pattern="%d"/>
 	</channel-type>
@@ -198,7 +198,7 @@
 		<label>Program Phase Code</label>
 		<description>Raw program phase code</description>
 		<tags>
-			<tag>Status</tag>
+			<point>Status</point>
 		</tags>
 		<state readOnly="true" pattern="%d"/>
 	</channel-type>

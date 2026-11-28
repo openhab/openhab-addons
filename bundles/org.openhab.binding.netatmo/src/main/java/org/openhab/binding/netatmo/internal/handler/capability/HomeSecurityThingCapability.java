@@ -57,7 +57,7 @@ public abstract class HomeSecurityThingCapability extends Capability {
                 webhookServlet = null;
                 if (accountHandler.getWebhookServlet() instanceof WebhookServlet servlet) {
                     webhookServlet = servlet;
-                    servlet.registerDataListener(handler.getId(), this);
+                    servlet.registerDataListener(handler);
                 }
             }
         }
