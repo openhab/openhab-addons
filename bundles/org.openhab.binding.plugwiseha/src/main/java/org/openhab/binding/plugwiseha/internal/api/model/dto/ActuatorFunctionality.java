@@ -103,8 +103,14 @@ public class ActuatorFunctionality extends PlugwiseBaseModel implements Plugwise
         if (compareTo == null) {
             return -1;
         }
-        ZonedDateTime compareToDate = compareTo.getModifiedDate();
-        ZonedDateTime compareFromDate = this.getModifiedDate();
+        ZonedDateTime compareToDate = compareTo.getUpdatedDate();
+        if (compareToDate == null) {
+            compareToDate = compareTo.getModifiedDate();
+        }
+        ZonedDateTime compareFromDate = getUpdatedDate();
+        if (compareFromDate == null) {
+            compareFromDate = getModifiedDate();
+        }
         if (compareFromDate == null) {
             return -1;
         } else if (compareToDate == null) {
