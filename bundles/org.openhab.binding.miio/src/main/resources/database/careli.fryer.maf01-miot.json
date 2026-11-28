@@ -298,11 +298,13 @@
 				"friendlyName": "Custom - Recipe Name",
 				"channel": "recipe_name",
 				"type": "String",
-				"stateDescription": {
-					"readOnly": true
-				},
 				"refresh": true,
-				"actions": [],
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "STRING"
+					}
+				],
 				"readmeComment": "The name as stored by the device: the Mi Home app writes each letter, digit and space as its 2-digit hex code."
 			},
 			{
@@ -494,11 +496,14 @@
 				"friendlyName": "Custom - Recipe Sync",
 				"channel": "recipe_sync",
 				"type": "String",
-				"stateDescription": {
-					"readOnly": true
-				},
 				"refresh": true,
-				"actions": []
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "STRING"
+					}
+				],
+				"readmeComment": "Writing a value replaces the recipe list stored on the device."
 			},
 			{
 				"property": "turn-pot",

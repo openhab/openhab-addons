@@ -308,13 +308,15 @@
 				"channel": "auto_keep_warm",
 				"type": "Switch",
 				"refresh": true,
-				"actions": [],
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
 				"tags": [
 					"Status"
-				],
-				"stateDescription": {
-					"readOnly": true
-				}
+				]
 			},
 			{
 				"property": "current-keep-warm",
@@ -396,13 +398,17 @@
 							"value": "0",
 							"label": "Manual"
 						}
-					],
-					"readOnly": true
+					]
 				},
 				"refresh": true,
-				"actions": [],
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
 				"tags": [
-					"Status",
+					"Control",
 					"Mode"
 				],
 				"readmeComment": "Value mapping `[\"1\"\u003d\"French Fries\",\"2\"\u003d\"Chicken Wing\",\"3\"\u003d\"Steak\",\"4\"\u003d\"Lamb Chops\",\"5\"\u003d\"Fish\",\"6\"\u003d\"Shrimp\",\"7\"\u003d\"Vegetables\",\"8\"\u003d\"Cake\",\"9\"\u003d\"Pizza\",\"10\"\u003d\"Defrost\",\"11\"\u003d\"Dried Fruit\",\"12\"\u003d\"Yogurt\",\"0\"\u003d\"Manual\"]`"
@@ -415,13 +421,15 @@
 				"channel": "preheat",
 				"type": "Switch",
 				"refresh": true,
-				"actions": [],
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
 				"tags": [
 					"Status"
-				],
-				"stateDescription": {
-					"readOnly": true
-				}
+				]
 			},
 			{
 				"property": "recipe-id",
@@ -446,10 +454,12 @@
 				"channel": "recipe_name",
 				"type": "String",
 				"refresh": true,
-				"actions": [],
-				"stateDescription": {
-					"readOnly": true
-				},
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "STRING"
+					}
+				],
 				"transformation": "decodeUnicode"
 			},
 			{
@@ -606,11 +616,15 @@
 					"minimum": 0,
 					"maximum": 2880,
 					"step": 1,
-					"pattern": "%.0f %unit%",
-					"readOnly": true
+					"pattern": "%.0f %unit%"
 				},
 				"refresh": true,
-				"actions": [],
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
 				"category": "time",
 				"tags": [
 					"Status",
