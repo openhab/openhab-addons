@@ -84,7 +84,7 @@
     <json.version>20251224</json.version>
     <jsoup.version>1.24.1</jsoup.version>
     <karaf.version>4.5.0</karaf.version>
-    <mockito.version>5.23.0</mockito.version>
+    <mockito.version>5.25.0</mockito.version>
     <netty.version>4.1.139.Final</netty.version>
     <graalvm.version>25.0.1</graalvm.version>
     <groovy.version>6.0.0</groovy.version>
