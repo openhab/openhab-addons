@@ -273,7 +273,7 @@ This will change the communication method and the Mi IO binding can communicate 
 
 # Mi IO Devices
 
-Currently the miio binding supports more than 700 different models.
+Currently the miio binding supports more than 710 different models.
 
 | Device                             | ThingType        | Device Model           | Supported    | Remark     |
 |------------------------------------|------------------|------------------------|--------------|------------|
@@ -284,6 +284,7 @@ Currently the miio binding supports more than 700 different models.
 | Mi Smart Air Fryer (3.5L)          | miio:basic       | [careli.fryer.maf02](#careli-fryer-maf02) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Mi Air Frying Pan                  | miio:basic       | [careli.fryer.maf03](#careli-fryer-maf03) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Xiaomi Smart Air Fryer Pro 4L      | miio:basic       | [careli.fryer.maf05a](#careli-fryer-maf05a) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Mi Smart Air Fryer (3.5L)          | miio:basic       | [careli.fryer.maf07](#careli-fryer-maf07) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Xiaomi Smart Air Fryer 6.5L        | miio:basic       | [careli.fryer.maf10a](#careli-fryer-maf10a) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Qingping Air Monitor Lite          | miio:basic       | [cgllc.airm.cgd1st](#cgllc-airm-cgd1st) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Qingping Air Monitor Lite          | miio:basic       | [cgllc.airm.cgdn1](#cgllc-airm-cgdn1) | Yes          |            |
@@ -790,6 +791,15 @@ Currently the miio binding supports more than 700 different models.
 | Mijia Smart Air Circulation Fan Pro | miio:basic       | [xiaomi.fan.p90](#xiaomi-fan-p90) | Experimental | The Mi Home app sets the oscillation angles and the symmetrical flag in one command; here each is sent on its own.<br />Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Xiaomi Smart Pet Food Feeder 2     | miio:basic       | [xiaomi.feeder.iv2001](#xiaomi-feeder-iv2001) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Mijia Smart Pet Food Feeder 2      | miio:basic       | [xiaomi.feeder.pi2001](#xiaomi-feeder-pi2001) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Xiaomi Smart Double Stack Air Fryer 12L | miio:basic       | [xiaomi.fryer.jl12](#xiaomi-fryer-jl12) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Xiaomi Smart Double Stack Air Fryer 12L | miio:basic       | [xiaomi.fryer.jl12m](#xiaomi-fryer-jl12m) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Xiaomi Smart Double Stack Air Fryer 12L | miio:basic       | [xiaomi.fryer.jl12w](#xiaomi-fryer-jl12w) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Xiaomi Smart Air Fryer 5.5L        | miio:basic       | [xiaomi.fryer.maf07d](#xiaomi-fryer-maf07d) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Xiaomi Smart Air Fryer 4.5L        | miio:basic       | [xiaomi.fryer.maf14](#xiaomi-fryer-maf14) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Xiaomi Smart Air Fryer 4.5L        | miio:basic       | [xiaomi.fryer.maf15](#xiaomi-fryer-maf15) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Xiaomi Smart Air Fryer 6.5L        | miio:basic       | [xiaomi.fryer.maf65](#xiaomi-fryer-maf65) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Mijia Smart Steam Air Fryer 7L     | miio:basic       | [xiaomi.fryer.st701o](#xiaomi-fryer-st701o) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Mijia Smart Steam Air Fryer 7L     | miio:basic       | [xiaomi.fryer.st701t](#xiaomi-fryer-st701t) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Mijia Smart Dehumidifier 13L       | miio:basic       | [xiaomi.derh.13l](#xiaomi-derh-13l) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Xiaomi Smart Dehumidifier Lite     | miio:basic       | [xiaomi.derh.lite](#xiaomi-derh-lite) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Xiaomi Smart Graphene Heater       | miio:basic       | [xiaomi.heater.nb1](#xiaomi-heater-nb1) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
@@ -1112,22 +1122,24 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 
 | Channel                    | Type                 | Description                              | Comment    |
 |----------------------------|----------------------|------------------------------------------|------------|
-| actions                    | String               | Actions                                  | Value mapping `["air-fryer-start-cook"="Air Fryer Start Cook","air-fryer-cancel-cooking"="Air Fryer Cancel Cooking","air-fryer-pause"="Air Fryer Pause","custom-start-cook"="Custom Start Cook","custom-resume-cook"="Custom Resume Cook"]` |
-| status                     | Number               | Air Fryer - Status                       | Value mapping `["0"="Shutdown","1"="Standby","2"="Pause","3"="Appointment","4"="Cooking","5"="Preheat ","6"="Cooked","7"="Preheat Finish","8"="Preheat Pause","9"="Pause2"]` |
+| actions                    | String               | Actions                                  | Value mapping `["air-fryer-start-cook"="Start Cooking","air-fryer-cancel-cooking"="Cancel Cooking","air-fryer-pause"="Pause Cooking","custom-resume-cook"="Resume Cooking"]` |
+| start_cook                 | String               | Start Cooking With Settings              | Starts cooking with a JSON list of 7 values: recipe id, recipe name, time (minutes), temperature (degrees Celsius), scheduled start time (minutes, 0 starts now), food quantity (0-4), preheat (1 off, 2 on). The recipe id is `M0` for manual cooking, `M1` to `M7` for the device presets or `C` plus the recipeID of a cloud recipe. The recipe name is sent as given, it is not encoded by the binding; the Mi Home app writes each letter, digit and space as its 2-digit hex code. Example manual cooking 15 minutes at 180 degrees: `["M0","4d616e75616c",15,180,0,0,1]`. |
+| status                     | Number               | Air Fryer - Status                       | Value mapping `["0"="Off","1"="Standby","2"="Paused","3"="Scheduled","4"="Cooking","5"="Preheating","6"="Cooking Completed","7"="Preheat Completed","8"="Preheat Paused","9"="Paused (Basket Removed)"]` |
 | fault                      | Number               | Air Fryer - Device Fault                 | Value mapping `["0"="No Faults","1"="E1","2"="E2"]` |
 | target_time                | Number:Time          | Air Fryer - Target Time                  |            |
 | target_temperature         | Number:Temperature   | Air Fryer - Target Temperature           |            |
 | left_time                  | Number:Time          | Air Fryer - Left Time                    |            |
 | recipe_id                  | String               | Custom - Recipe Id                       |            |
-| recipe_name                | String               | Custom - Recipe Name                     |            |
-| work_time                  | Number:Time          | Custom - Work Time                       |            |
-| work_temp                  | Number:Temperature   | Custom - Work Temp                       |            |
-| appoint_time               | Number:Time          | Custom - Appoint Time                    |            |
-| food_quantity              | Number               | Custom - Food Quantity                   | Value mapping `["0"="Null","1"="Single","2"="Double","3"="Half","4"="Full"]` |
-| preheat_switch             | Number               | Custom - Preheat Switch                  | Value mapping `["0"="Null","1"="Off","2"="On"]` |
-| appoint_time_left          | Number:Time          | Custom - Appoint Time Left               |            |
-| recipe_sync                | String               | Custom - Recipe Sync                     |            |
-| turn_pot                   | Number               | Custom - Turn Pot                        | Value mapping `["1"="Switch Off","0"="Not Turn Pot","2"="Turn Pot"]` |
+| recipe_name                | String               | Custom - Recipe Name                     | The name as stored by the device: the Mi Home app writes each letter, digit and space as its 2-digit hex code. |
+| work_time                  | Number:Time          | Custom - Cooking Time                    |            |
+| work_temp                  | Number:Temperature   | Custom - Cooking Temperature             |            |
+| appoint_time               | Number:Time          | Custom - Scheduled Start Time            |            |
+| food_quantity              | Number               | Custom - Food Quantity                   | Value mapping `["0"="None","1"="Single Layer","2"="Double Layer","3"="Half Pot","4"="Full Pot"]` |
+| preheat_switch             | Number               | Custom - Preheat Switch                  | Value mapping `["0"="Not Set","1"="Off","2"="On"]` |
+| appoint_time_left          | Number:Time          | Custom - Scheduled Start Time Left       |            |
+| recipe_sync                | String               | Custom - Recipe Sync                     | Writing a value replaces the recipe list stored on the device. |
+| turn_pot                   | Number               | Custom - Turn Food Reminder              | Value mapping `["0"="Reminder On","1"="Reminder Off","2"="Turn Food Now"]` |
+| recipes                    | String               | Recipes                                  | List of the Mi Home cloud recipes as JSON, with for each recipe the recipeID, recipeName, time (minutes), temperature (degrees Celsius), preHeat and capacity. Requires the cloud server to be set. The list is read once, send a refresh command to read it again. |
 
 ### Mi Smart Air Fryer (3.5L) (<a name="careli-fryer-maf02">careli.fryer.maf02</a>) Channels
 
@@ -1154,22 +1166,24 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 
 | Channel                    | Type                 | Description                              | Comment    |
 |----------------------------|----------------------|------------------------------------------|------------|
-| actions                    | String               | Actions                                  | Value mapping `["air-fryer-start-cook"="Air Fryer Start Cook","air-fryer-cancel-cooking"="Air Fryer Cancel Cooking","air-fryer-pause"="Air Fryer Pause","custom-start-cook"="Custom Start Cook","custom-resume-cook"="Custom Resume Cook"]` |
-| status                     | Number               | Air Fryer - Status                       | Value mapping `["0"="Shutdown","1"="Standby","2"="Pause","3"="Appointment","4"="Cooking","5"="Preheat ","6"="Cooked","7"="Preheat Finish","8"="Preheat Pause","9"="Pause2"]` |
+| actions                    | String               | Actions                                  | Value mapping `["air-fryer-start-cook"="Start Cooking","air-fryer-cancel-cooking"="Cancel Cooking","air-fryer-pause"="Pause Cooking","custom-resume-cook"="Resume Cooking"]` |
+| start_cook                 | String               | Start Cooking With Settings              | Starts cooking with a JSON list of 7 values: recipe id, recipe name, time (minutes), temperature (degrees Celsius), scheduled start time (minutes, 0 starts now), food quantity (0-4), preheat (1 off, 2 on). The recipe id is `M0` for manual cooking, `M1` to `M7` for the device presets or `C` plus the recipeID of a cloud recipe. The recipe name is sent as given, it is not encoded by the binding; the Mi Home app writes each letter, digit and space as its 2-digit hex code. Example manual cooking 15 minutes at 180 degrees: `["M0","4d616e75616c",15,180,0,0,1]`. |
+| status                     | Number               | Air Fryer - Status                       | Value mapping `["0"="Off","1"="Standby","2"="Paused","3"="Scheduled","4"="Cooking","5"="Preheating","6"="Cooking Completed","7"="Preheat Completed","8"="Preheat Paused","9"="Paused (Basket Removed)"]` |
 | fault                      | Number               | Air Fryer - Device Fault                 | Value mapping `["0"="No Faults","1"="E1","2"="E2"]` |
 | target_time                | Number:Time          | Air Fryer - Target Time                  |            |
 | target_temperature         | Number:Temperature   | Air Fryer - Target Temperature           |            |
 | left_time                  | Number:Time          | Air Fryer - Left Time                    |            |
 | recipe_id                  | String               | Custom - Recipe Id                       |            |
-| recipe_name                | String               | Custom - Recipe Name                     |            |
-| work_time                  | Number:Time          | Custom - Work Time                       |            |
-| work_temp                  | Number:Temperature   | Custom - Work Temp                       |            |
-| appoint_time               | Number:Time          | Custom - Appoint Time                    |            |
-| food_quantity              | Number               | Custom - Food Quantity                   | Value mapping `["0"="Null","1"="Single","2"="Double","3"="Half","4"="Full"]` |
-| preheat_switch             | Number               | Custom - Preheat Switch                  | Value mapping `["0"="Null","1"="Off","2"="On"]` |
-| appoint_time_left          | Number:Time          | Custom - Appoint Time Left               |            |
-| recipe_sync                | String               | Custom - Recipe Sync                     |            |
-| turn_pot                   | Number               | Custom - Turn Pot                        | Value mapping `["1"="Switch Off","0"="Not Turn Pot","2"="Turn Pot"]` |
+| recipe_name                | String               | Custom - Recipe Name                     | The name as stored by the device: the Mi Home app writes each letter, digit and space as its 2-digit hex code. |
+| work_time                  | Number:Time          | Custom - Cooking Time                    |            |
+| work_temp                  | Number:Temperature   | Custom - Cooking Temperature             |            |
+| appoint_time               | Number:Time          | Custom - Scheduled Start Time            |            |
+| food_quantity              | Number               | Custom - Food Quantity                   | Value mapping `["0"="None","1"="Single Layer","2"="Double Layer","3"="Half Pot","4"="Full Pot"]` |
+| preheat_switch             | Number               | Custom - Preheat Switch                  | Value mapping `["0"="Not Set","1"="Off","2"="On"]` |
+| appoint_time_left          | Number:Time          | Custom - Scheduled Start Time Left       |            |
+| recipe_sync                | String               | Custom - Recipe Sync                     | Writing a value replaces the recipe list stored on the device. |
+| turn_pot                   | Number               | Custom - Turn Food Reminder              | Value mapping `["0"="Reminder On","1"="Reminder Off","2"="Turn Food Now"]` |
+| recipes                    | String               | Recipes                                  | List of the Mi Home cloud recipes as JSON, with for each recipe the recipeID, recipeName, time (minutes), temperature (degrees Celsius), preHeat and capacity. Requires the cloud server to be set. The list is read once, send a refresh command to read it again. |
 
 ### Xiaomi Smart Air Fryer Pro 4L (<a name="careli-fryer-maf05a">careli.fryer.maf05a</a>) Channels
 
@@ -1195,28 +1209,52 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | turn_pot_cfg               | Number               | Custom - Turn Food Reminder              | Value mapping `["0"="Off","1"="On"]` |
 | recipes                    | String               | Recipes                                  | List of the Mi Home cloud recipes as JSON, with for each recipe the recipeID, recipeName, time (minutes), temperature (degrees Celsius), preHeat and capacity. Requires the cloud server to be set. The list is read once, send a refresh command to read it again. |
 
+### Mi Smart Air Fryer (3.5L) (<a name="careli-fryer-maf07">careli.fryer.maf07</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| actions                    | String               | Actions                                  | Value mapping `["air-fryer-start-cook"="Start Cooking","air-fryer-cancel-cooking"="Cancel Cooking","air-fryer-pause"="Pause Cooking","custom-resume-cooking"="Resume Cooking"]` |
+| start_cook                 | String               | Start Cooking With Settings              | Starts cooking with a JSON list of 6 values: recipe id, time (minutes), temperature (degrees Celsius), scheduled start time (minutes, 0 starts now), food quantity (0-4), preheat (1 off, 2 on). The recipe id is `M0` for manual cooking, `M1` to `M8` for the device presets or `A` plus the recipeID of a cloud recipe. Example manual cooking 15 minutes at 180 degrees: `["M0",15,180,0,0,1]`. |
+| status                     | Number               | Air Fryer - Status                       | Value mapping `["0"="Off","1"="Standby","2"="Paused","3"="Scheduled","4"="Cooking","5"="Preheating","6"="Cooking Completed","7"="Preheat Completed","8"="Preheat Paused","9"="Paused (Basket Removed)"]` |
+| fault                      | Number               | Air Fryer - Device Fault                 | Value mapping `["0"="No Faults","1"="E1","2"="E2"]` |
+| target_time                | Number:Time          | Air Fryer - Target Time                  |            |
+| target_temperature         | Number:Temperature   | Air Fryer - Target Temperature           |            |
+| left_time                  | Number:Time          | Air Fryer - Left Time                    |            |
+| recipe_id                  | String               | Custom - Recipe Id                       |            |
+| work_time                  | Number:Time          | Custom - Cooking Time                    |            |
+| work_temp                  | Number:Temperature   | Custom - Cooking Temperature             |            |
+| appoint_time               | Number:Time          | Custom - Scheduled Start Time            |            |
+| food_quantity              | Number               | Custom - Food Quantity                   | Value mapping `["0"="None","1"="Single Layer","2"="Double Layer","3"="Half Pot","4"="Full Pot"]` |
+| preheat_switch             | Number               | Custom - Preheat Switch                  | Value mapping `["0"="Not Set","1"="Off","2"="On"]` |
+| appoint_time_left          | Number:Time          | Custom - Scheduled Start Time Left       |            |
+| turn_pot                   | Number               | Custom - Turn Food Reminder              | Value mapping `["0"="Reminder On","1"="Reminder Off","2"="Turn Food Now"]` |
+| recipes                    | String               | Recipes                                  | List of the Mi Home cloud recipes as JSON, with for each recipe the recipeID, recipeName, time (minutes), temperature (degrees Celsius), preHeat and capacity. Requires the cloud server to be set. The list is read once, send a refresh command to read it again. |
+
 ### Xiaomi Smart Air Fryer 6.5L (<a name="careli-fryer-maf10a">careli.fryer.maf10a</a>) Channels
 
 | Channel                    | Type                 | Description                              | Comment    |
 |----------------------------|----------------------|------------------------------------------|------------|
-| actions                    | String               | Actions                                  | Value mapping `["air-fryer-start-cook"="Start Cooking","air-fryer-cancel-cooking"="Cancel Cooking","air-fryer-pause"="Pause","air-fryer-resume-cook"="Resume Cooking"]` |
-| status                     | Number               | Air Fryer - Status                       | Value mapping `["0"="Off","1"="Idle","2"="Paused","3"="Scheduled","4"="Cooking","5"="Preheat","6"="Cooking Completed","7"="Preheat Completed","8"="Preheat Paused","9"="Paused To Turn Over Food","10"="Keep Warm","11"="Keep Warm Paused","12"="Keep Warm Completed","13"="Crispy Roast","14"="Degrease"]` |
+| actions                    | String               | Actions                                  | Value mapping `["air-fryer-start-cook"="Start Cooking","air-fryer-cancel-cooking"="Cancel Cooking","air-fryer-pause"="Pause Cooking","air-fryer-resume-cook"="Resume Cooking"]` |
+| start_cook                 | String               | Start Cooking With Settings              | Starts cooking with a JSON list of 9 values: time (minutes), temperature (degrees Celsius), keep warm after cooking (true or false), recipe id, recipe name, food quantity (1 single layer, 2 double layer, 3 half, 4 full), texture (0 none, 1 crispy roast, 3 degrease), scheduled start time (minutes, 0 starts now), cooking weight (grams). The recipe id is `M0` for manual cooking, `M1` to `M12` for the device presets or `C` plus the recipeID of a cloud recipe. The Mi Home app always sends `u0064u0065u006du006f` as recipe name. Example manual cooking 15 minutes at 180 degrees: `[15,180,false,"M0","u0064u0065u006du006f",1,0,0,500]`. |
+| status                     | Number               | Air Fryer - Status                       | Value mapping `["0"="Off","1"="Idle","2"="Paused","3"="Scheduled","4"="Cooking","5"="Preheating","6"="Cooking Completed","7"="Preheat Completed","8"="Preheat Paused","9"="Paused (Basket Removed)","10"="Keep Warm","11"="Keep Warm Paused","12"="Keep Warm Completed","13"="Crispy Roast","14"="Degrease"]` |
 | fault                      | Number               | Air Fryer - Device Fault                 | Value mapping `["0"="No Faults","1"="E1","2"="E2","3"="E3"]` |
 | target_time                | Number:Time          | Air Fryer - Target Time                  |            |
 | target_temperature         | Number:Temperature   | Air Fryer - Target Temperature           |            |
 | left_time                  | Number:Time          | Air Fryer - Left Time                    |            |
-| auto_keep_warm             | Switch               | Air Fryer - Auto Keep Warm               |            |
-| current_keep_warm          | Switch               | Air Fryer - Keep Warm                    |            |
+| auto_keep_warm             | Switch               | Air Fryer - Keep Warm Available          |            |
+| current_keep_warm          | Switch               | Air Fryer - Keep Warm After Cooking      |            |
 | mode                       | Number               | Air Fryer - Mode                         | Value mapping `["1"="French Fries","2"="Chicken Wing","3"="Steak","4"="Lamb Chops","5"="Fish","6"="Shrimp","7"="Vegetables","8"="Cake","9"="Pizza","10"="Defrost","11"="Dried Fruit","12"="Yogurt","0"="Manual"]` |
 | preheat                    | Switch               | Air Fryer - Preheat                      |            |
 | recipe_id                  | String               | Air Fryer - Recipe Id                    |            |
 | recipe_name                | String               | Air Fryer - Recipe Name                  |            |
-| target_cooking_measure     | Number               | Air Fryer - Food Quantity                | Value mapping `["0"="None","1"="One Layer","2"="Double Layer","3"="Half Pot","4"="Full Pot"]` |
-| turn_pot                   | Number               | Air Fryer - Turn Over Food               | Value mapping `["1"="No Need To Turn Over","2"="Turn Over Food"]` |
-| turn_pot_config            | Switch               | Air Fryer - Turn Over Reminder           |            |
+| recipe_sync                | String               | Air Fryer - Recipe Sync                  |            |
+| target_cooking_measure     | Number               | Air Fryer - Food Quantity                | Value mapping `["0"="None","1"="Single Layer","2"="Double Layer","3"="Half Pot","4"="Full Pot"]` |
+| turn_pot                   | Number               | Air Fryer - Turn Food                    | Value mapping `["1"="No Action","2"="Turn Food Now"]` |
+| turn_pot_config            | Switch               | Air Fryer - Turn Food Reminder           |            |
 | texture                    | Number               | Air Fryer - Texture                      | Value mapping `["0"="None","1"="Crispy Roast","2"="Tender Roast","3"="Degrease"]` |
-| reservation_left_time      | Number:Time          | Air Fryer - Scheduled Start Left Time    |            |
+| reservation_left_time      | Number:Time          | Air Fryer - Scheduled Start Time Left    |            |
 | cooking_weight             | Number               | Air Fryer - Cooking Weight               |            |
+| recipes                    | String               | Recipes                                  | List of the Mi Home cloud recipes as JSON, with for each recipe the recipeID, recipeName, time (minutes), temperature (degrees Celsius), preHeat and capacity. Requires the cloud server to be set. The list is read once, send a refresh command to read it again. |
 
 ### Qingping Air Monitor Lite (<a name="cgllc-airm-cgd1st">cgllc.airm.cgd1st</a>) Channels
 
@@ -11732,6 +11770,284 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | screen_display             | Number               | Screen Display                           | Value mapping `["0"="Food Left (g)","1"="Food Eaten (g)","2"="Percentage"]` |
 | desiccant_left_level       | Number:Dimensionless | Desiccant Left Level                     |            |
 
+### Xiaomi Smart Double Stack Air Fryer 12L (<a name="xiaomi-fryer-jl12">xiaomi.fryer.jl12</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| actions                    | String               | Actions                                  | Value mapping `["upper-pause"="Pause Upper Basket","lower-pause"="Pause Lower Basket","both-pause"="Pause Both Baskets","upper-resume"="Resume Upper Basket","lower-resume"="Resume Lower Basket","both-resume"="Resume Both Baskets","upper-cancel"="Cancel Upper Basket","lower-cancel"="Cancel Lower Basket","both-cancel"="Cancel Both Baskets"]` |
+| upper_start_cook           | String               | Upper Basket - Start Cooking With Settings | Starts cooking in the upper basket with a JSON list of 7 values: time (minutes), temperature (degrees Celsius), recipe id, keep warm after cooking (true or false), scheduled start time (minutes, 0 starts now), both baskets (0 this basket only, 1 both baskets), turn food reminder (true or false). The recipe id is `M11` for manual cooking, other `M` ids for the device presets or `C` plus the recipeID of a cloud recipe. For both baskets the Mi Home app sends the same list to the upper and the lower basket. Example manual cooking 15 minutes at 180 degrees: `[15,180,"M11",false,0,0,false]`. |
+| lower_start_cook           | String               | Lower Basket - Start Cooking With Settings | Starts cooking in the lower basket with a JSON list of 7 values: time (minutes), temperature (degrees Celsius), recipe id, keep warm after cooking (true or false), scheduled start time (minutes, 0 starts now), both baskets (0 this basket only, 1 both baskets), turn food reminder (true or false). The recipe id is `M11` for manual cooking, other `M` ids for the device presets or `C` plus the recipeID of a cloud recipe. For both baskets the Mi Home app sends the same list to the upper and the lower basket. Example manual cooking 15 minutes at 180 degrees: `[15,180,"M11",false,0,0,false]`. |
+| power                      | Switch               | Power                                    |            |
+| status                     | Number               | Air Fryer - Status                       | Value mapping `["0"="Off","1"="Idle","2"="Scheduled","3"="Cooking","4"="Paused","5"="Paused (Basket Removed)","6"="Keep Warm","7"="Keep Warm Completed","8"="Cooking Completed","9"="Waiting","10"="Waiting Paused","11"="Cooling Down","12"="Cooling Completed","13"="Cooking Canceled","14"="Keep Warm Canceled","15"="Cooling Down Canceled","16"="Connected Standby"]` |
+| left_time                  | Number:Time          | Air Fryer - Left Time                    |            |
+| fault                      | Number               | Air Fryer - Device Fault                 | Value mapping `["0"="No Faults","1"="Sampling Chip Error"]` |
+| auto_keep_warm             | Switch               | Air Fryer - Keep Warm Available          |            |
+| end_cooking_together       | Switch               | Air Fryer - Finish Together              |            |
+| basket_selection           | Number               | Air Fryer - Basket Selection             | Value mapping `["1"="Upper Basket","2"="Lower Basket","3"="Both Baskets","4"="Double Recipe"]` |
+| dual_baskets               | Switch               | Air Fryer - Both Baskets                 |            |
+| upper_status               | Number               | Upper Basket - Status                    | Value mapping `["0"="Off","1"="Idle","2"="Scheduled","3"="Cooking","4"="Paused","5"="Paused (Basket Removed)","6"="Keep Warm","7"="Keep Warm Completed","8"="Cooking Completed","9"="Waiting","10"="Waiting Paused","11"="Cooling Down","12"="Cooling Completed","13"="Cooking Canceled","14"="Keep Warm Canceled","15"="Cooling Down Canceled","16"="Connected Standby","17"="Cooking Stopped"]` |
+| upper_fault                | Number               | Upper Basket - Device Fault              | Value mapping `["0"="No Faults","1"="Temperature Sensor Failure","2"="Temperature Sensor Short Circuit","3"="Temperature Sensor Disconnected"]` |
+| upper_target_time          | Number:Time          | Upper Basket - Target Time               |            |
+| upper_target_temperature   | Number:Temperature   | Upper Basket - Target Temperature        |            |
+| upper_left_time            | Number:Time          | Upper Basket - Left Time                 |            |
+| upper_mode                 | Number               | Upper Basket - Mode                      | Value mapping `["0"="Manual","1"="French Fries","2"="Chicken Drumstick","3"="Steak","4"="Fish","5"="Vegetables","6"="Pizza","7"="Cake","8"="Dried Fruit","9"="Reheat","10"="Custom","11"="Chicken Breast Potato Chunks","12"="Chicken Legs Broccoli","13"="Salmon Asparagus","14"="Steak Asparagus"]` |
+| upper_recipe_id            | String               | Upper Basket - Recipe Id                 |            |
+| upper_turn_pot             | Number               | Upper Basket - Turn Food                 | Value mapping `["1"="No Action","2"="Turn Food Now"]` |
+| upper_turn_pot_config      | Switch               | Upper Basket - Turn Food Reminder        |            |
+| upper_current_keep_warm    | Switch               | Upper Basket - Keep Warm After Cooking   |            |
+| upper_reservation_left_time | Number:Time          | Upper Basket - Scheduled Start Time Left |            |
+| upper_basket_mode          | Number               | Upper Basket - Basket Mode               | Value mapping `["0"="Single Basket","1"="Both Baskets","2"="Double Recipe"]` |
+| lower_status               | Number               | Lower Basket - Status                    | Value mapping `["0"="Off","1"="Idle","2"="Scheduled","3"="Cooking","4"="Paused","5"="Paused (Basket Removed)","6"="Keep Warm","7"="Keep Warm Completed","8"="Cooking Completed","9"="Waiting","10"="Waiting Paused","11"="Cooling Down","12"="Cooling Completed","13"="Cooking Canceled","14"="Keep Warm Canceled","15"="Cooling Down Canceled","16"="Connected Standby","17"="Cooking Stopped"]` |
+| lower_fault                | Number               | Lower Basket - Device Fault              | Value mapping `["0"="No Faults","1"="Temperature Sensor Failure","2"="Temperature Sensor Short Circuit","3"="Temperature Sensor Disconnected"]` |
+| lower_target_time          | Number:Time          | Lower Basket - Target Time               |            |
+| lower_target_temperature   | Number:Temperature   | Lower Basket - Target Temperature        |            |
+| lower_left_time            | Number:Time          | Lower Basket - Left Time                 |            |
+| lower_mode                 | Number               | Lower Basket - Mode                      | Value mapping `["0"="Manual","1"="French Fries","2"="Chicken Drumstick","3"="Steak","4"="Fish","5"="Vegetables","6"="Pizza","7"="Cake","8"="Dried Fruit","9"="Reheat","10"="Custom","11"="Chicken Breast Potato Chunks","12"="Chicken Legs Broccoli","13"="Salmon Asparagus","14"="Steak Asparagus"]` |
+| lower_recipe_id            | String               | Lower Basket - Recipe Id                 |            |
+| lower_turn_pot             | Number               | Lower Basket - Turn Food                 | Value mapping `["1"="No Action","2"="Turn Food Now"]` |
+| lower_turn_pot_config      | Switch               | Lower Basket - Turn Food Reminder        |            |
+| lower_current_keep_warm    | Switch               | Lower Basket - Keep Warm After Cooking   |            |
+| lower_reservation_left_time | Number:Time          | Lower Basket - Scheduled Start Time Left |            |
+| lower_basket_mode          | Number               | Lower Basket - Basket Mode               | Value mapping `["0"="Single Basket","1"="Both Baskets","2"="Double Recipe"]` |
+| recipes                    | String               | Recipes                                  | List of the Mi Home cloud recipes as JSON, with for each recipe the recipeID, recipeName, time (minutes), temperature (degrees Celsius), preHeat and capacity. Requires the cloud server to be set. The list is read once, send a refresh command to read it again. |
+
+### Xiaomi Smart Double Stack Air Fryer 12L (<a name="xiaomi-fryer-jl12m">xiaomi.fryer.jl12m</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| actions                    | String               | Actions                                  | Value mapping `["upper-pause"="Pause Upper Basket","lower-pause"="Pause Lower Basket","both-pause"="Pause Both Baskets","upper-resume"="Resume Upper Basket","lower-resume"="Resume Lower Basket","both-resume"="Resume Both Baskets","upper-cancel"="Cancel Upper Basket","lower-cancel"="Cancel Lower Basket","both-cancel"="Cancel Both Baskets"]` |
+| upper_start_cook           | String               | Upper Basket - Start Cooking With Settings | Starts cooking in the upper basket with a JSON list of 7 values: time (minutes), temperature (degrees Celsius), recipe id, keep warm after cooking (true or false), scheduled start time (minutes, 0 starts now), both baskets (0 this basket only, 1 both baskets), turn food reminder (true or false). The recipe id is `M11` for manual cooking, other `M` ids for the device presets or `C` plus the recipeID of a cloud recipe. For both baskets the Mi Home app sends the same list to the upper and the lower basket. Example manual cooking 15 minutes at 180 degrees: `[15,180,"M11",false,0,0,false]`. |
+| lower_start_cook           | String               | Lower Basket - Start Cooking With Settings | Starts cooking in the lower basket with a JSON list of 7 values: time (minutes), temperature (degrees Celsius), recipe id, keep warm after cooking (true or false), scheduled start time (minutes, 0 starts now), both baskets (0 this basket only, 1 both baskets), turn food reminder (true or false). The recipe id is `M11` for manual cooking, other `M` ids for the device presets or `C` plus the recipeID of a cloud recipe. For both baskets the Mi Home app sends the same list to the upper and the lower basket. Example manual cooking 15 minutes at 180 degrees: `[15,180,"M11",false,0,0,false]`. |
+| power                      | Switch               | Power                                    |            |
+| status                     | Number               | Air Fryer - Status                       | Value mapping `["0"="Off","1"="Idle","2"="Scheduled","3"="Cooking","4"="Paused","5"="Paused (Basket Removed)","6"="Keep Warm","7"="Keep Warm Completed","8"="Cooking Completed","9"="Waiting","10"="Waiting Paused","11"="Cooling Down","12"="Cooling Completed","13"="Cooking Canceled","14"="Keep Warm Canceled","15"="Cooling Down Canceled","16"="Connected Standby","17"="Cooking Stopped"]` |
+| left_time                  | Number:Time          | Air Fryer - Left Time                    |            |
+| fault                      | Number               | Air Fryer - Device Fault                 | Value mapping `["0"="No Faults","1"="Sampling Chip Error"]` |
+| auto_keep_warm             | Switch               | Air Fryer - Keep Warm Available          |            |
+| end_cooking_together       | Switch               | Air Fryer - Finish Together              |            |
+| basket_selection           | Number               | Air Fryer - Basket Selection             | Value mapping `["1"="Upper Basket","2"="Lower Basket","3"="Both Baskets","4"="Double Recipe"]` |
+| dual_baskets               | Switch               | Air Fryer - Both Baskets                 |            |
+| upper_status               | Number               | Upper Basket - Status                    | Value mapping `["0"="Off","1"="Idle","2"="Scheduled","3"="Cooking","4"="Paused","5"="Paused (Basket Removed)","6"="Keep Warm","7"="Keep Warm Completed","8"="Cooking Completed","9"="Waiting","10"="Waiting Paused","11"="Cooling Down","12"="Cooling Completed","13"="Cooking Canceled","14"="Keep Warm Canceled","15"="Cooling Down Canceled","16"="Connected Standby","17"="Cooking Stopped"]` |
+| upper_fault                | Number               | Upper Basket - Device Fault              | Value mapping `["0"="No Faults","1"="Temperature Sensor Failure","2"="Temperature Sensor Short Circuit","3"="Temperature Sensor Disconnected"]` |
+| upper_target_time          | Number:Time          | Upper Basket - Target Time               |            |
+| upper_target_temperature   | Number:Temperature   | Upper Basket - Target Temperature        |            |
+| upper_left_time            | Number:Time          | Upper Basket - Left Time                 |            |
+| upper_mode                 | Number               | Upper Basket - Mode                      | Value mapping `["0"="Manual","1"="French Fries","2"="Chicken Drumstick","3"="Steak","4"="Fish","5"="Vegetables","6"="Pizza","7"="Cake","8"="Dried Fruit","9"="Reheat","10"="Custom","11"="Chicken Breast Potato Chunks","12"="Chicken Legs Broccoli","13"="Salmon Asparagus","14"="Steak Asparagus"]` |
+| upper_recipe_id            | String               | Upper Basket - Recipe Id                 |            |
+| upper_turn_pot             | Number               | Upper Basket - Turn Food                 | Value mapping `["1"="No Action","2"="Turn Food Now"]` |
+| upper_turn_pot_config      | Switch               | Upper Basket - Turn Food Reminder        |            |
+| upper_current_keep_warm    | Switch               | Upper Basket - Keep Warm After Cooking   |            |
+| upper_reservation_left_time | Number:Time          | Upper Basket - Scheduled Start Time Left |            |
+| upper_basket_mode          | Number               | Upper Basket - Basket Mode               | Value mapping `["0"="Single Basket","1"="Both Baskets","2"="Double Recipe"]` |
+| lower_status               | Number               | Lower Basket - Status                    | Value mapping `["0"="Off","1"="Idle","2"="Scheduled","3"="Cooking","4"="Paused","5"="Paused (Basket Removed)","6"="Keep Warm","7"="Keep Warm Completed","8"="Cooking Completed","9"="Waiting","10"="Waiting Paused","11"="Cooling Down","12"="Cooling Completed","13"="Cooking Canceled","14"="Keep Warm Canceled","15"="Cooling Down Canceled","16"="Connected Standby","17"="Cooking Stopped"]` |
+| lower_fault                | Number               | Lower Basket - Device Fault              | Value mapping `["0"="No Faults","1"="Temperature Sensor Failure","2"="Temperature Sensor Short Circuit","3"="Temperature Sensor Disconnected"]` |
+| lower_target_time          | Number:Time          | Lower Basket - Target Time               |            |
+| lower_target_temperature   | Number:Temperature   | Lower Basket - Target Temperature        |            |
+| lower_left_time            | Number:Time          | Lower Basket - Left Time                 |            |
+| lower_mode                 | Number               | Lower Basket - Mode                      | Value mapping `["0"="Manual","1"="French Fries","2"="Chicken Drumstick","3"="Steak","4"="Fish","5"="Vegetables","6"="Pizza","7"="Cake","8"="Dried Fruit","9"="Reheat","10"="Custom","11"="Chicken Breast Potato Chunks","12"="Chicken Legs Broccoli","13"="Salmon Asparagus","14"="Steak Asparagus"]` |
+| lower_recipe_id            | String               | Lower Basket - Recipe Id                 |            |
+| lower_turn_pot             | Number               | Lower Basket - Turn Food                 | Value mapping `["1"="No Action","2"="Turn Food Now"]` |
+| lower_turn_pot_config      | Switch               | Lower Basket - Turn Food Reminder        |            |
+| lower_current_keep_warm    | Switch               | Lower Basket - Keep Warm After Cooking   |            |
+| lower_reservation_left_time | Number:Time          | Lower Basket - Scheduled Start Time Left |            |
+| lower_basket_mode          | Number               | Lower Basket - Basket Mode               | Value mapping `["0"="Single Basket","1"="Both Baskets","2"="Double Recipe"]` |
+| recipes                    | String               | Recipes                                  | List of the Mi Home cloud recipes as JSON, with for each recipe the recipeID, recipeName, time (minutes), temperature (degrees Celsius), preHeat and capacity. Requires the cloud server to be set. The list is read once, send a refresh command to read it again. |
+
+### Xiaomi Smart Double Stack Air Fryer 12L (<a name="xiaomi-fryer-jl12w">xiaomi.fryer.jl12w</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| actions                    | String               | Actions                                  | Value mapping `["upper-pause"="Pause Upper Basket","lower-pause"="Pause Lower Basket","both-pause"="Pause Both Baskets","upper-resume"="Resume Upper Basket","lower-resume"="Resume Lower Basket","both-resume"="Resume Both Baskets","upper-cancel"="Cancel Upper Basket","lower-cancel"="Cancel Lower Basket","both-cancel"="Cancel Both Baskets"]` |
+| upper_start_cook           | String               | Upper Basket - Start Cooking With Settings | Starts cooking in the upper basket with a JSON list of 7 values: time (minutes), temperature (degrees Celsius), recipe id, keep warm after cooking (true or false), scheduled start time (minutes, 0 starts now), both baskets (0 this basket only, 1 both baskets), turn food reminder (true or false). The recipe id is `M11` for manual cooking, other `M` ids for the device presets or `C` plus the recipeID of a cloud recipe. For both baskets the Mi Home app sends the same list to the upper and the lower basket. Example manual cooking 15 minutes at 180 degrees: `[15,180,"M11",false,0,0,false]`. |
+| lower_start_cook           | String               | Lower Basket - Start Cooking With Settings | Starts cooking in the lower basket with a JSON list of 7 values: time (minutes), temperature (degrees Celsius), recipe id, keep warm after cooking (true or false), scheduled start time (minutes, 0 starts now), both baskets (0 this basket only, 1 both baskets), turn food reminder (true or false). The recipe id is `M11` for manual cooking, other `M` ids for the device presets or `C` plus the recipeID of a cloud recipe. For both baskets the Mi Home app sends the same list to the upper and the lower basket. Example manual cooking 15 minutes at 180 degrees: `[15,180,"M11",false,0,0,false]`. |
+| power                      | Switch               | Power                                    |            |
+| status                     | Number               | Air Fryer - Status                       | Value mapping `["0"="Off","1"="Idle","2"="Scheduled","3"="Cooking","4"="Paused","5"="Paused (Basket Removed)","6"="Keep Warm","7"="Keep Warm Completed","8"="Cooking Completed","9"="Waiting","10"="Waiting Paused","11"="Cooling Down","12"="Cooling Completed","13"="Cooking Canceled","14"="Keep Warm Canceled","15"="Cooling Down Canceled","16"="Connected Standby"]` |
+| left_time                  | Number:Time          | Air Fryer - Left Time                    |            |
+| fault                      | Number               | Air Fryer - Device Fault                 | Value mapping `["0"="No Faults","1"="Sampling Chip Error"]` |
+| auto_keep_warm             | Switch               | Air Fryer - Keep Warm Available          |            |
+| end_cooking_together       | Switch               | Air Fryer - Finish Together              |            |
+| basket_selection           | Number               | Air Fryer - Basket Selection             | Value mapping `["1"="Upper Basket","2"="Lower Basket","3"="Both Baskets","4"="Double Recipe"]` |
+| dual_baskets               | Switch               | Air Fryer - Both Baskets                 |            |
+| upper_status               | Number               | Upper Basket - Status                    | Value mapping `["0"="Off","1"="Idle","2"="Scheduled","3"="Cooking","4"="Paused","5"="Paused (Basket Removed)","6"="Keep Warm","7"="Keep Warm Completed","8"="Cooking Completed","9"="Waiting","10"="Waiting Paused","11"="Cooling Down","12"="Cooling Completed","13"="Cooking Canceled","14"="Keep Warm Canceled","15"="Cooling Down Canceled","16"="Connected Standby","17"="Cooking Stopped"]` |
+| upper_fault                | Number               | Upper Basket - Device Fault              | Value mapping `["0"="No Faults","1"="Temperature Sensor Failure","2"="Temperature Sensor Short Circuit","3"="Temperature Sensor Disconnected"]` |
+| upper_target_time          | Number:Time          | Upper Basket - Target Time               |            |
+| upper_target_temperature   | Number:Temperature   | Upper Basket - Target Temperature        |            |
+| upper_left_time            | Number:Time          | Upper Basket - Left Time                 |            |
+| upper_mode                 | Number               | Upper Basket - Mode                      | Value mapping `["0"="Manual","1"="French Fries","2"="Chicken Drumstick","3"="Steak","4"="Fish","5"="Vegetables","6"="Pizza","7"="Cake","8"="Dried Fruit","9"="Reheat","10"="Custom","11"="Chicken Breast Potato Chunks","12"="Chicken Legs Broccoli","13"="Salmon Asparagus","14"="Steak Asparagus"]` |
+| upper_recipe_id            | String               | Upper Basket - Recipe Id                 |            |
+| upper_turn_pot             | Number               | Upper Basket - Turn Food                 | Value mapping `["1"="No Action","2"="Turn Food Now"]` |
+| upper_turn_pot_config      | Switch               | Upper Basket - Turn Food Reminder        |            |
+| upper_current_keep_warm    | Switch               | Upper Basket - Keep Warm After Cooking   |            |
+| upper_reservation_left_time | Number:Time          | Upper Basket - Scheduled Start Time Left |            |
+| upper_basket_mode          | Number               | Upper Basket - Basket Mode               | Value mapping `["0"="Single Basket","1"="Both Baskets","2"="Double Recipe"]` |
+| lower_status               | Number               | Lower Basket - Status                    | Value mapping `["0"="Off","1"="Idle","2"="Scheduled","3"="Cooking","4"="Paused","5"="Paused (Basket Removed)","6"="Keep Warm","7"="Keep Warm Completed","8"="Cooking Completed","9"="Waiting","10"="Waiting Paused","11"="Cooling Down","12"="Cooling Completed","13"="Cooking Canceled","14"="Keep Warm Canceled","15"="Cooling Down Canceled","16"="Connected Standby","17"="Cooking Stopped"]` |
+| lower_fault                | Number               | Lower Basket - Device Fault              | Value mapping `["0"="No Faults","1"="Temperature Sensor Failure","2"="Temperature Sensor Short Circuit","3"="Temperature Sensor Disconnected"]` |
+| lower_target_time          | Number:Time          | Lower Basket - Target Time               |            |
+| lower_target_temperature   | Number:Temperature   | Lower Basket - Target Temperature        |            |
+| lower_left_time            | Number:Time          | Lower Basket - Left Time                 |            |
+| lower_mode                 | Number               | Lower Basket - Mode                      | Value mapping `["0"="Manual","1"="French Fries","2"="Chicken Drumstick","3"="Steak","4"="Fish","5"="Vegetables","6"="Pizza","7"="Cake","8"="Dried Fruit","9"="Reheat","10"="Custom","11"="Chicken Breast Potato Chunks","12"="Chicken Legs Broccoli","13"="Salmon Asparagus","14"="Steak Asparagus"]` |
+| lower_recipe_id            | String               | Lower Basket - Recipe Id                 |            |
+| lower_turn_pot             | Number               | Lower Basket - Turn Food                 | Value mapping `["1"="No Action","2"="Turn Food Now"]` |
+| lower_turn_pot_config      | Switch               | Lower Basket - Turn Food Reminder        |            |
+| lower_current_keep_warm    | Switch               | Lower Basket - Keep Warm After Cooking   |            |
+| lower_reservation_left_time | Number:Time          | Lower Basket - Scheduled Start Time Left |            |
+| lower_basket_mode          | Number               | Lower Basket - Basket Mode               | Value mapping `["0"="Single Basket","1"="Both Baskets","2"="Double Recipe"]` |
+| recipes                    | String               | Recipes                                  | List of the Mi Home cloud recipes as JSON, with for each recipe the recipeID, recipeName, time (minutes), temperature (degrees Celsius), preHeat and capacity. Requires the cloud server to be set. The list is read once, send a refresh command to read it again. |
+
+### Xiaomi Smart Air Fryer 5.5L (<a name="xiaomi-fryer-maf07d">xiaomi.fryer.maf07d</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| actions                    | String               | Actions                                  | Value mapping `["air-fryer-start-cook"="Start Cooking","air-fryer-cancel-cooking"="Cancel Cooking","air-fryer-pause"="Pause Cooking","air-fryer-resume-cook"="Resume Cooking"]` |
+| start_cook                 | String               | Start Cooking With Settings              | Starts cooking with a JSON list of 9 values: time (minutes), temperature (degrees Celsius), keep warm after cooking (true or false), recipe id, recipe name, food quantity (1 single layer, 2 double layer), texture (0 none, 1 crispy roast, 3 degrease), scheduled start time (minutes, 0 starts now), cooking weight (grams). The recipe id is `M0` for manual cooking, `M1` to `M12` for the device presets or `C` plus the recipeID of a cloud recipe. The Mi Home app always sends `u0064u0065u006du006f` as recipe name. Example manual cooking 15 minutes at 180 degrees: `[15,180,false,"M0","u0064u0065u006du006f",1,0,0,500]`. |
+| status                     | Number               | Air Fryer - Status                       | Value mapping `["0"="Off","1"="Idle","2"="Paused","3"="Scheduled","4"="Cooking","6"="Cooking Completed","9"="Paused (Basket Removed)","10"="Keep Warm","11"="Keep Warm Paused","12"="Keep Warm Completed","13"="Crispy Roast","14"="Degrease"]` |
+| fault                      | Number               | Air Fryer - Device Fault                 | Value mapping `["0"="No Faults","1"="Temperature Sensor Disconnected","2"="Temperature Sensor Short Circuit","3"="Temperature Sensor Failure"]` |
+| target_time                | Number:Time          | Air Fryer - Target Time                  |            |
+| target_temperature         | Number:Temperature   | Air Fryer - Target Temperature           |            |
+| left_time                  | Number:Time          | Air Fryer - Left Time                    |            |
+| auto_keep_warm             | Switch               | Air Fryer - Keep Warm Available          |            |
+| current_keep_warm          | Switch               | Air Fryer - Keep Warm After Cooking      |            |
+| mode                       | Number               | Air Fryer - Mode                         | Value mapping `["1"="French Fries","2"="Chicken Wing","3"="Steak","4"="Lamb Chops","5"="Fish","6"="Shrimp","7"="Vegetables","8"="Cake","9"="Pizza","10"="Defrost","11"="Dried Fruit","12"="Yogurt","0"="Manual"]` |
+| recipe_id                  | String               | Air Fryer - Recipe Id                    |            |
+| recipe_name                | String               | Air Fryer - Recipe Name                  |            |
+| recipe_sync                | String               | Air Fryer - Recipe Sync                  |            |
+| target_cooking_measure     | Number               | Air Fryer - Food Quantity                | Value mapping `["0"="None","1"="Single Layer","2"="Double Layer"]` |
+| turn_pot                   | Number               | Air Fryer - Turn Food                    | Value mapping `["1"="No Action","2"="Turn Food Now"]` |
+| turn_pot_config            | Switch               | Air Fryer - Turn Food Reminder           |            |
+| texture                    | Number               | Air Fryer - Texture                      | Value mapping `["0"="None","1"="Crispy Roast","2"="Tender Roast","3"="Degrease"]` |
+| reservation_left_time      | Number:Time          | Air Fryer - Scheduled Start Time Left    |            |
+| cooking_weight             | Number               | Air Fryer - Cooking Weight               |            |
+| recipes                    | String               | Recipes                                  | List of the Mi Home cloud recipes as JSON, with for each recipe the recipeID, recipeName, time (minutes), temperature (degrees Celsius), preHeat and capacity. Requires the cloud server to be set. The list is read once, send a refresh command to read it again. |
+
+### Xiaomi Smart Air Fryer 4.5L (<a name="xiaomi-fryer-maf14">xiaomi.fryer.maf14</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| actions                    | String               | Actions                                  | Value mapping `["air-fryer-start-cook"="Start Cooking","air-fryer-cancel-cooking"="Cancel Cooking","air-fryer-pause"="Pause Cooking","air-fryer-resume-cook"="Resume Cooking"]` |
+| start_cook                 | String               | Start Cooking With Settings              | Starts cooking with a JSON list of 7 values: time (minutes), temperature (degrees Celsius), food quantity (1 single layer, 2 double layer), keep warm after cooking (true or false), scheduled start time (minutes, 0 starts now), cooking weight (grams), recipe id. The recipe id is `M0` for manual cooking, `M1` to `M10` for the device presets or `C` plus the recipeID of a cloud recipe. Example manual cooking 15 minutes at 180 degrees: `[15,180,1,false,0,300,"M0"]`. |
+| status                     | Number               | Air Fryer - Status                       | Value mapping `["0"="Off","1"="Idle","2"="Scheduled","3"="Cooking","4"="Paused","5"="Paused (Basket Removed)","6"="Keep Warm","7"="Keep Warm Completed","8"="Cooking Completed"]` |
+| fault                      | Number               | Air Fryer - Device Fault                 | Value mapping `["0"="No Faults","1"="Temperature Sensor Disconnected","2"="Temperature Sensor Short Circuit","3"="Temperature Sensor Failure"]` |
+| target_time                | Number:Time          | Air Fryer - Target Time                  |            |
+| target_temperature         | Number:Temperature   | Air Fryer - Target Temperature           |            |
+| mode                       | Number               | Air Fryer - Mode                         | Value mapping `["0"="Manual","1"="Chicken Wing","2"="Steak","3"="Fish","4"="French Fries","5"="Cake","6"="Defrost","7"="Dried Fruit","8"="Yogurt","9"="Shrimp","10"="Vegetables"]` |
+| left_time                  | Number:Time          | Air Fryer - Left Time                    |            |
+| target_cooking_measure     | Number               | Air Fryer - Food Quantity                | Value mapping `["0"="None","1"="Single Layer","2"="Double Layer"]` |
+| recipe_id                  | String               | Air Fryer - Recipe Id                    |            |
+| recipe_name                | String               | Air Fryer - Recipe Name                  |            |
+| recipe_sync                | String               | Air Fryer - Recipe Sync                  |            |
+| turn_pot                   | Number               | Air Fryer - Turn Food                    | Value mapping `["1"="No Action","2"="Turn Food Now"]` |
+| turn_pot_config            | Switch               | Air Fryer - Turn Food Reminder           |            |
+| current_keep_warm          | Switch               | Air Fryer - Keep Warm After Cooking      |            |
+| auto_keep_warm             | Switch               | Air Fryer - Keep Warm Available          |            |
+| reservation_left_time      | Number:Time          | Air Fryer - Scheduled Start Time Left    |            |
+| cooking_weight             | Number               | Air Fryer - Cooking Weight               |            |
+| recipes                    | String               | Recipes                                  | List of the Mi Home cloud recipes as JSON, with for each recipe the recipeID, recipeName, time (minutes), temperature (degrees Celsius), preHeat and capacity. Requires the cloud server to be set. The list is read once, send a refresh command to read it again. |
+
+### Xiaomi Smart Air Fryer 4.5L (<a name="xiaomi-fryer-maf15">xiaomi.fryer.maf15</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| actions                    | String               | Actions                                  | Value mapping `["air-fryer-start-cook"="Start Cooking","air-fryer-cancel-cooking"="Cancel Cooking","air-fryer-pause"="Pause Cooking","air-fryer-resume-cook"="Resume Cooking"]` |
+| start_cook                 | String               | Start Cooking With Settings              | Starts cooking with a JSON list of 7 values: time (minutes), temperature (degrees Celsius), food quantity (1 single layer, 2 double layer), keep warm after cooking (true or false), scheduled start time (minutes, 0 starts now), cooking weight (grams), recipe id. The recipe id is `M0` for manual cooking, `M1` to `M10` for the device presets or `C` plus the recipeID of a cloud recipe. Example manual cooking 15 minutes at 180 degrees: `[15,180,1,false,0,300,"M0"]`. |
+| status                     | Number               | Air Fryer - Status                       | Value mapping `["0"="Off","1"="Idle","2"="Scheduled","3"="Cooking","4"="Paused","5"="Paused (Basket Removed)","6"="Keep Warm","7"="Keep Warm Completed","8"="Cooking Completed"]` |
+| fault                      | Number               | Air Fryer - Device Fault                 | Value mapping `["0"="No Faults","1"="Temperature Sensor Disconnected","2"="Temperature Sensor Short Circuit","3"="Temperature Sensor Failure"]` |
+| target_time                | Number:Time          | Air Fryer - Target Time                  |            |
+| target_temperature         | Number:Temperature   | Air Fryer - Target Temperature           |            |
+| mode                       | Number               | Air Fryer - Mode                         | Value mapping `["0"="Manual","1"="Chicken Wing","2"="Steak","3"="Fish","4"="French Fries","5"="Cake","6"="Defrost","7"="Dried Fruit","8"="Yogurt","9"="Shrimp","10"="Vegetables"]` |
+| left_time                  | Number:Time          | Air Fryer - Left Time                    |            |
+| target_cooking_measure     | Number               | Air Fryer - Food Quantity                | Value mapping `["0"="None","1"="Single Layer","2"="Double Layer"]` |
+| recipe_id                  | String               | Air Fryer - Recipe Id                    |            |
+| recipe_name                | String               | Air Fryer - Recipe Name                  |            |
+| recipe_sync                | String               | Air Fryer - Recipe Sync                  |            |
+| turn_pot                   | Number               | Air Fryer - Turn Food                    | Value mapping `["1"="No Action","2"="Turn Food Now"]` |
+| turn_pot_config            | Switch               | Air Fryer - Turn Food Reminder           |            |
+| current_keep_warm          | Switch               | Air Fryer - Keep Warm After Cooking      |            |
+| auto_keep_warm             | Switch               | Air Fryer - Keep Warm Available          |            |
+| reservation_left_time      | Number:Time          | Air Fryer - Scheduled Start Time Left    |            |
+| cooking_weight             | Number               | Air Fryer - Cooking Weight               |            |
+| recipes                    | String               | Recipes                                  | List of the Mi Home cloud recipes as JSON, with for each recipe the recipeID, recipeName, time (minutes), temperature (degrees Celsius), preHeat and capacity. Requires the cloud server to be set. The list is read once, send a refresh command to read it again. |
+
+### Xiaomi Smart Air Fryer 6.5L (<a name="xiaomi-fryer-maf65">xiaomi.fryer.maf65</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| actions                    | String               | Actions                                  | Value mapping `["air-fryer-start-cook"="Start Cooking","air-fryer-cancel-cooking"="Cancel Cooking","air-fryer-pause"="Pause Cooking","air-fryer-resume-cook"="Resume Cooking"]` |
+| start_cook                 | String               | Start Cooking With Settings              | Starts cooking with a JSON list of 9 values: time (minutes), temperature (degrees Celsius), keep warm after cooking (true or false), recipe id, recipe name, food quantity (1 single layer, 2 double layer, 3 half, 4 full), texture (0 none, 1 crispy roast, 3 degrease), scheduled start time (minutes, 0 starts now), cooking weight (grams). The recipe id is `M0` for manual cooking, `M1` to `M12` for the device presets or `C` plus the recipeID of a cloud recipe. The Mi Home app always sends `u0064u0065u006du006f` as recipe name. Example manual cooking 15 minutes at 180 degrees: `[15,180,false,"M0","u0064u0065u006du006f",1,0,0,500]`. |
+| status                     | Number               | Air Fryer - Status                       | Value mapping `["0"="Off","1"="Idle","2"="Paused","3"="Scheduled","4"="Cooking","5"="Preheating","6"="Cooking Completed","7"="Preheat Completed","8"="Preheat Paused","9"="Paused (Basket Removed)","10"="Keep Warm","11"="Keep Warm Paused","12"="Keep Warm Completed","13"="Crispy Roast","14"="Degrease"]` |
+| fault                      | Number               | Air Fryer - Device Fault                 | Value mapping `["0"="No Faults","1"="Temperature Sensor Disconnected","2"="Temperature Sensor Short Circuit","3"="Temperature Sensor Failure"]` |
+| target_time                | Number:Time          | Air Fryer - Target Time                  |            |
+| target_temperature         | Number:Temperature   | Air Fryer - Target Temperature           |            |
+| left_time                  | Number:Time          | Air Fryer - Left Time                    |            |
+| auto_keep_warm             | Switch               | Air Fryer - Keep Warm Available          |            |
+| current_keep_warm          | Switch               | Air Fryer - Keep Warm After Cooking      |            |
+| mode                       | Number               | Air Fryer - Mode                         | Value mapping `["1"="French Fries","2"="Chicken Wing","3"="Steak","4"="Lamb Chops","5"="Fish","6"="Shrimp","7"="Vegetables","8"="Cake","9"="Pizza","10"="Defrost","11"="Dried Fruit","12"="Yogurt","0"="Manual"]` |
+| preheat                    | Switch               | Air Fryer - Preheat                      |            |
+| recipe_id                  | String               | Air Fryer - Recipe Id                    |            |
+| recipe_name                | String               | Air Fryer - Recipe Name                  |            |
+| recipe_sync                | String               | Air Fryer - Recipe Sync                  |            |
+| target_cooking_measure     | Number               | Air Fryer - Food Quantity                | Value mapping `["0"="None","1"="Single Layer","2"="Double Layer","3"="Half Pot","4"="Full Pot"]` |
+| turn_pot                   | Number               | Air Fryer - Turn Food                    | Value mapping `["1"="No Action","2"="Turn Food Now"]` |
+| turn_pot_config            | Switch               | Air Fryer - Turn Food Reminder           |            |
+| texture                    | Number               | Air Fryer - Texture                      | Value mapping `["0"="None","1"="Crispy Roast","2"="Tender Roast","3"="Degrease"]` |
+| reservation_left_time      | Number:Time          | Air Fryer - Scheduled Start Time Left    |            |
+| cooking_weight             | Number               | Air Fryer - Cooking Weight               |            |
+| recipes                    | String               | Recipes                                  | List of the Mi Home cloud recipes as JSON, with for each recipe the recipeID, recipeName, time (minutes), temperature (degrees Celsius), preHeat and capacity. Requires the cloud server to be set. The list is read once, send a refresh command to read it again. |
+
+### Mijia Smart Steam Air Fryer 7L (<a name="xiaomi-fryer-st701o">xiaomi.fryer.st701o</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| actions                    | String               | Actions                                  | Value mapping `["air-fryer-start-cook"="Start Cooking","air-fryer-cancel-cooking"="Cancel Cooking","air-fryer-pause"="Pause Cooking","air-fryer-resume-cook"="Resume Cooking","custom-enter-water-clean"="Start Waterline Cleaning","custom-close-water-clean"="Skip Waterline Cleaning"]` |
+| start_cook                 | String               | Start Cooking With Settings              | Starts cooking with a JSON list of 8 values: time (minutes), temperature (degrees Celsius), recipe id, keep warm after cooking (true or false), scheduled start time (minutes, 0 starts now), cooking weight (grams), food quantity (1 single layer, 2 double layer), texture (0 none, 1 air fry, 2 steam and air fry, 3 steam). The recipe id is `M` plus the mode number (for example `M1` air fry custom, `M8` steam custom) or `C` plus the recipeID of a cloud recipe. The Mi Home app shows that cooking cannot be started from the app, so the device may refuse a remote start. Example air frying 15 minutes at 180 degrees: `[15,180,"M1",false,0,500,1,1]`. The texture values follow the Mi Home app, which uses the same list for st701o and st701t. |
+| power                      | Switch               | Power                                    |            |
+| status                     | Number               | Air Fryer - Status                       | Value mapping `["0"="Off","1"="Idle","2"="Paused","3"="Scheduled","4"="Cooking","5"="Cooking Completed","6"="Paused (Basket Removed)","7"="Keep Warm","8"="Keep Warm Completed","12"="Paused (Water Shortage)","13"="Canceled (Water Shortage)","14"="Cleaning Paused (Water Shortage)","15"="Connected Standby"]` |
+| fault                      | Number               | Air Fryer - Device Fault                 | Value mapping `["0"="No Faults","1"="Temperature Sensor Failure","2"="Temperature Sensor Short Circuit","3"="Temperature Sensor Disconnected"]` |
+| target_time                | Number:Time          | Air Fryer - Target Time                  |            |
+| target_temperature         | Number:Temperature   | Air Fryer - Target Temperature           |            |
+| mode                       | Number               | Air Fryer - Mode                         | Value mapping `["1"="Air Fry Custom","2"="Frozen Fries","3"="Fresh Potatoes","4"="Chicken Drumstick","5"="Steak","6"="Fish","7"="Vegetables","8"="Steam Custom","9"="Steam Root Vegetables","10"="Steam Broccoli","11"="Steam Corn","12"="Steam Salmon","13"="Steam Rice","14"="Steam Egg","15"="Steam & Air Fry Chicken Drumstick","16"="Steam & Air Fry Fish","17"="Steam & Air Fry Vegetables","18"="Steam & Air Fry Fresh Potatoes","19"="Steam & Air Fry Dumplings","20"="Steam & Air Fry Bread","21"="Bake Custom","22"="Bake Cake","23"="Bake Pizza","24"="Bake Bread","25"="Sous Vide Custom","26"="Sous Vide Steak","27"="Sous Vide Chicken Cutlet","28"="Sous Vide Salmon","29"="Sous Vide Egg","30"="Max Crisp","31"="Dehydrate","32"="Ferment","33"="Defrost","34"="Reheat","35"="Dry","36"="Waterline Cleaning","37"="Deodorize"]` |
+| left_time                  | Number:Time          | Air Fryer - Left Time                    |            |
+| target_cooking_measure     | Number               | Air Fryer - Food Quantity                | Value mapping `["0"="None","1"="Single Layer","2"="Double Layer"]` |
+| texture                    | Number               | Air Fryer - Texture                      | The values follow the Mi Home app, which uses the same list for st701o and st701t. Value mapping `["0"="None","1"="Air Fry","2"="Steam & Air Fry","3"="Steam"]` |
+| recipe_id                  | String               | Air Fryer - Recipe Id                    |            |
+| turn_pot                   | Number               | Air Fryer - Turn Food                    | Value mapping `["1"="No Action","2"="Turn Food Now"]` |
+| turn_pot_config            | Switch               | Air Fryer - Turn Food Reminder           |            |
+| current_keep_warm          | Switch               | Air Fryer - Keep Warm After Cooking      |            |
+| auto_keep_warm             | Switch               | Air Fryer - Keep Warm Available          |            |
+| reservation_left_time      | Number:Time          | Air Fryer - Scheduled Start Time Left    |            |
+| cooking_weight             | Number               | Air Fryer - Cooking Weight               |            |
+| water_clean                | Switch               | Waterline Cleaning                       |            |
+| water_clean_timeout        | Switch               | Waterline Cleaning Due                   |            |
+| clean_stage                | Number               | Waterline Cleaning Stage                 | Value mapping `["0"="None","1"="Stage 1","2"="Stage 2"]` |
+| continue_clean             | Switch               | Waterline Cleaning Not Completed         |            |
+| recipes                    | String               | Recipes                                  | List of the Mi Home cloud recipes as JSON, with for each recipe the recipeID, recipeName, time (minutes), temperature (degrees Celsius), preHeat and capacity. Requires the cloud server to be set. The list is read once, send a refresh command to read it again. |
+
+### Mijia Smart Steam Air Fryer 7L (<a name="xiaomi-fryer-st701t">xiaomi.fryer.st701t</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| actions                    | String               | Actions                                  | Value mapping `["air-fryer-start-cook"="Start Cooking","air-fryer-cancel-cooking"="Cancel Cooking","air-fryer-pause"="Pause Cooking","air-fryer-resume-cook"="Resume Cooking","custom-enter-water-clean"="Start Waterline Cleaning","custom-close-water-clean"="Skip Waterline Cleaning"]` |
+| start_cook                 | String               | Start Cooking With Settings              | Starts cooking with a JSON list of 8 values: time (minutes), temperature (degrees Celsius), recipe id, keep warm after cooking (true or false), scheduled start time (minutes, 0 starts now), cooking weight (grams), food quantity (1 single layer, 2 double layer), texture (0 none, 1 air fry, 2 steam and air fry, 3 steam). The recipe id is `M` plus the mode number (for example `M1` air fry custom, `M8` steam custom) or `C` plus the recipeID of a cloud recipe. The Mi Home app shows that cooking cannot be started from the app, so the device may refuse a remote start. Example air frying 15 minutes at 180 degrees: `[15,180,"M1",false,0,500,1,1]`. The texture values follow the Mi Home app, which uses the same list for st701o and st701t. |
+| power                      | Switch               | Power                                    |            |
+| status                     | Number               | Air Fryer - Status                       | Value mapping `["0"="Off","1"="Idle","2"="Paused","3"="Scheduled","4"="Cooking","5"="Cooking Completed","6"="Paused (Basket Removed)","7"="Keep Warm","8"="Keep Warm Completed","12"="Paused (Water Shortage)","13"="Canceled (Water Shortage)","14"="Cleaning Paused (Water Shortage)","15"="Connected Standby"]` |
+| fault                      | Number               | Air Fryer - Device Fault                 | Value mapping `["0"="No Faults","1"="Temperature Sensor Failure","2"="Temperature Sensor Short Circuit","3"="Temperature Sensor Disconnected"]` |
+| target_time                | Number:Time          | Air Fryer - Target Time                  |            |
+| target_temperature         | Number:Temperature   | Air Fryer - Target Temperature           |            |
+| mode                       | Number               | Air Fryer - Mode                         | Value mapping `["1"="Air Fry Custom","2"="Frozen Fries","3"="Fresh Potatoes","4"="Chicken Drumstick","5"="Steak","6"="Fish","7"="Vegetables","8"="Steam Custom","9"="Steam Root Vegetables","10"="Steam Broccoli","11"="Steam Corn","12"="Steam Salmon","13"="Steam Rice","14"="Steam Egg","15"="Steam & Air Fry Chicken Drumstick","16"="Steam & Air Fry Fish","17"="Steam & Air Fry Vegetables","18"="Steam & Air Fry Fresh Potatoes","19"="Steam & Air Fry Dumplings","20"="Steam & Air Fry Bread","21"="Bake Custom","22"="Bake Cake","23"="Bake Pizza","24"="Bake Bread","25"="Sous Vide Custom","26"="Sous Vide Steak","27"="Sous Vide Chicken Cutlet","28"="Sous Vide Salmon","29"="Sous Vide Egg","30"="Max Crisp","31"="Dehydrate","32"="Ferment","33"="Defrost","34"="Reheat","35"="Dry","36"="Waterline Cleaning","37"="Deodorize"]` |
+| left_time                  | Number:Time          | Air Fryer - Left Time                    |            |
+| target_cooking_measure     | Number               | Air Fryer - Food Quantity                | Value mapping `["0"="None","1"="Single Layer","2"="Double Layer"]` |
+| texture                    | Number               | Air Fryer - Texture                      | The values follow the Mi Home app, which uses the same list for st701o and st701t. Value mapping `["0"="None","1"="Air Fry","2"="Steam & Air Fry","3"="Steam"]` |
+| recipe_id                  | String               | Air Fryer - Recipe Id                    |            |
+| turn_pot                   | Number               | Air Fryer - Turn Food                    | Value mapping `["1"="No Action","2"="Turn Food Now"]` |
+| turn_pot_config            | Switch               | Air Fryer - Turn Food Reminder           |            |
+| current_keep_warm          | Switch               | Air Fryer - Keep Warm After Cooking      |            |
+| auto_keep_warm             | Switch               | Air Fryer - Keep Warm Available          |            |
+| reservation_left_time      | Number:Time          | Air Fryer - Scheduled Start Time Left    |            |
+| cooking_weight             | Number               | Air Fryer - Cooking Weight               |            |
+| water_clean                | Switch               | Waterline Cleaning                       |            |
+| water_clean_timeout        | Switch               | Waterline Cleaning Due                   |            |
+| clean_stage                | Number               | Waterline Cleaning Stage                 | Value mapping `["0"="None","1"="Stage 1","2"="Stage 2"]` |
+| continue_clean             | Switch               | Waterline Cleaning Not Completed         |            |
+| recipes                    | String               | Recipes                                  | List of the Mi Home cloud recipes as JSON, with for each recipe the recipeID, recipeName, time (minutes), temperature (degrees Celsius), preHeat and capacity. Requires the cloud server to be set. The list is read once, send a refresh command to read it again. |
+
 ### Mijia Smart Dehumidifier 13L (<a name="xiaomi-derh-13l">xiaomi.derh.13l</a>) Channels
 
 | Channel                    | Type                 | Description                              | Comment    |
@@ -16733,6 +17049,7 @@ note: Autogenerated example. Replace the id (fryer) in the channel with your own
 ```java
 Group G_fryer "Mi Air Frying Pan" <status>
 String actions "Actions" (G_fryer) {channel="miio:basic:fryer:actions"}
+String start_cook "Start Cooking With Settings" (G_fryer) {channel="miio:basic:fryer:start_cook"}
 Number status "Air Fryer - Status" (G_fryer) {channel="miio:basic:fryer:status"}
 Number fault "Air Fryer - Device Fault" (G_fryer) {channel="miio:basic:fryer:fault"}
 Number:Time target_time "Air Fryer - Target Time" (G_fryer) {channel="miio:basic:fryer:target_time"}
@@ -16740,14 +17057,15 @@ Number:Temperature target_temperature "Air Fryer - Target Temperature" (G_fryer)
 Number:Time left_time "Air Fryer - Left Time" (G_fryer) {channel="miio:basic:fryer:left_time"}
 String recipe_id "Custom - Recipe Id" (G_fryer) {channel="miio:basic:fryer:recipe_id"}
 String recipe_name "Custom - Recipe Name" (G_fryer) {channel="miio:basic:fryer:recipe_name"}
-Number:Time work_time "Custom - Work Time" (G_fryer) {channel="miio:basic:fryer:work_time"}
-Number:Temperature work_temp "Custom - Work Temp" (G_fryer) {channel="miio:basic:fryer:work_temp"}
-Number:Time appoint_time "Custom - Appoint Time" (G_fryer) {channel="miio:basic:fryer:appoint_time"}
+Number:Time work_time "Custom - Cooking Time" (G_fryer) {channel="miio:basic:fryer:work_time"}
+Number:Temperature work_temp "Custom - Cooking Temperature" (G_fryer) {channel="miio:basic:fryer:work_temp"}
+Number:Time appoint_time "Custom - Scheduled Start Time" (G_fryer) {channel="miio:basic:fryer:appoint_time"}
 Number food_quantity "Custom - Food Quantity" (G_fryer) {channel="miio:basic:fryer:food_quantity"}
 Number preheat_switch "Custom - Preheat Switch" (G_fryer) {channel="miio:basic:fryer:preheat_switch"}
-Number:Time appoint_time_left "Custom - Appoint Time Left" (G_fryer) {channel="miio:basic:fryer:appoint_time_left"}
+Number:Time appoint_time_left "Custom - Scheduled Start Time Left" (G_fryer) {channel="miio:basic:fryer:appoint_time_left"}
 String recipe_sync "Custom - Recipe Sync" (G_fryer) {channel="miio:basic:fryer:recipe_sync"}
-Number turn_pot "Custom - Turn Pot" (G_fryer) {channel="miio:basic:fryer:turn_pot"}
+Number turn_pot "Custom - Turn Food Reminder" (G_fryer) {channel="miio:basic:fryer:turn_pot"}
+String recipes "Recipes" (G_fryer) {channel="miio:basic:fryer:recipes"}
 ```
 
 ### Mi Smart Air Fryer (3.5L) (careli.fryer.maf02) item file lines
@@ -16781,6 +17099,7 @@ note: Autogenerated example. Replace the id (fryer) in the channel with your own
 ```java
 Group G_fryer "Mi Air Frying Pan" <status>
 String actions "Actions" (G_fryer) {channel="miio:basic:fryer:actions"}
+String start_cook "Start Cooking With Settings" (G_fryer) {channel="miio:basic:fryer:start_cook"}
 Number status "Air Fryer - Status" (G_fryer) {channel="miio:basic:fryer:status"}
 Number fault "Air Fryer - Device Fault" (G_fryer) {channel="miio:basic:fryer:fault"}
 Number:Time target_time "Air Fryer - Target Time" (G_fryer) {channel="miio:basic:fryer:target_time"}
@@ -16788,14 +17107,15 @@ Number:Temperature target_temperature "Air Fryer - Target Temperature" (G_fryer)
 Number:Time left_time "Air Fryer - Left Time" (G_fryer) {channel="miio:basic:fryer:left_time"}
 String recipe_id "Custom - Recipe Id" (G_fryer) {channel="miio:basic:fryer:recipe_id"}
 String recipe_name "Custom - Recipe Name" (G_fryer) {channel="miio:basic:fryer:recipe_name"}
-Number:Time work_time "Custom - Work Time" (G_fryer) {channel="miio:basic:fryer:work_time"}
-Number:Temperature work_temp "Custom - Work Temp" (G_fryer) {channel="miio:basic:fryer:work_temp"}
-Number:Time appoint_time "Custom - Appoint Time" (G_fryer) {channel="miio:basic:fryer:appoint_time"}
+Number:Time work_time "Custom - Cooking Time" (G_fryer) {channel="miio:basic:fryer:work_time"}
+Number:Temperature work_temp "Custom - Cooking Temperature" (G_fryer) {channel="miio:basic:fryer:work_temp"}
+Number:Time appoint_time "Custom - Scheduled Start Time" (G_fryer) {channel="miio:basic:fryer:appoint_time"}
 Number food_quantity "Custom - Food Quantity" (G_fryer) {channel="miio:basic:fryer:food_quantity"}
 Number preheat_switch "Custom - Preheat Switch" (G_fryer) {channel="miio:basic:fryer:preheat_switch"}
-Number:Time appoint_time_left "Custom - Appoint Time Left" (G_fryer) {channel="miio:basic:fryer:appoint_time_left"}
+Number:Time appoint_time_left "Custom - Scheduled Start Time Left" (G_fryer) {channel="miio:basic:fryer:appoint_time_left"}
 String recipe_sync "Custom - Recipe Sync" (G_fryer) {channel="miio:basic:fryer:recipe_sync"}
-Number turn_pot "Custom - Turn Pot" (G_fryer) {channel="miio:basic:fryer:turn_pot"}
+Number turn_pot "Custom - Turn Food Reminder" (G_fryer) {channel="miio:basic:fryer:turn_pot"}
+String recipes "Recipes" (G_fryer) {channel="miio:basic:fryer:recipes"}
 ```
 
 ### Xiaomi Smart Air Fryer Pro 4L (careli.fryer.maf05a) item file lines
@@ -16825,6 +17145,30 @@ Number turn_pot_cfg "Custom - Turn Food Reminder" (G_fryer) {channel="miio:basic
 String recipes "Recipes" (G_fryer) {channel="miio:basic:fryer:recipes"}
 ```
 
+### Mi Smart Air Fryer (3.5L) (careli.fryer.maf07) item file lines
+
+note: Autogenerated example. Replace the id (fryer) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_fryer "Mi Smart Air Fryer (3.5L)" <status>
+String actions "Actions" (G_fryer) {channel="miio:basic:fryer:actions"}
+String start_cook "Start Cooking With Settings" (G_fryer) {channel="miio:basic:fryer:start_cook"}
+Number status "Air Fryer - Status" (G_fryer) {channel="miio:basic:fryer:status"}
+Number fault "Air Fryer - Device Fault" (G_fryer) {channel="miio:basic:fryer:fault"}
+Number:Time target_time "Air Fryer - Target Time" (G_fryer) {channel="miio:basic:fryer:target_time"}
+Number:Temperature target_temperature "Air Fryer - Target Temperature" (G_fryer) {channel="miio:basic:fryer:target_temperature"}
+Number:Time left_time "Air Fryer - Left Time" (G_fryer) {channel="miio:basic:fryer:left_time"}
+String recipe_id "Custom - Recipe Id" (G_fryer) {channel="miio:basic:fryer:recipe_id"}
+Number:Time work_time "Custom - Cooking Time" (G_fryer) {channel="miio:basic:fryer:work_time"}
+Number:Temperature work_temp "Custom - Cooking Temperature" (G_fryer) {channel="miio:basic:fryer:work_temp"}
+Number:Time appoint_time "Custom - Scheduled Start Time" (G_fryer) {channel="miio:basic:fryer:appoint_time"}
+Number food_quantity "Custom - Food Quantity" (G_fryer) {channel="miio:basic:fryer:food_quantity"}
+Number preheat_switch "Custom - Preheat Switch" (G_fryer) {channel="miio:basic:fryer:preheat_switch"}
+Number:Time appoint_time_left "Custom - Scheduled Start Time Left" (G_fryer) {channel="miio:basic:fryer:appoint_time_left"}
+Number turn_pot "Custom - Turn Food Reminder" (G_fryer) {channel="miio:basic:fryer:turn_pot"}
+String recipes "Recipes" (G_fryer) {channel="miio:basic:fryer:recipes"}
+```
+
 ### Xiaomi Smart Air Fryer 6.5L (careli.fryer.maf10a) item file lines
 
 note: Autogenerated example. Replace the id (fryer) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
@@ -16832,23 +17176,26 @@ note: Autogenerated example. Replace the id (fryer) in the channel with your own
 ```java
 Group G_fryer "Xiaomi Smart Air Fryer 6.5L" <status>
 String actions "Actions" (G_fryer) {channel="miio:basic:fryer:actions"}
+String start_cook "Start Cooking With Settings" (G_fryer) {channel="miio:basic:fryer:start_cook"}
 Number status "Air Fryer - Status" (G_fryer) {channel="miio:basic:fryer:status"}
 Number fault "Air Fryer - Device Fault" (G_fryer) {channel="miio:basic:fryer:fault"}
 Number:Time target_time "Air Fryer - Target Time" (G_fryer) {channel="miio:basic:fryer:target_time"}
 Number:Temperature target_temperature "Air Fryer - Target Temperature" (G_fryer) {channel="miio:basic:fryer:target_temperature"}
 Number:Time left_time "Air Fryer - Left Time" (G_fryer) {channel="miio:basic:fryer:left_time"}
-Switch auto_keep_warm "Air Fryer - Auto Keep Warm" (G_fryer) {channel="miio:basic:fryer:auto_keep_warm"}
-Switch current_keep_warm "Air Fryer - Keep Warm" (G_fryer) {channel="miio:basic:fryer:current_keep_warm"}
+Switch auto_keep_warm "Air Fryer - Keep Warm Available" (G_fryer) {channel="miio:basic:fryer:auto_keep_warm"}
+Switch current_keep_warm "Air Fryer - Keep Warm After Cooking" (G_fryer) {channel="miio:basic:fryer:current_keep_warm"}
 Number mode "Air Fryer - Mode" (G_fryer) {channel="miio:basic:fryer:mode"}
 Switch preheat "Air Fryer - Preheat" (G_fryer) {channel="miio:basic:fryer:preheat"}
 String recipe_id "Air Fryer - Recipe Id" (G_fryer) {channel="miio:basic:fryer:recipe_id"}
 String recipe_name "Air Fryer - Recipe Name" (G_fryer) {channel="miio:basic:fryer:recipe_name"}
+String recipe_sync "Air Fryer - Recipe Sync" (G_fryer) {channel="miio:basic:fryer:recipe_sync"}
 Number target_cooking_measure "Air Fryer - Food Quantity" (G_fryer) {channel="miio:basic:fryer:target_cooking_measure"}
-Number turn_pot "Air Fryer - Turn Over Food" (G_fryer) {channel="miio:basic:fryer:turn_pot"}
-Switch turn_pot_config "Air Fryer - Turn Over Reminder" (G_fryer) {channel="miio:basic:fryer:turn_pot_config"}
+Number turn_pot "Air Fryer - Turn Food" (G_fryer) {channel="miio:basic:fryer:turn_pot"}
+Switch turn_pot_config "Air Fryer - Turn Food Reminder" (G_fryer) {channel="miio:basic:fryer:turn_pot_config"}
 Number texture "Air Fryer - Texture" (G_fryer) {channel="miio:basic:fryer:texture"}
-Number:Time reservation_left_time "Air Fryer - Scheduled Start Left Time" (G_fryer) {channel="miio:basic:fryer:reservation_left_time"}
+Number:Time reservation_left_time "Air Fryer - Scheduled Start Time Left" (G_fryer) {channel="miio:basic:fryer:reservation_left_time"}
 Number cooking_weight "Air Fryer - Cooking Weight" (G_fryer) {channel="miio:basic:fryer:cooking_weight"}
+String recipes "Recipes" (G_fryer) {channel="miio:basic:fryer:recipes"}
 ```
 
 ### Qingping Air Monitor Lite (cgllc.airm.cgd1st) item file lines
@@ -28632,6 +28979,311 @@ Switch spillage_prevention "Food Bowl Spillage Prevention" (G_feeder) {channel="
 Number:Dimensionless schedule_progress "Schedule Progress" (G_feeder) {channel="miio:basic:feeder:schedule_progress"}
 Number screen_display "Screen Display" (G_feeder) {channel="miio:basic:feeder:screen_display"}
 Number:Dimensionless desiccant_left_level "Desiccant Left Level" (G_feeder) {channel="miio:basic:feeder:desiccant_left_level"}
+```
+
+### Xiaomi Smart Double Stack Air Fryer 12L (xiaomi.fryer.jl12) item file lines
+
+note: Autogenerated example. Replace the id (fryer) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_fryer "Xiaomi Smart Double Stack Air Fryer 12L" <status>
+String actions "Actions" (G_fryer) {channel="miio:basic:fryer:actions"}
+String upper_start_cook "Upper Basket - Start Cooking With Settings" (G_fryer) {channel="miio:basic:fryer:upper_start_cook"}
+String lower_start_cook "Lower Basket - Start Cooking With Settings" (G_fryer) {channel="miio:basic:fryer:lower_start_cook"}
+Switch power "Power" (G_fryer) {channel="miio:basic:fryer:power"}
+Number status "Air Fryer - Status" (G_fryer) {channel="miio:basic:fryer:status"}
+Number:Time left_time "Air Fryer - Left Time" (G_fryer) {channel="miio:basic:fryer:left_time"}
+Number fault "Air Fryer - Device Fault" (G_fryer) {channel="miio:basic:fryer:fault"}
+Switch auto_keep_warm "Air Fryer - Keep Warm Available" (G_fryer) {channel="miio:basic:fryer:auto_keep_warm"}
+Switch end_cooking_together "Air Fryer - Finish Together" (G_fryer) {channel="miio:basic:fryer:end_cooking_together"}
+Number basket_selection "Air Fryer - Basket Selection" (G_fryer) {channel="miio:basic:fryer:basket_selection"}
+Switch dual_baskets "Air Fryer - Both Baskets" (G_fryer) {channel="miio:basic:fryer:dual_baskets"}
+Number upper_status "Upper Basket - Status" (G_fryer) {channel="miio:basic:fryer:upper_status"}
+Number upper_fault "Upper Basket - Device Fault" (G_fryer) {channel="miio:basic:fryer:upper_fault"}
+Number:Time upper_target_time "Upper Basket - Target Time" (G_fryer) {channel="miio:basic:fryer:upper_target_time"}
+Number:Temperature upper_target_temperature "Upper Basket - Target Temperature" (G_fryer) {channel="miio:basic:fryer:upper_target_temperature"}
+Number:Time upper_left_time "Upper Basket - Left Time" (G_fryer) {channel="miio:basic:fryer:upper_left_time"}
+Number upper_mode "Upper Basket - Mode" (G_fryer) {channel="miio:basic:fryer:upper_mode"}
+String upper_recipe_id "Upper Basket - Recipe Id" (G_fryer) {channel="miio:basic:fryer:upper_recipe_id"}
+Number upper_turn_pot "Upper Basket - Turn Food" (G_fryer) {channel="miio:basic:fryer:upper_turn_pot"}
+Switch upper_turn_pot_config "Upper Basket - Turn Food Reminder" (G_fryer) {channel="miio:basic:fryer:upper_turn_pot_config"}
+Switch upper_current_keep_warm "Upper Basket - Keep Warm After Cooking" (G_fryer) {channel="miio:basic:fryer:upper_current_keep_warm"}
+Number:Time upper_reservation_left_time "Upper Basket - Scheduled Start Time Left" (G_fryer) {channel="miio:basic:fryer:upper_reservation_left_time"}
+Number upper_basket_mode "Upper Basket - Basket Mode" (G_fryer) {channel="miio:basic:fryer:upper_basket_mode"}
+Number lower_status "Lower Basket - Status" (G_fryer) {channel="miio:basic:fryer:lower_status"}
+Number lower_fault "Lower Basket - Device Fault" (G_fryer) {channel="miio:basic:fryer:lower_fault"}
+Number:Time lower_target_time "Lower Basket - Target Time" (G_fryer) {channel="miio:basic:fryer:lower_target_time"}
+Number:Temperature lower_target_temperature "Lower Basket - Target Temperature" (G_fryer) {channel="miio:basic:fryer:lower_target_temperature"}
+Number:Time lower_left_time "Lower Basket - Left Time" (G_fryer) {channel="miio:basic:fryer:lower_left_time"}
+Number lower_mode "Lower Basket - Mode" (G_fryer) {channel="miio:basic:fryer:lower_mode"}
+String lower_recipe_id "Lower Basket - Recipe Id" (G_fryer) {channel="miio:basic:fryer:lower_recipe_id"}
+Number lower_turn_pot "Lower Basket - Turn Food" (G_fryer) {channel="miio:basic:fryer:lower_turn_pot"}
+Switch lower_turn_pot_config "Lower Basket - Turn Food Reminder" (G_fryer) {channel="miio:basic:fryer:lower_turn_pot_config"}
+Switch lower_current_keep_warm "Lower Basket - Keep Warm After Cooking" (G_fryer) {channel="miio:basic:fryer:lower_current_keep_warm"}
+Number:Time lower_reservation_left_time "Lower Basket - Scheduled Start Time Left" (G_fryer) {channel="miio:basic:fryer:lower_reservation_left_time"}
+Number lower_basket_mode "Lower Basket - Basket Mode" (G_fryer) {channel="miio:basic:fryer:lower_basket_mode"}
+String recipes "Recipes" (G_fryer) {channel="miio:basic:fryer:recipes"}
+```
+
+### Xiaomi Smart Double Stack Air Fryer 12L (xiaomi.fryer.jl12m) item file lines
+
+note: Autogenerated example. Replace the id (fryer) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_fryer "Xiaomi Smart Double Stack Air Fryer 12L" <status>
+String actions "Actions" (G_fryer) {channel="miio:basic:fryer:actions"}
+String upper_start_cook "Upper Basket - Start Cooking With Settings" (G_fryer) {channel="miio:basic:fryer:upper_start_cook"}
+String lower_start_cook "Lower Basket - Start Cooking With Settings" (G_fryer) {channel="miio:basic:fryer:lower_start_cook"}
+Switch power "Power" (G_fryer) {channel="miio:basic:fryer:power"}
+Number status "Air Fryer - Status" (G_fryer) {channel="miio:basic:fryer:status"}
+Number:Time left_time "Air Fryer - Left Time" (G_fryer) {channel="miio:basic:fryer:left_time"}
+Number fault "Air Fryer - Device Fault" (G_fryer) {channel="miio:basic:fryer:fault"}
+Switch auto_keep_warm "Air Fryer - Keep Warm Available" (G_fryer) {channel="miio:basic:fryer:auto_keep_warm"}
+Switch end_cooking_together "Air Fryer - Finish Together" (G_fryer) {channel="miio:basic:fryer:end_cooking_together"}
+Number basket_selection "Air Fryer - Basket Selection" (G_fryer) {channel="miio:basic:fryer:basket_selection"}
+Switch dual_baskets "Air Fryer - Both Baskets" (G_fryer) {channel="miio:basic:fryer:dual_baskets"}
+Number upper_status "Upper Basket - Status" (G_fryer) {channel="miio:basic:fryer:upper_status"}
+Number upper_fault "Upper Basket - Device Fault" (G_fryer) {channel="miio:basic:fryer:upper_fault"}
+Number:Time upper_target_time "Upper Basket - Target Time" (G_fryer) {channel="miio:basic:fryer:upper_target_time"}
+Number:Temperature upper_target_temperature "Upper Basket - Target Temperature" (G_fryer) {channel="miio:basic:fryer:upper_target_temperature"}
+Number:Time upper_left_time "Upper Basket - Left Time" (G_fryer) {channel="miio:basic:fryer:upper_left_time"}
+Number upper_mode "Upper Basket - Mode" (G_fryer) {channel="miio:basic:fryer:upper_mode"}
+String upper_recipe_id "Upper Basket - Recipe Id" (G_fryer) {channel="miio:basic:fryer:upper_recipe_id"}
+Number upper_turn_pot "Upper Basket - Turn Food" (G_fryer) {channel="miio:basic:fryer:upper_turn_pot"}
+Switch upper_turn_pot_config "Upper Basket - Turn Food Reminder" (G_fryer) {channel="miio:basic:fryer:upper_turn_pot_config"}
+Switch upper_current_keep_warm "Upper Basket - Keep Warm After Cooking" (G_fryer) {channel="miio:basic:fryer:upper_current_keep_warm"}
+Number:Time upper_reservation_left_time "Upper Basket - Scheduled Start Time Left" (G_fryer) {channel="miio:basic:fryer:upper_reservation_left_time"}
+Number upper_basket_mode "Upper Basket - Basket Mode" (G_fryer) {channel="miio:basic:fryer:upper_basket_mode"}
+Number lower_status "Lower Basket - Status" (G_fryer) {channel="miio:basic:fryer:lower_status"}
+Number lower_fault "Lower Basket - Device Fault" (G_fryer) {channel="miio:basic:fryer:lower_fault"}
+Number:Time lower_target_time "Lower Basket - Target Time" (G_fryer) {channel="miio:basic:fryer:lower_target_time"}
+Number:Temperature lower_target_temperature "Lower Basket - Target Temperature" (G_fryer) {channel="miio:basic:fryer:lower_target_temperature"}
+Number:Time lower_left_time "Lower Basket - Left Time" (G_fryer) {channel="miio:basic:fryer:lower_left_time"}
+Number lower_mode "Lower Basket - Mode" (G_fryer) {channel="miio:basic:fryer:lower_mode"}
+String lower_recipe_id "Lower Basket - Recipe Id" (G_fryer) {channel="miio:basic:fryer:lower_recipe_id"}
+Number lower_turn_pot "Lower Basket - Turn Food" (G_fryer) {channel="miio:basic:fryer:lower_turn_pot"}
+Switch lower_turn_pot_config "Lower Basket - Turn Food Reminder" (G_fryer) {channel="miio:basic:fryer:lower_turn_pot_config"}
+Switch lower_current_keep_warm "Lower Basket - Keep Warm After Cooking" (G_fryer) {channel="miio:basic:fryer:lower_current_keep_warm"}
+Number:Time lower_reservation_left_time "Lower Basket - Scheduled Start Time Left" (G_fryer) {channel="miio:basic:fryer:lower_reservation_left_time"}
+Number lower_basket_mode "Lower Basket - Basket Mode" (G_fryer) {channel="miio:basic:fryer:lower_basket_mode"}
+String recipes "Recipes" (G_fryer) {channel="miio:basic:fryer:recipes"}
+```
+
+### Xiaomi Smart Double Stack Air Fryer 12L (xiaomi.fryer.jl12w) item file lines
+
+note: Autogenerated example. Replace the id (fryer) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_fryer "Xiaomi Smart Double Stack Air Fryer 12L" <status>
+String actions "Actions" (G_fryer) {channel="miio:basic:fryer:actions"}
+String upper_start_cook "Upper Basket - Start Cooking With Settings" (G_fryer) {channel="miio:basic:fryer:upper_start_cook"}
+String lower_start_cook "Lower Basket - Start Cooking With Settings" (G_fryer) {channel="miio:basic:fryer:lower_start_cook"}
+Switch power "Power" (G_fryer) {channel="miio:basic:fryer:power"}
+Number status "Air Fryer - Status" (G_fryer) {channel="miio:basic:fryer:status"}
+Number:Time left_time "Air Fryer - Left Time" (G_fryer) {channel="miio:basic:fryer:left_time"}
+Number fault "Air Fryer - Device Fault" (G_fryer) {channel="miio:basic:fryer:fault"}
+Switch auto_keep_warm "Air Fryer - Keep Warm Available" (G_fryer) {channel="miio:basic:fryer:auto_keep_warm"}
+Switch end_cooking_together "Air Fryer - Finish Together" (G_fryer) {channel="miio:basic:fryer:end_cooking_together"}
+Number basket_selection "Air Fryer - Basket Selection" (G_fryer) {channel="miio:basic:fryer:basket_selection"}
+Switch dual_baskets "Air Fryer - Both Baskets" (G_fryer) {channel="miio:basic:fryer:dual_baskets"}
+Number upper_status "Upper Basket - Status" (G_fryer) {channel="miio:basic:fryer:upper_status"}
+Number upper_fault "Upper Basket - Device Fault" (G_fryer) {channel="miio:basic:fryer:upper_fault"}
+Number:Time upper_target_time "Upper Basket - Target Time" (G_fryer) {channel="miio:basic:fryer:upper_target_time"}
+Number:Temperature upper_target_temperature "Upper Basket - Target Temperature" (G_fryer) {channel="miio:basic:fryer:upper_target_temperature"}
+Number:Time upper_left_time "Upper Basket - Left Time" (G_fryer) {channel="miio:basic:fryer:upper_left_time"}
+Number upper_mode "Upper Basket - Mode" (G_fryer) {channel="miio:basic:fryer:upper_mode"}
+String upper_recipe_id "Upper Basket - Recipe Id" (G_fryer) {channel="miio:basic:fryer:upper_recipe_id"}
+Number upper_turn_pot "Upper Basket - Turn Food" (G_fryer) {channel="miio:basic:fryer:upper_turn_pot"}
+Switch upper_turn_pot_config "Upper Basket - Turn Food Reminder" (G_fryer) {channel="miio:basic:fryer:upper_turn_pot_config"}
+Switch upper_current_keep_warm "Upper Basket - Keep Warm After Cooking" (G_fryer) {channel="miio:basic:fryer:upper_current_keep_warm"}
+Number:Time upper_reservation_left_time "Upper Basket - Scheduled Start Time Left" (G_fryer) {channel="miio:basic:fryer:upper_reservation_left_time"}
+Number upper_basket_mode "Upper Basket - Basket Mode" (G_fryer) {channel="miio:basic:fryer:upper_basket_mode"}
+Number lower_status "Lower Basket - Status" (G_fryer) {channel="miio:basic:fryer:lower_status"}
+Number lower_fault "Lower Basket - Device Fault" (G_fryer) {channel="miio:basic:fryer:lower_fault"}
+Number:Time lower_target_time "Lower Basket - Target Time" (G_fryer) {channel="miio:basic:fryer:lower_target_time"}
+Number:Temperature lower_target_temperature "Lower Basket - Target Temperature" (G_fryer) {channel="miio:basic:fryer:lower_target_temperature"}
+Number:Time lower_left_time "Lower Basket - Left Time" (G_fryer) {channel="miio:basic:fryer:lower_left_time"}
+Number lower_mode "Lower Basket - Mode" (G_fryer) {channel="miio:basic:fryer:lower_mode"}
+String lower_recipe_id "Lower Basket - Recipe Id" (G_fryer) {channel="miio:basic:fryer:lower_recipe_id"}
+Number lower_turn_pot "Lower Basket - Turn Food" (G_fryer) {channel="miio:basic:fryer:lower_turn_pot"}
+Switch lower_turn_pot_config "Lower Basket - Turn Food Reminder" (G_fryer) {channel="miio:basic:fryer:lower_turn_pot_config"}
+Switch lower_current_keep_warm "Lower Basket - Keep Warm After Cooking" (G_fryer) {channel="miio:basic:fryer:lower_current_keep_warm"}
+Number:Time lower_reservation_left_time "Lower Basket - Scheduled Start Time Left" (G_fryer) {channel="miio:basic:fryer:lower_reservation_left_time"}
+Number lower_basket_mode "Lower Basket - Basket Mode" (G_fryer) {channel="miio:basic:fryer:lower_basket_mode"}
+String recipes "Recipes" (G_fryer) {channel="miio:basic:fryer:recipes"}
+```
+
+### Xiaomi Smart Air Fryer 5.5L (xiaomi.fryer.maf07d) item file lines
+
+note: Autogenerated example. Replace the id (fryer) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_fryer "Xiaomi Smart Air Fryer 5.5L" <status>
+String actions "Actions" (G_fryer) {channel="miio:basic:fryer:actions"}
+String start_cook "Start Cooking With Settings" (G_fryer) {channel="miio:basic:fryer:start_cook"}
+Number status "Air Fryer - Status" (G_fryer) {channel="miio:basic:fryer:status"}
+Number fault "Air Fryer - Device Fault" (G_fryer) {channel="miio:basic:fryer:fault"}
+Number:Time target_time "Air Fryer - Target Time" (G_fryer) {channel="miio:basic:fryer:target_time"}
+Number:Temperature target_temperature "Air Fryer - Target Temperature" (G_fryer) {channel="miio:basic:fryer:target_temperature"}
+Number:Time left_time "Air Fryer - Left Time" (G_fryer) {channel="miio:basic:fryer:left_time"}
+Switch auto_keep_warm "Air Fryer - Keep Warm Available" (G_fryer) {channel="miio:basic:fryer:auto_keep_warm"}
+Switch current_keep_warm "Air Fryer - Keep Warm After Cooking" (G_fryer) {channel="miio:basic:fryer:current_keep_warm"}
+Number mode "Air Fryer - Mode" (G_fryer) {channel="miio:basic:fryer:mode"}
+String recipe_id "Air Fryer - Recipe Id" (G_fryer) {channel="miio:basic:fryer:recipe_id"}
+String recipe_name "Air Fryer - Recipe Name" (G_fryer) {channel="miio:basic:fryer:recipe_name"}
+String recipe_sync "Air Fryer - Recipe Sync" (G_fryer) {channel="miio:basic:fryer:recipe_sync"}
+Number target_cooking_measure "Air Fryer - Food Quantity" (G_fryer) {channel="miio:basic:fryer:target_cooking_measure"}
+Number turn_pot "Air Fryer - Turn Food" (G_fryer) {channel="miio:basic:fryer:turn_pot"}
+Switch turn_pot_config "Air Fryer - Turn Food Reminder" (G_fryer) {channel="miio:basic:fryer:turn_pot_config"}
+Number texture "Air Fryer - Texture" (G_fryer) {channel="miio:basic:fryer:texture"}
+Number:Time reservation_left_time "Air Fryer - Scheduled Start Time Left" (G_fryer) {channel="miio:basic:fryer:reservation_left_time"}
+Number cooking_weight "Air Fryer - Cooking Weight" (G_fryer) {channel="miio:basic:fryer:cooking_weight"}
+String recipes "Recipes" (G_fryer) {channel="miio:basic:fryer:recipes"}
+```
+
+### Xiaomi Smart Air Fryer 4.5L (xiaomi.fryer.maf14) item file lines
+
+note: Autogenerated example. Replace the id (fryer) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_fryer "Xiaomi Smart Air Fryer 4.5L" <status>
+String actions "Actions" (G_fryer) {channel="miio:basic:fryer:actions"}
+String start_cook "Start Cooking With Settings" (G_fryer) {channel="miio:basic:fryer:start_cook"}
+Number status "Air Fryer - Status" (G_fryer) {channel="miio:basic:fryer:status"}
+Number fault "Air Fryer - Device Fault" (G_fryer) {channel="miio:basic:fryer:fault"}
+Number:Time target_time "Air Fryer - Target Time" (G_fryer) {channel="miio:basic:fryer:target_time"}
+Number:Temperature target_temperature "Air Fryer - Target Temperature" (G_fryer) {channel="miio:basic:fryer:target_temperature"}
+Number mode "Air Fryer - Mode" (G_fryer) {channel="miio:basic:fryer:mode"}
+Number:Time left_time "Air Fryer - Left Time" (G_fryer) {channel="miio:basic:fryer:left_time"}
+Number target_cooking_measure "Air Fryer - Food Quantity" (G_fryer) {channel="miio:basic:fryer:target_cooking_measure"}
+String recipe_id "Air Fryer - Recipe Id" (G_fryer) {channel="miio:basic:fryer:recipe_id"}
+String recipe_name "Air Fryer - Recipe Name" (G_fryer) {channel="miio:basic:fryer:recipe_name"}
+String recipe_sync "Air Fryer - Recipe Sync" (G_fryer) {channel="miio:basic:fryer:recipe_sync"}
+Number turn_pot "Air Fryer - Turn Food" (G_fryer) {channel="miio:basic:fryer:turn_pot"}
+Switch turn_pot_config "Air Fryer - Turn Food Reminder" (G_fryer) {channel="miio:basic:fryer:turn_pot_config"}
+Switch current_keep_warm "Air Fryer - Keep Warm After Cooking" (G_fryer) {channel="miio:basic:fryer:current_keep_warm"}
+Switch auto_keep_warm "Air Fryer - Keep Warm Available" (G_fryer) {channel="miio:basic:fryer:auto_keep_warm"}
+Number:Time reservation_left_time "Air Fryer - Scheduled Start Time Left" (G_fryer) {channel="miio:basic:fryer:reservation_left_time"}
+Number cooking_weight "Air Fryer - Cooking Weight" (G_fryer) {channel="miio:basic:fryer:cooking_weight"}
+String recipes "Recipes" (G_fryer) {channel="miio:basic:fryer:recipes"}
+```
+
+### Xiaomi Smart Air Fryer 4.5L (xiaomi.fryer.maf15) item file lines
+
+note: Autogenerated example. Replace the id (fryer) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_fryer "Xiaomi Smart Air Fryer 4.5L" <status>
+String actions "Actions" (G_fryer) {channel="miio:basic:fryer:actions"}
+String start_cook "Start Cooking With Settings" (G_fryer) {channel="miio:basic:fryer:start_cook"}
+Number status "Air Fryer - Status" (G_fryer) {channel="miio:basic:fryer:status"}
+Number fault "Air Fryer - Device Fault" (G_fryer) {channel="miio:basic:fryer:fault"}
+Number:Time target_time "Air Fryer - Target Time" (G_fryer) {channel="miio:basic:fryer:target_time"}
+Number:Temperature target_temperature "Air Fryer - Target Temperature" (G_fryer) {channel="miio:basic:fryer:target_temperature"}
+Number mode "Air Fryer - Mode" (G_fryer) {channel="miio:basic:fryer:mode"}
+Number:Time left_time "Air Fryer - Left Time" (G_fryer) {channel="miio:basic:fryer:left_time"}
+Number target_cooking_measure "Air Fryer - Food Quantity" (G_fryer) {channel="miio:basic:fryer:target_cooking_measure"}
+String recipe_id "Air Fryer - Recipe Id" (G_fryer) {channel="miio:basic:fryer:recipe_id"}
+String recipe_name "Air Fryer - Recipe Name" (G_fryer) {channel="miio:basic:fryer:recipe_name"}
+String recipe_sync "Air Fryer - Recipe Sync" (G_fryer) {channel="miio:basic:fryer:recipe_sync"}
+Number turn_pot "Air Fryer - Turn Food" (G_fryer) {channel="miio:basic:fryer:turn_pot"}
+Switch turn_pot_config "Air Fryer - Turn Food Reminder" (G_fryer) {channel="miio:basic:fryer:turn_pot_config"}
+Switch current_keep_warm "Air Fryer - Keep Warm After Cooking" (G_fryer) {channel="miio:basic:fryer:current_keep_warm"}
+Switch auto_keep_warm "Air Fryer - Keep Warm Available" (G_fryer) {channel="miio:basic:fryer:auto_keep_warm"}
+Number:Time reservation_left_time "Air Fryer - Scheduled Start Time Left" (G_fryer) {channel="miio:basic:fryer:reservation_left_time"}
+Number cooking_weight "Air Fryer - Cooking Weight" (G_fryer) {channel="miio:basic:fryer:cooking_weight"}
+String recipes "Recipes" (G_fryer) {channel="miio:basic:fryer:recipes"}
+```
+
+### Xiaomi Smart Air Fryer 6.5L (xiaomi.fryer.maf65) item file lines
+
+note: Autogenerated example. Replace the id (fryer) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_fryer "Xiaomi Smart Air Fryer 6.5L" <status>
+String actions "Actions" (G_fryer) {channel="miio:basic:fryer:actions"}
+String start_cook "Start Cooking With Settings" (G_fryer) {channel="miio:basic:fryer:start_cook"}
+Number status "Air Fryer - Status" (G_fryer) {channel="miio:basic:fryer:status"}
+Number fault "Air Fryer - Device Fault" (G_fryer) {channel="miio:basic:fryer:fault"}
+Number:Time target_time "Air Fryer - Target Time" (G_fryer) {channel="miio:basic:fryer:target_time"}
+Number:Temperature target_temperature "Air Fryer - Target Temperature" (G_fryer) {channel="miio:basic:fryer:target_temperature"}
+Number:Time left_time "Air Fryer - Left Time" (G_fryer) {channel="miio:basic:fryer:left_time"}
+Switch auto_keep_warm "Air Fryer - Keep Warm Available" (G_fryer) {channel="miio:basic:fryer:auto_keep_warm"}
+Switch current_keep_warm "Air Fryer - Keep Warm After Cooking" (G_fryer) {channel="miio:basic:fryer:current_keep_warm"}
+Number mode "Air Fryer - Mode" (G_fryer) {channel="miio:basic:fryer:mode"}
+Switch preheat "Air Fryer - Preheat" (G_fryer) {channel="miio:basic:fryer:preheat"}
+String recipe_id "Air Fryer - Recipe Id" (G_fryer) {channel="miio:basic:fryer:recipe_id"}
+String recipe_name "Air Fryer - Recipe Name" (G_fryer) {channel="miio:basic:fryer:recipe_name"}
+String recipe_sync "Air Fryer - Recipe Sync" (G_fryer) {channel="miio:basic:fryer:recipe_sync"}
+Number target_cooking_measure "Air Fryer - Food Quantity" (G_fryer) {channel="miio:basic:fryer:target_cooking_measure"}
+Number turn_pot "Air Fryer - Turn Food" (G_fryer) {channel="miio:basic:fryer:turn_pot"}
+Switch turn_pot_config "Air Fryer - Turn Food Reminder" (G_fryer) {channel="miio:basic:fryer:turn_pot_config"}
+Number texture "Air Fryer - Texture" (G_fryer) {channel="miio:basic:fryer:texture"}
+Number:Time reservation_left_time "Air Fryer - Scheduled Start Time Left" (G_fryer) {channel="miio:basic:fryer:reservation_left_time"}
+Number cooking_weight "Air Fryer - Cooking Weight" (G_fryer) {channel="miio:basic:fryer:cooking_weight"}
+String recipes "Recipes" (G_fryer) {channel="miio:basic:fryer:recipes"}
+```
+
+### Mijia Smart Steam Air Fryer 7L (xiaomi.fryer.st701o) item file lines
+
+note: Autogenerated example. Replace the id (fryer) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_fryer "Mijia Smart Steam Air Fryer 7L" <status>
+String actions "Actions" (G_fryer) {channel="miio:basic:fryer:actions"}
+String start_cook "Start Cooking With Settings" (G_fryer) {channel="miio:basic:fryer:start_cook"}
+Switch power "Power" (G_fryer) {channel="miio:basic:fryer:power"}
+Number status "Air Fryer - Status" (G_fryer) {channel="miio:basic:fryer:status"}
+Number fault "Air Fryer - Device Fault" (G_fryer) {channel="miio:basic:fryer:fault"}
+Number:Time target_time "Air Fryer - Target Time" (G_fryer) {channel="miio:basic:fryer:target_time"}
+Number:Temperature target_temperature "Air Fryer - Target Temperature" (G_fryer) {channel="miio:basic:fryer:target_temperature"}
+Number mode "Air Fryer - Mode" (G_fryer) {channel="miio:basic:fryer:mode"}
+Number:Time left_time "Air Fryer - Left Time" (G_fryer) {channel="miio:basic:fryer:left_time"}
+Number target_cooking_measure "Air Fryer - Food Quantity" (G_fryer) {channel="miio:basic:fryer:target_cooking_measure"}
+Number texture "Air Fryer - Texture" (G_fryer) {channel="miio:basic:fryer:texture"}
+String recipe_id "Air Fryer - Recipe Id" (G_fryer) {channel="miio:basic:fryer:recipe_id"}
+Number turn_pot "Air Fryer - Turn Food" (G_fryer) {channel="miio:basic:fryer:turn_pot"}
+Switch turn_pot_config "Air Fryer - Turn Food Reminder" (G_fryer) {channel="miio:basic:fryer:turn_pot_config"}
+Switch current_keep_warm "Air Fryer - Keep Warm After Cooking" (G_fryer) {channel="miio:basic:fryer:current_keep_warm"}
+Switch auto_keep_warm "Air Fryer - Keep Warm Available" (G_fryer) {channel="miio:basic:fryer:auto_keep_warm"}
+Number:Time reservation_left_time "Air Fryer - Scheduled Start Time Left" (G_fryer) {channel="miio:basic:fryer:reservation_left_time"}
+Number cooking_weight "Air Fryer - Cooking Weight" (G_fryer) {channel="miio:basic:fryer:cooking_weight"}
+Switch water_clean "Waterline Cleaning" (G_fryer) {channel="miio:basic:fryer:water_clean"}
+Switch water_clean_timeout "Waterline Cleaning Due" (G_fryer) {channel="miio:basic:fryer:water_clean_timeout"}
+Number clean_stage "Waterline Cleaning Stage" (G_fryer) {channel="miio:basic:fryer:clean_stage"}
+Switch continue_clean "Waterline Cleaning Not Completed" (G_fryer) {channel="miio:basic:fryer:continue_clean"}
+String recipes "Recipes" (G_fryer) {channel="miio:basic:fryer:recipes"}
+```
+
+### Mijia Smart Steam Air Fryer 7L (xiaomi.fryer.st701t) item file lines
+
+note: Autogenerated example. Replace the id (fryer) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_fryer "Mijia Smart Steam Air Fryer 7L" <status>
+String actions "Actions" (G_fryer) {channel="miio:basic:fryer:actions"}
+String start_cook "Start Cooking With Settings" (G_fryer) {channel="miio:basic:fryer:start_cook"}
+Switch power "Power" (G_fryer) {channel="miio:basic:fryer:power"}
+Number status "Air Fryer - Status" (G_fryer) {channel="miio:basic:fryer:status"}
+Number fault "Air Fryer - Device Fault" (G_fryer) {channel="miio:basic:fryer:fault"}
+Number:Time target_time "Air Fryer - Target Time" (G_fryer) {channel="miio:basic:fryer:target_time"}
+Number:Temperature target_temperature "Air Fryer - Target Temperature" (G_fryer) {channel="miio:basic:fryer:target_temperature"}
+Number mode "Air Fryer - Mode" (G_fryer) {channel="miio:basic:fryer:mode"}
+Number:Time left_time "Air Fryer - Left Time" (G_fryer) {channel="miio:basic:fryer:left_time"}
+Number target_cooking_measure "Air Fryer - Food Quantity" (G_fryer) {channel="miio:basic:fryer:target_cooking_measure"}
+Number texture "Air Fryer - Texture" (G_fryer) {channel="miio:basic:fryer:texture"}
+String recipe_id "Air Fryer - Recipe Id" (G_fryer) {channel="miio:basic:fryer:recipe_id"}
+Number turn_pot "Air Fryer - Turn Food" (G_fryer) {channel="miio:basic:fryer:turn_pot"}
+Switch turn_pot_config "Air Fryer - Turn Food Reminder" (G_fryer) {channel="miio:basic:fryer:turn_pot_config"}
+Switch current_keep_warm "Air Fryer - Keep Warm After Cooking" (G_fryer) {channel="miio:basic:fryer:current_keep_warm"}
+Switch auto_keep_warm "Air Fryer - Keep Warm Available" (G_fryer) {channel="miio:basic:fryer:auto_keep_warm"}
+Number:Time reservation_left_time "Air Fryer - Scheduled Start Time Left" (G_fryer) {channel="miio:basic:fryer:reservation_left_time"}
+Number cooking_weight "Air Fryer - Cooking Weight" (G_fryer) {channel="miio:basic:fryer:cooking_weight"}
+Switch water_clean "Waterline Cleaning" (G_fryer) {channel="miio:basic:fryer:water_clean"}
+Switch water_clean_timeout "Waterline Cleaning Due" (G_fryer) {channel="miio:basic:fryer:water_clean_timeout"}
+Number clean_stage "Waterline Cleaning Stage" (G_fryer) {channel="miio:basic:fryer:clean_stage"}
+Switch continue_clean "Waterline Cleaning Not Completed" (G_fryer) {channel="miio:basic:fryer:continue_clean"}
+String recipes "Recipes" (G_fryer) {channel="miio:basic:fryer:recipes"}
 ```
 
 ### Mijia Smart Dehumidifier 13L (xiaomi.derh.13l) item file lines

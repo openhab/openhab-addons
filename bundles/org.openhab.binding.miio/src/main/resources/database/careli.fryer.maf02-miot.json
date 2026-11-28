@@ -1,7 +1,8 @@
 {
 	"deviceMapping": {
 		"id": [
-			"careli.fryer.maf02"
+			"careli.fryer.maf02",
+			"careli.fryer.maf07"
 		],
 		"propertyMethod": "get_properties",
 		"maxProperties": 1,
