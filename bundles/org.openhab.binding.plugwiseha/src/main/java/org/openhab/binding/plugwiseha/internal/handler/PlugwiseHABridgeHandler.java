@@ -40,7 +40,6 @@ import org.openhab.binding.plugwiseha.internal.discovery.PlugwiseHADiscoveryServ
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
-import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.thing.binding.ThingHandler;
@@ -56,6 +55,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Bas van Wetten - Initial contribution
  * @author Leo Siepel - finish initial contribution
+ * @author Leo Siepel - Populate gateway properties during polling
  * 
  */
 
@@ -164,11 +164,6 @@ public class PlugwiseHABridgeHandler extends BaseBridgeHandler {
         try {
             this.logger.trace("Executing refresh job");
             refresh();
-
-            if (super.thing.getStatus() == ThingStatus.INITIALIZING) {
-                setBridgeProperties();
-            }
-
         } catch (PlugwiseHAInvalidHostException e) {
             updateStatus(CONFIGURATION_ERROR, STATUS_DESCRIPTION_INVALID_HOSTNAME);
         } catch (PlugwiseHAUnauthorizedException | PlugwiseHANotAuthorizedException e) {
@@ -190,14 +185,13 @@ public class PlugwiseHABridgeHandler extends BaseBridgeHandler {
 
     @SuppressWarnings("unchecked")
     private void refresh() throws PlugwiseHAException {
-        if (this.getController() != null) {
+        PlugwiseHAController controller = getController();
+        if (controller != null) {
             logger.debug("Refreshing the Plugwise Home Automation Controller {}", getThing().getUID());
 
-            PlugwiseHAController controller = this.getController();
-            if (controller != null) {
-                controller.refresh();
-                updateStatus(ONLINE);
-            }
+            controller.refresh();
+            setBridgeProperties(controller);
+            updateStatus(ONLINE);
 
             getThing().getThings().forEach((thing) -> {
                 ThingHandler thingHandler = thing.getHandler();
@@ -219,14 +213,10 @@ public class PlugwiseHABridgeHandler extends BaseBridgeHandler {
         }
     }
 
-    protected void setBridgeProperties() {
+    private void setBridgeProperties(PlugwiseHAController controller) {
         logger.debug("Setting bridge properties");
         try {
-            PlugwiseHAController controller = this.getController();
-            GatewayInfo localGatewayInfo = null;
-            if (controller != null) {
-                localGatewayInfo = controller.getGatewayInfo();
-            }
+            GatewayInfo localGatewayInfo = controller.getGatewayInfo();
 
             if (localGatewayInfo != null) {
                 Map<String, String> properties = editProperties();
@@ -249,7 +239,7 @@ public class PlugwiseHABridgeHandler extends BaseBridgeHandler {
                 updateProperties(properties);
             }
         } catch (PlugwiseHAException e) {
-            updateStatus(COMMUNICATION_ERROR, STATUS_DESCRIPTION_COMMUNICATION_ERROR);
+            logger.debug("Unable to retrieve Plugwise Home Automation gateway properties: {}", e.getMessage());
         }
     }
 }
