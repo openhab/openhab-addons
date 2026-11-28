@@ -14,10 +14,6 @@
 
   <name>openHAB Add-ons :: Bundles :: Chromecast Binding</name>
 
-  <properties>
-    <dep.noembedding>jackson-core,jackson-annotations,jackson-databind</dep.noembedding>
-  </properties>
-
   <dependencies>
     <dependency>
       <groupId>de.sfuhrm</groupId>
@@ -37,10 +33,11 @@
       <version>3.25.5</version>
       <scope>compile</scope>
     </dependency>
+    <!-- chromecast-java-api-v2 requires Jackson 2, embed a private copy -->
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-core</artifactId>
-      <version>${jackson.version}</version>
+      <version>${jackson2.version}</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
@@ -52,7 +49,7 @@
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
-      <version>${jackson.version}</version>
+      <version>${jackson2.version}</version>
       <scope>compile</scope>
     </dependency>
   </dependencies>

@@ -21,7 +21,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.lgthinq.lgservices.model.FeatureDataType;
 import org.openhab.binding.lgthinq.lgservices.model.FeatureDefinition;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import tools.jackson.databind.JsonNode;
 
 /**
  * The WasherFeatureDefinition
@@ -54,7 +54,7 @@ public class WasherFeatureDefinition {
                 // "option":{
                 // "0":"@WM_STATE_POWER_OFF_W",
                 // to "0" -> "@WM_STATE_POWER_OFF_W"
-                valuesMapping.put(e.getKey(), e.getValue().asText());
+                valuesMapping.put(e.getKey(), e.getValue().asString(""));
             });
             fd.setValuesMapping(valuesMapping);
         }

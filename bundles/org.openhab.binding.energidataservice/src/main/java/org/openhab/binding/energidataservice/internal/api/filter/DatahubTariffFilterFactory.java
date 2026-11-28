@@ -31,9 +31,11 @@ import org.openhab.binding.energidataservice.internal.api.filter.dto.DatahubFilt
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.dataformat.yaml.YAMLFactory;
+import tools.jackson.dataformat.yaml.YAMLMapper;
+import tools.jackson.dataformat.yaml.YAMLSchema;
 
 /**
  * Factory for creating a {@link DatahubTariffFilter} for a specific Grid Company GLN.
@@ -70,12 +72,12 @@ public class DatahubTariffFilterFactory {
                 throw new IllegalStateException("Grid tariffs resource not found");
             }
 
-            ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
-            mapper.registerModule(new JavaTimeModule());
+            ObjectMapper mapper = YAMLMapper.builder(YAMLFactory.builder().yamlSchema(YAMLSchema.CORE).build())
+                    .configureForJackson2().build();
 
             return mapper.readValue(inputStream,
                     mapper.getTypeFactory().constructCollectionType(List.class, DatahubFilter.class));
-        } catch (IOException e) {
+        } catch (IOException | JacksonException e) {
             throw new IllegalStateException("Grid tariffs resource could not be read and parsed", e);
         }
     }

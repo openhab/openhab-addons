@@ -28,7 +28,7 @@ import org.openhab.binding.lgthinq.lgservices.model.devices.washerdryer.WasherDr
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
+import tools.jackson.core.JacksonException;
 
 /**
  * The {@link LGThinQWMApiV1ClientServiceImpl}
@@ -96,7 +96,7 @@ public class LGThinQWMApiV1ClientServiceImpl
 
     @Override
     protected Map<String, Object> prepareCommandV1(CommandDefinition cmdDef, Map<String, Object> snapData)
-            throws JsonProcessingException {
+            throws JacksonException {
         // expected map ordered here
         String dataStr = cmdDef.getDataTemplate();
         for (Map.Entry<String, Object> e : snapData.entrySet()) {

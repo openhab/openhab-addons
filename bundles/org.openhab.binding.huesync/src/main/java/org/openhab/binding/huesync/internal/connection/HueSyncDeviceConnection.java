@@ -44,7 +44,7 @@ import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
+import tools.jackson.core.JacksonException;
 
 /**
  * Handles the connection to a Hue HDMI Sync Box using the official API.
@@ -182,7 +182,7 @@ public class HueSyncDeviceConnection {
 
                     return registration;
                 }
-            } catch (JsonProcessingException e) {
+            } catch (JacksonException e) {
                 this.logger.warn("Unable to parse registration response: {}", e.getMessage(), e);
             }
         }

@@ -33,7 +33,7 @@ import org.openhab.binding.lgthinq.lgservices.model.MonitoringResultFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import tools.jackson.databind.JsonNode;
 
 /**
  * The {@link AbstractACCapabilityFactory}
@@ -60,7 +60,7 @@ public abstract class AbstractACCapabilityFactory extends AbstractCapabilityFact
         }
         FeatureDefinition fd = new FeatureDefinition();
         fd.setName(featureName);
-        fd.setDataType(FeatureDataType.fromValue(featureNode.path(getDataTypeFeatureNodeName()).asText()));
+        fd.setDataType(FeatureDataType.fromValue(featureNode.path(getDataTypeFeatureNodeName()).asString("")));
         JsonNode options = featureNode.path(getOptionsMapNodeName());
         if (options.isMissingNode()) {
             return FeatureDefinition.NULL_DEFINITION;
@@ -77,7 +77,7 @@ public abstract class AbstractACCapabilityFactory extends AbstractCapabilityFact
         } else {
             List<String> values = new ArrayList<>();
             optionsNode.properties().forEach(e -> {
-                values.add(e.getValue().asText());
+                values.add(e.getValue().asString(""));
             });
             return values;
         }
@@ -91,9 +91,9 @@ public abstract class AbstractACCapabilityFactory extends AbstractCapabilityFact
             Map<String, String> modes = new HashMap<String, String>();
             optionsNode.properties().forEach(e -> {
                 if (invertKeyValue) {
-                    modes.put(e.getValue().asText(), e.getKey());
+                    modes.put(e.getValue().asString(""), e.getKey());
                 } else {
-                    modes.put(e.getKey(), e.getValue().asText());
+                    modes.put(e.getKey(), e.getValue().asString(""));
                 }
             });
             return modes;
@@ -146,13 +146,13 @@ public abstract class AbstractACCapabilityFactory extends AbstractCapabilityFact
         JsonNode supRacSubModeOps = valuesNode.path(getSupSubRacModeNodeName()).path(getOptionsMapNodeName());
         if (!supRacSubModeOps.isMissingNode()) {
             supRacSubModeOps.properties().forEach(f -> {
-                if (CAP_AC_SUB_MODE_COOL_JET.equals(f.getValue().asText())) {
+                if (CAP_AC_SUB_MODE_COOL_JET.equals(f.getValue().asString(""))) {
                     acCap.setJetModeAvailable(true);
                 }
-                if (CAP_AC_SUB_MODE_STEP_UP_DOWN.equals(f.getValue().asText())) {
+                if (CAP_AC_SUB_MODE_STEP_UP_DOWN.equals(f.getValue().asString(""))) {
                     acCap.setStepUpDownAvailable(true);
                 }
-                if (CAP_AC_SUB_MODE_STEP_LEFT_RIGHT.equals(f.getValue().asText())) {
+                if (CAP_AC_SUB_MODE_STEP_LEFT_RIGHT.equals(f.getValue().asString(""))) {
                     acCap.setStepLeftRightAvailable(true);
                 }
             });
@@ -163,7 +163,7 @@ public abstract class AbstractACCapabilityFactory extends AbstractCapabilityFact
             JsonNode jetModeOps = valuesNode.path(getJetModeNodeName()).path(getOptionsMapNodeName());
             if (!jetModeOps.isMissingNode()) {
                 jetModeOps.properties().forEach(j -> {
-                    String value = j.getValue().asText();
+                    String value = j.getValue().asString("");
                     if (CAP_AC_COOL_JET.containsKey(value)) {
                         acCap.setCoolJetModeCommandOn(j.getKey());
                     } else if (CAP_AC_COMMAND_OFF.equals(value)) {
@@ -195,7 +195,7 @@ public abstract class AbstractACCapabilityFactory extends AbstractCapabilityFact
 
         if (!supRACModeOps.isMissingNode()) {
             supRACModeOps.properties().forEach(r -> {
-                String racOpValue = r.getValue().asText();
+                String racOpValue = r.getValue().asString("");
                 switch (racOpValue) {
                     case CAP_AC_AUTODRY:
                         Map<String, String> dryStates = extractOptions(
@@ -248,7 +248,7 @@ public abstract class AbstractACCapabilityFactory extends AbstractCapabilityFact
             logger.warn("No info session defined in the cap data.");
         } else {
             // try to find monitoring result format
-            MonitoringResultFormat format = MonitoringResultFormat.getFormatOf(infoNode.path("model").asText());
+            MonitoringResultFormat format = MonitoringResultFormat.getFormatOf(infoNode.path("model").asString(""));
             if (!MonitoringResultFormat.UNKNOWN_FORMAT.equals(format)) {
                 acCap.setMonitoringDataFormat(format);
             }

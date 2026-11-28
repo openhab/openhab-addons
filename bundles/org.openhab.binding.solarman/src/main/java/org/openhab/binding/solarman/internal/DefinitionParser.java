@@ -22,8 +22,11 @@ import org.openhab.binding.solarman.internal.defmodel.InverterDefinition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.dataformat.yaml.YAMLFactory;
+import tools.jackson.dataformat.yaml.YAMLMapper;
+import tools.jackson.dataformat.yaml.YAMLSchema;
 
 /**
  * The {@link DefinitionParser} is parses inverter definitions
@@ -37,7 +40,8 @@ public class DefinitionParser {
     private final ObjectMapper mapper;
 
     public DefinitionParser() {
-        mapper = new ObjectMapper(new YAMLFactory());
+        mapper = YAMLMapper.builder(YAMLFactory.builder().yamlSchema(YAMLSchema.CORE).build()).configureForJackson2()
+                .build();
     }
 
     @Nullable
@@ -54,7 +58,7 @@ public class DefinitionParser {
             inverterDefinition.setInverterDefinitionId(definitionId);
 
             return inverterDefinition;
-        } catch (IOException e) {
+        } catch (IOException | JacksonException e) {
             logger.warn("Error parsing definition with ID: {}", definitionId, e);
             return null;
         }

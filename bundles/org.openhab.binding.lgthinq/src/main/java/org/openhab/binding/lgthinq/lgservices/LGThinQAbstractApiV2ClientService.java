@@ -31,12 +31,11 @@ import org.openhab.binding.lgthinq.lgservices.model.ResultCodes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-
 import jakarta.ws.rs.core.UriBuilder;
+import tools.jackson.core.JacksonException;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.node.JsonNodeFactory;
+import tools.jackson.databind.node.ObjectNode;
 
 /**
  * The {@link LGThinQAbstractApiV2ClientService} - Specialized abstract class that implements methods and services to
@@ -125,7 +124,7 @@ public abstract class LGThinQAbstractApiV2ClientService<C extends CapabilityDefi
                                     code, getErrorCodeMessage(code)));
                 }
                 return metaResult;
-            } catch (JsonProcessingException e) {
+            } catch (JacksonException e) {
                 throw new IllegalStateException("Unknown error occurred deserializing json stream", e);
             }
         }

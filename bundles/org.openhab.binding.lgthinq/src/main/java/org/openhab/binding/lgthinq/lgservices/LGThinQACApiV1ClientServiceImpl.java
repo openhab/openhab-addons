@@ -14,7 +14,6 @@ package org.openhab.binding.lgthinq.lgservices;
 
 import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.*;
 
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Map;
@@ -33,7 +32,8 @@ import org.openhab.binding.lgthinq.lgservices.model.devices.ac.ExtendedDeviceInf
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.JsonNode;
 
 /**
  * The {@link LGThinQACApiV1ClientServiceImpl}
@@ -70,17 +70,17 @@ public class LGThinQACApiV1ClientServiceImpl extends
         throw new UnsupportedOperationException("Method not supported in V1 API device.");
     }
 
-    private void readDataResultNodeToObject(String jsonResult, Object obj) throws IOException {
+    private void readDataResultNodeToObject(String jsonResult, Object obj) throws JacksonException {
         JsonNode node = objectMapper.readTree(jsonResult);
         JsonNode data = node.path(LG_ROOT_TAG_V1).path("returnData");
-        if (data.isTextual()) {
+        if (data.isString()) {
             // analyses if its b64 or not
             JsonNode format = node.path(LG_ROOT_TAG_V1).path("format");
-            if ("B64".equals(format.textValue())) {
-                String dataStr = new String(Base64.getDecoder().decode(data.textValue()), StandardCharsets.UTF_8);
+            if ("B64".equals(format.stringValue(null))) {
+                String dataStr = new String(Base64.getDecoder().decode(data.stringValue(null)), StandardCharsets.UTF_8);
                 objectMapper.readerForUpdating(obj).readValue(dataStr);
             } else {
-                objectMapper.readerForUpdating(obj).readValue(data.textValue());
+                objectMapper.readerForUpdating(obj).readValue(data.stringValue(null));
             }
         } else {
             logger.warn("Data returned by LG API to get energy state is not present. Result:{}", node.toPrettyString());

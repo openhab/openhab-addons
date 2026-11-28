@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.energidataservice.internal.api.filter.serialization;
 
-import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 
@@ -21,10 +20,9 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.energidataservice.internal.api.DateQueryParameter;
 import org.openhab.binding.energidataservice.internal.api.DateQueryParameterType;
 
-import com.fasterxml.jackson.core.JacksonException;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
+import tools.jackson.core.JsonParser;
+import tools.jackson.databind.DeserializationContext;
+import tools.jackson.databind.deser.std.StdDeserializer;
 
 /**
  * The {@link DateQueryParameterDeserializer} converts a string representation
@@ -35,23 +33,16 @@ import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
  */
 @NonNullByDefault
 public class DateQueryParameterDeserializer extends StdDeserializer<DateQueryParameter> {
-    private static final long serialVersionUID = 1L;
-
     public DateQueryParameterDeserializer() {
-        this(null);
-    }
-
-    public DateQueryParameterDeserializer(@Nullable Class<?> vc) {
-        super(vc);
+        super(DateQueryParameter.class);
     }
 
     @Override
-    public DateQueryParameter deserialize(@Nullable JsonParser p, @Nullable DeserializationContext ctxt)
-            throws IOException, JacksonException {
+    public DateQueryParameter deserialize(@Nullable JsonParser p, @Nullable DeserializationContext ctxt) {
         if (p == null) {
             throw new IllegalArgumentException("JsonParser is null");
         }
-        String value = p.getText();
+        String value = p.getString();
         try {
             LocalDate date = LocalDate.parse(value);
             return DateQueryParameter.of(date);

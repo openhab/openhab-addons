@@ -26,9 +26,10 @@ import org.openhab.binding.lgthinq.lgservices.model.devices.commons.washers.Cour
 import org.openhab.binding.lgthinq.lgservices.model.devices.commons.washers.CourseFunction;
 import org.openhab.binding.lgthinq.lgservices.model.devices.washerdryer.WasherDryerCapability;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
+import tools.jackson.databind.node.ObjectNode;
 
 /**
  * The {@link CapabilityFactoryTest}
@@ -37,7 +38,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
  */
 @NonNullByDefault
 class CapabilityFactoryTest {
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper = JsonMapper.builder().configureForJackson2().build();
 
     @Test
     void create() throws IOException, LGThinqException {

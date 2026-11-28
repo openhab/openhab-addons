@@ -43,8 +43,8 @@ import org.openhab.binding.gemini.internal.api.dto.request.GeminiThinkingLevel;
 import org.openhab.core.voice.text.conversation.Conversation;
 import org.openhab.core.voice.text.conversation.ConversationRole;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
 
 /**
  * Tests for the request reconstruction of {@link GeminiApiClient}, i.e. how a stored conversation
@@ -121,47 +121,47 @@ public class GeminiApiClientTest {
         assertEquals(3, contents.size());
 
         JsonNode userTurn = contents.get(0);
-        assertEquals("user", userTurn.get("role").asText());
-        assertEquals(PROMPT, userTurn.get("parts").get(0).get("text").asText());
+        assertEquals("user", userTurn.get("role").asString());
+        assertEquals(PROMPT, userTurn.get("parts").get(0).get("text").asString());
 
         JsonNode callTurn = contents.get(1);
-        assertEquals("model", callTurn.get("role").asText());
+        assertEquals("model", callTurn.get("role").asString());
         JsonNode callParts = callTurn.get("parts");
         assertEquals(2, callParts.size());
 
         JsonNode firstCallPart = callParts.get(0);
         assertFalse(firstCallPart.has("text"));
-        assertEquals("signature-abc", firstCallPart.get("thoughtSignature").asText());
+        assertEquals("signature-abc", firstCallPart.get("thoughtSignature").asString());
         JsonNode firstCall = firstCallPart.get("functionCall");
-        assertEquals("item-get-state", firstCall.get("name").asText());
-        assertEquals("Lamp1", firstCall.get("args").get("item").asText());
-        assertEquals("call-1", firstCall.get("id").asText());
+        assertEquals("item-get-state", firstCall.get("name").asString());
+        assertEquals("Lamp1", firstCall.get("args").get("item").asString());
+        assertEquals("call-1", firstCall.get("id").asString());
 
         JsonNode secondCallPart = callParts.get(1);
         assertFalse(secondCallPart.has("text"));
         // Gemini only signs the first part of a batch, so the second one must not carry a signature
         assertFalse(secondCallPart.has("thoughtSignature"));
         JsonNode secondCall = secondCallPart.get("functionCall");
-        assertEquals("item-get-state", secondCall.get("name").asText());
-        assertEquals("Lamp2", secondCall.get("args").get("item").asText());
-        assertEquals("call-2", secondCall.get("id").asText());
+        assertEquals("item-get-state", secondCall.get("name").asString());
+        assertEquals("Lamp2", secondCall.get("args").get("item").asString());
+        assertEquals("call-2", secondCall.get("id").asString());
 
         JsonNode returnTurn = contents.get(2);
-        assertEquals("user", returnTurn.get("role").asText());
+        assertEquals("user", returnTurn.get("role").asString());
         JsonNode returnParts = returnTurn.get("parts");
         assertEquals(2, returnParts.size());
 
         // the results are paired with the calls by position, and the call id is echoed so that
         // equally named parallel calls can be told apart
         JsonNode firstResponse = returnParts.get(0).get("functionResponse");
-        assertEquals("item-get-state", firstResponse.get("name").asText());
-        assertEquals("call-1", firstResponse.get("id").asText());
-        assertEquals("Lamp1 is ON", firstResponse.get("response").get("result").asText());
+        assertEquals("item-get-state", firstResponse.get("name").asString());
+        assertEquals("call-1", firstResponse.get("id").asString());
+        assertEquals("Lamp1 is ON", firstResponse.get("response").get("result").asString());
 
         JsonNode secondResponse = returnParts.get(1).get("functionResponse");
-        assertEquals("item-get-state", secondResponse.get("name").asText());
-        assertEquals("call-2", secondResponse.get("id").asText());
-        assertEquals("Lamp2 is OFF", secondResponse.get("response").get("result").asText());
+        assertEquals("item-get-state", secondResponse.get("name").asString());
+        assertEquals("call-2", secondResponse.get("id").asString());
+        assertEquals("Lamp2 is OFF", secondResponse.get("response").get("result").asString());
     }
 
     @Test
@@ -178,21 +178,21 @@ public class GeminiApiClientTest {
         assertEquals(3, contents.size());
 
         JsonNode callParts = contents.get(1).get("parts");
-        assertEquals("model", contents.get(1).get("role").asText());
+        assertEquals("model", contents.get(1).get("role").asString());
         assertEquals(1, callParts.size());
         assertFalse(callParts.get(0).has("thoughtSignature"));
         JsonNode functionCall = callParts.get(0).get("functionCall");
-        assertEquals("item-get-state", functionCall.get("name").asText());
-        assertEquals("Lamp1", functionCall.get("args").get("item").asText());
+        assertEquals("item-get-state", functionCall.get("name").asString());
+        assertEquals("Lamp1", functionCall.get("args").get("item").asString());
         // no id was stored, so none must be sent
         assertFalse(functionCall.has("id"));
 
         JsonNode returnParts = contents.get(2).get("parts");
-        assertEquals("user", contents.get(2).get("role").asText());
+        assertEquals("user", contents.get(2).get("role").asString());
         assertEquals(1, returnParts.size());
         JsonNode functionResponse = returnParts.get(0).get("functionResponse");
-        assertEquals("item-get-state", functionResponse.get("name").asText());
-        assertEquals("Lamp1 is ON", functionResponse.get("response").get("result").asText());
+        assertEquals("item-get-state", functionResponse.get("name").asString());
+        assertEquals("Lamp1 is ON", functionResponse.get("response").get("result").asString());
         assertFalse(functionResponse.has("id"));
     }
 
@@ -215,22 +215,22 @@ public class GeminiApiClientTest {
         JsonNode contents = captureRequestBody().get("contents");
         assertEquals(5, contents.size());
 
-        assertEquals("model", contents.get(1).get("role").asText());
+        assertEquals("model", contents.get(1).get("role").asString());
         assertEquals(1, contents.get(1).get("parts").size());
-        assertEquals("signature-abc", contents.get(1).get("parts").get(0).get("thoughtSignature").asText());
-        assertEquals("user", contents.get(2).get("role").asText());
+        assertEquals("signature-abc", contents.get(1).get("parts").get(0).get("thoughtSignature").asString());
+        assertEquals("user", contents.get(2).get("role").asString());
         assertEquals(1, contents.get(2).get("parts").size());
         assertEquals("Lamp1 is ON",
-                contents.get(2).get("parts").get(0).get("functionResponse").get("response").get("result").asText());
+                contents.get(2).get("parts").get(0).get("functionResponse").get("response").get("result").asString());
 
-        assertEquals("model", contents.get(3).get("role").asText());
+        assertEquals("model", contents.get(3).get("role").asString());
         assertEquals(1, contents.get(3).get("parts").size());
-        assertEquals("signature-def", contents.get(3).get("parts").get(0).get("thoughtSignature").asText());
-        assertEquals("call-2", contents.get(3).get("parts").get(0).get("functionCall").get("id").asText());
-        assertEquals("user", contents.get(4).get("role").asText());
+        assertEquals("signature-def", contents.get(3).get("parts").get(0).get("thoughtSignature").asString());
+        assertEquals("call-2", contents.get(3).get("parts").get(0).get("functionCall").get("id").asString());
+        assertEquals("user", contents.get(4).get("role").asString());
         assertEquals(1, contents.get(4).get("parts").size());
         assertEquals("Lamp2 is OFF",
-                contents.get(4).get("parts").get(0).get("functionResponse").get("response").get("result").asText());
+                contents.get(4).get("parts").get(0).get("functionResponse").get("response").get("result").asString());
     }
 
     @Test

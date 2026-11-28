@@ -26,11 +26,6 @@
       <version>3.0.1</version>
     </dependency>
     <dependency>
-      <groupId>org.openhab.osgiify</groupId>
-      <artifactId>com.hubspot.jinjava.jinjava</artifactId>
-      <version>${jinjava.version}</version>
-    </dependency>
-    <dependency>
       <groupId>ch.obermuhlner</groupId>
       <artifactId>big-math</artifactId>
       <version>2.3.2</version>
@@ -39,11 +34,6 @@
       <groupId>org.openhab.osgiify</groupId>
       <artifactId>com.google.re2j.re2j</artifactId>
       <version>1.2</version>
-    </dependency>
-    <dependency>
-      <groupId>com.fasterxml.jackson.datatype</groupId>
-      <artifactId>jackson-datatype-jdk8</artifactId>
-      <version>${jackson.version}</version>
     </dependency>
   </dependencies>
 

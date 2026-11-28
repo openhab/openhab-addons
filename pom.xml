@@ -77,7 +77,11 @@
     <commons.net.version>3.13.0</commons.net.version>
     <eea.version>2.4.0</eea.version>
     <jackson.annotations.version>2.23</jackson.annotations.version>
-    <jackson.version>2.23.0</jackson.version>
+    <jackson.version>3.3.0</jackson.version>
+    <!-- only for add-ons embedding a private copy of Jackson 2, e.g. for libraries not available for Jackson 3 -->
+    <jackson2.version>2.23.0</jackson2.version>
+    <!-- snakeyaml required by jackson-dataformat-yaml ${jackson2.version}, update together -->
+    <jackson2.snakeyaml.version>2.5</jackson2.snakeyaml.version>
     <jetty.version>12.1.14</jetty.version>
     <jinjava.version>2.8.5</jinjava.version>
     <jna.version>5.19.1</jna.version>

@@ -29,7 +29,7 @@ import org.openhab.binding.lgthinq.lgservices.model.devices.washerdryer.WasherDr
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import tools.jackson.databind.JsonNode;
 
 /**
  * Factory class responsible for creating {@link CapabilityDefinition} instances

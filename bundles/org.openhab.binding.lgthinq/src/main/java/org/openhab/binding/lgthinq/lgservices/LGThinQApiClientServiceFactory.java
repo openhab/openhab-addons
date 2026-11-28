@@ -26,7 +26,7 @@ import org.openhab.binding.lgthinq.lgservices.model.AbstractSnapshotDefinition;
 import org.openhab.binding.lgthinq.lgservices.model.DevicePowerState;
 import org.openhab.core.io.net.http.HttpClientFactory;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import tools.jackson.databind.node.ObjectNode;
 
 /**
  * Creates specialized API clients.

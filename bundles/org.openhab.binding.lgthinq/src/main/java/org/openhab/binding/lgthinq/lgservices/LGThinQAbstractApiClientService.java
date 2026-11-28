@@ -63,13 +63,13 @@ import org.openhab.binding.lgthinq.lgservices.model.SnapshotBuilderFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-
 import jakarta.ws.rs.core.UriBuilder;
+import tools.jackson.core.JacksonException;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
+import tools.jackson.databind.node.ObjectNode;
 
 /**
  * The {@link LGThinQAbstractApiClientService} - base class for all LG API client service. It's provide commons methods
@@ -81,7 +81,7 @@ import jakarta.ws.rs.core.UriBuilder;
 @SuppressWarnings("unchecked")
 public abstract class LGThinQAbstractApiClientService<C extends CapabilityDefinition, S extends AbstractSnapshotDefinition>
         implements LGThinQApiClientService<C, S> {
-    protected final ObjectMapper objectMapper = new ObjectMapper();
+    protected final ObjectMapper objectMapper = JsonMapper.builder().configureForJackson2().build();
     protected final TokenManager tokenManager;
     protected final Class<C> capabilityClass;
     protected final Class<S> snapshotClass;
@@ -260,7 +260,7 @@ public abstract class LGThinQAbstractApiClientService<C extends CapabilityDefini
                             "Error calling device settings from LG Server API. The code is: %s and The reason is: %s",
                             resultCode, ResultCodes.fromCode(resultCode)));
                 }
-            } catch (JsonProcessingException e) {
+            } catch (JacksonException e) {
                 // This exception doesn't matter, it's because response is not in json format. Logging raw response.
                 logger.trace(
                         "Error calling device settings from LG Server API. Response is not in json format. Ignoring...",
@@ -278,7 +278,7 @@ public abstract class LGThinQAbstractApiClientService<C extends CapabilityDefini
                             "LG API report error processing the request -> resultCode=[{%s], message=[%s]", code,
                             getErrorCodeMessage(code)));
                 }
-            } catch (JsonProcessingException e) {
+            } catch (JacksonException e) {
                 throw new IllegalStateException("Unknown error occurred deserializing json stream", e);
             }
         }
@@ -312,7 +312,7 @@ public abstract class LGThinQAbstractApiClientService<C extends CapabilityDefini
                         .requireNonNull(devicesResult.get("result"), "Not expected null here")).get("item");
                 devices = objectMapper.convertValue(items, new TypeReference<>() {
                 });
-            } catch (JsonProcessingException e) {
+            } catch (JacksonException e) {
                 throw new IllegalStateException("Unknown error occurred deserializing json stream.", e);
             }
         }
@@ -337,7 +337,7 @@ public abstract class LGThinQAbstractApiClientService<C extends CapabilityDefini
                 rootNode = objectMapper.readTree(reader);
             }
             return CapabilityFactory.getInstance().create(rootNode, capabilityClass);
-        } catch (IOException e) {
+        } catch (IOException | JacksonException e) {
             throw new LGThinqApiException("Error reading IO interface", e);
         } catch (LGThinqException e) {
             throw new LGThinqApiException("Error parsing capability registry", e);
@@ -392,7 +392,7 @@ public abstract class LGThinQAbstractApiClientService<C extends CapabilityDefini
                 try {
                     objectMapper.writeValue(new File(String.format(LGThinQBindingConstants.getThinqUserDataFolder()
                             + File.separator + "thinq-%s-datatrace.json", deviceId)), workList);
-                } catch (IOException e) {
+                } catch (JacksonException e) {
                     // Only debug since datatrace is a trace data.
                     logger.debug("Unexpected error saving data trace", e);
                 }
@@ -480,7 +480,7 @@ public abstract class LGThinQAbstractApiClientService<C extends CapabilityDefini
                 try {
                     objectMapper.writeValue(new File(String.format(LGThinQBindingConstants.getThinqUserDataFolder()
                             + File.separator + "thinq-%s-datatrace.json", deviceId)), deviceSettings);
-                } catch (IOException e) {
+                } catch (JacksonException e) {
                     logger.debug("Error saving data trace", e);
                 }
             }

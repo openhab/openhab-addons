@@ -52,9 +52,10 @@ import org.osgi.service.component.annotations.ServiceScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 
 /**
  * The {@link ChatGPTHLIService} is responsible for handling the human language interpretation using ChatGPT.
@@ -255,7 +256,7 @@ public class ChatGPTHLIService implements ThingHandlerService, HumanLanguageInte
                             getLocalizedMessage(ERROR_KEY_TECHNICAL_PROBLEM, DEFAULT_ERROR_TECHNICAL_PROBLEM, locale));
                 }
 
-                ObjectMapper objectMapper = new ObjectMapper();
+                ObjectMapper objectMapper = JsonMapper.builder().configureForJackson2().build();
                 for (ChatToolCalls toolCall : toolCalls) {
                     if ("function".equals(toolCall.getType())) {
                         ChatFunctionCall fc = toolCall.getFunction();
@@ -267,7 +268,7 @@ public class ChatGPTHLIService implements ThingHandlerService, HumanLanguageInte
                                 try {
                                     args = objectMapper.readValue(arguments, new TypeReference<Map<String, Object>>() {
                                     });
-                                } catch (JsonProcessingException e) {
+                                } catch (JacksonException e) {
                                     logger.warn("Failed to parse tool call arguments: {}", e.getMessage(), e);
                                 }
                             }

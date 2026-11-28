@@ -40,9 +40,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.MappingJsonFactory;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+
+import tools.jackson.core.JacksonException;
+import tools.jackson.core.StreamReadFeature;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 
 /**
  * This class listens for updates from the pilight daemon. It is also responsible for requesting
@@ -64,12 +67,12 @@ public class PilightConnector implements Runnable, Closeable {
 
     private final IPilightCallback callback;
 
-    private final ObjectMapper inputMapper = new ObjectMapper(
-            new MappingJsonFactory().configure(JsonParser.Feature.AUTO_CLOSE_SOURCE, false));
+    private final ObjectMapper inputMapper = JsonMapper.builder().configureForJackson2()
+            .disable(StreamReadFeature.AUTO_CLOSE_SOURCE).build();
 
-    private final ObjectMapper outputMapper = new ObjectMapper(
-            new MappingJsonFactory().configure(JsonParser.Feature.AUTO_CLOSE_SOURCE, false))
-            .setDefaultPropertyInclusion(JsonInclude.Include.NON_NULL);
+    private final ObjectMapper outputMapper = JsonMapper.builder().configureForJackson2()
+            .changeDefaultPropertyInclusion(incl -> JsonInclude.Value.construct(Include.NON_NULL, Include.NON_NULL))
+            .build();
 
     private @Nullable Socket socket;
     private @Nullable PrintStream printStream;
@@ -122,7 +125,7 @@ public class PilightConnector implements Runnable, Closeable {
                             }
                         }
                     }
-                } catch (IOException e) {
+                } catch (IOException | JacksonException e) {
                     if (!Thread.currentThread().isInterrupted()) {
                         logger.debug("Error in pilight listener thread: {}", e.getMessage());
                     }
@@ -224,7 +227,7 @@ public class PilightConnector implements Runnable, Closeable {
                     socket.close();
                     logger.debug("pilight client not accepted: {}", response.getStatus());
                 }
-            } catch (IOException e) {
+            } catch (IOException | JacksonException e) {
                 final @Nullable PrintStream printStream = this.printStream;
                 if (printStream != null) {
                     printStream.close();
@@ -266,7 +269,7 @@ public class PilightConnector implements Runnable, Closeable {
         if (printStream != null) {
             try {
                 printStream.println(outputMapper.writeValueAsString(action));
-            } catch (IOException e) {
+            } catch (JacksonException e) {
                 logger.debug("Error while sending action '{}' to pilight server: {}", action.getAction(),
                         e.getMessage());
             }

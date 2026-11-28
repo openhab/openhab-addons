@@ -27,8 +27,8 @@ import org.openhab.binding.lgthinq.lgservices.model.devices.washerdryer.WasherDr
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import tools.jackson.databind.node.JsonNodeFactory;
+import tools.jackson.databind.node.ObjectNode;
 
 /**
  * The {@link LGThinQWMApiV2ClientServiceImpl}

@@ -15,8 +15,7 @@
   <name>openHAB Add-ons :: Bundles :: IO :: YAML Composer</name>
 
   <properties>
-    <bnd.importpackage>com.sun.jdi;resolution:=optional,com.sun.jdi.connect;resolution:=optional,com.sun.jdi.event;resolution:=optional,com.sun.jdi.request;resolution:=optional,com.sun.tools.attach;resolution:=optional,jdk.internal.module;resolution:=optional,org.jspecify.annotations;resolution:=optional,sun.misc;resolution:=optional,*</bnd.importpackage>
-    <dep.noembedding>com.hubspot.jinjava.jinjava</dep.noembedding>
+    <bnd.importpackage>android.os;resolution:=optional,com.googlecode.ipv6;resolution:=optional,com.sun.jdi;resolution:=optional,com.sun.jdi.connect;resolution:=optional,com.sun.jdi.event;resolution:=optional,com.sun.jdi.request;resolution:=optional,com.sun.tools.attach;resolution:=optional,javax.annotation;resolution:=optional,jdk.internal.module;resolution:=optional,org.jspecify.annotations;resolution:=optional,sun.misc;resolution:=optional,*</bnd.importpackage>
   </properties>
 
   <dependencies>
@@ -30,13 +29,44 @@
       <groupId>org.openhab.osgiify</groupId>
       <artifactId>com.hubspot.jinjava.jinjava</artifactId>
       <version>${jinjava.version}</version>
-      <scope>provided</scope>
+      <scope>compile</scope>
+    </dependency>
+    <!-- jinjava 2.x requires Jackson 2, embed a private copy -->
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-annotations</artifactId>
+      <version>${jackson.annotations.version}</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+      <version>${jackson2.version}</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-core</artifactId>
+      <version>${jackson2.version}</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.dataformat</groupId>
+      <artifactId>jackson-dataformat-yaml</artifactId>
+      <version>${jackson2.version}</version>
+      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>com.fasterxml.jackson.datatype</groupId>
       <artifactId>jackson-datatype-jdk8</artifactId>
-      <version>${jackson.version}</version>
-      <scope>test</scope>
+      <version>${jackson2.version}</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.yaml</groupId>
+      <artifactId>snakeyaml</artifactId>
+      <version>${jackson2.snakeyaml.version}</version>
+      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>com.google.re2j</groupId>

@@ -21,7 +21,7 @@ import org.openhab.binding.energidataservice.internal.api.DateQueryParameter;
 import org.openhab.binding.energidataservice.internal.api.filter.serialization.ChargeTypeCodeDeserializer;
 import org.openhab.binding.energidataservice.internal.api.filter.serialization.DateQueryParameterDeserializer;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import tools.jackson.databind.annotation.JsonDeserialize;
 
 /**
  * Record for deserializing YAML grid tariff definitions.

@@ -17,8 +17,7 @@
   <properties>
     <mcp.sdk.version>1.1.2</mcp.sdk.version>
     <reactor.version>3.7.6</reactor.version>
-    <dep.noembedding>jackson-databind,jackson-core,jackson-annotations,jackson-dataformat-yaml</dep.noembedding>
-    <bnd.importpackage>javax.annotation;resolution:=optional,io.projectreactor.*;resolution:=optional,org.reactivestreams.*;resolution:=optional,org.jspecify.annotations;resolution:=optional,org.yaml.snakeyaml.*;resolution:=optional,io.micrometer.*;resolution:=optional,reactor.blockhound.*;resolution:=optional,javax.annotation.meta.*;resolution:=optional,org.graalvm.polyglot.*;resolution:=optional,org.jcodings.*;resolution:=optional,org.joni.*;resolution:=optional</bnd.importpackage>
+    <bnd.importpackage>javax.annotation;resolution:=optional,io.projectreactor.*;resolution:=optional,org.reactivestreams.*;resolution:=optional,org.jspecify.annotations;resolution:=optional,io.micrometer.*;resolution:=optional,reactor.blockhound.*;resolution:=optional,javax.annotation.meta.*;resolution:=optional,org.graalvm.polyglot.*;resolution:=optional,org.jcodings.*;resolution:=optional,org.joni.*;resolution:=optional</bnd.importpackage>
   </properties>
 
   <dependencies>
@@ -62,6 +61,37 @@
       <groupId>org.reactivestreams</groupId>
       <artifactId>reactive-streams</artifactId>
       <version>1.0.4</version>
+      <scope>compile</scope>
+    </dependency>
+    <!-- MCP SDK 1.x and json-schema-validator require Jackson 2, embed a private copy -->
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-annotations</artifactId>
+      <version>${jackson.annotations.version}</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-core</artifactId>
+      <version>${jackson2.version}</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+      <version>${jackson2.version}</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.dataformat</groupId>
+      <artifactId>jackson-dataformat-yaml</artifactId>
+      <version>${jackson2.version}</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.yaml</groupId>
+      <artifactId>snakeyaml</artifactId>
+      <version>${jackson2.snakeyaml.version}</version>
       <scope>compile</scope>
     </dependency>
   </dependencies>

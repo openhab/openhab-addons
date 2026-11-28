@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.homeassistant.internal.component;
 
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
@@ -39,9 +38,11 @@ import org.openhab.core.types.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.JsonNodeType;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
+import tools.jackson.databind.node.JsonNodeType;
 
 /**
  * A MQTT Valve component, following the https://www.home-assistant.io/integrations/valve.mqtt/ specification.
@@ -162,7 +163,7 @@ public class Valve extends AbstractComponent<Valve.Configuration> implements Cha
     private final PercentageValue positionValue;
     private final TextValue stateValue;
     private final ChannelStateUpdateListener channelStateUpdateListener;
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper = JsonMapper.builder().configureForJackson2().build();
 
     public Valve(ComponentFactory.ComponentContext componentContext) {
         super(componentContext, Configuration.class);
@@ -370,10 +371,12 @@ public class Valve extends AbstractComponent<Valve.Configuration> implements Cha
 
             Map<String, String> result = new HashMap<>();
             for (Entry<String, JsonNode> field : node.properties()) {
-                result.put(field.getKey(), field.getValue().asText());
+                JsonNode value = field.getValue();
+                // same values as Jackson 2's asText(): "null" for JSON null, "" for objects and arrays
+                result.put(field.getKey(), value.isNull() ? "null" : value.asString(""));
             }
             return result;
-        } catch (IOException e) {
+        } catch (JacksonException e) {
             // It's not JSON
             return null;
         }

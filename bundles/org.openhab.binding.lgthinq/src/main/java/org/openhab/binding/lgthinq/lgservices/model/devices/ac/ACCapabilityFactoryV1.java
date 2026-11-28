@@ -22,7 +22,7 @@ import org.openhab.binding.lgthinq.lgservices.errors.LGThinqException;
 import org.openhab.binding.lgthinq.lgservices.model.CommandDefinition;
 import org.openhab.binding.lgthinq.lgservices.model.LGAPIVerion;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import tools.jackson.databind.JsonNode;
 
 /**
  * The {@link ACCapabilityFactoryV1}
@@ -46,7 +46,7 @@ public class ACCapabilityFactoryV1 extends AbstractACCapabilityFactory {
     protected Map<String, String> extractFeatureOptions(JsonNode optionsNode) {
         Map<String, String> options = new HashMap<>();
         optionsNode.properties().forEach(o -> {
-            options.put(o.getKey(), o.getValue().asText());
+            options.put(o.getKey(), o.getValue().asString(""));
         });
         return options;
     }

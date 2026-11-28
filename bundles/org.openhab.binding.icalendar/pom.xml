@@ -10,7 +10,8 @@
   <artifactId>org.openhab.binding.icalendar</artifactId>
   <name>openHAB Add-ons :: Bundles :: iCalendar Binding</name>
   <properties>
-    <dep.noembedding>jackson-core,jackson-annotations,jackson-databind</dep.noembedding>
+    <!-- Preserve biweekly's optional Jackson imports for its unused jCal support when embedding the library. -->
+    <bnd.importpackage>com.fasterxml.jackson.*;resolution:=optional;version="[2.12,3)"</bnd.importpackage>
   </properties>
   <dependencies>
     <!-- own dependencies -->
@@ -22,6 +23,10 @@
       <exclusions>
         <exclusion>
           <groupId>com.fasterxml.jackson.core</groupId>
+          <artifactId>jackson-core</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>com.fasterxml.jackson.core</groupId>
           <artifactId>jackson-databind</artifactId>
         </exclusion>
       </exclusions>
@@ -31,18 +36,6 @@
       <groupId>com.github.mangstadt</groupId>
       <artifactId>vinnie</artifactId>
       <version>2.0.2</version>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.fasterxml.jackson.core</groupId>
-      <artifactId>jackson-core</artifactId>
-      <version>${jackson.version}</version>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.fasterxml.jackson.core</groupId>
-      <artifactId>jackson-databind</artifactId>
-      <version>${jackson.version}</version>
       <scope>compile</scope>
     </dependency>
   </dependencies>

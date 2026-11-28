@@ -14,7 +14,6 @@ package org.openhab.binding.gemini.internal.api;
 
 import static org.openhab.binding.gemini.internal.GeminiBindingConstants.DEFAULT_REQUEST_TIMEOUT;
 
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -61,9 +60,12 @@ import org.openhab.core.voice.text.interpreter.llm.LLMToolParam;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 
 /**
  * The {@link GeminiApiClient} class encapsulates all HTTP/REST API communications with the Google Gemini API.
@@ -87,9 +89,9 @@ public class GeminiApiClient {
     public GeminiApiClient(HttpClient httpClient, String apiKey) {
         this.httpClient = httpClient;
         this.apiKey = apiKey;
-        this.objectMapper = new ObjectMapper();
-        this.objectMapper.setDefaultPropertyInclusion(
-                com.fasterxml.jackson.annotation.JsonInclude.Value.construct(Include.NON_NULL, Include.ALWAYS));
+        this.objectMapper = JsonMapper.builder().configureForJackson2()
+                .changeDefaultPropertyInclusion(incl -> JsonInclude.Value.construct(Include.NON_NULL, Include.ALWAYS))
+                .build();
     }
 
     /**
@@ -316,7 +318,7 @@ public class GeminiApiClient {
         String queryJson;
         try {
             queryJson = objectMapper.writeValueAsString(requestPayload);
-        } catch (JsonProcessingException e) {
+        } catch (JacksonException e) {
             throw new GeminiApiException("Failed to serialize Gemini request: " + e.getMessage(), e);
         }
 
@@ -327,7 +329,7 @@ public class GeminiApiClient {
                 String prettyRequest = objectMapper.writerWithDefaultPrettyPrinter()
                         .writeValueAsString(objectMapper.readTree(queryJson));
                 logger.trace("Request payload to {} (POST):\n{}", url, prettyRequest);
-            } catch (IOException e) {
+            } catch (JacksonException e) {
                 logger.trace("Request payload to {} (POST): {}", url, queryJson);
             }
         }
@@ -366,12 +368,12 @@ public class GeminiApiClient {
                                 String prettyResponse = objectMapper.writerWithDefaultPrettyPrinter()
                                         .writeValueAsString(objectMapper.readTree(body));
                                 logger.trace("Response payload from {} (POST):\n{}", url, prettyResponse);
-                            } catch (IOException e) {
+                            } catch (JacksonException e) {
                                 logger.trace("Response payload from {} (POST):\n{}", url, body);
                             }
                         }
                         return geminiResponse;
-                    } catch (JsonProcessingException e) {
+                    } catch (JacksonException e) {
                         throw new GeminiApiException("Failed to parse Gemini response: " + e.getMessage(), e);
                     }
                 } else {
@@ -384,7 +386,7 @@ public class GeminiApiClient {
                             String prettyError = objectMapper.writerWithDefaultPrettyPrinter()
                                     .writeValueAsString(objectMapper.readTree(errorBody));
                             logger.trace("Error response payload from {} (POST):\n{}", url, prettyError);
-                        } catch (IOException e) {
+                        } catch (JacksonException e) {
                             logger.trace("Error response payload from {} (POST):\n{}", url, errorBody);
                         }
                     }
@@ -472,7 +474,7 @@ public class GeminiApiClient {
                     if (models != null) {
                         return models;
                     }
-                } catch (JsonProcessingException e) {
+                } catch (JacksonException e) {
                     throw new GeminiApiException("Failed to parse models response DTO: " + e.getMessage(), e);
                 }
             } else {
@@ -484,7 +486,7 @@ public class GeminiApiClient {
                         String prettyError = objectMapper.writerWithDefaultPrettyPrinter()
                                 .writeValueAsString(objectMapper.readTree(errorBody));
                         logger.trace("Error response payload from {} (GET):\n{}", modelsUrl, prettyError);
-                    } catch (IOException e) {
+                    } catch (JacksonException e) {
                         logger.trace("Error response payload from {} (GET):\n{}", modelsUrl, errorBody);
                     }
                 }
@@ -508,7 +510,7 @@ public class GeminiApiClient {
         return null;
     }
 
-    private <T> @Nullable T readNullableValue(String content, Class<T> valueType) throws JsonProcessingException {
+    private <T> @Nullable T readNullableValue(String content, Class<T> valueType) {
         return objectMapper.readValue(content, valueType);
     }
 }

@@ -12,14 +12,12 @@
  */
 package org.openhab.binding.pilight.internal.serializers;
 
-import java.io.IOException;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.JsonSerializer;
-import com.fasterxml.jackson.databind.SerializerProvider;
+import tools.jackson.core.JsonGenerator;
+import tools.jackson.databind.SerializationContext;
+import tools.jackson.databind.ValueSerializer;
 
 /**
  * Serializer to map boolean values to an integer (1 and 0).
@@ -29,13 +27,13 @@ import com.fasterxml.jackson.databind.SerializerProvider;
  * @author Niklas Dörfler - Port pilight binding to openHAB 3 + add device discovery
  */
 @NonNullByDefault
-public class BooleanToIntegerSerializer extends JsonSerializer<Boolean> {
+public class BooleanToIntegerSerializer extends ValueSerializer<Boolean> {
 
     @Override
     public void serialize(@Nullable Boolean bool, @Nullable JsonGenerator jsonGenerator,
-            @Nullable SerializerProvider serializerProvider) throws IOException {
+            @Nullable SerializationContext serializationContext) {
         if (bool != null && jsonGenerator != null) {
-            jsonGenerator.writeObject(bool ? 1 : 0);
+            jsonGenerator.writeNumber(bool ? 1 : 0);
         }
     }
 }

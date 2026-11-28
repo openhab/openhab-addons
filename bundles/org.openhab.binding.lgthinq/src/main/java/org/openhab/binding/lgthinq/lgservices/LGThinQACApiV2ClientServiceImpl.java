@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.lgthinq.lgservices;
 
-import java.io.IOException;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -28,9 +26,10 @@ import org.openhab.binding.lgthinq.lgservices.model.devices.ac.ExtendedDeviceInf
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.node.JsonNodeFactory;
+import tools.jackson.databind.node.ObjectNode;
 
 /**
  * The {@link LGThinQACApiV2ClientServiceImpl}
@@ -209,9 +208,9 @@ public class LGThinQACApiV2ClientServiceImpl extends
      *
      * @param jsonResult json result
      * @param obj object to be updated
-     * @throws IOException if there are errors deserialization the jsonResult
+     * @throws JacksonException if there are errors deserialization the jsonResult
      */
-    private void readDataResultNodeToObject(String jsonResult, Object obj) throws IOException {
+    private void readDataResultNodeToObject(String jsonResult, Object obj) throws JacksonException {
         JsonNode node = objectMapper.readTree(jsonResult);
         JsonNode data = node.path("result").path("data");
         if (data.isObject()) {

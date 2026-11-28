@@ -22,8 +22,9 @@ import org.junit.jupiter.api.Test;
 import org.openhab.binding.lgthinq.lgservices.errors.LGThinqException;
 import org.openhab.binding.lgthinq.lgservices.model.devices.dishwasher.DishWasherCapability;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 
 /**
  * Test class to validate DishWasher capability detection.
@@ -32,7 +33,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  */
 @NonNullByDefault
 class DishWasherCapabilityTest {
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper = JsonMapper.builder().configureForJackson2().build();
 
     @Test
     void testDishWasherCapabilityFormat() throws IOException, LGThinqException {

@@ -33,7 +33,9 @@ import org.openhab.binding.lgthinq.lgservices.errors.TokenException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 
 /**
  * The {@link TokenManager} Principal facade to manage all token handles
@@ -45,7 +47,7 @@ public class TokenManager {
     private static final int EXPIRICY_TOLERANCE_SEC = 60;
     private final Logger logger = LoggerFactory.getLogger(TokenManager.class);
     private final LGThinqOauthEmpAuthenticator authenticator;
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper = JsonMapper.builder().configureForJackson2().build();
     private final Map<String, TokenResult> tokenCached = new ConcurrentHashMap<>();
 
     public TokenManager(HttpClient httpClient) {
@@ -65,7 +67,7 @@ public class TokenManager {
             TokenResult token = authenticator.doRefreshToken(currentToken);
             objectMapper.writeValue(new File(getConfigDataFileName(bridgeName)), token);
             return token;
-        } catch (IOException e) {
+        } catch (IOException | JacksonException e) {
             throw new RefreshTokenException("Error refreshing LGThinq token", e);
         }
     }

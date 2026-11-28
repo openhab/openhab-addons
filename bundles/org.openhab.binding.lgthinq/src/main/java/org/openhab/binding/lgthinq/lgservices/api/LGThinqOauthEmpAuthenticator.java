@@ -38,10 +38,10 @@ import org.openhab.binding.lgthinq.lgservices.model.ResultCodes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import jakarta.ws.rs.core.UriBuilder;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 
 /**
  * The {@link LGThinqOauthEmpAuthenticator} main service to authenticate against LG Emp Server via Oauth
@@ -51,7 +51,7 @@ import jakarta.ws.rs.core.UriBuilder;
 @NonNullByDefault
 public class LGThinqOauthEmpAuthenticator {
 
-    private static final ObjectMapper MAPPER = new ObjectMapper();
+    private static final ObjectMapper MAPPER = JsonMapper.builder().configureForJackson2().build();
 
     private final Logger logger = LoggerFactory.getLogger(LGThinqOauthEmpAuthenticator.class);
     private final HttpClient httpClient;
