@@ -288,6 +288,12 @@ public abstract class AbstractKNXClient implements NetworkLinkListener, KNXClien
             logger.debug("Bridge {} cannot connect: {}", thingUID, e.getMessage());
             disconnect(e, ThingStatusDetail.CONFIGURATION_ERROR);
             return false;
+        } catch (RuntimeException e) {
+            // must not escape: the scheduled connect job would swallow it and connectJob would never be reset
+            logger.warn("Bridge {} cannot connect", thingUID, e);
+            disconnect(e);
+            scheduleReconnectJob();
+            return false;
         }
     }
 
