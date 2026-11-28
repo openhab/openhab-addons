@@ -12,10 +12,13 @@
  */
 package org.openhab.binding.solarforecast.internal.forecastsolar.handler;
 
+import static org.mockito.Mockito.mock;
+
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.solarforecast.CallbackMock;
 import org.openhab.binding.solarforecast.FileReader;
 import org.openhab.binding.solarforecast.internal.SolarForecastBindingConstants;
@@ -49,6 +52,11 @@ public class ForecastSolarMockFactory {
 
     public static ForecastSolarPlaneMock createPlaneHandler(ForecastSolarBridgeHandler bridgeHandler, String name,
             String forecastFile) {
+        return createPlaneHandler(bridgeHandler, name, forecastFile, mock(HttpClient.class));
+    }
+
+    public static ForecastSolarPlaneMock createPlaneHandler(ForecastSolarBridgeHandler bridgeHandler, String name,
+            String forecastFile, HttpClient httpClient) {
         String contentOne = FileReader.readFileInString(forecastFile);
         ForecastSolarObject forecastSolarObject = new ForecastSolarObject(name + "-forecast", contentOne,
                 Instant.now().plus(1, ChronoUnit.DAYS));
@@ -58,7 +66,7 @@ public class ForecastSolarMockFactory {
         CallbackMock forecastSolarPlaneCallback = new CallbackMock();
         forecastSolarPlaneCallback.setBridge(bridgeHandler.getThing());
         ForecastSolarPlaneMock forecastSolarPlane = new ForecastSolarPlaneMock(forecastSolarPlaneThing,
-                forecastSolarPlaneCallback);
+                forecastSolarPlaneCallback, httpClient);
         forecastSolarPlane.setCallback(forecastSolarPlaneCallback);
         forecastSolarPlane.updateConfiguration(getDefaultPlaneConfig());
         forecastSolarPlane.updateForecast(forecastSolarObject);

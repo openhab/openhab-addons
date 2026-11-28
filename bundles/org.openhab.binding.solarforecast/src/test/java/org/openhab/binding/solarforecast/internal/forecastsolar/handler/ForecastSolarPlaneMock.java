@@ -33,7 +33,11 @@ import org.openhab.core.thing.binding.ThingHandlerCallback;
 public class ForecastSolarPlaneMock extends ForecastSolarPlaneHandler {
 
     public ForecastSolarPlaneMock(Thing thing, CallbackMock cm) {
-        super(thing, mock(HttpClient.class));
+        this(thing, cm, mock(HttpClient.class));
+    }
+
+    public ForecastSolarPlaneMock(Thing thing, CallbackMock cm, HttpClient httpClient) {
+        super(thing, httpClient);
         super.setCallback(cm);
     }
 

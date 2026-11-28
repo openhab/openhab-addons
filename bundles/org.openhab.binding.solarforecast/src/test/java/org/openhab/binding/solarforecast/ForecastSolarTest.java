@@ -13,6 +13,7 @@
 package org.openhab.binding.solarforecast;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 import java.time.Clock;
 import java.time.Instant;
@@ -23,11 +24,16 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.Iterator;
+import java.util.concurrent.TimeUnit;
 
 import javax.measure.quantity.Energy;
 import javax.measure.quantity.Power;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jetty.client.ContentResponse;
+import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.http.HttpStatus;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.Execution;
@@ -591,6 +597,121 @@ class ForecastSolarTest {
         assertEquals(
                 "https://api.forecast.solar/xyz/estimate/1.234/9.876/45/-10/5.5?damping=0.5,0.3&horizon=0,0,0,0,0,0,10,20,20,20,20,20&inverter=0.8&full=1",
                 fsPlaneHandler1.getURL(), "Full URL");
+    }
+
+    @Test
+    void testForecastResetOnPlaneConfigChange() throws Exception {
+        ForecastSolarBridgeMock fsBridgeHandler = ForecastSolarMockFactory.createBridgeHandler();
+        HttpClient httpMock = mock(HttpClient.class);
+        ForecastSolarPlaneMock fsPlaneHandler = ForecastSolarMockFactory.createPlaneHandler(fsBridgeHandler, "plane1",
+                "src/test/resources/forecastsolar/result.json", httpMock);
+        ForecastSolarObject oldForecast = fsPlaneHandler.getForecast();
+        assertFalse(oldForecast.isExpired(), "Forecast valid before config change");
+        httpOkResponse(httpMock, "src/test/resources/forecastsolar/result.json");
+
+        Configuration planeConfig = new Configuration();
+        planeConfig.put("declination", "30");
+        planeConfig.put("azimuth", "-90");
+        planeConfig.put("kwp", "5");
+        newPlaneConfig(fsPlaneHandler, planeConfig);
+        String newUrl = fsPlaneHandler.getURL();
+        assertTrue(newUrl.contains("/30/-90/5.0?"), "URL with new plane config");
+
+        verify(httpMock, timeout(10000)).newRequest(newUrl);
+        assertTrue(waitForNewForecast(fsPlaneHandler, oldForecast), "Forecast fetched with new plane config");
+        waitForScheduler(fsBridgeHandler);
+        verify(httpMock, times(1)).newRequest(anyString());
+    }
+
+    @Test
+    void testForecastResetOnSiteConfigChange() throws Exception {
+        ForecastSolarBridgeMock fsBridgeHandler = ForecastSolarMockFactory.createBridgeHandler();
+        HttpClient httpMock = mock(HttpClient.class);
+        ForecastSolarPlaneMock fsPlaneHandler = ForecastSolarMockFactory.createPlaneHandler(fsBridgeHandler, "plane1",
+                "src/test/resources/forecastsolar/result.json", httpMock);
+        ForecastSolarObject oldForecast = fsPlaneHandler.getForecast();
+        assertFalse(oldForecast.isExpired(), "Forecast valid before config change");
+        httpOkResponse(httpMock, "src/test/resources/forecastsolar/result.json");
+
+        Configuration siteConfig = new Configuration();
+        siteConfig.put("location", "1.234,9.876");
+        newSiteConfig(fsBridgeHandler, siteConfig);
+        String newUrl = fsPlaneHandler.getURL();
+        assertTrue(newUrl.startsWith("https://api.forecast.solar/estimate/1.234/9.876/"), "URL with new site config");
+
+        verify(httpMock, timeout(10000)).newRequest(newUrl);
+        assertTrue(waitForNewForecast(fsPlaneHandler, oldForecast), "Forecast fetched with new site config");
+        waitForScheduler(fsBridgeHandler);
+        verify(httpMock, times(1)).newRequest(anyString());
+    }
+
+    @Test
+    void testNoResetOnPlaneReinitWithoutConfigChange() throws Exception {
+        ForecastSolarBridgeMock fsBridgeHandler = ForecastSolarMockFactory.createBridgeHandler();
+        HttpClient httpMock = mock(HttpClient.class);
+        ForecastSolarPlaneMock fsPlaneHandler = ForecastSolarMockFactory.createPlaneHandler(fsBridgeHandler, "plane1",
+                "src/test/resources/forecastsolar/result.json", httpMock);
+        ForecastSolarObject forecast = fsPlaneHandler.getForecast();
+
+        // Thing update without configuration change, e.g. a new label
+        fsPlaneHandler.getThing().setLabel("renamed plane");
+        fsPlaneHandler.dispose();
+        fsPlaneHandler.initialize();
+        waitForScheduler(fsBridgeHandler);
+
+        assertSame(forecast, fsPlaneHandler.getForecast(), "Forecast kept");
+        verify(httpMock, never()).newRequest(anyString());
+    }
+
+    @Test
+    void testNoResetOnSiteReinitWithoutConfigChange() throws Exception {
+        ForecastSolarBridgeMock fsBridgeHandler = ForecastSolarMockFactory.createBridgeHandler();
+        HttpClient httpMock = mock(HttpClient.class);
+        ForecastSolarPlaneMock fsPlaneHandler = ForecastSolarMockFactory.createPlaneHandler(fsBridgeHandler, "plane1",
+                "src/test/resources/forecastsolar/result.json", httpMock);
+        ForecastSolarObject forecast = fsPlaneHandler.getForecast();
+
+        // Thing update without configuration change, e.g. a new label
+        fsBridgeHandler.getThing().setLabel("renamed site");
+        fsBridgeHandler.dispose();
+        fsBridgeHandler.initialize();
+        waitForScheduler(fsBridgeHandler);
+
+        assertSame(forecast, fsPlaneHandler.getForecast(), "Forecast kept");
+        verify(httpMock, never()).newRequest(anyString());
+    }
+
+    private void httpOkResponse(HttpClient httpMock, String file) throws Exception {
+        Request request = mock(Request.class);
+        when(httpMock.newRequest(anyString())).thenReturn(request);
+        when(request.timeout(anyLong(), any(TimeUnit.class))).thenReturn(request);
+        ContentResponse response = mock(ContentResponse.class);
+        when(request.send()).thenReturn(response);
+        when(response.getStatus()).thenReturn(HttpStatus.OK_200);
+        when(response.getContentAsString()).thenReturn(FileReader.readFileInString(file));
+    }
+
+    private void waitForScheduler(ForecastSolarBridgeMock handler) throws Exception {
+        // all tasks queued before are done once this one ran on the sequential scheduler
+        handler.getSequentialScheduler().submit(() -> {
+        }).get(10, TimeUnit.SECONDS);
+    }
+
+    private boolean waitForNewForecast(ForecastSolarPlaneMock handler, ForecastSolarObject oldForecast) {
+        Instant deadline = Instant.now().plusSeconds(10);
+        while (Instant.now().isBefore(deadline)) {
+            ForecastSolarObject current = handler.getForecast();
+            if (!current.equals(oldForecast) && !current.isExpired()) {
+                return true;
+            }
+            try {
+                Thread.sleep(50);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                return false;
+            }
+        }
+        return false;
     }
 
     private void newSiteConfig(ForecastSolarBridgeMock handler, Configuration config) {

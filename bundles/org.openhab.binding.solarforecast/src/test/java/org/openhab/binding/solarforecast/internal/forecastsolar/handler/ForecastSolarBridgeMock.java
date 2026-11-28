@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.solarforecast.internal.forecastsolar.handler;
 
+import java.util.concurrent.ScheduledExecutorService;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.config.core.Configuration;
@@ -44,5 +46,10 @@ public class ForecastSolarBridgeMock extends ForecastSolarBridgeHandler {
     @Override
     public void updateConfiguration(Configuration config) {
         super.updateConfiguration(config);
+    }
+
+    @Override
+    public ScheduledExecutorService getSequentialScheduler() {
+        return super.getSequentialScheduler();
     }
 }
