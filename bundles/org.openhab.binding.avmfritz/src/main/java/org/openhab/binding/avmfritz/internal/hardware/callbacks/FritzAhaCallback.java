@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.avmfritz.internal.hardware.callbacks;
 
+import static org.eclipse.jetty.http.HttpStatus.OK_200;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
@@ -21,6 +23,11 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public interface FritzAhaCallback {
+
+    static boolean isValidResponse(int status, String response) {
+        return status == OK_200 && !response.isEmpty() && !".".equals(response);
+    }
+
     /**
      * Runs callback code after response completion.
      */

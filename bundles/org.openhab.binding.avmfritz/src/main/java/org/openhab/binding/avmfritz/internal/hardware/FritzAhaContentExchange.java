@@ -12,8 +12,12 @@
  */
 package org.openhab.binding.avmfritz.internal.hardware;
 
+import java.util.Objects;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.BufferingResponseListener;
+import org.eclipse.jetty.client.Request;
 import org.eclipse.jetty.client.Response;
 import org.eclipse.jetty.client.Response.CompleteListener;
 import org.eclipse.jetty.client.Response.ContentListener;
@@ -28,6 +32,7 @@ import org.slf4j.LoggerFactory;
  * Implementation of Jetty ContextExchange to handle callbacks
  *
  * @author Robert Bausdorf - Initial contribution
+ * @author Leo Siepel - Handle session loss on failed requests
  */
 @NonNullByDefault
 public class FritzAhaContentExchange extends BufferingResponseListener
@@ -39,6 +44,7 @@ public class FritzAhaContentExchange extends BufferingResponseListener
      * Callback to execute on complete response
      */
     private final FritzAhaCallback callback;
+    private @Nullable Runnable invalidateSession;
 
     /**
      * Constructor
@@ -47,6 +53,11 @@ public class FritzAhaContentExchange extends BufferingResponseListener
      */
     public FritzAhaContentExchange(FritzAhaCallback callback) {
         this.callback = callback;
+    }
+
+    void send(Request request, Runnable invalidateSession) {
+        this.invalidateSession = invalidateSession;
+        request.send(this);
     }
 
     @Override
@@ -62,10 +73,21 @@ public class FritzAhaContentExchange extends BufferingResponseListener
 
     @Override
     public void onComplete(@NonNullByDefault({}) Result result) {
-        String content = getContentAsString();
-        logger.debug("{} response complete: {}", result.getRequest().getMethod(), content);
-        if (content != null) {
-            callback.execute(result.getResponse().getStatus(), content);
+        Runnable invalidate = invalidateSession;
+        Response response = result.getResponse();
+        if (result.isFailed() || response == null) {
+            if (invalidate != null) {
+                invalidate.run();
+            }
+            return;
         }
+
+        String content = Objects.requireNonNullElse(getContentAsString(), "");
+        int status = response.getStatus();
+        logger.debug("{} response complete: {}", result.getRequest().getMethod(), content);
+        if (invalidate != null && !FritzAhaCallback.isValidResponse(status, content)) {
+            invalidate.run();
+        }
+        callback.execute(status, content);
     }
 }

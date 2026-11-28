@@ -26,6 +26,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.BufferingResponseListener;
 import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.Request;
 import org.eclipse.jetty.client.Result;
 import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpMethod;
@@ -59,6 +60,7 @@ import org.slf4j.LoggerFactory;
  * @author Ulrich Mertin - Added support for HAN-FUN blinds
  * @author Christoph Sommer - Added support for color temperature
  * @author Leo Siepel - Made authentication non-blocking
+ * @author Leo Siepel - Recover after the FRITZ!Box loses its session
  */
 @NonNullByDefault
 public class FritzAhaWebInterface {
@@ -301,15 +303,6 @@ public class FritzAhaWebInterface {
         return getURL(args.isEmpty() ? path : path + "?" + args);
     }
 
-    public String addSID(String path) {
-        String currentSid = sid;
-        if (currentSid == null) {
-            return path;
-        } else {
-            return (path.isEmpty() ? "" : path + "&") + "sid=" + currentSid;
-        }
-    }
-
     /**
      * Sends a HTTP GET request using the asynchronous client
      *
@@ -318,15 +311,7 @@ public class FritzAhaWebInterface {
      * @param callback Callback to handle the response with
      */
     public FritzAhaContentExchange asyncGet(String path, String args, FritzAhaCallback callback) {
-        FritzAhaContentExchange getExchange = new FritzAhaContentExchange(callback);
-        authenticate().thenAccept(authenticated -> {
-            if (authenticated && !disposed) {
-                httpClient.newRequest(getURL(path, addSID(args))).timeout(config.asyncTimeout, TimeUnit.MILLISECONDS)
-                        .method(HttpMethod.GET).onResponseSuccess(getExchange).onResponseFailure(getExchange)
-                        .send(getExchange);
-            }
-        });
-        return getExchange;
+        return sendAuthenticated(HttpMethod.GET, path, args, callback);
     }
 
     public FritzAhaContentExchange asyncGet(FritzAhaCallback callback) {
@@ -341,20 +326,34 @@ public class FritzAhaWebInterface {
      * @param callback Callback to handle the response with
      */
     public FritzAhaContentExchange asyncPost(String path, String args, FritzAhaCallback callback) {
-        FritzAhaContentExchange postExchange = new FritzAhaContentExchange(callback);
-        authenticate().thenAccept(authenticated -> {
-            if (authenticated && !disposed) {
-                httpClient.newRequest(getURL(path)).timeout(config.asyncTimeout, TimeUnit.MILLISECONDS)
-                        .method(HttpMethod.POST).onResponseSuccess(postExchange).onResponseFailure(postExchange)
-                        .body(new StringRequestContent(addSID(args), StandardCharsets.UTF_8)).send(postExchange);
-            }
-        });
-        return postExchange;
+        return sendAuthenticated(HttpMethod.POST, path, args, callback);
     }
 
-    public void invalidateAuthentication() {
+    private FritzAhaContentExchange sendAuthenticated(HttpMethod method, String path, String args,
+            FritzAhaCallback callback) {
+        FritzAhaContentExchange exchange = new FritzAhaContentExchange(callback);
+        authenticate().thenAccept(authenticated -> {
+            String requestSid = sid;
+            if (authenticated && requestSid != null && !disposed) {
+                String authenticatedArgs = (args.isEmpty() ? "" : args + "&") + "sid=" + requestSid;
+                String url = method == HttpMethod.GET ? getURL(path, authenticatedArgs) : getURL(path);
+                Request request = httpClient.newRequest(url).timeout(config.asyncTimeout, TimeUnit.MILLISECONDS)
+                        .method(method);
+                if (method == HttpMethod.POST) {
+                    request.body(new StringRequestContent(authenticatedArgs, StandardCharsets.UTF_8));
+                }
+                exchange.send(request, () -> invalidateAuthentication(requestSid));
+            }
+        });
+        return exchange;
+    }
+
+    private void invalidateAuthentication(String requestSid) {
         synchronized (authenticationLock) {
-            sid = null;
+            // Another request may have already obtained a replacement session.
+            if (requestSid.equals(sid)) {
+                sid = null;
+            }
         }
     }
 
