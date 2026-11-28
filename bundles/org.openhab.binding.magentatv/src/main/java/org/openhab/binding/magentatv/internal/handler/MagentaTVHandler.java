@@ -531,7 +531,7 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
                 mapPlayModeToMediaControl(playMode);
             }
             if (event.duration > 0) {
-                updateState(CHANNEL_PROG_DURATION, new StringType(event.duration.toString()));
+                updateState(CHANNEL_PROG_DURATION, toQuantityType(event.duration, Units.SECOND));
             }
             if (event.playPostion != -1) {
                 updateState(CHANNEL_PROG_POS, toQuantityType(event.playPostion / 6, Units.MINUTE));
