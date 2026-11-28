@@ -77,6 +77,11 @@
 		<state readOnly="true">
 		</state>
 	</channel-type>
+	<channel-type id="displayScreen">
+		<item-type>Switch</item-type>
+		<label>Screen</label>
+		<description>Turns the Wall Display screen on or off, the device stays powered and reachable</description>
+	</channel-type>
 	<channel-type id="relayInThermostat" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Relay in Thermostat</label>

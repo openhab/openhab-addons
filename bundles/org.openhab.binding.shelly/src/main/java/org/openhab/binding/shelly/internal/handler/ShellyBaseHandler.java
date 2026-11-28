@@ -62,6 +62,7 @@ import org.openhab.binding.shelly.internal.config.ShellyThingConfiguration;
 import org.openhab.binding.shelly.internal.discovery.ShellyBasicDiscoveryService;
 import org.openhab.binding.shelly.internal.discovery.ShellyThingCreator;
 import org.openhab.binding.shelly.internal.handler.ShellyDeviceStats.ShellyDeviceAlarm;
+import org.openhab.binding.shelly.internal.handler.component.ShellyComponentDisplay;
 import org.openhab.binding.shelly.internal.handler.component.ShellyComponentThermostat;
 import org.openhab.binding.shelly.internal.provider.ShellyChannelDefinitions;
 import org.openhab.binding.shelly.internal.provider.ShellyStateDescriptionProvider;
@@ -525,6 +526,9 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
                 case CHANNEL_LED_POWER_DISABLE:
                     logger.debug("{}: Set POWER LED disabled to {}", thingName, command);
                     api.setLedStatus(SHELLY_LED_POWER_DISABLE, command == OnOffType.ON);
+                    break;
+                case CHANNEL_DEVST_SCREEN:
+                    ShellyComponentDisplay.handleCommand(this, command);
                     break;
                 case CHANNEL_DEVST_DEBUG:
                     logger.debug("{}: Set Debug Log streaming to {}", thingName, command);
