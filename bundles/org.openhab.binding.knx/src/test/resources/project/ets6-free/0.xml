@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<KNX xmlns="http://knx.org/xml/project/22" CreatedBy="ETS6" ToolVersion="6.1.5500.1">
+  <Project Id="P-5A6B">
+    <Installations>
+      <Installation Name="" DefaultLine="P-5A6B-0_L-1">
+        <Topology>
+          <Area Id="P-5A6B-0_A-1" Name="Nieuw gebied" Address="1" Puid="1">
+            <Line Id="P-5A6B-0_L-1" Name="Nieuwe lijn" Address="1" Puid="2">
+              <Segment Id="P-5A6B-0_S-1" Number="0" MediumTypeRefId="MT-5" Puid="3" />
+            </Line>
+          </Area>
+        </Topology>
+        <Locations>
+          <Space Id="P-5A6B-0_BP-1" Name="Gebouw" Type="Building" Usage="SU-1" Puid="4">
+            <Space Id="P-5A6B-0_BP-2" Name="Begane grond" Type="Floor" Puid="11">
+              <Function Id="P-5A6B-0_F-1" Name="Licht gang" Type="FT-1" Puid="12">
+                <GroupAddressRef Id="P-5A6B-0_F-1_GA-1" Name="Schakelen" RefId="P-5A6B-0_GA-1" Role="SwitchOnOff" Puid="13" />
+              </Function>
+            </Space>
+          </Space>
+        </Locations>
+        <GroupAddresses>
+          <GroupRanges>
+            <GroupRange Id="P-5A6B-0_GR-1" Name="Eerste" RangeStart="1" RangeEnd="1000" Puid="5">
+              <GroupAddress Id="P-5A6B-0_GA-1" Address="17" Name="Vrij zeventien" Puid="6" />
+            </GroupRange>
+            <GroupRange Id="P-5A6B-0_GR-2" Name="Tweede" RangeStart="30000" RangeEnd="50000" Puid="7">
+              <GroupRange Id="P-5A6B-0_GR-3" Name="Derde" RangeStart="40000" RangeEnd="45000" Puid="8">
+                <GroupRange Id="P-5A6B-0_GR-4" Name="Vierde" RangeStart="40000" RangeEnd="40100" Puid="9">
+                  <GroupAddress Id="P-5A6B-0_GA-2" Address="40000" Name="Diep" DatapointType="DPT-14" Puid="10" />
+                </GroupRange>
+              </GroupRange>
+            </GroupRange>
+          </GroupRanges>
+        </GroupAddresses>
+      </Installation>
+    </Installations>
+  </Project>
+</KNX>

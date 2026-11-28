@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<KNX xmlns="http://knx.org/xml/project/23" CreatedBy="ETS6" ToolVersion="6.4.7890.0">
+  <Project Id="P-5A6B">
+    <Installations>
+      <Installation Name="" BCUKey="MADEUP-BCUKEY-MOD">
+        <Topology>
+          <Area Id="P-5A6B-0_A-1" Name="Gebouw" Address="1" Puid="1">
+            <Line Id="P-5A6B-0_L-1" Name="Lijn" Address="1" Puid="2">
+              <Segment Id="P-5A6B-0_S-1" Number="0" MediumTypeRefId="MT-0" DomainAddress="" Puid="3">
+                <DeviceInstance Id="P-5A6B-0_DI-1" Address="1" ProductRefId="M-00C8_H-0010-1_P-MOD.8" Hardware2ProgramRefId="M-00C8_H-0010-1_HP-0110-10-AAAA" SerialNumber="MADEUP-SERIAL-MOD-1" Puid="4">
+                  <ComObjectInstanceRefs>
+                    <ComObjectInstanceRef RefId="O-1_R-1" Links="GA-1" />
+                    <ComObjectInstanceRef RefId="MD-1_M-1_MI-1_O-2-1_R-1" Links="GA-2 GA-1" ChannelId="MD-1_M-1_MI-1_CH-1" />
+                    <ComObjectInstanceRef RefId="MD-1_M-1_MI-1_SM-1_M-1_MI-1-1-1_SM-1_O-3-1_R-1" Links="GA-3" />
+                    <ComObjectInstanceRef RefId="MD-1_M-1_MI-2_O-2-1_R-1" Links="GA-4" />
+                    <ComObjectInstanceRef RefId="O-9_R-9" />
+                    <ComObjectInstanceRef RefId="O-5_R-5" Links="GA-5" />
+                  </ComObjectInstanceRefs>
+                  <ModuleInstances>
+                    <ModuleInstance Id="MD-1_M-1_MI-1" RefId="MD-1_M-1">
+                      <Arguments>
+                        <Argument RefId="MD-1_A-1" Value="Hal" />
+                      </Arguments>
+                    </ModuleInstance>
+                    <ModuleInstance Id="MD-1_M-1_MI-1_SM-1_M-1_MI-1-1-1" RefId="MD-1_SM-1_M-1" />
+                    <ModuleInstance Id="MD-1_M-1_MI-2" RefId="MD-1_M-1">
+                      <Arguments>
+                        <Argument RefId="MD-1_A-1" Value="Keuken" />
+                      </Arguments>
+                    </ModuleInstance>
+                  </ModuleInstances>
+                </DeviceInstance>
+                <DeviceInstance Id="P-5A6B-0_DI-2" Name="Tweede actor" Address="2" ProductRefId="M-00C8_H-0010-1_P-MOD.8" Hardware2ProgramRefId="M-00C8_H-0010-1_HP-0110-10-AAAA" Puid="5">
+                  <ComObjectInstanceRefs>
+                    <ComObjectInstanceRef RefId="O-1_R-1" Links="GA-5" Text="Centraal tweede" />
+                  </ComObjectInstanceRefs>
+                </DeviceInstance>
+                <DeviceInstance Id="P-5A6B-0_DI-3" Address="3" ProductRefId="M-00C8_H-0011-1_P-GONE.1" Hardware2ProgramRefId="M-00C8_H-0011-1_HP-0111-10-BBBB" Puid="6">
+                  <ComObjectInstanceRefs>
+                    <ComObjectInstanceRef RefId="O-1_R-1" Links="GA-5" Text="Eigen tekst" UpdateFlag="Enabled" />
+                  </ComObjectInstanceRefs>
+                </DeviceInstance>
+                <DeviceInstance Id="P-5A6B-0_DI-4" Address="4" ProductRefId="M-00C8_H-0012-1_P-NOHP.1" Hardware2ProgramRefId="M-00C8_H-0012-1_HP-0112-10-CCCC" Puid="7">
+                  <ComObjectInstanceRefs>
+                    <ComObjectInstanceRef RefId="O-1_R-1" Links="GA-5" />
+                  </ComObjectInstanceRefs>
+                </DeviceInstance>
+                <DeviceInstance Id="P-5A6B-0_DI-5" Address="5" ProductRefId="M-00C8_H-0099-1_P-NONE.1" Puid="8">
+                  <ComObjectInstanceRefs>
+                    <ComObjectInstanceRef RefId="O-1_R-1" Links="GA-5" DatapointType="DPST-1-1" />
+                  </ComObjectInstanceRefs>
+                </DeviceInstance>
+              </Segment>
+            </Line>
+          </Area>
+        </Topology>
+        <GroupAddresses>
+          <GroupRanges>
+            <GroupRange Id="P-5A6B-0_GR-1" Name="Licht" RangeStart="2048" RangeEnd="4095" Puid="10">
+              <GroupRange Id="P-5A6B-0_GR-2" Name="Gelijkvloers" RangeStart="2048" RangeEnd="2303" Puid="11">
+                <GroupAddress Id="P-5A6B-0_GA-1" Address="2049" Name="Alles uit" DatapointType="DPST-1-1" Puid="12" />
+                <GroupAddress Id="P-5A6B-0_GA-2" Address="2050" Name="Hal schakelen" Puid="13" />
+                <GroupAddress Id="P-5A6B-0_GA-3" Address="2051" Name="Hal logica" DatapointType="DPT-5" Puid="14" />
+                <GroupAddress Id="P-5A6B-0_GA-4" Address="2052" Name="Keuken schakelen" Puid="15" />
+                <GroupAddress Id="P-5A6B-0_GA-5" Address="2053" Name="Centraal" DatapointType="DPST-1-1" Puid="16" />
+              </GroupRange>
+            </GroupRange>
+          </GroupRanges>
+        </GroupAddresses>
+      </Installation>
+    </Installations>
+  </Project>
+</KNX>

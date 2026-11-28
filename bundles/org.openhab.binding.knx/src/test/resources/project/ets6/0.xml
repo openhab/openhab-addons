@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<KNX xmlns="http://knx.org/xml/project/23" CreatedBy="ETS6" ToolVersion="6.4.7890.0">
+  <Project Id="P-3E4F">
+    <Installations>
+      <Installation Name="" BCUKey="MADEUP-BCUKEY-0000" IPRoutingLatencyTolerance="2000" IPSyncLatencyFraction="0.1">
+        <FutureSection Flag="new">
+          <FutureChild Value="1" />
+        </FutureSection>
+        <Topology>
+          <Area Id="P-3E4F-0_A-1" Name="Gebouw" Address="1" Puid="1">
+            <Line Id="P-3E4F-0_L-1" Name="Lijn een" Address="1" Puid="2">
+              <Segment Id="P-3E4F-0_S-1" Number="0" MediumTypeRefId="MT-0" DomainAddress="" Puid="3">
+                <DeviceInstance Id="P-3E4F-0_DI-1" Address="1" ProductRefId="M-00C8_H-0001-2_P-ABC.12" Hardware2ProgramRefId="M-00C8_H-0001-2_HP-0101-20-0F0F" SerialNumber="MADEUP-SERIAL-ONE" Puid="4" LastModified="2026-01-01T00:00:00Z" Broken="false" CheckSums="MADEUP-CHECKSUMS">
+                  <Security ToolKey="MADEUP-TOOLKEY-1" LoadedToolKey="MADEUP-LOADEDTOOLKEY-1" DeviceAuthenticationCode="MADEUP-DAC-1" DeviceAuthenticationCodeHash="MADEUP-DACHASH-1" DeviceManagementPassword="MADEUP-DMP-1" DeviceManagementPasswordHash="MADEUP-DMPHASH-1" SequenceNumber="123456" SequenceNumberTimestamp="2026-01-01T00:00:00Z" />
+                  <BusInterfaces>
+                    <BusInterface RefId="M-00C8_A-0101-20-0F0F_BI-1" Password="MADEUP-BI-PASSWORD" PasswordHash="MADEUP-BI-PASSWORDHASH">
+                      <Connectors>
+                        <Connector GroupAddressRefId="P-3E4F-0_GA-1" />
+                      </Connectors>
+                    </BusInterface>
+                  </BusInterfaces>
+                  <ComObjectInstanceRefs>
+                    <ComObjectInstanceRef RefId="O-1_R-1" Links="GA-1 GA-2" ReadFlag="Enabled" ChannelId="CH-1" FutureAttribute="x">
+                      <FutureChild Value="1" />
+                    </ComObjectInstanceRef>
+                    <ComObjectInstanceRef RefId="MD-1_M-1_MI-2_O-3-1_R-4" Links="GA-3" ChannelId="MD-1_M-1_MI-2_CH-1" />
+                  </ComObjectInstanceRefs>
+                  <GroupObjectTree GroupObjectInstances="2">
+                    <Nodes>
+                      <Node Type="Folder" RefId="MD-1_M-1_MI-2" GroupObjectInstances="1">
+                        <Node Type="Channel" RefId="MD-1_M-1_MI-2_CH-1" GroupObjectInstances="1" />
+                      </Node>
+                    </Nodes>
+                  </GroupObjectTree>
+                  <ParameterInstanceRefs>
+                    <ParameterInstanceRef RefId="M-00C8_A-0101-20-0F0F_P-1_R-1" Value="Hall" />
+                    <ParameterInstanceRef RefId="M-00C8_A-0101-20-0F0F_MD-1_M-1_MI-2_P-3_R-3" Value="12" />
+                  </ParameterInstanceRefs>
+                  <ChannelInstances>
+                    <ChannelInstance Id="CH-1" RefId="CH-1" Name="Kanaal een" IsActive="true" />
+                  </ChannelInstances>
+                  <ModuleInstances>
+                    <ModuleInstance Id="MD-1_M-1_MI-2" RefId="MD-1_M-1" RepeatIndex="1x2">
+                      <Arguments>
+                        <Argument RefId="MD-1_A-1" Value="3" />
+                      </Arguments>
+                    </ModuleInstance>
+                  </ModuleInstances>
+                  <AdditionalAddresses>
+                    <Address Address="250" Name="Tunnel 1" />
+                  </AdditionalAddresses>
+                  <IPConfig Assign="Fixed" IPAddress="192.0.2.10" SubnetMask="255.255.255.0" DefaultGateway="192.0.2.1" MACAddress="MADEUP-MAC-ADDRESS" />
+                </DeviceInstance>
+              </Segment>
+              <Segment Id="P-3E4F-0_S-2" Number="1" MediumTypeRefId="MT-0" DomainAddress="" Puid="5">
+                <DeviceInstance Id="P-3E4F-0_DI-2" Name="Drukknop deur" Address="20" ProductRefId="M-00C8_H-0002-2_P-DEF.34" Hardware2ProgramRefId="M-00C8_H-0002-2_HP-0102-21-1A1A" Puid="6" />
+              </Segment>
+            </Line>
+            <Line Id="P-3E4F-0_L-2" Name="IP-lijn" Address="0" Puid="7">
+              <Segment Id="P-3E4F-0_S-3" Number="0" MediumTypeRefId="MT-5" DomainAddress="" Puid="8">
+                <DeviceInstance Id="P-3E4F-0_DI-3" Name="IP-router" Description="router in de technische ruimte" Address="0" ProductRefId="M-0001_H-0003-1_P-RTR.1" Hardware2ProgramRefId="M-0001_H-0003-1_HP-0103-10-2B2B" Puid="9" />
+              </Segment>
+            </Line>
+          </Area>
+          <Area Id="P-3E4F-0_A-2" Name="Leeg" Address="2" Puid="10" />
+        </Topology>
+        <Locations>
+          <Space Id="P-3E4F-0_BP-1" Name="Werkplaats" Type="Building" Puid="11">
+            <Space Id="P-3E4F-0_BP-2" Name="Gelijkvloers" Type="Floor" Puid="12">
+              <Space Id="P-3E4F-0_BP-3" Name="Hal" Type="Room" Puid="13">
+                <DeviceInstanceRef RefId="P-3E4F-0_DI-2" />
+                <Function Id="P-3E4F-0_F-1" Name="Licht hal" Type="FT-1" Puid="14">
+                  <GroupAddressRef Id="P-3E4F-0_F-1_GA-1" Name="Schakelen" RefId="P-3E4F-0_GA-1" Role="9e2e5b64-0000-4000-8000-00000000a001" Puid="15" />
+                  <GroupAddressRef Id="P-3E4F-0_F-1_GA-2" Name="Temperatuur" RefId="P-3E4F-0_GA-2" Role="9e2e5b64-0000-4000-8000-00000000a002" Puid="23" />
+                </Function>
+                <Function Id="P-3E4F-0_F-2" Name="Leeg ding" Type="FT-0" Puid="24" />
+              </Space>
+              <Function Id="P-3E4F-0_F-3" Name="Licht verdieping" Type="FT-1" Puid="25">
+                <GroupAddressRef Id="P-3E4F-0_F-3_GA-1" Name="Schakelen" RefId="P-3E4F-0_GA-3" Role="9e2e5b64-0000-4000-8000-00000000a001" Puid="26" />
+              </Function>
+            </Space>
+          </Space>
+        </Locations>
+        <GroupAddresses>
+          <GroupRanges>
+            <GroupRange Id="P-3E4F-0_GR-1" Name="Hoofd" RangeStart="0" RangeEnd="2047" Puid="16">
+              <GroupRange Id="P-3E4F-0_GR-2" Name="Midden" RangeStart="0" RangeEnd="255" Puid="17">
+                <GroupAddress Id="P-3E4F-0_GA-1" Address="1" Name="Hal schakelen" DatapointType="DPST-1-1" Key="MADEUP-GA-KEY-ONE" Puid="18" />
+                <GroupAddress Id="P-3E4F-0_GA-2" Address="2" Name="Hal temperatuur" DatapointType="DPST-9-1" Puid="19" FutureAttribute="x" />
+              </GroupRange>
+            </GroupRange>
+            <GroupRange Id="P-3E4F-0_GR-3" Name="Top" RangeStart="63488" RangeEnd="65535" Puid="20">
+              <GroupRange Id="P-3E4F-0_GR-4" Name="Einde" RangeStart="65280" RangeEnd="65535" Puid="21">
+                <GroupAddress Id="P-3E4F-0_GA-3" Address="65535" Name="Laatste" Description="hoogste adres" DatapointType="DPST-232-600" Puid="22" />
+              </GroupRange>
+            </GroupRange>
+          </GroupRanges>
+        </GroupAddresses>
+      </Installation>
+    </Installations>
+  </Project>
+</KNX>

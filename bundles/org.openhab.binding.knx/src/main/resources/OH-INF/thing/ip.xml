@@ -42,6 +42,7 @@
 				<context>network-address</context>
 			</parameter>
 			<parameter name="localSourceAddr" type="text">
+				<limitToOptions>false</limitToOptions>
 				<label>Local Device Address</label>
 				<description>The Physical Address (Individual Address) in x.y.z notation for identification of this openHAB Thing
 					within the KNX bus</description>
@@ -73,6 +74,20 @@
 				<description>Seconds between connection retries when KNX link has been lost, 0 means never retry, minimum 30s</description>
 				<default>60</default>
 			</parameter>
+			<parameter name="monitorBufferSize" type="integer">
+				<label>Monitor Buffer Size</label>
+				<description>Number of telegrams the group monitor keeps in memory (console command "openhab:knx monitor"),
+					0 keeps
+					none. Values above 100000 are reduced to 100000. A negative value counts as 0.</description>
+				<default>2000</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="groupMonitorSend" type="boolean">
+				<label>Allow sending from the KNX page</label>
+				<description>Lets an administrator read or write group addresses from the Group Monitor of the add-on's page</description>
+				<default>false</default>
+				<advanced>true</advanced>
+			</parameter>
 			<parameter name="keyringFile" type="text" groupName="knxsecure">
 				<label>Keyring file</label>
 				<description>Keyring file exported from ETS and placed in openHAB config/misc folder, e.g.
@@ -99,6 +114,7 @@
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="tunnelSourceAddress" type="text" groupName="knxsecure">
+				<limitToOptions>false</limitToOptions>
 				<label>Tunnel source address</label>
 				<description>Physical KNX address of tunnel in secure mode. Optional, only used in combination
 					with keyring file to

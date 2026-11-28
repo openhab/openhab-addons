@@ -13,6 +13,7 @@
 package org.openhab.binding.knx.internal.client;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 
@@ -43,4 +44,14 @@ public interface StatusUpdateCallback {
      * @param description the description of the status
      */
     void updateStatus(ThingStatusDetail statusDetail, String description);
+
+    /**
+     * Updates the status of the thing, for a status that carries a text, like ONLINE with a warning.
+     *
+     * see {@link org.openhab.core.thing.binding.BaseThingHandler}
+     *
+     * @param status the status
+     * @param description the description of the status
+     */
+    void updateStatus(ThingStatus status, @Nullable String description);
 }

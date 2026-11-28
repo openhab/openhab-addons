@@ -25,6 +25,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.openhab.binding.knx.internal.handler.KNXBridgeBaseThingHandler.CommandExtensionData;
+import org.openhab.binding.knx.internal.monitor.TelegramMonitor;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingUID;
 
@@ -54,7 +55,8 @@ class IPClientTest {
         InetSocketAddress localEndPoint = new InetSocketAddress("192.0.2.1", 0);
         IPClient client = new IPClient(IPClient.IpConnectionType.TUNNEL, "192.168.0.73", "0.0.0", 3671, localEndPoint,
                 false, 0, new byte[0], 0, new byte[0], 0, new byte[0], new ThingUID("knx:ip:bridge"), 5, 50, 1,
-                knxScheduler, new CommandExtensionData(new TreeMap<>()), Security.newSecurity(), statusUpdateCallback);
+                knxScheduler, new CommandExtensionData(new TreeMap<>()), new TelegramMonitor(), Security.newSecurity(),
+                () -> null, statusUpdateCallback);
 
         client.initialize();
 

@@ -20,10 +20,14 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.time.Duration;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.function.Supplier;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.knx.internal.handler.KNXBridgeBaseThingHandler.CommandExtensionData;
+import org.openhab.binding.knx.internal.monitor.ConnectionKind;
+import org.openhab.binding.knx.internal.monitor.TelegramMonitor;
+import org.openhab.binding.knx.internal.security.KeyringFacts;
 import org.openhab.core.thing.ThingUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -90,9 +94,10 @@ public class IPClient extends AbstractKNXClient {
             byte[] secureRoutingBackboneGroupKey, long secureRoutingLatencyToleranceMs, byte[] secureTunnelDevKey,
             int secureTunnelUser, byte[] secureTunnelUserKey, ThingUID thingUID, int responseTimeout, int readingPause,
             int readRetriesLimit, ScheduledExecutorService knxScheduler, CommandExtensionData commandExtensionData,
-            Security openhabSecurity, StatusUpdateCallback statusUpdateCallback) {
+            TelegramMonitor telegramMonitor, Security openhabSecurity, Supplier<@Nullable KeyringFacts> keyringFacts,
+            StatusUpdateCallback statusUpdateCallback) {
         super(autoReconnectPeriod, thingUID, responseTimeout, readingPause, readRetriesLimit, knxScheduler,
-                commandExtensionData, openhabSecurity, statusUpdateCallback);
+                commandExtensionData, telegramMonitor, openhabSecurity, keyringFacts, statusUpdateCallback);
         this.ipConnectionType = ipConnectionType;
         this.ip = ip;
         this.localSource = localSource;
@@ -114,6 +119,16 @@ public class IPClient extends AbstractKNXClient {
         TPSettings settings = new TPSettings(new IndividualAddress(localSource));
         return createKNXNetworkLinkIP(ipConnectionType, localEndPoint, new InetSocketAddress(ip, port), useNAT,
                 settings);
+    }
+
+    @Override
+    protected ConnectionKind connectionKind() {
+        return switch (ipConnectionType) {
+            case TUNNEL -> ConnectionKind.TUNNEL;
+            case SECURE_TUNNEL -> ConnectionKind.SECURE_TUNNEL;
+            case ROUTER -> ConnectionKind.ROUTER;
+            case SECURE_ROUTER -> ConnectionKind.SECURE_ROUTER;
+        };
     }
 
     private String connectionTypeToString() {

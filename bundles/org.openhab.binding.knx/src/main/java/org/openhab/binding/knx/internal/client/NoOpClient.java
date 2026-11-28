@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.knx.internal.client;
 
+import java.util.Optional;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.knx.internal.handler.GroupAddressListener;
@@ -31,6 +33,11 @@ public class NoOpClient implements KNXClient {
     @Override
     public boolean isConnected() {
         return false;
+    }
+
+    @Override
+    public Optional<IndividualAddress> ownAddress() {
+        return Optional.empty();
     }
 
     @Override
@@ -61,7 +68,12 @@ public class NoOpClient implements KNXClient {
     }
 
     @Override
-    public void writeToKNX(OutboundSpec commandSpec) throws KNXException {
+    public void readOnce(Datapoint datapoint) {
+    }
+
+    @Override
+    public boolean writeToKNX(OutboundSpec commandSpec) throws KNXException {
+        return false;
     }
 
     @Override

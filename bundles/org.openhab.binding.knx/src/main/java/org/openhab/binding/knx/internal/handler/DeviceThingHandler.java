@@ -16,6 +16,9 @@ import static org.openhab.binding.knx.internal.KNXBindingConstants.CHANNEL_RESET
 
 import java.math.BigDecimal;
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -44,6 +47,9 @@ import org.openhab.binding.knx.internal.dpt.DPTUnits;
 import org.openhab.binding.knx.internal.dpt.DPTUtil;
 import org.openhab.binding.knx.internal.dpt.ValueDecoder;
 import org.openhab.binding.knx.internal.i18n.KNXTranslationProvider;
+import org.openhab.binding.knx.internal.monitor.DataType;
+import org.openhab.binding.knx.internal.monitor.MonitorDecoder;
+import org.openhab.binding.knx.internal.project.KnxConfiguredAddress;
 import org.openhab.core.cache.ExpiringCacheMap;
 import org.openhab.core.library.types.IncreaseDecreaseType;
 import org.openhab.core.thing.Bridge;
@@ -213,6 +219,10 @@ public class DeviceThingHandler extends BaseThingHandler implements GroupAddress
     }
 
     private void scheduleRead(KNXChannel knxChannel) {
+        if (knxChannel.isTrigger()) {
+            // never reads, whatever the configuration says about the read flag
+            return;
+        }
         List<InboundSpec> readSpecs = knxChannel.getReadSpec();
         for (InboundSpec readSpec : readSpecs) {
             readSpec.getGroupAddresses().forEach(ga -> scheduleReadJob(ga, readSpec.getDPT()));
@@ -243,9 +253,37 @@ public class DeviceThingHandler extends BaseThingHandler implements GroupAddress
         }
     }
 
+    /** {@return the configured addresses of all channels, channels in the order of their UID} */
+    public List<KnxConfiguredAddress> configuredAddresses() {
+        List<KNXChannel> channels = new ArrayList<>(knxChannels.values());
+        channels.sort(Comparator.comparing(channel -> channel.getChannelUID().getAsString()));
+        List<KnxConfiguredAddress> addresses = new ArrayList<>();
+        channels.forEach(channel -> addresses.addAll(channel.configuredAddresses()));
+        return List.copyOf(addresses);
+    }
+
     @Override
     public boolean listensTo(GroupAddress destination) {
         return groupAddresses.contains(destination);
+    }
+
+    @Override
+    public @Nullable DataType monitorDataType(GroupAddress destination) {
+        return monitorDataType(knxChannels.values(), destination);
+    }
+
+    static @Nullable DataType monitorDataType(Collection<KNXChannel> channels, GroupAddress destination) {
+        for (KNXChannel knxChannel : channels) {
+            InboundSpec listenSpec = knxChannel.getListenSpec(destination);
+            if (listenSpec == null) {
+                continue;
+            }
+            String dpt = listenSpec.getDPT();
+            if (MonitorDecoder.isSupported(dpt)) {
+                return new DataType(dpt, knxChannel.preferredType());
+            }
+        }
+        return null;
     }
 
     /** Handling commands triggered from openHAB */
@@ -255,6 +293,10 @@ public class DeviceThingHandler extends BaseThingHandler implements GroupAddress
         KNXChannel knxChannel = knxChannels.get(channelUID);
         if (knxChannel == null) {
             logger.warn("Channel '{}' received command, but no KNXChannel found", channelUID);
+            return;
+        }
+        if (knxChannel.isTrigger()) {
+            logger.trace("Ignoring command '{}' on trigger channel '{}'", command, channelUID);
             return;
         }
         if (command instanceof RefreshType && !knxChannel.isControl()) {
@@ -349,10 +391,10 @@ public class DeviceThingHandler extends BaseThingHandler implements GroupAddress
     @Override
     public void onGroupReadResponse(AbstractKNXClient client, IndividualAddress source, GroupAddress destination,
             byte[] asdu) {
-        // GroupValueResponses are treated the same as GroupValueWrite telegrams
+        // GroupValueResponses are treated the same as GroupValueWrite telegrams, except by trigger channels
         logger.trace("onGroupReadResponse Thing '{}' processes a GroupValueResponse telegram for destination '{}'",
                 getThing().getUID(), destination);
-        onGroupWrite(client, source, destination, asdu);
+        processGroupValue(source, destination, asdu, false);
     }
 
     /**
@@ -361,12 +403,23 @@ public class DeviceThingHandler extends BaseThingHandler implements GroupAddress
     @Override
     public void onGroupWrite(AbstractKNXClient client, IndividualAddress source, GroupAddress destination,
             byte[] asdu) {
+        processGroupValue(source, destination, asdu, true);
+    }
+
+    private void processGroupValue(IndividualAddress source, GroupAddress destination, byte[] asdu,
+            boolean isGroupWrite) {
         logger.debug("onGroupWrite Thing '{}' received a GroupValueWrite telegram from '{}' for destination '{}'",
                 getThing().getUID(), source, destination);
 
         for (KNXChannel knxChannel : knxChannels.values()) {
             InboundSpec listenSpec = knxChannel.getListenSpec(destination);
             if (listenSpec != null) {
+                if (knxChannel.isTrigger()) {
+                    if (isGroupWrite) {
+                        fireTrigger(knxChannel, listenSpec, asdu);
+                    }
+                    continue;
+                }
                 logger.trace(
                         "onGroupWrite Thing '{}' processes a GroupValueWrite telegram for destination '{}' for channel '{}'",
                         getThing().getUID(), destination, knxChannel.getChannelUID());
@@ -384,6 +437,17 @@ public class DeviceThingHandler extends BaseThingHandler implements GroupAddress
                 }
                 processDataReceived(destination, asdu, listenSpec, knxChannel);
             }
+        }
+    }
+
+    /** The value as text, decoded without the decoder's log lines; the raw bytes if there is no data type or value. */
+    private void fireTrigger(KNXChannel knxChannel, InboundSpec listenSpec, byte[] asdu) {
+        try {
+            Type value = MonitorDecoder.decode(listenSpec.getDPT(), asdu, knxChannel.preferredType());
+            triggerChannel(knxChannel.getChannelUID(),
+                    value == null ? HexUtils.bytesToHex(asdu) : value.toFullString());
+        } catch (RuntimeException e) {
+            logger.debug("Trigger channel '{}' could not fire: {}", knxChannel.getChannelUID(), e.toString());
         }
     }
 

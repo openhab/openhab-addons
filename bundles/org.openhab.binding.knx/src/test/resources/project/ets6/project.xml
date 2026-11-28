@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<KNX xmlns="http://knx.org/xml/project/23" CreatedBy="ETS6" ToolVersion="6.4.7890.0">
+  <Project Id="P-3E4F">
+    <ProjectInformation Name="Werkplaats Zes" GroupAddressStyle="ThreeLevel" LastModified="2026-01-02T03:04:05.678Z" ProjectStart="2025-12-01T00:00:00.000Z" Comment="" CompletionStatus="Editing" Guid="aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee" LastUsedPuid="99" FutureProjectAttribute="ignored">
+      <ProjectTraces>
+        <ProjectTrace Date="2026-01-02T03:04:05.678Z" UserName="MADEUP-USER-SIX" Comment="Saved" />
+      </ProjectTraces>
+      <DeviceCertificates>
+        <DeviceCertificate FDSK="MADEUP-FDSK-AAAA" SerialNumber="MADEUP-CERT-SERIAL" />
+      </DeviceCertificates>
+    </ProjectInformation>
+    <AddinData>
+      <AddinData AddinId="00000000-0000-0000-0000-000000000001" Name="Made-up add-in" />
+    </AddinData>
+  </Project>
+</KNX>

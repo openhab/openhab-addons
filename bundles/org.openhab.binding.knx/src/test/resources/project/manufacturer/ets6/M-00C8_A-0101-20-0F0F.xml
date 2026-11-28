@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<KNX xmlns="http://knx.org/xml/project/23" CreatedBy="ETS6" ToolVersion="6.4.7890.0">
+  <ManufacturerData>
+    <Manufacturer RefId="M-00C8">
+      <ApplicationPrograms>
+        <ApplicationProgram Id="M-00C8_A-0101-20-0F0F" ApplicationNumber="257" ApplicationVersion="32" ProgramType="ApplicationProgram" MaskVersion="MV-07B0" Name="Made-up light program" DefaultLanguage="en-US" IsSecureEnabled="true" Hash="MADEUP-PROGRAM-HASH">
+          <Static>
+            <Parameters>
+              <Parameter Id="M-00C8_A-0101-20-0F0F_P-1" Name="Label" ParameterType="M-00C8_A-0101-20-0F0F_PT-Text" Text="Label" Value="" />
+            </Parameters>
+            <ParameterRefs>
+              <ParameterRef Id="M-00C8_A-0101-20-0F0F_P-1_R-1" RefId="M-00C8_A-0101-20-0F0F_P-1" />
+            </ParameterRefs>
+            <ComObjectTable>
+              <ComObject Id="M-00C8_A-0101-20-0F0F_O-1" Name="Switch" Text="Switch {{0:A}}" Number="1" FunctionText="Light" ObjectSize="1 Bit" ReadFlag="Disabled" WriteFlag="Enabled" CommunicationFlag="Enabled" TransmitFlag="Disabled" UpdateFlag="Disabled" ReadOnInitFlag="Disabled" DatapointType="DPST-1-1" />
+            </ComObjectTable>
+            <ComObjectRefs>
+              <ComObjectRef Id="M-00C8_A-0101-20-0F0F_O-1_R-1" RefId="M-00C8_A-0101-20-0F0F_O-1" TextParameterRefId="M-00C8_A-0101-20-0F0F_P-1_R-1" TransmitFlag="Enabled" />
+            </ComObjectRefs>
+            <BusInterfaces>
+              <BusInterface Id="M-00C8_A-0101-20-0F0F_BI-1" AccessType="MADEUP-BI-ACCESS" AddressIndex="1" Text="MADEUP-BI-TEXT" Password="MADEUP-BI-PROGRAM-PASSWORD" />
+            </BusInterfaces>
+          </Static>
+          <ModuleDefs>
+            <ModuleDef Id="M-00C8_A-0101-20-0F0F_MD-1" Name="Colour">
+              <Arguments>
+                <Argument Id="M-00C8_A-0101-20-0F0F_MD-1_A-1" Name="ch" Allocates="1" />
+              </Arguments>
+              <Static>
+                <ComObjects>
+                  <ComObject Id="M-00C8_A-0101-20-0F0F_MD-1_O-3-1" Name="Colour" Text="Colour {{ch}}" Number="3" FunctionText="Colour light" ObjectSize="3 Bytes" ReadFlag="Enabled" WriteFlag="Enabled" CommunicationFlag="Enabled" TransmitFlag="Disabled" UpdateFlag="Disabled" ReadOnInitFlag="Disabled" DatapointType="DPST-232-600" />
+                </ComObjects>
+                <ComObjectRefs>
+                  <ComObjectRef Id="M-00C8_A-0101-20-0F0F_MD-1_O-3-1_R-4" RefId="M-00C8_A-0101-20-0F0F_MD-1_O-3-1" />
+                </ComObjectRefs>
+              </Static>
+            </ModuleDef>
+          </ModuleDefs>
+          <Dynamic>
+            <Channel Id="M-00C8_A-0101-20-0F0F_CH-1" Text="Channel">
+              <ComObjectRefRef RefId="M-00C8_A-0101-20-0F0F_O-1_R-1" />
+            </Channel>
+          </Dynamic>
+        </ApplicationProgram>
+      </ApplicationPrograms>
+      <Languages>
+        <Language Identifier="de-DE">
+          <TranslationUnit RefId="M-00C8_A-0101-20-0F0F">
+            <TranslationElement RefId="M-00C8_A-0101-20-0F0F_O-1">
+              <Translation AttributeName="Text" Text="Schalten {{0:A}}" />
+            </TranslationElement>
+          </TranslationUnit>
+        </Language>
+      </Languages>
+    </Manufacturer>
+  </ManufacturerData>
+</KNX>

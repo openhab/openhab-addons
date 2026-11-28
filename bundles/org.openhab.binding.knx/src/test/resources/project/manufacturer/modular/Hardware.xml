@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<KNX xmlns="http://knx.org/xml/project/23" CreatedBy="ETS6" ToolVersion="6.4.7890.0">
+  <ManufacturerData>
+    <Manufacturer RefId="M-00C8">
+      <Hardware>
+        <Hardware Id="M-00C8_H-0010-1" Name="Made-up modular actuator" SerialNumber="MADEUP-HW-SERIAL-MOD" VersionNumber="1" BusCurrent="10" HasIndividualAddress="true" HasApplicationProgram="true">
+          <Products>
+            <Product Id="M-00C8_H-0010-1_P-MOD.8" Text="Made-up actuator 8-fold" OrderNumber="MU MOD.8" IsRailMounted="true" DefaultLanguage="en-US" />
+          </Products>
+          <Hardware2Programs>
+            <Hardware2Program Id="M-00C8_H-0010-1_HP-0110-10-AAAA" MediumTypes="MT-0">
+              <ApplicationProgramRef RefId="M-00C8_A-0110-10-AAAA" />
+            </Hardware2Program>
+          </Hardware2Programs>
+        </Hardware>
+        <Hardware Id="M-00C8_H-0011-1" Name="Made-up gone" SerialNumber="MADEUP-HW-SERIAL-GONE" VersionNumber="1" BusCurrent="10" HasIndividualAddress="true" HasApplicationProgram="true">
+          <Products>
+            <Product Id="M-00C8_H-0011-1_P-GONE.1" Text="Made-up device without program file" OrderNumber="MU GONE.1" DefaultLanguage="en-US" />
+          </Products>
+          <Hardware2Programs>
+            <Hardware2Program Id="M-00C8_H-0011-1_HP-0111-10-BBBB" MediumTypes="MT-0">
+              <ApplicationProgramRef RefId="M-00C8_A-0111-10-BBBB" />
+            </Hardware2Program>
+          </Hardware2Programs>
+        </Hardware>
+        <Hardware Id="M-00C8_H-0012-1" Name="Made-up without hardware2program" SerialNumber="MADEUP-HW-SERIAL-NOHP" VersionNumber="1" BusCurrent="10" HasIndividualAddress="true" HasApplicationProgram="true">
+          <Products>
+            <Product Id="M-00C8_H-0012-1_P-NOHP.1" Text="" OrderNumber="MU NOHP.1" DefaultLanguage="en-US" />
+          </Products>
+          <Hardware2Programs />
+        </Hardware>
+      </Hardware>
+    </Manufacturer>
+  </ManufacturerData>
+</KNX>

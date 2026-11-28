@@ -4,7 +4,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<thing-type id="device"
-		extensible="switch, switch-control, dimmer, dimmer-control, rollershutter, rollershutter-control, color, color-control, contact, contact-control, number, number-control, string, string-control, datetime, datetime-control">
+		extensible="switch, switch-control, dimmer, dimmer-control, rollershutter, rollershutter-control, color, color-control, contact, contact-control, number, number-control, string, string-control, datetime, datetime-control, telegram-trigger">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="ip"/>
 			<bridge-type-ref id="serial"/>
@@ -212,5 +212,13 @@
 		<config-description-ref uri="channel-type:knx:single"/>
 	</channel-type>
 
+
+	<!-- Telegram Trigger -->
+	<channel-type id="telegram-trigger">
+		<kind>trigger</kind>
+		<label>Telegram Trigger</label>
+		<description>Triggers for every GroupValueWrite telegram to the configured group addresses, with the value as text</description>
+		<config-description-ref uri="channel-type:knx:telegram-trigger"/>
+	</channel-type>
 
 </thing:thing-descriptions>

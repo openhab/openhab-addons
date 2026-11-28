@@ -54,6 +54,7 @@ public class KNXBindingConstants {
     public static final String MANUFACTURER_FIRMWARE_REVISION = "manufacturerFirmwareRevision";
     public static final String MANUFACTURER_ORDER_INFO = "manufacturerOrderInfo";
     public static final String MAX_APDU_LENGTH = "maxApduLength";
+    public static final String OWN_ADDRESS = "ownAddress";
 
     // Thing Configuration parameters
     public static final String IP_ADDRESS = "ipAddress";
@@ -92,6 +93,7 @@ public class KNXBindingConstants {
     public static final String CHANNEL_STRING_CONTROL = "string-control";
     public static final String CHANNEL_SWITCH = "switch";
     public static final String CHANNEL_SWITCH_CONTROL = "switch-control";
+    public static final String CHANNEL_TELEGRAM_TRIGGER = "telegram-trigger";
 
     public static final ChannelTypeUID CHANNEL_CONTACT_CONTROL_UID = new ChannelTypeUID(BINDING_ID,
             CHANNEL_CONTACT_CONTROL);

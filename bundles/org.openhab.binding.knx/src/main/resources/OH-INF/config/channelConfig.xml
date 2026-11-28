@@ -134,5 +134,18 @@
 		</parameter>
 	</config-description>
 
+	<!-- Telegram trigger -->
+	<config-description uri="channel-type:knx:telegram-trigger">
+		<parameter name="ga" type="text" required="true">
+			<label>Address</label>
+			<description>The group addresses (GA) that fire this channel. Several GAs can be added by concatenating GAs with a
+				"+"
+				(e.g. "1/7/18+2/9/15"). The DPT can be defined by prepending it to the first GA, separated by ":" (e.g.
+				"9.001:1/4/17");
+				without one the event carries the raw bytes. A "&lt;" in front of a GA is ignored: this channel
+				never reads.
+			</description>
+		</parameter>
+	</config-description>
 
 </config-description:config-descriptions>

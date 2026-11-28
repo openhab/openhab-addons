@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<KNX xmlns="http://knx.org/xml/project/20" CreatedBy="ETS5" ToolVersion="5.7.1093.38570">
+  <ManufacturerData>
+    <Manufacturer RefId="M-0083">
+      <ApplicationPrograms>
+        <ApplicationProgram Id="M-0083_A-00AA-11-B2C3" ApplicationNumber="170" ApplicationVersion="17" ProgramType="ApplicationProgram" MaskVersion="MV-07B0" Name="Made-up actuator program" DefaultLanguage="en-US" IsSecureEnabled="false">
+          <Static>
+            <Parameters>
+              <Parameter Id="M-0083_A-00AA-11-B2C3_P-1" Name="Mode" ParameterType="M-0083_A-00AA-11-B2C3_PT-Mode" Text="Mode" Value="1" />
+            </Parameters>
+            <ParameterRefs>
+              <ParameterRef Id="M-0083_A-00AA-11-B2C3_P-1_R-1" RefId="M-0083_A-00AA-11-B2C3_P-1" />
+            </ParameterRefs>
+            <ComObjectTable>
+              <ComObject Id="M-0083_A-00AA-11-B2C3_O-0" Name="Switch" Text="Switch" Number="0" FunctionText="Output A" ObjectSize="1 Bit" ReadFlag="Disabled" WriteFlag="Enabled" CommunicationFlag="Enabled" TransmitFlag="Disabled" UpdateFlag="Disabled" ReadOnInitFlag="Disabled" />
+              <ComObject Id="M-0083_A-00AA-11-B2C3_O-2" Name="Value" Text="Dimming value" Number="2" FunctionText="Output A" ObjectSize="1 Byte" ReadFlag="Enabled" WriteFlag="Enabled" CommunicationFlag="Disabled" TransmitFlag="Enabled" UpdateFlag="Disabled" ReadOnInitFlag="Disabled" DatapointType="DPST-5-1" />
+              <ComObject Id="M-0083_A-00AA-11-B2C3_O-3" Name="Alarm" Text="Alarm" Number="3" FunctionText="Device" ObjectSize="1 Bit" ReadFlag="Enabled" WriteFlag="Disabled" CommunicationFlag="Enabled" TransmitFlag="Enabled" UpdateFlag="Disabled" ReadOnInitFlag="Disabled" DatapointType="DPST-1-5" />
+            </ComObjectTable>
+            <ComObjectRefs>
+              <ComObjectRef Id="M-0083_A-00AA-11-B2C3_O-0_R-1" RefId="M-0083_A-00AA-11-B2C3_O-0" FunctionText="Output A, switching" ReadFlag="Enabled" />
+              <ComObjectRef Id="M-0083_A-00AA-11-B2C3_O-2_R-3" RefId="M-0083_A-00AA-11-B2C3_O-2" Text="Brightness" ObjectSize="1 Byte" />
+              <ComObjectRef Id="M-0083_A-00AA-11-B2C3_O-3_R-4" RefId="M-0083_A-00AA-11-B2C3_O-3" />
+            </ComObjectRefs>
+          </Static>
+          <ModuleDefs>
+            <ModuleDef Id="M-0083_A-00AA-11-B2C3_MD-1" Name="Sensor">
+              <Arguments>
+                <Argument Id="M-0083_A-00AA-11-B2C3_MD-1_A-1" Name="ch" Allocates="1" />
+                <Argument Id="M-0083_A-00AA-11-B2C3_MD-1_A-2" Name="name" />
+              </Arguments>
+              <Static>
+                <ComObjects>
+                  <ComObject Id="M-0083_A-00AA-11-B2C3_MD-1_O-1-1" Name="Temperature" Text="Temperature {{name}}" Number="1" FunctionText="Sensor" ObjectSize="2 Bytes" ReadFlag="Enabled" WriteFlag="Disabled" CommunicationFlag="Enabled" TransmitFlag="Enabled" UpdateFlag="Disabled" ReadOnInitFlag="Disabled" DatapointType="DPST-9-1" />
+                </ComObjects>
+                <ComObjectRefs>
+                  <ComObjectRef Id="M-0083_A-00AA-11-B2C3_MD-1_O-1-1_R-1" RefId="M-0083_A-00AA-11-B2C3_MD-1_O-1-1" />
+                </ComObjectRefs>
+              </Static>
+            </ModuleDef>
+          </ModuleDefs>
+          <Dynamic>
+            <ComObjectRefRef RefId="M-0083_A-00AA-11-B2C3_O-0_R-1" />
+          </Dynamic>
+        </ApplicationProgram>
+      </ApplicationPrograms>
+    </Manufacturer>
+  </ManufacturerData>
+</KNX>
