@@ -80,6 +80,11 @@ public abstract class SinopeDataAnswer extends SinopeAnswer {
                 throw new IOException("Truncated Sinope nested app data: declared " + nestedLength
                         + " bytes, available " + (data.length - APP_DATA_ID_SIZE - APP_DATA_LEN_SIZE));
             }
+            int expectedDataLength = appData.getExpectedDataLength();
+            if (expectedDataLength > 0 && nestedLength < expectedDataLength) {
+                throw new IOException("Truncated Sinope app data value: expected at least " + expectedDataLength
+                        + " bytes, got " + nestedLength);
+            }
         }
         this.appData = appData;
         try {

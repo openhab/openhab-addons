@@ -571,6 +571,21 @@ public class SinopeDiscoveryAndPairingTest {
         byte[] nestedTruncatedFrame = buildFrame((byte) 0x02, (byte) 0x01, nestedTruncatedData);
         assertThrows(IOException.class, () -> new SinopeDataReadAnswer(new ByteArrayInputStream(nestedTruncatedFrame),
                 new SinopeRoomTempData()));
+
+        // Nested value length = 1 (with 1 byte present) is too short for 2-byte SinopeRoomTempData
+        byte[] undersizedValueData = new byte[] { 0x01, 0x00, 0x00, 0x00, // seq
+                0x0A, // status
+                0x00, // attempt
+                0x00, // more
+                0x01, 0x02, 0x03, 0x04, // srcDeviceId
+                0x06, // outer app data length = 6
+                0x00, 0x00, 0x02, 0x03, // dataId (4 bytes)
+                0x01, // nested length = 1 (< 2 expected)
+                0x2A // single byte payload
+        };
+        byte[] undersizedValueFrame = buildFrame((byte) 0x02, (byte) 0x01, undersizedValueData);
+        assertThrows(IOException.class, () -> new SinopeDataReadAnswer(new ByteArrayInputStream(undersizedValueFrame),
+                new SinopeRoomTempData()));
     }
 
     @Test
@@ -659,7 +674,11 @@ public class SinopeDiscoveryAndPairingTest {
                 t1.start();
                 t2.start();
                 assertTrue(firstAccepted.await(5, TimeUnit.SECONDS));
-                Thread.sleep(150);
+                long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(5);
+                while (t2.getState() != Thread.State.BLOCKED && System.nanoTime() < deadline) {
+                    Thread.onSpinWait();
+                }
+                assertEquals(Thread.State.BLOCKED, t2.getState(), "Second caller should block waiting on connectLock");
                 allowLoginReply.countDown();
                 assertTrue(done.await(5, TimeUnit.SECONDS));
 
@@ -977,8 +996,9 @@ public class SinopeDiscoveryAndPairingTest {
             AtomicReference<@Nullable ThingStatusInfo> lastGatewayStatus = new AtomicReference<>();
             ThingHandlerCallback gwCallback = mock(ThingHandlerCallback.class);
             doAnswer(inv -> {
+                Bridge targetBridge = inv.getArgument(0);
                 ThingStatusInfo info = inv.getArgument(1);
-                bridge.setStatusInfo(info);
+                targetBridge.setStatusInfo(info);
                 lastGatewayStatus.set(info);
                 if (info.getStatus() == ThingStatus.ONLINE && info.getStatusDetail() == ThingStatusDetail.NONE
                         && newServer.getLocalPort() == ((Number) gatewayHandler.getThing().getConfiguration()
@@ -1038,6 +1058,114 @@ public class SinopeDiscoveryAndPairingTest {
                         "Stale command error must not overwrite healthy ONLINE status");
             } finally {
                 releaseOldServerClose.countDown();
+                gatewayHandler.dispose();
+            }
+        }
+    }
+
+    @Test
+    public void testCommandOnMisconfiguredGatewayPreservesConfigurationError() {
+        Bridge bridge = BridgeBuilder.create(SinopeBindingConstants.THING_TYPE_GATEWAY, "misconfiggw")
+                .withConfiguration(new Configuration(Map.of("hostname", "127.0.0.1", "port", 70000, "gatewayId",
+                        "002f-c2c2-dd88-aaaa", "apiKey", "0x12 0x57 0x55 0xD5 0xCD 0x4A 0xD5 0x33", "refresh", 60)))
+                .build();
+        SinopeGatewayHandler gatewayHandler = new SinopeGatewayHandler(bridge);
+        AtomicReference<@Nullable ThingStatusInfo> lastGwStatus = new AtomicReference<>();
+        ThingHandlerCallback gwCallback = mock(ThingHandlerCallback.class);
+        doAnswer(inv -> {
+            ThingStatusInfo info = inv.getArgument(1);
+            bridge.setStatusInfo(info);
+            lastGwStatus.set(info);
+            return null;
+        }).when(gwCallback).statusUpdated(any(), any());
+        gatewayHandler.setCallback(gwCallback);
+        bridge.setHandler(gatewayHandler);
+
+        Thing thermoThing = ThingBuilder.create(SinopeBindingConstants.THING_TYPE_THERMO, "t4")
+                .withBridge(bridge.getUID())
+                .withConfiguration(new Configuration(Map.of("deviceId", "0x00 0x00 0x35 0x86"))).build();
+        SinopeThermostatHandler thermoHandler = new SinopeThermostatHandler(thermoThing) {
+            @Override
+            protected @Nullable Bridge getBridge() {
+                return bridge;
+            }
+        };
+        AtomicReference<@Nullable ThingStatusInfo> lastThermoStatus = new AtomicReference<>();
+        ThingHandlerCallback thermoCallback = mock(ThingHandlerCallback.class);
+        doAnswer(inv -> {
+            ThingStatusInfo info = inv.getArgument(1);
+            thermoThing.setStatusInfo(info);
+            lastThermoStatus.set(info);
+            return null;
+        }).when(thermoCallback).statusUpdated(any(), any());
+        thermoHandler.setCallback(thermoCallback);
+
+        try {
+            gatewayHandler.initialize();
+            thermoHandler.initialize();
+
+            ThingStatusInfo gwStatusBefore = lastGwStatus.get();
+            assertNotNull(gwStatusBefore);
+            assertEquals(ThingStatusDetail.CONFIGURATION_ERROR, gwStatusBefore.getStatusDetail());
+
+            thermoHandler.handleCommand(new ChannelUID(thermoThing.getUID(), SinopeBindingConstants.CHANNEL_SETTEMP),
+                    new DecimalType("21.5"));
+
+            ThingStatusInfo gwStatusAfter = lastGwStatus.get();
+            assertNotNull(gwStatusAfter);
+            assertEquals(gwStatusBefore.getDescription(), gwStatusAfter.getDescription(),
+                    "Command on misconfigured gateway must not overwrite CONFIGURATION_ERROR");
+            ThingStatusInfo thermoStatusAfter = lastThermoStatus.get();
+            assertNotNull(thermoStatusAfter);
+            assertEquals(ThingStatus.ONLINE, thermoStatusAfter.getStatus(),
+                    "Command on inactive misconfigured gateway should be skipped without setting COMMUNICATION_ERROR");
+        } finally {
+            gatewayHandler.dispose();
+        }
+    }
+
+    @Test
+    @Timeout(10)
+    public void testCommandWithEmptyDeviceIdDoesNotConnect() throws Exception {
+        AtomicInteger acceptCount = new AtomicInteger();
+        try (ServerSocket server = new ServerSocket(0)) {
+            Thread mockGateway = new Thread(() -> {
+                try (Socket ignored = server.accept()) {
+                    acceptCount.incrementAndGet();
+                } catch (IOException ignored) {
+                }
+            });
+            mockGateway.setDaemon(true);
+            mockGateway.start();
+
+            Bridge bridge = BridgeBuilder.create(SinopeBindingConstants.THING_TYPE_GATEWAY, "emptyidgw")
+                    .withConfiguration(new Configuration(Map.of("hostname", "127.0.0.1", "port", server.getLocalPort(),
+                            "gatewayId", "002f-c2c2-dd88-aaaa", "apiKey", "0x12 0x57 0x55 0xD5 0xCD 0x4A 0xD5 0x33",
+                            "refresh", 60)))
+                    .build();
+            SinopeGatewayHandler gatewayHandler = new SinopeGatewayHandler(bridge);
+            gatewayHandler.setCallback(mock(ThingHandlerCallback.class));
+            bridge.setHandler(gatewayHandler);
+
+            Thing thermoThing = ThingBuilder.create(SinopeBindingConstants.THING_TYPE_THERMO, "t5")
+                    .withBridge(bridge.getUID()).withConfiguration(new Configuration(Map.of("deviceId", "bad-hex")))
+                    .build();
+            SinopeThermostatHandler thermoHandler = new SinopeThermostatHandler(thermoThing) {
+                @Override
+                protected @Nullable Bridge getBridge() {
+                    return bridge;
+                }
+            };
+            thermoHandler.setCallback(mock(ThingHandlerCallback.class));
+
+            try {
+                thermoHandler.initialize();
+                thermoHandler.handleCommand(
+                        new ChannelUID(thermoThing.getUID(), SinopeBindingConstants.CHANNEL_SETTEMP),
+                        new DecimalType("21.0"));
+                assertEquals(0, acceptCount.get(),
+                        "Thermostat with invalid/empty deviceId must not open gateway connection");
+            } finally {
                 gatewayHandler.dispose();
             }
         }

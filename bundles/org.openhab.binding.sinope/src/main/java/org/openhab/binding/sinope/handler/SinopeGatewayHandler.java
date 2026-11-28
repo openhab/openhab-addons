@@ -114,8 +114,9 @@ public class SinopeGatewayHandler extends ConfigStatusBridgeHandler {
     private @Nullable ScheduledFuture<?> connectFuture;
     private @Nullable ScheduledFuture<?> pairingFuture;
     private @Nullable Future<?> pairingTaskFuture;
-    private @Nullable ExecutorService pairingExecutor;
     private @Nullable ScheduledFuture<?> pollSearch;
+    private @Nullable Future<?> searchTaskFuture;
+    private @Nullable ExecutorService ioExecutor;
     private long refreshInterval = DEFAULT_REFRESH_INTERVAL; // In seconds
     private int seq = 1;
     private volatile boolean searching;
@@ -148,6 +149,16 @@ public class SinopeGatewayHandler extends ConfigStatusBridgeHandler {
         return searching || pairing;
     }
 
+    private boolean hasValidConfiguration(SinopeConfig config) {
+        String hostname = config.hostname;
+        Integer port = config.port;
+        String gatewayId = config.gatewayId;
+        String effectiveApiKey = getEffectiveApiKey(config);
+        return hostname != null && !hostname.isBlank() && port != null && isValidPort(port) && gatewayId != null
+                && SinopeConfig.convert(gatewayId) != null && effectiveApiKey != null && !effectiveApiKey.isBlank()
+                && SinopeConfig.convert(effectiveApiKey) != null;
+    }
+
     @Override
     public void thingUpdated(Thing thing) {
         synchronized (configLock) {
@@ -157,10 +168,12 @@ public class SinopeGatewayHandler extends ConfigStatusBridgeHandler {
 
     @Override
     public void initialize() {
+        logger.debug("Initializing Sinope Gateway");
+        Bridge currentThing;
+        long generation;
+        SinopeConfig config;
         synchronized (configLock) {
-            logger.debug("Initializing Sinope Gateway");
-            Bridge currentThing = getThing();
-            long generation;
+            currentThing = getThing();
             synchronized (socketOwnershipLock) {
                 generation = lifecycleGeneration.incrementAndGet();
                 searchGeneration.incrementAndGet();
@@ -169,45 +182,45 @@ public class SinopeGatewayHandler extends ConfigStatusBridgeHandler {
                 searching = false;
                 pairedApiKey = null;
             }
-
-            SinopeConfig config = getConfigAs(SinopeConfig.class);
-            Integer refresh = config.refresh;
-            refreshInterval = (refresh != null && refresh > 0) ? refresh : DEFAULT_REFRESH_INTERVAL;
-
-            String hostname = config.hostname;
-            Integer port = config.port;
-            String gatewayId = config.gatewayId;
-            String apiKey = config.apiKey;
-
-            if (hostname == null || hostname.isBlank()) {
-                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Gateway hostname must be set");
-                return;
-            }
-            if (port == null || !isValidPort(port)) {
-                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Gateway port must be between 1 and 65535");
-                return;
-            }
-            byte[] gatewayIdBytes = gatewayId != null ? SinopeConfig.convert(gatewayId) : null;
-            if (gatewayIdBytes == null) {
-                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Gateway ID must be set");
-                return;
-            }
-
-            if (apiKey == null || apiKey.isBlank()) {
-                updateStatus(ThingStatusDetail.CONFIGURATION_PENDING,
-                        "Press the WEB button on the Sinopé Gateway to obtain the API key.");
-                startPairing(generation, currentThing, hostname, port, gatewayIdBytes);
-                return;
-            }
-
-            if (SinopeConfig.convert(apiKey) == null) {
-                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "API Key is invalid");
-                return;
-            }
-
-            updateStatus(ThingStatus.UNKNOWN);
-            scheduleConnect(generation);
+            config = getConfigAs(SinopeConfig.class);
         }
+
+        Integer refresh = config.refresh;
+        refreshInterval = (refresh != null && refresh > 0) ? refresh : DEFAULT_REFRESH_INTERVAL;
+
+        String hostname = config.hostname;
+        Integer port = config.port;
+        String gatewayId = config.gatewayId;
+        String apiKey = config.apiKey;
+
+        if (hostname == null || hostname.isBlank()) {
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Gateway hostname must be set");
+            return;
+        }
+        if (port == null || !isValidPort(port)) {
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Gateway port must be between 1 and 65535");
+            return;
+        }
+        byte[] gatewayIdBytes = gatewayId != null ? SinopeConfig.convert(gatewayId) : null;
+        if (gatewayIdBytes == null) {
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Gateway ID must be set");
+            return;
+        }
+
+        if (apiKey == null || apiKey.isBlank()) {
+            updateStatus(ThingStatusDetail.CONFIGURATION_PENDING,
+                    "Press the WEB button on the Sinopé Gateway to obtain the API key.");
+            startPairing(generation, currentThing, hostname, port, gatewayIdBytes);
+            return;
+        }
+
+        if (SinopeConfig.convert(apiKey) == null) {
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "API Key is invalid");
+            return;
+        }
+
+        updateStatus(ThingStatus.UNKNOWN);
+        scheduleConnect(generation);
     }
 
     private void scheduleConnect(long generation) {
@@ -251,11 +264,11 @@ public class SinopeGatewayHandler extends ConfigStatusBridgeHandler {
 
     @Override
     public void dispose() {
+        Socket oldPairing;
+        Socket oldSearch;
+        Socket oldConnecting;
+        Socket oldClient;
         synchronized (configLock) {
-            Socket oldPairing;
-            Socket oldSearch;
-            Socket oldConnecting;
-            Socket oldClient;
             synchronized (socketOwnershipLock) {
                 disposed = true;
                 lifecycleGeneration.incrementAndGet();
@@ -271,20 +284,18 @@ public class SinopeGatewayHandler extends ConfigStatusBridgeHandler {
             synchronized (schedulerLock) {
                 cancelFuture(connectFuture, true);
                 connectFuture = null;
-                cancelFuture(pollSearch, true);
-                pollSearch = null;
                 cancelFuture(pollFuture, true);
                 pollFuture = null;
+                shutdownIoExecutorLocked(true);
             }
-            shutdownPairingExecutor(true);
-
-            closeQuietly(oldPairing);
-            closeQuietly(oldSearch);
-            closeQuietly(oldConnecting);
-            closeQuietly(oldClient);
             pairedApiKey = null;
-            super.dispose();
         }
+
+        closeQuietly(oldPairing);
+        closeQuietly(oldSearch);
+        closeQuietly(oldConnecting);
+        closeQuietly(oldClient);
+        super.dispose();
     }
 
     private static void cancelFuture(@Nullable Future<?> future, boolean mayInterrupt) {
@@ -293,37 +304,48 @@ public class SinopeGatewayHandler extends ConfigStatusBridgeHandler {
         }
     }
 
-    private ExecutorService ensurePairingExecutor() {
-        ExecutorService executor = pairingExecutor;
+    private ExecutorService ensureIoExecutorLocked() {
+        ExecutorService executor = ioExecutor;
         if (executor == null || executor.isShutdown()) {
-            String threadName = "OH-binding-" + getThing().getUID() + "-pairing";
+            String threadName = "OH-binding-" + getThing().getUID() + "-io";
             executor = Executors.newSingleThreadExecutor(runnable -> {
                 Thread thread = new Thread(runnable, threadName);
                 thread.setDaemon(true);
                 return thread;
             });
-            pairingExecutor = executor;
+            ioExecutor = executor;
         }
         return executor;
     }
 
-    private void shutdownPairingExecutor(boolean interruptRunning) {
-        synchronized (schedulerLock) {
-            cancelFuture(pairingFuture, interruptRunning);
-            pairingFuture = null;
+    private void shutdownIoExecutorLocked(boolean interruptRunning) {
+        cancelFuture(pairingFuture, interruptRunning);
+        pairingFuture = null;
+        cancelFuture(pollSearch, interruptRunning);
+        pollSearch = null;
+        if (interruptRunning) {
+            cancelFuture(pairingTaskFuture, true);
+            cancelFuture(searchTaskFuture, true);
+        }
+        pairingTaskFuture = null;
+        searchTaskFuture = null;
+        ExecutorService executor = ioExecutor;
+        ioExecutor = null;
+        if (executor != null) {
             if (interruptRunning) {
-                cancelFuture(pairingTaskFuture, true);
+                executor.shutdownNow();
+            } else {
+                executor.shutdown();
             }
-            pairingTaskFuture = null;
-            ExecutorService executor = pairingExecutor;
-            pairingExecutor = null;
-            if (executor != null) {
-                if (interruptRunning) {
-                    executor.shutdownNow();
-                } else {
-                    executor.shutdown();
-                }
+        }
+    }
+
+    private void shutdownIoExecutorIfIdle(long generation) {
+        synchronized (schedulerLock) {
+            if (!isActiveGeneration(generation) || pairing || searching) {
+                return;
             }
+            shutdownIoExecutorLocked(false);
         }
     }
 
@@ -377,7 +399,7 @@ public class SinopeGatewayHandler extends ConfigStatusBridgeHandler {
                 return;
             }
             cancelFuture(pairingFuture, false);
-            ensurePairingExecutor();
+            ensureIoExecutorLocked();
             pairingFuture = scheduler.schedule(
                     () -> submitPairingAttempt(generation, expectedThing, hostname, port, gatewayId), delaySeconds,
                     TimeUnit.SECONDS);
@@ -390,19 +412,19 @@ public class SinopeGatewayHandler extends ConfigStatusBridgeHandler {
             if (!pairing || !isActiveGeneration(generation)) {
                 return;
             }
-            ExecutorService executor = pairingExecutor;
-            if (executor == null || executor.isShutdown()) {
-                return;
-            }
             Future<?> currentTask = pairingTaskFuture;
             if (currentTask != null && !currentTask.isDone()) {
+                pairingFuture = scheduler.schedule(
+                        () -> submitPairingAttempt(generation, expectedThing, hostname, port, gatewayId),
+                        PAIRING_RETRY_DELAY_SECONDS, TimeUnit.SECONDS);
                 return;
             }
+            ExecutorService executor = ensureIoExecutorLocked();
             try {
                 pairingTaskFuture = executor
                         .submit(() -> attemptPairing(generation, expectedThing, hostname, port, gatewayId));
             } catch (RejectedExecutionException e) {
-                logger.debug("Pairing task rejected because pairing executor was shut down");
+                logger.debug("Pairing task rejected because I/O executor was shut down");
             }
         }
     }
@@ -412,6 +434,7 @@ public class SinopeGatewayHandler extends ConfigStatusBridgeHandler {
             return;
         }
         Socket socket = null;
+        long retryDelaySeconds = -1;
         try {
             socket = openRegisteredSocket(hostname, port, pairingSocket,
                     () -> pairing && isActiveGeneration(generation));
@@ -427,7 +450,7 @@ public class SinopeGatewayHandler extends ConfigStatusBridgeHandler {
                     new SinopeAuthenticationKeyRequest(gatewayId));
 
             byte[] apiKeyBytes = answer.getApiKey();
-            if (answer.getStatus() != 0xFF && apiKeyBytes.length == EXPECTED_API_KEY_LENGTH
+            if (answer.getStatus() >= 0 && answer.getStatus() != 0xFF && apiKeyBytes.length == EXPECTED_API_KEY_LENGTH
                     && !isAllZero(apiKeyBytes)) {
                 String formattedApiKey = ByteUtil.toString(apiKeyBytes).trim();
                 Socket socketToClose;
@@ -444,9 +467,11 @@ public class SinopeGatewayHandler extends ConfigStatusBridgeHandler {
                 closeQuietly(socketToClose);
 
                 updateBridgeApiKey(generation, expectedThing, hostname, port, gatewayId, formattedApiKey);
-                logger.info("Successfully paired with Sinopé Gateway and obtained API key.");
-                shutdownPairingExecutor(false);
-                scheduleConnect(generation);
+                if (isActiveGeneration(generation)) {
+                    logger.info("Successfully paired with Sinopé Gateway and obtained API key.");
+                    shutdownIoExecutorIfIdle(generation);
+                    scheduleConnect(generation);
+                }
                 return;
             }
 
@@ -455,28 +480,29 @@ public class SinopeGatewayHandler extends ConfigStatusBridgeHandler {
             if (pairing && isActiveGeneration(generation)) {
                 updateStatus(ThingStatusDetail.CONFIGURATION_PENDING,
                         "Press the WEB button on the Sinopé Gateway to obtain the API key.");
-                schedulePairingAttempt(generation, expectedThing, hostname, port, gatewayId,
-                        PAIRING_RETRY_DELAY_SECONDS);
+                retryDelaySeconds = PAIRING_RETRY_DELAY_SECONDS;
             }
         } catch (SocketTimeoutException e) {
             if (pairing && isActiveGeneration(generation)) {
                 logger.debug("Timed out waiting for WEB button press on Sinopé Gateway; retrying");
                 updateStatus(ThingStatusDetail.CONFIGURATION_PENDING,
                         "Press the WEB button on the Sinopé Gateway to obtain the API key.");
-                schedulePairingAttempt(generation, expectedThing, hostname, port, gatewayId,
-                        PAIRING_RETRY_DELAY_SECONDS);
+                retryDelaySeconds = PAIRING_RETRY_DELAY_SECONDS;
             }
         } catch (IOException e) {
             if (pairing && isActiveGeneration(generation)) {
                 logger.debug("Communication error during Sinopé Gateway pairing: {}", e.getMessage());
                 updateStatus(ThingStatusDetail.CONFIGURATION_PENDING,
                         "Cannot reach Sinopé Gateway to pair. Press the WEB button once reachable.");
-                schedulePairingAttempt(generation, expectedThing, hostname, port, gatewayId,
-                        PAIRING_ERROR_RETRY_DELAY_SECONDS);
+                retryDelaySeconds = PAIRING_ERROR_RETRY_DELAY_SECONDS;
             }
         } finally {
             pairingSocket.compareAndSet(socket, null);
             closeQuietly(socket);
+        }
+
+        if (retryDelaySeconds >= 0 && pairing && isActiveGeneration(generation)) {
+            schedulePairingAttempt(generation, expectedThing, hostname, port, gatewayId, retryDelaySeconds);
         }
     }
 
@@ -536,6 +562,9 @@ public class SinopeGatewayHandler extends ConfigStatusBridgeHandler {
     }
 
     private void schedulePoll(long generation) {
+        if (!hasValidConfiguration(getConfigAs(SinopeConfig.class))) {
+            return;
+        }
         synchronized (schedulerLock) {
             if (searching || pairing || !isActiveGeneration(generation)) {
                 return;
@@ -561,6 +590,9 @@ public class SinopeGatewayHandler extends ConfigStatusBridgeHandler {
                 return;
             }
             scanGen = searchGeneration.get();
+        }
+        if (!hasValidConfiguration(getConfigAs(SinopeConfig.class))) {
+            return;
         }
         if (!thermostatHandlers.isEmpty() || getThing().getStatus() != ThingStatus.ONLINE) {
             logger.debug("Polling for state");
@@ -655,7 +687,7 @@ public class SinopeGatewayHandler extends ConfigStatusBridgeHandler {
             byte[] apiKey = effectiveApiKey != null ? SinopeConfig.convert(effectiveApiKey) : null;
             if (hostname == null || hostname.isBlank() || port == null || !isValidPort(port) || gatewayId == null
                     || apiKey == null) {
-                return ConnectionResult.AUTH_FAILED;
+                return ConnectionResult.INACTIVE;
             }
 
             // Connect and login while holding connectLock (serializing concurrent reconnects) but never
@@ -906,8 +938,25 @@ public class SinopeGatewayHandler extends ConfigStatusBridgeHandler {
                 return;
             }
             cancelFuture(pollSearch, true);
-            pollSearch = scheduler.schedule(() -> search(lifecycleGen, scanGen, deviceDiscoveredCallback),
+            cancelFuture(searchTaskFuture, true);
+            searchTaskFuture = null;
+            ensureIoExecutorLocked();
+            pollSearch = scheduler.schedule(() -> submitSearch(lifecycleGen, scanGen, deviceDiscoveredCallback),
                     FIRST_POLL_INTERVAL, TimeUnit.SECONDS);
+        }
+    }
+
+    private void submitSearch(long lifecycleGen, long scanGen, final Consumer<byte[]> deviceDiscoveredCallback) {
+        synchronized (schedulerLock) {
+            if (!isCurrentSearch(lifecycleGen, scanGen)) {
+                return;
+            }
+            ExecutorService executor = ensureIoExecutorLocked();
+            try {
+                searchTaskFuture = executor.submit(() -> search(lifecycleGen, scanGen, deviceDiscoveredCallback));
+            } catch (RejectedExecutionException e) {
+                logger.debug("Discovery task rejected because I/O executor was shut down");
+            }
         }
     }
 
@@ -982,6 +1031,7 @@ public class SinopeGatewayHandler extends ConfigStatusBridgeHandler {
             }
         }
         if (shouldResumePoll) {
+            shutdownIoExecutorIfIdle(lifecycleGen);
             schedulePoll(lifecycleGen);
         }
     }
@@ -1000,6 +1050,11 @@ public class SinopeGatewayHandler extends ConfigStatusBridgeHandler {
         synchronized (schedulerLock) {
             cancelFuture(pollSearch, true);
             this.pollSearch = null;
+            cancelFuture(searchTaskFuture, true);
+            this.searchTaskFuture = null;
+            if (!pairing && !searching) {
+                shutdownIoExecutorLocked(false);
+            }
         }
         closeQuietly(oldSearch);
 
@@ -1036,6 +1091,9 @@ public class SinopeGatewayHandler extends ConfigStatusBridgeHandler {
     }
 
     public void setCommunicationError(boolean hasError) {
+        if (!hasValidConfiguration(getConfigAs(SinopeConfig.class))) {
+            return;
+        }
         long generation;
         long scanGen;
         Socket currentSocket = null;

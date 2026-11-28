@@ -41,6 +41,8 @@ public class SinopeAppData {
      */
     private byte[] data; // Data field of the app object
 
+    private final int expectedDataLength;
+
     /**
      * Instantiates a new sinope app data.
      *
@@ -50,6 +52,16 @@ public class SinopeAppData {
     public SinopeAppData(byte[] dataId, byte[] data) {
         this.dataId = dataId;
         this.data = data;
+        this.expectedDataLength = data != null ? data.length : 0;
+    }
+
+    /**
+     * Gets the expected minimum value payload length for this app-data type.
+     *
+     * @return the expected data length in bytes
+     */
+    public int getExpectedDataLength() {
+        return expectedDataLength;
     }
 
     /**
