@@ -663,6 +663,13 @@ public class SamsungTvHandler extends BaseThingHandler implements RegistryListen
     }
 
     /**
+     * @return true if an ON command is waking the TV, see {@link ModeOnWake#isWaking()}
+     */
+    public boolean isWaking() {
+        return modeOnWake.isWaking();
+    }
+
+    /**
      * Called with each art mode report, see {@link ModeOnWake#take(boolean)}
      */
     public boolean takeModeOnWake(boolean artMode) {

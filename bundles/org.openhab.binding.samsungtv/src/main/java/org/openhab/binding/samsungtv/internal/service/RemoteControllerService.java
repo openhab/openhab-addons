@@ -311,7 +311,10 @@ public class RemoteControllerService implements SamsungTvService {
                     // send key only to toggle state when power = off
                     if (!getPowerState()) {
                         if (OnOffType.ON.equals(command)) {
-                            if (!artMode) {
+                            if (handler.isWaking()) {
+                                // another KEY_POWER would switch the waking TV from art mode to TV mode
+                                logger.debug("{}: TV is waking, not sending KEY_POWER again", host);
+                            } else if (!artMode) {
                                 sendKeys(KeyCode.KEY_POWER);
                                 handler.setModeOnWake(true);
                             }
