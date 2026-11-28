@@ -14,6 +14,7 @@ package org.openhab.binding.sinope.internal.core.base;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.BufferUnderflowException;
 import java.util.Arrays;
 
 import org.openhab.binding.sinope.internal.core.appdata.SinopeAppData;
@@ -47,6 +48,9 @@ public abstract class SinopeDataAnswer extends SinopeAnswer {
     private static final int MIN_FRAME_DATA_SIZE = SEQ_SIZE + STATUS_SIZE + ATTEMPT_NBR_SIZE + MORE_SIZE
             + SRC_DEVICE_ID_SIZE + APP_DATA_SIZE_SIZE;
 
+    private static final int APP_DATA_ID_SIZE = 4;
+    private static final int APP_DATA_LEN_SIZE = 1;
+
     /** The app data. */
     private SinopeAppData appData;
 
@@ -70,8 +74,19 @@ public abstract class SinopeDataAnswer extends SinopeAnswer {
                     + (frameData.length - MIN_FRAME_DATA_SIZE));
         }
         byte[] data = getData();
+        if (data.length > APP_DATA_ID_SIZE) {
+            int nestedLength = data[APP_DATA_ID_SIZE] & 0xFF;
+            if (data.length < APP_DATA_ID_SIZE + APP_DATA_LEN_SIZE + nestedLength) {
+                throw new IOException("Truncated Sinope nested app data: declared " + nestedLength
+                        + " bytes, available " + (data.length - APP_DATA_ID_SIZE - APP_DATA_LEN_SIZE));
+            }
+        }
         this.appData = appData;
-        this.appData.read(data);
+        try {
+            this.appData.read(data);
+        } catch (BufferUnderflowException e) {
+            throw new IOException("Malformed Sinope app data payload", e);
+        }
     }
 
     /**

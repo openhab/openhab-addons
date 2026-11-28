@@ -13,7 +13,7 @@
 				<description>Hostname of the Sinopé Gateway</description>
 				<context>network-address</context>
 			</parameter>
-			<parameter name="port" type="integer">
+			<parameter name="port" type="integer" min="1" max="65535">
 				<label>Port</label>
 				<description>The port that the Sinopé Gateway listens on</description>
 				<default>4550</default>
@@ -26,6 +26,7 @@
 				<label>API Key</label>
 				<description>API key for the Sinopé Gateway. Leave empty to automatically obtain it by pressing the WEB button on
 					the gateway.</description>
+				<context>password</context>
 			</parameter>
 			<parameter name="refresh" type="integer" required="false">
 				<label>Refresh Interval</label>

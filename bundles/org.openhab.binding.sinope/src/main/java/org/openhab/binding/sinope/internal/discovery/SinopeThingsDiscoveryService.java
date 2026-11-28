@@ -71,6 +71,13 @@ public class SinopeThingsDiscoveryService extends AbstractThingHandlerDiscoveryS
         logger.debug("Sinope Things scan stopped");
     }
 
+    @Override
+    public synchronized void abortScan() {
+        logger.debug("Sinope Things scan aborted");
+        thingHandler.stopSearch();
+        super.abortScan();
+    }
+
     public void newThermostat(byte[] deviceId) {
         if (deviceId.length == 0) {
             return;

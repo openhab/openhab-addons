@@ -72,11 +72,11 @@ public class SinopeThermostatHandler extends BaseThingHandler {
                         && command instanceof QuantityType<?> quantityCommand) {
                     QuantityType<?> celsiusCommand = quantityCommand.toUnit(SIUnits.CELSIUS);
                     if (celsiusCommand != null) {
-                        setSetpointTemp(celsiusCommand.floatValue());
+                        setSetpointTemp(celsiusCommand.doubleValue());
                     }
                 } else if (SinopeBindingConstants.CHANNEL_SETTEMP.equals(channelUID.getId())
                         && command instanceof DecimalType decimalCommand) {
-                    setSetpointTemp(decimalCommand.floatValue());
+                    setSetpointTemp(decimalCommand.doubleValue());
                 } else if (SinopeBindingConstants.CHANNEL_SETMODE.equals(channelUID.getId())
                         && command instanceof DecimalType decimalCommand) {
                     setSetpointMode(decimalCommand.intValue());
@@ -84,62 +84,93 @@ public class SinopeThermostatHandler extends BaseThingHandler {
             } catch (IOException e) {
                 logger.debug("Cannot handle command for channel {} because of {}", channelUID.getId(),
                         e.getLocalizedMessage());
-                getSinopeGatewayHandler().setCommunicationError(true);
             }
         }
     }
 
-    private void setSetpointTemp(float temp) throws UnknownHostException, IOException {
-        int newTemp = (int) (temp * 100.0);
+    private void setSetpointTemp(double temp) throws UnknownHostException, IOException {
+        SinopeGatewayHandler gateway = getSinopeGatewayHandler();
+        if (gateway == null) {
+            return;
+        }
+        if (gateway.isBusy()) {
+            logger.debug("Sinopé Gateway is busy; skipping setpoint temp command");
+            return;
+        }
 
-        getSinopeGatewayHandler().stopPoll();
+        int newTemp = (int) Math.round(temp * 100.0);
+
+        gateway.stopPoll();
         try {
-            if (getSinopeGatewayHandler().connectToBridge()) {
+            SinopeGatewayHandler.ConnectionResult result = gateway.connectToBridgeForCommand();
+            if (result == SinopeGatewayHandler.ConnectionResult.CONNECTED) {
                 logger.debug("Connected to bridge");
 
-                SinopeDataWriteRequest req = new SinopeDataWriteRequest(getSinopeGatewayHandler().newSeq(), deviceId,
+                SinopeDataWriteRequest req = new SinopeDataWriteRequest(gateway.newSeq(), deviceId,
                         new SinopeSetPointTempData());
                 ((SinopeSetPointTempData) req.getAppData()).setSetPointTemp(newTemp);
 
-                SinopeDataAnswer answ = (SinopeDataAnswer) getSinopeGatewayHandler().execute(req);
+                SinopeDataAnswer answ = (SinopeDataAnswer) gateway.execute(req);
 
                 if (answ.getStatus() == DATA_ANSWER) {
                     logger.debug("Setpoint temp is now: {} C", temp);
                 } else {
                     logger.debug("Cannot Setpoint temp, status: {}", answ.getStatus());
                 }
+                if (getThing().getStatus() != ThingStatus.ONLINE && deviceId.length > 0) {
+                    updateStatus(ThingStatus.ONLINE);
+                }
+            } else if (result == SinopeGatewayHandler.ConnectionResult.BUSY
+                    || result == SinopeGatewayHandler.ConnectionResult.INACTIVE) {
+                logger.debug("Sinopé Gateway is temporarily unavailable ({}); skipping setpoint temp command", result);
             } else {
                 logger.debug("Could not connect to bridge to update Setpoint Temp");
                 updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "Cannot connect to bridge");
             }
         } finally {
-            getSinopeGatewayHandler().schedulePoll();
+            gateway.schedulePoll();
         }
     }
 
     private void setSetpointMode(int mode) throws UnknownHostException, IOException {
-        getSinopeGatewayHandler().stopPoll();
+        SinopeGatewayHandler gateway = getSinopeGatewayHandler();
+        if (gateway == null) {
+            return;
+        }
+        if (gateway.isBusy()) {
+            logger.debug("Sinopé Gateway is busy; skipping setpoint mode command");
+            return;
+        }
+
+        gateway.stopPoll();
         try {
-            if (getSinopeGatewayHandler().connectToBridge()) {
+            SinopeGatewayHandler.ConnectionResult result = gateway.connectToBridgeForCommand();
+            if (result == SinopeGatewayHandler.ConnectionResult.CONNECTED) {
                 logger.debug("Connected to bridge");
 
-                SinopeDataWriteRequest req = new SinopeDataWriteRequest(getSinopeGatewayHandler().newSeq(), deviceId,
+                SinopeDataWriteRequest req = new SinopeDataWriteRequest(gateway.newSeq(), deviceId,
                         new SinopeSetPointModeData());
                 ((SinopeSetPointModeData) req.getAppData()).setSetPointMode((byte) mode);
 
-                SinopeDataAnswer answ = (SinopeDataAnswer) getSinopeGatewayHandler().execute(req);
+                SinopeDataAnswer answ = (SinopeDataAnswer) gateway.execute(req);
 
                 if (answ.getStatus() == DATA_ANSWER) {
                     logger.debug("Setpoint mode is now : {}", mode);
                 } else {
                     logger.debug("Cannot Setpoint mode, status: {}", answ.getStatus());
                 }
+                if (getThing().getStatus() != ThingStatus.ONLINE && deviceId.length > 0) {
+                    updateStatus(ThingStatus.ONLINE);
+                }
+            } else if (result == SinopeGatewayHandler.ConnectionResult.BUSY
+                    || result == SinopeGatewayHandler.ConnectionResult.INACTIVE) {
+                logger.debug("Sinopé Gateway is temporarily unavailable ({}); skipping setpoint mode command", result);
             } else {
-                logger.debug("Could not connect to bridge to update Setpoint Temp");
+                logger.debug("Could not connect to bridge to update Setpoint Mode");
                 updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "Cannot connect to bridge");
             }
         } finally {
-            getSinopeGatewayHandler().schedulePoll();
+            gateway.schedulePoll();
         }
     }
 
@@ -197,6 +228,9 @@ public class SinopeThermostatHandler extends BaseThingHandler {
             }
             if (isLinked(SinopeBindingConstants.CHANNEL_HEATINGLEVEL)) {
                 this.updateHeatingLevel(readHeatLevel());
+            }
+            if (getThing().getStatus() != ThingStatus.ONLINE) {
+                updateStatus(ThingStatus.ONLINE);
             }
         } else {
             logger.error("Device id is null for Thing UID: {}", getThing().getUID());

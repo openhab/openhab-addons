@@ -53,7 +53,9 @@ import org.openhab.binding.sinope.internal.util.CRC8;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.config.discovery.DiscoveryListener;
 import org.openhab.core.config.discovery.DiscoveryResult;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
@@ -407,7 +409,8 @@ public class SinopeDiscoveryAndPairingTest {
                 if (statusInfo.getStatusDetail() == ThingStatusDetail.CONFIGURATION_PENDING) {
                     pendingLatch.countDown();
                 }
-                if (statusInfo.getStatus() == ThingStatus.ONLINE) {
+                if (statusInfo.getStatus() == ThingStatus.ONLINE
+                        && statusInfo.getStatusDetail() == ThingStatusDetail.NONE) {
                     onlineLatch.countDown();
                 }
                 return null;
@@ -554,6 +557,20 @@ public class SinopeDiscoveryAndPairingTest {
         byte[] shortDataFrame = buildFrame((byte) 0x02, (byte) 0x01, new byte[] { 0x01, 0x00, 0x00, 0x00 });
         assertThrows(IOException.class,
                 () -> new SinopeDataReadAnswer(new ByteArrayInputStream(shortDataFrame), new SinopeRoomTempData()));
+
+        // Outer app-data length = 5, nested value length = 2 with 0 value bytes must fail with IOException
+        byte[] nestedTruncatedData = new byte[] { 0x01, 0x00, 0x00, 0x00, // seq
+                0x0A, // status
+                0x00, // attempt
+                0x00, // more
+                0x01, 0x02, 0x03, 0x04, // srcDeviceId
+                0x05, // outer app data length = 5
+                0x00, 0x00, 0x02, 0x03, // dataId (4 bytes)
+                0x02 // nested length = 2, but 0 bytes follow
+        };
+        byte[] nestedTruncatedFrame = buildFrame((byte) 0x02, (byte) 0x01, nestedTruncatedData);
+        assertThrows(IOException.class, () -> new SinopeDataReadAnswer(new ByteArrayInputStream(nestedTruncatedFrame),
+                new SinopeRoomTempData()));
     }
 
     @Test
@@ -652,6 +669,376 @@ public class SinopeDiscoveryAndPairingTest {
             } finally {
                 allowLoginReply.countDown();
                 handler.dispose();
+            }
+        }
+    }
+
+    @Test
+    public void testInvalidPortRejectedByConfigStatusAndInitialize() {
+        for (int badPort : new int[] { 0, -1, 65536, 70000 }) {
+            Bridge bridge = BridgeBuilder.create(SinopeBindingConstants.THING_TYPE_GATEWAY, "badport")
+                    .withConfiguration(new Configuration(Map.of("hostname", "127.0.0.1", "port", badPort, "gatewayId",
+                            "002f-c2c2-dd88-aaaa", "apiKey", "0x12 0x57 0x55 0xD5 0xCD 0x4A 0xD5 0x33", "refresh", 60)))
+                    .build();
+
+            SinopeGatewayHandler handler = new SinopeGatewayHandler(bridge);
+            assertEquals(1, handler.getConfigStatus().size(), "Port " + badPort + " should fail config status");
+            assertEquals(SinopeBindingConstants.CONFIG_PROPERTY_PORT,
+                    handler.getConfigStatus().iterator().next().parameterName);
+
+            ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
+            AtomicReference<@Nullable ThingStatusInfo> lastStatus = new AtomicReference<>();
+            doAnswer(inv -> {
+                lastStatus.set(inv.getArgument(1));
+                return null;
+            }).when(callback).statusUpdated(any(), any());
+            handler.setCallback(callback);
+
+            assertDoesNotThrow(handler::initialize);
+            ThingStatusInfo status = lastStatus.get();
+            assertNotNull(status);
+            assertEquals(ThingStatusDetail.CONFIGURATION_ERROR, status.getStatusDetail(),
+                    "Port " + badPort + " should set CONFIGURATION_ERROR");
+            handler.dispose();
+        }
+    }
+
+    @Test
+    @Timeout(15)
+    public void testAbortScanStopsGatewaySearchAndResumesNormalRequests() throws Exception {
+        CountDownLatch searchLoggedIn = new CountDownLatch(1);
+        CountDownLatch searchClosed = new CountDownLatch(1);
+
+        try (ServerSocket server = new ServerSocket(0)) {
+            Thread mockGateway = new Thread(() -> {
+                try {
+                    // Connection 1: discovery scan (ping + login, then blocks until scan aborted)
+                    try (Socket s1 = server.accept()) {
+                        InputStream in = s1.getInputStream();
+                        OutputStream out = s1.getOutputStream();
+                        readFrame(in); // ping
+                        out.write(buildFrame((byte) 0x00, (byte) 0x13, new byte[0]));
+                        out.flush();
+                        readFrame(in); // login
+                        out.write(buildFrame((byte) 0x01, (byte) 0x11, new byte[10]));
+                        out.flush();
+                        searchLoggedIn.countDown();
+                        in.read(); // blocks until abortScan closes searchSocket
+                    } finally {
+                        searchClosed.countDown();
+                    }
+
+                    // Connection 2: normal client login after abortScan
+                    try (Socket s2 = server.accept()) {
+                        InputStream in = s2.getInputStream();
+                        OutputStream out = s2.getOutputStream();
+                        readFrame(in); // login
+                        out.write(buildFrame((byte) 0x01, (byte) 0x11, new byte[10]));
+                        out.flush();
+                        in.read();
+                    }
+                } catch (IOException ignored) {
+                }
+            });
+            mockGateway.setDaemon(true);
+            mockGateway.start();
+
+            Bridge bridge = BridgeBuilder.create(SinopeBindingConstants.THING_TYPE_GATEWAY, "abortgw")
+                    .withConfiguration(new Configuration(Map.of("hostname", "127.0.0.1", "port", server.getLocalPort(),
+                            "gatewayId", "002f-c2c2-dd88-aaaa", "apiKey", "0x12 0x57 0x55 0xD5 0xCD 0x4A 0xD5 0x33",
+                            "refresh", 60)))
+                    .build();
+
+            SinopeGatewayHandler handler = new SinopeGatewayHandler(bridge);
+            handler.setCallback(mock(ThingHandlerCallback.class));
+
+            SinopeThingsDiscoveryService discoveryService = new SinopeThingsDiscoveryService();
+            discoveryService.setThingHandler(handler);
+
+            try {
+                discoveryService.startScan();
+                assertTrue(searchLoggedIn.await(5, TimeUnit.SECONDS), "Discovery scan should log into gateway");
+
+                discoveryService.abortScan();
+                assertTrue(searchClosed.await(5, TimeUnit.SECONDS), "abortScan() should close search socket promptly");
+
+                Socket normalSocket = handler.getClientSocket();
+                assertNotNull(normalSocket);
+                assertTrue(normalSocket.isConnected() && !normalSocket.isClosed());
+            } finally {
+                handler.dispose();
+            }
+        }
+    }
+
+    @Test
+    @Timeout(10)
+    public void testSetpointDecimalCommandRoundsToNearestHundredth() throws Exception {
+        AtomicReference<byte @Nullable []> capturedWriteFrame = new AtomicReference<>();
+        CountDownLatch writeReceived = new CountDownLatch(1);
+
+        try (ServerSocket server = new ServerSocket(0)) {
+            Thread mockGateway = new Thread(() -> {
+                try (Socket s = server.accept()) {
+                    InputStream in = s.getInputStream();
+                    OutputStream out = s.getOutputStream();
+
+                    // Login
+                    readFrame(in);
+                    out.write(buildFrame((byte) 0x01, (byte) 0x11, new byte[10]));
+                    out.flush();
+
+                    // Data write request
+                    byte[] writeReq = readFrame(in);
+                    capturedWriteFrame.set(writeReq);
+                    writeReceived.countDown();
+
+                    // Reply with DATA_ANSWER (status=0x0A)
+                    byte[] writeReplyData = new byte[] { 0x01, 0x00, 0x00, 0x00, // seq
+                            0x0A, // status = DATA_ANSWER
+                            0x00, // attempt
+                            0x00, // more
+                            0x01, 0x02, 0x03, 0x04, // srcDeviceId
+                            0x04, // app data length
+                            0x08, 0x02, 0x00, 0x00 // dataId
+                    };
+                    out.write(buildFrame((byte) 0x02, (byte) 0x04, writeReplyData));
+                    out.flush();
+                    in.read();
+                } catch (IOException ignored) {
+                }
+            });
+            mockGateway.setDaemon(true);
+            mockGateway.start();
+
+            Bridge bridge = BridgeBuilder.create(SinopeBindingConstants.THING_TYPE_GATEWAY, "tempgw")
+                    .withConfiguration(new Configuration(Map.of("hostname", "127.0.0.1", "port", server.getLocalPort(),
+                            "gatewayId", "002f-c2c2-dd88-aaaa", "apiKey", "0x12 0x57 0x55 0xD5 0xCD 0x4A 0xD5 0x33",
+                            "refresh", 60)))
+                    .build();
+            SinopeGatewayHandler gatewayHandler = new SinopeGatewayHandler(bridge);
+            gatewayHandler.setCallback(mock(ThingHandlerCallback.class));
+            bridge.setHandler(gatewayHandler);
+
+            Thing thermoThing = ThingBuilder.create(SinopeBindingConstants.THING_TYPE_THERMO, "t1")
+                    .withBridge(bridge.getUID())
+                    .withConfiguration(new Configuration(Map.of("deviceId", "0x00 0x00 0x35 0x86"))).build();
+            SinopeThermostatHandler thermoHandler = new SinopeThermostatHandler(thermoThing) {
+                @Override
+                protected @Nullable Bridge getBridge() {
+                    return bridge;
+                }
+            };
+            thermoHandler.setCallback(mock(ThingHandlerCallback.class));
+
+            try {
+                thermoHandler.initialize();
+                thermoHandler.handleCommand(
+                        new ChannelUID(thermoThing.getUID(), SinopeBindingConstants.CHANNEL_SETTEMP),
+                        new DecimalType("21.3"));
+
+                assertTrue(writeReceived.await(5, TimeUnit.SECONDS), "Gateway should receive setpoint write request");
+                byte[] frame = capturedWriteFrame.get();
+                assertNotNull(frame);
+                // Last 3 bytes of frame are: [tempLo, tempHi, crc8]
+                short encodedTemp = ByteBuffer.wrap(frame, frame.length - 3, 2).order(ByteOrder.LITTLE_ENDIAN)
+                        .getShort();
+                assertEquals(2130, encodedTemp, "21.3 C must round to 2130 hundredths, not truncate to 2129");
+            } finally {
+                gatewayHandler.dispose();
+            }
+        }
+    }
+
+    @Test
+    @Timeout(10)
+    public void testCommandDuringDiscoveryDoesNotMarkThermostatOffline() throws Exception {
+        CountDownLatch searchLoggedIn = new CountDownLatch(1);
+
+        try (ServerSocket server = new ServerSocket(0)) {
+            Thread mockGateway = new Thread(() -> {
+                try (Socket s = server.accept()) {
+                    InputStream in = s.getInputStream();
+                    OutputStream out = s.getOutputStream();
+                    readFrame(in); // ping
+                    out.write(buildFrame((byte) 0x00, (byte) 0x13, new byte[0]));
+                    out.flush();
+                    readFrame(in); // login
+                    out.write(buildFrame((byte) 0x01, (byte) 0x11, new byte[10]));
+                    out.flush();
+                    searchLoggedIn.countDown();
+                    in.read();
+                } catch (IOException ignored) {
+                }
+            });
+            mockGateway.setDaemon(true);
+            mockGateway.start();
+
+            Bridge bridge = BridgeBuilder.create(SinopeBindingConstants.THING_TYPE_GATEWAY, "busygw")
+                    .withConfiguration(new Configuration(Map.of("hostname", "127.0.0.1", "port", server.getLocalPort(),
+                            "gatewayId", "002f-c2c2-dd88-aaaa", "apiKey", "0x12 0x57 0x55 0xD5 0xCD 0x4A 0xD5 0x33",
+                            "refresh", 60)))
+                    .build();
+            SinopeGatewayHandler gatewayHandler = new SinopeGatewayHandler(bridge);
+            gatewayHandler.setCallback(mock(ThingHandlerCallback.class));
+            bridge.setHandler(gatewayHandler);
+
+            Thing thermoThing = ThingBuilder.create(SinopeBindingConstants.THING_TYPE_THERMO, "t2")
+                    .withBridge(bridge.getUID())
+                    .withConfiguration(new Configuration(Map.of("deviceId", "0x00 0x00 0x35 0x86"))).build();
+            SinopeThermostatHandler thermoHandler = new SinopeThermostatHandler(thermoThing) {
+                @Override
+                protected @Nullable Bridge getBridge() {
+                    return bridge;
+                }
+            };
+            ThingHandlerCallback thermoCallback = mock(ThingHandlerCallback.class);
+            AtomicReference<@Nullable ThingStatusInfo> lastThermoStatus = new AtomicReference<>();
+            doAnswer(inv -> {
+                ThingStatusInfo info = inv.getArgument(1);
+                thermoThing.setStatusInfo(info);
+                lastThermoStatus.set(info);
+                return null;
+            }).when(thermoCallback).statusUpdated(any(), any());
+            thermoHandler.setCallback(thermoCallback);
+
+            try {
+                thermoHandler.initialize();
+                ThingStatusInfo initialStatus = lastThermoStatus.get();
+                assertNotNull(initialStatus);
+                assertEquals(ThingStatus.ONLINE, initialStatus.getStatus());
+
+                gatewayHandler.startSearch(id -> {
+                });
+                assertTrue(searchLoggedIn.await(5, TimeUnit.SECONDS), "Gateway should enter discovery mode");
+
+                thermoHandler.handleCommand(
+                        new ChannelUID(thermoThing.getUID(), SinopeBindingConstants.CHANNEL_SETTEMP),
+                        new DecimalType("21.5"));
+
+                ThingStatusInfo statusAfter = lastThermoStatus.get();
+                assertNotNull(statusAfter);
+                assertEquals(ThingStatus.ONLINE, statusAfter.getStatus(),
+                        "Command during discovery must not mark thermostat offline");
+                assertEquals(ThingStatusDetail.NONE, statusAfter.getStatusDetail());
+            } finally {
+                gatewayHandler.stopSearch();
+                gatewayHandler.dispose();
+            }
+        }
+    }
+
+    @Test
+    @Timeout(15)
+    public void testStaleCommandErrorDoesNotCloseReplacementSocketAfterReinit() throws Exception {
+        CountDownLatch oldWriteBlocked = new CountDownLatch(1);
+        CountDownLatch releaseOldServerClose = new CountDownLatch(1);
+        CountDownLatch oldCommandDone = new CountDownLatch(1);
+        CountDownLatch newOnline = new CountDownLatch(1);
+
+        try (ServerSocket oldServer = new ServerSocket(0); ServerSocket newServer = new ServerSocket(0)) {
+            Thread oldGateway = new Thread(() -> {
+                try (Socket s = oldServer.accept()) {
+                    InputStream in = s.getInputStream();
+                    OutputStream out = s.getOutputStream();
+                    readFrame(in); // login
+                    out.write(buildFrame((byte) 0x01, (byte) 0x11, new byte[10]));
+                    out.flush();
+                    readFrame(in); // setpoint write request from old generation
+                    oldWriteBlocked.countDown();
+                    releaseOldServerClose.await(5, TimeUnit.SECONDS);
+                } catch (IOException | InterruptedException ignored) {
+                }
+            });
+            oldGateway.setDaemon(true);
+            oldGateway.start();
+
+            Thread newGateway = new Thread(() -> {
+                try (Socket s = newServer.accept()) {
+                    InputStream in = s.getInputStream();
+                    OutputStream out = s.getOutputStream();
+                    readFrame(in); // login on fresh generation
+                    out.write(buildFrame((byte) 0x01, (byte) 0x11, new byte[10]));
+                    out.flush();
+                    in.read();
+                } catch (IOException ignored) {
+                }
+            });
+            newGateway.setDaemon(true);
+            newGateway.start();
+
+            Bridge bridge = BridgeBuilder.create(SinopeBindingConstants.THING_TYPE_GATEWAY, "reinitcmdgw")
+                    .withConfiguration(new Configuration(Map.of("hostname", "127.0.0.1", "port",
+                            oldServer.getLocalPort(), "gatewayId", "002f-c2c2-dd88-aaaa", "apiKey",
+                            "0x12 0x57 0x55 0xD5 0xCD 0x4A 0xD5 0x33", "refresh", 60)))
+                    .build();
+
+            SinopeGatewayHandler gatewayHandler = new SinopeGatewayHandler(bridge);
+            AtomicReference<@Nullable ThingStatusInfo> lastGatewayStatus = new AtomicReference<>();
+            ThingHandlerCallback gwCallback = mock(ThingHandlerCallback.class);
+            doAnswer(inv -> {
+                ThingStatusInfo info = inv.getArgument(1);
+                bridge.setStatusInfo(info);
+                lastGatewayStatus.set(info);
+                if (info.getStatus() == ThingStatus.ONLINE && info.getStatusDetail() == ThingStatusDetail.NONE
+                        && newServer.getLocalPort() == ((Number) gatewayHandler.getThing().getConfiguration()
+                                .get(SinopeBindingConstants.CONFIG_PROPERTY_PORT)).intValue()) {
+                    newOnline.countDown();
+                }
+                return null;
+            }).when(gwCallback).statusUpdated(any(), any());
+            gatewayHandler.setCallback(gwCallback);
+            bridge.setHandler(gatewayHandler);
+
+            Thing thermoThing = ThingBuilder.create(SinopeBindingConstants.THING_TYPE_THERMO, "t3")
+                    .withBridge(bridge.getUID())
+                    .withConfiguration(new Configuration(Map.of("deviceId", "0x00 0x00 0x35 0x86"))).build();
+            SinopeThermostatHandler thermoHandler = new SinopeThermostatHandler(thermoThing) {
+                @Override
+                protected @Nullable Bridge getBridge() {
+                    return bridge;
+                }
+            };
+            thermoHandler.setCallback(mock(ThingHandlerCallback.class));
+
+            try {
+                thermoHandler.initialize();
+                Thread oldCmdThread = new Thread(() -> {
+                    try {
+                        thermoHandler.handleCommand(
+                                new ChannelUID(thermoThing.getUID(), SinopeBindingConstants.CHANNEL_SETTEMP),
+                                new DecimalType("21.0"));
+                    } finally {
+                        oldCommandDone.countDown();
+                    }
+                });
+                oldCmdThread.setDaemon(true);
+                oldCmdThread.start();
+
+                assertTrue(oldWriteBlocked.await(5, TimeUnit.SECONDS), "Old command should reach old gateway");
+
+                Bridge updatedBridge = BridgeBuilder.create(SinopeBindingConstants.THING_TYPE_GATEWAY, "reinitcmdgw")
+                        .withConfiguration(new Configuration(Map.of("hostname", "127.0.0.1", "port",
+                                newServer.getLocalPort(), "gatewayId", "002f-c2c2-dd88-aaaa", "apiKey",
+                                "0x12 0x57 0x55 0xD5 0xCD 0x4A 0xD5 0x33", "refresh", 60)))
+                        .build();
+                gatewayHandler.thingUpdated(updatedBridge);
+                releaseOldServerClose.countDown();
+
+                assertTrue(newOnline.await(5, TimeUnit.SECONDS), "Reinitialized gateway should come ONLINE");
+                assertTrue(oldCommandDone.await(5, TimeUnit.SECONDS), "Old command thread should exit");
+
+                Socket replacementSocket = gatewayHandler.getClientSocket();
+                assertNotNull(replacementSocket);
+                assertTrue(replacementSocket.isConnected() && !replacementSocket.isClosed(),
+                        "Stale command error must not close healthy replacement socket");
+                ThingStatusInfo gwStatus = lastGatewayStatus.get();
+                assertNotNull(gwStatus);
+                assertEquals(ThingStatus.ONLINE, gwStatus.getStatus(),
+                        "Stale command error must not overwrite healthy ONLINE status");
+            } finally {
+                releaseOldServerClose.countDown();
+                gatewayHandler.dispose();
             }
         }
     }
