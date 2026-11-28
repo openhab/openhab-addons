@@ -43,6 +43,7 @@ import org.slf4j.LoggerFactory;
  * @author Kai Kreuzer - Initial contribution and API
  * @author Christoph Weitkamp - Added getSupportedStreams() and UnsupportedAudioStreamException
  * @author Laurent Garnier - Support for more audio streams through the HTTP audio servlet
+ * @author Leo Siepel - Volume retrieval and fixed-output handling
  *
  */
 @NonNullByDefault
@@ -179,13 +180,29 @@ public class SonosAudioSink extends AudioSinkSync {
     }
 
     @Override
-    public PercentType getVolume() {
+    public PercentType getVolume() throws IOException {
+        if (handler.isOutputLevelFixed()) {
+            throw new UnsupportedOperationException("Sonos volume is fixed.");
+        }
         String volume = handler.getVolume();
-        return volume != null ? new PercentType(volume) : PercentType.ZERO;
+        if (volume == null) {
+            volume = handler.getRefreshedVolume();
+        }
+        if (volume == null) {
+            throw new IOException("Sonos volume is unknown.");
+        }
+        try {
+            return new PercentType(volume);
+        } catch (IllegalArgumentException e) {
+            throw new IOException("Sonos reported an invalid volume.", e);
+        }
     }
 
     @Override
     public void setVolume(PercentType volume) {
+        if (handler.isOutputLevelFixed()) {
+            throw new UnsupportedOperationException("Sonos volume is fixed.");
+        }
         handler.setVolume(volume);
     }
 }
