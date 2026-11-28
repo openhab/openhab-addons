@@ -1034,4 +1034,52 @@ class VehicleHandlerTest {
         // no exception means the missing account is ignored instead of breaking the rule
         vHandler.forceUpdate();
     }
+
+    private void assertChargeFlapAndCoupler(String fixture, String flap, String coupler, String lock) {
+        Map<String, Object> instances = createBEV();
+        ThingCallbackListener updateListener = (ThingCallbackListener) instances
+                .get(ThingCallbackListener.class.getCanonicalName());
+        VehicleHandler vHandler = (VehicleHandler) instances.get(VehicleHandler.class.getCanonicalName());
+        assertNotNull(updateListener);
+        assertNotNull(vHandler);
+
+        String raw = loadRaw("src/test/resources/vehiclestatusupdates/" + fixture);
+        vHandler.enqueueUpdate(ProtoConverter.raw2Proto(raw, true));
+        updateListener.waitForUpdates();
+
+        assertEquals(flap, updateListener.getResponse("test::bev:charge#charge-flap").toFullString(),
+                fixture + " Charge Flap");
+        assertEquals(coupler, updateListener.getResponse("test::bev:charge#coupler-ac").toFullString(),
+                fixture + " Coupler AC");
+        assertEquals(lock, updateListener.getResponse("test::bev:charge#coupler-lock").toFullString(),
+                fixture + " Coupler Lock");
+    }
+
+    /**
+     * Newer vehicles report charge flap and inlet as lists. The channels must show the same numbers as for vehicles
+     * which report the single attributes.
+     */
+    @Test
+    public void testChargeFlapAndCouplerFromListsClosedUnplugged() {
+        // CLA 250.raw: flap closed (1), cable not plugged (2), inlet unlocked (1)
+        assertChargeFlapAndCoupler("CLA 250.raw", "1", "2", "1");
+    }
+
+    @Test
+    public void testChargeFlapAndCouplerFromListsOpenPlugged() {
+        // GLB 250.raw: flap open (0), cable plugged (0), inlet locked (0)
+        assertChargeFlapAndCoupler("GLB 250.raw", "0", "0", "0");
+    }
+
+    @Test
+    public void testChargeFlapAndCouplerFromListsGlcEq() {
+        // GLC EQ.raw (MB.OS) reports only the lists: flap open (0), cable plugged (0), inlet locked (0)
+        assertChargeFlapAndCoupler("GLC EQ.raw", "0", "0", "0");
+    }
+
+    @Test
+    public void testChargeFlapAndCouplerFromSingleAttributes() {
+        // vsu-eqa-2.raw reports the single attributes: flap closed (1), not plugged (2), unlocked (1)
+        assertChargeFlapAndCoupler("vsu-eqa-2.raw", "1", "2", "1");
+    }
 }

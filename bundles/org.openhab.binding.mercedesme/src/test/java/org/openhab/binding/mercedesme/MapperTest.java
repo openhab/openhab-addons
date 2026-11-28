@@ -30,6 +30,18 @@ import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.UnDefType;
 
 import com.daimler.mbcarkit.proto.VehicleEvents.AttributeStatus;
+import com.daimler.mbcarkit.proto.VehicleEvents.ChargeCouplerLockStatus;
+import com.daimler.mbcarkit.proto.VehicleEvents.ChargeCouplerStatus;
+import com.daimler.mbcarkit.proto.VehicleEvents.ChargeCouplerStatusEnumAttribute;
+import com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlapStatus;
+import com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlapStatusEnumAttribute;
+import com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlapsArrayAttribute;
+import com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlapsEntry;
+import com.daimler.mbcarkit.proto.VehicleEvents.ChargeFlapsPositionState;
+import com.daimler.mbcarkit.proto.VehicleEvents.ChargeInletsArrayAttribute;
+import com.daimler.mbcarkit.proto.VehicleEvents.ChargeInletsEntry;
+import com.daimler.mbcarkit.proto.VehicleEvents.ChargeInletsEntry.ChargeInletsCouplerState;
+import com.daimler.mbcarkit.proto.VehicleEvents.ChargeInletsEntry.ChargeInletsLockState;
 import com.daimler.mbcarkit.proto.VehicleEvents.ChargeProgram;
 import com.daimler.mbcarkit.proto.VehicleEvents.ChargeProgramsValue;
 import com.daimler.mbcarkit.proto.VehicleEvents.Ignitionstate;
@@ -529,5 +541,176 @@ class MapperTest {
         assertNull(attributes.get(MB_KEY_SOC), "soc was absent from this update, must not appear as 0");
         assertNull(attributes.get(MB_KEY_OVERALL_RANGE), "overallRange was absent, must not appear as 0");
         assertNull(attributes.get(MB_KEY_CHARGING_POWER), "chargingPower was absent, must not appear as 0");
+    }
+
+    private static long intValue(Map<String, VehicleAttributeStatus> attributes, String key) {
+        VehicleAttributeStatus value = attributes.get(key);
+        assertNotNull(value, key + " must be delivered");
+        return value.getIntValue();
+    }
+
+    private static Map<String, VehicleAttributeStatus> loadRawFixture(String name) {
+        String raw = FileReader.readRawFileInString("src/test/resources/vehiclestatusupdates/" + name);
+        return ProtoConverter.raw2Proto(raw, true).attributes();
+    }
+
+    private static VSUMetadata validMetadata() {
+        return VSUMetadata.newBuilder().setStatus(AttributeStatus.VALUE_VALID).build();
+    }
+
+    private static Map<String, VehicleAttributeStatus> mapFlap(ChargeFlapsPositionState state) {
+        ChargeFlapsArrayAttribute flaps = ChargeFlapsArrayAttribute.newBuilder()
+                .addValue(ChargeFlapsEntry.newBuilder().setId(1).setPositionState(state)).setMetadata(validMetadata())
+                .build();
+        return Mapper.fromVehicleStatusUpdate(VehicleStatusUpdate.newBuilder().setFinOrVin("UNIT_TEST_VIN")
+                .setFullUpdate(false).setChargeFlaps(flaps).build());
+    }
+
+    private static Map<String, VehicleAttributeStatus> mapInlet(ChargeInletsCouplerState coupler,
+            ChargeInletsLockState lock) {
+        ChargeInletsArrayAttribute inlets = ChargeInletsArrayAttribute.newBuilder()
+                .addValue(ChargeInletsEntry.newBuilder().setId(1).setCouplerState(coupler).setLockState(lock))
+                .setMetadata(validMetadata()).build();
+        return Mapper.fromVehicleStatusUpdate(VehicleStatusUpdate.newBuilder().setFinOrVin("UNIT_TEST_VIN")
+                .setFullUpdate(false).setChargeInlets(inlets).build());
+    }
+
+    @Test
+    void whenNewVehicleReportsChargeFlapAndInletThenLegacyAttributesAreFilled() {
+        // Arrange - CLA 250: flap closed, cable not plugged, inlet unlocked
+        // Act
+        Map<String, VehicleAttributeStatus> cla = loadRawFixture("CLA 250.raw");
+        // Assert
+        assertEquals(ChargeFlapStatus.CHARGE_FLAP_STATUS_CLOSED_VALUE, intValue(cla, MB_KEY_CHARGE_FLAP_DC_STATUS),
+                "CLA flap");
+        assertEquals(ChargeCouplerStatus.CHARGE_COUPLER_STATUS_NOT_PLUGGED_VEHICLE_SIDE_VALUE,
+                intValue(cla, MB_KEY_CHARGE_COUPLER_AC_STATUS), "CLA coupler");
+        assertEquals(ChargeCouplerLockStatus.CHARGE_COUPLER_LOCK_STATUS_UNLOCKED_VALUE,
+                intValue(cla, MB_KEY_CHARGE_COUPLER_DC_LOCK_STATUS), "CLA lock");
+
+        // Arrange / Act - GLB 250: flap open, cable plugged, inlet locked
+        Map<String, VehicleAttributeStatus> glb = loadRawFixture("GLB 250.raw");
+        // Assert
+        assertEquals(ChargeFlapStatus.CHARGE_FLAP_STATUS_OPEN_VALUE, intValue(glb, MB_KEY_CHARGE_FLAP_DC_STATUS),
+                "GLB flap");
+        assertEquals(ChargeCouplerStatus.CHARGE_COUPLER_STATUS_PLUGGED_BOTH_SIDES_VALUE,
+                intValue(glb, MB_KEY_CHARGE_COUPLER_AC_STATUS), "GLB coupler");
+        assertEquals(ChargeCouplerLockStatus.CHARGE_COUPLER_LOCK_STATUS_LOCKED_VALUE,
+                intValue(glb, MB_KEY_CHARGE_COUPLER_DC_LOCK_STATUS), "GLB lock");
+    }
+
+    @Test
+    void whenLegacyVehicleReportsChargeFlapAndCouplerThenValuesStayUnchanged() {
+        // Arrange - EQA reports the single attributes and no flap or inlet list
+        // Act
+        Map<String, VehicleAttributeStatus> eqa = loadFixture();
+        // Assert
+        assertEquals(ChargeFlapStatus.CHARGE_FLAP_STATUS_CLOSED_VALUE, intValue(eqa, MB_KEY_CHARGE_FLAP_DC_STATUS),
+                "EQA flap");
+        assertEquals(ChargeCouplerStatus.CHARGE_COUPLER_STATUS_NOT_PLUGGED_VEHICLE_SIDE_VALUE,
+                intValue(eqa, MB_KEY_CHARGE_COUPLER_AC_STATUS), "EQA coupler");
+        assertEquals(ChargeCouplerLockStatus.CHARGE_COUPLER_LOCK_STATUS_UNLOCKED_VALUE,
+                intValue(eqa, MB_KEY_CHARGE_COUPLER_DC_LOCK_STATUS), "EQA lock");
+    }
+
+    @Test
+    void whenFlapPositionStateIsConvertedThenLegacyNumberIsUsed() {
+        // the numbers of the new enum are shifted by one against the legacy one, a plain copy would invert them
+        assertEquals(0, intValue(mapFlap(ChargeFlapsPositionState.CHARGE_FLAPS_POSITION_STATE_OPEN),
+                MB_KEY_CHARGE_FLAP_DC_STATUS));
+        assertEquals(1, intValue(mapFlap(ChargeFlapsPositionState.CHARGE_FLAPS_POSITION_STATE_CLOSED),
+                MB_KEY_CHARGE_FLAP_DC_STATUS));
+        assertEquals(2, intValue(mapFlap(ChargeFlapsPositionState.CHARGE_FLAPS_POSITION_STATE_FLAP_PRESSED),
+                MB_KEY_CHARGE_FLAP_DC_STATUS));
+    }
+
+    @Test
+    void whenFlapPositionStateIsUnknownThenNoValueIsDelivered() {
+        // Act - -1 is the marker for unknown values, the channel turns it into UNDEF
+        // Assert
+        assertEquals(-1, intValue(mapFlap(ChargeFlapsPositionState.CHARGE_FLAPS_POSITION_STATE_DEFAULT),
+                MB_KEY_CHARGE_FLAP_DC_STATUS));
+        assertEquals(-1, intValue(mapFlap(ChargeFlapsPositionState.CHARGE_FLAPS_POSITION_STATE_UNKNOWN),
+                MB_KEY_CHARGE_FLAP_DC_STATUS));
+    }
+
+    @Test
+    void whenInletCouplerStateIsConvertedThenLegacyNumberIsUsed() {
+        ChargeInletsLockState lock = ChargeInletsLockState.CHARGE_INLETS_LOCK_STATE_UNLOCKED;
+        assertEquals(0, intValue(mapInlet(ChargeInletsCouplerState.CHARGE_INLETS_COUPLER_STATE_PLUGGED, lock),
+                MB_KEY_CHARGE_COUPLER_AC_STATUS), "plugged");
+        assertEquals(1, intValue(mapInlet(ChargeInletsCouplerState.CHARGE_INLETS_COUPLER_STATE_VEHICLE_PLUGGED, lock),
+                MB_KEY_CHARGE_COUPLER_AC_STATUS), "vehicle plugged");
+        assertEquals(2,
+                intValue(mapInlet(ChargeInletsCouplerState.CHARGE_INLETS_COUPLER_STATE_VEHICLE_NOT_PLUGGED, lock),
+                        MB_KEY_CHARGE_COUPLER_AC_STATUS),
+                "not plugged");
+        assertEquals(4, intValue(mapInlet(ChargeInletsCouplerState.CHARGE_INLETS_COUPLER_STATE_DEFECT, lock),
+                MB_KEY_CHARGE_COUPLER_AC_STATUS), "defect");
+        assertEquals(3, intValue(mapInlet(ChargeInletsCouplerState.CHARGE_INLETS_COUPLER_STATE_UNKNOWN, lock),
+                MB_KEY_CHARGE_COUPLER_AC_STATUS), "unknown");
+    }
+
+    @Test
+    void whenInletLockStateIsConvertedThenLegacyNumberIsUsed() {
+        ChargeInletsCouplerState coupler = ChargeInletsCouplerState.CHARGE_INLETS_COUPLER_STATE_PLUGGED;
+        assertEquals(0, intValue(mapInlet(coupler, ChargeInletsLockState.CHARGE_INLETS_LOCK_STATE_LOCKED),
+                MB_KEY_CHARGE_COUPLER_DC_LOCK_STATUS), "locked");
+        assertEquals(1, intValue(mapInlet(coupler, ChargeInletsLockState.CHARGE_INLETS_LOCK_STATE_UNLOCKED),
+                MB_KEY_CHARGE_COUPLER_DC_LOCK_STATUS), "unlocked");
+        assertEquals(2, intValue(mapInlet(coupler, ChargeInletsLockState.CHARGE_INLETS_LOCK_STATE_LOCK_STATE_NOT_CLEAR),
+                MB_KEY_CHARGE_COUPLER_DC_LOCK_STATUS), "not clear");
+        assertEquals(-1, intValue(mapInlet(coupler, ChargeInletsLockState.CHARGE_INLETS_LOCK_STATE_NOT_AVAILABLE),
+                MB_KEY_CHARGE_COUPLER_DC_LOCK_STATUS), "not available");
+        assertEquals(-1, intValue(mapInlet(coupler, ChargeInletsLockState.CHARGE_INLETS_LOCK_STATE_UNKNOWN),
+                MB_KEY_CHARGE_COUPLER_DC_LOCK_STATUS), "unknown");
+    }
+
+    @Test
+    void whenListIsEmptyThenNoLegacyAttributeIsDelivered() {
+        // Arrange
+        VehicleStatusUpdate update = VehicleStatusUpdate.newBuilder().setFinOrVin("UNIT_TEST_VIN").setFullUpdate(false)
+                .setChargeFlaps(ChargeFlapsArrayAttribute.newBuilder().setMetadata(validMetadata()))
+                .setChargeInlets(ChargeInletsArrayAttribute.newBuilder().setMetadata(validMetadata())).build();
+
+        // Act
+        Map<String, VehicleAttributeStatus> attributes = Mapper.fromVehicleStatusUpdate(update);
+
+        // Assert
+        assertTrue(attributes.isEmpty(), "no entry means no statement about flap or inlet");
+    }
+
+    @Test
+    void whenLegacyAndListAreReportedTogetherThenLegacyAttributesWin() {
+        // Arrange - legacy says flap closed, coupler not plugged, list says the opposite
+        VSUMetadata metadata = validMetadata();
+        VehicleStatusUpdate update = VehicleStatusUpdate.newBuilder().setFinOrVin("UNIT_TEST_VIN").setFullUpdate(true)
+                .setChargeFlapDCStatus(ChargeFlapStatusEnumAttribute.newBuilder()
+                        .setValue(ChargeFlapStatus.CHARGE_FLAP_STATUS_CLOSED).setMetadata(metadata))
+                .setChargeCouplerACStatus(ChargeCouplerStatusEnumAttribute.newBuilder()
+                        .setValue(ChargeCouplerStatus.CHARGE_COUPLER_STATUS_NOT_PLUGGED_VEHICLE_SIDE)
+                        .setMetadata(metadata))
+                .setChargeFlaps(ChargeFlapsArrayAttribute.newBuilder()
+                        .addValue(ChargeFlapsEntry.newBuilder()
+                                .setPositionState(ChargeFlapsPositionState.CHARGE_FLAPS_POSITION_STATE_OPEN))
+                        .setMetadata(metadata))
+                .setChargeInlets(ChargeInletsArrayAttribute.newBuilder()
+                        .addValue(ChargeInletsEntry.newBuilder()
+                                .setCouplerState(ChargeInletsCouplerState.CHARGE_INLETS_COUPLER_STATE_PLUGGED)
+                                .setLockState(ChargeInletsLockState.CHARGE_INLETS_LOCK_STATE_LOCKED))
+                        .setMetadata(metadata))
+                .build();
+
+        // Act
+        Map<String, VehicleAttributeStatus> attributes = Mapper.fromVehicleStatusUpdate(update);
+
+        // Assert
+        assertEquals(ChargeFlapStatus.CHARGE_FLAP_STATUS_CLOSED_VALUE,
+                intValue(attributes, MB_KEY_CHARGE_FLAP_DC_STATUS), "legacy flap");
+        assertEquals(ChargeCouplerStatus.CHARGE_COUPLER_STATUS_NOT_PLUGGED_VEHICLE_SIDE_VALUE,
+                intValue(attributes, MB_KEY_CHARGE_COUPLER_AC_STATUS), "legacy coupler");
+        assertEquals(ChargeCouplerLockStatus.CHARGE_COUPLER_LOCK_STATUS_LOCKED_VALUE,
+                intValue(attributes, MB_KEY_CHARGE_COUPLER_DC_LOCK_STATUS),
+                "no legacy lock reported, so the list is used");
     }
 }

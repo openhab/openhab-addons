@@ -453,21 +453,29 @@ States and controls are depending on your vehicle capabilities.
 
 - 0 : Open
 - 1 : Closed
+- 2 : Flap Pressed
 
 #### Coupler AC Mapping
 
 - 0 : Plugged
+- 1 : Plugged Vehicle Side
 - 2 : Unplugged
+- 3 : Unknown
+- 4 : Unknown Due to Defect
 
 #### Coupler DC Mapping
 
 - 0 : Plugged
+- 1 : Plugged Vehicle Side
 - 2 : Unplugged
+- 3 : Unknown
+- 4 : Unknown Due to Defect
 
 #### Coupler Lock Mapping
 
 - 0 : Locked
 - 1 : Unlocked
+- 2 : Not Clear
 
 #### Charge Status Mapping
 
