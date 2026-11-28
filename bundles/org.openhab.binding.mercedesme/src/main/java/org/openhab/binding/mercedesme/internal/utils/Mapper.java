@@ -942,10 +942,12 @@ public class Mapper {
     }
 
     /**
-     * @return number of {@link ChargeCouplerStatus} or -1 if the state is unknown
+     * @return number of {@link ChargeCouplerStatus} or -1 if the state has no legacy counterpart
      */
     private static int toLegacyCouplerStatus(ChargeInletsCouplerState state) {
         switch (state) {
+            case CHARGE_INLETS_COUPLER_STATE_UNKNOWN:
+                return ChargeCouplerStatus.CHARGE_COUPLER_STATUS_UNKNOWN_VALUE;
             case CHARGE_INLETS_COUPLER_STATE_PLUGGED:
                 return ChargeCouplerStatus.CHARGE_COUPLER_STATUS_PLUGGED_BOTH_SIDES_VALUE;
             case CHARGE_INLETS_COUPLER_STATE_VEHICLE_PLUGGED:

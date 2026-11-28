@@ -15,6 +15,7 @@
 			<options>
 				<option value="0">Open</option>
 				<option value="1">Closed</option>
+				<option value="2">Flap Pressed</option>
 			</options>
 		</state>
 	</channel-type>
@@ -29,7 +30,10 @@
 		<state readOnly="true">
 			<options>
 				<option value="0">Plugged</option>
+				<option value="1">Plugged Vehicle Side</option>
 				<option value="2">Unplugged</option>
+				<option value="3">Unknown</option>
+				<option value="4">Unknown Due to Defect</option>
 			</options>
 		</state>
 	</channel-type>
@@ -44,7 +48,10 @@
 		<state readOnly="true">
 			<options>
 				<option value="0">Plugged</option>
+				<option value="1">Plugged Vehicle Side</option>
 				<option value="2">Unplugged</option>
+				<option value="3">Unknown</option>
+				<option value="4">Unknown Due to Defect</option>
 			</options>
 		</state>
 	</channel-type>
@@ -60,6 +67,7 @@
 			<options>
 				<option value="0">Locked</option>
 				<option value="1">Unlocked</option>
+				<option value="2">Not Clear</option>
 			</options>
 		</state>
 	</channel-type>

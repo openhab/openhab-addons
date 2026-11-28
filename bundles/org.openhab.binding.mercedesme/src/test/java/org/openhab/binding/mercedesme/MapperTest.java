@@ -647,7 +647,7 @@ class MapperTest {
                 "not plugged");
         assertEquals(4, intValue(mapInlet(ChargeInletsCouplerState.CHARGE_INLETS_COUPLER_STATE_DEFECT, lock),
                 MB_KEY_CHARGE_COUPLER_AC_STATUS), "defect");
-        assertEquals(-1, intValue(mapInlet(ChargeInletsCouplerState.CHARGE_INLETS_COUPLER_STATE_UNKNOWN, lock),
+        assertEquals(3, intValue(mapInlet(ChargeInletsCouplerState.CHARGE_INLETS_COUPLER_STATE_UNKNOWN, lock),
                 MB_KEY_CHARGE_COUPLER_AC_STATUS), "unknown");
     }
 
