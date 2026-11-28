@@ -13,18 +13,28 @@
 package org.openhab.binding.solarman.internal;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.argThat;
-import static org.mockito.Mockito.after;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.openhab.binding.solarman.internal.SolarmanBindingConstants.THING_TYPE_SOLARMAN_LOGGER;
 
+import java.time.ZoneOffset;
 import java.util.Map;
+import java.util.Objects;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
+import org.openhab.binding.solarman.internal.util.SolarmanWorkQueue;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -58,23 +68,35 @@ class SolarmanLoggerHandlerTest {
     }
 
     @Test
-    void pollWaitingForMonitorDoesNothingAfterDispose() throws InterruptedException {
-        SolarmanLoggerHandler handler = createHandler();
-
-        // Holding the handler monitor keeps the initial poll waiting in queryLogger() until after dispose()
-        synchronized (handler) {
-            handler.initialize();
-            Thread.sleep(500);
-            handler.dispose();
-        }
-
-        verify(callback, after(2000).never()).statusUpdated(any(), argThat(this::isCommunicationError));
+    void queuedPollDoesNothingAfterDispose() {
+        ScheduledExecutorService testScheduler = mock(ScheduledExecutorService.class);
+        ScheduledFuture<?> future = mock(ScheduledFuture.class);
+        AtomicReference<Runnable> cycle = new AtomicReference<>();
+        when(testScheduler.scheduleWithFixedDelay(any(Runnable.class), anyLong(), anyLong(), any(TimeUnit.class)))
+                .thenAnswer(invocation -> {
+                    cycle.set(invocation.getArgument(0));
+                    return future;
+                });
+        Thing thing = ThingBuilder.create(THING_TYPE_SOLARMAN_LOGGER, "test")
+                .withConfiguration(new Configuration(CONFIG)).build();
+        SolarmanLoggerHandler handler = new SolarmanLoggerHandler(thing, () -> ZoneOffset.UTC) {
+            @Override
+            protected SolarmanWorkQueue createWorkQueue(Runnable poll, int interval, Consumer<Exception> errors) {
+                return new SolarmanWorkQueue(testScheduler, poll, interval, errors);
+            }
+        };
+        handler.setCallback(callback);
+        handler.initialize();
+        handler.dispose();
+        Objects.requireNonNull(cycle.get()).run();
+        verify(future).cancel(true);
+        verify(callback, never()).statusUpdated(any(), argThat(this::isCommunicationError));
     }
 
     private SolarmanLoggerHandler createHandler() {
         Thing thing = ThingBuilder.create(THING_TYPE_SOLARMAN_LOGGER, "test")
                 .withConfiguration(new Configuration(CONFIG)).build();
-        SolarmanLoggerHandler handler = new SolarmanLoggerHandler(thing);
+        SolarmanLoggerHandler handler = new SolarmanLoggerHandler(thing, () -> ZoneOffset.UTC);
         handler.setCallback(callback);
         return handler;
     }
