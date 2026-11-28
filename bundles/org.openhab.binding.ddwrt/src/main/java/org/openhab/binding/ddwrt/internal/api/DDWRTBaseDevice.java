@@ -768,7 +768,7 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
     protected @Nullable Pattern getSyslogPattern() {
         // Default standard syslog format
         return Pattern.compile(
-                "^([A-Za-z]{3}\\s+\\d{1,2}\\s+\\d{2}:\\d{2}:\\d{2})\\s+(\\S+)\\s+([^:\\[\\s]+(?:\\.[^:\\[\\s]+)*)(?:\\[(\\d+)\\])?:\\s*(.*)$");
+                "^([A-Za-z]{3}\\s+\\d{1,2}\\s+\\d{2}:\\d{2}:\\d{2})\\s+(\\S+)\\s+([^:\\[\\s]++)(?:\\[(\\d+)\\])?:\\s*(.*)$");
     }
 
     /**

@@ -54,7 +54,7 @@ public class SyslogParser {
     // Feb 21 16:08:56 hostname authpriv.notice dropbear[2663]: Password auth succeeded
     // Groups: 1=timestamp, 2=hostname, 3=facility(opt), 4=severity(opt), 5=process, 6=pid, 7=message
     private static final Pattern STANDARD_SYSLOG = Pattern.compile(
-            "^([A-Za-z]{3}\\s+\\d{1,2}\\s+\\d{2}:\\d{2}:\\d{2})\\s+(\\S+)\\s+(?:(\\w+)\\.(\\w+)\\s+)?([^:\\[\\s]+(?:\\.[^:\\[\\s]+)*)(?:\\[(\\d+)\\])?:\\s*(.*)$");
+            "^([A-Za-z]{3}\\s+\\d{1,2}\\s+\\d{2}:\\d{2}:\\d{2})\\s+(\\S+)\\s+(?:(\\w+)\\.(\\w+)\\s+)?([^:\\[\\s]++)(?:\\[(\\d+)\\])?:\\s*(.*)$");
 
     // Kernel messages: timestamp kernel: message (fallback pattern)
     private static final Pattern KERNEL_SYSLOG = Pattern
