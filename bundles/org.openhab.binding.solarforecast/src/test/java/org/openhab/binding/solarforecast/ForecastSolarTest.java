@@ -701,7 +701,7 @@ class ForecastSolarTest {
         Instant deadline = Instant.now().plusSeconds(10);
         while (Instant.now().isBefore(deadline)) {
             ForecastSolarObject current = handler.getForecast();
-            if (current != oldForecast && !current.isExpired()) {
+            if (!current.equals(oldForecast) && !current.isExpired()) {
                 return true;
             }
             try {
