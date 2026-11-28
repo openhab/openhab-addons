@@ -13,7 +13,7 @@
 				<description>Hostname of the Sinopé Gateway</description>
 				<context>network-address</context>
 			</parameter>
-			<parameter name="port" type="integer">
+			<parameter name="port" type="integer" min="1" max="65535">
 				<label>Port</label>
 				<description>The port that the Sinopé Gateway listens on</description>
 				<default>4550</default>
@@ -22,9 +22,11 @@
 				<label>Gateway ID</label>
 				<description>The Sinopé gateway ID (as printed on the back-side, e.g. "xxxx xxxx xxxx xxxx")</description>
 			</parameter>
-			<parameter name="apiKey" type="text" required="true">
+			<parameter name="apiKey" type="text" required="false">
 				<label>API Key</label>
-				<description>Use sinope-core application to generate your api key</description>
+				<description>API key for the Sinopé Gateway. Leave empty to automatically obtain it by pressing the WEB button on
+					the gateway.</description>
+				<context>password</context>
 			</parameter>
 			<parameter name="refresh" type="integer" required="false">
 				<label>Refresh Interval</label>
@@ -48,6 +50,7 @@
 			<channel id="setpointMode" typeId="setpointMode"/>
 			<channel id="heatingLevel" typeId="heatingLevel"/>
 		</channels>
+		<representation-property>deviceId</representation-property>
 		<config-description>
 			<parameter name="deviceId" type="text" required="true">
 				<label>Thermostat Device ID</label>

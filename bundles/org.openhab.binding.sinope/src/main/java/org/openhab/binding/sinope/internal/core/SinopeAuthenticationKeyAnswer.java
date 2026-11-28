@@ -60,7 +60,7 @@ public class SinopeAuthenticationKeyAnswer extends SinopeAnswer {
      */
     public int getStatus() {
         byte[] b = this.getFrameData();
-        return b[0];
+        return b.length >= STATUS_SIZE ? b[0] & 0xFF : -1;
     }
 
     /**
@@ -70,8 +70,10 @@ public class SinopeAuthenticationKeyAnswer extends SinopeAnswer {
      */
     public byte[] getBackoff() {
         byte[] b = this.getFrameData();
-        b = Arrays.copyOfRange(b, STATUS_SIZE, STATUS_SIZE + BACKOFF_SIZE);
-        return b;
+        if (b.length < STATUS_SIZE + BACKOFF_SIZE) {
+            return new byte[0];
+        }
+        return Arrays.copyOfRange(b, STATUS_SIZE, STATUS_SIZE + BACKOFF_SIZE);
     }
 
     /**
@@ -81,8 +83,17 @@ public class SinopeAuthenticationKeyAnswer extends SinopeAnswer {
      */
     public byte[] getApiKey() {
         byte[] b = this.getFrameData();
+        if (b.length < STATUS_SIZE + BACKOFF_SIZE + API_KEY_SIZE) {
+            return new byte[0];
+        }
         b = Arrays.copyOfRange(b, STATUS_SIZE + BACKOFF_SIZE, STATUS_SIZE + BACKOFF_SIZE + API_KEY_SIZE);
         return ByteUtil.reverse(b);
+    }
+
+    @Override
+    protected void setInternal_payload(byte[] internal_payload) {
+        // Avoid logging the raw authentication key payload
+        this.internal_payload = internal_payload;
     }
 
     /**
@@ -91,11 +102,8 @@ public class SinopeAuthenticationKeyAnswer extends SinopeAnswer {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append(super.toString());
-        sb.append(String.format("\nData: %s", ByteUtil.toString(getFrameData())));
-        sb.append(String.format("\n\tStatus: 0x%02X ", getStatus()));
-        sb.append(String.format("\n\tApi Key: %s", ByteUtil.toString(getApiKey())));
-        sb.append(String.format("\n\tBackoff: %s", ByteUtil.toString(getBackoff())));
+        sb.append(String.format("SinopeAuthenticationKeyAnswer [status=0x%02X, backoff=%s, apiKey=%s]", getStatus(),
+                ByteUtil.toString(getBackoff()).trim(), getApiKey().length > 0 ? "***" : "<empty>"));
         return sb.toString();
     }
 }

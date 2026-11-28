@@ -60,10 +60,14 @@ public class SinopeConfig {
         if (_value.length() % 2 == 0 && _value.length() > 1) {
             byte[] b = new byte[_value.length() / 2];
 
-            for (int i = 0; i < _value.length(); i = i + 2) {
-                b[i / 2] = (byte) Integer.parseInt(_value.substring(i, i + 2), 16);
+            try {
+                for (int i = 0; i < _value.length(); i = i + 2) {
+                    b[i / 2] = (byte) Integer.parseInt(_value.substring(i, i + 2), 16);
+                }
+                return b;
+            } catch (NumberFormatException e) {
+                return null;
             }
-            return b;
         } else {
             return null;
         }

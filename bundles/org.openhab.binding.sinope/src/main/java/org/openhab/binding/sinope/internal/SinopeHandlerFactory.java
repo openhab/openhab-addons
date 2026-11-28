@@ -12,24 +12,19 @@
  */
 package org.openhab.binding.sinope.internal;
 
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.sinope.SinopeBindingConstants;
 import org.openhab.binding.sinope.handler.SinopeGatewayHandler;
 import org.openhab.binding.sinope.handler.SinopeThermostatHandler;
-import org.openhab.binding.sinope.internal.discovery.SinopeThingsDiscoveryService;
-import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
-import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
-import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Component;
 
 /**
@@ -38,10 +33,10 @@ import org.osgi.service.component.annotations.Component;
  * @author Pascal Larin - Initial contribution
  */
 @Component(service = ThingHandlerFactory.class)
+@NonNullByDefault
 public class SinopeHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = SinopeBindingConstants.SUPPORTED_THING_TYPES_UIDS;
-    private Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -49,35 +44,14 @@ public class SinopeHandlerFactory extends BaseThingHandlerFactory {
     }
 
     @Override
-    protected ThingHandler createHandler(Thing thing) {
+    protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (SinopeBindingConstants.THING_TYPE_GATEWAY.equals(thingTypeUID)) {
-            SinopeGatewayHandler bridge = new SinopeGatewayHandler((Bridge) thing);
-            registerDiscoveryService(bridge);
-            return bridge;
+            return new SinopeGatewayHandler((Bridge) thing);
         } else if (SinopeBindingConstants.THING_TYPE_THERMO.equals(thingTypeUID)) {
             return new SinopeThermostatHandler(thing);
         }
         return null;
-    }
-
-    private synchronized void registerDiscoveryService(SinopeGatewayHandler bridge) {
-        SinopeThingsDiscoveryService discoveryService = new SinopeThingsDiscoveryService(bridge);
-
-        this.discoveryServiceRegs.put(bridge.getThing().getUID(),
-                bundleContext.registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<>()));
-    }
-
-    @Override
-    protected synchronized void removeHandler(ThingHandler thingHandler) {
-        if (thingHandler instanceof SinopeGatewayHandler) {
-            ServiceRegistration<?> serviceReg = this.discoveryServiceRegs.get(thingHandler.getThing().getUID());
-            if (serviceReg != null) {
-                // remove discovery service, if bridge handler is removed
-                serviceReg.unregister();
-                discoveryServiceRegs.remove(thingHandler.getThing().getUID());
-            }
-        }
     }
 }

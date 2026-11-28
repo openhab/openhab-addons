@@ -83,4 +83,15 @@ public class SinopeApiLoginRequest extends SinopeRequest {
     public SinopeApiLoginAnswer getReplyAnswer(InputStream r) throws IOException {
         return new SinopeApiLoginAnswer(r);
     }
+
+    @Override
+    protected void setInternal_payload(byte[] internal_payload) {
+        // Avoid logging the raw login payload containing the API key
+        this.internal_payload = internal_payload;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("SinopeApiLoginRequest [id=%s, apiKey=***]", ByteUtil.toString(id).trim());
+    }
 }
