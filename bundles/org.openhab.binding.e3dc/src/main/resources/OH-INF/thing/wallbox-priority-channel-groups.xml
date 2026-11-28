@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="e3dc"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-group-type id="wallbox-priority">
+		<label>Wallbox Priority</label>
+		<description>Order in which solar power is assigned to the battery and the car</description>
+		<channels>
+			<channel id="charge-battery-before-car" typeId="battery-wallbox-charge-before-car"/>
+			<channel id="discharge-battery-to-car" typeId="battery-wallbox-discharge-to-car"/>
+			<channel id="discharge-until" typeId="battery-wallbox-discharge-until"/>
+			<channel id="battery-off-in-mix-mode" typeId="battery-wallbox-disable-at-mix-mode"/>
+		</channels>
+	</channel-group-type>
+
+</thing:thing-descriptions>

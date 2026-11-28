@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="e3dc"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-group-type id="manual-battery-charge">
+		<label>Manual Battery Charge</label>
+		<description>Start a manual battery charge and follow its state</description>
+		<channels>
+			<channel id="set-manual-charge" typeId="manual-battery-charge-set-manual-charge"/>
+			<channel id="manual-charge-active" typeId="manual-battery-charge-active"/>
+			<channel id="manual-charge-target" typeId="manual-battery-charge-target"/>
+			<channel id="manual-charge-energy" typeId="manual-battery-charge-energy"/>
+			<channel id="manual-charge-remaining" typeId="manual-battery-charge-remaining"/>
+			<channel id="manual-charge-last-start" typeId="manual-battery-charge-last-start"/>
+		</channels>
+	</channel-group-type>
+
+</thing:thing-descriptions>
