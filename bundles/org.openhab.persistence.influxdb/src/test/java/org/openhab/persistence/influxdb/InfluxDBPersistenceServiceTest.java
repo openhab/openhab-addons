@@ -26,8 +26,11 @@ import static org.openhab.persistence.influxdb.internal.InfluxDBConfiguration.UR
 import static org.openhab.persistence.influxdb.internal.InfluxDBConfiguration.USER_PARAM;
 import static org.openhab.persistence.influxdb.internal.InfluxDBConfiguration.VERSION_PARAM;
 
+import java.math.BigDecimal;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.BeforeEach;
@@ -38,8 +41,17 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
+import org.openhab.core.i18n.UnitProvider;
+import org.openhab.core.items.GroupItem;
 import org.openhab.core.items.ItemRegistry;
 import org.openhab.core.items.MetadataRegistry;
+import org.openhab.core.library.CoreItemFactory;
+import org.openhab.core.library.items.ColorItem;
+import org.openhab.core.library.items.DimmerItem;
+import org.openhab.core.library.items.NumberItem;
+import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.PercentType;
 import org.openhab.core.persistence.FilterCriteria;
 import org.openhab.persistence.influxdb.internal.InfluxDBMetadataService;
 import org.openhab.persistence.influxdb.internal.InfluxDBRepository;
@@ -231,6 +243,69 @@ public class InfluxDBPersistenceServiceTest {
         assertThat(secondBatch.get(0).getTags().get("item"), is("accepted"));
         verify(influxDBRepositoryMock, never()).disconnect();
         instance.deactivate();
+    }
+
+    @Test
+    public void timestampedStateIsConvertedToTheItemStateType()
+            throws UnexpectedConditionException, InterruptedException {
+        InfluxDBPersistenceService instance = getService(VALID_V2_CONFIGURATION);
+        instance.setItemFactory(new CoreItemFactory(mock(UnitProvider.class)));
+        when(influxDBRepositoryMock.isConnected()).thenReturn(true);
+        List<InfluxPoint> points = new CopyOnWriteArrayList<>();
+        when(influxDBRepositoryMock.write(any())).thenAnswer(invocation -> {
+            points.addAll(invocation.<List<InfluxPoint>> getArgument(0));
+            return WriteResult.SUCCESS;
+        });
+
+        instance.store(new DimmerItem("dimmer"), ZonedDateTime.now(), OnOffType.ON);
+        instance.store(new ColorItem("color"), ZonedDateTime.now(), PercentType.HUNDRED);
+
+        // each conversion is asynchronous, so the two points may be written in separate batches
+        long deadline = System.currentTimeMillis() + 10000;
+        while (points.size() < 2 && System.currentTimeMillis() < deadline) {
+            Thread.sleep(50);
+        }
+        assertThat(points.size(), is(2));
+        InfluxPoint dimmer = points.stream().filter(p -> "dimmer".equals(p.getTags().get("item"))).findFirst().get();
+        InfluxPoint color = points.stream().filter(p -> "color".equals(p.getTags().get("item"))).findFirst().get();
+        // ON is stored as 100 (%), not as the digital value 1
+        assertThat(dimmer.getValue(), is(PercentType.HUNDRED.toBigDecimal()));
+        // a Color item is restored with new HSBType(String), so it needs an HSB string, not a scalar
+        assertThat(color.getValue(), is("0,0,100"));
+        instance.deactivate();
+    }
+
+    @Test
+    public void numericStatesAndTypedGroupsKeepTheirStoredValues()
+            throws UnexpectedConditionException, InterruptedException {
+        InfluxDBPersistenceService instance = getService(VALID_V2_CONFIGURATION);
+        instance.setItemFactory(new CoreItemFactory(mock(UnitProvider.class)));
+        when(influxDBRepositoryMock.isConnected()).thenReturn(true);
+        List<InfluxPoint> points = new CopyOnWriteArrayList<>();
+        when(influxDBRepositoryMock.write(any())).thenAnswer(invocation -> {
+            points.addAll(invocation.<List<InfluxPoint>> getArgument(0));
+            return WriteResult.SUCCESS;
+        });
+
+        // numeric states that were already written correctly are not rescaled or dropped
+        instance.store(new NumberItem("number"), ZonedDateTime.now(), PercentType.valueOf("50"));
+        instance.store(new DimmerItem("plain"), ZonedDateTime.now(), new DecimalType(50));
+        // a typed group stores like its base item
+        instance.store(new GroupItem("group", new DimmerItem("base")), ZonedDateTime.now(), OnOffType.ON);
+
+        long deadline = System.currentTimeMillis() + 10000;
+        while (points.size() < 3 && System.currentTimeMillis() < deadline) {
+            Thread.sleep(50);
+        }
+        assertThat(points.size(), is(3));
+        assertThat(valueOf(points, "number"), is(new BigDecimal("50")));
+        assertThat(valueOf(points, "plain"), is(new BigDecimal("50")));
+        assertThat(valueOf(points, "group"), is(PercentType.HUNDRED.toBigDecimal()));
+        instance.deactivate();
+    }
+
+    private Object valueOf(List<InfluxPoint> points, String itemName) {
+        return points.stream().filter(p -> itemName.equals(p.getTags().get("item"))).findFirst().get().getValue();
     }
 
     private InfluxDBPersistenceService getService(Map<String, Object> config) {

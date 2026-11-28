@@ -35,10 +35,15 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.common.ThreadPoolManager;
 import org.openhab.core.config.core.ConfigurableService;
+import org.openhab.core.items.GroupItem;
 import org.openhab.core.items.Item;
 import org.openhab.core.items.ItemFactory;
 import org.openhab.core.items.ItemRegistry;
 import org.openhab.core.items.ItemUtil;
+import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.HSBType;
+import org.openhab.core.library.types.PercentType;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.persistence.FilterCriteria;
 import org.openhab.core.persistence.HistoricItem;
 import org.openhab.core.persistence.ModifiablePersistenceService;
@@ -341,6 +346,9 @@ public class InfluxDBPersistenceService implements ModifiablePersistenceService 
         String itemLabel = item.getLabel();
         String category = item.getCategory();
         String itemType = item.getType();
+        // a typed group (Group:Dimmer) stores its states like its base item does
+        Item baseItem = item instanceof GroupItem groupItem ? groupItem.getBaseItem() : null;
+        String baseItemType = baseItem != null ? baseItem.getType() : itemType;
 
         if (state instanceof UnDefType) {
             return CompletableFuture.completedFuture(null);
@@ -354,8 +362,7 @@ public class InfluxDBPersistenceService implements ModifiablePersistenceService 
                 measurementName = measurementName.replace('_', '.');
             }
 
-            State storeState = Objects
-                    .requireNonNullElse(state.as(desiredClasses.get(ItemUtil.getMainItemType(itemType))), state);
+            State storeState = normalize(baseItemType, state);
             Object value = InfluxDBStateConvertUtils.stateToObject(storeState);
 
             InfluxPoint.Builder pointBuilder = InfluxPoint.newBuilder(measurementName).withTime(timeStamp)
@@ -382,6 +389,31 @@ public class InfluxDBPersistenceService implements ModifiablePersistenceService 
         });
     }
 
+    /**
+     * Converts a state to the main state type of the item type, so that e.g. {@code ON} stored with a timestamp for a
+     * Dimmer item is written as 100 %. Numeric states that are already written correctly are left unchanged: a
+     * {@link PercentType} stored for a Number item stays 50 (not 0.5) and a {@link DecimalType} stored for a Dimmer
+     * item stays a plain number (it would not fit a {@link PercentType} above 100).
+     */
+    private State normalize(String itemType, State state) {
+        Class<? extends State> desiredClass = desiredClasses.get(ItemUtil.getMainItemType(itemType));
+        if (desiredClass == null) {
+            return state;
+        }
+        boolean numericTarget = DecimalType.class.isAssignableFrom(desiredClass)
+                && !HSBType.class.isAssignableFrom(desiredClass);
+        if (numericTarget && (state instanceof DecimalType || state instanceof QuantityType)) {
+            return state;
+        }
+        try {
+            return Objects.requireNonNullElse(state.as(desiredClass), state);
+        } catch (IllegalArgumentException e) {
+            logger.debug("Could not convert state {} to {}, storing it unchanged: {}", state,
+                    desiredClass.getSimpleName(), e.getMessage());
+            return state;
+        }
+    }
+
     @Reference(cardinality = ReferenceCardinality.AT_LEAST_ONE, policy = ReferencePolicy.DYNAMIC)
     public void setItemFactory(ItemFactory itemFactory) {
         itemFactories.add(itemFactory);
@@ -399,8 +431,7 @@ public class InfluxDBPersistenceService implements ModifiablePersistenceService 
             for (String itemType : factory.getSupportedItemTypes()) {
                 Item item = factory.createItem(itemType, "influxItem");
                 if (item != null) {
-                    item.getAcceptedCommandTypes().stream()
-                            .filter(commandType -> commandType.isAssignableFrom(State.class)).findFirst()
+                    item.getAcceptedCommandTypes().stream().filter(State.class::isAssignableFrom).findFirst()
                             .map(commandType -> (Class<? extends State>) commandType.asSubclass(State.class))
                             .ifPresent(desiredClass -> desiredClasses.put(itemType, desiredClass));
                 }
