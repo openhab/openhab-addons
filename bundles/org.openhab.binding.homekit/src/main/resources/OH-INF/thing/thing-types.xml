@@ -52,4 +52,11 @@
 		</config-description>
 	</channel-type>
 
+	<channel-type id="camera-url">
+		<item-type>String</item-type>
+		<label>Camera URL</label>
+		<description>Browser URL of a go2rtc page for camera video, audio, and talk-back.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
 </thing:thing-descriptions>
