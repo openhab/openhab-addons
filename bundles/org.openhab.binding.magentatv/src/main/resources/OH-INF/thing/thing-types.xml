@@ -160,7 +160,7 @@
 			<point>Status</point>
 			<property>Duration</property>
 		</tags>
-		<state pattern="%d %unit%" readOnly="true">
+		<state pattern="%1$tT" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="programPosition">
@@ -171,7 +171,7 @@
 			<point>Measurement</point>
 			<property>Progress</property>
 		</tags>
-		<state pattern="%d %unit%" readOnly="true">
+		<state pattern="%1$tT" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="key">

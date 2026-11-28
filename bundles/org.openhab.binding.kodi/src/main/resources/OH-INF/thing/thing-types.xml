@@ -508,7 +508,7 @@
 			<point>Status</point>
 			<property>Progress</property>
 		</tags>
-		<state pattern="%.0f %unit%"/>
+		<state pattern="%1$tT"/>
 	</channel-type>
 	<channel-type id="currenttimepercentage" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
@@ -524,7 +524,7 @@
 			<point>Status</point>
 			<property>Duration</property>
 		</tags>
-		<state readOnly="true" pattern="%.0f %unit%"/>
+		<state readOnly="true" pattern="%1$tT"/>
 	</channel-type>
 	<channel-type id="id" advanced="true">
 		<item-type>Number</item-type>

@@ -257,6 +257,7 @@
 			<point>Status</point>
 			<property>Duration</property>
 		</tags>
+		<state pattern="%1$tT"/>
 	</channel-type>
 	<channel-type id="totalTime">
 		<item-type>String</item-type>

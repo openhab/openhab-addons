@@ -39,8 +39,10 @@ import org.openhab.core.library.types.NextPreviousType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.PlayPauseType;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.RewindFastforwardType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingUID;
 
@@ -184,6 +186,20 @@ class ClientCommandRouterTest {
         route(Constants.PLAYING_ITEM_SECOND_CHANNEL, new DecimalType(5));
 
         verify(serverHandler).sendPlayStateCommand(SESSION_ID, PlaystateCommand.SEEK, 50_000_000L);
+    }
+
+    @Test
+    void testSeekByTimeQuantityConvertsMinutesToTicks() {
+        route(Constants.PLAYING_ITEM_SECOND_CHANNEL, new QuantityType<>(2, Units.MINUTE));
+
+        verify(serverHandler).sendPlayStateCommand(SESSION_ID, PlaystateCommand.SEEK, 1_200_000_000L);
+    }
+
+    @Test
+    void testSeekByIncompatibleQuantityIsIgnored() {
+        route(Constants.PLAYING_ITEM_SECOND_CHANNEL, new QuantityType<>(2, Units.PERCENT));
+
+        verify(serverHandler, never()).sendPlayStateCommand(any(), any(), any());
     }
 
     @Test

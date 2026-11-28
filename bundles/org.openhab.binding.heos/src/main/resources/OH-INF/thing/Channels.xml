@@ -71,7 +71,7 @@
 			<point>Status</point>
 			<property>Progress</property>
 		</tags>
-		<state readOnly="true" pattern="%d %unit%"/>
+		<state readOnly="true" pattern="%1$tT"/>
 	</channel-type>
 	<channel-type id="duration" advanced="true">
 		<item-type>Number:Time</item-type>
@@ -82,7 +82,7 @@
 			<point>Status</point>
 			<property>Duration</property>
 		</tags>
-		<state readOnly="true" pattern="%d %unit%"/>
+		<state readOnly="true" pattern="%1$tT"/>
 	</channel-type>
 	<channel-type id="rawCommand" advanced="true">
 		<item-type>String</item-type>

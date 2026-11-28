@@ -693,7 +693,7 @@ public class YamahaMusiccastHandler extends BaseThingHandler {
         }
         if (playTime != 0) {
             channel = new ChannelUID(getThing().getUID(), "playerControls", CHANNEL_PLAYTIME);
-            updateState(channel, StringType.valueOf(String.valueOf(playTime)));
+            updateState(channel, new QuantityType<>(playTime, Units.SECOND));
         }
         if ("true".equals(distInfoUpdated)) {
             updateMCLinkStatus();
@@ -1018,7 +1018,7 @@ public class YamahaMusiccastHandler extends BaseThingHandler {
                 testchannel = new ChannelUID(getThing().getUID(), "playerControls", CHANNEL_SHUFFLE);
                 updateState(testchannel, StringType.valueOf(shuffleState));
                 testchannel = new ChannelUID(getThing().getUID(), "playerControls", CHANNEL_PLAYTIME);
-                updateState(testchannel, StringType.valueOf(String.valueOf(playTimeState)));
+                updateState(testchannel, new QuantityType<>(playTimeState, Units.SECOND));
                 testchannel = new ChannelUID(getThing().getUID(), "playerControls", CHANNEL_TOTALTIME);
                 updateState(testchannel, StringType.valueOf(String.valueOf(totalTimeState)));
             }

@@ -211,7 +211,7 @@
 			<point>Status</point>
 			<property>Progress</property>
 		</tags>
-		<state readOnly="true" pattern="%.0f %unit%"/>
+		<state readOnly="true" pattern="%1$tT"/>
 	</channel-type>
 
 	<channel-type id="duration" advanced="true">
@@ -222,7 +222,7 @@
 			<point>Status</point>
 			<property>Duration</property>
 		</tags>
-		<state readOnly="true" pattern="%.0f %unit%"/>
+		<state readOnly="true" pattern="%1$tT"/>
 	</channel-type>
 
 	<!-- Metadata Information -->

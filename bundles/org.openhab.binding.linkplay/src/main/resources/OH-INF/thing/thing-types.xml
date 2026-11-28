@@ -76,7 +76,7 @@
 			<point>Status</point>
 			<property>Progress</property>
 		</tags>
-		<state readOnly="true"/>
+		<state readOnly="true" pattern="%1$tT"/>
 	</channel-type>
 	<channel-type id="track-duration">
 		<item-type>Number:Time</item-type>
@@ -87,7 +87,7 @@
 			<point>Status</point>
 			<property>Duration</property>
 		</tags>
-		<state readOnly="true"/>
+		<state readOnly="true" pattern="%1$tT"/>
 	</channel-type>
 	<channel-type id="playlist-name">
 		<item-type>String</item-type>
