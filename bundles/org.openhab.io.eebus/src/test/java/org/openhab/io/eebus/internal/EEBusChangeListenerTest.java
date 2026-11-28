@@ -1,0 +1,281 @@
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+package org.openhab.io.eebus.internal;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ScheduledExecutorService;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
+import org.openhab.core.common.registry.RegistryChangeListener;
+import org.openhab.core.events.Event;
+import org.openhab.core.events.EventPublisher;
+import org.openhab.core.items.Item;
+import org.openhab.core.items.ItemRegistry;
+import org.openhab.core.items.Metadata;
+import org.openhab.core.items.MetadataKey;
+import org.openhab.core.items.MetadataRegistry;
+import org.openhab.core.items.events.ItemCommandEvent;
+import org.openhab.core.items.events.ItemStateEvent;
+import org.openhab.core.library.items.NumberItem;
+import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.unit.Units;
+import org.openhab.core.types.UnDefType;
+import org.openmuc.jeebus.spine.api.Entity;
+import org.openmuc.jeebus.usecase.powerlimitation.controllablesystem.ActiveLimit;
+import org.openmuc.jeebus.usecase.powerlimitation.controllablesystem.LimitationUseCaseImpl;
+
+/**
+ * Tests for {@link EEBusChangeListener}.
+ *
+ * @author Stamate Viorel - Initial contribution
+ */
+@NonNullByDefault
+class EEBusChangeListenerTest {
+
+    private static final String ITEM_NAME = "Test_Lpc_Limit";
+    private static final MetadataKey METADATA_KEY = new MetadataKey("eebus", ITEM_NAME);
+
+    private final ItemRegistry itemRegistry = mock(ItemRegistry.class);
+    private final MetadataRegistry metadataRegistry = mock(MetadataRegistry.class);
+    private final EventPublisher eventPublisher = mock(EventPublisher.class);
+    private final Entity entity = mock(Entity.class);
+
+    private final List<EEBusChangeListener> listeners = new ArrayList<>();
+
+    private EEBusChangeListener createListener() {
+        EEBusChangeListener listener = new EEBusChangeListener(itemRegistry, metadataRegistry, eventPublisher, entity,
+                entity);
+        listeners.add(listener);
+        return listener;
+    }
+
+    @AfterEach
+    void stopListeners() {
+        listeners.forEach(EEBusChangeListener::stop);
+    }
+
+    private static Metadata lpcMetadata(Map<String, Object> config) {
+        return new Metadata(METADATA_KEY, "lpc", config);
+    }
+
+    @Test
+    void allItemsChangedDoesNotReRegisterAUseCaseAlreadyBoundToTheSameItem() {
+        Item item = new NumberItem(ITEM_NAME);
+        when(itemRegistry.getItems()).thenReturn(List.of(item));
+        when(metadataRegistry.get(METADATA_KEY)).thenReturn(lpcMetadata(Map.of()));
+
+        EEBusChangeListener listener = createListener();
+        verify(entity, times(1)).addUseCase(any());
+
+        // Simulates a full item/metadata registry reload where the same item is still tagged -
+        // must not call addUseCase() a second time, since jeebus.spine has no API to remove the
+        // first registration.
+        listener.allItemsChanged(List.of());
+
+        verify(entity, times(1)).addUseCase(any());
+    }
+
+    @Test
+    void allItemsChangedStillBindsAGenuinelyNewlyTaggedItem() {
+        when(itemRegistry.getItems()).thenReturn(List.of());
+        EEBusChangeListener listener = createListener();
+        verify(entity, times(0)).addUseCase(any());
+
+        Item item = new NumberItem(ITEM_NAME);
+        when(itemRegistry.getItems()).thenReturn(List.of(item));
+        when(metadataRegistry.get(METADATA_KEY)).thenReturn(lpcMetadata(Map.of()));
+        listener.allItemsChanged(List.of());
+
+        verify(entity, times(1)).addUseCase(any());
+    }
+
+    @Test
+    void metadataUpdateOnAnAlreadyBoundItemDoesNotReRegisterTheUseCase() {
+        Item item = new NumberItem(ITEM_NAME);
+        when(itemRegistry.getItems()).thenReturn(List.of(item));
+        Metadata original = lpcMetadata(Map.of("nominalMax", 4200));
+        when(metadataRegistry.get(METADATA_KEY)).thenReturn(original);
+
+        createListener();
+        verify(entity, times(1)).addUseCase(any());
+
+        @SuppressWarnings("unchecked")
+        ArgumentCaptor<RegistryChangeListener<Metadata>> captor = ArgumentCaptor.forClass(RegistryChangeListener.class);
+        verify(metadataRegistry).addRegistryChangeListener(captor.capture());
+
+        // Simulates editing nominalMax/failsafeLimit/failsafeDuration on the already-bound item -
+        // the add-on has no way to reconfigure an already-attached use case, so this must stay a
+        // no-op rather than registering a second one.
+        Metadata updated = lpcMetadata(Map.of("nominalMax", 11000));
+        captor.getValue().updated(original, updated);
+
+        verify(entity, times(1)).addUseCase(any());
+    }
+
+    @Test
+    void distinctLpcAndLppItemsBothGetTheirOwnUseCase() {
+        Item lpcItem = new NumberItem(ITEM_NAME);
+        Item lppItem = new NumberItem("Test_Lpp_Limit");
+        MetadataKey lppKey = new MetadataKey("eebus", "Test_Lpp_Limit");
+        when(itemRegistry.getItems()).thenReturn(List.of(lpcItem, lppItem));
+        when(metadataRegistry.get(METADATA_KEY)).thenReturn(lpcMetadata(Map.of()));
+        when(metadataRegistry.get(lppKey)).thenReturn(new Metadata(lppKey, "lpp", Map.of()));
+
+        createListener();
+
+        verify(entity, times(2)).addUseCase(any());
+    }
+
+    @Test
+    void deactivatedLimitSetsTheItemToUndef() throws Exception {
+        when(itemRegistry.getItems()).thenReturn(List.of());
+        when(itemRegistry.getItem(ITEM_NAME)).thenReturn(new NumberItem(ITEM_NAME));
+        EEBusChangeListener listener = createListener();
+
+        // jEEBus passes null as the active limit in the CONTROLLED and AUTONOMOUS states
+        listener.onLimitUpdate(ITEM_NAME, null, false);
+
+        ArgumentCaptor<Event> captor = ArgumentCaptor.forClass(Event.class);
+        verify(eventPublisher).post(captor.capture());
+        ItemStateEvent event = assertInstanceOf(ItemStateEvent.class, captor.getValue());
+        assertEquals(ITEM_NAME, event.getItemName());
+        assertEquals(UnDefType.UNDEF, event.getItemState());
+    }
+
+    @Test
+    void activeLimitIsPostedAsACommandInWatts() throws Exception {
+        when(itemRegistry.getItems()).thenReturn(List.of());
+        when(itemRegistry.getItem(ITEM_NAME)).thenReturn(new NumberItem(ITEM_NAME));
+        EEBusChangeListener listener = createListener();
+        ActiveLimit limit = mock(ActiveLimit.class);
+        when(limit.getResultingValue()).thenReturn(4200.0);
+        when(limit.getUnit()).thenReturn("W");
+
+        listener.onLimitUpdate(ITEM_NAME, limit, false);
+
+        ArgumentCaptor<Event> captor = ArgumentCaptor.forClass(Event.class);
+        verify(eventPublisher).post(captor.capture());
+        ItemCommandEvent event = assertInstanceOf(ItemCommandEvent.class, captor.getValue());
+        assertEquals(new QuantityType<>(4200.0, Units.WATT), event.getItemCommand());
+    }
+
+    @Test
+    void productionLimitIsPostedAsAPositivePower() throws Exception {
+        when(itemRegistry.getItems()).thenReturn(List.of());
+        when(itemRegistry.getItem(ITEM_NAME)).thenReturn(new NumberItem(ITEM_NAME));
+        EEBusChangeListener listener = createListener();
+        ActiveLimit limit = mock(ActiveLimit.class);
+        when(limit.getResultingValue()).thenReturn(-6000.0);
+        when(limit.getUnit()).thenReturn("W");
+
+        listener.onLimitUpdate(ITEM_NAME, limit, true);
+
+        ArgumentCaptor<Event> captor = ArgumentCaptor.forClass(Event.class);
+        verify(eventPublisher).post(captor.capture());
+        ItemCommandEvent event = assertInstanceOf(ItemCommandEvent.class, captor.getValue());
+        assertEquals(new QuantityType<>(6000.0, Units.WATT), event.getItemCommand());
+    }
+
+    @Test
+    void limitUpdatesAfterStopAreIgnored() throws Exception {
+        when(itemRegistry.getItems()).thenReturn(List.of());
+        when(itemRegistry.getItem(ITEM_NAME)).thenReturn(new NumberItem(ITEM_NAME));
+        EEBusChangeListener listener = createListener();
+
+        listener.stop();
+        listener.onLimitUpdate(ITEM_NAME, null, false);
+
+        verify(eventPublisher, never()).post(any());
+    }
+
+    @Test
+    void invalidMetadataOnOneItemDoesNotStopTheOthersFromBinding() {
+        Item lpcItem = new NumberItem(ITEM_NAME);
+        Item lppItem = new NumberItem("Test_Lpp_Limit");
+        MetadataKey lppKey = new MetadataKey("eebus", "Test_Lpp_Limit");
+        when(itemRegistry.getItems()).thenReturn(List.of(lpcItem, lppItem));
+        when(metadataRegistry.get(METADATA_KEY)).thenReturn(lpcMetadata(Map.of("failsafeDuration", "two hours")));
+        when(metadataRegistry.get(lppKey)).thenReturn(new Metadata(lppKey, "lpp", Map.of()));
+
+        EEBusChangeListener listener = createListener();
+
+        verify(entity, times(1)).addUseCase(any());
+        assertTrue(listener.getLpcItemName().isEmpty());
+        assertEquals("Test_Lpp_Limit", listener.getLppItemName().orElseThrow());
+    }
+
+    @Test
+    void failedInitialScanUnregistersTheListeners() {
+        when(itemRegistry.getItems()).thenThrow(new IllegalStateException("registry not ready"));
+
+        assertThrows(IllegalStateException.class, this::createListener);
+
+        verify(itemRegistry).removeRegistryChangeListener(any());
+        verify(metadataRegistry).removeRegistryChangeListener(any());
+    }
+
+    @Test
+    void stopShutsDownExecutor() {
+        when(itemRegistry.getItems()).thenReturn(List.of(new NumberItem(ITEM_NAME)));
+        when(metadataRegistry.get(METADATA_KEY)).thenReturn(lpcMetadata(Map.of()));
+        List<ScheduledExecutorService> executors = captureExecutors(false);
+
+        EEBusChangeListener listener = createListener();
+        ScheduledExecutorService executor = executors.getFirst();
+        assertFalse(executor.isShutdown());
+
+        listener.stop();
+
+        assertTrue(executor.isShutdown());
+    }
+
+    @Test
+    void failedRegistrationShutsDownExecutor() {
+        when(itemRegistry.getItems()).thenReturn(List.of(new NumberItem(ITEM_NAME)));
+        when(metadataRegistry.get(METADATA_KEY)).thenReturn(lpcMetadata(Map.of()));
+        List<ScheduledExecutorService> executors = captureExecutors(true);
+
+        EEBusChangeListener listener = createListener();
+
+        assertTrue(executors.getFirst().isShutdown());
+        assertTrue(listener.getLpcItemName().isEmpty());
+    }
+
+    private List<ScheduledExecutorService> captureExecutors(boolean failRegistration) {
+        LimitationExecutorAccess access = new LimitationExecutorAccess();
+        List<ScheduledExecutorService> executors = new ArrayList<>();
+        doAnswer(invocation -> {
+            LimitationUseCaseImpl useCase = invocation.getArgument(0);
+            executors.add(access.getExecutor(useCase));
+            if (failRegistration) {
+                throw new IllegalStateException("registration failed");
+            }
+            return null;
+        }).when(entity).addUseCase(any());
+        return executors;
+    }
+}
