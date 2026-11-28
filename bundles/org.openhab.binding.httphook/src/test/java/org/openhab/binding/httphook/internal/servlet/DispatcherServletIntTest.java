@@ -185,8 +185,10 @@ class DispatcherServletIntTest {
                 HttpRequest.BodyPublishers.ofInputStream(() -> new ByteArrayInputStream(body)) };
 
         for (var publisher : publishers) {
+            // Jetty can reject a known length before reading the body. Wait for its response before uploading.
             var request = HttpRequest.newBuilder(server.getURI().resolve("/httphook/status/oversized-body"))
-                    .header("Content-Type", "text/plain; charset=UTF-8").POST(publisher).build();
+                    .expectContinue(publisher.contentLength() >= 0).header("Content-Type", "text/plain; charset=UTF-8")
+                    .POST(publisher).build();
             var response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
             assertThat(response.statusCode()).isEqualTo(413);
