@@ -22,6 +22,7 @@ import java.util.Locale;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -52,6 +53,7 @@ import org.openhab.binding.ecovacs.internal.api.commands.GetTotalStatsCommand.To
 import org.openhab.binding.ecovacs.internal.api.commands.GetTrueDetectCommand;
 import org.openhab.binding.ecovacs.internal.api.commands.GetVolumeCommand;
 import org.openhab.binding.ecovacs.internal.api.commands.GetWaterSystemPresentCommand;
+import org.openhab.binding.ecovacs.internal.api.commands.GetWorkStateCommand;
 import org.openhab.binding.ecovacs.internal.api.commands.GoChargingCommand;
 import org.openhab.binding.ecovacs.internal.api.commands.PauseCleaningCommand;
 import org.openhab.binding.ecovacs.internal.api.commands.PlaySoundCommand;
@@ -111,10 +113,13 @@ import org.osgi.framework.FrameworkUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.Gson;
+
 /**
  * The {@link EcovacsVacuumHandler} is responsible for handling data and commands from/to vacuum cleaners.
  *
  * @author Danny Baumann - Initial contribution
+ * @author Andreas Rothstein - X12S state initialization
  */
 @NonNullByDefault
 public class EcovacsVacuumHandler extends BaseThingHandler implements EcovacsDevice.EventListener {
@@ -134,7 +139,11 @@ public class EcovacsVacuumHandler extends BaseThingHandler implements EcovacsDev
     private @Nullable Boolean lastWasCharging;
     private @Nullable CleanMode lastCleanMode;
     private @Nullable CleanMode lastActiveCleanMode;
-    private Optional<String> lastDownloadedCleanMapUrl = Optional.empty();
+
+    private record CleanMapRecord(long timestamp, Optional<String> url) {
+    }
+
+    private final AtomicReference<@Nullable CleanMapRecord> lastAttemptedCleanMap = new AtomicReference<>();
     private long lastSuccessfulPollTimestamp;
     private int lastDefaultCleaningPasses = 1;
     private String serialNumber = "<unset>";
@@ -313,6 +322,10 @@ public class EcovacsVacuumHandler extends BaseThingHandler implements EcovacsDev
 
     @Override
     public void onCleaningModeUpdated(EcovacsDevice device, CleanMode newMode, Optional<String> areaDefinition) {
+        if (device.hasCapability(DeviceCapability.WORK_STATE_REPORTING)
+                && (newMode.isActive() || newMode == CleanMode.PAUSE || newMode == CleanMode.RETURNING)) {
+            lastWasCharging = false;
+        }
         lastCleanMode = newMode;
         if (newMode.isActive()) {
             lastActiveCleanMode = newMode;
@@ -394,14 +407,30 @@ public class EcovacsVacuumHandler extends BaseThingHandler implements EcovacsDev
         onBatteryLevelUpdated(device, batteryPercent);
     }
 
-    private void fetchInitialStateAndCommandValues(EcovacsDevice device)
-            throws EcovacsApiException, InterruptedException {
+    void fetchInitialStateAndCommandValues(EcovacsDevice device) throws EcovacsApiException, InterruptedException {
         lastWasCharging = device.sendCommand(new GetChargeStateCommand()) == ChargeMode.CHARGING;
-        CleanMode mode = device.sendCommand(new GetCleanStateCommand());
-        if (mode.isActive()) {
-            lastActiveCleanMode = mode;
+        if (device.hasCapability(DeviceCapability.WORK_STATE_REPORTING)) {
+            // These devices reject getCleanInfo_V2; an unavailable initial query must not prevent MQTT updates.
+            try {
+                var report = device.sendCommand(new GetWorkStateCommand());
+                CleanMode mode = report.determineCleanMode(new Gson(), true);
+                if (mode != null) {
+                    onCleaningModeUpdated(device, mode, Optional.empty());
+                }
+            } catch (EcovacsApiException e) {
+                logger.debug("{}: Initial work state unavailable; waiting for MQTT", serialNumber, e);
+            }
+            if (lastCleanMode == null && Boolean.TRUE.equals(lastWasCharging)) {
+                updateState(CHANNEL_ID_STATE, new StringType("charging"));
+                updateState(CHANNEL_ID_COMMAND, new StringType(CMD_CHARGE));
+            }
+        } else {
+            CleanMode mode = device.sendCommand(new GetCleanStateCommand());
+            if (mode.isActive()) {
+                lastActiveCleanMode = mode;
+            }
+            lastCleanMode = mode;
         }
-        lastCleanMode = mode;
         updateStateAndCommandChannels();
     }
 
@@ -631,13 +660,8 @@ public class EcovacsVacuumHandler extends BaseThingHandler implements EcovacsDev
                     StateOptionEntry<CleanMode> mode = CLEAN_MODE_MAPPING.get(record.mode);
                     updateState(CHANNEL_ID_LAST_CLEAN_MODE, stringToState(mode != null ? mode.value : null));
 
-                    if (device.hasCapability(DeviceCapability.MAPPING)
-                            && !lastDownloadedCleanMapUrl.equals(record.mapImageUrl)) {
-                        Optional<State> content = device.downloadCleanMapImage(record).map(bytes -> {
-                            lastDownloadedCleanMapUrl = record.mapImageUrl;
-                            return new RawType(bytes, "image/png");
-                        });
-                        updateState(CHANNEL_ID_LAST_CLEAN_MAP, Objects.requireNonNull(content.orElse(UnDefType.NULL)));
+                    if (device.hasCapability(DeviceCapability.MAPPING)) {
+                        fetchLastCleanMap(device, record);
                     }
                 }
             }
@@ -704,6 +728,28 @@ public class EcovacsVacuumHandler extends BaseThingHandler implements EcovacsDev
             scheduleNextPoll(-1);
         });
         logger.debug("{}: Data polling completed", serialNumber);
+    }
+
+    private void fetchLastCleanMap(EcovacsDevice device, CleanLogRecord record) throws InterruptedException {
+        CleanMapRecord key = new CleanMapRecord(record.timestamp.getTime(), record.mapImageUrl);
+        CleanMapRecord previous;
+        do {
+            previous = lastAttemptedCleanMap.get();
+            if (key.equals(previous)) {
+                return;
+            }
+        } while (!lastAttemptedCleanMap.compareAndSet(previous, key));
+        try {
+            Optional<State> image = device.downloadCleanMapImage(record).map(bytes -> new RawType(bytes, "image/png"));
+            updateState(CHANNEL_ID_LAST_CLEAN_MAP, Objects.requireNonNull(image.orElse(UnDefType.NULL)));
+        } catch (EcovacsApiException e) {
+            updateState(CHANNEL_ID_LAST_CLEAN_MAP, UnDefType.NULL);
+            logger.debug("{}: Historical cleaning image unavailable", serialNumber, e);
+        } catch (InterruptedException e) {
+            // Cancellation is not a completed lookup; a later connection may retry this record.
+            lastAttemptedCleanMap.compareAndSet(key, previous);
+            throw e;
+        }
     }
 
     private void updateStateAndCommandChannels() {

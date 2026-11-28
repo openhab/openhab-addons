@@ -28,6 +28,7 @@ import org.openhab.binding.ecovacs.internal.api.impl.dto.response.deviceapi.json
 import org.openhab.binding.ecovacs.internal.api.impl.dto.response.deviceapi.json.WorkStateReport;
 import org.openhab.binding.ecovacs.internal.api.impl.dto.response.portal.PortalIotCommandJsonResponse.JsonResponsePayloadWrapper;
 import org.openhab.binding.ecovacs.internal.api.model.CleanMode;
+import org.openhab.binding.ecovacs.internal.api.model.DeviceCapability;
 import org.openhab.binding.ecovacs.internal.api.util.DataParsingException;
 import org.slf4j.Logger;
 
@@ -36,6 +37,7 @@ import com.google.gson.JsonSyntaxException;
 
 /**
  * @author Danny Baumann - Initial contribution
+ * @author Andreas Rothstein - Capability-scoped X12S work-state handling
  */
 @NonNullByDefault
 class JsonReportParser implements ReportParser {
@@ -131,8 +133,13 @@ class JsonReportParser implements ReportParser {
             }
             case "workstate": {
                 WorkStateReport report = payloadAs(response, WorkStateReport.class);
-                CleanMode mode = report.determineCleanMode(gson);
+                boolean workStateReporting = device.hasCapability(DeviceCapability.WORK_STATE_REPORTING);
+                CleanMode mode = report.determineCleanMode(gson, workStateReporting);
                 if (mode == null) {
+                    if (workStateReporting) {
+                        logger.debug("{}: Ignoring unsupported or incomplete work state", device.getSerialNumber());
+                        break;
+                    }
                     throw new DataParsingException("Could not get clean mode from response " + payload);
                 }
                 handleCleanModeChange(mode, null);
