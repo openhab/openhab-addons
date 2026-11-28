@@ -1,0 +1,18 @@
+syntax = "proto2";
+option java_package = "org.openhab.binding.atv.internal.client.protocols.mrp.dto";
+
+import "atv/mrp/protobuf/ProtocolMessage.proto";
+
+extend ProtocolMessage {
+  optional SetRecordingStateMessage setRecordingStateMessage = 35;
+}
+
+message SetRecordingStateMessage {
+  enum RecordingState {
+    Unknown = 0;
+    Recording = 1;
+    NotRecording = 2;    
+  }
+
+  optional RecordingState state = 1;
+}

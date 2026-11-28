@@ -1,0 +1,25 @@
+syntax = "proto2";
+option java_package = "org.openhab.binding.atv.internal.client.protocols.mrp.dto";
+
+import "atv/mrp/protobuf/Common.proto";
+
+message NowPlayingInfo {
+  optional string album = 1;
+  optional string artist = 2;
+  optional double duration = 3;
+  optional double elapsedTime = 4;
+  optional float playbackRate = 5;
+  optional RepeatMode.Enum repeatMode = 6;
+  optional ShuffleMode.Enum shuffleMode = 7;
+  optional double timestamp = 8;
+  optional string title = 9;
+  optional uint64 uniqueIdentifier = 10;
+  optional bool isExplicitTrack = 11;
+  optional bool isMusicApp = 12;
+  optional int64 radioStationIdentifier = 13;
+  optional string radioStationHash = 14;
+  optional string radioStationName = 15;
+  optional bytes artworkDataDigest = 16;
+  optional bool isAlwaysLive = 17;
+  optional bool isAdvertisement = 18;
+}

@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.openhab.addons.bundles</groupId>
+    <artifactId>org.openhab.addons.reactor.bundles</artifactId>
+    <version>5.3.0-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>org.openhab.binding.atv</artifactId>
+
+  <name>openHAB Add-ons :: Bundles :: atv Binding</name>
+
+  <properties>
+    <protobuf.version>4.35.1</protobuf.version>
+    <!-- sun.misc is referenced defensively by protobuf-java and javax.sound.midi by tritonus-share; neither
+         is used by the binding. sun.misc is a JDK package not exported as an OSGi bundle, so both are
+         imported optionally. The openHAB runtime provides them through the JVM. -->
+    <bnd.importpackage>sun.misc;resolution:=optional,javax.sound.midi;resolution:=optional</bnd.importpackage>
+  </properties>
+
+  <dependencies>
+    <!-- Installed as a separate bundle by the feature. Used for ChaCha20-Poly1305, which the JDK refuses
+         under the limited crypto policy that the openHAB Docker image uses by default. -->
+    <dependency>
+      <groupId>org.bouncycastle</groupId>
+      <artifactId>bcprov-jdk18on</artifactId>
+      <version>${bouncycastle.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <!-- Embedded Apple TV client dependencies (jmDNS and SLF4J are provided by the openHAB runtime). -->
+    <dependency>
+      <groupId>com.google.protobuf</groupId>
+      <artifactId>protobuf-java</artifactId>
+      <version>${protobuf.version}</version>
+    </dependency>
+    <!-- MP3 decoder (Java Sound SPI) so the audio sink accepts MP3, not just WAV/PCM. The transitive
+         junit dependency is excluded so it does not confuse the test engine. -->
+    <dependency>
+      <groupId>com.googlecode.soundlibs</groupId>
+      <artifactId>mp3spi</artifactId>
+      <version>1.9.5.4</version>
+      <exclusions>
+        <exclusion>
+          <groupId>junit</groupId>
+          <artifactId>junit</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>com.googlecode.soundlibs</groupId>
+      <artifactId>jlayer</artifactId>
+      <version>1.0.1.4</version>
+      <exclusions>
+        <exclusion>
+          <groupId>junit</groupId>
+          <artifactId>junit</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>com.googlecode.soundlibs</groupId>
+      <artifactId>tritonus-share</artifactId>
+      <version>0.3.7.4</version>
+      <exclusions>
+        <exclusion>
+          <groupId>junit</groupId>
+          <artifactId>junit</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <!-- Generate the MRP protobuf classes from src/main/proto. protoc is downloaded from Maven Central and
+           matches the protobuf-java runtime version. -->
+      <plugin>
+        <groupId>io.github.ascopes</groupId>
+        <artifactId>protobuf-maven-plugin</artifactId>
+        <version>3.1.0</version>
+        <configuration>
+          <protocVersion>${protobuf.version}</protocVersion>
+          <sourceDirectories>
+            <sourceDirectory>${project.basedir}/src/main/proto</sourceDirectory>
+          </sourceDirectories>
+        </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <!-- Keep the generated protobuf sources out of the compiler warning stream. -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <compilerArgs combine.children="append">
+            <arg>-nowarn:[${project.build.directory}/generated-sources]</arg>
+          </compilerArgs>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+</project>

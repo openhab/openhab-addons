@@ -1,0 +1,6 @@
+syntax = "proto2";
+option java_package = "org.openhab.binding.atv.internal.client.protocols.mrp.dto";
+
+message AudioFormatSettings {
+  optional bytes formatSettingsPlistData = 1;
+}

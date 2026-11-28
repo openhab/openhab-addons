@@ -1,0 +1,15 @@
+syntax = "proto2";
+option java_package = "org.openhab.binding.atv.internal.client.protocols.mrp.dto";
+
+import "atv/mrp/protobuf/ProtocolMessage.proto";
+import "atv/mrp/protobuf/ContentItem.proto";
+import "atv/mrp/protobuf/PlayerPath.proto";
+
+extend ProtocolMessage {
+  optional UpdateContentItemMessage updateContentItemMessage = 60;
+}
+
+message UpdateContentItemMessage {
+  repeated ContentItem contentItems = 1;
+  optional PlayerPath playerPath = 2;
+}

@@ -1,0 +1,29 @@
+syntax = "proto2";
+option java_package = "org.openhab.binding.atv.internal.client.protocols.mrp.dto";
+
+import "atv/mrp/protobuf/ProtocolMessage.proto";
+import "atv/mrp/protobuf/NowPlayingInfo.proto";
+import "atv/mrp/protobuf/PlaybackQueue.proto";
+import "atv/mrp/protobuf/SupportedCommands.proto";
+import "atv/mrp/protobuf/PlaybackQueueCapabilities.proto";
+import "atv/mrp/protobuf/PlayerPath.proto";
+import "atv/mrp/protobuf/PlaybackQueueRequestMessage.proto";
+import "atv/mrp/protobuf/Common.proto";
+
+extend ProtocolMessage {
+  optional SetDefaultSupportedCommandsMessage setDefaultSupportedCommandsMessage = 75;
+}
+
+// Seems to be the same as SetStateMessage
+message SetDefaultSupportedCommandsMessage {
+  optional NowPlayingInfo nowPlayingInfo = 1;
+  optional SupportedCommands supportedCommands = 2;
+  optional PlaybackQueue playbackQueue = 3;
+  optional string displayID = 4;
+  optional string displayName = 5;
+  optional PlaybackState.Enum playbackState = 6;
+  optional PlaybackQueueCapabilities playbackQueueCapabilities = 8;
+  optional PlayerPath playerPath = 9;
+  optional PlaybackQueueRequestMessage request = 10;
+  optional double playbackStateTimestamp = 11;
+}

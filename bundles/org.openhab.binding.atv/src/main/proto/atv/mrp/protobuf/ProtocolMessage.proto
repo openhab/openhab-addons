@@ -1,0 +1,172 @@
+syntax = "proto2";
+option java_package = "org.openhab.binding.atv.internal.client.protocols.mrp.dto";
+
+message ErrorCode {
+  enum Enum {
+    NoError = 0;
+    UnknownError = 1;
+    InvalidOperation = 2;
+    OperationNotPermitted = 3;
+    ClientDoesNotExist = 4;
+    OriginDoesNotExist = 5;
+    UnsupportedOperation = 6;
+    FailedToSetPickedRoute = 7;
+    FailedToRegisterCustomOrigin = 8;
+    FailedToRemoveCustomOrigin = 9;
+    TheApplicationActivityDoesNotExist = 10;
+    TheAppHasNotSetupABrowsableContentEndpoint = 11;
+    TheRequestedBrowsableContentApiIsNotSupportedByTheApplication = 12;
+    TheNotficationHasNotBeenWhitelistedByTheServer = 13;
+    OperationRequiresAClientCallbackToHaveBeenRegistered = 14;
+    OperationRequiresAClientDataSourceToHaveBeenRegistered = 15;
+    RequestedDataIsOutOfDateAndShouldBeRequestedAgain = 16;
+    TheDevicesEnforcedVolumeLimitHasBeenExceeded = 17; // The system will ignore the volume adjustment until overridden.
+    VolumeValueIsOutOfRange = 18; // between 0.0 and 1.0, where 1.0 is the loudest
+    VolumeIsAlreadyAtTheMaximumValue = 19;
+    VolumeIsAlreadyMuted = 20;
+    VoiceInputEndpointDoesNotExist = 21;
+    TheVoiceInputDeviceIsNotRegisteredOrDoesNotExist = 22;
+    EncryptionFailure = 23;
+    EndpointDoesNotExist = 24;
+    TheClientsApplicationCancelledTheOperation = 25;
+    TheOperationTimedOut = 26;
+    TheSpecifiedPlayerPathObjectWasInvalid = 27;
+    AddingOrRemovingDevicesFromTheAvOutputContextHasFailed = 28;
+    CouldNotFindTheSpecifiedNowPlayingPlayer = 29;
+    TheSpecifiedContentItemDoesNotExist = 30;
+    TheSpecifiedOffsetIsInvalid = 31;
+    TheSpecifiedOutputContextIsInvalid = 32;
+    OneOrMoreSpecifiedOutputDevicesAreNotGroupable = 33;
+    TheSpecifiedOutputContextDoesNotSupportAddingMoreThanOneOutputDevice = 34;
+    CouldNotFindTheSpecifiedNowPlayingClient = 35;
+    EndpointVolumeControlIsOnlyPossibleIfTheEndpointIsPickedOrRemoteControllable = 36;
+    OutputDeviceVolumeControlIsOnlyPossibleIfTheEndpointIsPickedOrRemoteControllable = 37;
+    CoderMustSupportKeyValueCoding = 38;
+    CouldNotFindTheGivenOutputdevice = 39;
+
+    FailedToConnectToRemoteDevice = 100;
+    AuthenticationTokenIsInvalid = 101;
+    RecordingSessionIsAlreadyInProgressOnThisDevice = 102;
+    TheDeviceIsNotCurrentlyRecording = 103;
+    TheClientHasDisconnected = 104;
+    TheServerHasDisconnected = 105;
+    TheConnectionHasBeenCancelledByTheClient = 106;
+    PairingFunctionalityIsLockedDueToSecurityReasons = 107;
+    TheClientsOperatingSystemVersionIsTooOld = 108;
+    TheClientsApplicationVersionIsTooOld = 109;
+    TheDeviceIsNotPaired = 110;
+    ThePinPairingDialogWasRemovedByTheUserBeforePairingOccoured = 111;
+    ThePinPairingDialogWasRemovedByATimeoutBeforePairingOccoured = 112;
+    TheConnectionTimedout = 113;
+    PairingWithThisDeviceIsBlocked = 114;
+    TheDeviceIsGoingToSleep = 115;
+    ConnectionBlockedByServer = 116;
+    MravendpointWasDeallocatedWhileWaitingForDeviceToConnect = 117;
+
+    OutputContextModificationCausedADeviceToNoLongerBeAProxyGroupPlayer = 200;
+    OutputContextModificationCausedADeviceToBecomeAProxyGroupPlayer = 201;
+    OutputContextModificationRequestedNoTopologyChange = 202;
+
+    OtherUnknownError = 299;
+  }
+}
+
+message ProtocolMessage {
+  extensions 6 to 77;
+  extensions 79 to 84;
+  extensions 86 to max;
+
+  enum Type {
+    UNKNOWN_MESSAGE = 0;
+    SEND_COMMAND_MESSAGE = 1;
+    SEND_COMMAND_RESULT_MESSAGE = 2;
+    GET_STATE_MESSAGE = 3;
+    SET_STATE_MESSAGE = 4;
+    SET_ARTWORK_MESSAGE = 5;
+    REGISTER_HID_DEVICE_MESSAGE = 6;
+    REGISTER_HID_DEVICE_RESULT_MESSAGE = 7;
+    SEND_HID_EVENT_MESSAGE = 8;
+    SEND_HID_REPORT_MESSAGE = 9;
+    SEND_VIRTUAL_TOUCH_EVENT_MESSAGE = 10;
+    NOTIFICATION_MESSAGE = 11;
+    CONTENT_ITEMS_CHANGED_NOTIFICATION_MESSAGE = 12;
+    DEVICE_INFO_MESSAGE = 15; 
+    CLIENT_UPDATES_CONFIG_MESSAGE = 16;
+    VOLUME_CONTROL_AVAILABILITY_MESSAGE = 17;
+    GAME_CONTROLLER_MESSAGE = 18;
+    REGISTER_GAME_CONTROLLER_MESSAGE = 19;
+    REGISTER_GAME_CONTROLLER_RESPONSE_MESSAGE = 20;
+    UNREGISTER_GAME_CONTROLLER_MESSAGE = 21;
+    REGISTER_FOR_GAME_CONTROLLER_EVENTS_MESSAGE = 22;
+    KEYBOARD_MESSAGE = 23;
+    GET_KEYBOARD_SESSION_MESSAGE = 24;
+    TEXT_INPUT_MESSAGE = 25;
+    GET_VOICE_INPUT_DEVICES_MESSAGE = 26;
+    GET_VOICE_INPUT_DEVICES_RESPONSE_MESSAGE = 27;
+    REGISTER_VOICE_INPUT_DEVICE_MESSAGE = 28;
+    REGISTER_VOICE_INPUT_DEVICE_RESPONSE_MESSAGE = 29;
+    SET_RECORDING_STATE_MESSAGE = 30;
+    SEND_VOICE_INPUT_MESSAGE = 31;
+    PLAYBACK_QUEUE_REQUEST_MESSAGE = 32;
+    TRANSACTION_MESSAGE = 33;
+    CRYPTO_PAIRING_MESSAGE = 34; 
+    GAME_CONTROLLER_PROPERTIES_MESSAGE = 35;
+    SET_READY_STATE_MESSAGE = 36;
+    DEVICE_INFO_UPDATE_MESSAGE = 37;
+    SET_CONNECTION_STATE_MESSAGE = 38;
+    SEND_BUTTON_EVENT_MESSAGE = 39;
+    SET_HILITE_MODE_MESSAGE = 40;
+    WAKE_DEVICE_MESSAGE = 41;
+    GENERIC_MESSAGE = 42;
+    SEND_PACKED_VIRTUAL_TOUCH_EVENT_MESSAGE = 43;
+    SEND_LYRICS_EVENT = 44;
+    SET_NOW_PLAYING_CLIENT_MESSAGE = 46;
+    SET_NOW_PLAYING_PLAYER_MESSAGE = 47;
+    MODIFY_OUTPUT_CONTEXT_REQUEST_MESSAGE = 48;
+    GET_VOLUME_MESSAGE = 49;
+    GET_VOLUME_RESULT_MESSAGE = 50;
+    SET_VOLUME_MESSAGE = 51;
+    VOLUME_DID_CHANGE_MESSAGE = 52;
+    REMOVE_CLIENT_MESSAGE = 53;
+    REMOVE_PLAYER_MESSAGE = 54;
+    UPDATE_CLIENT_MESSAGE = 55;
+    UPDATE_CONTENT_ITEM_MESSAGE = 56;
+    UPDATE_CONTENT_ITEM_ARTWORK_MESSAGE = 57;
+    UPDATE_PLAYER_MESSAGE = 58;
+    PROMPT_FOR_ROUTE_AUTHORIZATION_MESSAGE = 59;
+    PROMPT_FOR_ROUTE_AUTHORIZATION_RESPONSE_MESSAGE = 60;
+    PRESENT_ROUTE_AUTHORIZATION_STATUS_MESSAGE = 61;
+    GET_VOLUME_CONTROL_CAPABILITIES_MESSAGE = 62;
+    GET_VOLUME_CONTROL_CAPABILITIES_RESULT_MESSAGE = 63;
+    VOLUME_CONTROL_CAPABILITIES_DID_CHANGE_MESSAGE = 64;
+    UPDATE_OUTPUT_DEVICE_MESSAGE = 65;
+    REMOVE_OUTPUT_DEVICES_MESSAGE = 66;
+    REMOTE_TEXT_INPUT_MESSAGE = 67;
+    GET_REMOTE_TEXT_INPUT_SESSION_MESSAGE = 68;
+    REMOVE_OUTPUT_DEVICES_MESSAGE2 = 69; // Same as 66?
+    PLAYBACK_SESSION_REQUEST_MESSAGE = 70;
+    PLAYBACK_SESSION_RESPONSE_MESSAGE = 71;
+    SET_DEFAULT_SUPPORTED_COMMANDS_MESSAGE = 72;
+    PLAYBACK_SESSION_MIGRATE_REQUEST_MESSAGE = 73;
+    PLAYBACK_SESSION_MIGRATE_RESPONSE_MESSAGE = 74;
+    PLAYBACK_SESSION_MIGRATE_BEGIN_MESSAGE = 75;
+    PLAYBACK_SESSION_MIGRATE_END_MESSAGE = 76;
+    UPDATE_ACTIVE_SYSTEM_ENDPOINT_MESSAGE = 77;
+    SET_DISCOVERY_MODE_MESSAGE = 101;
+    UPDATE_END_POINTS_MESSAGE = 102;
+    REMOVE_ENDPOINTS_MESSAGE = 103;
+    PLAYER_CLIENT_PROPERTIES_MESSAGE = 104;
+    ORIGIN_CLIENT_PROPERTIES_MESSAGE = 105;
+    AUDIO_FADE_MESSAGE = 106;
+    AUDIO_FADE_RESPONSE_MESSAGE = 107;
+    CONFIGURE_CONNECTION_MESSAGE = 120;
+  }
+
+  optional Type type = 1; // Identifies which underlying message is filled in.
+  optional string identifier = 2;
+  optional string authenticationToken = 3;
+  optional ErrorCode.Enum errorCode = 4;
+  optional uint64 timestamp = 5;
+  optional string errorDescription = 78;
+  optional string uniqueIdentifier = 85;
+}
