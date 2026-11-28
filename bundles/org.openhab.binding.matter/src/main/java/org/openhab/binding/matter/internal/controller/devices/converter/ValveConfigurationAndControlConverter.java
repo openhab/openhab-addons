@@ -156,7 +156,10 @@ public class ValveConfigurationAndControlConverter extends GenericConverter<Valv
                     // as that null write rather than an out-of-constraint 0 the device should reject.
                     handler.writeAttribute(endpointNumber, ValveConfigurationAndControlCluster.CLUSTER_NAME,
                             ValveConfigurationAndControlCluster.ATTRIBUTE_DEFAULT_OPEN_DURATION,
-                            seconds == 0 ? "null" : String.valueOf(seconds));
+                            seconds == 0 ? "null" : String.valueOf(seconds)).exceptionally(e -> {
+                                logger.debug("Failed to set default open duration: {}", e.getMessage());
+                                return Void.TYPE.cast(null);
+                            });
                 }
                 break;
             default:

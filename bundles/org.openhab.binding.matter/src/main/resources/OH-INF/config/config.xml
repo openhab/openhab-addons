@@ -62,4 +62,11 @@
 			<advanced>true</advanced>
 		</parameter>
 	</config-description>
+
+	<config-description uri="channel-type:matter:transition">
+		<parameter name="transitionTime" type="decimal" min="0" max="6553.4" step="0.1" unit="s">
+			<label>Transition Time</label>
+			<description>Overrides the device default.</description>
+		</parameter>
+	</config-description>
 </config-description:config-descriptions>

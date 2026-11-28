@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.matter.internal.controller.devices.converter;
 
+import java.math.BigDecimal;
+import java.util.Map;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -21,7 +24,12 @@ import org.openhab.binding.matter.internal.MatterConfigDescriptionProvider;
 import org.openhab.binding.matter.internal.MatterStateDescriptionOptionProvider;
 import org.openhab.binding.matter.internal.bridge.MatterBridgeClient;
 import org.openhab.binding.matter.internal.util.TranslationService;
+import org.openhab.core.config.core.Configuration;
+import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
+import org.openhab.core.thing.binding.builder.ChannelBuilder;
 
 /**
  * Base class for Matter converter tests
@@ -59,5 +67,27 @@ public abstract class BaseMatterConverterTest {
         mockHandler = Mockito.spy(
                 new TestMatterBaseThingHandler(mockBridgeClient, mockThingHandlerFactory, mockStateDescriptionProvider,
                         mockChannelTypeProvider, mockConfigDescriptionProvider, mockTranslationService));
+    }
+
+    protected void setChannelTransitionTime(ChannelUID channelUID, String seconds) {
+        setChannelConfiguration(channelUID, Map.of("transitionTime", new BigDecimal(seconds)));
+    }
+
+    protected void setChannelConfiguration(ChannelUID channelUID, Map<String, Object> configuration) {
+        Thing thing = spyThing();
+        Mockito.doReturn(ChannelBuilder.create(channelUID).withConfiguration(new Configuration(configuration)).build())
+                .when(thing).getChannel(channelUID);
+    }
+
+    protected void setThingStatus(ThingStatus status) {
+        Thing thing = spyThing();
+        Mockito.doReturn(status).when(thing).getStatus();
+    }
+
+    private Thing spyThing() {
+        Thing current = mockHandler.getThing();
+        Thing thing = Mockito.mockingDetails(current).isSpy() ? current : Mockito.spy(current);
+        Mockito.doReturn(thing).when(mockHandler).getThing();
+        return thing;
     }
 }

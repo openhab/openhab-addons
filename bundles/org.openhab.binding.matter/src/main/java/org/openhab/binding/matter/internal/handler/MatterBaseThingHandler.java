@@ -17,13 +17,17 @@ import static org.openhab.binding.matter.internal.MatterBindingConstants.THING_S
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -56,6 +60,8 @@ import org.openhab.binding.matter.internal.util.MatterLabelUtils;
 import org.openhab.binding.matter.internal.util.MatterUIDUtils;
 import org.openhab.binding.matter.internal.util.TranslationService;
 import org.openhab.core.config.core.ConfigDescription;
+import org.openhab.core.config.core.ConfigDescriptionBuilder;
+import org.openhab.core.config.core.ConfigDescriptionParameter;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
@@ -69,6 +75,7 @@ import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.BridgeHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
+import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.thing.type.ChannelGroupDefinition;
 import org.openhab.core.thing.type.ChannelGroupType;
@@ -101,7 +108,8 @@ public abstract class MatterBaseThingHandler extends BaseThingHandler
     protected final MatterChannelTypeProvider channelTypeProvider;
     protected final MatterConfigDescriptionProvider configDescriptionProvider;
     protected final TranslationService translationService;
-    protected Map<Integer, DeviceType> devices = new HashMap<>();
+    protected final Map<Integer, DeviceType> devices = new ConcurrentHashMap<>();
+    private final Map<String, ConfigDescription> configDescriptionParts = new LinkedHashMap<>();
     protected @Nullable MatterControllerClient cachedClient;
     private int currentFabricIndex = 0;
     private static final int FIRST_POLL_DELAY_SECONDS = 15;
@@ -164,15 +172,28 @@ public abstract class MatterBaseThingHandler extends BaseThingHandler
 
     @Override
     public void dispose() {
-        channelTypeProvider.removeChannelGroupTypesForPrefix(getThing().getThingTypeUID().getId());
+        // Group types are kept. Sleepy devices may not resend their endpoints after a config change.
         stopPolling();
         super.dispose();
     }
 
     @Override
+    public void thingUpdated(Thing thing) {
+        super.thingUpdated(thing);
+        // An update reinitializes the handler but does not rebuild the endpoints
+        devices.values().forEach(DeviceType::handleChannelConfigurationUpdate);
+    }
+
+    @Override
     public void handleRemoval() {
         channelTypeProvider.removeThingType(getThing().getThingTypeUID());
-        channelTypeProvider.removeChannelGroupTypesForPrefix(thing.getThingTypeUID().getId());
+        try {
+            // Before the first build the Thing has the base type, whose prefix matches all Things
+            channelTypeProvider.removeChannelGroupTypesForPrefix(getDynamicThingTypeUID().getId());
+        } catch (IllegalStateException e) {
+            // An endpoint whose node handler is gone cannot build its type
+            logger.debug("Not removing channel group types of {}: {}", getThing().getUID(), e.getMessage());
+        }
         super.handleRemoval();
     }
 
@@ -324,7 +345,7 @@ public abstract class MatterBaseThingHandler extends BaseThingHandler
         if (ws != null) {
             return ws.clusterWriteAttribute(getNodeId(), endpointId, clusterName, attributeName, value);
         } else {
-            throw new IllegalStateException("Client is null");
+            return CompletableFuture.failedFuture(new IllegalStateException("Client is null"));
         }
     }
 
@@ -473,9 +494,23 @@ public abstract class MatterBaseThingHandler extends BaseThingHandler
         return null;
     }
 
-    public void addConfigDescription(ConfigDescription configDescription) {
-        logger.debug("addConfigDescription {}", configDescription.getUID());
-        configDescriptionProvider.addConfigDescription(configDescription);
+    /**
+     * Adds config parameters under a key, replacing any part with the same key. Parts are merged into the Thing's
+     * config description and cleared when the endpoints are rebuilt.
+     */
+    public synchronized void addConfigDescription(String key, ConfigDescription configDescription) {
+        logger.debug("addConfigDescription {} {}", key, configDescription.getUID());
+        configDescriptionParts.put(key, configDescription);
+        publishConfigDescription();
+    }
+
+    private synchronized void publishConfigDescription() {
+        configDescriptionProvider.addConfigDescription(ConfigDescriptionBuilder.create(getConfigDescriptionURI())
+                .withParameters(configDescriptionParts.values().stream().flatMap(part -> part.getParameters().stream())
+                        .toList())
+                .withParameterGroups(configDescriptionParts.values().stream()
+                        .flatMap(part -> part.getParameterGroups().stream()).toList())
+                .build());
     }
 
     public @Nullable ConfigDescription getConfigDescription() {
@@ -487,6 +522,37 @@ public abstract class MatterBaseThingHandler extends BaseThingHandler
                 getThing().getUID().getAsString());
         return URI.create(
                 MatterBindingConstants.CONFIG_DESCRIPTION_URI_THING_PREFIX + ":" + getThing().getUID().getAsString());
+    }
+
+    /**
+     * Adds config parameters to one channel. Core merges them with the parameters of the channel type.
+     */
+    public void addChannelConfigDescription(ChannelUID channelUID, List<ConfigDescriptionParameter> parameters) {
+        URI uri;
+        try {
+            // Encodes the "#" in the channel UID the same way the REST API does, so lookups match
+            uri = new URI(MatterBindingConstants.CONFIG_DESCRIPTION_URI_CHANNEL_PREFIX, channelUID.getAsString(), null);
+        } catch (URISyntaxException e) {
+            logger.debug("Invalid config description URI for channel {}: {}", channelUID, e.getMessage());
+            return;
+        }
+        configDescriptionProvider
+                .addConfigDescription(ConfigDescriptionBuilder.create(uri).withParameters(parameters).build());
+    }
+
+    public synchronized void updateChannelConfiguration(ChannelUID channelUID, Map<String, Object> values) {
+        Channel channel = getThing().getChannel(channelUID);
+        if (channel == null) {
+            return;
+        }
+        Configuration config = new Configuration(channel.getConfiguration().getProperties());
+        values.forEach(config::put);
+        Channel updated = ChannelBuilder.create(channel).withConfiguration(config).build();
+        updateThing(
+                editThing()
+                        .withChannels(getThing().getChannels().stream()
+                                .map(existing -> existing.getUID().equals(channelUID) ? updated : existing).toList())
+                        .build());
     }
 
     public final String getTranslation(String key) {
@@ -602,7 +668,11 @@ public abstract class MatterBaseThingHandler extends BaseThingHandler
         List<ChannelGroupDefinition> groupDefs = new ArrayList<>();
         List<Channel> channels = new ArrayList<>();
 
+        // Converters add their parts again during the rebuild
+        configDescriptionParts.clear();
         updateEndpointInternal(endpoint, groupTypes, groupDefs, channels);
+        Set<String> endpointIds = groupDefs.stream().map(ChannelGroupDefinition::getId).collect(Collectors.toSet());
+        devices.keySet().removeIf(number -> !endpointIds.contains(number.toString()));
 
         // update our thing using a custom thing type so we can add channel groups dynamically.
         // editThing() is overridden to use the type specific thing type here.
@@ -623,11 +693,18 @@ public abstract class MatterBaseThingHandler extends BaseThingHandler
         channelTypeProvider.updateChannelGroupTypesForPrefix(dynamicThingTypeUID.getId(), groupTypes);
 
         ThingBuilder thingBuilder = editThing().withChannels();
-        thingBuilder.withChannels(channels);
+        // Keep channel config across rebuilds
+        thingBuilder.withChannels(channels.stream().map(channel -> {
+            Channel existing = getThing().getChannel(channel.getUID());
+            return existing != null
+                    ? ChannelBuilder.create(channel).withConfiguration(existing.getConfiguration()).build()
+                    : channel;
+        }).toList());
         updateThing(thingBuilder.build());
 
         // have all clusters send their initial states
         devices.values().forEach(deviceType -> deviceType.initState());
+        publishConfigDescription();
     }
 
     /**
@@ -657,8 +734,9 @@ public abstract class MatterBaseThingHandler extends BaseThingHandler
         }
 
         // create custom group for endpoint
+        // Prefixed so this Thing's group types can be found and removed
         ChannelGroupTypeUID channelGroupTypeUID = new ChannelGroupTypeUID(MatterBindingConstants.BINDING_ID,
-                getNodeId() + "-" + endpoint.number);
+                getDynamicThingTypeUID().getId() + "-" + endpoint.number);
         ChannelGroupDefinition channelGroupDefinition = new ChannelGroupDefinition(endpoint.number.toString(),
                 channelGroupTypeUID);
         ChannelGroupType channelGroupType = ChannelGroupTypeBuilder.instance(channelGroupTypeUID, deviceLabel)

@@ -30,6 +30,7 @@ public class MatterBindingConstants {
     public static final ThingTypeUID THING_TYPE_NODE = new ThingTypeUID(BINDING_ID, "node");
     public static final ThingTypeUID THING_TYPE_ENDPOINT = new ThingTypeUID(BINDING_ID, "endpoint");
     public static final String CONFIG_DESCRIPTION_URI_THING_PREFIX = "thing";
+    public static final String CONFIG_DESCRIPTION_URI_CHANNEL_PREFIX = "channel";
     // List of Channel UIDs
     public static final String CHANNEL_ID_AIRQUALITY_AIRQUALITY = "airquality-airquality";
     public static final ChannelTypeUID CHANNEL_AIRQUALITY_AIRQUALITY = new ChannelTypeUID(BINDING_ID,
@@ -669,6 +670,12 @@ public class MatterBindingConstants {
     public static final String CONFIG_DESC_DOORLOCK_PIN_CREDENTIAL = "@text/thing-type.config.matter.node.doorlock_pin_credential.description";
     public static final String CONFIG_DESC_DOORLOCK_DELETE_USER = "@text/thing-type.config.matter.node.doorlock_delete_user.description";
     public static final String CONFIG_DESC_DOORLOCK_EXTERNAL_FABRIC = "@text/thing-type.config.matter.node.doorlock_external_fabric.description";
+
+    // Transition time
+    public static final String CONFIG_CHANNEL_TRANSITION_TIME = "transitionTime";
+    public static final String CONFIG_CHANNEL_DEFAULT_TRANSITION_TIME = "defaultTransitionTime";
+    public static final String CONFIG_LABEL_DEFAULT_TRANSITION_TIME = "@text/channel.config.matter.default_transition_time.label";
+    public static final String CONFIG_DESC_DEFAULT_TRANSITION_TIME = "@text/channel.config.matter.default_transition_time.description";
 
     // Firmware Update - Note these are the raw i18n keys, not the translated strings
     public static final String OTA_FIRMWARE_UPDATE_FAILED = "ota.matter.firmwareUpdateFailed";
