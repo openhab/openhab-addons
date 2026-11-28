@@ -76,6 +76,12 @@ public class Connection {
     }
 
     /**
+     * Releases any session held with the device. Each XOR command uses its own socket, so there is nothing to release.
+     */
+    public void close() {
+    }
+
+    /**
      * Reads and decrypts result returned from the device.
      *
      * @param socket socket to read result from

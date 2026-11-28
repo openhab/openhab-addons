@@ -445,6 +445,7 @@
 /bundles/org.openhab.binding.tibber/ @kjoglum @weymann
 /bundles/org.openhab.binding.tivo/ @mlobstein
 /bundles/org.openhab.binding.touchwand/ @roieg
+/bundles/org.openhab.binding.tplinkbridge/ @smitopher
 /bundles/org.openhab.binding.tplinkrouter/ @olivierkeke
 /bundles/org.openhab.binding.tplinksmarthome/ @Hilbrand
 /bundles/org.openhab.binding.tr064/ @J-N-K

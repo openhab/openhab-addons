@@ -122,6 +122,20 @@ The Thing has the following configuration parameters:
 | broadcastAddress       | [advanced] Set broadcast address to your local subnet  if you have problems with default address                                                           |
 | discoveryInterval      | [advanced] Interval in minutes when a background device scan should be executed. Default is 60                                                             |
 
+### Shared TP-Link Account
+
+Instead of a `tapocontrol:bridge`, a device Thing can use a `tplinkbridge:account` from the [TP-Link Bridge Binding](https://www.openhab.org/addons/bindings/tplinkbridge/) as its parent.
+That bridge holds the same TP-Link account credentials and can be shared with Kasa devices, so you enter them only once.
+It doesn't discover devices, so add the device Things manually or discover them with a `tapocontrol:bridge`.
+
+To move an existing Thing, create a `tplinkbridge:account` bridge and change the Thing's parent bridge to it.
+The Thing UID, its configuration and its item links stay the same.
+
+```java
+Bridge tplinkbridge:account:home "TP-Link Account" [ username="you@yourprovider.com", password="verysecret" ]
+Thing tapocontrol:P100:home:mySocket "My-Socket" (tplinkbridge:account:home) [ ipAddress="192.168.178.150", protocol="KLAP" ]
+```
+
 ## Thing Configuration
 
 Wi-Fi-based Things need to be configured with `ipAddress`.

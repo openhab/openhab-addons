@@ -87,6 +87,7 @@ public final class TPLinkSmartHomeBindingConstants {
     public static final String CONFIG_IP = "ipAddress";
     public static final String CONFIG_DEVICE_ID = "deviceId";
     public static final String CONFIG_REFRESH = "refresh";
+    public static final String CONFIG_ACCOUNT = "account";
     // Only for bulbs
     public static final String CONFIG_TRANSITION_PERIOD = "transitionPeriod";
 

@@ -357,6 +357,11 @@ Devices can be auto discovered in the same local network as the openHAB applicat
 It is possible to connect to devices on a different network, but these must be added manually by `ipAddress`.
 It is not possible to connect to devices on a different network using `deviceId` as configuration.
 
+Devices on [secured firmware](#devices-with-secured-firmware) are discovered too, on UDP port 20002.
+Their Inbox entry is labeled with the model and "(secured firmware)", and has the device's `ipAddress`.
+If there is exactly one `tplinkbridge:account` Thing, the entry also has that `account`; otherwise set it after adding the Thing.
+The device id is filled in once the Thing is online.
+
 ## Thing Configuration
 
 The thingId is the product type in lower case. For example `HS100` has thingId `hs100`.
@@ -376,14 +381,40 @@ Manually starting a discovery can also be used to set the ip address directly in
 
 The Thing has the following configuration parameters:
 
-| Parameter          | Description                                                                                  |
-|--------------------|----------------------------------------------------------------------------------------------|
-| deviceId           | The TP-Link id of the device.                                                                |
-| ipAddress          | IP Address of the device.                                                                    |
-| refresh            | Refresh interval in seconds. Optional. The default is 30 seconds, and 1 second for switches. |
-| transitionPeriod   | Duration of state changes in milliseconds, only for light bulbs, default 0.                  |
+| Parameter        | Description                                                                                         |
+|------------------|-----------------------------------------------------------------------------------------------------|
+| deviceId         | The TP-Link id of the device.                                                                       |
+| ipAddress        | IP Address of the device.                                                                           |
+| refresh          | Refresh interval in seconds. Optional. The default is 30 seconds, and 1 second for switches.        |
+| transitionPeriod | Duration of state changes in milliseconds, only for light bulbs, default 0.                         |
+| account          | UID of a `tplinkbridge:account` Thing. Optional. Only for devices with secured firmware, see below. |
 
 Either `deviceId` or `ipAddress` must be set.
+
+### Devices with Secured Firmware
+
+Newer Kasa firmware secures the local protocol on port 9999, so the binding can no longer reach the device the old way.
+Such devices speak TP-Link's KLAP protocol instead, which needs the e-mail address and password of the TP-Link account the device is registered to.
+
+To use KLAP, add a `tplinkbridge:account` Thing from the TP-Link Bridge binding with your account credentials, and set the device Thing's `account` parameter to its UID.
+A Thing with an `account` always uses KLAP, and a Thing without one uses the old protocol, so only set it once the device runs the secured firmware.
+The Thing UID and its item links stay the same when you set the parameter.
+
+The binding tries the account password first, then the key the Kasa app stores on some devices, and then the fixed credentials of devices that were never registered to an account.
+It supports both versions of KLAP that Kasa firmware uses.
+If the device accepts none of them, or the account Thing doesn't exist or isn't ONLINE, the Thing goes OFFLINE with a configuration error.
+After the device rejected the credentials, the binding logs in again only once per refresh interval.
+Give such a device a fixed IP address in your router, or keep discovery running so the Thing follows the device to a new address.
+
+Newer hardware revisions of some Kasa models, such as the EP25 hardware 2.6, HS200 hardware 5.26 and HS220 hardware 3.26, no longer speak the Kasa protocol over KLAP but TP-Link's newer SMART protocol, which this binding doesn't support.
+Discovery leaves them out, and a Thing for such a device goes OFFLINE with a configuration error that says so.
+The [Tapo Control Binding](https://www.openhab.org/addons/bindings/tapocontrol/) speaks the SMART protocol and may support them.
+
+```java
+Bridge tplinkbridge:account:home "TP-Link Account" [ username="user@example.com", password="secret" ]
+
+Thing tplinksmarthome:ep10:lamp "Desk Lamp" [ ipAddress="192.168.1.20", account="tplinkbridge:account:home" ]
+```
 
 ## Channels
 

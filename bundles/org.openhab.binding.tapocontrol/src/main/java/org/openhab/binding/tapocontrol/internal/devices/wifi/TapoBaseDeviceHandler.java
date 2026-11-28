@@ -29,14 +29,18 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.tapocontrol.internal.api.TapoDeviceConnector;
 import org.openhab.binding.tapocontrol.internal.constants.TapoErrorCode;
+import org.openhab.binding.tapocontrol.internal.devices.bridge.TapoAccountBridge;
 import org.openhab.binding.tapocontrol.internal.devices.bridge.TapoBridgeHandler;
+import org.openhab.binding.tapocontrol.internal.devices.bridge.TapoDeviceBridge;
 import org.openhab.binding.tapocontrol.internal.devices.dto.TapoBaseDeviceData;
 import org.openhab.binding.tapocontrol.internal.devices.dto.TapoEnergyData;
 import org.openhab.binding.tapocontrol.internal.dto.TapoRequest;
 import org.openhab.binding.tapocontrol.internal.dto.TapoResponse;
 import org.openhab.binding.tapocontrol.internal.helpers.TapoErrorHandler;
+import org.openhab.binding.tplinkbridge.TPLinkAccount;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
@@ -53,6 +57,7 @@ import org.slf4j.LoggerFactory;
  * Abstract class as base for TAPO-Device device implementations.
  *
  * @author Christian Wild - Initial contribution
+ * @author Christopher Smith - Accept the shared TP-Link account bridge
  */
 @NonNullByDefault
 public abstract class TapoBaseDeviceHandler extends BaseThingHandler {
@@ -67,15 +72,18 @@ public abstract class TapoBaseDeviceHandler extends BaseThingHandler {
     private static final Object DISPOSED = new Object();
     private volatile Object lifecycle = DISPOSED;
     protected @NonNullByDefault({}) TapoDeviceConnector connector;
-    protected @NonNullByDefault({}) TapoBridgeHandler bridge;
+    protected @NonNullByDefault({}) TapoDeviceBridge bridge;
+    private final HttpClient httpClient;
 
     /**
      * Constructor
      *
      * @param thing Thing object representing device
+     * @param httpClient HTTP client used when the parent is a {@code tplinkbridge:account}
      */
-    protected TapoBaseDeviceHandler(Thing thing) {
+    protected TapoBaseDeviceHandler(Thing thing, HttpClient httpClient) {
         super(thing);
+        this.httpClient = httpClient;
         this.uid = getThing().getUID().getAsString();
     }
 
@@ -111,6 +119,9 @@ public abstract class TapoBaseDeviceHandler extends BaseThingHandler {
             BridgeHandler bridgeHandler = bridgeThing.getHandler();
             if (bridgeHandler instanceof TapoBridgeHandler tapoBridgeHandler) {
                 this.bridge = tapoBridgeHandler;
+                this.connector = new TapoDeviceConnector(this, bridge);
+            } else if (bridgeHandler instanceof TPLinkAccount account) {
+                this.bridge = new TapoAccountBridge(account, httpClient);
                 this.connector = new TapoDeviceConnector(this, bridge);
             }
         }
@@ -152,7 +163,7 @@ public abstract class TapoBaseDeviceHandler extends BaseThingHandler {
      */
     protected boolean checkBridge() throws TapoErrorHandler {
         /* check bridge */
-        if (!(bridge instanceof TapoBridgeHandler)) {
+        if (!(bridge instanceof TapoDeviceBridge)) {
             throw new TapoErrorHandler(ERR_CONFIG_NO_BRIDGE);
         }
         /* check credentials */

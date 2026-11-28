@@ -8,6 +8,7 @@
 	<thing-type id="L920">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="bridge"/>
+			<bridge-type-ref bindingId="tplinkbridge" id="account"/>
 		</supported-bridge-type-refs>
 
 		<label>L920 LightStrip</label>

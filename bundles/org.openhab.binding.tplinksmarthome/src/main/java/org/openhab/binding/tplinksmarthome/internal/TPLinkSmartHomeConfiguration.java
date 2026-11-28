@@ -38,4 +38,9 @@ public class TPLinkSmartHomeConfiguration {
      * Transition period of light bulb state changes in seconds.
      */
     public int transitionPeriod;
+
+    /**
+     * UID of the TP-Link account Thing whose credentials are used to connect with KLAP.
+     */
+    public String account;
 }

@@ -32,6 +32,7 @@ import org.openhab.binding.tapocontrol.internal.api.protocol.kasa.KasaXorProtoco
 import org.openhab.binding.tapocontrol.internal.api.protocol.klap.KlapProtocol;
 import org.openhab.binding.tapocontrol.internal.api.protocol.passthrough.PassthroughProtocol;
 import org.openhab.binding.tapocontrol.internal.devices.bridge.TapoBridgeHandler;
+import org.openhab.binding.tapocontrol.internal.devices.bridge.TapoDeviceBridge;
 import org.openhab.binding.tapocontrol.internal.devices.dto.TapoChildDeviceData;
 import org.openhab.binding.tapocontrol.internal.devices.wifi.TapoBaseDeviceHandler;
 import org.openhab.binding.tapocontrol.internal.dto.TapoBaseRequestInterface;
@@ -56,7 +57,7 @@ import com.google.gson.JsonParseException;
 public class TapoDeviceConnector implements TapoConnectorInterface {
     private final Logger logger = LoggerFactory.getLogger(TapoDeviceConnector.class);
     private final TapoBaseDeviceHandler device;
-    private final TapoBridgeHandler bridge;
+    private final TapoDeviceBridge bridge;
     private final String uid;
     private TapoProtocolInterface protocolHandler;
     private TapoResponse queryResponse = new TapoResponse();
@@ -69,7 +70,7 @@ public class TapoDeviceConnector implements TapoConnectorInterface {
      * Init Class
      **********************/
 
-    public TapoDeviceConnector(TapoBaseDeviceHandler tapoDeviceHandler, TapoBridgeHandler bridgeThingHandler) {
+    public TapoDeviceConnector(TapoBaseDeviceHandler tapoDeviceHandler, TapoDeviceBridge bridgeThingHandler) {
         bridge = bridgeThingHandler;
         device = tapoDeviceHandler;
         uid = device.getThingUID().toString() + " / DeviceConnector";
@@ -531,7 +532,7 @@ public class TapoDeviceConnector implements TapoConnectorInterface {
     }
 
     @Override
-    public TapoBridgeHandler getBridge() {
-        return bridge;
+    public @Nullable TapoBridgeHandler getBridge() {
+        return bridge.getTapoBridge();
     }
 }

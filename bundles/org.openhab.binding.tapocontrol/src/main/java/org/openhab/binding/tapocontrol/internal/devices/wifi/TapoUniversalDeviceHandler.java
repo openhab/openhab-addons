@@ -17,6 +17,7 @@ import static org.openhab.binding.tapocontrol.internal.constants.TapoThingConsta
 import static org.openhab.binding.tapocontrol.internal.helpers.utils.TypeUtils.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.tapocontrol.internal.devices.wifi.lightstrip.TapoLightStripData;
 import org.openhab.binding.tapocontrol.internal.dto.TapoRequest;
 import org.openhab.binding.tapocontrol.internal.dto.TapoResponse;
@@ -59,8 +60,8 @@ public class TapoUniversalDeviceHandler extends TapoBaseDeviceHandler {
      *
      * @param thing Thing object representing device
      */
-    public TapoUniversalDeviceHandler(Thing thing) {
-        super(thing);
+    public TapoUniversalDeviceHandler(Thing thing, HttpClient httpClient) {
+        super(thing, httpClient);
     }
 
     /**

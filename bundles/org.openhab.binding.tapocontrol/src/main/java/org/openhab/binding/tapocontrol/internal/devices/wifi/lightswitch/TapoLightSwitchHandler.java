@@ -17,6 +17,7 @@ import static org.openhab.binding.tapocontrol.internal.constants.TapoThingConsta
 import static org.openhab.binding.tapocontrol.internal.helpers.utils.TypeUtils.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.tapocontrol.internal.devices.wifi.TapoBaseDeviceHandler;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -46,8 +47,8 @@ public class TapoLightSwitchHandler extends TapoBaseDeviceHandler {
      *
      * @param thing Thing object representing device
      */
-    public TapoLightSwitchHandler(Thing thing) {
-        super(thing);
+    public TapoLightSwitchHandler(Thing thing, HttpClient httpClient) {
+        super(thing, httpClient);
         dimmer = SUPPORTED_DIMMER_SWITCH_UIDS.contains(thing.getThingTypeUID());
         lightSwitchData = dimmer ? new TapoDimmerSwitchData() : new TapoLightSwitchData();
     }

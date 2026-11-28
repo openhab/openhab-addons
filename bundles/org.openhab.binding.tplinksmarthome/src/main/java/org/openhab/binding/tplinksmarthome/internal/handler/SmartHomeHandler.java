@@ -15,6 +15,7 @@ package org.openhab.binding.tplinksmarthome.internal.handler;
 import static org.openhab.binding.tplinksmarthome.internal.TPLinkSmartHomeBindingConstants.*;
 
 import java.io.IOException;
+import java.io.InterruptedIOException;
 import java.time.Duration;
 import java.util.Collection;
 import java.util.List;
@@ -23,13 +24,19 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.util.StringUtil;
+import org.openhab.binding.tplinkbridge.TPLinkAccount;
+import org.openhab.binding.tplinkbridge.TPLinkCredentials;
+import org.openhab.binding.tplinkbridge.klap.KlapAuthenticationException;
 import org.openhab.binding.tplinksmarthome.internal.Connection;
+import org.openhab.binding.tplinksmarthome.internal.KlapConnection;
 import org.openhab.binding.tplinksmarthome.internal.TPLinkIpAddressService;
 import org.openhab.binding.tplinksmarthome.internal.TPLinkSmartHomeConfiguration;
 import org.openhab.binding.tplinksmarthome.internal.TPLinkSmartHomeThingType;
 import org.openhab.binding.tplinksmarthome.internal.TPLinkSmartHomeThingType.DeviceType;
 import org.openhab.binding.tplinksmarthome.internal.TPLinkStateDescriptionProvider;
+import org.openhab.binding.tplinksmarthome.internal.UnsupportedProtocolException;
 import org.openhab.binding.tplinksmarthome.internal.device.BulbDevice;
 import org.openhab.binding.tplinksmarthome.internal.device.DeviceState;
 import org.openhab.binding.tplinksmarthome.internal.device.SmartHomeDevice;
@@ -39,8 +46,10 @@ import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingRegistry;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
@@ -55,6 +64,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Christian Fischer - Initial contribution
  * @author Hilbrand Bouwkamp - Rewrite to generic TP-Link Smart Home Handler
+ * @author Christopher Smith - KLAP connection with the credentials of a shared TP-Link account
  */
 @NonNullByDefault
 public class SmartHomeHandler extends BaseThingHandler {
@@ -68,6 +78,8 @@ public class SmartHomeHandler extends BaseThingHandler {
     private final TPLinkIpAddressService ipAddressService;
     private final int forceRefreshThreshold;
     private final TPLinkStateDescriptionProvider stateDescriptionProvider;
+    private final HttpClient httpClient;
+    private final ThingRegistry thingRegistry;
 
     private @NonNullByDefault({}) TPLinkSmartHomeConfiguration configuration;
     private @NonNullByDefault({}) Connection connection;
@@ -77,6 +89,13 @@ public class SmartHomeHandler extends BaseThingHandler {
      * Cache to avoid refresh is called multiple time in 1 second.
      */
     private @NonNullByDefault({}) ExpiringCache<@Nullable DeviceState> fastCache;
+    private @Nullable ThingUID accountUid;
+    /**
+     * After the device rejected the credentials or answered in a protocol this binding doesn't speak, refreshes don't
+     * log in again before this time, so a poll or the REFRESH commands for several channels don't each send a failed
+     * request to the device.
+     */
+    private volatile long loginRetryAt;
 
     /**
      * Constructor.
@@ -86,11 +105,16 @@ public class SmartHomeHandler extends BaseThingHandler {
      * @param type The device type
      * @param ipAddressService Cache keeping track of ip addresses of tp link devices
      * @param stateDescriptionProvider
+     * @param httpClient HTTP client for devices that are reached over KLAP
+     * @param thingRegistry registry to look up the TP-Link account Thing of devices that are reached over KLAP
      */
     public SmartHomeHandler(final Thing thing, final SmartHomeDevice smartHomeDevice,
             final TPLinkSmartHomeThingType type, final TPLinkIpAddressService ipAddressService,
-            final TPLinkStateDescriptionProvider stateDescriptionProvider) {
+            final TPLinkStateDescriptionProvider stateDescriptionProvider, final HttpClient httpClient,
+            final ThingRegistry thingRegistry) {
         super(thing);
+        this.httpClient = httpClient;
+        this.thingRegistry = thingRegistry;
         this.smartHomeDevice = smartHomeDevice;
         this.ipAddressService = ipAddressService;
         this.forceRefreshThreshold = type.getDeviceType() == DeviceType.SWITCH
@@ -110,15 +134,25 @@ public class SmartHomeHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(final ChannelUID channelUid, final Command command) {
+        final ExpiringCache<@Nullable DeviceState> localFastCache = fastCache;
+        if (localFastCache == null) {
+            // initialize() stopped early because of a configuration error
+            return;
+        }
         try {
             if (command instanceof RefreshType) {
-                updateChannelState(channelUid, fastCache.getValue());
+                updateChannelState(channelUid, localFastCache.getValue());
+            } else if (!isAccountAvailable()) {
+                logger.debug("Command {} for channel {} ignored while the TP-Link account is unavailable", command,
+                        channelUid.getId());
             } else if (smartHomeDevice.handleCommand(channelUid, command)) {
                 // After a command always refresh the cache to make sure the cache has the latest data
                 updateChannelState(channelUid, forceCacheUpdate());
             } else {
                 logger.debug("Command {} is not supported for channel: {}", command, channelUid.getId());
             }
+        } catch (final KlapAuthenticationException | UnsupportedProtocolException e) {
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
         } catch (final IOException e) {
             updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
@@ -130,6 +164,11 @@ public class SmartHomeHandler extends BaseThingHandler {
             refreshJob.cancel(true);
             refreshJob = null;
         }
+        cache = null;
+        fastCache = null;
+        if (connection != null) {
+            connection.close();
+        }
     }
 
     @Override
@@ -138,6 +177,23 @@ public class SmartHomeHandler extends BaseThingHandler {
         if (StringUtil.isBlank(configuration.ipAddress) && StringUtil.isBlank(configuration.deviceId)) {
             updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "No ip address or the device id configured.");
             return;
+        }
+        accountUid = null;
+        loginRetryAt = 0;
+        if (usesAccount(configuration)) {
+            // Only port 9999 discovery reports a device's address, and devices that need KLAP no longer answer it
+            if (StringUtil.isBlank(configuration.ipAddress)) {
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
+                        "Set the ip address of a device that uses a TP-Link account.");
+                return;
+            }
+            try {
+                accountUid = new ThingUID(configuration.account);
+            } catch (final IllegalArgumentException e) {
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
+                        String.format("The account '%s' isn't a Thing UID.", configuration.account));
+                return;
+            }
         }
         logger.debug("Initializing TP-Link Smart device on ip '{}' or deviceId '{}' ", configuration.ipAddress,
                 configuration.deviceId);
@@ -166,7 +222,42 @@ public class SmartHomeHandler extends BaseThingHandler {
      * @return new Connection object
      */
     Connection createConnection(final TPLinkSmartHomeConfiguration config) {
-        return new Connection(config.ipAddress);
+        return usesAccount(config) ? new KlapConnection(httpClient, config.ipAddress, this::accountCredentials)
+                : new Connection(config.ipAddress);
+    }
+
+    /**
+     * A device whose firmware secures the legacy protocol only speaks KLAP, which needs the TP-Link account. Users
+     * signal this by setting the Thing's account. It isn't a parent bridge, because openHAB doesn't initialize a
+     * Thing without a bridge when its type supports one, and most devices still use the legacy protocol.
+     */
+    private static boolean usesAccount(final TPLinkSmartHomeConfiguration config) {
+        return !StringUtil.isBlank(config.account);
+    }
+
+    private @Nullable TPLinkAccount account(final ThingUID uid) {
+        final Thing accountThing = thingRegistry.get(uid);
+        return accountThing != null && accountThing.getStatus() == ThingStatus.ONLINE
+                && accountThing.getHandler() instanceof TPLinkAccount account ? account : null;
+    }
+
+    /**
+     * @return whether the Thing needs no account or its account is ONLINE. Sets a configuration error otherwise.
+     */
+    private boolean isAccountAvailable() {
+        final ThingUID uid = accountUid;
+        if (uid != null && account(uid) == null) {
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
+                    String.format("The TP-Link account '%s' doesn't exist or isn't ONLINE.", uid));
+            return false;
+        }
+        return true;
+    }
+
+    private TPLinkCredentials accountCredentials() {
+        final ThingUID uid = accountUid;
+        final TPLinkAccount account = uid == null ? null : account(uid);
+        return account == null ? new TPLinkCredentials("", "") : account.getCredentials();
     }
 
     /**
@@ -175,11 +266,19 @@ public class SmartHomeHandler extends BaseThingHandler {
      * @return the refreshed value
      */
     private @Nullable DeviceState forceCacheUpdate() {
-        cache.invalidateValue();
-        return cache.getValue();
+        final ExpiringCache<@Nullable DeviceState> localCache = cache;
+        if (localCache == null) {
+            return null;
+        }
+        localCache.invalidateValue();
+        return localCache.getValue();
     }
 
     private @Nullable DeviceState refreshCache() {
+        // Polling goes on, so the Thing recovers once the account is ONLINE
+        if (!isAccountAvailable() || System.currentTimeMillis() < loginRetryAt) {
+            return null;
+        }
         int retry = 1;
 
         while (true) {
@@ -193,6 +292,15 @@ public class SmartHomeHandler extends BaseThingHandler {
                     updateStatus(ThingStatus.ONLINE);
                 }
                 return deviceState;
+            } catch (final InterruptedIOException e) {
+                // dispose() cancelled this refresh, so don't retry or change the status of the next initialization
+                Thread.currentThread().interrupt();
+                return null;
+            } catch (final KlapAuthenticationException | UnsupportedProtocolException e) {
+                loginRetryAt = System.currentTimeMillis()
+                        + TimeUnit.SECONDS.toMillis(Math.max(1, configuration.refresh));
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+                return null;
             } catch (final IOException e) {
                 // If there is a connection problem retry before throwing an exception
                 if (retry < CONNECTION_IO_RETRIES) {
@@ -265,7 +373,13 @@ public class SmartHomeHandler extends BaseThingHandler {
 
     void refreshChannels() {
         logger.trace("Update Channels for:{}", thing.getUID());
-        getThing().getChannels().forEach(channel -> updateChannelState(channel.getUID(), cache.getValue()));
+        final ExpiringCache<@Nullable DeviceState> localCache = cache;
+        if (localCache == null) {
+            return;
+        }
+        // Read once, as a failed refresh isn't cached and would otherwise be repeated for every channel
+        final @Nullable DeviceState deviceState = localCache.getValue();
+        getThing().getChannels().forEach(channel -> updateChannelState(channel.getUID(), deviceState));
     }
 
     /**

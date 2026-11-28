@@ -172,17 +172,17 @@ public class TapoControlHandlerFactory extends BaseThingHandlerFactory {
             }
             return bridgeHandler;
         } else if (SUPPORTED_HUB_UIDS.contains(thingTypeUID)) {
-            return new TapoHubHandler(thing);
+            return new TapoHubHandler(thing, getHttpClient());
         } else if (SUPPORTED_SOCKET_UIDS.contains(thingTypeUID)) {
-            return new TapoSocketHandler(thing);
+            return new TapoSocketHandler(thing, getHttpClient());
         } else if (SUPPORTED_SOCKET_STRIP_UIDS.contains(thingTypeUID)) {
-            return new TapoSocketStripHandler(thing);
+            return new TapoSocketStripHandler(thing, getHttpClient());
         } else if (SUPPORTED_WHITE_BULB_UIDS.contains(thingTypeUID)) {
-            return new TapoBulbHandler(thing, stateDescriptionProvider);
+            return new TapoBulbHandler(thing, getHttpClient(), stateDescriptionProvider);
         } else if (SUPPORTED_COLOR_BULB_UIDS.contains(thingTypeUID)) {
-            return new TapoBulbHandler(thing, stateDescriptionProvider);
+            return new TapoBulbHandler(thing, getHttpClient(), stateDescriptionProvider);
         } else if (SUPPORTED_LIGHT_STRIP_UIDS.contains(thingTypeUID)) {
-            return new TapoLightStripHandler(thing);
+            return new TapoLightStripHandler(thing, getHttpClient());
         } else if (SUPPORTED_SMART_CONTACTS.contains(thingTypeUID)) {
             return new TapoSmartContactHandler(thing);
         } else if (SUPPORTED_WEATHER_SENSORS.contains(thingTypeUID)) {
@@ -190,7 +190,7 @@ public class TapoControlHandlerFactory extends BaseThingHandlerFactory {
         } else if (SUPPORTED_SMART_SWITCHES.contains(thingTypeUID)) {
             return new TapoSmartSwitchHandler(thing);
         } else if (SUPPORTED_LIGHT_SWITCH_UIDS.contains(thingTypeUID)) {
-            return new TapoLightSwitchHandler(thing);
+            return new TapoLightSwitchHandler(thing, getHttpClient());
         } else if (SUPPORTED_CAMERA_UIDS.contains(thingTypeUID)) {
             TapoCameraHandler cameraHandler = new TapoCameraHandler(thing, getCameraHttpClient());
             synchronized (handlersWithHttpClient) {
@@ -198,7 +198,7 @@ public class TapoControlHandlerFactory extends BaseThingHandlerFactory {
             }
             return cameraHandler;
         } else if (thingTypeUID.equals(UNIVERSAL_THING_TYPE)) {
-            return new TapoUniversalDeviceHandler(thing);
+            return new TapoUniversalDeviceHandler(thing, getHttpClient());
         }
         return null;
     }

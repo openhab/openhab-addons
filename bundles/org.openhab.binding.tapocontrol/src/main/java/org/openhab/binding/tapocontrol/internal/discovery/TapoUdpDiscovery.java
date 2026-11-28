@@ -63,7 +63,7 @@ import com.google.gson.JsonParseException;
 @NonNullByDefault
 public class TapoUdpDiscovery {
     private final Logger logger = LoggerFactory.getLogger(TapoUdpDiscovery.class);
-    private final TapoBridgeHandler bridge;
+    private final @Nullable TapoBridgeHandler bridge;
     private String uid;
 
     private static final Integer BROADCAST_TIMEOUT_MS = 8000;
@@ -80,6 +80,17 @@ public class TapoUdpDiscovery {
         uid = bridge.getUID().getAsString() + " - updDiscovery";
     }
 
+    /**
+     * Sender without a Tapo bridge, for a device whose parent is a {@code tplinkbridge:account}. Replies are not
+     * added to discovery, and {@link #startScan()} is not available.
+     *
+     * @param thingUID UID of the device that sends
+     */
+    public TapoUdpDiscovery(String thingUID) {
+        this.bridge = null;
+        uid = thingUID + " - updDiscovery";
+    }
+
     /***********************************
      * SCAN HANDLING
      ************************************/
@@ -88,6 +99,10 @@ public class TapoUdpDiscovery {
      * start scan with configured broadcast address
      */
     protected void startScan() throws TapoErrorHandler {
+        TapoBridgeHandler bridge = this.bridge;
+        if (bridge == null) {
+            throw new TapoErrorHandler(TapoErrorCode.ERR_CONFIG_NO_BRIDGE);
+        }
         String broadcastAddress = bridge.getBridgeConfig().broadcastAddress;
         try {
             scanAllPorts(InetAddress.getByName(broadcastAddress));
@@ -489,8 +504,7 @@ public class TapoUdpDiscovery {
         if (handleDiscoveryResult(responseMessage)) {
             return;
         }
-        KasaXorDiscovery.decode(response, length, senderIp)
-                .ifPresent(result -> bridge.getDiscoveryService().addScanResult(result));
+        KasaXorDiscovery.decode(response, length, senderIp).ifPresent(this::addScanResult);
     }
 
     /**
@@ -508,13 +522,20 @@ public class TapoUdpDiscovery {
                 }
                 String responseContent = responseMessage.substring(jsonIndex).trim();
                 TapoResponse tapoResponse = getObjectFromJson(responseContent, TapoResponse.class);
-                bridge.getDiscoveryService()
-                        .addScanResult(getObjectFromJson(tapoResponse.result(), TapoDiscoveryResult.class));
+                addScanResult(getObjectFromJson(tapoResponse.result(), TapoDiscoveryResult.class));
             } catch (JsonParseException | IndexOutOfBoundsException e) {
                 break;
             }
             return true;
         }
         return false;
+    }
+
+    private void addScanResult(TapoDiscoveryResult result) {
+        TapoBridgeHandler bridge = this.bridge;
+        TapoDiscoveryService discoveryService = bridge != null ? bridge.getDiscoveryService() : null;
+        if (discoveryService != null) {
+            discoveryService.addScanResult(result);
+        }
     }
 }

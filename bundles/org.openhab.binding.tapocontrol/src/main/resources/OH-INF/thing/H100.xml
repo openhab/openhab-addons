@@ -7,6 +7,7 @@
 	<bridge-type id="H100">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="bridge"/>
+			<bridge-type-ref bindingId="tplinkbridge" id="account"/>
 		</supported-bridge-type-refs>
 
 		<label>Tapo Hub H100</label>
